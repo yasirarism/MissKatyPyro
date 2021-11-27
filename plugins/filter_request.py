@@ -42,13 +42,13 @@ async def _callbackreq(c: Client, q: CallbackQuery):
 
 
 @Client.on_callback_query(filters.regex(r"^rejectreq"))
-async def _callbackreq(c: Client, q: CallbackQuery):
+async def _callbackreject(c: Client, q: CallbackQuery):
     i, msg_id, chat_id = q.data.split('_')
     await c.send_message(chat_id=chat_id, text=f"Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya dulu yaa 🙃.", reply_to_message_id=int(msg_id))
     await q.answer("Requests berhasil ditolak 🚫")
 
 @Client.on_callback_query(filters.regex(r"^unavailablereq"))
-async def _callbackreq(c: Client, q: CallbackQuery):
+async def _callbackunav(c: Client, q: CallbackQuery):
     i, msg_id, chat_id = q.data.split('_')
     await c.send_message(chat_id=chat_id, text=f"Mohon maaf, request kamu tidak tersedia 😕..", reply_to_message_id=int(msg_id))
     await q.answer("Request tidak tersedia.")
