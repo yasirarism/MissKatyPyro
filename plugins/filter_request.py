@@ -5,13 +5,13 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
 
-@Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
+@Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat) & ~filters.edited)
 async def start(_, message):
     await message.reply_text(
         text=f"Wa'alaikumsalam {message.from_user.mention}"
 )
     
-@Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
+@Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat) & ~filters.edited)
 async def start(_, message):
     pesan = [f"Sama-sama {message.from_user.first_name}",
              f"You're Welcome {message.from_user.first_name}",
@@ -24,11 +24,11 @@ async def start(_, message):
             ]
     await message.reply_text(text=random.choice(pesan))
 
-@Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001201566570))
+@Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935) & ~filters.edited)
 async def request_user(client, message):
-    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1201566570/{message.message_id}")],
+    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.message_id}")],
                                    [InlineKeyboardButton(text="🚫 Tolak", callback_data=f"rejectreq_{message.message_id}_{message.chat.id}"),InlineKeyboardButton(text="✅ Done", callback_data=f"donereq_{message.message_id}_{message.chat.id}")],
-                                   [InlineKeyboardButton(text="✖️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")]
+                                   [InlineKeyboardButton(text="⚠️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")]
                                  ])
     try:
       if message.text:
@@ -76,7 +76,7 @@ async def _callbackunav(c: Client, q: CallbackQuery):
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Unavailable\nMohon maaf, request kamu tidak tersedia 😕..", reply_to_message_id=int(msg_id))
        if q.message.caption:
-          await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
+          await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
        else:
           await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
        await q.answer("Request tidak tersedia.")
