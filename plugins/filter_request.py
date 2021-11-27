@@ -47,6 +47,8 @@ async def _callbackreq(c: Client, q: CallbackQuery):
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Done\nDone ✅, pastikan join channel dan grup yaahh untuk melihat request-an nya.", reply_to_message_id=int(msg_id))
+       if q.message.caption:
+          await q.message.edit_text(f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]))
        await q.message.edit_text(f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]))
        await q.answer("Request berhasil diselesaikan ✅")
     else:
@@ -58,6 +60,8 @@ async def _callbackreject(c: Client, q: CallbackQuery):
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Rejected\nMohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya dulu yaa 🙃.", reply_to_message_id=int(msg_id))
+       if q.message.caption:
+          await q.message.edit_text(f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]))
        await q.message.edit_text(f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]))
        await q.answer("Requests berhasil ditolak 🚫")
     else:
@@ -69,6 +73,8 @@ async def _callbackunav(c: Client, q: CallbackQuery):
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Unavailable\nMohon maaf, request kamu tidak tersedia 😕..", reply_to_message_id=int(msg_id))
+       if q.message.caption:
+          await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
        await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
        await q.answer("Request tidak tersedia.")
     else:
