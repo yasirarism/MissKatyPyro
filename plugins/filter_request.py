@@ -28,7 +28,7 @@ async def start(_, message):
 async def request_user(client, message):
     markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1201566570/{message.message_id}")],
                                    [InlineKeyboardButton(text="🚫 Tolak", callback_data=f"rejectreq_{message.message_id}_{message.chat.id}"),InlineKeyboardButton(text="✅ Done", callback_data=f"donereq_{message.message_id}_{message.chat.id}")],
-                                   [InlineKeyboardButton(text="✖️ Tidak Tersedia", callback_data=f"unavailable_{message.message_id}_{message.chat.id}")]
+                                   [InlineKeyboardButton(text="✖️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")]
                                  ])
     forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.text}", reply_markup=markup)
     markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
@@ -37,5 +37,18 @@ async def request_user(client, message):
 @Client.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c: Client, q: CallbackQuery):
     i, msg_id, chat_id = q.data.split('_')
-    await c.send_message(chat_id=chat_id, text=f"Done", reply_to_message_id=int(msg_id))
-    await q.answer("Done")
+    await c.send_message(chat_id=chat_id, text=f"Done pastikan join channel dan grup yaahh untuk melihat request an nya ✅", reply_to_message_id=int(msg_id))
+    await q.answer("Request berhasil diselesaikan ✅")
+
+
+@Client.on_callback_query(filters.regex(r"^rejectreq"))
+async def _callbackreq(c: Client, q: CallbackQuery):
+    i, msg_id, chat_id = q.data.split('_')
+    await c.send_message(chat_id=chat_id, text=f"Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya dulu yaa 🙃.", reply_to_message_id=int(msg_id))
+    await q.answer("Requests berhasil ditolak 🚫")
+
+@Client.on_callback_query(filters.regex(r"^unavailablereq"))
+async def _callbackreq(c: Client, q: CallbackQuery):
+    i, msg_id, chat_id = q.data.split('_')
+    await c.send_message(chat_id=chat_id, text=f"Mohon maaf, request kamu tidak tersedia 😕..", reply_to_message_id=int(msg_id))
+    await q.answer("Request tidak tersedia.")
