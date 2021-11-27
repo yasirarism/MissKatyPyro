@@ -47,7 +47,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Done\nDone ✅, pastikan join channel dan grup yaahh untuk melihat request-an nya.", reply_to_message_id=int(msg_id))
-       await q.message.edit_text(f"<b>COMPLETED</b>\n\n<s>{message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="req_compl")]])
+       await q.message.edit_text(f"<b>COMPLETED</b>\n\n<s>{message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="req_compl")]]))
        await q.answer("Request berhasil diselesaikan ✅")
     else:
        await q.answer("😝😝😝", show_alert=True)
