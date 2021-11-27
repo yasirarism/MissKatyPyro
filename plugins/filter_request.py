@@ -37,5 +37,5 @@ async def request_user(client, message):
 @Client.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c: Client, q: CallbackQuery):
     i, msg_id, chat_id = q.data.split('_')
-    await c.send_message(chat_id=chat_id, text=f"Done {msg_id}")
+    await c.send_message(chat_id=chat_id, text=f"Done", reply_to_message_id=int(msg_id))
     await q.answer("Done")
