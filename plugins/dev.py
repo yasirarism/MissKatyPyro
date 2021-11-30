@@ -8,9 +8,9 @@ import io
 import sys
 import traceback
 from pyrogram import Client as Yasir, filters
+from info import COMMAND_HANDLER
 
-
-@Yasir.on_message(filters.command(["run","run@MissKatyRoBot") & filters.user(617426792))
+@Yasir.on_message(filters.command(["run","run@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
 async def eval(client, message):
     if len(message.command) < 2 :
         return await message.reply("Masukkan kode yang ingin dijalankan..")
