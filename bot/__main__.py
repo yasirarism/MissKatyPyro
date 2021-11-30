@@ -5,4 +5,7 @@ from pyrogram import idle, __version__
 
 # Run Bot
 if __name__ == "__main__":
-       YasirBot.run()
+    app.start()
+    me = app.get_me()
+    logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
+    idle()
