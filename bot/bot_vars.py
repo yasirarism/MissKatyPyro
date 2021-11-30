@@ -5,3 +5,4 @@ async def aboutbot():
     BOT_ID = me.id
     BOT_NAME = me.first_name
     BOT_USERNAME = me.username
+    return BOT_ID, BOT_NAME, BOT_USERNAME
