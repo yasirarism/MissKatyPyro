@@ -161,6 +161,7 @@ async def get_content(url):
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, movie = query.data.split('#')
+    trl = Translator()
     resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
     req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
     parse = req.json()
