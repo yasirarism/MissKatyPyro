@@ -13,9 +13,9 @@ async def purge(_, message):
         # https://t.me/c/1312712379/84174
         return
 
-    is_admin = await app.get_chat_member(message.chat.id, message.from_user.id)
+    admin = await app.get_chat_member(message.chat.id, message.from_user.id)
 
-    if user.status in ['administrator','creator']:
+    if admin.status not in ['administrator','creator']:
         return await message.reply_text("Command ini hanya untuk admin..", quote=True)
 
     status_message = await message.reply_text("Sedang Memproses..", quote=True)
