@@ -16,23 +16,16 @@ Ini adalah daftar menu bantuan."""
 
 <b>Owner:</b>
 - <a href=https://t.me/YasirArisM>Yasir Aris M</a>"""
-    MANUELFILTER_TXT = """Help: <b>Filters</b>
+    MANUELFILTER_TXT = """Help: <b>Admin</b>
 
-- Filter is the feature were users can set automated replies for a particular keyword and EvaMaria will respond whenever a keyword is found the message
-
-<b>NOTE:</b>
-1. eva maria should have admin privillage.
-2. only admins can add filters in a chat.
-3. alert buttons have a limit of 64 characters.
+- Berikut ini ada beberapa fitur yang berguna banget buat manajemen grup.
 
 <b>Commands and Usage:</b>
-• /filter - <code>add a filter in chat</code>
-• /filters - <code>list all the filters of a chat</code>
+• /ban - <code>Banned user dari grup</code>
+• /kick - <code>list all the filters of a chat</code>
 • /del - <code>delete a specific filter in chat</code>
 • /delall - <code>delete the whole filters in a chat (chat owner only)</code>"""
     BUTTON_TXT = """Help: <b>Buttons</b>
-
-- Eva Maria Supports both url and alert inline buttons.
 
 <b>NOTE:</b>
 1. Telegram will not allows you to send buttons without any content, so content is mandatory.
@@ -47,7 +40,49 @@ Ini adalah daftar menu bantuan."""
     AUTOFILTER_TXT = """Help: <b>Code Runner</b>
 
 Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung.
- I'll add all the files in that channel to my db."""
+
+Daftar Bahasa Pemrograman Yang Didukung:
+~> assembly
+~> ats
+~> bash
+~> c
+~> clojure
+~> cobol
+~> coffeescript
+~> cpp
+~> crystal
+~> csharp
+~> d
+~> elixir
+~> elm
+~> erlang
+~> fsharp
+~> go
+~> groovy
+~> haskell
+~> idris
+~> java
+~> javascript
+~> julia
+~> kotlin
+~> lua
+~> mercury
+~> nim
+~> nix
+~> ocaml
+~> perl
+~> php
+~> python
+~> raku
+~> ruby
+~> rust
+~> scala
+~> swift
+~> typescript
+
+<b>Cara penggunaan:</b>
+~> <code>/python print("Hai aku MissKatyRoBot")</code>
+"""
     CONNECTION_TXT = """Help: <b>Connections</b>
 
 - Used to connect bot to PM for managing filters 
