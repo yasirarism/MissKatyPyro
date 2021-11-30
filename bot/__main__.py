@@ -1,4 +1,5 @@
 import logging
+from bot import app
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
 
