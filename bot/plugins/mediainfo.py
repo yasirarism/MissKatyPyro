@@ -2,14 +2,13 @@ import io
 import json
 import requests
 import aiohttp
-from pyrogram import filters
+from pyrogram import filters, Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from bot import app
 from info import COMMAND_HANDLER
 from utils import get_file_id
 from bot.utils.media_helper import post_to_telegraph, runcmd, safe_filename, get_media_info
 
-@app.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
 async def mediainfo(_, message):
     reply = message.reply_to_message
     if not reply:
