@@ -24,7 +24,7 @@ app = Client(
     sleep_threshold=5,
 )
 
-app.run()
+app.start()
 me = app.get_me()
 logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
 idle()
