@@ -248,7 +248,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
     thumb = parse.get('poster')
     if thumb:
         try:
-            await query.message.reply_photo(photo=5thumb, caption=res_str, reply_markup=markup)
+            await query.message.reply_photo(photo=thumb, caption=res_str, reply_markup=markup)
         except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
             poster = thumb.replace('.jpg', "._V1_UX360.jpg")
             await query.message.reply_photo(photo=poster, caption=res_str, reply_markup=markup)
