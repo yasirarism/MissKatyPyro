@@ -263,4 +263,4 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.answer()
     else:
-        await query.answer("Tombol ini bukan untukmu", alert=True)
+        await query.answer("Tombol ini bukan untukmu", show_alert=True)
