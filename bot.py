@@ -28,6 +28,5 @@ app.start()
 me = app.get_me()
 temp.U_NAME = me.username
 temp.B_NAME = me.first_name
-username = '@' + me.username
 logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
 idle()
