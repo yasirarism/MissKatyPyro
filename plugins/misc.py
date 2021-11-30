@@ -162,7 +162,7 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, movie = query.data.split('#')
     resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-    req = requests.get(f"https://betterimdbot.herokuapp.com/?tt={tt_url}")
+    req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
     parse = req.json()
     b = BeautifulSoup(resp, "lxml")
     r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
