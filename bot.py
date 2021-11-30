@@ -26,7 +26,6 @@ app = Client(
 
 app.start()
 me = app.get_me()
-temp.ME = me.id
 temp.U_NAME = me.username
 temp.B_NAME = me.first_name
 username = '@' + me.username
