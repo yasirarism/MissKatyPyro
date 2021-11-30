@@ -1,7 +1,7 @@
 FROM python:3.9-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install git -y & apt install mediainfo -y
+RUN apt install ffmpeg -y & apt install mediainfo -y
 COPY requirements.txt /requirements.txt
 
 RUN cd /
