@@ -282,13 +282,13 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         thumb = parse.get('poster')
         if thumb:
             try:
-                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=msg_id, reply_markup=markup)
+                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace('.jpg', "._V1_UX360.jpg")
-                await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=msg_id, reply_markup=markup)
+                await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
             except Exception as e:
                 logger.exception(e)
-                await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=msg_id)
+                await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
             await query.message.delete()
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
