@@ -9,7 +9,7 @@ async def copy(_, message):
         reply = message.reply_to_message
         if not reply and not to:
           return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
-        await app.copy_message(to, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
+        await client.copy_message(to, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
         await message.reply_text("Pesan berhasil dikirim..")
     except Exception as e:
         await message.reply_text(e)
@@ -21,7 +21,7 @@ async def copy(_, message):
         reply = message.reply_to_message
         if not reply and not to:
           return await message.reply_text("Silahkan balas pesan yang mau diforward, lalu kirim command /copy [chat_tujuan]")
-        await app.forward_messages(to, message.chat.id, message.reply_to_message.message_id)
+        await client.forward_messages(to, message.chat.id, message.reply_to_message.message_id)
         await message.reply_text("Pesan berhasil dikirim..")
     except Exception as e:
         await message.reply_text(e)
