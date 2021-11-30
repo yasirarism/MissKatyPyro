@@ -3,7 +3,7 @@ from pyrogram.errors import PeerIdInvalid
 from info import COMMAND_HANDLER
 
 @Client.on_message(filters.command(["copy","copy@MissKatyRoBot"], COMMAND_HANDLER))
-async def copy(_, message):
+async def copy(client, message):
     try:
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
@@ -15,7 +15,7 @@ async def copy(_, message):
         await message.reply_text(e)
 
 @Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
-async def copy(_, message):
+async def copy(client, message):
     try:
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
