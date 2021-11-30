@@ -1,6 +1,7 @@
 import time
 from pyrogram import filters
-from bot import app, COMMAND_HANDLER
+from bot import app
+from info import COMMAND_HANDLER
 
 @app.on_message(filters.command("ping", COMMAND_HANDLER))
 async def ping(_, message):
