@@ -1,11 +1,12 @@
 FROM python:3.9-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install ffmpeg -y && apt install mediainfo -y
+RUN apt install git -y && apt install mediainfo -y && apt install ffmpeg -y
+COPY requirements.txt /requirements.txt
 
-COPY . /usr/YasirBot
-WORKDIR /usr/YasirBot
-
-RUN pip3 install -r requirements.txt
-
-CMD ["python3", "bot.py"]
+RUN cd /
+RUN pip3 install -U pip && pip3 install -U -r requirements.txt
+RUN mkdir /EvaMaria
+WORKDIR /EvaMaria
+COPY start.sh /start.sh
+CMD ["/bin/bash", "/start.sh"]
