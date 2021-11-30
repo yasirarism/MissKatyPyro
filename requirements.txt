@@ -9,3 +9,5 @@ bs4
 aiohttp
 imdbpy
 gpytranslate
+apscheduler
+pytz
