@@ -166,6 +166,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
     parse = req.json()
     b = BeautifulSoup(resp, "lxml")
     r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+    res_str = "<b>#IMDBSearchResults</b>\n"
     if r_json["@type"] == 'Person':
         return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", alert=True)
     if parse.get("title"):
