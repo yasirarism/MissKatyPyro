@@ -1,5 +1,10 @@
 import os
+import aiohttp
+from bs4 import BeautifulSoup
+import json
+import requests
 from pyrogram import Client, filters
+from gpytranslate import Translator
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE
 from utils import extract_user, get_file_id, get_poster, last_online
@@ -147,11 +152,28 @@ async def imdb_search(client, message):
         await k.edit('Here is what i found on IMDb', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Give me a movie / series Name')
+        
+async def get_content(url):
+    async with aiohttp.ClientSession() as session:
+        r = await session.get(url)
+        return await r.read()
 
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, movie = query.data.split('#')
     imdb = await get_poster(query=movie, id=True)
+    resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
+    b = BeautifulSoup(resp, "lxml")
+    r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+    if r_json.get("keywords"):
+        keywords = r_json['keywords'].split(",")
+        key_ = ""
+        for i in keywords:
+            i = i.replace(" ", "_")
+            key_ += f"#{i}, "
+        key_ = key_[:-2]
+    else:
+        key_ = ""
     btn = [
             [
                 InlineKeyboardButton(
@@ -189,7 +211,8 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             poster = imdb['poster'],
             plot = imdb['plot'],
             rating = imdb['rating'],
-            url = imdb['url']
+            url = imdb['url'],
+            tags = key_
         )
     else:
         caption = "No Results"
