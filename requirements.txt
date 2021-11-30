@@ -11,3 +11,7 @@ imdbpy
 gpytranslate
 apscheduler
 pytz
+psutil
+html-telegraph-poster
+lottie[all]
+lk21
