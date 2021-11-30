@@ -1,5 +1,8 @@
 import re
 from os import environ
+from bot import app
+
+x = app.get_me()
 
 id_pattern = re.compile(r'^.\d+$')
 def is_enabled(value, default):
@@ -16,6 +19,11 @@ API_ID = int(environ['API_ID'])
 API_HASH = environ['API_HASH']
 BOT_TOKEN = environ['BOT_TOKEN']
 COMMAND_HANDLER = environ.get('COMMAND_HANDLER','! /').split()
+BOT_ID = x.id
+BOT_NAME = x.first_name + (x.last_name or "")
+BOT_USERNAME = x.username
+BOT_MENTION = x.mention
+BOT_DC_ID = x.dc_id
 
 # Bot settings
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
