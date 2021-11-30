@@ -1,4 +1,5 @@
-from pyrogram.types import ChatPermissions, Client
+from pyrogram.types import ChatPermissions
+from pyrogram import Client
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import logging
 import pytz
