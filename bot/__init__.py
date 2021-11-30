@@ -60,4 +60,3 @@ class YasirBot(Client):
     async def stop(self):
         await super().stop()
         LOGGER.info("Bot Stopped")
-        )
