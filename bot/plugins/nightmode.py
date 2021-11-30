@@ -6,7 +6,7 @@ import pytz
 import requests
 from datetime import datetime
 
-async def job_close():
+async def job_close(client):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
     month = ['Unknown', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
@@ -33,7 +33,7 @@ async def job_close_ymoviez():
     await client.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
 
-async def job_open():
+async def job_open(client):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
     month = ['Unknown', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
@@ -51,7 +51,7 @@ async def job_open():
     await client.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_send_stickers=False, can_send_animations=True, can_invite_users=True, can_add_web_page_previews=True, can_use_inline_bots=True)
     )
 
-async def job_open_ymoviez():
+async def job_open_ymoviez(client):
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
     month = ['Unknown', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
