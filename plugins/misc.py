@@ -15,6 +15,37 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+@Alita.on_message(command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
+async def translate(_, message):
+    trl = Translator()
+    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+        if len(message.text.split()) == 1:
+            target_lang = "en"
+        else:
+            target_lang = message.text.split()[1]
+        if message.reply_to_message.text:
+            text = message.reply_to_message.text
+        else:
+            text = message.reply_to_message.caption
+    else:
+        if len(message.text.split()) <= 2:
+            await message.reply_text(
+                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
+            )
+            return
+        target_lang = message.text.split(None, 2)[1]
+        text = message.text.split(None, 2)[2]
+    detectlang = await trl.detect(text)
+    try:
+        tekstr = await trl(text, targetlang=target_lang)
+    except ValueError as err:
+        await message.reply_text(f"Error: <code>{str(err)}</code>")
+        return
+    return await message.reply_text(
+        f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>``{tekstr.text}``</code>",
+    )
+
+
 @Client.on_message(filters.command(['id','id@MissKatyRoBot'], COMMAND_HANDLER))
 async def showid(client, message):
     chat_type = message.chat.type
