@@ -7,7 +7,7 @@ logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 
-from pyrogram import Client, __version__, idle
+from pyrogram import Client
 from pyrogram.raw.all import layer
 from database.ia_filterdb import Media
 from database.users_chats_db import db
@@ -20,11 +20,6 @@ app = Client(
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
     workers=50,
-    plugins={"root": "plugins"},
+    plugins=dict(root="bot/plugins"),
     sleep_threshold=5,
 )
-
-app.start()
-me = app.get_me()
-logging.info(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
-idle()
