@@ -220,12 +220,12 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
         markup = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Open IMDB", url=url),
+                [InlineKeyboardButton("Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
                  InlineKeyboardButton("▶️ Trailer", url=trailer_url)
                 ]
             ])
     else:
-        markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open IMDB", url=url)]])
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
     if parse.get("summary"):
         try:
           summary = await trl(parse['summary']['plot'], targetlang='id')
