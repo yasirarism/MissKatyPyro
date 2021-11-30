@@ -15,7 +15,7 @@ async def copy(client, message):
         await message.reply_text(e)
 
 @Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
-async def copy(client, message):
+async def forward(client, message):
     try:
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
