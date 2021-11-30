@@ -161,10 +161,75 @@ async def get_content(url):
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, movie = query.data.split('#')
-    imdb = await get_poster(query=movie, id=True)
     resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
+    req = requests.get(f"https://betterimdbot.herokuapp.com/?tt={tt_url}")
+    parse = req.json()
     b = BeautifulSoup(resp, "lxml")
     r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+    if r_json["@type"] == 'Person':
+        return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", alert=True)
+    if parse.get("title"):
+        res_str += f"<b>📹 Judul:</b> <code>{parse['title']}</code>"
+    if parse.get("title_type"):
+        res_str += f" ({parse['title_type']})\n"
+    else:
+        res_str += "\n"
+    if parse.get("aka"):
+        res_str += f"<b>🎤 Disebut Juga:</b> <code>{parse['aka']}</code>\n\n"
+    else:
+        res_str += "\n"
+    if parse.get("duration"):
+        durasi = await trl(parse['duration'], targetlang='id')
+        res_str += f"<b>🕓 Durasi:</b> <code>{durasi.text}</code>\n"
+    if r_json.get("contentRating"):
+        res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
+    if parse.get("UserRating"):
+        user_rating = await trl(parse['UserRating']['description'], targetlang='id')
+        res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
+    if parse.get("release_date"):
+        rilis = await trl(parse['release_date']['NAME'], targetlang='id')
+        res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code> \n"
+    if parse.get("genres"):
+        all_genre = parse['genres']
+        genre = "".join(f"{i} " for i in all_genre)
+        res_str += f"<b>🔮 Genre :</b> {genre}\n"
+    if parse.get("sum_mary"):
+        res_str += "\n<b>🙎 Info Pemeran:</b>\n"
+        try:
+            director = parse['sum_mary']['Directors']
+            director_ = "".join(f"{i['NAME']}, " for i in director)
+            res_str += f"<b>Sutradara:</b> <code>{director_}</code>\n"
+        except:
+            res_str += ""
+        try:
+            writers = parse['sum_mary']['Writers']
+            writers_ = "".join(f"{i['NAME']}, " for i in writers)
+            res_str += f"<b>Penulis:</b> <code>{writers_}</code>\n"
+        except:
+            res_str += ""
+        try:
+            stars = parse['sum_mary']['Stars']
+            stars_ = "".join(f"{i['NAME']}, " for i in stars)
+            res_str += f"<b>Bintang:</b> <code>{stars_}</code>\n"
+        except:
+            res_str += ""
+        res_str += "\n"
+    if r_json.get("trailer"):
+        trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
+        markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("Open IMDB", url=url),
+                 InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                ]
+            ])
+    else:
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open IMDB", url=url)]])
+    if parse.get("summary"):
+        try:
+          summary = await trl(parse['summary']['plot'], targetlang='id')
+          res_str += f"<b>📜 Deskripsi: </b> <code>{summary.text}</code>\n\n"
+        except Exception:
+          res_str += f"<b> 📜 Deskripsi: -</b>\n"
     if r_json.get("keywords"):
         keywords = r_json['keywords'].split(",")
         key_ = ""
@@ -172,63 +237,27 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             i = i.replace(" ", "_")
             key_ += f"#{i}, "
         key_ = key_[:-2]
+        res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
+    if parse.get("awards"):
+        all_award = parse['awards']
+        awards = await trl("".join(f"~ {i}\n" for i in all_award), targetlang='id')
+        res_str += f"<b>🏆 Penghargaan :</b>\n<code>{awards.text}</code>\n\n"
     else:
-        key_ = ""
-    btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{imdb.get('title')}",
-                    url=imdb['url'],
-                )
-            ]
-        ]
-    if imdb:
-        caption = IMDB_TEMPLATE.format(
-            query = imdb['title'],
-            title = imdb['title'],
-            votes = imdb['votes'],
-            aka = imdb["aka"],
-            seasons = imdb["seasons"],
-            box_office = imdb['box_office'],
-            localized_title = imdb['localized_title'],
-            kind = imdb['kind'],
-            imdb_id = imdb["imdb_id"],
-            cast = imdb["cast"],
-            runtime = imdb["runtime"],
-            countries = imdb["countries"],
-            certificates = imdb["certificates"],
-            languages = imdb["languages"],
-            director = imdb["director"],
-            writer = imdb["writer"],
-            producer = imdb["producer"],
-            composer = imdb["composer"],
-            cinematographer = imdb["cinematographer"],
-            music_team = imdb["music_team"],
-            distributors = imdb["distributors"],
-            release_date = imdb['release_date'],
-            year = imdb['year'],
-            genres = imdb['genres'],
-            poster = imdb['poster'],
-            plot = imdb['plot'],
-            rating = imdb['rating'],
-            url = imdb['url'],
-            tags = key_
-        )
-    else:
-        caption = "No Results"
-    if imdb.get('poster'):
+        res_str += "\n"
+    res_str += f"IMDb Plugin by @MissKatyRoBot"
+    thumb = parse.get('poster')
+    if thumb:
         try:
-            await query.message.reply_photo(photo=imdb['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(btn))
+            await query.message.reply_photo(photo=5thumb, caption=res_str, reply_markup=markup)
         except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-            pic = imdb.get('poster')
-            poster = pic.replace('.jpg', "._V1_UX360.jpg")
-            await query.message.reply_photo(photo=imdb['poster'], caption=caption, reply_markup=InlineKeyboardMarkup(btn))
+            poster = thumb.replace('.jpg', "._V1_UX360.jpg")
+            await query.message.reply_photo(photo=poster, caption=res_str, reply_markup=markup)
         except Exception as e:
             logger.exception(e)
-            await query.message.reply(caption, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=False)
+            await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.message.delete()
     else:
-        await query.message.edit(caption, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=False)
+        await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
     await query.answer()
         
 
