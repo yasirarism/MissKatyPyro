@@ -174,13 +174,13 @@ async def imdb_search(client, message):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{movie.get('title')} - {movie.get('year')}",
-                    callback_data=f"imdb#{message.from_user.id}#{movie.movieID}",
+                    text=f"{movie.get('title')} ({movie.get('year')})",
+                    callback_data=f"imdb_{message.from_user.id}_{message.message_id}_{movie.movieID}",
                 )
             ]
             for movie in movies
         ]
-        await k.edit('Ini yang bisa saya temukan di IMDB', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit('Ini yang bisa saya temukan di IMDB..', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari.')
         
@@ -191,7 +191,7 @@ async def get_content(url):
 
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
-    i, user, movie = query.data.split('#')
+    i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
         trl = Translator()
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
@@ -282,13 +282,13 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         thumb = parse.get('poster')
         if thumb:
             try:
-                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_markup=markup)
+                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=msg_id, reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace('.jpg', "._V1_UX360.jpg")
-                await query.message.reply_photo(photo=poster, quote=True, caption=res_str, reply_markup=markup)
+                await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=msg_id, reply_markup=markup)
             except Exception as e:
                 logger.exception(e)
-                await query.message.reply(res_str, quote=True, reply_markup=markup, disable_web_page_preview=False)
+                await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=msg_id)
             await query.message.delete()
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
