@@ -194,7 +194,7 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
-        await query answer("Please wait, Getting data from IMDb...")
+        await query.answer("Please wait, Getting data from IMDb...")
         trl = Translator()
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
         req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
@@ -254,12 +254,12 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
             markup = InlineKeyboardMarkup(
                 [
-                    [InlineKeyboardButton("Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
+                    [InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
                      InlineKeyboardButton("▶️ Trailer", url=trailer_url)
                     ]
                 ])
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
         if parse.get("summary"):
             try:
               summary = await trl(parse['summary']['plot'], targetlang='id')
