@@ -35,13 +35,14 @@ async def translate(_, message):
             return
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
+    msg = await message.reply("Menerjemahkan...")
     detectlang = await trl.detect(text)
     try:
         tekstr = await trl(text, targetlang=target_lang)
     except ValueError as err:
-        await message.reply_text(f"Error: <code>{str(err)}</code>")
+        await message.edit(f"Error: <code>{str(err)}</code>")
         return
-    return await message.reply_text(
+    return await message.edit(
         f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>``{tekstr.text}``</code>",
     )
 
@@ -193,6 +194,7 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
+        await query answer("Please wait, Getting data from IMDb...")
         trl = Translator()
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
         req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
@@ -201,7 +203,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
         res_str = "<b>#IMDBSearchResults</b>\n"
         if r_json["@type"] == 'Person':
-            return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", alert=True)
+            return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
         if parse.get("title"):
             res_str += f"<b>📹 Judul:</b> <code>{parse['title']}</code>"
         if parse.get("title_type"):
