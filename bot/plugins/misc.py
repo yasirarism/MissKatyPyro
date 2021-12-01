@@ -40,9 +40,9 @@ async def translate(_, message):
     try:
         tekstr = await trl(text, targetlang=target_lang)
     except ValueError as err:
-        await message.edit(f"Error: <code>{str(err)}</code>")
+        await msg.edit(f"Error: <code>{str(err)}</code>")
         return
-    return await message.edit(
+    return await msg.edit(
         f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>``{tekstr.text}``</code>",
     )
 
