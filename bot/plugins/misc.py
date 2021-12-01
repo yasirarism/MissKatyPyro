@@ -277,7 +277,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         if parse.get("awards"):
             all_award = parse['awards']
             awards = await trl("".join(f"~ {i}\n" for i in all_award), targetlang='id')
-            res_str += f"<b>🏆 Penghargaan :</b>\n<code>{awards.text}</code>\n\n"
+            res_str += f"<b>🏆 Penghargaan :</b>\n<i>{awards.text}</i>\n\n"
         else:
             res_str += "\n"
         res_str += f"IMDb Plugin by @MissKatyRoBot"
