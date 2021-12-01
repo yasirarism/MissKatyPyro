@@ -20,7 +20,7 @@ async def translate(_, message):
     trl = Translator()
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
-            target_lang = "en"
+            target_lang = "id"
         else:
             target_lang = message.text.split()[1]
         if message.reply_to_message.text:
