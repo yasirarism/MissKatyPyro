@@ -212,7 +212,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         else:
             res_str += "\n"
         if imdb.get("kind") == "tv series":
-            res_str += f"<b>🍂 Total Season:</b> {imdb['seasons']} season\n"
+            res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
         if parse.get("aka"):
             res_str += f"<b>🎤 Disebut Juga:</b> <code>{parse['aka']}</code>\n\n"
         else:
@@ -238,7 +238,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             for i in all_lang:
                 i = i.replace(" ", "_")
                 language_ += f"#{i} "
-            language_ = language_[:-1]
+            language_ = language_[:-3]
             res_str += f"<b>🔊 Bahasa: </b> {language_}\n"
         if imdb.get("countries"):
             all_country = imdb['countries'].split(",")
@@ -253,7 +253,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
                 director = parse['sum_mary']['Directors']
                 director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
                 director_ = director_[:-2]
-                res_str += f"<b>Sutradara:</b> <code>{director_}</code>\n"
+                res_str += f"<b>Sutradara:</b> {director_}\n"
             except:
                 res_str += ""
             try:
@@ -267,7 +267,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
                 stars = parse['sum_mary']['Stars']
                 stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
                 stars_ = stars_[:-2]
-                res_str += f"<b>Bintang:</b> <code>{stars_}</code>\n"
+                res_str += f"<b>Bintang:</b> {stars_}\n"
             except:
                 res_str += ""
             res_str += "\n"
@@ -297,7 +297,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
         if parse.get("awards"):
             all_award = parse['awards']
-            awards = await trl("".join(f"• {i}\n" for i in all_award), targetlang='id')
+            awards = await trl("".join(f" × {i}\n" for i in all_award), targetlang='id')
             res_str += f"<b>🏆 Penghargaan :</b>\n<code>{awards.text}</code>\n\n"
         else:
             res_str += "\n"
