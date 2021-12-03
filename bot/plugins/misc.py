@@ -236,12 +236,12 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             all_country = imdb['countries']
             if all_country.endswith(", "):
                all_country = all_country[:-2]
-            res += f"<b>🆔 Negara:</b> <code>{all_country}</code>\n"
+            res_str += f"<b>🆔 Negara:</b> <code>{all_country}</code>\n"
         if imdb.get("languages"):
             all_lang = imdb['languages']
             if all_lang.endswith(", "):
                all_lang = all_lang[:-2]
-            res += f"<b>🔊 Bahasa:</b> <code>{all_lang}</code>\n"
+            res_str += f"<b>🔊 Bahasa:</b> <code>{all_lang}</code>\n"
         if parse.get("sum_mary"):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
