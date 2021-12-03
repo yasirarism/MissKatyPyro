@@ -202,7 +202,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         parse = req.json()
         b = BeautifulSoup(resp, "lxml")
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
-        res_str = "<b>#IMDBSearchResults</b>\n"
+        res_str = ""
         if r_json["@type"] == 'Person':
             return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
         if parse.get("title"):
@@ -232,6 +232,21 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             all_genre = parse['genres']
             genre = "".join(f"{i} " for i in all_genre)
             res_str += f"<b>🔮 Genre :</b> {genre}\n"
+        if imdb.get("languages"):
+            all_lang = imdb['languages'].split(",")
+            language_ = ""
+            for i in all_lang:
+                i = i.replace(" ", "_")
+                language_ += f"#{i}, "
+            language_ = language_[:-3]
+            res_str += f"<b>🔊 Bahasa: </b> {language_}\n"
+        if imdb.get("countries"):
+            all_country = imdb['countries'].split(",")
+            countries_ = ""
+            for i in all_country:
+                i = i.replace(" ", "_")
+                countries_ += f"#{i} "
+            res_str += f"<b>🆔 Negara: </b> {countries_}\n"
         if parse.get("sum_mary"):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
