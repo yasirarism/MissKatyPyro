@@ -238,7 +238,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             for i in all_lang:
                 i = i.replace(" ", "_")
                 language_ += f"#{i} "
-            language_ = language_[:-3]
+            language_ = language_[:-1]
             res_str += f"<b>🔊 Bahasa: </b> {language_}\n"
         if imdb.get("countries"):
             all_country = imdb['countries'].split(",")
@@ -251,19 +251,22 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
                 director = parse['sum_mary']['Directors']
-                director_ = "".join(f"{i['NAME']}, " for i in director)
+                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                director_ = director_[:-2]
                 res_str += f"<b>Sutradara:</b> <code>{director_}</code>\n"
             except:
                 res_str += ""
             try:
                 writers = parse['sum_mary']['Writers']
-                writers_ = "".join(f"{i['NAME']}, " for i in writers)
-                res_str += f"<b>Penulis:</b> <code>{writers_}</code>\n"
+                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                writers_ = writers_[:-2]
+                res_str += f"<b>Penulis:</b> {writers_}\n"
             except:
                 res_str += ""
             try:
                 stars = parse['sum_mary']['Stars']
-                stars_ = "".join(f"{i['NAME']}, " for i in stars)
+                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                stars_ = stars_[:-2]
                 res_str += f"<b>Bintang:</b> <code>{stars_}</code>\n"
             except:
                 res_str += ""
@@ -281,9 +284,9 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         if imdb.get("plot"):
             try:
               summary = await trl(imdb['plot'], targetlang='id')
-              res_str += f"<b>📜 Deskripsi: </b> <code>{summary.text}</code>\n\n"
+              res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
             except Exception:
-              res_str += f"<b> 📜 Deskripsi: -</b>\n"
+              res_str += f"<b> 📜 Plot: -</b>\n"
         if r_json.get("keywords"):
             keywords = r_json['keywords'].split(",")
             key_ = ""
@@ -295,7 +298,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         if parse.get("awards"):
             all_award = parse['awards']
             awards = await trl("".join(f"• {i}\n" for i in all_award), targetlang='id')
-            res_str += f"<b>🏆 Penghargaan :</b>\n<i>{awards.text}</i>\n\n"
+            res_str += f"<b>🏆 Penghargaan :</b>\n<code>{awards.text}</code>\n\n"
         else:
             res_str += "\n"
         res_str += f"IMDb Plugin by @MissKatyRoBot"
