@@ -196,6 +196,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
     if user == f"{query.from_user.id}":
         await query.answer("Please wait, Getting data from IMDb...")
         trl = Translator()
+        imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
         req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
         parse = req.json()
@@ -205,11 +206,13 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         if r_json["@type"] == 'Person':
             return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
         if parse.get("title"):
-            res_str += f"<b>📹 Judul:</b> <code>{parse['title']}</code>"
+            res_str += f"<b>📹 Judul:</b> <a href='https://www.imdb.com/title/tt{movie}/'>{parse['title']}</a>"
         if parse.get("title_type"):
             res_str += f" ({parse['title_type']})\n"
         else:
             res_str += "\n"
+        if imdb.get("kind") == "tv series":
+            res_str += f"<b>Total Season:</b> {imdb['seasons']} season"
         if parse.get("aka"):
             res_str += f"<b>🎤 Disebut Juga:</b> <code>{parse['aka']}</code>\n\n"
         else:
