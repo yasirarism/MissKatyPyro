@@ -212,7 +212,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         else:
             res_str += "\n"
         if imdb.get("kind") == "tv series":
-            res_str += f"<b>Total Season:</b> {imdb['seasons']} season"
+            res_str += f"<b>🍂 Total Season:</b> {imdb['seasons']} season\n"
         if parse.get("aka"):
             res_str += f"<b>🎤 Disebut Juga:</b> <code>{parse['aka']}</code>\n\n"
         else:
@@ -263,9 +263,9 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
                 ])
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
-        if parse.get("summary"):
+        if imdb.get("plot"):
             try:
-              summary = await trl(parse['summary']['plot'], targetlang='id')
+              summary = await trl(imdb['plot'], targetlang='id')
               res_str += f"<b>📜 Deskripsi: </b> <code>{summary.text}</code>\n\n"
             except Exception:
               res_str += f"<b> 📜 Deskripsi: -</b>\n"
@@ -279,7 +279,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
         if parse.get("awards"):
             all_award = parse['awards']
-            awards = await trl("".join(f"~ {i}\n" for i in all_award), targetlang='id')
+            awards = await trl("".join(f"• {i}\n" for i in all_award), targetlang='id')
             res_str += f"<b>🏆 Penghargaan :</b>\n<i>{awards.text}</i>\n\n"
         else:
             res_str += "\n"
