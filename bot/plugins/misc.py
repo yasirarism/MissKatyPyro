@@ -168,10 +168,10 @@ async def who_is(client, message):
 async def imdb_search(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
-        k = await message.reply('Sedang mencari di Database IMDB')
+        k = await message.reply('Sedang mencari di Database IMDB.. 😴')
         movies = await get_poster(title, bulk=True)
         if not movies:
-            return await message.reply("Tidak ada hasil ditemukan")
+            return await k.edit("Tidak ada hasil ditemukan.. 😕")
         btn = [
             [
                 InlineKeyboardButton(
@@ -181,9 +181,9 @@ async def imdb_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit('Ini yang bisa saya temukan di IMDB..', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit('Ini yang bisa saya temukan di IMDB.. 👇', reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply('Berikan aku nama series atau movie yang ingin dicari.')
+        await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
         
 async def get_content(url):
     async with aiohttp.ClientSession() as session:
