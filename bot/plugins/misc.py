@@ -227,11 +227,21 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
         if parse.get("release_date"):
             rilis = await trl(parse['release_date']['NAME'], targetlang='id')
-            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code> \n"
+            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
         if parse.get("genres"):
             all_genre = parse['genres']
             genre = "".join(f"{i} " for i in all_genre)
             res_str += f"<b>🔮 Genre :</b> {genre}\n"
+        if imdb.get("countries"):
+            all_country = imdb['countries']
+            if all_country.endswith(", "):
+               all_country = all_country[:-2]
+            res += f"<b>🆔 Negara:</b> <code>{all_country}</code>\n"
+        if imdb.get("languages"):
+            all_lang = imdb['languages']
+            if all_lang.endswith(", "):
+               all_lang = all_lang[:-2]
+            res += f"<b>🔊 Bahasa:</b> <code>{all_lang}</code>\n"
         if parse.get("sum_mary"):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
