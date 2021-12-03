@@ -232,14 +232,6 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             all_genre = parse['genres']
             genre = "".join(f"{i} " for i in all_genre)
             res_str += f"<b>🔮 Genre :</b> {genre}\n"
-        if imdb.get("languages"):
-            all_lang = imdb['languages']
-            language_ = "".join(f"{i}, " for i in all_lang)
-            res_str += f"<b>🔊 Bahasa: </b> {language_}\n"
-        if imdb.get("countries"):
-            all_country = imdb['countries']
-            countries_ = "".join(f"{i}, " for i in all_country)
-            res_str += f"<b>🆔 Negara: </b> {countries_}\n"
         if parse.get("sum_mary"):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
