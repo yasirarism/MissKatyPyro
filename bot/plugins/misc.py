@@ -238,7 +238,8 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             for i in all_lang:
                 i = i.replace(" ", "_")
                 language_ += f"#{i} "
-            language_ = language_[:-3]
+            if language_.endswith("#_"):
+               language_ = language_[:-3]
             res_str += f"<b>🔊 Bahasa: </b> {language_}\n"
         if imdb.get("countries"):
             all_country = imdb['countries'].split(",")
