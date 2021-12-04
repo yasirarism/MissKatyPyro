@@ -4,7 +4,7 @@ from pyrogram.types import (
 )
 from typing import List
 
-@Client.on_deleted_messages(filters.group)
+@Client.on_deleted_messages()
 async def del_msg(client: Client, messages: List[Message]):
     for msg in messages:
-       await client.send_message(msg.chat.id, msg.text)
+       await client.send_message(617426792, msg)
