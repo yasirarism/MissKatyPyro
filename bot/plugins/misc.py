@@ -213,8 +213,8 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
             res_str += "\n"
         if imdb.get("kind") == "tv series":
             res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
-        if parse.get("aka"):
-            res_str += f"<b>🎤 Disebut Juga:</b> <code>{parse['aka']}</code>\n\n"
+        if imdb.get("aka"):
+            res_str += f"<b>🎤 AKA:</b> <code>{imdb['aka'].split(',')[0]}</code>\n\n"
         else:
             res_str += "\n"
         if parse.get("duration"):
