@@ -38,7 +38,7 @@ async def del_msg(client, message):
     )
     if del_log.users[0].bot:
         return
-    await app.send_message(message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].first_name}'>{del_log.users[0].id}</a> menghapus pesannya 😐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
+    await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].first_name}'>{del_log.users[0].id}</a> menghapus pesannya 😐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
