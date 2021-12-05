@@ -38,7 +38,7 @@ async def del_msg(client, message):
     )
     if del_log.users[0].bot:
         return
-    await app.send_message(617426792, message.events[0].action.message)
+    await app.send_message(617426792, del_log.events[0].action.message)
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
