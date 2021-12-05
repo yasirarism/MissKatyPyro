@@ -30,13 +30,12 @@ async def del_msg(client, message):
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
-    fwd = await app.forward_messages(617426792, message.chat.id, message.message_id)
-    #await app.send_message(617426792, f"Pesan dari {message.from_user.mention}", reply_to_message_id=fwd.message_id)
+    await app.send_message(617426792, f"Ada pesan baru dari {message.from_user.mention}")
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
 async def mentioned(client, message):
     pesan = message.text if message.text else message.caption
-    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\nPesan: {pesan}")
+    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\nPesan: {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{message.chat.id[-3:]}/{message.message_id}")]]))
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
