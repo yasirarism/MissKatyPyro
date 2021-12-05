@@ -33,7 +33,8 @@ async def message_pm(client, message):
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
 async def mentioned(client, message):
-    await app.send_message(617426792, f"{message.from_user.first_name} mention kamu di {message.chat.title}")
+    pesan = message.text if message.text else message.caption
+    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\nPesan: {pesan}")
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
