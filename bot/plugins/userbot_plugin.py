@@ -57,7 +57,7 @@ async def join_date(app, message: Message):
     os.remove("joined_date.txt")
 
 @user.on_message(filters.command("memberstats", "!") & filters.me)
-async def memberstats(client, message)
+async def memberstats(client, message):
     people = {}
     total = await user.get_chat_members_count(chat)
     for msg in await user.iter_history(chat, limit=1000):
