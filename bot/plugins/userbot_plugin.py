@@ -1,7 +1,7 @@
 import os
 from pyrogram import Client, filters
 from pyrogram.types import (
-    Message
+    Message, InlineKeyboardMarkup, InlineKeyboardButton
 )
 from pyrogram.raw import functions
 from typing import List
@@ -30,7 +30,8 @@ async def del_msg(client, message):
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
-    await app.forward_messages(617426792, message.chat.id, message.message_id)
+    fwd = await app.forward_messages(617426792, message.chat.id, message.message_id)
+    await app.send_message(617426792, f"Pesan dari {message.from_user.mention}", reply_to_message_id=fwd.message_id)
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
 async def mentioned(client, message):
