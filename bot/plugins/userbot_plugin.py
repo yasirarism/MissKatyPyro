@@ -29,7 +29,7 @@ async def add_keep(_, message: Message):
 async def afk_handler(client, message):
     try:
         global start, end
-        end = datetime.datetime.now().replace(microsecond=0)
+        end = datetime.now().replace(microsecond=0)
         afk_time = (end - start)
         if message.from_user.is_bot is False:
             await message.reply_text(f"<b>Saya AFK sejak {afk_time}</b>\n"
