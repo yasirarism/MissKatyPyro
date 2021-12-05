@@ -66,7 +66,7 @@ async def memberstats(client, message)
     await message.edit(len(people) / total)
 
 @user.on_message(filters.command("recent_action", "!") & filters.me)
-async def recent_act(client, message)
+async def recent_act(client, message):
     full_log = await user.send(
         functions.channels.GetAdminLog(
             channel=app.resolve_peer(message.chat.id),
