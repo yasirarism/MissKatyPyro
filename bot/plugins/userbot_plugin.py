@@ -40,7 +40,7 @@ async def afk_handler(client, message):
 @user.on_message(filters.command('afk', "!") & filters.me)
 async def afk(client, message):
     global start, end, handler, reason
-    start = datetime.datetime.now().replace(microsecond=0)
+    start = datetime.now().replace(microsecond=0)
     handler = client.add_handler(MessageHandler(afk_handler, (~filters.me)))
     if len(message.text.split()) >= 2:
         reason = message.text.split(" ", maxsplit=1)[1]
