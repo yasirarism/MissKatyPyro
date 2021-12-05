@@ -23,7 +23,7 @@ async def add_keep(_, message: Message):
         f.add(message.chat.id)
         await message.edit("Autoscroll diaktifkan, semua chat akan otomatis terbaca")
 
-@user.on_deleted_messages(filters.chat(-1001455886928))
+@user.on_deleted_messages(filters.chat(-1001455886928) & ~filters.bot)
 async def del_msg(client, message):
     await app.send_message(617426792, message)
 
