@@ -63,8 +63,8 @@ async def join_date(app, message: Message):
 @user.on_message(filters.command("memberstats", "!") & filters.me)
 async def memberstats(client, message):
     people = {}
-    total = await user.get_chat_members_count(chat)
-    async for msg in user.iter_history(chat, limit=1000):
+    total = await user.get_chat_members_count(message.chat.id)
+    async for msg in user.iter_history(message.chat.id, limit=1000):
         if msg.from_user and not msg.from_user.is_bot:
             people[msg.from_user.id] = msg.from_user.first_name
     await message.edit(len(people) / total)
