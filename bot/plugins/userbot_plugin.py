@@ -27,10 +27,8 @@ async def add_keep(_, message: Message):
 async def del_msg(client, message):
     await app.send_message(617426792, message)
 
-@user.on_message(filters.private)
+@user.on_message(filters.private & ~filters.bot & filters.outgoing)
 async def message_pm(client, message):
-    if message.from_user.is_bot:
-       return
     await message.forward(617426792)
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
