@@ -39,7 +39,7 @@ async def mentioned(client, message):
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
     members = []
-    for m in await user.iter_chat_members(message.chat.id):
+    for m in user.iter_chat_members(message.chat.id):
         members.append(
             (
                 m.user.first_name,
