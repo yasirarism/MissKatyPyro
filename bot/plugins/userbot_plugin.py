@@ -67,7 +67,7 @@ async def memberstats(client, message):
     async for msg in user.iter_history(message.chat.id, limit=1000):
         if msg.from_user and not msg.from_user.is_bot:
             people[msg.from_user.id] = msg.from_user.first_name
-    await message.edit(len(people) / total)
+    await message.edit(round(len(people) / total)+"%")
 
 @user.on_message(filters.command("recent_action", "!") & filters.me)
 async def recent_act(client, message):
@@ -80,12 +80,12 @@ async def recent_act(client, message):
             limit=0,
         )
     )
-    with open(f"recent_actions_{chat}.txt", "w", encoding="utf8") as log_file:
+    with open(f"recent_actions_{message.chat.id}.txt", "w", encoding="utf8") as log_file:
        log_file.write(str(full_log))
     await message.reply_document(full_log)
 
 @user.on_message(filters.command(["screenshot"], prefixes="!"))
-async def take_a_screenshot(app, message):
+async def take_a_screenshot(client, message):
     await message.delete()
     await user.send(
         functions.messages.SendScreenshotNotification(
