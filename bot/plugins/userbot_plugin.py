@@ -29,7 +29,11 @@ async def del_msg(client, message):
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
-    await message.forward(617426792)
+    await app.forward_messages(617426792, message.chat.id, message.message_id)
+
+@user.on_message(~filters.bot & filters.group & filters.mentioned)
+async def mentioned(client, message):
+    await app.send_message(617426792, f"{message.from_user.first_name} mention kamu di {message.chat.title}")
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
