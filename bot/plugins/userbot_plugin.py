@@ -43,7 +43,7 @@ async def join_date(app, message: Message):
         members.append(
             (
                 m.user.first_name,
-                m.joined_date or app.get_messages(message.chat.id, 1).date,
+                m.joined_date or await user.get_messages(message.chat.id, 1).date,
             )
         )
     members.sort(key=lambda member: member[1])
