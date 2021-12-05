@@ -1,8 +1,10 @@
 import os
+import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import (
     Message, InlineKeyboardMarkup, InlineKeyboardButton
 )
+from pyrogram.handlers import MessageHandler
 from pyrogram.raw import functions, types
 from typing import List
 from bot import user, app
@@ -23,6 +25,41 @@ async def add_keep(_, message: Message):
     else:
         f.add(message.chat.id)
         await message.edit("Autoscroll diaktifkan, semua chat akan otomatis terbaca")
+
+async def afk_handler(client, message):
+    try:
+        global start, end
+        end = datetime.datetime.now().replace(microsecond=0)
+        afk_time = (end - start)
+        if message.from_user.is_bot is False:
+            await message.reply_text(f"<b>Saya AFK sejak {afk_time}</b>\n"
+                                     f"<b>Alasan:</b> <i>{reason}</i>")
+    except NameError:
+        pass
+
+@Client.on_message(filters.command('afk', prefix) & filters.me)
+async def afk(client, message):
+    global start, end, handler, reason
+    start = datetime.datetime.now().replace(microsecond=0)
+    handler = client.add_handler(MessageHandler(afk_handler, (~filters.me)))
+    if len(message.text.split()) >= 2:
+        reason = message.text.split(" ", maxsplit=1)[1]
+    else:
+        reason = "Tidak ada alasan.."
+    await message.edit("<b>I'm going afk</b>")
+
+@Client.on_message(filters.command('unafk', prefix) & filters.me)
+async def unafk(client, message):
+    try:
+        global start, end
+        end = datetime.datetime.now().replace(microsecond=0)
+        afk_time = (end - start)
+        await message.edit(f"<b>Saya tidak AFK lagi.\nSaya telah AFK selama {afk_time}</b>")
+        client.remove_handler(*handler)
+    except NameError:
+        await message.edit("<b>Kamu kan tidak afk</b>")
+        await asyncio.sleep(3)
+        await message.delete()
 
 @user.on_deleted_messages(filters.chat(-1001455886928) & ~filters.bot)
 async def del_msg(client, message):
