@@ -41,7 +41,7 @@ async def afk_handler(client, message):
 async def afk(client, message):
     global start, end, handler, reason
     start = datetime.now().replace(microsecond=0)
-    handler = client.add_handler(MessageHandler(afk_handler, (~filters.me)))
+    handler = client.add_handler(MessageHandler(afk_handler, (~filters.me & filters.mentioned)))
     if len(message.text.split()) >= 2:
         reason = message.text.split(" ", maxsplit=1)[1]
     else:
@@ -52,7 +52,7 @@ async def afk(client, message):
 async def unafk(client, message):
     try:
         global start, end
-        end = datetime.datetime.now().replace(microsecond=0)
+        end = datetime.now().replace(microsecond=0)
         afk_time = (end - start)
         await message.edit(f"<b>Saya tidak AFK lagi.\nSaya telah AFK selama {afk_time}</b>")
         client.remove_handler(*handler)
