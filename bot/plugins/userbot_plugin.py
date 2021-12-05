@@ -28,7 +28,7 @@ async def add_keep(_, message: Message):
 async def del_msg(client, message):
     del_log = await user.send(
         functions.channels.GetAdminLog(
-            channel= await user.resolve_peer(message.chat.id),
+            channel= await user.resolve_peer(message[0].chat.id),
             q="",
             max_id=0,
             min_id=0,
