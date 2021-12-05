@@ -82,7 +82,7 @@ async def recent_act(client, message):
     )
     with open(f"recent_actions_{message.chat.id}.txt", "w", encoding="utf8") as log_file:
        log_file.write(str(full_log))
-    await message.reply_document(full_log)
+    await message.reply_document(f"recent_actions_{message.chat.id}.txt")
 
 @user.on_message(filters.command(["screenshot"], prefixes="!"))
 async def take_a_screenshot(client, message):
