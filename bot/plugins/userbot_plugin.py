@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from pyrogram.types import (
     Message, InlineKeyboardMarkup, InlineKeyboardButton
 )
-from pyrogram.raw import functions
+from pyrogram.raw import functions, types
 from typing import List
 from bot import user, app
 from datetime import datetime
@@ -26,7 +26,19 @@ async def add_keep(_, message: Message):
 
 @user.on_deleted_messages(filters.chat(-1001455886928) & ~filters.bot)
 async def del_msg(client, message):
-    await app.send_message(617426792, message)
+    del_log = await user.send(
+        functions.channels.GetAdminLog(
+            channel= await user.resolve_peer(message.chat.id),
+            q="",
+            max_id=0,
+            min_id=0,
+            limit=1,
+            events_filter=types.ChannelAdminLogEventsFilter(delete=True),
+        )
+    )
+    if del_log.users[0].bot:
+        return
+    await app.send_message(617426792, message.events[0].action.message)
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
