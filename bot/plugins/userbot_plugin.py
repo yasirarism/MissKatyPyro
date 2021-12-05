@@ -36,7 +36,7 @@ async def message_pm(client, message):
 async def mentioned(client, message):
     cid = message.chat.id
     pesan = message.text if message.text else message.caption
-    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{cid[4:]}[-3:]/{message.message_id}")]]))
+    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{cid[4:]}/{message.message_id}")]]))
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
