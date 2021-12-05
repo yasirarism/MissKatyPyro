@@ -7,7 +7,7 @@ from pyrogram import idle, __version__
 # Run Bot
 if __name__ == "__main__":
     app.start()
-    user.start
+    user.start()
     me = app.get_me()
     user = user.get_me()
     temp.ME = me.id
