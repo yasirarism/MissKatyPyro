@@ -27,7 +27,7 @@ async def add_keep(_, message: Message):
 async def del_msg(client, message):
     await app.send_message(617426792, message)
 
-@user.on_message(filters.private & ~filters.bot & filters.outgoing)
+@user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
     await message.forward(617426792)
 
