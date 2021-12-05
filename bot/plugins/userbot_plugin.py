@@ -39,11 +39,11 @@ async def mentioned(client, message):
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
     members = []
-    for m in user.iter_chat_members(message.chat.id):
+    async for m in app.iter_chat_members(message.chat.id):
         members.append(
             (
                 m.user.first_name,
-                m.joined_date or await user.get_messages(message.chat.id, 1).date,
+                m.joined_date or await app.get_messages(message.chat.id, 1).date,
             )
         )
     members.sort(key=lambda member: member[1])
@@ -63,7 +63,7 @@ async def join_date(app, message: Message):
 async def memberstats(client, message):
     people = {}
     total = await user.get_chat_members_count(chat)
-    for msg in await user.iter_history(chat, limit=1000):
+    async for msg in user.iter_history(chat, limit=1000):
         if msg.from_user and not msg.from_user.is_bot:
             people[msg.from_user.id] = msg.from_user.first_name
     await message.edit(len(people) / total)
