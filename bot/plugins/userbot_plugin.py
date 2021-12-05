@@ -37,7 +37,7 @@ async def afk_handler(client, message):
     except NameError:
         pass
 
-@Client.on_message(filters.command('afk', prefix) & filters.me)
+@Client.on_message(filters.command('afk', "!") & filters.me)
 async def afk(client, message):
     global start, end, handler, reason
     start = datetime.datetime.now().replace(microsecond=0)
@@ -48,7 +48,7 @@ async def afk(client, message):
         reason = "Tidak ada alasan.."
     await message.edit("<b>I'm going afk</b>")
 
-@Client.on_message(filters.command('unafk', prefix) & filters.me)
+@Client.on_message(filters.command('unafk', "!") & filters.me)
 async def unafk(client, message):
     try:
         global start, end
