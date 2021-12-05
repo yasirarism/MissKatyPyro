@@ -69,7 +69,7 @@ async def memberstats(client, message):
 async def recent_act(client, message):
     full_log = await user.send(
         functions.channels.GetAdminLog(
-            channel=app.resolve_peer(message.chat.id),
+            channel= await user.resolve_peer(message.chat.id),
             q="",
             max_id=0,
             min_id=0,
@@ -85,7 +85,7 @@ async def take_a_screenshot(app, message):
     await message.delete()
     await user.send(
         functions.messages.SendScreenshotNotification(
-            peer=app.resolve_peer(message.chat.id),
+            peer=await user.resolve_peer(message.chat.id),
             reply_to_msg_id=0,
             random_id=app.rnd_id(),
         )
