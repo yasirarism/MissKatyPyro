@@ -16,7 +16,7 @@ async def job_close():
     jam = now.strftime('%H:%M')
     await app.send_sticker(-1001128045651, "CAACAgQAAxkDAAEDfNhgygZBqbTlbOQ6Gk3CmtD-bnkRDAACLxsAAvEGNAY-qWSFYAqy3R4E")
     await app.send_message(
-      -1001128045651, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Proses LockDown dimulai, Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Dbuat dengan Pyrogram v1.2.9.."
+      -1001128045651, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Proses LockDown dimulai, Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Dbuat dengan Pyrogram v1.2.11.."
     )
     await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
@@ -29,7 +29,7 @@ async def job_close_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     await app.send_message(
-      -1001255283935, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 6 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v1.2.9.."
+      -1001255283935, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 6 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v1.2.11.."
     )
     await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
