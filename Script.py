@@ -1,14 +1,24 @@
 class script(object):
     START_TXT = """Hai {},
-Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna loh 😍. Penasaran? silahkan dicoba yaa. Mungkin masih ada banyak bug di bot ini, jadi harap dimaklumi 😃."""
+Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna loh 😍. Penasaran? silahkan dicoba yaa. Mungkin masih ada banyak bug di bot ini, jadi harap dimaklumi saja yaa 😃."""
     HELP_TXT = """Hai {}
-Ini adalah daftar menu bantuan."""
-    ABOUT_TXT = """✯ 𝙼𝚈 𝙽𝙰𝙼𝙴: {}
+Ini adalah daftar menu bantuan bot MissKatyRoBot. Kamu bisa membaca petunjuk melalui button dibawah ini.
+<b>Catatan:</b>
+Menu Bantuan ini belum selesai dibuat jadi mungkin masih acak-acakan.
+Jika kamu ada kendala, bisa tanya saya di grup @indocloud atau @YMovieZChat. Jangan lupa yaa join disitu 🙃..
+
+Bot Uptime: 
+Disk Kosong:
+Disk Digunakan:
+RAM:
+
+Semua command bisa digunakan dengan ! atau /."""
+    ABOUT_TXT = """✯ Tentang Saya: {}
 ✯ OWNER: <a href=https://t.me/YasirArisM>Yasir Aris M</a>
 ✯ LIBRARY: Pyrogram
 ✯ BAHASA: Python 3
 ✯ DATABASE: MONGO DB
-✯ SERVER BOT: Railway
+✯ SERVER BOT: HEROKU
 ✯ BUILD STATUS: v1.0.1 [ BETA ]"""
     SOURCE_TXT = """<b>NOTE:</b>
 - MissKatyRoBot adalah project closed source. Saya hanya membuat bot ini untuk sekedar belajar mengenai programming. 
@@ -24,7 +34,10 @@ Ini adalah daftar menu bantuan."""
 • /ban - <code>Banned user dari grup</code>
 • /kick - <code>list all the filters of a chat</code>
 • /del - <code>delete a specific filter in chat</code>
-• /delall - <code>delete the whole filters in a chat (chat owner only)</code>"""
+• /delall - <code>Hapus pesan seluruh chat.</code>
+• /purge - <code>Hapus seluruh pesan mulain dari pesan yang direply.</code>
+• /pin - <code>delete the whole filters in a chat (chat owner only)</code>
+Docs ini belum selesai harap bersabar.. 🙃"""
     BUTTON_TXT = """Help: <b>Buttons</b>
 
 <b>NOTE:</b>
@@ -39,9 +52,9 @@ Ini adalah daftar menu bantuan."""
 <code>[Button Text](buttonalert:This is an alert message)</code>"""
     AUTOFILTER_TXT = """Help: <b>Code Runner</b>
 
-Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung.
+Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung. Untuk command sementara hanya support dengan tanda "!" seperti contoh dibawah.
 
-Daftar Bahasa Pemrograman Yang Didukung:
+<b>Daftar Bahasa Pemrograman Yang Didukung:</b>
 ~> assembly
 ~> ats
 ~> bash
@@ -81,9 +94,9 @@ Daftar Bahasa Pemrograman Yang Didukung:
 ~> typescript
 
 <b>Cara penggunaan:</b>
-~> <code>/python print("Hai aku MissKatyRoBot")</code>
+~> <code>!python print("Hai aku MissKatyRoBot")</code>
 """
-    CONNECTION_TXT = """Help: <b>Connections</b>
+    CONNECTION_TXT = """Help: <b>Inline</b>
 
 - Used to connect bot to PM for managing filters 
 - it helps to avoid spamming in groups.
@@ -93,25 +106,30 @@ Daftar Bahasa Pemrograman Yang Didukung:
 2. Send <code>/connect</code> for connecting me to ur PM
 
 <b>Commands and Usage:</b>
-• /connect  - <code>connect a particular chat to your PM</code>
+• /google  - <code>connect a particular chat to your PM</code>
 • /disconnect  - <code>disconnect from a chat</code>
 • /connections - <code>list all your connections</code>"""
     EXTRAMOD_TXT = """Help: <b>Extra Modules</b>
 
 <b>NOTE:</b>
-these are the extra features of Eva Maria
+Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berdasarkan kategori jika sempat.
 
 <b>Commands and Usage:</b>
-• /id - <code>get id of a specifed user.</code>
-• /info  - <code>get information about a user.</code>
-• /imdb  - <code>get the film information from IMDb source.</code>
-• /search  - <code>get the film information from various sources.</code>"""
+• /id - <code>Dapatkan ID dari seorang user atau grup.</code>
+• /info  - <code>Dapatkan informasi mengenai user.</code>
+• /imdb  - <code>Dapatkan informasi mengenai film/series dari IMDb. (Translate ke Bahasa Indonesia)</code>
+• /webss  - <code>Ambil screenshot dari sebuah website.</code>
+• /json - <code>Melihat struktur pesan di Telegram. (<b>Pyrogram Version</b>)
+• /mediainfo - <code>Reply ke pesan Telegram atau dengan command /mediainfo [direct link], untuk mengetahui metadata sebuah file. Sangat berguna jika kamu punya channel film..</code>
+• /tr, /trans - <code>Untuk menterjemahkan kalimat.</code>
+"""
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
 <b>NOTE:</b>
-This module only works for my admins
+This module only works for my owner
 
 <b>Commands and Usage:</b>
+• /run - <code>Menjalankan kode python</code>
 • /logs - <code>to get the rescent errors</code>
 • /stats - <code>to get status of files in db.</code>
 • /delete - <code>to delete a specific file from db.</code>
@@ -130,8 +148,8 @@ This module only works for my admins
 ★ Sisa Ruang Disk: <code>{}</code> 𝙼𝚒𝙱"""
     LOG_TEXT_G = """#NewGroup
 Group = {}(<code>{}</code>)
-Total Members = <code>{}</code>
-Added By - {}
+Jumlah Members = <code>{}</code>
+Ditambahkan Oleh - {}
 """
     LOG_TEXT_P = """#NewUser
 ID - <code>{}</code>
