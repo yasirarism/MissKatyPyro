@@ -1,5 +1,5 @@
 from pyrogram.types import ChatPermissions
-from pyrogram import Client
+from pyrogram import Client, __version__
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import logging
 import pytz
@@ -16,7 +16,7 @@ async def job_close():
     jam = now.strftime('%H:%M')
     await app.send_sticker(-1001128045651, "CAACAgQAAxkDAAEDfNhgygZBqbTlbOQ6Gk3CmtD-bnkRDAACLxsAAvEGNAY-qWSFYAqy3R4E")
     await app.send_message(
-      -1001128045651, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Proses LockDown dimulai, Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Dbuat dengan Pyrogram v1.2.11.."
+      -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Proses LockDown dimulai, Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Dbuat dengan Pyrogram v{__version__}.."
     )
     await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
@@ -29,7 +29,7 @@ async def job_close_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     await app.send_message(
-      -1001255283935, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ Jam : "+jam+"\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 6 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v1.2.11.."
+      -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 6 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v{__version__}.."
     )
     await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
@@ -47,7 +47,7 @@ async def job_open():
     by = json["result"]["by"]
     await app.send_sticker(-1001128045651, "CAACAgQAAxkDAAEDeJhgyLPTe0shLKykbafLA-rZk3CYZAAC4xoAAvEGNAYXtspUoZE5Nx4E")
     await app.send_message(
-        -1001128045651, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ "+jam+"`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n**Quotes Today:**\n"+quote+" ~"+by
+        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n**Quotes Today:**\n{quote} ~{by}"
     )
     await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_send_stickers=False, can_send_animations=True, can_invite_users=True, can_add_web_page_previews=True, can_use_inline_bots=True)
     )
@@ -64,7 +64,7 @@ async def job_open_ymoviez():
     by = json["result"]["by"]
     quote = json["result"]["quote"]
     await app.send_message(
-        -1001255283935, "📆 "+days[now.weekday()]+", "+tgl+" "+month[now.month]+" "+tahun+"\n⏰ "+jam+"`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n**Quotes Today:**\n"+quote+" ~"+by
+        -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n**Quotes Today:**\n{quote} ~{by}"
     )
     await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_send_stickers=True, can_send_animations=True, can_invite_users=True, can_add_web_page_previews=True, can_use_inline_bots=True)
     )
