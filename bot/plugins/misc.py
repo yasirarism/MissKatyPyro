@@ -21,9 +21,6 @@ logger.setLevel(logging.ERROR)
 async def gsearch(client, message):
     r, query = message.text.split(None, 1)
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
-    flags = message.flags
-    page = int(flags.get('-p', 1))
-    limit = int(flags.get('-l', 5))
     if message.reply_to_message:
         query = message.reply_to_message.text
     if not query:
@@ -31,12 +28,12 @@ async def gsearch(client, message):
         return
     try:
         g_search = GoogleSearch()
-        gresults = await g_search.async_search(query, page)
+        gresults = await g_search.async_search(query, 1)
     except Exception as e:
         await msg.edit(e)
         return
     output = ""
-    for i in range(limit):
+    for i in range(5):
         try:
             title = gresults["titles"][i].replace("\n", " ")
             link = gresults["links"][i]
