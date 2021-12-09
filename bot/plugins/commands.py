@@ -1,13 +1,10 @@
 import os
-import time
 import logging
 import random
 import asyncio
 from Script import script
-import shutil, psutil
-from bot import botStartTime
+
 from pyrogram import Client, filters
-from bot.utils.human_read import get_readable_time, get_readable_file_size
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
@@ -49,18 +46,10 @@ async def start(client, message):
             InlineKeyboardButton('ℹ️ Help', callback_data='help'),
             InlineKeyboardButton('😊 About', callback_data='about')
         ]]
-        currentTime = get_readable_time(time.time() - botStartTime)
-        total, used, free = shutil.disk_usage('.')
-        total = get_readable_file_size(total)
-        used = get_readable_file_size(used)
-        free = get_readable_file_size(free)
-        cpuUsage = psutil.cpu_percent(interval=0.5)
-        memory = psutil.virtual_memory().percent
-        disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=random.choice(PICS),
-            caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME, currentTime, total, free, used, cpuUsage, memory, disk),
+            caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
             reply_markup=reply_markup,
             parse_mode='html'
         )
