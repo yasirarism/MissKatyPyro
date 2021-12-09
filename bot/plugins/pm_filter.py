@@ -3,11 +3,12 @@ import asyncio
 import re
 import ast
 import time
-import shutil
+import shutil, psutil
 
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
+from bot import botStartTime
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, make_inactive
 from bot.utils.human_read import get_readable_time, get_readable_file_size
 from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, P_TTI_SHOW_OFF, IMDB, SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE
