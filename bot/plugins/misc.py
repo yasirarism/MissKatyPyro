@@ -5,7 +5,6 @@ import json
 import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
-from search_engine_parser import GoogleSearch
 from gtts import gTTS
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
