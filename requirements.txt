@@ -13,6 +13,7 @@ gpytranslate
 apscheduler
 pytz
 psutil
+search-engine-parser
 html-telegraph-poster
 lottie[all]
 lk21
