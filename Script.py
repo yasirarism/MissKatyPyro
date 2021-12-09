@@ -22,7 +22,6 @@ Semua command bisa digunakan dengan ! atau /."""
 ✯ BUILD STATUS: v1.0.1 [ BETA ]"""
     SOURCE_TXT = """<b>NOTE:</b>
 - MissKatyRoBot adalah project closed source. Saya hanya membuat bot ini untuk sekedar belajar mengenai programming. 
-- Source - 🙃
 
 <b>Owner:</b>
 - <a href=https://t.me/YasirArisM>Yasir Aris M</a>"""
@@ -122,6 +121,8 @@ Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berd
 • /json - <code>Melihat struktur pesan di Telegram. (<b>Pyrogram Version</b>)
 • /mediainfo - <code>Reply ke pesan Telegram atau dengan command /mediainfo [direct link], untuk mengetahui metadata sebuah file. Sangat berguna jika kamu punya channel film..</code>
 • /tr, /trans - <code>Untuk menterjemahkan kalimat.</code>
+• /tts - <code>Mengubah pesan teks menjadi voice message.</code>
+• /google - <code>Browsing google melalui bot.</code>
 """
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
