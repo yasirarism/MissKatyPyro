@@ -2,11 +2,14 @@
 import asyncio
 import re
 import ast
+import time
+import shutil
 
 from pyrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 import pyrogram
 from database.connections_mdb import active_connection, all_connections, delete_connection, if_active, make_active, make_inactive
+from bot.utils.human_read import get_readable_time, get_readable_file_size
 from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, P_TTI_SHOW_OFF, IMDB, SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters
@@ -413,15 +416,23 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('🏠 Home', callback_data='start'),
             InlineKeyboardButton('🔮 Status', callback_data='stats')
         ]]
+        currentTime = get_readable_time(time.time() - botStartTime)
+        total, used, free = shutil.disk_usage('.')
+        total = get_readable_file_size(total)
+        used = get_readable_file_size(used)
+        free = get_readable_file_size(free)
+        cpuUsage = psutil.cpu_percent(interval=0.5)
+        memory = psutil.virtual_memory().percent
+        disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
-            text=script.HELP_TXT.format(query.from_user.mention),
+            text=script.HELP_TXT.format(query.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
             reply_markup=reply_markup,
             parse_mode='html'
         )
     elif query.data == "about":
         buttons= [[
-            InlineKeyboardButton('🤖 Updates', url='https://t.me/TeamEvamaria'),
+            InlineKeyboardButton('🤖 Updates', url='https://t.me/YasirPediaChannel'),
             InlineKeyboardButton('♥️ Source', callback_data='source')
             ],[
             InlineKeyboardButton('🏠 Home', callback_data='start'),
