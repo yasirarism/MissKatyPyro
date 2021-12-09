@@ -5,6 +5,7 @@ import json
 import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
+from search_engine_parser import GoogleSearch
 from gtts import gTTS
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
@@ -15,6 +16,38 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
+
+@Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
+async def gsearch(client, message):
+    r, query = message.text.split(None, 1)
+    msg = await message.reply_text(f"**Googling** for `{query}` ...")
+    flags = message.flags
+    page = int(flags.get('-p', 1))
+    limit = int(flags.get('-l', 5))
+    if message.reply_to_message:
+        query = message.reply_to_message.text
+    if not query:
+        await msg.edit("Give a query or reply to a message to google!")
+        return
+    try:
+        g_search = GoogleSearch()
+        gresults = await g_search.async_search(query, page)
+    except Exception as e:
+        await msg.edit(e)
+        return
+    output = ""
+    for i in range(limit):
+        try:
+            title = gresults["titles"][i].replace("\n", " ")
+            link = gresults["links"][i]
+            desc = gresults["descriptions"][i]
+            output += f"[{title}]({link})\n"
+            output += f"`{desc}`\n\n"
+        except (IndexError, KeyError):
+            break
+    output = f"**Google Search:**\n`{query}`\n\n**Results:**\n{output}"
+    await message.edit(text=output, caption=query,
+                                       disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 async def translate(_, message):
