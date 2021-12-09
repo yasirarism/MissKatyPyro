@@ -8,6 +8,7 @@ requests
 bs4
 aiohttp
 imdbpy
+gTTS
 gpytranslate
 apscheduler
 pytz
