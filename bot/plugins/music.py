@@ -1,5 +1,5 @@
 from pyrogram import filters
-from nksama import app, user
+from bot import app, user
 import pytgcalls
 
 
