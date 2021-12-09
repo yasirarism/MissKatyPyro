@@ -13,7 +13,6 @@ gpytranslate
 apscheduler
 pytz
 psutil
-pytgcalls==3.0.0.dev19
 html-telegraph-poster
 lottie[all]
 lk21
