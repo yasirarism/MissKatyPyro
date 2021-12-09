@@ -17,34 +17,35 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+GOOGLE_API = "https://api.abirhasan.wtf/google?query="
+async def google(query):
+    r = requests.get(GOOGLE_API + requote_uri(query))
+    informations = r.json()["results"][:7]
+    results = []
+    for info in informations:
+        results.append(
+            {
+                "title": info['title'],
+                "description": info['description'],
+                "link": info['link']
+            }
+        )
+    return results
+
 @Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
 async def gsearch(client, message):
+    if message.command == 1:
+        await message.reply("Give a query or reply to a message to google!")
+        return
     r, query = message.text.split(None, 1)
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
-    if message.reply_to_message:
-        query = message.reply_to_message.text
-    if not query:
-        await msg.edit("Give a query or reply to a message to google!")
-        return
     try:
-        g_search = GoogleSearch()
-        gresults = await g_search.async_search(query, 1)
+        gresults = await google(query)
+        res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in gresults)
     except Exception as e:
         await msg.edit(e)
         return
-    output = ""
-    for i in range(5):
-        try:
-            title = gresults["titles"][i].replace("\n", " ")
-            link = gresults["links"][i]
-            desc = gresults["descriptions"][i]
-            output += f"[{title}]({link})\n"
-            output += f"`{desc}`\n\n"
-        except (IndexError, KeyError):
-            break
-    output = f"**Google Search:**\n`{query}`\n\n**Results:**\n{output}"
-    await message.edit(text=output, caption=query,
-                                       disable_web_page_preview=True)
+    await msg.edit(text=f"<b>Hasil Pencarian dari Google Search:</b>\n{res}", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 async def translate(_, message):
