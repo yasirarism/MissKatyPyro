@@ -7,10 +7,11 @@ Ini adalah daftar menu bantuan bot MissKatyRoBot. Kamu bisa membaca petunjuk mel
 Menu Bantuan ini belum selesai dibuat jadi mungkin masih acak-acakan.
 Jika kamu ada kendala, bisa tanya saya di grup @indocloud atau @YMovieZChat. Jangan lupa yaa join disitu 🙃..
 
-Bot Uptime: 
-Disk Kosong:
-Disk Digunakan:
-RAM:
+Bot Uptime: {}
+Total Ruang Penyimpanan: {}
+Disk Kosong: {}
+Disk Digunakan: {}
+CPU: {} RAM: {} DISK: {}
 
 Semua command bisa digunakan dengan ! atau /."""
     ABOUT_TXT = """✯ Tentang Saya: {}
