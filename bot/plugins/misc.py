@@ -48,7 +48,7 @@ async def gsearch(client, message):
     await msg.edit(text=f"<b>Hasil Pencarian dari Google Search:</b>\n{res}", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
-async def translate(_, message):
+async def translate(client, message):
     trl = Translator()
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
@@ -79,7 +79,7 @@ async def translate(_, message):
     )
 
 @Client.on_message(filters.command(["tts","tts@MissKatyRoBot"], COMMAND_HANDLER))
-async def translate(_, message):
+async def tts(_, message):
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
             target_lang = "id"
