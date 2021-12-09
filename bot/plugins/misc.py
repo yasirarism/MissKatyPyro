@@ -5,6 +5,7 @@ import json
 import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
+from requests.utils import requote_uri
 from gtts import gTTS
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
@@ -33,10 +34,10 @@ async def google(query):
 
 @Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
 async def gsearch(client, message):
-    if message.command == 1:
+    if len(message.command) == 1:
         await message.reply("Give a query or reply to a message to google!")
         return
-    r, query = message.text.split(None, 1)
+    query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
         gresults = await google(query)
