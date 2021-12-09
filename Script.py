@@ -1,13 +1,6 @@
 class script(object):
     START_TXT = """Hai {},
-Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna loh 😍. Penasaran? silahkan dicoba yaa. Mungkin masih ada banyak bug di bot ini, jadi harap dimaklumi saja yaa 😃.
-
-<b>Status Server Bot:</b>
-<b>Bot Uptime:</b> <code>{}</code>
-<b>Total Ruang Penyimpanan:</b> <code>{}</code>
-<b>Disk Kosong:</b> <code>{}</code>
-<b>Disk Digunakan:</b> <code>{}</code>
-<b>CPU:</b> {}% <b>RAM:</b> {}% <b>DISK:</b> {}%"""
+Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna loh 😍. Penasaran? silahkan dicoba yaa. Mungkin masih ada banyak bug di bot ini, jadi harap dimaklumi saja yaa 😃."""
     HELP_TXT = """Hai {}
 Ini adalah daftar menu bantuan bot MissKatyRoBot. Kamu bisa membaca petunjuk melalui button dibawah ini.
 <b>Catatan:</b>
