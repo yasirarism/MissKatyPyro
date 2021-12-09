@@ -5,6 +5,7 @@ import json
 import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
+from gtts import gTTS
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
 from utils import extract_user, get_file_id, get_poster, last_online
@@ -45,6 +46,35 @@ async def translate(_, message):
     return await msg.edit(
         f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>``{tekstr.text}``</code>",
     )
+
+@Client.on_message(filters.command(["tts","tts@MissKatyRoBot"], COMMAND_HANDLER))
+async def translate(_, message):
+    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+        if len(message.text.split()) == 1:
+            target_lang = "id"
+        else:
+            target_lang = message.text.split()[1]
+        if message.reply_to_message.text:
+            text = message.reply_to_message.text
+        else:
+            text = message.reply_to_message.caption
+    else:
+        if len(message.text.split()) <= 2:
+            await message.reply_text(
+                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/trt en <text></code>",
+            )
+            return
+        target_lang = message.text.split(None, 2)[1]
+        text = message.text.split(None, 2)[2]
+    msg = await message.reply("Converting to voice...")
+    try:
+        tts = gTTS(text, lang=target_lang)
+        tts.save(f'tts_{message.from_user.id}.mp3')
+    except ValueError as err:
+        await msg.edit(f"Error: <code>{str(err)}</code>")
+        return
+    await msg.delete()
+    return await msg.reply_audio(f'tts_{message.from_user.id}.mp3')
 
 
 @Client.on_message(filters.command(['id','id@MissKatyRoBot'], COMMAND_HANDLER))
