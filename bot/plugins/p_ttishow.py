@@ -235,7 +235,7 @@ async def ban_a_user(bot, message):
     except RPCError as ef:
         await message.reply_text(f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}")
                                  
-@Client.on_callback_query(r"^unban_")
+@Client.on_callback_query(filters.regex("^unban_"))
 async def unbanbutton(c: Client, q: CallbackQuery):
     splitter = (str(q.data).replace("unban_", "")).split("=")
     user_id = int(splitter[1])
