@@ -73,11 +73,12 @@ async def start(client, message):
         memory = psutil.virtual_memory().percent
         disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
-        return await message.reply_text(
+        await message.reply_text(
             text=script.HELP_TXT.format(message.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
             reply_markup=reply_markup,
             parse_mode='html'
         )
+        return
     if message.chat.type in ['group', 'supergroup']:
         buttons = [
             [
