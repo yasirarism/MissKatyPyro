@@ -125,6 +125,9 @@ Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berd
 • /tr, /trans - <code>Untuk menterjemahkan kalimat.</code>
 • /tts - <code>Mengubah pesan teks menjadi voice message.</code>
 • /google - <code>Browsing google melalui bot.</code>
+• /tosticker - <code>Mengubah foto menjadi sticker.</code>
+• /toimage - <code>Mengubah sticker menjadi foto.</code>
+• /ocr - <code>Mengubah gambar atau sticker menjadi tulisan.</code>
 """
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
