@@ -33,7 +33,9 @@ Semua command bisa digunakan dengan ! atau /."""
 
 <b>Commands and Usage:</b>
 • /ban - <code>Banned user dari grup</code>
-• /kick - <code>list all the filters of a chat</code>
+• /dban - <code>Hapus pesan dan banned user dari grup</code>
+• /kickme - <code>Menendang diri sendiri dari grup</code>
+• /kick - <code>kick from a chat</code>
 • /del - <code>delete a specific filter in chat</code>
 • /delall - <code>Hapus pesan seluruh chat.</code>
 • /purge - <code>Hapus seluruh pesan mulain dari pesan yang direply.</code>
