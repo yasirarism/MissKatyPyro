@@ -166,7 +166,7 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-@Client.on_message(filters.command(['dban'], COMMAND_HANDLER) & filters.user(ADMINS) & filters.group)
+@Client.on_message(filters.command(['dban'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(bot, message):
     if len(message.text.split()) == 1 and not message.reply_to_message:
         await message.reply_text("Gunakan command ini dengan reply atau mention user")
