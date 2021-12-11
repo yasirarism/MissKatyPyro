@@ -231,7 +231,7 @@ async def ban_a_user(bot, message):
     except UserAdminInvalid:
         await message.reply_text("Tidak dapat bertindak atas pengguna ini, mungkin bukan saya yang mengubah izinnya")
     except RightForbidden:
-        await message.reply_text("Aku tidak punya ijin untuk membanned pengguna ini)
+        await message.reply_text("Aku tidak punya ijin untuk membanned pengguna ini")
     except RPCError as ef:
         await message.reply_text(f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}")
                                  
