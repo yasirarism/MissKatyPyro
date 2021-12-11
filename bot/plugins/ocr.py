@@ -2,6 +2,7 @@ from info import COMMAND_HANDLER
 import requests
 import json
 import os
+from telegraph import upload_file
 from pyrogram import filters
 from bot import app
 
