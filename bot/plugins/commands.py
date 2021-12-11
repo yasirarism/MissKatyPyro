@@ -24,7 +24,7 @@ async def help(client, message):
         buttons = [
             [InlineKeyboardButton(text="ℹ️ Klik Saya", url=f"https://t.me/{temp.U_NAME}?start=help")],
         ]
-        return await message.reply("Silahkan PM saya untuk melihat menu bantuan..", reply_markup=reply_markup)
+        return await message.reply("Silahkan PM saya untuk melihat menu bantuan..", reply_markup=buttons)
     else:
         buttons = [[
             InlineKeyboardButton('Admin', callback_data='manuelfilter'),
@@ -72,7 +72,6 @@ async def start(client, message):
         cpuUsage = psutil.cpu_percent(interval=0.5)
         memory = psutil.virtual_memory().percent
         disk = psutil.disk_usage('/').percent
-        reply_markup = InlineKeyboardMarkup(buttons)
         reply_markup = InlineKeyboardMarkup(buttons)
         return await message.reply_text(
             text=script.HELP_TXT.format(message.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
