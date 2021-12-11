@@ -13,10 +13,10 @@ async def ocr(_, message):
     return await message.reply_text("Balas pesan foto dengan command /ocr")
   msg = await message.reply("Reading image...")
   try:
-    img = await reply.download()
+    file_path = await reply.download()
     if reply.sticker:
-      img = await reply.download(f"ocr{message.from_user.id}.jpg")
-    response = upload_file(img)
+      file_path = await reply.download(f"ocr{message.from_user.id}.jpg")
+    response = upload_file(file_path)
     url = f"https://telegra.ph{response[0]}"
     req = requests.get(f"https://script.google.com/macros/s/AKfycbwmaiH74HX_pL-iNzw8qUsHoDMtBIBLogclgLD6cNLpPM6piGg/exec?url={url}").json()
     await msg.edit(f"Hasil OCR:\n<code>{req['text']}</code>")
