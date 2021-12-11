@@ -3,19 +3,68 @@ import logging
 import random
 import asyncio
 from Script import script
+import shutil, psutil
 
 from pyrogram import Client, filters
+from bot import botStartTime
+from bot.utils.human_read import get_readable_time, get_readable_file_size
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION, LOG_CHANNEL, PICS, COMMAND_HANDLER
 from utils import get_size, is_subscribed, temp
 import re
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command("start"))
+@Client.on_message(filters.command(["help","help@MissKatyRoBot", COMMAND_HANDLER))
+async def help(client, message):
+    if message.chat.type in ['group', 'supergroup']:
+        buttons = InlineKeyboardMarkup[[InlineKeyboardButton('ℹ️ Help', url=f"https://t.me/{temp.U_NAME}?start=help")]]
+        await message.reply("Silahkan PM saya untuk melihat menu bantuan", reply_markup=reply_markup)
+    else:
+        buttons = [[
+            InlineKeyboardButton('Admin', callback_data='manuelfilter'),
+            InlineKeyboardButton('Code Runner', callback_data='autofilter')
+            ],[
+            InlineKeyboardButton('Connection', callback_data='coct'),
+            InlineKeyboardButton('Extra Mods', callback_data='extra')
+            ],[
+            InlineKeyboardButton('🏠 Home', callback_data='start'),
+            InlineKeyboardButton('🔮 Status', callback_data='stats')
+        ]]
+        currentTime = get_readable_time(time.time() - botStartTime)
+        total, used, free = shutil.disk_usage('.')
+        total = get_readable_file_size(total)
+        used = get_readable_file_size(used)
+        free = get_readable_file_size(free)
+        cpuUsage = psutil.cpu_percent(interval=0.5)
+        memory = psutil.virtual_memory().percent
+        disk = psutil.disk_usage('/').percent
+        reply_markup = InlineKeyboardMarkup(buttons)
+                                    
+@Client.on_message(filters.command(["start","start@MissKatyRoBot"], COMMAND_HANDLER))
 async def start(client, message):
+    if message.chat.type == 'private' and message.text == '/start help':
+        buttons = [[
+            InlineKeyboardButton('Admin', callback_data='manuelfilter'),
+            InlineKeyboardButton('Code Runner', callback_data='autofilter')
+            ],[
+            InlineKeyboardButton('Stickers', callback_data='coct'),
+            InlineKeyboardButton('Other', callback_data='extra')
+            ],[
+            InlineKeyboardButton('🏠 Home', callback_data='start'),
+            InlineKeyboardButton('🔮 Status', callback_data='stats')
+        ]]
+        currentTime = get_readable_time(time.time() - botStartTime)
+        total, used, free = shutil.disk_usage('.')
+        total = get_readable_file_size(total)
+        used = get_readable_file_size(used)
+        free = get_readable_file_size(free)
+        cpuUsage = psutil.cpu_percent(interval=0.5)
+        memory = psutil.virtual_memory().percent
+        disk = psutil.disk_usage('/').percent
+        reply_markup = InlineKeyboardMarkup(buttons)
     if message.chat.type in ['group', 'supergroup']:
         buttons = [
             [
@@ -38,7 +87,7 @@ async def start(client, message):
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     if len(message.command) != 2:
         buttons = [[
-            InlineKeyboardButton('➕ Add Me To Your Groups ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+            InlineKeyboardButton('➕ Tambahkan Saya ke Grup ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
             InlineKeyboardButton('YMovieZNew Channel', url='https://t.me/YMovieZNew'),
             InlineKeyboardButton('Updates', url='https://t.me/YasirPediaChannel')
@@ -79,10 +128,10 @@ async def start(client, message):
         return
     if len(message.command) ==2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
         buttons = [[
-            InlineKeyboardButton('➕ Add Me To Your Groups ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+            InlineKeyboardButton('➕ Tambahkan Saya ke Grup ➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
-            InlineKeyboardButton('🔍 Search', switch_inline_query_current_chat=''),
-            InlineKeyboardButton('🤖 Updates', url='https://t.me/TeamEvamaria')
+            InlineKeyboardButton('YMovieZNew Channel', url='https://t.me/YMovieZNew'),
+            InlineKeyboardButton('Updates', url='https://t.me/YasirPediaChannel')
             ],[
             InlineKeyboardButton('ℹ️ Help', callback_data='help'),
             InlineKeyboardButton('😊 About', callback_data='about')
