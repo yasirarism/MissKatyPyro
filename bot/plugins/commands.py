@@ -21,8 +21,10 @@ logger = logging.getLogger(__name__)
 @Client.on_message(filters.command(["help","help@MissKatyRoBot"], COMMAND_HANDLER))
 async def help(client, message):
     if message.chat.type in ['group', 'supergroup']:
-        buttons = InlineKeyboardMarkup[[InlineKeyboardButton('ℹ️ Help', url=f"https://t.me/{temp.U_NAME}?start=help")]]
-        await message.reply("Silahkan PM saya untuk melihat menu bantuan", reply_markup=reply_markup)
+        buttons = [
+            [InlineKeyboardButton(text="ℹ️ Klik Saya", url=f"https://t.me/{temp.U_NAME}?start=help")],
+        ]
+        return await message.reply("Silahkan PM saya untuk melihat menu bantuan..", reply_markup=reply_markup)
     else:
         buttons = [[
             InlineKeyboardButton('Admin', callback_data='manuelfilter'),
