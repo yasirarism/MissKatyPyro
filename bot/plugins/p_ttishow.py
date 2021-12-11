@@ -209,10 +209,10 @@ async def ban_a_user(bot, message):
     try:
         await message.reply_to_message.delete()
         await message.chat.kick_member(user_id)
-        txt = (f"{admin} banned {banned} di <b>{chat_title}</b>!").format(
-            admin=message.from_user.mention,
-            banned=message.reply_to_message.from_user.mention,
-            chat_title=message.chat.title,
+        txt = ("{} banned {} di <b>{}</b>!").format(
+            message.from_user.mention,
+            message.reply_to_message.from_user.mention,
+            message.chat.title,
         )
         txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
         keyboard = InlineKeyboardMarkup([[
