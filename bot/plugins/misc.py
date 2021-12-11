@@ -107,6 +107,29 @@ async def tts(_, message):
     await msg.delete()
     return await msg.reply_audio(f'tts_{message.from_user.id}.mp3')
 
+@Client.on_message(filters.command(["tosticker","tosticker@MissKatyRoBot"], COMMAND_HANDLER))
+async def tostick(client, message):
+    try:
+        if not message.reply_to_message or not message.reply_to_message.photo:
+            return await message.reply_text("Reply ke foto untuk mengubah ke sticker")
+        sticker = await clinet.download_media(message.reply_to_message.photo.file_id, f"tostick_{message.from_user.id}.webp")
+        await message.reply_sticker(sticker)
+        os.remove(sticker)
+    except Exception as e:
+        await message.reply_text(str(e))
+
+@Client.on_message(filters.command(["toimage","toimage@MissKatyRoBot"], COMMAND_HANDLER))
+async def topho(client, message):
+    try:
+        if not message.reply_to_message or not message.reply_to_message.sticker:
+            return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
+        if message.reply_to_message.sticker.is_animated:
+            return await message.reply_text("Ini sticker animasi, command ini hanya untuk sticker biasa.")
+        photo = await client.download_media(message.reply_to_message.sticker.file_id, f"tostick_{message.from_user.id}.jpg")
+        await message.reply_photo(photo=photo, caption=f'Sticker -> Image\n@MissKatyRoBot')
+        os.remove(photo)
+    except Exception as e:
+        await message.reply_text(str(e))
 
 @Client.on_message(filters.command(['id','id@MissKatyRoBot'], COMMAND_HANDLER))
 async def showid(client, message):
