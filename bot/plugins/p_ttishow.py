@@ -236,7 +236,7 @@ async def ban_a_user(bot, message):
         await message.reply_text(f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}")
                                  
 @Client.on_callback_query(filters.regex("^unban_"))
-async def unbanbutton(c: Client, q: CallbackQuery):
+async def unbanbutton(bot: Client, q: CallbackQuery):
     splitter = (str(q.data).replace("unban_", "")).split("=")
     user_id = int(splitter[1])
     user = await q.message.chat.get_member(q.from_user.id)
@@ -247,14 +247,15 @@ async def unbanbutton(c: Client, q: CallbackQuery):
             show_alert=True,
         )
         return
-    whoo = await c.get_chat(user_id)
-    doneto = whoo.title if whoo.title else whoo.mention
+    whoo = await bot.get_chat(user_id)
+    doneto = whoo.title if whoo.title else whoo.first_name
+    ids = whoo.id
     try:
         await q.message.chat.unban_member(user_id)
     except RPCError as e:
         await q.message.edit_text(f"Error: {e}")
         return
-    await q.message.edit_text(f"{q.from_user.mention} unbanned {doneto}!")
+    await q.message.edit_text(f"{q.from_user.mention} unbanned <a href='tg://user?id={ids}'>{doneto}</a>!")
     return
     
 @Client.on_message(filters.command('unban') & filters.user(ADMINS))
