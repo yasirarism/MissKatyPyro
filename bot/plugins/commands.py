@@ -43,6 +43,11 @@ async def help(client, message):
         memory = psutil.virtual_memory().percent
         disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
+        await message.reply_text(
+            text=script.HELP_TXT.format(query.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
+            reply_markup=reply_markup,
+            parse_mode='html'
+        )
                                     
 @Client.on_message(filters.command(["start","start@MissKatyRoBot"], COMMAND_HANDLER))
 async def start(client, message):
@@ -66,6 +71,12 @@ async def start(client, message):
         memory = psutil.virtual_memory().percent
         disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(buttons)
+        await message.reply_text(
+            text=script.HELP_TXT.format(query.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
+            reply_markup=reply_markup,
+            parse_mode='html'
+        )
     if message.chat.type in ['group', 'supergroup']:
         buttons = [
             [
