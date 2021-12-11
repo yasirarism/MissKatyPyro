@@ -24,7 +24,7 @@ async def help(client, message):
         buttons = [
             [InlineKeyboardButton(text="ℹ️ Klik Saya", url=f"https://t.me/{temp.U_NAME}?start=help")],
         ]
-        return await message.reply("Silahkan PM saya untuk melihat menu bantuan..", reply_markup=buttons)
+        return await message.reply("Silahkan PM saya untuk melihat menu bantuan..", reply_markup=InlineKeyboardMarkup(buttons))
     else:
         buttons = [[
             InlineKeyboardButton('Admin', callback_data='manuelfilter'),
