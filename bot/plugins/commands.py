@@ -29,7 +29,7 @@ async def help(client, message):
             InlineKeyboardButton('Code Runner', callback_data='autofilter')
             ],[
             InlineKeyboardButton('Connection', callback_data='coct'),
-            InlineKeyboardButton('Extra Mods', callback_data='extra')
+            InlineKeyboardButton('Misc', callback_data='extra')
             ],[
             InlineKeyboardButton('🏠 Home', callback_data='start'),
             InlineKeyboardButton('🔮 Status', callback_data='stats')
@@ -57,7 +57,7 @@ async def start(client, message):
             InlineKeyboardButton('Code Runner', callback_data='autofilter')
             ],[
             InlineKeyboardButton('Stickers', callback_data='coct'),
-            InlineKeyboardButton('Other', callback_data='extra')
+            InlineKeyboardButton('Misc', callback_data='extra')
             ],[
             InlineKeyboardButton('🏠 Home', callback_data='start'),
             InlineKeyboardButton('🔮 Status', callback_data='stats')
