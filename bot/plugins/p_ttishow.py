@@ -190,10 +190,10 @@ async def ban_a_user(bot, message):
     if not user_id:
         await message.reply_text("Aku tidak bisa menemukan pengguna untuk diban")
         return
-    if user_id == m.chat.id:
+    if user_id == message.chat.id:
         await message.reply_text("Itu adalah hal gila jika saya ban admin!")
         await message.stop_propagation()
-    if user_id == Config.BOT_ID:
+    if user_id == 1507530289:
         await message.reply_text("Hah, saya harus ban diriku sendiri?")
         await message.stop_propagation()
 
@@ -209,7 +209,7 @@ async def ban_a_user(bot, message):
     try:
         await message.reply_to_message.delete()
         await message.chat.kick_member(user_id)
-        txt = ("{admin} banned {banned} di <b>{chat_title}</b>!").format(
+        txt = (f"{admin} banned {banned} di <b>{chat_title}</b>!").format(
             admin=message.from_user.mention,
             banned=message.reply_to_message.from_user.mention,
             chat_title=message.chat.title,
@@ -223,7 +223,7 @@ async def ban_a_user(bot, message):
         ]])
         await bot.send_message(message.chat.id, txt, reply_markup=keyboard)
     except ChatAdminRequired:
-        await message.reply_text("Sepertinya aku bukan admin disini."))
+        await message.reply_text("Sepertinya aku bukan admin disini.")
     except PeerIdInvalid:
         await message.reply_text(
             "Aku belum pernah melihat pengguna ini sebelumnya...!\nMungkin bisa dengan forward pesan dia?",
