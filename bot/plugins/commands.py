@@ -17,7 +17,7 @@ from utils import get_size, is_subscribed, temp
 import re
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command(["help","help@MissKatyRoBot", COMMAND_HANDLER))
+@Client.on_message(filters.command(["help","help@MissKatyRoBot"], COMMAND_HANDLER))
 async def help(client, message):
     if message.chat.type in ['group', 'supergroup']:
         buttons = InlineKeyboardMarkup[[InlineKeyboardButton('ℹ️ Help', url=f"https://t.me/{temp.U_NAME}?start=help")]]
