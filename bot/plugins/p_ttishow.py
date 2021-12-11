@@ -166,6 +166,21 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
+@Client.on_message(filters.command(["kickme","kickme@MissKatyroBot"], COMMAND_HANDLER))
+async def kickme(_, message):
+    reason = None
+    if len(message.text.split()) >= 2:
+        reason = message.text.split(None, 1)[1]
+    try:
+        await message.chat.kick_member(m.from_user.id)
+        txt = f"Pengguna {message.from_user.mention} menendang dirinya sendiri. Mungkin dia sedang frustasi 😕"
+        txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
+        await message.reply_text(txt)
+        await message.chat.unban_member(m.from_user.id)
+    except RPCError as ef:
+        await message.reply_text(f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}")
+    return
+
 @Client.on_message(filters.command(['dban'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(bot, message):
     if len(message.text.split()) == 1 and not message.reply_to_message:
@@ -217,7 +232,7 @@ async def ban_a_user(bot, message):
         txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
         keyboard = InlineKeyboardMarkup([[
             InlineKeyboardButton(
-                "Unban (Hanya Admin)",
+                "⚠️ Unban (Hanya Admin)",
                 callback_data=f"unban_={user_id}",
             ),
         ]])
