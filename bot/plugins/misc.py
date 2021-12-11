@@ -112,7 +112,7 @@ async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
             return await message.reply_text("Reply ke foto untuk mengubah ke sticker")
-        sticker = await clinet.download_media(message.reply_to_message.photo.file_id, f"tostick_{message.from_user.id}.webp")
+        sticker = await client.download_media(message.reply_to_message.photo.file_id, f"tostick_{message.from_user.id}.webp")
         await message.reply_sticker(sticker)
         os.remove(sticker)
     except Exception as e:
