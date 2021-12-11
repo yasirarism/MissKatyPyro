@@ -18,5 +18,7 @@ async def ocr(_, message):
     url = f"https://telegra.ph{response[0]}"
     req = requests.get(f"https://script.google.com/macros/s/AKfycbwmaiH74HX_pL-iNzw8qUsHoDMtBIBLogclgLD6cNLpPM6piGg/exec?url={url}").json()
     await msg.edit(re)
+    os.remove(file_path)
   except Exception as e:
     await msg.edit(str(e))
+    os.remove(file_path)
