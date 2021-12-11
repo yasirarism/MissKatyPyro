@@ -72,7 +72,7 @@ async def start(client, message):
         disk = psutil.disk_usage('/').percent
         reply_markup = InlineKeyboardMarkup(buttons)
         reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_text(
+        return await message.reply_text(
             text=script.HELP_TXT.format(message.from_user.mention, currentTime, total, free, used, cpuUsage, memory, disk),
             reply_markup=reply_markup,
             parse_mode='html'
