@@ -9,7 +9,7 @@ from bot import app
 @app.on_message(filters.command(["ocr","ocr@MissKatyRoBot"], COMMAND_HANDLER))
 async def ocr(_, message):
   reply = message.reply_to_message
-  if not reply or not reply.photo or not reply.sticker:
+  if not reply or not reply.photo and not reply.sticker:
     return await message.reply_text("Balas pesan foto dengan command /ocr")
   msg = await message.reply("Reading image...")
   try:
