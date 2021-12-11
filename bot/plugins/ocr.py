@@ -19,7 +19,7 @@ async def ocr(_, message):
     response = upload_file(img)
     url = f"https://telegra.ph{response[0]}"
     req = requests.get(f"https://script.google.com/macros/s/AKfycbwmaiH74HX_pL-iNzw8qUsHoDMtBIBLogclgLD6cNLpPM6piGg/exec?url={url}").json()
-    await msg.edit(f"Hasil OCR:\n<code>req['text']</code>")
+    await msg.edit(f"Hasil OCR:\n<code>{req['text']}</code>")
     os.remove(file_path)
   except Exception as e:
     await msg.edit(str(e))
