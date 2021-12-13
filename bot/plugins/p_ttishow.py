@@ -173,7 +173,7 @@ async def adminlist(_, message):
         return await message.reply("Perintah ini hanya untuk grup")
     try:
         mem = await app.get_chat_members(message.chat.id, filter="administrators")
-        res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in res)
+        res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in mem)
         return await message.reply(f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
