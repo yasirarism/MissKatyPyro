@@ -178,6 +178,26 @@ async def adminlist(_, message):
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
+@app.on_message(filters.command(["zombies","zombies@MissKatyRoBot"], COMMAND_HANDLER))
+async def zombie_clean(_, message):
+    
+    zombie = 0
+    wait = await message.reply_text("Searching ... and banning ...")
+    async for member in app.iter_chat_members(m.chat.id):
+        if member.user.is_deleted:
+            zombie += 1
+            try:
+                await app.kick_chat_member(m.chat.id, member.user.id)
+            except UserAdminInvalid:
+                zombie -= 1
+            except FloodWait as e:
+                await sleep(e.x)
+    if zombie == 0:
+        return await wait.edit_text("Group is clean!")
+    return await wait.edit_text(
+        f"<b>{zombie}</b> Zombies ditemukan dan telah banned!",
+    )
+
 @Client.on_message(filters.command(["kickme","kickme@MissKatyRoBot"], COMMAND_HANDLER))
 async def kickme(_, message):
     reason = None
@@ -195,6 +215,11 @@ async def kickme(_, message):
 
 @Client.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(bot, message):
+    admin = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    if user_id in ['administrator','creator']:
+        await message.reply_text("Kamu bukan admin disini")
+        await message.stop_propagation()
+
     if len(message.text.split()) == 1 and not message.reply_to_message:
         await message.reply_text("Gunakan command ini dengan reply atau mention user")
         await message.stop_propagation()
@@ -224,7 +249,7 @@ async def ban_a_user(bot, message):
         await message.reply_text("Hah, saya harus ban diriku sendiri?")
         await message.stop_propagation()
 
-    admin = await bot.get_chat_member(message.chat.id, message.from_user.id)
+    admin = await bot.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)
     if user_id in ['administrator','creator']:
         await message.reply_text("Saya tidak bisa ban admin")
         await message.stop_propagation()
