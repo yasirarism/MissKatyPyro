@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
+from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from database.users_chats_db import db
 from database.ia_filterdb import Media
@@ -166,7 +167,16 @@ async def gen_invite(bot, message):
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-@Client.on_message(filters.command(["kickme","kickme@MissKatyroBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["adminlist","adminlist@MissKatyRoBot"], COMMAND_HANDLER))
+async def adminlist(_, message):
+    try:
+        mem = await app.get_chat_members(message.chat.id, filter="administrators")
+        res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in a)
+        return await message.reply(f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
+    except Exception as e:
+        await message.reply(f"ERROR: str(e)")
+
+@Client.on_message(filters.command(["kickme","kickme@MissKatyRoBot"], COMMAND_HANDLER))
 async def kickme(_, message):
     reason = None
     if len(message.text.split()) >= 2:
@@ -181,7 +191,7 @@ async def kickme(_, message):
         await message.reply_text(f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}")
     return
 
-@Client.on_message(filters.command(['dban'], COMMAND_HANDLER) & filters.group)
+@Client.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(bot, message):
     if len(message.text.split()) == 1 and not message.reply_to_message:
         await message.reply_text("Gunakan command ini dengan reply atau mention user")

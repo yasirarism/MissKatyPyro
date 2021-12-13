@@ -5,7 +5,7 @@ Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna l
 Ini adalah daftar menu bantuan bot MissKatyRoBot. Kamu bisa membaca petunjuk melalui button dibawah ini.
 <b>Catatan:</b>
 Menu Bantuan ini belum selesai dibuat jadi mungkin masih acak-acakan.
-Jika kamu ada kendala, bisa tanya saya di grup @indocloud atau @YMovieZChat. Jangan lupa yaa join disitu 🙃..
+Jika kamu ada kendala, bisa tanya saya di grup @indoupload atau @YMovieZChat. Jangan lupa yaa join disitu 🙃..
 
 <b>Status Server Bot:</b>
 <b>Bot Uptime:</b> <code>{}</code>
