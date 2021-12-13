@@ -216,7 +216,7 @@ async def kickme(_, message):
 @Client.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(bot, message):
     admin = await bot.get_chat_member(message.chat.id, message.from_user.id)
-    if user_id in ['administrator','creator']:
+    if admin.status not in ['administrator','creator']:
         await message.reply_text("Kamu bukan admin disini")
         await message.stop_propagation()
 
