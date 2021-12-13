@@ -170,7 +170,7 @@ async def gen_invite(bot, message):
 @app.on_message(filters.command(["adminlist","adminlist@MissKatyRoBot"], COMMAND_HANDLER))
 async def adminlist(_, message):
     if message.chat.type == 'private':
-        return message.reply("Perintah ini hanya untuk grup")
+        return await message.reply("Perintah ini hanya untuk grup")
     try:
         mem = await app.get_chat_members(message.chat.id, filter="administrators")
         res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in res)
