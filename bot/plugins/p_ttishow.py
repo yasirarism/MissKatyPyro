@@ -174,7 +174,7 @@ async def adminlist(_, message):
         res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in a)
         return await message.reply(f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
     except Exception as e:
-        await message.reply(f"ERROR: str(e)")
+        await message.reply(f"ERROR: {str(e)}")
 
 @Client.on_message(filters.command(["kickme","kickme@MissKatyRoBot"], COMMAND_HANDLER))
 async def kickme(_, message):

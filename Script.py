@@ -39,7 +39,8 @@ Semua command bisa digunakan dengan ! atau /."""
 • /del - <code>delete a specific filter in chat</code>
 • /delall - <code>Hapus pesan seluruh chat.</code>
 • /purge - <code>Hapus seluruh pesan mulain dari pesan yang direply.</code>
-• /pin - <code>delete the whole filters in a chat (chat owner only)</code>
+• /pin - <code>Pin pesan digrup</code>
+• /adminlist - <code>Dapatkan daftar admin disebuah grup</code>
 Docs ini belum selesai harap bersabar.. 🙃"""
     BUTTON_TXT = """Help: <b>Buttons</b>
 
