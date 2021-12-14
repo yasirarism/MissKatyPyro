@@ -3,24 +3,12 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
+from bot.utils.admin_helper import is_admin
 from database.users_chats_db import db
 from database.ia_filterdb import Media
 from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
-
-async def is_admin(group_id: int, user_id: int):
-    try:
-        user_data = await app.get_chat_member(group_id, user_id)
-        if user_data.status == 'administrator' or user_data.status == 'creator':
-            # print(f'is admin user_data : {user_data}')
-            return True
-        else:
-            # print('Not admin')
-            return False
-    except:
-        # print('Not admin')
-        return False
 
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
