@@ -108,6 +108,8 @@ async def start(client, message):
             ],[
             InlineKeyboardButton('ℹ️ Help', callback_data='help'),
             InlineKeyboardButton('😊 About', callback_data='about')
+            ],[
+            InlineKeyboardButton('📦 Source Code', url='tg://need_update_for_some_feature')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
