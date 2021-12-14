@@ -119,7 +119,7 @@ async def save_note(c: Client, m: Message, strings):
         update_note(chat_id, trigger, raw_data, file_id, note_type)
     else:
         add_note(chat_id, trigger, raw_data, file_id, note_type)
-    await m.reply_text("add_note_success {}").format(trigger=trigger), quote=True)
+    await m.reply_text(f"add_note_success {trigger}", quote=True)
 
 @Client.on_message(filters.command(["delnote", "rmnote"], "!"))
 async def delete_note(c: Client, m: Message, strings):
@@ -129,10 +129,10 @@ async def delete_note(c: Client, m: Message, strings):
     check_note = check_for_notes(chat_id, trigger)
     if check_note:
         rm_note(chat_id, trigger)
-        await m.reply_text("remove_note_success {}").format(trigger=trigger), quote=True
+        await m.reply_text(f"remove_note_success {trigger}", quote=True
         )
     else:
-        await m.reply_text("no_note_with_name {}").format(trigger=trigger),quote=True)
+        await m.reply_text(f"no_note_with_name {trigger}",quote=True)
 
 @Client.on_message(filters.command("notes", "!"))
 async def get_all_chat_note(c: Client, m: Message, strings):
