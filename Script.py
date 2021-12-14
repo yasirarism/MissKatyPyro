@@ -40,6 +40,7 @@ Semua command bisa digunakan dengan ! atau /."""
 • /delall - <code>Hapus pesan seluruh chat.</code>
 • /purge - <code>Hapus seluruh pesan mulain dari pesan yang direply.</code>
 • /pin - <code>Pin pesan digrup</code>
+• /unpin - <code>Unpin pesan tersemat digrup</code>
 • /adminlist - <code>Dapatkan daftar admin disebuah grup</code>
 Docs ini belum selesai harap bersabar.. 🙃"""
     BUTTON_TXT = """Help: <b>Buttons</b>

@@ -230,6 +230,7 @@ async def pin(_,message):
         message_id = message.reply_to_message.message_id
         if await is_admin(message.chat.id , message.from_user.id): 
             await app.pin_chat_message(message.chat.id , message_id)
+            await message.reply("Berhasil menyematkan pesan ini", reply_to_message_id=message_id)
     elif not await is_admin(message.chat.id , message.from_user.id): 
         await message.reply("Uppss, kamu bukan admin disini..")
     elif not message.reply_to_message:
@@ -243,6 +244,7 @@ async def unpin(_,message):
         message_id = message.reply_to_message.message_id
         if await is_admin(message.chat.id , message.from_user.id): 
             await app.unpin_chat_message(message.chat.id , message_id)
+            await message.reply("Berhasil unpin pesan ini", reply_to_message_id=message_id)
     elif not await is_admin(message.chat.id , message.from_user.id): 
         await message.reply("Upps, kamu bukan admin disini")
     elif not message.reply_to_message:
