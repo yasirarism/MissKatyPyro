@@ -137,7 +137,7 @@ async def delete_note(c: Client, m: Message, strings):
 @Client.on_message(filters.command("notes", "!"))
 async def get_all_chat_note(c: Client, m: Message, strings):
     chat_id = m.chat.id
-    reply_text = "notes_list"
+    reply_text = strings("notes_list")
     all_notes = get_all_notes(chat_id)
     for note_s in all_notes:
         keyword = note_s[1]
