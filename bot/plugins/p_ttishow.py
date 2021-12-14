@@ -276,7 +276,7 @@ async def ban_a_user(_, message):
         await message.reply_text("Hah, saya harus ban diriku sendiri?")
         await message.stop_propagation()
 
-    admin = await bot.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)
+    admin = await app.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)
     if user_id in ['administrator','creator']:
         await message.reply_text("Saya tidak bisa ban admin")
         await message.stop_propagation()
