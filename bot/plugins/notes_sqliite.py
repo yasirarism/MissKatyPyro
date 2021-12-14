@@ -61,7 +61,7 @@ async def save_note(c: Client, m: Message, strings):
     trigger = split_text[0].lower()
 
     if m.reply_to_message is None and len(split_text) < 2:
-        await m.reply_text("add_note_empty"), quote=True)
+        await m.reply_text("add_note_empty", quote=True)
         return
 
     if m.reply_to_message and m.reply_to_message.photo:
