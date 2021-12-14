@@ -300,7 +300,7 @@ async def ban_a_user(_, message):
                 callback_data=f"unban_={user_id}",
             ),
         ]])
-        await bot.send_message(message.chat.id, txt, reply_markup=keyboard)
+        await app.send_message(message.chat.id, txt, reply_markup=keyboard)
     except ChatAdminRequired:
         await message.reply_text("Sepertinya aku bukan admin disini.")
     except PeerIdInvalid:
