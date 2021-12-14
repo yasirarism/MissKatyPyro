@@ -3,7 +3,7 @@
 
 import sqlite3
 
-db = sqlite3.connect("eduu/database/eduu.db")
+db = sqlite3.connect("database/yasir.db")
 dbc = db.cursor()
 
 
