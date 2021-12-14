@@ -55,7 +55,7 @@ def check_for_notes(chat_id, trigger):
     return False
 
 @Client.on_message(filters.command(["note", "savenote"], "!"))
-async def save_note(c: Client, m: Message, strings):
+async def save_note(c: Client, m: Message):
     args = m.text.html.split(maxsplit=1)
     split_text = split_quotes(args[1])
     trigger = split_text[0].lower()
@@ -122,7 +122,7 @@ async def save_note(c: Client, m: Message, strings):
     await m.reply_text(f"add_note_success {trigger}", quote=True)
 
 @Client.on_message(filters.command(["delnote", "rmnote"], "!"))
-async def delete_note(c: Client, m: Message, strings):
+async def delete_note(c: Client, m: Message):
     args = m.text.html.split(maxsplit=1)
     trigger = args[1].lower()
     chat_id = m.chat.id
@@ -135,9 +135,9 @@ async def delete_note(c: Client, m: Message, strings):
         await m.reply_text(f"no_note_with_name {trigger}",quote=True)
 
 @Client.on_message(filters.command("notes", "!"))
-async def get_all_chat_note(c: Client, m: Message, strings):
+async def get_all_chat_note(c: Client, m: Message):
     chat_id = m.chat.id
-    reply_text = strings("notes_list")
+    reply_text = "notes_list"
     all_notes = get_all_notes(chat_id)
     for note_s in all_notes:
         keyword = note_s[1]
