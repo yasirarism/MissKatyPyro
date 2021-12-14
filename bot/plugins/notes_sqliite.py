@@ -57,8 +57,8 @@ def check_for_notes(chat_id, trigger):
 @Client.on_message(filters.command(["note", "savenote"], "!"))
 async def save_note(c: Client, m: Message):
     args = m.text.split(" ",maxsplit=2)
-    split_text = args[1]
-    trigger = args[0].lower()
+    split_text = args[0]
+    trigger = args[1].lower()
 
     if m.reply_to_message is None and len(split_text) < 2:
         await m.reply_text("add_note_empty", quote=True)
@@ -110,7 +110,7 @@ async def save_note(c: Client, m: Message):
         note_type = "sticker"
     else:
         file_id = None
-        raw_data = split_text
+        raw_data = args[2]
         note_type = "text"
 
     chat_id = m.chat.id
