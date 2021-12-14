@@ -9,7 +9,18 @@ from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
 
-"""-----------------------------------------https://t.me/GetTGLink/4179 --------------------------------------"""
+async def is_admin(group_id: int, user_id: int):
+    try:
+        user_data = await app.get_chat_member(group_id, user_id)
+        if user_data.status == 'administrator' or user_data.status == 'creator':
+            # print(f'is admin user_data : {user_data}')
+            return True
+        else:
+            # print('Not admin')
+            return False
+    except:
+        # print('Not admin')
+        return False
 
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
@@ -213,9 +224,35 @@ async def kickme(_, message):
         await message.reply_text(f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}")
     return
 
-@Client.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
-async def ban_a_user(bot, message):
-    admin = await bot.get_chat_member(message.chat.id, message.from_user.id)
+@app.on_message(filters.command(['pin','pin@MissKatyRoBot'], COMMAND_HANDLER))
+async def pin(_,message):
+    if message.reply_to_message:
+        message_id = message.reply_to_message.message_id
+        if await is_admin(message.chat.id , message.from_user.id): 
+            await app.pin_chat_message(message.chat.id , message_id)
+    elif not await is_admin(message.chat.id , message.from_user.id): 
+        await message.reply("Uppss, kamu bukan admin disini..")
+    elif not message.reply_to_message:
+        message.reply("Balas ke pesan yang mau dipin.")
+    else:
+        message.reply("Pastikan aku admin dan punya ijin pin pesan")
+
+@app.on_message(filters.command(['unpin','unpin@MissKatyRoBot'], COMMAND_HANDLER))
+async def unpin(_,message):
+    if message.reply_to_message:
+        message_id = message.reply_to_message.message_id
+        if await is_admin(message.chat.id , message.from_user.id): 
+            await app.unpin_chat_message(message.chat.id , message_id)
+    elif not await is_admin(message.chat.id , message.from_user.id): 
+        await message.reply("Upps, kamu bukan admin disini")
+    elif not message.reply_to_message:
+        await message.reply("Balas ke pesan yang mau diunpin")
+    else:
+        await message.reply("Pastikan aku admin dan punya ijin unpin pesan")
+
+@app.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
+async def ban_a_user(_, message):
+    admin = await app.get_chat_member(message.chat.id, message.from_user.id)
     if admin.status not in ['administrator','creator']:
         await message.reply_text("Kamu bukan admin disini")
         await message.stop_propagation()
