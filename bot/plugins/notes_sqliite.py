@@ -144,6 +144,6 @@ async def get_all_chat_note(c: Client, m: Message, strings):
         reply_text += f" - {keyword} \n"
 
     if not all_notes:
-        await m.reply_text("notes_list_empty"), quote=True)
+        await m.reply_text("notes_list_empty", quote=True)
     else:
         await m.reply_text(reply_text, quote=True)
