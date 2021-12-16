@@ -48,7 +48,7 @@ async def gsearch(client, message):
        arr = json.dumps(data, indent=2, ensure_ascii=False)
        parse = json.loads(arr)
        total = len(parse)
-       res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in parse)
+       res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse)
     except Exception as e:
        await msg.edit(e)
        return
