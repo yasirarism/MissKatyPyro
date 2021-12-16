@@ -20,7 +20,7 @@ logger.setLevel(logging.ERROR)
 @Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
 async def gsearch(client, message):
     if len(message.command) == 1:
-        await message.reply("Give a query or reply to a message to google!")
+        await message.reply("Give a query to search!")
         return
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
@@ -28,7 +28,7 @@ async def gsearch(client, message):
        headers = {
          'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
-       html = requests.get('https://www.google.com/search?q=liburan akhir tahun', headers=headers)
+       html = requests.get(f'https://www.google.com/search?q={query}', headers=headers)
        soup = BeautifulSoup(html.text, 'lxml')
 
        # collect data
@@ -49,7 +49,7 @@ async def gsearch(client, message):
     except Exception as e:
         await msg.edit(e)
         return
-    await msg.edit(data)
+    await msg.edit(f"<code>{data}</data>")
     #await msg.edit(text=f"<b>Hasil Pencarian dari {query}:</b>\n{res}", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
