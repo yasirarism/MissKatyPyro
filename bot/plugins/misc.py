@@ -35,16 +35,16 @@ async def gsearch(client, message):
        data = []
 
        for result in soup.select('.tF2Cxc'):
-       title = result.select_one('.DKV0Md').text
-       link = result.select_one('.yuRUbf a')['href']
-       snippet = result.select_one('#rso .lyLwlc').text
+          title = result.select_one('.DKV0Md').text
+          link = result.select_one('.yuRUbf a')['href']
+          snippet = result.select_one('#rso .lyLwlc').text
 
-       # appending data to an array
-       data.append({
-         'title': title,
-         'link': link,
-         'snippet': snippet,
-       })
+          # appending data to an array
+          data.append({
+            'title': title,
+            'link': link,
+            'snippet': snippet,
+          })
        #res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in gresults)
     except Exception as e:
         await msg.edit(e)
