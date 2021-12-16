@@ -17,21 +17,6 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-GOOGLE_API = "https://api.abirhasan.wtf/google?query="
-async def google(query):
-    r = requests.get(GOOGLE_API + requote_uri(query))
-    informations = r.json()["results"][:7]
-    results = []
-    for info in informations:
-        results.append(
-            {
-                "title": info['title'],
-                "description": info['description'],
-                "link": info['link']
-            }
-        )
-    return results
-
 @Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
 async def gsearch(client, message):
     if len(message.command) == 1:
@@ -40,12 +25,32 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        gresults = await google(query)
-        res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in gresults)
+       headers = {
+         'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+       }
+       html = requests.get('https://www.google.com/search?q=liburan akhir tahun', headers=headers)
+       soup = BeautifulSoup(html.text, 'lxml')
+
+       # collect data
+       data = []
+
+       for result in soup.select('.tF2Cxc'):
+       title = result.select_one('.DKV0Md').text
+       link = result.select_one('.yuRUbf a')['href']
+       snippet = result.select_one('#rso .lyLwlc').text
+
+       # appending data to an array
+       data.append({
+         'title': title,
+         'link': link,
+         'snippet': snippet,
+       })
+       #res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in gresults)
     except Exception as e:
         await msg.edit(e)
         return
-    await msg.edit(text=f"<b>Hasil Pencarian dari Google Search:</b>\n{res}", disable_web_page_preview=True)
+    await msg.edit(data)
+    #await msg.edit(text=f"<b>Hasil Pencarian dari {query}:</b>\n{res}", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 async def translate(client, message):
