@@ -52,7 +52,7 @@ async def gsearch(client, message):
     except Exception as e:
        await msg.edit(e)
        return
-    await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}\n\n<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
+    await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}\n<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 async def translate(client, message):
