@@ -37,7 +37,10 @@ async def gsearch(client, message):
        for result in soup.select('.tF2Cxc'):
           title = result.select_one('.DKV0Md').text
           link = result.select_one('.yuRUbf a')['href']
-          snippet = result.select_one('#rso .lyLwlc').text
+          try:
+            snippet = result.select_one('#rso .lyLwlc').text
+          except:
+            snippet = "-"
 
           # appending data to an array
           data.append({
