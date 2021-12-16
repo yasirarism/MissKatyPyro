@@ -45,12 +45,14 @@ async def gsearch(client, message):
             'link': link,
             'snippet': snippet,
           })
-       #res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in gresults)
+       arr = json.dumps(data, indent=2, ensure_ascii=False)
+       parse = json.loads(arr)
+       total = len(parse)
+       res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['description']}\n\n" for i in parse)
     except Exception as e:
-        await msg.edit(e)
-        return
-    await msg.edit(f"<code>{data}</data>")
-    #await msg.edit(text=f"<b>Hasil Pencarian dari {query}:</b>\n{res}", disable_web_page_preview=True)
+       await msg.edit(e)
+       return
+    await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 async def translate(client, message):
