@@ -8,7 +8,7 @@ chat = [-1001128045651, -1001255283935, -1001455886928]
 @Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat) & ~filters.edited)
 async def start(_, message):
     await message.reply_text(
-        text=f"Wa'alaikumsalam {message.from_user.mention}"
+        text=f"Wa'alaikumsalam {message.from_user.mention} 😇"
 )
     
 @Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat) & ~filters.edited)
