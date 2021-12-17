@@ -1,6 +1,7 @@
 from pyrogram import filters, Client
 from pyrogram.errors import PeerIdInvalid, UserIsBlocked
 from info import COMMAND_HANDLER
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 @Client.on_message(filters.command(["copy","copy@MissKatyRoBot"], COMMAND_HANDLER))
 async def copy(client, message):
@@ -22,7 +23,7 @@ async def copy(client, message):
             await client.copy_message(message.from_user.id, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserIsBlocked:
-            await message.reply_text("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..")
+            await message.reply_text("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 MediaInfo", url=link)]]))
             
 @Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
 async def forward(client, message):
