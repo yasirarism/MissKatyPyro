@@ -57,7 +57,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
     
 @Client.on_callback_query(filters.regex(r"^dahada"))
-async def _callbackreq(c: Client, q: CallbackQuery):
+async def _callbackreqada(c: Client, q: CallbackQuery):
     user = await c.get_chat_member(-1001404537486, q.from_user.id)
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
