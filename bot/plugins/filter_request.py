@@ -28,7 +28,8 @@ async def start(_, message):
 async def request_user(client, message):
     markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.message_id}")],
                                    [InlineKeyboardButton(text="🚫 Tolak", callback_data=f"rejectreq_{message.message_id}_{message.chat.id}"),InlineKeyboardButton(text="✅ Done", callback_data=f"donereq_{message.message_id}_{message.chat.id}")],
-                                   [InlineKeyboardButton(text="⚠️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")]
+                                   [InlineKeyboardButton(text="⚠️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")],
+                                   [InlineKeyboardButton(text="🔍 Sudah Ada", callback_data=f"dahada_{message.message_id}_{message.chat.id}")]
                                  ])
     try:
       if message.text:
@@ -53,7 +54,21 @@ async def _callbackreq(c: Client, q: CallbackQuery):
           await q.message.edit_text(f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]))
        await q.answer("Request berhasil diselesaikan ✅")
     else:
-       await q.answer("😝😝😝", show_alert=True)
+       await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
+    
+@Client.on_callback_query(filters.regex(r"^dahada"))
+async def _callbackreq(c: Client, q: CallbackQuery):
+    user = await c.get_chat_member(-1001404537486, q.from_user.id)
+    if user.status in ['administrator','creator']:
+       i, msg_id, chat_id = q.data.split('_')
+       await c.send_message(chat_id=chat_id, text=f"#AlreadyAvailable\nFilm/series yang direquest sudah ada. Selamat mencari..", reply_to_message_id=int(msg_id))
+       if q.message.caption:
+          await q.message.edit_text(f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavai")]]))
+       else:
+          await q.message.edit_text(f"<b>Already Available</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavai")]]))
+       await q.answer("Request berhasil diselesaikan ✅")
+    else:
+       await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^rejectreq"))
 async def _callbackreject(c: Client, q: CallbackQuery):
@@ -67,7 +82,7 @@ async def _callbackreject(c: Client, q: CallbackQuery):
           await q.message.edit_text(f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]))
        await q.answer("Requests berhasil ditolak 🚫")
     else:
-       await q.answer("😝😝😝", show_alert=True)
+       await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^unavailablereq"))
 async def _callbackunav(c: Client, q: CallbackQuery):
@@ -81,8 +96,12 @@ async def _callbackunav(c: Client, q: CallbackQuery):
           await q.message.edit_text(f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠️ Request Unavailable", callback_data="requnav")]]))
        await q.answer("Request tidak tersedia.")
     else:
-       await q.answer("😝😝😝", show_alert=True)
+       await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
+@Client.on_callback_query(filters.regex(r"^reqavai$"))
+async def _callbackaft_done(c: Client, q: CallbackQuery):
+      await q.answer("Request ini sudah ada, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
+        
 @Client.on_callback_query(filters.regex(r"^reqcompl$"))
 async def _callbackaft_done(c: Client, q: CallbackQuery):
       await q.answer("Request ini sudah tersedia 🥳, silahkan cek di channel atau grup yaa..", show_alert=True)
