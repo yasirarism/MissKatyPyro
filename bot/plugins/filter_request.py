@@ -61,11 +61,11 @@ async def _callbackreq(c: Client, q: CallbackQuery):
     user = await c.get_chat_member(-1001404537486, q.from_user.id)
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
-       await c.send_message(chat_id=chat_id, text=f"#AlreadyAvailable\nFilm/series yang direquest sudah ada. Selamat mencari..", reply_to_message_id=int(msg_id))
+       await c.send_message(chat_id=chat_id, text=f"#AlreadyAvailable\nFilm/series yang direquest sudah ada sebelumnya. Selamat mencari..", reply_to_message_id=int(msg_id))
        if q.message.caption:
-          await q.message.edit_text(f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavai")]]))
+          await q.message.edit_text(f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavailable")]]))
        else:
-          await q.message.edit_text(f"<b>Already Available</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavai")]]))
+          await q.message.edit_text(f"<b>Already Available</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavailable")]]))
        await q.answer("Request berhasil diselesaikan ✅")
     else:
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
@@ -98,13 +98,13 @@ async def _callbackunav(c: Client, q: CallbackQuery):
     else:
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
-@Client.on_callback_query(filters.regex(r"^reqavai$"))
+@Client.on_callback_query(filters.regex(r"^reqavailable$"))
 async def _callbackaft_done(c: Client, q: CallbackQuery):
-      await q.answer("Request ini sudah ada, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
+      await q.answer("Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
         
 @Client.on_callback_query(filters.regex(r"^reqcompl$"))
 async def _callbackaft_done(c: Client, q: CallbackQuery):
-      await q.answer("Request ini sudah tersedia 🥳, silahkan cek di channel atau grup yaa..", show_alert=True)
+      await q.answer("Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^reqreject$"))
 async def _callbackaft_rej(c: Client, q: CallbackQuery):
