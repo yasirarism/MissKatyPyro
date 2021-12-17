@@ -97,10 +97,6 @@ async def _callbackunav(c: Client, q: CallbackQuery):
        await q.answer("Request tidak tersedia.")
     else:
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
-
-@Client.on_callback_query(filters.regex(r"^reqavailable$"))
-async def _callbackaft_done(c: Client, q: CallbackQuery):
-      await q.answer("Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
         
 @Client.on_callback_query(filters.regex(r"^reqcompl$"))
 async def _callbackaft_done(c: Client, q: CallbackQuery):
@@ -113,3 +109,8 @@ async def _callbackaft_rej(c: Client, q: CallbackQuery):
 @Client.on_callback_query(filters.regex(r"^requnav$"))
 async def _callbackaft_unav(c: Client, q: CallbackQuery):
       await q.answer("Request ini tidak tersedia 🥳, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.", show_alert=True)
+
+
+@Client.on_callback_query(filters.regex(r"^reqavailable$"))
+async def _callbackaft_dahada(c: Client, q: CallbackQuery):
+      await q.answer("Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
