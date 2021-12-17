@@ -43,7 +43,7 @@ async def request_user(client, message):
 
 @Client.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c: Client, q: CallbackQuery):
-    user = await c.get_chat_member(-1001575525902, q.from_user.id)
+    user = await c.get_chat_member(-1001404537486, q.from_user.id)
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Done\nDone ✅, pastikan join channel dan grup yaahh untuk melihat request-an nya.", reply_to_message_id=int(msg_id))
@@ -57,7 +57,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
 
 @Client.on_callback_query(filters.regex(r"^rejectreq"))
 async def _callbackreject(c: Client, q: CallbackQuery):
-    user = await c.get_chat_member(-1001575525902, q.from_user.id)
+    user = await c.get_chat_member(-1001404537486, q.from_user.id)
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Rejected\nMohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya dulu yaa 🙃.", reply_to_message_id=int(msg_id))
@@ -71,7 +71,7 @@ async def _callbackreject(c: Client, q: CallbackQuery):
 
 @Client.on_callback_query(filters.regex(r"^unavailablereq"))
 async def _callbackunav(c: Client, q: CallbackQuery):
-    user = await c.get_chat_member(-1001575525902, q.from_user.id)
+    user = await c.get_chat_member(-1001404537486, q.from_user.id)
     if user.status in ['administrator','creator']:
        i, msg_id, chat_id = q.data.split('_')
        await c.send_message(chat_id=chat_id, text=f"#Unavailable\nMohon maaf, request kamu tidak tersedia 😕..", reply_to_message_id=int(msg_id))
