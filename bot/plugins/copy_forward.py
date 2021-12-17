@@ -23,7 +23,9 @@ async def copy(client, message):
             await client.copy_message(message.from_user.id, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserIsBlocked:
-            await message.reply_text("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 MediaInfo", url=link)]]))
+            await message.reply_text("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
+        except Exception as e:
+            await message.reply(f"ERROR: {str(e)}")
             
 @Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
 async def forward(client, message):
