@@ -37,8 +37,6 @@ async def request_user(client, message):
       user_id = message.from_user.id
       if user_id in REQUEST_DB:
         REQUEST_DB[user_id] += 1
-        if REQUEST_DB[user_id] <= 3:
-           return
       else:
         REQUEST_DB[user_id] = 0
       if REQUEST_DB[user_id] > 3:
