@@ -2,6 +2,7 @@ import re
 import random
 import datetime
 from pyrogram import filters, Client
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
@@ -50,6 +51,11 @@ async def request_user(client, message):
       await message.reply_text(text=f"Request kamu sudah dikirim yaa. Harap bersabar, mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3 - REQUEST_DB[user_id]}x", quote=True, reply_markup=markup2)
     except:
       pass
+def clear_reqdict():
+    REQUEST_DB.clear()
+
+scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
+scheduler.add_job(clear_reqdict, trigger="cron", hour=7, minute=0)
 
 @Client.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c: Client, q: CallbackQuery):
