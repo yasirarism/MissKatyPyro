@@ -47,7 +47,7 @@ async def request_user(client, message):
       if message.photo:
         forward = await client.send_photo(-1001575525902, message.photo.file_id, caption=f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.caption}", reply_markup=markup)
         markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
-      await message.reply_text(text=f"Request kamu sudah dikirim yaa. Harap bersabar, mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3REQUEST_DB[user_id]}x", quote=True, reply_markup=markup2)
+      await message.reply_text(text=f"Request kamu sudah dikirim yaa. Harap bersabar, mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3 - REQUEST_DB[user_id]}x", quote=True, reply_markup=markup2)
     except:
       pass
 
