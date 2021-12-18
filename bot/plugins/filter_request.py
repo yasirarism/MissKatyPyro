@@ -1,9 +1,14 @@
 import re
 import random
+import datetime
 from pyrogram import filters, Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
+REQUEST_DB = {"user_id": [],
+              "count": 0,
+              "tgl": []
+             }
 
 @Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat) & ~filters.edited)
 async def start(_, message):
@@ -32,8 +37,18 @@ async def request_user(client, message):
                                    [InlineKeyboardButton(text="🔍 Sudah Ada", callback_data=f"dahada_{message.message_id}_{message.chat.id}")]
                                  ])
     try:
+      user_id = message.from_user.id
+      REQUEST_DB['user_id'].append(user_id)
+      REQUEST_DB['count'] += 1
+      REQUEST_DB['tgl'].append(datetime.datetime.now().day)
+      if REQUEST_DB['user_id'] and REQUEST_DB['tgl'] != datetime.datetime.now().day:
+        REQUEST_DB['user_id'].append(user_id)
+        REQUEST_DB['count'] = 0
+        REQUEST_DB['tgl'].append(datetime.datetime.now().day)
+      if REQUEST_DB['user_id'] and REQUEST_DB['count'] > 3:
+        return await message.reply("Mohon maaf, maksimal request hanya 3x silahkan coba esok lagi.")
       if message.text:
-        forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.text}", reply_markup=markup)
+        forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
         markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
       if message.photo:
         forward = await client.send_photo(-1001575525902, message.photo.file_id, caption=f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.caption}", reply_markup=markup)
