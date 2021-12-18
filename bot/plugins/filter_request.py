@@ -38,7 +38,7 @@ async def request_user(client, message):
       if user_id in REQUEST_DB:
         REQUEST_DB[user_id] += 1
       else:
-        REQUEST_DB[user_id] = 0
+        REQUEST_DB[user_id] = 1
       if REQUEST_DB[user_id] > 3:
         return await message.reply("Mohon maaf, maksimal request hanya 3x silahkan coba esok lagi.")
       if message.text:
