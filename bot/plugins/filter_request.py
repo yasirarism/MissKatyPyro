@@ -54,9 +54,6 @@ async def request_user(client, message):
 def clear_reqdict():
     REQUEST_DB.clear()
 
-scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
-scheduler.add_job(clear_reqdict, trigger="cron", hour=7, minute=0)
-
 @Client.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c: Client, q: CallbackQuery):
     user = await c.get_chat_member(-1001404537486, q.from_user.id)
@@ -129,3 +126,7 @@ async def _callbackaft_unav(c: Client, q: CallbackQuery):
 @Client.on_callback_query(filters.regex(r"^reqavailable$"))
 async def _callbackaft_dahada(c: Client, q: CallbackQuery):
       await q.answer("Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa, selamat mencari..", show_alert=True)
+
+scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
+scheduler.add_job(clear_reqdict, trigger="cron", hour=7, minute=0)
+scheduler.start()
