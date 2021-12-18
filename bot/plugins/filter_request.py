@@ -38,15 +38,15 @@ async def request_user(client, message):
                                  ])
     try:
       user_id = message.from_user.id
-      REQUEST_DB['user_id'].append(user_id)
-      REQUEST_DB['count'] += 1
-      REQUEST_DB['tgl'].append(datetime.datetime.now().day)
       if REQUEST_DB['user_id'] and REQUEST_DB['tgl'] != datetime.datetime.now().day:
         REQUEST_DB['user_id'].append(user_id)
         REQUEST_DB['count'] = 0
         REQUEST_DB['tgl'].append(datetime.datetime.now().day)
       if REQUEST_DB['user_id'] and REQUEST_DB['count'] > 3:
         return await message.reply("Mohon maaf, maksimal request hanya 3x silahkan coba esok lagi.")
+      REQUEST_DB['user_id'].append(user_id)
+      REQUEST_DB['count'] += 1
+      REQUEST_DB['tgl'].append(datetime.datetime.now().day)
       if message.text:
         forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
         markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
