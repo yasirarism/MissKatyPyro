@@ -29,7 +29,7 @@ async def job_close_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     await app.send_message(
-      -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 6 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v{__version__}.."
+      -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 9 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v{__version__}.."
     )
     await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
     )
