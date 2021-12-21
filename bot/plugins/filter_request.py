@@ -78,7 +78,7 @@ async def _callbackreqada(c: Client, q: CallbackQuery):
           await q.message.edit_text(f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavailable")]]))
        else:
           await q.message.edit_text(f"<b>Already Available</b>\n\n<s>{q.message.text}</s>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🔍 Request Sudah Ada", callback_data="reqavailable")]]))
-       await q.answer("Request berhasil diselesaikan ✅")
+       await q.answer("Done")
     else:
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
