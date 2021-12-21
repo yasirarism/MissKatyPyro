@@ -275,7 +275,7 @@ async def imdb_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit('Ini yang bisa saya temukan di IMDB.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit('Silahkan klik tombol dibawah ini.. 👇', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
         
@@ -288,7 +288,8 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
-        await query.answer("Please wait, Getting data from IMDb...")
+        #await query.answer("Please wait, Getting data from IMDb...")
+        await q.message.edit_text("Permintaan kamu sedang diproses..")
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
