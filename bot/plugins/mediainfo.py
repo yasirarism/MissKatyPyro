@@ -27,7 +27,7 @@ async def mediainfo(_, message):
             response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
             response = response.json()
             spacebin = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph), InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Spacebin", url=spacebin)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph), InlineKeyboardButton(text="💬 Spacebin", url=spacebin)]])
             with io.BytesIO(str.encode(output)) as out_file:
                out_file.name = "MissKaty_Mediainfo.txt"
                await message.reply_document(out_file, caption="Hasil mediainfo anda..", reply_markup=markup)
