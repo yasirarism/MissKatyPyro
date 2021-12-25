@@ -19,7 +19,7 @@ async def mediainfo(_, message):
             output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
             title = f"MissKaty Bot Mediainfo"
             with io.BytesIO(str.encode(output)) as out_file:
-               media_info_file.name = "MissKaty_Mediainfo.txt"
+               out_file.name = "MissKaty_Mediainfo.txt"
             body_text = f"""
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
                          <pre>{output}</pre>
