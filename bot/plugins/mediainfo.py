@@ -2,6 +2,7 @@ import io
 import json
 import requests
 import aiohttp
+import subprocess
 from pyrogram import filters, Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
@@ -15,7 +16,7 @@ async def mediainfo(_, message):
         try:
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
-            output = await get_media_info(link)
+            output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
             title = f"MissKaty Bot Mediainfo"
             media_info_file = io.BytesIO()
             media_info_file.name = "MissKaty_Mediainfo.txt"
