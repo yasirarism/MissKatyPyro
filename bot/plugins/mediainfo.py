@@ -18,9 +18,8 @@ async def mediainfo(_, message):
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
             title = f"MissKaty Bot Mediainfo"
-            media_info_file = io.BytesIO()
-            media_info_file.name = "MissKaty_Mediainfo.txt"
-            media_info_file.write(output)
+            with io.BytesIO(str.encode(output)) as out_file:
+               media_info_file.name = "MissKaty_Mediainfo.txt"
             body_text = f"""
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
                          <pre>{output}</pre>
@@ -31,7 +30,7 @@ async def mediainfo(_, message):
             #response = response.json()
             #link = "https://spaceb.in/"+response['payload']['id']
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Link MediaInfo", url=link)]])
-            await message.reply_document(media_info_file, caption="Hasil mediainfo anda..", reply_markup=markup)
+            await message.reply_document(out_file, caption="Hasil mediainfo anda..", reply_markup=markup)
             await process.delete()
         except IndexError:
             return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
