@@ -22,12 +22,12 @@ async def mediainfo(_, message):
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
                          <pre>{output}</pre>
                          """
-            link = post_to_telegraph(title, body_text)
-            #siteurl = "https://spaceb.in/api/v1/documents/"
-            #response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
-            #response = response.json()
-            #link = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Link MediaInfo", url=link)]])
+            tgraph = post_to_telegraph(title, body_text)
+            siteurl = "https://spaceb.in/api/v1/documents/"
+            response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
+            response = response.json()
+            spacebin = "https://spaceb.in/"+response['payload']['id']
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph), InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Spacebin", url=spacebin)]])
             with io.BytesIO(str.encode(output)) as out_file:
                out_file.name = "MissKaty_Mediainfo.txt"
                await message.reply_document(out_file, caption="Hasil mediainfo anda..", reply_markup=markup)
