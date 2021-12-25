@@ -16,7 +16,10 @@ async def mediainfo(_, message):
         try:
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
-            output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
+            try:
+              output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
+            except Exception:
+              return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = f"MissKaty Bot Mediainfo"
             body_text = f"""
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
