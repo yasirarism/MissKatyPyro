@@ -20,17 +20,20 @@ async def mediainfo(_, message):
             media_info_file = io.BytesIO()
             media_info_file.name = "MissKaty_Mediainfo.txt"
             media_info_file.write(output)
-            #body_text = f"<pre>{output}</pre>"
-            #link = post_to_telegraph(title, body_text)
-            siteurl = "https://spaceb.in/api/v1/documents/"
-            response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
-            response = response.json()
-            link = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 MediaInfo", url=link)]])
+            body_text = f"""
+                         <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
+                         <pre>{output}</pre>
+                         """
+            link = post_to_telegraph(title, body_text)
+            #siteurl = "https://spaceb.in/api/v1/documents/"
+            #response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
+            #response = response.json()
+            #link = "https://spaceb.in/"+response['payload']['id']
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Link MediaInfo", url=link)]])
             await message.reply_document(media_info_file, caption="Hasil mediainfo anda..", reply_markup=markup)
             await process.delete()
         except IndexError:
-            return await message.reply_text("Gunakan command /mediainfo [link]")
+            return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
     else:
         process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`")
         x_media = None
@@ -44,6 +47,7 @@ async def mediainfo(_, message):
         if len(output_) != 0:
              out = output_[0]
         body_text = f"""
+    <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
     <h2>JSON</h2>
     <pre>{file_info}.type</pre>
     <br>
