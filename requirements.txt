@@ -17,3 +17,4 @@ html-telegraph-poster
 lottie[all]
 lk21
 telegraph
+telethon
