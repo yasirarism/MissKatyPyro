@@ -33,8 +33,4 @@ user = Client(
     api_hash=API_HASH,
 )
 
-telethon = TelegramClient(
-        session_name="Telethon Bot",
-        api_id=API_ID,
-        api_hash=API_HASH
-)
+telethon = TelegramClient("Telethon Bot", API_ID, API_HASH)
