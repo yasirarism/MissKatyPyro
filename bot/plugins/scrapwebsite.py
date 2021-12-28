@@ -27,6 +27,8 @@ async def melongmovie(_, message):
            })
         if not data:
            return await message.reply('Oops, data film tidak ditemukan di melongmovie')
-        return await message.reply(json.dumps(data, indent=2, ensure_ascii=False))
+        res = "".join(f"{i['judul']}'\n{i['link']}\n\n" for i in data)
+        #return await message.reply(json.dumps(data, indent=2, ensure_ascii=False))
+        return await message.reply(res)
      except IndexError:
         await message.reply("Masukkan kata kunci film yang dicari")
