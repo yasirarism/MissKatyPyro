@@ -37,7 +37,7 @@ async def melongmovie(_, message):
      except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
-@app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+@app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER))
 async def lk21_scrap(_, message):
     try:
        judul = message.text.split(" ", maxsplit=1)[1]
