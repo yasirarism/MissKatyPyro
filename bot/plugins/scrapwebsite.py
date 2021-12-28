@@ -72,10 +72,8 @@ async def lk21_scrap(_, message):
              r5 = res.select('a')[6].text
           except:
              r5 = ''
-          html = requests.get(link)
-          soup = BeautifulSoup(html.text, 'lxml')
-          dl = soup.find_all(class_='btn btn-primary btn-block')[0]['href']
-          soup = BeautifulSoup(html.text, 'lxml')
+          ddl = link.split("/")[3]
+          dl = f"https://asdahsdkjajslkfbkaujsgfbjaeghfyjj76e8637e68723rhbfajkl.rodanesia.com/get/{ddl}"
           data.append({
               'judul': judul,
               'link': link,
