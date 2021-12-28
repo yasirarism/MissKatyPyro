@@ -1,3 +1,4 @@
+# This plugin to scrape from melongmovie, and lk21
 from bs4 import BeautifulSoup
 import requests, json, re
 from bot import app
