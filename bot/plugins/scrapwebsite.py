@@ -46,7 +46,7 @@ async def lk21_scrap(_, message):
            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
 
-       html = requests.get(judul, headers=headers)
+       html = requests.get(f"https://149.56.24.226/?s={judul}", headers=headers)
        soup = BeautifulSoup(html.text, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
@@ -94,12 +94,12 @@ async def lk21_scrap(_, message):
 @app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
 async def melong_scrap(_, message):
     try:
-      judul = message.text.split(" ", maxsplit=1)[1]
+      link = message.text.split(" ", maxsplit=1)[1]
       headers = {
           'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
       }
 
-      html = requests.get(judul, headers=headers)
+      html = requests.get(link, headers=headers)
       soup = BeautifulSoup(html.text, 'lxml')
       for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
           hardsub = ep.findPrevious("div")
