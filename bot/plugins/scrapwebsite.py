@@ -105,7 +105,7 @@ async def melong_scrap(_, message):
           hardsub = ep.findPrevious("div")
           softsub = ep.findNext("div")
           rep = f"{hardsub}\n{softsub}"
-          await message.edit(rep)
+          await message.reply(rep)
     except IndexError:
        return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
     except Exception as e:
