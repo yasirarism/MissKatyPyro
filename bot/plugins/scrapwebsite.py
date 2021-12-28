@@ -33,7 +33,7 @@ async def melongmovie(_, message):
      except IndexError:
         await message.reply("Masukkan kata kunci film yang dicari")
 
-@app.on_message(filters.command(["melongmovie","melongmovie@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER))
 async def melong_scrap(_, message):
     try:
       judul = message.text.split(" ", maxsplit=1)[1]
