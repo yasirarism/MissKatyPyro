@@ -45,7 +45,7 @@ async def lk21_scrap(_, message):
            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
 
-       html = requests.get('https://149.56.24.226/?s=Transformers%202014', headers=headers)
+       html = requests.get(judul, headers=headers)
        soup = BeautifulSoup(html.text, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
