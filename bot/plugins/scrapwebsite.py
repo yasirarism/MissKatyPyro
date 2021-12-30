@@ -165,6 +165,53 @@ async def lk21_scrap(_, message):
     except Exception as e:
        await message.reply(f"ERROR: {str(e)}")
 
+@app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+async def savefilm21_scrap(_, message):
+    try:
+      link = message.text.split(" ", maxsplit=1)[1]
+      headers = {
+          'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+      }
+
+      html = requests.get(link, headers=headers, allow_redirects=False)
+      soup = BeautifulSoup(html.text, 'lxml')
+      res = soup.find_all(class_="button button-shadow")
+      res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+      await message.reply(f"<b>Hasil Scrap dari {source}</b>:\n\n{res}")
+    except IndexError:
+       return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+    except Exception as e:
+       await message.reply(f"ERROR: {str(e)}")
+
+@app.on_message(filters.command(["movieku_scrap","movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+async def muviku_scrap(_, message):
+    try:
+      link = message.text.split(" ", maxsplit=1)[1]
+      headers = {
+          'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+      }
+
+      html = requests.get(link, headers=headers)
+      soup = BeautifulSoup(html.text, 'lxml')
+      res = soup.find_all(class_="smokeurl")
+      data = []
+      for i in res:
+        for b in range(len(i.find_all("a"))):
+           link = i.find_all("a")[b]['href']
+           kualitas = i.find_all("a")[b].text
+           #print(f"{kualitas}\n{link
+           data.append({
+              'link': link,
+              'kualitas': kualitas
+           })
+       res = "".join(f"<b>Kualitas: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
+       await message.reply(res)
+    except IndexError:
+       return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+    except Exception as e:
+       await message.reply(f"ERROR: {str(e)}")
+
+
 @app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
 async def melong_scrap(_, message):
     try:
