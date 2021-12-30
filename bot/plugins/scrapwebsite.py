@@ -179,9 +179,9 @@ async def savefilm21_scrap(_, message):
       res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
       await message.reply(f"<b>Hasil Scrap dari {source}</b>:\n\n{res}")
     except IndexError:
-       return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+      return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
     except Exception as e:
-       await message.reply(f"ERROR: {str(e)}")
+      await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["movieku_scrap","movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
 async def muviku_scrap(_, message):
@@ -204,12 +204,12 @@ async def muviku_scrap(_, message):
               'link': link,
               'kualitas': kualitas
            })
-       res = "".join(f"<b>Kualitas: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
-       await message.reply(res)
+      res = "".join(f"<b>Kualitas: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
+      await message.reply(res)
     except IndexError:
-       return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+      return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
     except Exception as e:
-       await message.reply(f"ERROR: {str(e)}")
+      await message.reply(f"ERROR: {str(e)}")
 
 
 @app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
