@@ -5,6 +5,82 @@ from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
 
+@app.on_message(filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+async def ngefilm21(_, message):
+     try:
+        judul = message.text.split(" ", maxsplit=1)[1]
+        msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+        headers = {
+            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
+
+        html = requests.get(f'https://www.nf21.web.id/search?q={judul}', headers=headers)
+        soup = BeautifulSoup(html.text, 'lxml')
+        res = soup.find_all("h2")
+        data = []
+        for i in res:
+           a = i.find_all("a")[0]
+           judul = a.find_all(class_="r-snippetized")
+           b = i.find_all("a")[0]['href']
+           data.append({
+              'judul': judul[0].text,
+              'link': b
+           })
+           #print(f"{judul[0].text}{b}\n")
+        res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
+        await msg.edit(f"Hasil Scrap dari Ngefilm21:\n{res}")
+     except IndexError:
+        return await message.reply("Masukkan kata kunci film yang dicari")
+     except Exception as e:
+        await message.reply(f"ERROR: {str(e)}")
+
+@app.on_message(filters.command(["movieku","movieku@MissKatyRoBot"], COMMAND_HANDLER))
+async def movikucc(_, message):
+     try:
+        judul = message.text.split(" ", maxsplit=1)[1]
+        msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+        headers = {
+            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
+
+        html = requests.get(f'https://107.152.39.187/?s={judul}', headers=headers)
+        soup = BeautifulSoup(html.text, 'lxml')
+        data = soup.find_all(class_='bx')
+        res = "".join(f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n" for i in data)
+        await msg.edit(f"<b>Hasil Scrap Dari Movieku.cc:</b>\n{res}")
+     except IndexError:
+        return await message.reply("Masukkan kata kunci film yang dicari")
+     except Exception as e:
+        await message.reply(f"ERROR: {str(e)}")
+
+@app.on_message(filters.command(["savefilm21","savefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+async def savefilm21(_, message):
+     try:
+        judul = message.text.split(" ", maxsplit=1)[1]
+        msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+        headers = {
+           'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
+
+        html = requests.get(f"http://173.212.233.209/?s={judul}", headers=headers, allow_redirects=False)
+        soup = BeautifulSoup(html.text, 'lxml')
+        res = soup.find_all(class_="entry-title")
+        data = []
+        for i in res:
+            pas = i.find_all("a")
+            judul = pas[0].text
+            link = pas[0]['href']
+            data.append({
+              'judul': judul,
+              'link': link
+            })
+        res = "".join(f"<b>Judul: {i['judul']}</b>\nLink: {i['link']}\n\n" for i in data)
+        await msg.edit(f"Hasil Scrap dari Savefilm21:\n{res}")
+     except IndexError:
+        return await message.reply("Masukkan kata kunci film yang dicari")
+     except Exception as e:
+        await message.reply(f"ERROR: {str(e)}")
+
 @app.on_message(filters.command(["melongmovie","melongmovie@MissKatyRoBot"], COMMAND_HANDLER))
 async def melongmovie(_, message):
      try:
