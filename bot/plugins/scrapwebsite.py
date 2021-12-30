@@ -28,7 +28,7 @@ async def ngefilm21(_, message):
            })
            #print(f"{judul[0].text}{b}\n")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
-        await msg.edit(f"Hasil Scrap dari Ngefilm21:\n{res}")
+        await msg.edit(f"<b>Hasil Scrap <code>{judul}</code> dari Ngefilm21:</b>\n{res}")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
@@ -47,7 +47,7 @@ async def movikucc(_, message):
         soup = BeautifulSoup(html.text, 'lxml')
         data = soup.find_all(class_='bx')
         res = "".join(f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n" for i in data)
-        await msg.edit(f"<b>Hasil Scrap Dari Movieku.cc:</b>\n{res}")
+        await msg.edit(f"<b>Hasil Scrap <code>{judul}</code> di Movieku.cc:</b>\n{res}\n\n⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download.")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
@@ -75,7 +75,7 @@ async def savefilm21(_, message):
               'link': link
             })
         res = "".join(f"<b>Judul: {i['judul']}</b>\nLink: {i['link']}\n\n" for i in data)
-        await msg.edit(f"Hasil Scrap dari Savefilm21:\n{res}")
+        await msg.edit(f"Hasil Scrap <code>{judul}</code> dari Savefilm21:\n{res}\n\n⚠️ Gunakan /savefilm21_scrap <b>[link]</b> untuk mengambil link downloadnya.")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
@@ -177,9 +177,9 @@ async def savefilm21_scrap(_, message):
       soup = BeautifulSoup(html.text, 'lxml')
       res = soup.find_all(class_="button button-shadow")
       res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-      await message.reply(f"<b>Hasil Scrap dari {source}</b>:\n\n{res}")
+      await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}")
     except IndexError:
-      return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+      return await message.reply("Gunakan command /savefilm21_scrap <b>[link]</b> untuk scrap link download")
     except Exception as e:
       await message.reply(f"ERROR: {str(e)}")
 
@@ -204,10 +204,10 @@ async def muviku_scrap(_, message):
               'link': link,
               'kualitas': kualitas
            })
-      res = "".join(f"<b>Kualitas: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
+      res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
       await message.reply(res)
     except IndexError:
-      return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+      return await message.reply("Gunakan command /movieku_scrap <b>[link]</b> untuk scrap link download")
     except Exception as e:
       await message.reply(f"ERROR: {str(e)}")
 
