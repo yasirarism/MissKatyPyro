@@ -197,7 +197,7 @@ async def lk21_scrap(_, message):
     except Exception as e:
        await message.reply(f"ERROR: {str(e)}")
 
-@app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+@app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
 async def savefilm21_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
@@ -215,7 +215,7 @@ async def savefilm21_scrap(_, message):
     except Exception as e:
       await message.reply(f"ERROR: {str(e)}")
 
-@app.on_message(filters.command(["movieku_scrap","movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+@app.on_message(filters.command(["movieku_scrap","movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER))
 async def muviku_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
