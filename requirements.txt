@@ -1,4 +1,4 @@
-https://github.com/pyrogram/pyrogram/archive/master.zip
+pyrogram
 tgcrypto
 pymongo[srv]==3.11.4
 motor==2.4.0
