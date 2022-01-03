@@ -292,8 +292,8 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
+      await query.message.edit_text("Permintaan kamu sedang diproses.. ")
       try:
-        await query.message.edit_text("Permintaan kamu sedang diproses..")
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
