@@ -10,6 +10,7 @@ from gtts import gTTS
 from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
 from utils import extract_user, get_file_id, get_poster, last_online
+from bot.utils.time_gap import check_time_gap
 import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -260,6 +261,9 @@ async def who_is(client, message):
 
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
 async def imdb_search(client, message):
+    is_in_gap, sleep_time = check_time_gap(update.message.from_user.id)
+    if is_in_gap and message.from_user.id != 617426792:
+        return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
         k = await message.reply('Sedang mencari di Database IMDB.. 😴')
@@ -288,7 +292,7 @@ async def get_content(url):
 async def imdb_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
-        #await query.answer("Please wait, Getting data from IMDb...")
+      try:
         await query.message.edit_text("Permintaan kamu sedang diproses..")
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
@@ -406,5 +410,7 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.answer()
+      except Exception as e:
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
