@@ -261,7 +261,7 @@ async def who_is(client, message):
 
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
 async def imdb_search(client, message):
-    is_in_gap, sleep_time = check_time_gap(update.message.from_user.id)
+    is_in_gap, sleep_time = await check_time_gap(update.message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
         return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
     if ' ' in message.text:
