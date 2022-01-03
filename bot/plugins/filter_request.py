@@ -17,7 +17,7 @@ async def start(_, message):
 
 @Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935) & ~filters.edited)
 async def request_user(client, message):
-    is_in_gap, sleep_time = check_time_gap(message.from_user.id)
+    is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
         await message.reply("🙄")
         return
