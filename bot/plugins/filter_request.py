@@ -4,7 +4,7 @@ import datetime
 from pyrogram import filters, Client
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from bot.utils import time_gap
+from bot.utils.time_gap import check_time_gap
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}
