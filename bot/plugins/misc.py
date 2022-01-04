@@ -259,6 +259,17 @@ async def who_is(client, message):
         )
     await status_message.delete()
 
+async def get_content(url):
+    async with aiohttp.ClientSession() as session:
+        r = await session.get(url)
+        return await r.read()
+
+async def transapi(text):
+    a = await get_content(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=jw")
+    res = a.decode("utf-8")
+    return json.loads(res)['text']
+
+# IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
 async def imdb_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
@@ -282,11 +293,6 @@ async def imdb_search(client, message):
         await k.edit('Silahkan klik tombol dibawah ini.. 👇', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
-        
-async def get_content(url):
-    async with aiohttp.ClientSession() as session:
-        r = await session.get(url)
-        return await r.read()
 
 @Client.on_callback_query(filters.regex('^imdb'))
 async def imdb_callback(bot: Client, query: CallbackQuery):
@@ -414,3 +420,304 @@ async def imdb_callback(bot: Client, query: CallbackQuery):
         await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
+
+# IMDB Versi Indonesia v2
+@Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER))
+async def imdb2_search(client, message):
+    is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
+    if is_in_gap and message.from_user.id != 617426792:
+        return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
+    if ' ' in message.text:
+        r, title = message.text.split(None, 1)
+        k = await message.reply('Sedang mencari di Database IMDB.. 😴')
+        movies = await get_poster(title, bulk=True)
+        if not movies:
+            return await k.edit("Tidak ada hasil ditemukan.. 😕")
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"{movie.get('title')} ({movie.get('year')})",
+                    callback_data=f"imdb2_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                )
+            ]
+            for movie in movies
+        ]
+        await k.edit('Silahkan klik tombol dibawah ini.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+    else:
+        await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
+
+@Client.on_callback_query(filters.regex('^imdb2'))
+async def imdb2_callback(bot: Client, query: CallbackQuery):
+    i, user, msg_id, movie = query.data.split('_')
+    if user == f"{query.from_user.id}":
+      await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+      try:
+        trl = Translator()
+        imdb = await get_poster(query=movie, id=True)
+        resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
+        req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
+        parse = req.json()
+        b = BeautifulSoup(resp, "lxml")
+        r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+        res_str = ""
+        if r_json["@type"] == 'Person':
+            return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
+        if parse.get("title"):
+            res_str += f"<b>📹 Judul:</b> <a href='https://www.imdb.com/title/tt{movie}/'>{parse['title']}</a>"
+        if parse.get("title_type"):
+            res_str += f" ({parse['title_type']})\n"
+        else:
+            res_str += "\n"
+        if imdb.get("kind") == "tv series":
+            res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
+        if imdb.get("aka"):
+            res_str += f"<b>🎤 AKA:</b> <code>{imdb['aka'].split(',')[0]}</code>\n\n"
+        else:
+            res_str += "\n"
+        if parse.get("duration"):
+            durasi = await transapi(parse['duration'])
+            res_str += f"<b>🕓 Durasi:</b> <code>{durasi.text}</code>\n"
+        if r_json.get("contentRating"):
+            res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
+        if parse.get("UserRating"):
+            user_rating = await transapi(parse['UserRating']['description'])
+            res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
+        if parse.get("release_date"):
+            rilis = await transapi(parse['release_date']['NAME'])
+            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
+        if parse.get("genres"):
+            all_genre = parse['genres']
+            genre = "".join(f"{i} " for i in all_genre)
+            res_str += f"<b>🔮 Genre :</b> {genre}\n"
+        if imdb.get("countries"):
+            all_country = imdb['countries']
+            if all_country.endswith(", "):
+               all_country = all_country[:-2]
+            res_str += f"<b>🆔 Negara:</b> <code>{all_country}</code>\n"
+        if imdb.get("languages"):
+            all_lang = imdb['languages']
+            if all_lang.endswith(", "):
+               all_lang = all_lang[:-2]
+            res_str += f"<b>🔊 Bahasa:</b> <code>{all_lang}</code>\n"
+        if parse.get("sum_mary"):
+            res_str += "\n<b>🙎 Info Pemeran:</b>\n"
+            try:
+                director = parse['sum_mary']['Directors']
+                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                director_ = director_[:-2]
+                res_str += f"<b>Sutradara:</b> {director_}\n"
+            except:
+                res_str += ""
+            try:
+                writers = parse['sum_mary']['Writers']
+                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                writers_ = writers_[:-2]
+                res_str += f"<b>Penulis:</b> {writers_}\n"
+            except:
+                res_str += ""
+            try:
+                stars = parse['sum_mary']['Stars']
+                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                stars_ = stars_[:-2]
+                res_str += f"<b>Bintang:</b> {stars_}\n"
+            except:
+                res_str += ""
+            res_str += "\n"
+        if r_json.get("trailer"):
+            trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
+            markup = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
+                     InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                    ]
+                ])
+        else:
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+        if imdb.get("plot"):
+            try:
+              summary = await transapi(imdb['plot'])
+              res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
+            except Exception:
+              res_str += f"<b> 📜 Plot: -</b>\n"
+        if r_json.get("keywords"):
+            keywords = r_json['keywords'].split(",")
+            key_ = ""
+            for i in keywords:
+                i = i.replace(" ", "_")
+                key_ += f"#{i}, "
+            key_ = key_[:-2]
+            res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
+        if parse.get("awards"):
+            all_award = parse['awards']
+            awards = await transapi("".join(f"× {i}\n" for i in all_award), targetlang='id')
+            res_str += f"<b>🏆 Penghargaan :</b>\n<code> {awards}</code>\n\n"
+        else:
+            res_str += "\n"
+        res_str += f"IMDb Plugin by @MissKatyRoBot"
+        thumb = parse.get('poster')
+        if thumb:
+            try:
+                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+                poster = thumb.replace('.jpg', "._V1_UX360.jpg")
+                await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+            except Exception as e:
+                logger.exception(e)
+                await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
+            await query.message.delete()
+        else:
+            await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
+        await query.answer()
+      except Exception as e:
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+    else:
+        await query.answer("Tombol ini bukan untukmu", show_alert=True)
+
+# IMDB Versi English
+@Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
+async def imdb_en_search(client, message):
+    if ' ' in message.text:
+        r, title = message.text.split(None, 1)
+        k = await message.reply('Searching Movie/Series in IMDB Database.. 😴')
+        movies = await get_poster(title, bulk=True)
+        if not movies:
+            return await k.edit("No Result.. 😕")
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"{movie.get('title')} ({movie.get('year')})",
+                    callback_data=f"imdben_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                )
+            ]
+            for movie in movies
+        ]
+        await k.edit('Please click button below.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+    else:
+        await message.reply('Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️')
+
+@Client.on_callback_query(filters.regex('^imdben'))
+async def imdb_en_callback(bot: Client, query: CallbackQuery):
+    i, user, msg_id, movie = query.data.split('_')
+    if user == f"{query.from_user.id}":
+      await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+      try:
+        trl = Translator()
+        imdb = await get_poster(query=movie, id=True)
+        resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
+        req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
+        parse = req.json()
+        b = BeautifulSoup(resp, "lxml")
+        r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+        res_str = ""
+        if r_json["@type"] == 'Person':
+            return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
+        if parse.get("title"):
+            res_str += f"<b>📹 Title:</b> <a href='https://www.imdb.com/title/tt{movie}/'>{parse['title']}</a>"
+        if parse.get("title_type"):
+            res_str += f" ({parse['title_type']})\n"
+        else:
+            res_str += "\n"
+        if imdb.get("kind") == "tv series":
+            res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
+        if imdb.get("aka"):
+            res_str += f"<b>🎤 AKA:</b> <code>{imdb['aka'].split(',')[0]}</code>\n\n"
+        else:
+            res_str += "\n"
+        if parse.get("duration"):
+            durasi = parse['duration']
+            res_str += f"<b>🕓 Duration:</b> <code>{durasi}</code>\n"
+        if r_json.get("contentRating"):
+            res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
+        if parse.get("UserRating"):
+            user_rating = parse['UserRating']['description']
+            res_str += f"<b>⭐ Rating :</b> <code>{user_rating}</code>\n"
+        if parse.get("release_date"):
+            rilis = parse['release_date']['NAME']
+            res_str += f"<b>📆 Release Date :</b> <code>{rilis}</code>\n"
+        if parse.get("genres"):
+            all_genre = parse['genres']
+            genre = "".join(f"{i} " for i in all_genre)
+            res_str += f"<b>🔮 Genre :</b> {genre}\n"
+        if imdb.get("countries"):
+            all_country = imdb['countries']
+            if all_country.endswith(", "):
+               all_country = all_country[:-2]
+            res_str += f"<b>🆔 Country:</b> <code>{all_country}</code>\n"
+        if imdb.get("languages"):
+            all_lang = imdb['languages']
+            if all_lang.endswith(", "):
+               all_lang = all_lang[:-2]
+            res_str += f"<b>🔊 Language:</b> <code>{all_lang}</code>\n"
+        if parse.get("sum_mary"):
+            res_str += "\n<b>🙎 Cast Info:</b>\n"
+            try:
+                director = parse['sum_mary']['Directors']
+                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                director_ = director_[:-2]
+                res_str += f"<b>Director:</b> {director_}\n"
+            except:
+                res_str += ""
+            try:
+                writers = parse['sum_mary']['Writers']
+                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                writers_ = writers_[:-2]
+                res_str += f"<b>Writer:</b> {writers_}\n"
+            except:
+                res_str += ""
+            try:
+                stars = parse['sum_mary']['Stars']
+                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                stars_ = stars_[:-2]
+                res_str += f"<b>Stars:</b> {stars_}\n"
+            except:
+                res_str += ""
+            res_str += "\n"
+        if r_json.get("trailer"):
+            trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
+            markup = InlineKeyboardMarkup(
+                [
+                    [InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
+                     InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                    ]
+                ])
+        else:
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+        if imdb.get("plot"):
+            try:
+              summary = imdb['plot']
+              res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
+            except Exception:
+              res_str += f"<b> 📜 Plot: -</b>\n"
+        if r_json.get("keywords"):
+            keywords = r_json['keywords'].split(",")
+            key_ = ""
+            for i in keywords:
+                i = i.replace(" ", "_")
+                key_ += f"#{i}, "
+            key_ = key_[:-2]
+            res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
+        if parse.get("awards"):
+            all_award = parse['awards']
+            awards = "".join(f"× {i}\n" for i in all_award)
+            res_str += f"<b>🏆 Awards :</b>\n<code> {awards}</code>\n\n"
+        else:
+            res_str += "\n"
+        res_str += f"IMDb Plugin by @MissKatyRoBot"
+        thumb = parse.get('poster')
+        if thumb:
+            try:
+                await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+                poster = thumb.replace('.jpg', "._V1_UX360.jpg")
+                await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+            except Exception as e:
+                logger.exception(e)
+                await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
+            await query.message.delete()
+        else:
+            await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
+        await query.answer()
+      except Exception as e:
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+    else:
+        await query.answer("This button not for you..", show_alert=True)

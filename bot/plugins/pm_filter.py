@@ -418,6 +418,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ],[
             InlineKeyboardButton('🏠 Home', callback_data='start'),
             InlineKeyboardButton('🔮 Status', callback_data='stats')
+            ],[
+            InlineKeyboardButton('Web Scraper', callback_data='scrap')
         ]]
         currentTime = get_readable_time(time.time() - botStartTime)
         total, used, free = shutil.disk_usage('.')
@@ -485,6 +487,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
             text=script.AUTOFILTER_TXT,
+            reply_markup=reply_markup,
+            parse_mode='html'
+        )
+    elif query.data == "scrap":
+        buttons = [[
+            InlineKeyboardButton('👩‍🦯 Back', callback_data='help')
+        ]]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        teks = "Disini tersedia command scraper untuk beberapa web film:"
+        await query.message.edit_text(
+            text=teks,
             reply_markup=reply_markup,
             parse_mode='html'
         )
