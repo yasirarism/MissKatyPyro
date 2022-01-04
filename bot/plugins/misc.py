@@ -271,7 +271,7 @@ async def transapi(text):
 
 # IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
-async def imdb_search(client, message):
+async def imdb1_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
         return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
@@ -285,7 +285,7 @@ async def imdb_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdb_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                    callback_data=f"imdb1_{message.from_user.id}_{message.message_id}_{movie.movieID}",
                 )
             ]
             for movie in movies
@@ -294,8 +294,8 @@ async def imdb_search(client, message):
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
-@Client.on_callback_query(filters.regex('^imdb'))
-async def imdb_callback(bot: Client, query: CallbackQuery):
+@Client.on_callback_query(filters.regex('^imdb1'))
+async def imdb1_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
       await query.message.edit_text("Permintaan kamu sedang diproses.. ")
