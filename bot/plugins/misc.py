@@ -265,7 +265,7 @@ async def get_content(url):
         return await r.read()
 
 async def transapi(text):
-    a = requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=jw").json()
+    a = requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=id").json()
     return a['text']
 
 # IMDB Versi Indonesia v1
