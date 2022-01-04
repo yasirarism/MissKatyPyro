@@ -480,7 +480,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
         if parse.get("UserRating"):
             user_rating = await transapi(parse['UserRating']['description'])
-            res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
+            res_str += f"<b>⭐ Rating :</b> <code>{user_rating}</code>\n"
         if parse.get("release_date"):
             rilis = await transapi(parse['release_date']['NAME'])
             res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis}</code>\n"
