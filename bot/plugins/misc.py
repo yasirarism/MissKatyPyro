@@ -265,9 +265,8 @@ async def get_content(url):
         return await r.read()
 
 async def transapi(text):
-    a = await get_content(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=jw")
-    res = a.decode("utf-8")
-    return json.loads(res)['text']
+    a = requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=jw").json()
+    return a['text']
 
 # IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
