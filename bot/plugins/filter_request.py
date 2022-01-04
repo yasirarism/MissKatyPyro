@@ -33,7 +33,7 @@ async def request_user(client, message):
       else:
         REQUEST_DB[user_id] = 1
       if REQUEST_DB[user_id] > 3:
-        return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝.")
+        return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝😝.")
       if message.text:
         forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
         markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
