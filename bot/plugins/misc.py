@@ -476,7 +476,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += "\n"
         if parse.get("duration"):
             durasi = await transapi(parse['duration'])
-            res_str += f"<b>🕓 Durasi:</b> <code>{durasi.text}</code>\n"
+            res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
         if parse.get("UserRating"):
@@ -484,7 +484,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
         if parse.get("release_date"):
             rilis = await transapi(parse['release_date']['NAME'])
-            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
+            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis}</code>\n"
         if parse.get("genres"):
             all_genre = parse['genres']
             genre = "".join(f"{i} " for i in all_genre)
@@ -536,7 +536,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
         if imdb.get("plot"):
             try:
               summary = await transapi(imdb['plot'])
-              res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
+              res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
             except Exception:
               res_str += f"<b> 📜 Plot: -</b>\n"
         if r_json.get("keywords"):
@@ -549,7 +549,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
         if parse.get("awards"):
             all_award = parse['awards']
-            awards = await transapi("".join(f"× {i}\n" for i in all_award), targetlang='id')
+            awards = await transapi("".join(f"× {i}\n" for i in all_award))
             res_str += f"<b>🏆 Penghargaan :</b>\n<code> {awards}</code>\n\n"
         else:
             res_str += "\n"
