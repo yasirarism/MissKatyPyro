@@ -58,7 +58,7 @@ async def job_open():
     await app.send_photo(
         -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
-    await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_send_stickers=False, can_send_animations=True, can_invite_users=True, can_add_web_page_previews=True, can_use_inline_bots=True)
+    await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True)
     )
 
 async def job_open_ymoviez():
@@ -83,7 +83,7 @@ async def job_open_ymoviez():
     await app.send_photo(
         -1001255283935, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
-    await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_send_stickers=True, can_send_animations=True, can_invite_users=True, can_add_web_page_previews=True, can_use_inline_bots=True)
+    await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
     )
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
