@@ -56,7 +56,7 @@ async def job_open():
         with open("quotes.jpg", 'wb') as f:
          f.write(reqtemp.content)
     await app.send_photo(
-        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+        -1001128045651, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
     await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True)
     )
@@ -93,6 +93,6 @@ async def _callbackanightmd(c: Client, q: CallbackQuery):
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
 scheduler.add_job(job_close_ymoviez, trigger="cron", hour=22, minute=15)
-scheduler.add_job(job_open, trigger="cron", hour=6, minute=0)
+scheduler.add_job(job_open, trigger="cron", hour=6, minute=45)
 scheduler.add_job(job_open_ymoviez, trigger="cron", hour=9, minute=0)
 scheduler.start()
