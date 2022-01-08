@@ -1,5 +1,5 @@
 from pyrogram.types import ChatPermissions
-from pyrogram import Client, __version__
+from pyrogram import Client, __version__, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import logging
 import pytz
