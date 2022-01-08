@@ -246,7 +246,7 @@ async def muviku_scrap(_, message):
       await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+@app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792,1985689491,1172699512]))
 async def melong_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
