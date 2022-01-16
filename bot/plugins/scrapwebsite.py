@@ -7,6 +7,7 @@ from info import COMMAND_HANDLER
 
 @app.on_message(filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
 async def nodrakor(_, message):
+     return message.reply("Mohon maaf, fitur ini dalam perbaikan..")
      try:
         judul = message.text.split(" ", maxsplit=1)[1]
         msg = await message.reply("Sedang proses scrap, mohon tunggu..")
@@ -36,7 +37,7 @@ async def nodrakor(_, message):
 @app.on_message(filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
 async def ngefilm21(_, message):
      try:
-        judul = message.text.split(" ", maxsplit=1)[1]
+        title = message.text.split(" ", maxsplit=1)[1]
         msg = await message.reply("Sedang proses scrap, mohon tunggu..")
         headers = {
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
@@ -58,7 +59,7 @@ async def ngefilm21(_, message):
         if not data:
            return await msg.edit('Oops, data film tidak ditemukan.')
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
-        await msg.edit(f"<b>Hasil Scrap <code>{judul}</code> dari Ngefilm21:</b>\n{res}")
+        await msg.edit(f"<b>Hasil Scrap <code>{title}</code> dari Ngefilm21:</b>\n{res}")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
@@ -129,7 +130,10 @@ async def melongmovie(_, message):
            dd = res.select("a")
            url = dd[0]['href']
            title = dd[0]['title']
-           kualitas = dd[0].find(class_="quality").text
+           try:
+               kualitas = dd[0].find(class_="quality").text
+           except:
+               kualitas = ''
            data.append({
                'judul': title,
                'link': url,
@@ -137,7 +141,7 @@ async def melongmovie(_, message):
            })
         if not data:
            return await msg.edit('Oops, data film tidak ditemukan di melongmovie')
-        res = "".join(f"<b>Judul: {i['judul']}</b>'\n<b>Link</b>: {i['link']}\n\n" for i in data)
+        res = "".join(f"<b>Judul: {i['judul']}</b>\n<b>Kualitas:</b> {i['kualitas']}\n<b>Link</b>: {i['link']}\n\n" for i in data)
         #return await message.reply(json.dumps(data, indent=2, ensure_ascii=False))
         return await msg.edit(res)
      except IndexError:
