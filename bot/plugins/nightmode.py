@@ -43,9 +43,9 @@ async def job_open():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
-    res = requests.get("https://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
-    quotes = urllib.parse.quote(res['quotes'])
-    by = res['author']
+    res = requests.get("http://api.developers.eu.org/api/random_kata_bijak.php?apikey=API_KEY_ANDA").json()
+    quotes = urllib.parse.quote(res['data']['kataBijak'])
+    by = "MissKatyRoBot"
     url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
     response = requests.get(url)
     if response.status_code == 200:
@@ -68,9 +68,9 @@ async def job_open_ymoviez():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
-    res = requests.get("https://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
-    quotes = urllib.parse.quote(res['quotes'])
-    by = res['author']
+    res = requests.get("http://api.developers.eu.org/api/random_kata_bijak.php?apikey=API_KEY_ANDA").json()
+    quotes = urllib.parse.quote(res['data']['kataBijak'])
+    by = "MissKatyRoBot"
     url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
     response = requests.get(url)
     if response.status_code == 200:
