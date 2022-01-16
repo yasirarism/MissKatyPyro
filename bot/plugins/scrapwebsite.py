@@ -7,7 +7,7 @@ from info import COMMAND_HANDLER
 
 @app.on_message(filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
 async def nodrakor(_, message):
-     return message.reply("Mohon maaf, fitur ini dalam perbaikan..")
+     return await message.reply("Mohon maaf, fitur ini sementara tidak bisa digunakan..")
      try:
         judul = message.text.split(" ", maxsplit=1)[1]
         msg = await message.reply("Sedang proses scrap, mohon tunggu..")
