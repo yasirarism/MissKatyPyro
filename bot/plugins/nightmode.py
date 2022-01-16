@@ -58,7 +58,7 @@ async def job_open():
     await app.send_photo(
         -1001128045651, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
-    await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True)
+    await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
     )
 
 async def job_open_ymoviez():
@@ -88,7 +88,7 @@ async def job_open_ymoviez():
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 async def _callbackanightmd(c: Client, q: CallbackQuery):
-      await q.answer(f"🔖 Hai, Aku MissKatyRoBot dibuat menggunakan Pyrogram v{__version__}.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia", show_alert=True)
+      await q.answer(f"🔖 Hai, Aku MissKatyRoBot dibuat menggunakan Pyrogram v{__version__}.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM", show_alert=True)
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
