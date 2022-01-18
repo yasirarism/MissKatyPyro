@@ -289,7 +289,7 @@ async def imdb1_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit(f'Ditemukan {len(k)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Ditemukan {len(movies)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
@@ -453,7 +453,7 @@ async def imdb2_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit(f'Ditemukan {len(k)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Ditemukan {len(movies)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
@@ -602,7 +602,7 @@ async def imdb_en_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit(f'Found {len(k)} result from <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Found {len(movies)} result from <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️')
 
