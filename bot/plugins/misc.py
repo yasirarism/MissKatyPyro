@@ -289,7 +289,7 @@ async def imdb1_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit('Silahkan klik tombol dibawah ini.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Ditemukan {len(k)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
@@ -322,16 +322,25 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
         else:
             res_str += "\n"
         if parse.get("duration"):
-            durasi = await trl(parse['duration'], targetlang='id')
-            res_str += f"<b>🕓 Durasi:</b> <code>{durasi.text}</code>\n"
+            try:
+                durasi = await trl(parse['duration'], targetlang='id')
+                res_str += f"<b>🕓 Durasi:</b> <code>{durasi.text}</code>\n"
+            except:
+                res_str += f"<b>🕓 Durasi:</b> <code>{parse['duration']}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
         if parse.get("UserRating"):
-            user_rating = await trl(parse['UserRating']['description'], targetlang='id')
-            res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
+            try:
+                user_rating = await trl(parse['UserRating']['description'], targetlang='id')
+                res_str += f"<b>⭐ Rating :</b> <code>{user_rating.text}</code>\n"
+            except:
+                res_str += f"<b>⭐ Rating :</b> <code>{parse['UserRating']}</code>\n"
         if parse.get("release_date"):
-            rilis = await trl(parse['release_date']['NAME'], targetlang='id')
-            res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
+            try:
+                rilis = await trl(parse['release_date']['NAME'], targetlang='id')
+                res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
+            except:
+                res_str += f"<b>📆 Tanggal Rilis :</b> <code>{parse['release_date']}</code>\n"
         if parse.get("genres"):
             all_genre = parse['genres']
             genre = "".join(f"{i} " for i in all_genre)
@@ -385,7 +394,7 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
               summary = await trl(imdb['plot'], targetlang='id')
               res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
             except Exception:
-              res_str += f"<b> 📜 Plot: -</b>\n"
+              res_str += f"<b> 📜 Plot: </b>{imdb['plot']}\n"
         if r_json.get("keywords"):
             keywords = r_json['keywords'].split(",")
             key_ = ""
@@ -396,8 +405,11 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Keyword/Tags:</b> {key_}\n"
         if parse.get("awards"):
             all_award = parse['awards']
-            awards = await trl("".join(f"× {i}\n" for i in all_award), targetlang='id')
-            res_str += f"<b>🏆 Penghargaan :</b>\n<code> {awards.text}</code>\n\n"
+            try:
+                awards = await trl("".join(f"× {i}\n" for i in all_award), targetlang='id')
+                res_str += f"<b>🏆 Penghargaan :</b>\n<code> {awards.text}</code>\n\n"
+            except:
+                res_str += f"<b>🏆 Penghargaan :</b>\n<code> {all_award}</code>\n\n"
         else:
             res_str += "\n"
         res_str += f"IMDb Plugin by @MissKatyRoBot"
@@ -441,7 +453,7 @@ async def imdb2_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit('Silahkan klik tombol dibawah ini.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Ditemukan {len(k)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
@@ -590,7 +602,7 @@ async def imdb_en_search(client, message):
             ]
             for movie in movies
         ]
-        await k.edit('Please click button below.. 👇', reply_markup=InlineKeyboardMarkup(btn))
+        await k.edit(f'Found {len(k)} result from <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️')
 
@@ -598,7 +610,7 @@ async def imdb_en_search(client, message):
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
-      await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+      await query.message.edit_text("Processing your request.. ")
       try:
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
