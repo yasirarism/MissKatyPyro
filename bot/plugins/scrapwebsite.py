@@ -231,8 +231,6 @@ async def savefilm21_scrap(_, message):
       soup = BeautifulSoup(html.text, 'lxml')
       hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
       await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")
-    except IndexError:
-      return await message.reply("Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download")
     except Exception as e:
       await message.reply(f"ERROR: {str(e)}")
 
