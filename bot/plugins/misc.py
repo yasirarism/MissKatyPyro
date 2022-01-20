@@ -281,7 +281,7 @@ async def mdlsearch(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdl_{message.from_user.id}_{message.message_id}_{movie['slug']}_{movie['thumb']}",
+                    callback_data=f"mdl_{message.from_user.id}_{message.message_id}_{movie['slug']}",
                 )
             ]
             for movie in res
