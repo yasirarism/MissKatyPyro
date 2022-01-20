@@ -158,7 +158,7 @@ async def lk21_scrap(_, message):
            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
 
-       html = requests.get(f"https://149.56.24.226/?s={judul}", headers=headers)
+       html = requests.get(f"https://149.56.24.226/?s={judul}", headers=headers, verify=False)
        soup = BeautifulSoup(html.text, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
@@ -230,7 +230,7 @@ async def savefilm21_scrap(_, message):
       html = requests.get(link, headers=headers, allow_redirects=False, verify=False)
       soup = BeautifulSoup(html.text, 'lxml')
       hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
-      await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{hasil}")
+      await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")
     except IndexError:
       return await message.reply("Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download")
     except Exception as e:
