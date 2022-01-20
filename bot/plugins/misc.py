@@ -295,9 +295,20 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, slug = query.data.split('_')
     if user == f"{query.from_user.id}":
       await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+      result = ""
       try:
         res = requests.get(f"https://kuryana.vercel.app/id/{slug}").json()
-        await query.message.edit_text(f"{res}")
+        result += f"Title: <a href='{res['data']['link']'>{res['title']}</a>\n"
+        result += f"AKA: {res['others']['also_known_as']}\n\n"
+        result += f"Rating: {res['details']['score']}\n"
+        result += f"Type: {res['details']['type']}\n"
+        result += f"Country: {res['details']['country']}\n"
+        result += f"Release Date: {res['details']['release_date']}\n"
+        result += f"Duration: {res['details']['duration']}\n"
+        result += f"Genre: {res['others']['genres']}\n"
+        result += f"Synopsis: {res['data']['synopsis']}\n"
+        result += f"Tags: {res['others']['tags']}\n"
+        await query.message.edit_text(f"{result}")
       except Exception as e:
         await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
     else:
