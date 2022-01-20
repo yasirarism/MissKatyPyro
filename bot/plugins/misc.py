@@ -303,10 +303,10 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         result += f"<b>Rating:</b> <code>{res['data']['details']['score']}</code>\n"
         result += f"<b>Type:</b> <code>{res['data']['details']['type']}</code>\n"
         result += f"<b>Country:</b> <code>{res['data']['details']['country']}</code>\n"
-        if res['data']['type'] == 'Movie':
+        if res['data']['details']['type'] == 'Movie':
             result += f"<b>Release Date:</b> <code>{res['data']['details']['release_date']}</code>\n"
-        elif res['data']['type'] == 'Drama':
-            result += f"<b>Episode:</b> {res['details']['episodes']}"
+        elif res['data']['details']['type'] == 'Drama':
+            result += f"<b>Episode:</b> {res['data']['details']['episodes']}"
             result += f"<b>Aired:</b> <code>{res['data']['details']['aired']}</code>\n"
             result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
             result += f"<b>Original Network:</b> <code>{res['data']['details']['original_network']}</code>\n"
