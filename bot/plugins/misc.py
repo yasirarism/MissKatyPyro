@@ -272,9 +272,9 @@ async def transapi(text):
 async def mdlsearch(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
-        k = await message.reply('Sedang mencari di Database IMDB.. 😴')
+        k = await message.reply('Sedang mencari di Database MyDramaList.. 😴')
         movies = requests.get(f"https://kuryana.vercel.app/search/q/{title}").json()
-        res = req['results']['dramas']
+        res = movies['results']['dramas']
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
         btn = [
@@ -288,7 +288,7 @@ async def mdlsearch(client, message):
         ]
         await k.edit(f'Ditemukan {len(movies)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
+        await message.reply('Berikan aku nama drama yang ingin dicari. 🤷🏻‍♂️')
 
 # IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
