@@ -14,7 +14,7 @@ async def nodrakor(_, message):
         headers = {
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
-        html = requests.get(f'http://185.238.0.101/?s={judul}', headers=headers, allow_redirects=False)
+        html = requests.get(f'http://185.238.0.101/?s={judul}', headers=headers, verify=False)
         soup = BeautifulSoup(html.text, 'lxml')
         res = soup.find_all(class_="content-thumbnail text-center")
         data = []
@@ -28,7 +28,7 @@ async def nodrakor(_, message):
         if not data:
            return await msg.edit('Oops, data film tidak ditemukan.')
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n\n" for i in data)
-        await msg.edit(f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}")
+        await msg.edit(f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @MissKatyRoBot")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
@@ -43,7 +43,7 @@ async def ngefilm21(_, message):
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
 
-        html = requests.get(f'https://www.nf21.web.id/search?q={judul}', headers=headers)
+        html = requests.get(f'https://www.nf21.web.id/search?q={title}', headers=headers)
         soup = BeautifulSoup(html.text, 'lxml')
         res = soup.find_all("h2")
         data = []
@@ -78,7 +78,7 @@ async def movikucc(_, message):
         soup = BeautifulSoup(html.text, 'lxml')
         data = soup.find_all(class_='bx')
         res = "".join(f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n" for i in data)
-        await msg.edit(f"<b>Hasil Scrap <code>{judul}</code> di Movieku.cc:</b>\n{res}\n\n⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download.")
+        await msg.edit(f"<b>Hasil Scrap <code>{judul}</code> di Movieku.cc:</b>\n{res} ⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download.")
      except IndexError:
         return await message.reply("Masukkan kata kunci film yang dicari")
      except Exception as e:
