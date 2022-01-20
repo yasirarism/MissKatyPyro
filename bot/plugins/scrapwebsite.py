@@ -14,7 +14,7 @@ async def nodrakor(_, message):
         headers = {
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
-        html = requests.get(f'http://185.238.0.101/?s={judul}', headers=headers, allow_redirects=False, verify=False)
+        html = requests.get(f'https://109.234.34.246/?s={judul}', headers=headers, allow_redirects=False, verify=False)
         soup = BeautifulSoup(html.text, 'lxml')
         res = soup.find_all(class_="content-thumbnail text-center")
         data = []
