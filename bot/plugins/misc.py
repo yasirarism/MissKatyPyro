@@ -298,17 +298,18 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
       result = ""
       try:
         res = requests.get(f"https://kuryana.vercel.app/id/{slug}").json()
-        result += f"Title: <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
-        result += f"AKA: {res['data']['others']['also_known_as']}\n\n"
-        result += f"Rating: {res['data']['details']['score']}\n"
-        result += f"Type: {res['data']['details']['type']}\n"
-        result += f"Country: {res['data']['details']['country']}\n"
-        result += f"Release Date: {res['data']['details']['release_date']}\n"
-        result += f"Duration: {res['data']['details']['duration']}\n"
-        result += f"Genre: {res['data']['others']['genres']}\n"
-        result += f"Synopsis: {res['data']['synopsis']}\n"
-        result += f"Tags: {res['data']['others']['tags']}\n"
-        await query.message.edit_text(f"{result}")
+        result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
+        result += f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
+        result += f"<b>Rating:</b> <code>{res['data']['details']['score']}</code>\n"
+        result += f"<b>Type:</b> <code>{res['data']['details']['type']}</code>\n"
+        result += f"<b>Country:</b> <code>{res['data']['details']['country']}</code>\n"
+        result += f"<b>Release Date:</b> <code>{res['data']['details']['release_date']}</code>\n"
+        result += f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"
+        result += f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
+        result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
+        result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
+        btn = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open MyDramaList", url=res['data']['link'])]])
+        await query.message.edit_text(result, reply_markup=btn)
       except Exception as e:
         await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
     else:
