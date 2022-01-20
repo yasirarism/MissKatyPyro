@@ -14,7 +14,7 @@ async def nodrakor(_, message):
         headers = {
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
-        html = requests.get(f'http://185.238.0.101/?s={judul}', headers=headers, verify=False)
+        html = requests.get(f'http://185.238.0.101/?s={judul}', headers=headers, allow_redirects=False, verify=False)
         soup = BeautifulSoup(html.text, 'lxml')
         res = soup.find_all(class_="content-thumbnail text-center")
         data = []
@@ -216,6 +216,23 @@ async def savefilm21_scrap(_, message):
       await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}")
     except IndexError:
       return await message.reply("Gunakan command /savefilm21_scrap <b>[link]</b> untuk scrap link download")
+    except Exception as e:
+      await message.reply(f"ERROR: {str(e)}")
+          
+@app.on_message(filters.command(["nodrakor_scrap","nodrakor_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+async def savefilm21_scrap(_, message):
+    try:
+      link = message.text.split(" ", maxsplit=1)[1]
+      headers = {
+          'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+      }
+
+      html = requests.get(link, headers=headers, allow_redirects=False, verify=False)
+      soup = BeautifulSoup(html.text, 'lxml')
+      hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
+      await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{hasil}")
+    except IndexError:
+      return await message.reply("Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download")
     except Exception as e:
       await message.reply(f"ERROR: {str(e)}")
 
