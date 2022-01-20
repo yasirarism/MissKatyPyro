@@ -281,7 +281,7 @@ async def mdlsearch(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdl_{message.from_user.id}_{message.message_id}_{movie['slug']}",
+                    callback_data=f"mdls_{message.from_user.id}_{message.message_id}_{movie['slug']}",
                 )
             ]
             for movie in res
@@ -289,6 +289,19 @@ async def mdlsearch(client, message):
         await k.edit(f'Ditemukan {len(movies)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama drama yang ingin dicari. 🤷🏻‍♂️')
+        
+@Client.on_callback_query(filters.regex('^mdls'))
+async def mdl_callback(bot: Client, query: CallbackQuery):
+    i, user, msg_id, slug = query.data.split('_')
+    if user == f"{query.from_user.id}":
+      await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+      try:
+        res = requests.get(f"https://kuryana.vercel.app/id/{slug}").json()
+        await query.message.edit_text(f"{res}")
+      except Exception as e:
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+    else:
+        await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
