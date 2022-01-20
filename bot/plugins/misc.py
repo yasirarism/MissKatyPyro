@@ -309,7 +309,10 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         elif res['data']['details']['type'] == 'Drama':
             result += f"<b>Episode:</b> {res['data']['details']['episodes']}\n"
             result += f"<b>Aired:</b> <code>{res['data']['details']['aired']}</code>\n"
-            result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
+            try:
+                result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
+            except:
+                pass
             result += f"<b>Original Network:</b> <code>{res['data']['details']['original_network']}</code>\n"
         result += f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"
         result += f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
