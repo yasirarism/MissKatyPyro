@@ -298,7 +298,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
       result = ""
       try:
         res = requests.get(f"https://kuryana.vercel.app/id/{slug}").json()
-        result += f"Title: <a href='{res['data']['link']'>{res['title']}</a>\n"
+        result += f"Title: <a href='{res['data']['link']}'>{res['title']}</a>\n"
         result += f"AKA: {res['others']['also_known_as']}\n\n"
         result += f"Rating: {res['details']['score']}\n"
         result += f"Type: {res['details']['type']}\n"
