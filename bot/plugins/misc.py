@@ -306,7 +306,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         result += f"Release Date: {res['data']['details']['release_date']}\n"
         result += f"Duration: {res['data']['details']['duration']}\n"
         result += f"Genre: {res['data']['others']['genres']}\n"
-        result += f"Synopsis: {res['data']['data']['synopsis']}\n"
+        result += f"Synopsis: {res['data']['synopsis']}\n"
         result += f"Tags: {res['data']['others']['tags']}\n"
         await query.message.edit_text(f"{result}")
       except Exception as e:
