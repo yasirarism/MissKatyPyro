@@ -1,6 +1,6 @@
 # This plugin to scrape from melongmovie, and lk21
 from bs4 import BeautifulSoup
-import requests, json, re
+import requests, json, re, aiohttp, traceback
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
@@ -149,6 +149,11 @@ async def melongmovie(_, message):
      except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
+async def getcontent(url):  
+    async with aiohttp.ClientSession() as session:  
+        r = await session.get(url, proxy="http://105.213.135.51:38889")  
+        return await r.read() 
+     
 @app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER))
 async def lk21_scrap(_, message):
     try:
@@ -158,7 +163,7 @@ async def lk21_scrap(_, message):
            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
 
-       html = requests.get(f"https://149.56.24.226/?s={judul}", headers=headers, verify=False)
+       html = await get_content(f"https://149.56.24.226/?s={judul}")
        soup = BeautifulSoup(html.text, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
@@ -198,8 +203,9 @@ async def lk21_scrap(_, message):
        await msg.edit(res)
     except IndexError:
        return await message.reply("Gunakan command /lk21 [judul] untuk search film di lk21 (https://149.56.24.226)")
-    except Exception as e:
-       await message.reply(f"ERROR: {str(e)}")
+    except Exception:
+       exc = traceback.format_exc()
+       await message.reply(exc)
 
 @app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
 async def savefilm21_scrap(_, message):
