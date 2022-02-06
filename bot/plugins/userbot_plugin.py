@@ -73,7 +73,8 @@ async def del_msg(client, message):
             events_filter=types.ChannelAdminLogEventsFilter(delete=True),
         )
     )
-    if del_log.users[0].bot:
+    user = await app.get_chat_member(message.chat.id, message.from_user.id)
+    if del_log.users[0].bot or user.status in ['administrator','creator']:
         return
     await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].id}'>{del_log.users[0].first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
 
