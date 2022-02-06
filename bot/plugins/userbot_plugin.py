@@ -61,7 +61,7 @@ async def unafk(client, message):
         await asyncio.sleep(3)
         await message.delete()
 
-@user.on_deleted_messages(filters.chat(-1001455886928) & ~filters.bot)
+@user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]) & ~filters.bot)
 async def del_msg(client, message):
     del_log = await user.send(
         functions.channels.GetAdminLog(
@@ -73,9 +73,9 @@ async def del_msg(client, message):
             events_filter=types.ChannelAdminLogEventsFilter(delete=True),
         )
     )
-    if del_log.users[0].bot:
+    if del_log.users[0].bot or :
         return
-    await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].id}'>{del_log.users[0].first_name}</a> menghapus pesannya 😐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
+    await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].id}'>{del_log.users[0].first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
