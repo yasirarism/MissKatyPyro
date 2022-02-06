@@ -205,7 +205,7 @@ async def lk21_scrap(_, message):
        return await message.reply("Gunakan command /lk21 [judul] untuk search film di lk21 (https://149.56.24.226)")
     except Exception:
        exc = traceback.format_exc()
-       await message.edit(f"<code>{exc}</code>")
+       await msg.edit(f"<code>{exc}</code>")
 
 @app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
 async def savefilm21_scrap(_, message):
