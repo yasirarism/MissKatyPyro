@@ -26,8 +26,9 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-       headers = {
-         'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+       headers = {   
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '   
+        'Chrome/61.0.3163.100 Safari/537.36'   
        }
        html = requests.get(f'https://www.google.com/search?q={query}', headers=headers)
        soup = BeautifulSoup(html.text, 'lxml')
