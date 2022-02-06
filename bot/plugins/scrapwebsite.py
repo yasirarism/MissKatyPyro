@@ -164,7 +164,7 @@ async def lk21_scrap(_, message):
        }
 
        html = await getcontent(f"https://149.56.24.226/?s={judul}")
-       soup = BeautifulSoup(html.text, 'lxml')
+       soup = BeautifulSoup(html, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
           link = res.select('a')[0]['href']
