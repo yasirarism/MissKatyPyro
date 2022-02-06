@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 
 RUN apt update && apt upgrade -y
 RUN apt install git -y && apt install mediainfo -y && apt install ffmpeg -y
