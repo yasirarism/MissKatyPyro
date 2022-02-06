@@ -163,7 +163,7 @@ async def lk21_scrap(_, message):
            'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
        }
 
-       html = await get_content(f"https://149.56.24.226/?s={judul}")
+       html = await getcontent(f"https://149.56.24.226/?s={judul}")
        soup = BeautifulSoup(html.text, 'lxml')
        data = []
        for res in soup.find_all(class_='search-item'):
@@ -205,7 +205,7 @@ async def lk21_scrap(_, message):
        return await message.reply("Gunakan command /lk21 [judul] untuk search film di lk21 (https://149.56.24.226)")
     except Exception:
        exc = traceback.format_exc()
-       await message.reply(exc)
+       await message.edit(f"<code>{exc}</code>")
 
 @app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
 async def savefilm21_scrap(_, message):
