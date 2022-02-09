@@ -22,8 +22,9 @@ from traceback import format_exc
 
 from pyrogram import filters
 from pyrogram.types import Message
+from info import COMMAND_HANDLER
+from bot import app, arq
 
-from bot import COMMAND_HANDLER, app, arq
 
 async def quotify(messages: list):
     response = await arq.quotly(messages)
@@ -48,14 +49,13 @@ def isArgInt(message: Message) -> list:
     except ValueError:
         return [False, 0]
 
-@app.on_message(filters.command(["q","q@MissKatyRoBot"], COMMAND_HANDLER))
+
+@app.on_message(filters.command(["q", "q@MissKatyRoBot"], COMMAND_HANDLER))
 async def quotly_func(client, message: Message):
     if not message.reply_to_message:
         return await message.reply_text("Reply to a message to quote it.")
     if not message.reply_to_message.text:
-        return await message.reply_text(
-            "Silahkan reply pesan yang di quote"
-        )
+        return await message.reply_text("Silahkan reply pesan yang di quote")
     m = await message.reply_text("Sedang quote pesan..")
     if len(message.command) < 2:
         messages = [message.reply_to_message]
@@ -71,16 +71,14 @@ async def quotly_func(client, message: Message):
             # Fetching 5 extra messages so tha twe can ignore media
             # messages and still end up with correct offset
             messages = [
-                i
-                for i in await client.get_messages(
+                i for i in await client.get_messages(
                     message.chat.id,
                     range(
                         message.reply_to_message.message_id,
                         message.reply_to_message.message_id + (count + 5),
                     ),
                     replies=0,
-                )
-                if not i.empty and not i.media
+                ) if not i.empty and not i.media
             ]
             messages = messages[:count]
         else:
@@ -95,9 +93,7 @@ async def quotly_func(client, message: Message):
             )
             messages = [reply_message]
     else:
-        return await m.edit(
-            "Incorrect argument."
-        )
+        return await m.edit("Incorrect argument.")
     try:
         if not message:
             return await m.edit("Ada sesuatu yang salah sepertinya.")
@@ -111,11 +107,9 @@ async def quotly_func(client, message: Message):
         await m.delete()
         sticker.close()
     except Exception as e:
-        await m.edit(
-            "Something went wrong while quoting messages,"
-            + " This error usually happens when there's a "
-            + " message containing something other than text,"
-            + " or one of the messages in-between are deleted."
-        )
+        await m.edit("Something went wrong while quoting messages," +
+                     " This error usually happens when there's a " +
+                     " message containing something other than text," +
+                     " or one of the messages in-between are deleted.")
         e = format_exc()
         print(e)
