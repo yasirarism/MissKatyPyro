@@ -12,6 +12,7 @@ gTTS
 gpytranslate
 apscheduler
 pytz
+python-arq
 psutil
 html-telegraph-poster
 lottie[all]
