@@ -2,6 +2,7 @@ import os
 import aiohttp
 from bs4 import BeautifulSoup
 import json
+import traceback
 import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
@@ -18,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-@Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
+@Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER) & ~filters.edited)
 async def gsearch(client, message):
     if len(message.command) == 1:
         await message.reply("Give a query to search!")
@@ -54,12 +55,12 @@ async def gsearch(client, message):
        parse = json.loads(arr)
        total = len(parse)
        res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse)
-    except Exception as e:
-       await msg.edit(e)
-       return
+    except Exception:
+       exc = traceback.format_exc()
+       return await msg.edit(exc)
     await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
 
-@Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 async def translate(client, message):
     trl = Translator()
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
@@ -330,7 +331,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi Indonesia v1
-@Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 async def imdb1_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
@@ -488,13 +489,14 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.answer()
-      except Exception as e:
-        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+      except Exception:
+        exc = traceback.format_exc()
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi Indonesia v2
-@Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 async def imdb2_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
@@ -640,13 +642,14 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.answer()
-      except Exception as e:
-        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+      except Exception:
+        exc = traceback.format_exc()
+        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi English
-@Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 async def imdb_en_search(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
@@ -789,7 +792,8 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
         else:
             await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
         await query.answer()
-      except Exception as e:
-        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
+      except Exception:
+        exc = traceback.format_exc()
+        await query.message.edit_text(f"<b>ERROR:</b>\n{query.from_user.first_name} | {query.from_user.id}<code>{exc}</code>")
     else:
         await query.answer("This button not for you..", show_alert=True)
