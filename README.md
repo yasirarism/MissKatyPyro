@@ -2,7 +2,7 @@
   <img src="assets/logo.jpg" alt="Eva Maria Logo">
 </p>
 <h1 align="center">
-  <b>YasirPyro Bot</b>
+  <b>MissKatyPyro Bot</b>
 </h1>
 
 
