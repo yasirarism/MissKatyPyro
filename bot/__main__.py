@@ -1,5 +1,5 @@
 import logging
-from bot import app, user, telethon
+from bot import app, user, telethon, telethon_ubot
 from info import BOT_TOKEN
 from utils import temp
 from pyrogram.raw.all import layer
@@ -10,6 +10,7 @@ if __name__ == "__main__":
     app.start()
     user.start()
     telethon.start(bot_token=BOT_TOKEN)
+    telethon_ubot.start()
     me = app.get_me()
     user = user.get_me()
     temp.ME = me.id
