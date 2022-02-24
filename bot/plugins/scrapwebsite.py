@@ -230,7 +230,7 @@ async def lk21_scrap(_, message):
        if not DATA:
           return await msg.edit('Oops, data film tidak ditemukan di GoMov')
        res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n" for i in DATA)
-       await msg.edit(res)
+       await msg.edit(f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @MissKatyRoBot")
     except IndexError:
        return await message.reply("Gunakan command /gomov [judul] untuk search film di GoMov.me")
     except Exception:
