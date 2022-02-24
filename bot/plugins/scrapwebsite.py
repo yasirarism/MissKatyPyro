@@ -151,7 +151,7 @@ async def melongmovie(_, message):
 
 async def getcontent(url):  
     async with aiohttp.ClientSession() as session:  
-        r = await session.get(url, proxy="http://105.213.135.51:38889")  
+        r = await session.get(url)  
         return await r.read() 
      
 @app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER))
