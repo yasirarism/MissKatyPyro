@@ -17,7 +17,7 @@ async def mediainfo(_, message):
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
-              output = subprocess.check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format", "json", "-show_format", "-show_streams", f"{link}"]).decode('utf-8')
+              output = subprocess.check_output(["mediainfo", f"{link}"]).decode('utf-8')
             except Exception:
               return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = f"MissKaty Bot Mediainfo"
