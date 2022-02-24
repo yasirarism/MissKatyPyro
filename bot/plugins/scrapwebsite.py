@@ -149,11 +149,6 @@ async def melongmovie(_, message):
      except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
-async def getcontent(url):  
-    async with aiohttp.ClientSession() as session:  
-        r = await session.get(url)  
-        return await r.read() 
-     
 @app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER))
 async def lk21_scrap(_, message):
     try:
@@ -202,7 +197,42 @@ async def lk21_scrap(_, message):
        res = "".join(f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
        await msg.edit(res)
     except IndexError:
-       return await message.reply("Gunakan command /lk21 [judul] untuk search film di lk21 (https://149.56.24.226)")
+       return await message.reply("Gunakan command /gomov [judul] untuk search film di GoMov.me")
+    except Exception:
+       exc = traceback.format_exc()
+       await msg.edit(f"<code>{exc}</code>")
+
+async def getcontent(url):  
+    async with aiohttp.ClientSession() as session:  
+        r = await session.get(url)  
+        return await r.read() 
+     
+@app.on_message(filters.command(["gomov","gomov@MissKatyRoBot"], COMMAND_HANDLER))
+async def lk21_scrap(_, message):
+    try:
+       judul = message.text.split(" ", maxsplit=1)[1]
+       msg = await message.reply(f"Mencari film di GoMov dg keyword {judul}..")
+       headers = {
+          'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+       }
+
+       html = requests.get(f'https://185.173.38.216/?s={judul}', headers=headers, verify=False)
+       soup = BeautifulSoup(html.text, 'lxml')
+       entry = soup.find_all(class_="entry-title")
+       DATA = []
+       for i in entry:
+          judul = i.find_all("a")[0].text
+          link = i.find_all("a")[0]['href']
+          DATA.append({
+            'judul': judul,
+            'link': link
+          })
+       if not DATA:
+          return await msg.edit('Oops, data film tidak ditemukan di GoMov')
+       res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n" for i in DATA)
+       await msg.edit(res)
+    except IndexError:
+       return await message.reply("Gunakan command /gomov [judul] untuk search film di GoMov.me")
     except Exception:
        exc = traceback.format_exc()
        await msg.edit(f"<code>{exc}</code>")
