@@ -9,6 +9,19 @@ from bot import app
 from datetime import datetime
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
+def puasa():
+  now = datetime.now(pytz.timezone('Asia/Jakarta')) 
+  tahun = now.strftime('%Y') 
+  bulan = now.strftime('%m') 
+  tgl = now.strftime('%d') 
+  jam = now.strftime('%H') 
+  menit = now.strftime('%M') 
+  detik = now.strftime('%S') 
+  x = datetime(int(tahun), int(bulan), int(tgl), int(jam), int(menit), int(detik)) 
+  y = datetime(2022, 4, 2, 0, 0, 0) 
+  z = y - x
+  return z
+
 async def job_close():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
@@ -45,7 +58,7 @@ async def job_open():
     jam = now.strftime('%H:%M')
     res = requests.get("http://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
     quotes = urllib.parse.quote(res['quotes'])
-    by = "@MissKatyRoBot"
+    by = "MissKatyRoBot"
     url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
     response = requests.get(url)
     if response.status_code == 200:
@@ -58,7 +71,7 @@ async def job_open():
     await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
     )
     await app.send_photo(
-        -1001128045651, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+        -1001128045651, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Countdown Menuju Ramadhan 2022</b>:\n<code>{puasa()}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
 
 async def job_open_ymoviez():
@@ -70,7 +83,7 @@ async def job_open_ymoviez():
     jam = now.strftime('%H:%M')
     res = requests.get("http://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
     quotes = urllib.parse.quote(res['quotes'])
-    by = "@MissKatyRoBot"
+    by = "MissKatyRoBot"
     url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
     response = requests.get(url)
     if response.status_code == 200:
@@ -83,7 +96,7 @@ async def job_open_ymoviez():
     await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
     )
     await app.send_photo(
-        -1001255283935, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+        -1001255283935, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Countdown Menuju Ramadhan 2022</b>:\n<code>{puasa()}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
     )
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
