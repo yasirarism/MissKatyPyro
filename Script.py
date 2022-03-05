@@ -47,11 +47,10 @@ Docs ini belum selesai harap bersabar.. 🙃"""
 
 <b>NOTE:</b>
 1. Telegram will not allows you to send buttons without any content, so content is mandatory.
-2. Eva Maria supports buttons with any telegram media type.
-3. Buttons should be properly parsed as markdown format
+xxxxxxxxxxxxxxxxx
 
 <b>URL buttons:</b>
-<code>[Button Text](buttonurl:https://t.me/EvaMariaBot)</code>
+<code>[Button Text](buttonurl:https://t.me/MissKatyRoBot)</code>
 
 <b>Alert buttons:</b>
 <code>[Button Text](buttonalert:This is an alert message)</code>"""
@@ -111,8 +110,6 @@ Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Ber
 2. Send <code>/connect</code> for connecting me to ur PM
 
 <b>Commands and Usage:</b>
-• /google  - <code>connect a particular chat to your PM</code>
-• /disconnect  - <code>disconnect from a chat</code>
 • /connections - <code>list all your connections</code>"""
     EXTRAMOD_TXT = """Help: <b>Extra Modules</b>
 
