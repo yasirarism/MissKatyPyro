@@ -43,7 +43,7 @@ async def ngefilm21(_, message):
             'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
 
-        html = requests.get(f'https://www.nf21.web.id/search?q={title}', headers=headers)
+        html = requests.get(f'https://www.ngefilm21.org/search?q={title}', headers=headers)
         soup = BeautifulSoup(html.text, 'lxml')
         res = soup.find_all("h2")
         data = []
