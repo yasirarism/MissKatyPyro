@@ -9,6 +9,7 @@ import sys
 import traceback
 from pyrogram import filters, Client
 from info import COMMAND_HANDLER
+from bot import app, user
 
 @Client.on_message(filters.command(["run","run@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
 async def eval(client, message):
