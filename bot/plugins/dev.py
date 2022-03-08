@@ -46,7 +46,7 @@ async def eval(client, message):
     elif stdout:
         evaluation = stdout
     else:
-        evaluation = "Success"
+        evaluation = "Berhasil"
 
     final_output = "<b>EVAL</b>: "
     final_output += f"<code>{cmd}</code>\n\n"
