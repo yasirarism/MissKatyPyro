@@ -109,7 +109,7 @@ async def tts(_, message):
     else:
         if len(message.text.split()) <= 2:
             await message.reply_text(
-                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/trt en <text></code>",
+                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tts en <text></code>",
             )
             return
         target_lang = message.text.split(None, 2)[1]
@@ -281,6 +281,12 @@ async def imdbapi(ttid):
     async with aiohttp.ClientSession() as ses:
         async with ses.get(link) as result:
             return await result.json()
+        
+async def mdlapi(title):
+    link = f"https://kuryana.vercel.app/search/q/{title}"
+    async with aiohttp.ClientSession() as ses:
+        async with ses.get(link) as result:
+            return await result.json()
 
 @Client.on_message(filters.command(["mdl","mdl@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
@@ -288,7 +294,7 @@ async def mdlsearch(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
         k = await message.reply('Sedang mencari di Database MyDramaList.. 😴')
-        movies = requests.get(f"https://kuryana.vercel.app/search/q/{title}").json()
+        movies = await mdlapi(title)
         res = movies['results']['dramas']
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
@@ -380,7 +386,6 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-        # req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
         parse = await imdbapi(movie)
         b = BeautifulSoup(resp, "lxml")
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
@@ -437,23 +442,26 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
                 director = parse['sum_mary']['Directors']
-                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
-                director_ = director_[:-2]
-                res_str += f"<b>Sutradara:</b> {director_}\n"
+                if director != '' :
+                    director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                    director_ = director_[:-2]
+                    res_str += f"<b>Sutradara:</b> {director_}\n"
             except:
                 res_str += ""
             try:
                 writers = parse['sum_mary']['Writers']
-                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
-                writers_ = writers_[:-2]
-                res_str += f"<b>Penulis:</b> {writers_}\n"
+                if writers != '' :
+                    writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                    writers_ = writers_[:-2]
+                    res_str += f"<b>Penulis:</b> {writers_}\n"
             except:
                 res_str += ""
             try:
                 stars = parse['sum_mary']['Stars']
-                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
-                stars_ = stars_[:-2]
-                res_str += f"<b>Bintang:</b> {stars_}\n"
+                if stars != '' :
+                    stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                    stars_ = stars_[:-2]
+                    res_str += f"<b>Bintang:</b> {stars_}\n"
             except:
                 res_str += ""
             res_str += "\n"
@@ -547,8 +555,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-        req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
-        parse = req.json()
+        parse = await imdbapi(movie)
         b = BeautifulSoup(resp, "lxml")
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
         res_str = ""
@@ -595,23 +602,26 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             try:
                 director = parse['sum_mary']['Directors']
-                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
-                director_ = director_[:-2]
-                res_str += f"<b>Sutradara:</b> {director_}\n"
+                if director != '' :
+                    director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                    director_ = director_[:-2]
+                    res_str += f"<b>Sutradara:</b> {director_}\n"
             except:
                 res_str += ""
             try:
                 writers = parse['sum_mary']['Writers']
-                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
-                writers_ = writers_[:-2]
-                res_str += f"<b>Penulis:</b> {writers_}\n"
+                if writers != '' :
+                    writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                    writers_ = writers_[:-2]
+                    res_str += f"<b>Penulis:</b> {writers_}\n"
             except:
                 res_str += ""
             try:
                 stars = parse['sum_mary']['Stars']
-                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
-                stars_ = stars_[:-2]
-                res_str += f"<b>Bintang:</b> {stars_}\n"
+                if stars != '' :
+                    stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                    stars_ = stars_[:-2]
+                    res_str += f"<b>Bintang:</b> {stars_}\n"
             except:
                 res_str += ""
             res_str += "\n"
@@ -654,7 +664,6 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                 poster = thumb.replace('.jpg', "._V1_UX360.jpg")
                 await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
             except Exception as e:
-                logger.exception(e)
                 await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
             await query.message.delete()
         else:
@@ -699,8 +708,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-        req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
-        parse = req.json()
+        parse = await imdbapi(movie)
         b = BeautifulSoup(resp, "lxml")
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
         res_str = ""
@@ -747,23 +755,26 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             res_str += "\n<b>🙎 Cast Info:</b>\n"
             try:
                 director = parse['sum_mary']['Directors']
-                director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
-                director_ = director_[:-2]
-                res_str += f"<b>Director:</b> {director_}\n"
+                if director != '' :
+                    director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                    director_ = director_[:-2]
+                    res_str += f"<b>Director:</b> {director_}\n"
             except:
                 res_str += ""
             try:
                 writers = parse['sum_mary']['Writers']
-                writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
-                writers_ = writers_[:-2]
-                res_str += f"<b>Writer:</b> {writers_}\n"
+                if writers != '' :
+                    writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                    writers_ = writers_[:-2]
+                    res_str += f"<b>Writer:</b> {writers_}\n"
             except:
                 res_str += ""
             try:
                 stars = parse['sum_mary']['Stars']
-                stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
-                stars_ = stars_[:-2]
-                res_str += f"<b>Stars:</b> {stars_}\n"
+                if stars != '' :
+                    stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                    stars_ = stars_[:-2]
+                    res_str += f"<b>Stars:</b> {stars_}\n"
             except:
                 res_str += ""
             res_str += "\n"
@@ -806,7 +817,6 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 poster = thumb.replace('.jpg', "._V1_UX360.jpg")
                 await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
             except Exception as e:
-                logger.exception(e)
                 await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
             await query.message.delete()
         else:
