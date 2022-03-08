@@ -13,7 +13,7 @@ async def inline_query_handler(client, query):
                     query.id,
                     results=answers,
                     switch_pm_text="Google Search | google [QUERY]",
-                    switch_pm_parameter="inline",
+                    switch_pm_parameter="help",
                 )
             tex = text.split(None, 1)[1].strip()
             answerss = await google_search_func(answers, tex)
@@ -27,7 +27,7 @@ async def inline_query_handler(client, query):
                     query.id,
                     results=answers,
                     switch_pm_text="YouTube Search | yt [QUERY]",
-                    switch_pm_parameter="inline",
+                    switch_pm_parameter="help",
                 )
             tex = text.split(None, 1)[1].strip()
             answerss = await youtube_func(answers, tex)
@@ -39,7 +39,7 @@ async def inline_query_handler(client, query):
                     query.id,
                     results=answers,
                     switch_pm_text="Lyrics Search | lyrics [QUERY]",
-                    switch_pm_parameter="inline",
+                    switch_pm_parameter="help",
                 )
             tex = text.split(None, 1)[1].strip()
             answerss = await lyrics_func(answers, tex)
