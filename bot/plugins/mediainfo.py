@@ -8,8 +8,10 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from utils import get_file_id
 from bot.utils.media_helper import post_to_telegraph, runcmd, safe_filename, get_media_info
+from bot.utils.decorator import capture_err
 
 @Client.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def mediainfo(_, message):
     reply = message.reply_to_message
     if not reply:
