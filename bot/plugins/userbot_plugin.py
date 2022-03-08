@@ -78,6 +78,24 @@ async def del_msg(client, message):
         return
     await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].id}'>{del_log.users[0].first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
 
+@user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
+async def edit_msg(client, message):
+    edit_log = await user.send(
+        functions.channels.GetAdminLog(
+            channel= await user.resolve_peer(message[0].chat.id),
+            q="",
+            max_id=0,
+            min_id=0,
+            limit=1,
+            events_filter=types.ChannelAdminLogEventsFilter(edit=True),
+        )
+    )
+    users = await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)
+    if edit_log.users[0].bot or users.status in ['administrator','creator']:
+        return
+    if edit_log.events[0].action.message.message.startswith('/mirror') or edit_log.events[0].action.message.message.startswith('/leech'):
+        await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.message.message}")
+    
 @user.on_message(filters.private & ~filters.bot & ~filters.me)
 async def message_pm(client, message):
     await app.send_message(617426792, f"Ada pesan baru dari {message.from_user.mention}")
