@@ -276,6 +276,12 @@ async def transapi(text):
     a = requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=id").json()
     return a['text']
 
+async def imdbapi(ttid):
+    link = f"https://betterimdbot.herokuapp.com/?tt=tt{ttid}"
+    async with aiohttp.ClientSession() as ses:
+        async with ses.get(link) as result:
+            return await result.json()
+
 @Client.on_message(filters.command(["mdl","mdl@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def mdlsearch(client, message):
@@ -374,7 +380,8 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
         trl = Translator()
         imdb = await get_poster(query=movie, id=True)
         resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-        req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
+        # req = requests.get(f"https://betterimdbot.herokuapp.com/?tt=tt{movie}")
+        req = await imdbapi(movie)
         parse = req.json()
         b = BeautifulSoup(resp, "lxml")
         r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
