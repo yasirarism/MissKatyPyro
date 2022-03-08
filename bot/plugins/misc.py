@@ -15,11 +15,13 @@ from bot.utils.time_gap import check_time_gap
 import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from bot.utils.decorator import capture_err
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
 @Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER) & ~filters.edited)
+@capture_err
 async def gsearch(client, message):
     if len(message.command) == 1:
         await message.reply("Give a query to search!")
@@ -61,6 +63,7 @@ async def gsearch(client, message):
     await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
 
 @Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@capture_err
 async def translate(client, message):
     trl = Translator()
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
@@ -92,6 +95,7 @@ async def translate(client, message):
     )
 
 @Client.on_message(filters.command(["tts","tts@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def tts(_, message):
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
@@ -121,6 +125,7 @@ async def tts(_, message):
     return await msg.reply_audio(f'tts_{message.from_user.id}.mp3')
 
 @Client.on_message(filters.command(["tosticker","tosticker@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
@@ -132,6 +137,7 @@ async def tostick(client, message):
         await message.reply_text(str(e))
 
 @Client.on_message(filters.command(["toimage","toimage@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def topho(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.sticker:
@@ -271,6 +277,7 @@ async def transapi(text):
     return a['text']
 
 @Client.on_message(filters.command(["mdl","mdl@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def mdlsearch(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
@@ -293,6 +300,7 @@ async def mdlsearch(client, message):
         await message.reply('Berikan aku nama drama yang ingin dicari. 🤷🏻‍♂️')
         
 @Client.on_callback_query(filters.regex('^mdls'))
+@capture_err
 async def mdl_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, slug = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -332,6 +340,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
 
 # IMDB Versi Indonesia v1
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@capture_err
 async def imdb1_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
@@ -356,6 +365,7 @@ async def imdb1_search(client, message):
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
 @Client.on_callback_query(filters.regex('^imdb1'))
+@capture_err
 async def imdb1_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -497,6 +507,7 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
 
 # IMDB Versi Indonesia v2
 @Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@capture_err
 async def imdb2_search(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
@@ -521,6 +532,7 @@ async def imdb2_search(client, message):
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
 @Client.on_callback_query(filters.regex('^imdb2'))
+@capture_err
 async def imdb2_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -650,6 +662,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
 
 # IMDB Versi English
 @Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@capture_err
 async def imdb_en_search(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
@@ -671,6 +684,7 @@ async def imdb_en_search(client, message):
         await message.reply('Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️')
 
 @Client.on_callback_query(filters.regex('^imdben'))
+@capture_err
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
