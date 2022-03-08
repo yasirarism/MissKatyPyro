@@ -4,6 +4,7 @@ import datetime
 from pyrogram import filters, Client
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from bot.utils.decorator import capture_err
 from bot.utils.time_gap import check_time_gap
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
@@ -16,6 +17,7 @@ async def start(_, message):
 )
 
 @Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935) & ~filters.edited)
+@capture_err
 async def request_user(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
@@ -33,7 +35,7 @@ async def request_user(client, message):
       else:
         REQUEST_DB[user_id] = 1
       if REQUEST_DB[user_id] > 3:
-        return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝😝.")
+        return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 10k per request 😝😝.")
       if message.text:
         forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
         markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
@@ -63,6 +65,7 @@ async def start(_, message):
     await message.reply_text(text=random.choice(pesan))
 
 @Client.on_callback_query(filters.regex(r"^donereq"))
+@capture_err
 async def _callbackreq(c: Client, q: CallbackQuery):
     try:
       user = await c.get_chat_member(-1001404537486, q.from_user.id)
@@ -80,6 +83,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
     
 @Client.on_callback_query(filters.regex(r"^dahada"))
+@capture_err
 async def _callbackreqada(c: Client, q: CallbackQuery):
     try:
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
@@ -97,6 +101,7 @@ async def _callbackreqada(c: Client, q: CallbackQuery):
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^rejectreq"))
+@capture_err
 async def _callbackreject(c: Client, q: CallbackQuery):
     try:
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
@@ -114,6 +119,7 @@ async def _callbackreject(c: Client, q: CallbackQuery):
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^unavailablereq"))
+@capture_err
 async def _callbackunav(c: Client, q: CallbackQuery):
     try:
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
@@ -131,19 +137,23 @@ async def _callbackunav(c: Client, q: CallbackQuery):
        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
         
 @Client.on_callback_query(filters.regex(r"^reqcompl$"))
+@capture_err
 async def _callbackaft_done(c: Client, q: CallbackQuery):
       await q.answer("Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^reqreject$"))
+@capture_err
 async def _callbackaft_rej(c: Client, q: CallbackQuery):
       await q.answer("Request ini ditolak 💔, silahkan cek rules grup yaa. Jika belum paham bisa tanya ke admin lain digrup.", show_alert=True)
 
 @Client.on_callback_query(filters.regex(r"^requnav$"))
+@capture_err
 async def _callbackaft_unav(c: Client, q: CallbackQuery):
       await q.answer("Request ini tidak tersedia 🥳, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.", show_alert=True)
 
 
 @Client.on_callback_query(filters.regex(r"^reqavailable$"))
+@capture_err
 async def _callbackaft_dahada(c: Client, q: CallbackQuery):
       await q.answer("Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa..", show_alert=True)
 
