@@ -5,8 +5,10 @@ import os
 from telegraph import upload_file
 from pyrogram import filters
 from bot import app
+from bot.utils.decorator import capture_err
 
 @app.on_message(filters.command(["ocr","ocr@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def ocr(_, message):
   reply = message.reply_to_message
   if not reply or not reply.photo and not reply.sticker:
