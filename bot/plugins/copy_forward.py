@@ -2,8 +2,10 @@ from pyrogram import filters, Client
 from pyrogram.errors import PeerIdInvalid, UserIsBlocked
 from info import COMMAND_HANDLER
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from bot.utils.decorator import capture_err
 
 @Client.on_message(filters.command(["copy","copy@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def copy(client, message):
     try:
         to = message.text.split(" ")[1]
@@ -28,6 +30,7 @@ async def copy(client, message):
             await message.reply(f"ERROR: {str(e)}")
             
 @Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def forward(client, message):
     try:
         to = message.text.split(" ")[1]
