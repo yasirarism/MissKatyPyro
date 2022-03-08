@@ -4,8 +4,10 @@ import requests, json, re, aiohttp, traceback
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
+from bot.utils.decorator import capture_err
 
 @app.on_message(filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def nodrakor(_, message):
      #return await message.reply("Mohon maaf, fitur ini sementara tidak bisa digunakan..")
      try:
@@ -35,6 +37,7 @@ async def nodrakor(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def ngefilm21(_, message):
      try:
         title = message.text.split(" ", maxsplit=1)[1]
@@ -66,6 +69,7 @@ async def ngefilm21(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["movieku","movieku@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def movikucc(_, message):
      try:
         judul = message.text.split(" ", maxsplit=1)[1]
@@ -85,6 +89,7 @@ async def movikucc(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["savefilm21","savefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def savefilm21(_, message):
      try:
         judul = message.text.split(" ", maxsplit=1)[1]
@@ -115,6 +120,7 @@ async def savefilm21(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["melongmovie","melongmovie@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def melongmovie(_, message):
      try:
         judul = message.text.split(" ", maxsplit=1)[1]
@@ -150,6 +156,7 @@ async def melongmovie(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["lk21","lk21@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def lk21_scrap(_, message):
     try:
        judul = message.text.split(" ", maxsplit=1)[1]
@@ -208,6 +215,7 @@ async def getcontent(url):
         return await r.read() 
      
 @app.on_message(filters.command(["gomov","gomov@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def lk21_scrap(_, message):
     try:
        judul = message.text.split(" ", maxsplit=1)[1]
@@ -238,6 +246,7 @@ async def lk21_scrap(_, message):
        await msg.edit(f"<code>{exc}</code>")
 
 @app.on_message(filters.command(["savefilm21_scrap","savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def savefilm21_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
@@ -256,6 +265,7 @@ async def savefilm21_scrap(_, message):
       await message.reply(f"ERROR: {str(e)}")
           
 @app.on_message(filters.command(["nodrakor_scrap","nodrakor_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def nodrakor_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
@@ -273,6 +283,7 @@ async def nodrakor_scrap(_, message):
       await message.reply(f"ERROR: {str(e)}")
 
 @app.on_message(filters.command(["movieku_scrap","movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def muviku_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
@@ -304,6 +315,7 @@ async def muviku_scrap(_, message):
 
 
 @app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792,1985689491,1172699512]))
+@capture_err
 async def melong_scrap(_, message):
     try:
       link = message.text.split(" ", maxsplit=1)[1]
