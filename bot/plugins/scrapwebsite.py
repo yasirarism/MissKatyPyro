@@ -317,7 +317,7 @@ async def muviku_scrap(_, message):
 @app.on_message(filters.command(["melong","melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792,1985689491,1172699512]))
 @capture_err
 async def melong_scrap(_, message):
-    try:
+    # try:
       link = message.text.split(" ", maxsplit=1)[1]
       headers = {
           'User-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
@@ -330,7 +330,7 @@ async def melong_scrap(_, message):
           softsub = ep.findNext("div")
           rep = f"{hardsub}\n{softsub}"
           await message.reply(rep)
-    except IndexError:
-       return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
-    except Exception as e:
-       await message.reply(f"ERROR: {str(e)}")
+    # except IndexError:
+       # return await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+    # except Exception as e:
+       # await message.reply(f"ERROR: {str(e)}")
