@@ -38,7 +38,8 @@ def capture_err(func):
             await app.leave_chat(message.chat.id)
             return
         except Exception as err:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
+            exc = traceback.format_exc()
+            None, exc_obj, exc_tb = sys.exc_info()
             errors = traceback.format_exception(
                 type=exc_type,
                 value=exc_obj,
