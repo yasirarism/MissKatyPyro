@@ -39,9 +39,8 @@ def capture_err(func):
             return
         except Exception as err:
             exc = traceback.format_exc()
-            None, exc_obj, exc_tb = sys.exc_info()
+            exc_type, exc_obj, exc_tb = sys.exc_info()
             errors = traceback.format_exception(
-                type=exc_type,
                 value=exc_obj,
                 tb=exc_tb,
             )
