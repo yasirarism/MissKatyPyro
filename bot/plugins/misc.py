@@ -354,6 +354,8 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
 @Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 @capture_err
 async def imdb1_search(client, message):
+    if message.sender_chat:
+        return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
         return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
@@ -498,7 +500,7 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🏆 Penghargaan :</b>\n<code> {all_award}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += f"IMDb Plugin by @MissKatyRoBot"
+        res_str += f"IMDb Feature by @MissKatyRoBot"
         thumb = parse.get('poster')
         if thumb:
             try:
@@ -507,7 +509,6 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
                 poster = thumb.replace('.jpg', "._V1_UX360.jpg")
                 await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
             except Exception as e:
-                logger.exception(e)
                 await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
             await query.message.delete()
         else:
@@ -523,6 +524,8 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
 @Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
 @capture_err
 async def imdb2_search(client, message):
+    if message.sender_chat:
+        return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
         return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
@@ -655,7 +658,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Penghargaan :</b>\n<code> {awards}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += f"IMDb Plugin by @MissKatyRoBot"
+        res_str += f"IMDb Feature by @MissKatyRoBot"
         thumb = parse.get('poster')
         if thumb:
             try:
