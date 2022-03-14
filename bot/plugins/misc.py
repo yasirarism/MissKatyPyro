@@ -374,7 +374,7 @@ async def imdb1_search(client, message):
             ]
             for movie in movies
         ]
-        btn[len(movies)].append(InlineKeyboardButton('🔐 Close', callback_data='close_data'))
+        btn[len(movies)-1].append(InlineKeyboardButton('🔐 Close', callback_data='close_data'))
         await k.edit(f'Ditemukan {len(movies)} query dari <code>{title}</code>', reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
