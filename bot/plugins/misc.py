@@ -384,33 +384,34 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
   i, user, msg_id, movie = query.data.split('_')
   if user == f"{query.from_user.id}":
     await query.message.edit_text("Permintaan kamu sedang diproses.. ")
-    url = f"https://www.imdb.com/title/tt{movie}/"
-    resp = await get_content(url)
-    b = BeautifulSoup(resp, "lxml")
-    r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
-    res_str = "<b>#IMDBSearchResults</b>"
-    if r_json.get("@type"):
-        res_str += f"\n<b>Type: </b> <code>{r_json['@type']}</code> \n"
-    if r_json.get("name"):
+    try:
+      url = f"https://www.imdb.com/title/tt{movie}/"
+      resp = await get_content(url)
+      b = BeautifulSoup(resp, "lxml")
+      r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+      res_str = "<b>#IMDBSearchResults</b>"
+      if r_json.get("@type"):
+         res_str += f"\n<b>Type: </b> <code>{r_json['@type']}</code> \n"
+      if r_json.get("name"):
         res_str += f"<b>📹 Name:</b> {r_json['name']} \n"
-    if r_json.get("contentRating"):
+      if r_json.get("contentRating"):
         res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
-    if r_json.get("genre"):
+      if r_json.get("genre"):
         all_genre = r_json['genre']
         genre = "".join(f"{i}, " for i in all_genre)
         genre = genre[:-2]
         res_str += f"<b>🎭⚡ Genres:</b> <code>{genre}</code> \n"
-    if r_json.get("actor"):
+      if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
         actors = actors[:-2]
         res_str += f"<b>📺 Cast:</b> <code>{actors}</code> \n"
-    if r_json.get("trailer"):
+      if r_json.get("trailer"):
         trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
         res_str += f"<b>🎬 Trailer:</b> {trailer_url} \n"
-    if r_json.get("description"):
+      if r_json.get("description"):
         res_str += f"<b>✍️ Line History: </b> <code>{r_json['description']}</code> \n"
-    if r_json.get("keywords"):
+      if r_json.get("keywords"):
         keywords = r_json['keywords'].split(",")
         key_ = ""
         for i in keywords:
@@ -418,11 +419,11 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             key_ += f"#{i}, "
         key_ = key_[:-2]
         res_str += f"<b>🔥 #Tags:</b> {key_} \n"
-    if r_json.get("datePublished"):
+      if r_json.get("datePublished"):
         res_str += f"<b>Date Release :</b> <code>{r_json['datePublished']}</code> \n"
-    if r_json.get("aggregateRating"):
+      if r_json.get("aggregateRating"):
         res_str += f"<b>⭐ Rating Count :</b> <code>{r_json['aggregateRating']['ratingCount']}</code> \n<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']}</code> \n"
-    if r_json.get("trailer"):
+      if r_json.get("trailer"):
         trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
         markup = InlineKeyboardMarkup(
                 [
@@ -430,11 +431,11 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                      InlineKeyboardButton("▶️ Trailer", url=trailer_url)
                     ]
                 ])
-        else:
+      else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
-    res_str += f"<b>URL :</b> {url}"
-    thumb = r_json.get('image')
-    if thumb:
+      res_str += f"<b>URL :</b> {url}"
+      thumb = r_json.get('image')
+      if thumb:
         try:
            await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup
         except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
@@ -443,12 +444,12 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         except Exception as e:
            await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
            await query.message.delete()
-    else:
+      else:
         await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
-        await query.answer()
+      await query.answer()
     except Exception:
-        exc = traceback.format_exc()
-        await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
+      exc = traceback.format_exc()
+      await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
   else:
     await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
