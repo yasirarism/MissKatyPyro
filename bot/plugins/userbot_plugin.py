@@ -2,7 +2,7 @@ import os
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import (
-    Message, InlineKeyboardMarkup, InlineKeyboardButton
+    Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatEventFilter
 )
 from pyrogram.handlers import MessageHandler
 from pyrogram.raw import functions, types
@@ -63,20 +63,15 @@ async def unafk(client, message):
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def del_msg(client, message):
-    del_log = await user.send(
-        functions.channels.GetAdminLog(
-            channel= await user.resolve_peer(message[0].chat.id),
-            q="",
-            max_id=0,
-            min_id=0,
-            limit=1,
-            events_filter=types.ChannelAdminLogEventsFilter(delete=True),
-        )
-    )
-    users = await user.get_chat_member(message[0].chat.id, del_log.users[0].id)
-    if del_log.users[0].bot or users.status in ['administrator','creator']:
-        return
-    await app.send_message(message[0].chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={del_log.users[0].id}'>{del_log.users[0].first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {del_log.events[0].action.message.message}")
+    async for a in user.get_chat_event_log(message.chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
+       if a.user.id == a.deleted_message.from_user.id:
+          if a.deleted_message.text:
+             await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {a.deleted_message.text}")
+          elif a.deleted_message.video:
+             await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Nama file:</b> {a.deleted_message.video.file_name}")
+   # users = await user.get_chat_member(message[0].chat.id, del_log.users[0].id)
+   # if del_log.users[0].bot or users.status in ['administrator','creator']:
+   #    return
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def edit_msg(client, message):
