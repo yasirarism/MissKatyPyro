@@ -387,6 +387,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
     try:
       trl = Translator()
       url = f"https://www.imdb.com/title/tt{movie}/"
+      imdb = await get_poster(query=movie, id=True)
       resp = await get_content(url)
       b = BeautifulSoup(resp, "lxml")
       r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
@@ -399,12 +400,16 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
       if r_json.get("alternateName"):
         res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
+      else:
+        res_str += "\n
+      if imdb.get("kind") == "tv series":
+        res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
       if r_json.get("contentRating"):
         res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
       if r_json.get("datePublished"):
         res_str += f"<b>Date Release :</b> <code>{r_json['datePublished']}</code> \n"
       if r_json.get("aggregateRating"):
-        res_str += f"<b>⭐ Total Peringkat :</b> <code>{r_json['aggregateRating']['ratingCount']}</code> \n<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']}</code> \n"
+        res_str += f"<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
       if r_json.get("genre"):
         all_genre = r_json['genre']
         genre = "".join(f"#{i}, " for i in all_genre)
