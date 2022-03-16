@@ -437,7 +437,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
       thumb = r_json.get('image')
       if thumb:
         try:
-           await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup
+           await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
         except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
            poster = thumb.replace('.jpg', "._V1_UX360.jpg")
            await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
