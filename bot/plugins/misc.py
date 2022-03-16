@@ -417,17 +417,17 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         res_str += f"<b>🎭 Genre:</b> {genre}\n"
       if imdb.get("countries"):
         country = imdb['countries']
-        country = country[:-2]
+        country = country[:-2] if country.endswith(", ")
         res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
       if imdb.get("languages"):
         language = imdb['languages']
-        language = language[:-2]
-        res_str += f"<b>🆔 Negara:</b> <code>{language}</code>\n"
+        language = language[:-2] if language.endswith(", ")
+        res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
       if r_json.get("director"):
         all_director = r_json['director']
         director = "".join(f"{i['name']}, " for i in all_director)
         director = director[:-2]
-        res_str += f"<b>Sutradara:</b> <code>{director}</code>\n\n"
+        res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
       if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
