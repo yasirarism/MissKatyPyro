@@ -1,6 +1,6 @@
 from bot import app
 from pyrogram import Client, filters
-from pyrogram.types import ChatJoinRequest
+from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 @app.on_chat_join_request(filters.chat(-1001686184174))
 async def approve_join_chat(c: Client, m: ChatJoinRequest):
@@ -8,7 +8,6 @@ async def approve_join_chat(c: Client, m: ChatJoinRequest):
       return
    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Setuju", callback_data=approve), InlineKeyboardButton(text="💬 Tidak Setuju", callback_data=declined)]])
    await c.send_message(m.from_user.id, "Apakah anda setuju..", reply_markup=markup)
-   
 
 @app.on_callback_query(filters.regex(r"^approve$"))
 async def approve_chat(c: Client, q: CallbackQuery):
@@ -19,3 +18,5 @@ async def approve_chat(c: Client, q: CallbackQuery):
 async def decline_chat(c: Client, q: CallbackQuery):
       await q.message.edit("Yahh, sayang banget kamu ga jadi subs ke channel ini..")
       await c.approve_chat_join_request(q.chat.id, q.from_user.id)
+
+# Todo: Add exception if bot blocked
