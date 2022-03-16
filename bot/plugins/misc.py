@@ -396,7 +396,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
       if r_json.get("name"):
         res_str += f"<b>📹 Judul:</b> {r_json['name']}\n"
       if r_json.get("alternateName"):
-        res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n"
+        res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
       if r_json.get("contentRating"):
         res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
       if r_json.get("datePublished"):
@@ -408,7 +408,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         genre = "".join(f"{i}, " for i in all_genre)
         genre = genre[:-2]
         res_str += f"<b>🎭⚡ Genre:</b> <code>{genre}</code> \n"
-      if r_json.get
       if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
