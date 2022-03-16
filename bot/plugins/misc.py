@@ -401,7 +401,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
       if r_json.get("alternateName"):
         res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
       else:
-        res_str += "\n
+        res_str += "\n"
       if imdb.get("kind") == "tv series":
         res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
       if r_json.get("contentRating"):
