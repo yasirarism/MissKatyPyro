@@ -392,9 +392,11 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
       r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
       res_str = ""
       if r_json.get("@type"):
-         res_str += f"\n<b>Tipe: </b> <code>{r_json['@type']}</code> \n"
+        type = f"<code>{r_json['@type']}</code>"
+      else:
+        type = ""
       if r_json.get("name"):
-        res_str += f"<b>📹 Judul:</b> {r_json['name']}\n"
+        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
       if r_json.get("alternateName"):
         res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
       if r_json.get("contentRating"):
@@ -407,7 +409,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         all_genre = r_json['genre']
         genre = "".join(f"#{i}, " for i in all_genre)
         genre = genre[:-2]
-        res_str += f"<b>🎭 Genre:</b> <code>{genre}</code> \n"
+        res_str += f"<b>🎭 Genre:</b> {genre}\n"
       if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
