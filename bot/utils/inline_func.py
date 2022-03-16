@@ -10,10 +10,7 @@ YT_API = "https://api.abirhasan.wtf/youtube?query="
 
 async def google_search_func(answers, text):
     results = google(text)
-    answers = []
-    for result in results:
-        answers.append(
-            InlineQueryResultArticle(
+    answers = [InlineQueryResultArticle(
                 title=result["title"],
                 description=result["description"],
                 input_message_content=InputTextMessageContent(
@@ -22,7 +19,7 @@ async def google_search_func(answers, text):
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(text="Buka Website",
                                          url=result["link"])
-                ]])))
+                ]])) for result in results]
     return answers
 
 
@@ -73,7 +70,7 @@ async def lyrics_func(answers, text):
     song_name = song[0]
     artist = song[1]
     if len(lyrics) > 4095:
-        lyrics = f"**Terlalu Panjang Liriknya**"
+        lyrics = "**Terlalu Panjang Liriknya**"
 
     msg = f"__{lyrics}__"
 
@@ -93,7 +90,7 @@ def google(query):
     for info in informations:
         text = f"**Judul:** `{info['title']}`"
         text += f"\n**Deskripsi:** `{info['description']}`"
-        text += f"\n\nBy @MissKatyRoBot"
+        text += "\\n\\nBy @MissKatyRoBot"
         results.append({
             "title": info['title'],
             "description": info['description'],

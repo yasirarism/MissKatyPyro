@@ -37,8 +37,7 @@ async def quotify(messages: list):
 
 
 def getArg(message: Message) -> str:
-    arg = message.text.strip().split(None, 1)[1].strip()
-    return arg
+    return message.text.strip().split(None, 1)[1].strip()
 
 
 def isArgInt(message: Message) -> list:

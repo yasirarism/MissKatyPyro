@@ -58,7 +58,7 @@ async def set_skip_number(bot, message):
         except:
             return await message.reply("Skip number should be an integer.")
         await message.reply(f"Succesfully set SKIP number as {skip}")
-        temp.CURRENT = int(skip)
+        temp.CURRENT = skip
     else:
         await message.reply("Give me a skip number")
 

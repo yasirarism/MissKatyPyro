@@ -12,17 +12,16 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 from info import LOG_CHANNEL
 
 def puasa():
-  now = datetime.now(pytz.timezone('Asia/Jakarta')) 
-  tahun = now.strftime('%Y') 
-  bulan = now.strftime('%m') 
-  tgl = now.strftime('%d') 
-  jam = now.strftime('%H') 
-  menit = now.strftime('%M') 
-  detik = now.strftime('%S') 
-  x = datetime(int(tahun), int(bulan), int(tgl), int(jam), int(menit), int(detik)) 
-  y = datetime(2022, 4, 2, 0, 0, 0) 
-  z = y - x
-  return z
+  now = datetime.now(pytz.timezone('Asia/Jakarta'))
+  tahun = now.strftime('%Y')
+  bulan = now.strftime('%m')
+  tgl = now.strftime('%d')
+  jam = now.strftime('%H')
+  menit = now.strftime('%M')
+  detik = now.strftime('%S')
+  x = datetime(int(tahun), int(bulan), int(tgl), int(jam), int(menit), int(detik))
+  y = datetime(2022, 4, 2, 0, 0, 0)
+  return y - x
 
 async def job_close():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))

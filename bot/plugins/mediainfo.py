@@ -13,8 +13,30 @@ from bot.utils.decorator import capture_err
 @Client.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def mediainfo(_, message):
-    reply = message.reply_to_message
-    if not reply:
+    if reply := message.reply_to_message:
+        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`")
+        x_media = None
+        file_info = get_file_id(message.reply_to_message)
+        if file_info is None:
+           await process.edit_text("Balas ke format media yang valid")
+           return
+        file_path = safe_filename(await reply.download())
+        output_ = await runcmd(f'mediainfo "{file_path}"')
+        out = output_[0] if len(output_) != 0 else None
+        body_text = f"""
+    <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
+    <h2>JSON</h2>
+    <pre>{file_info}.type</pre>
+    <br>
+    <h2>DETAILS</h2>
+    <pre>{out or 'Not Supported'}</pre>
+    """
+        title = "MissKaty Bot Mediainfo"
+        text_ = file_info.message_type
+        link = post_to_telegraph(title, body_text)
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
+        await process.edit_text("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup)
+    else:
         try:
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
@@ -22,7 +44,7 @@ async def mediainfo(_, message):
               output = subprocess.check_output(["mediainfo", f"{link}"]).decode('utf-8')
             except Exception:
               return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
-            title = f"MissKaty Bot Mediainfo"
+            title = "MissKaty Bot Mediainfo"
             body_text = f"""
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
                          <pre>{output}</pre>
@@ -39,28 +61,3 @@ async def mediainfo(_, message):
                await process.delete()
         except IndexError:
             return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
-    else:
-        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`")
-        x_media = None
-        file_info = get_file_id(message.reply_to_message)
-        if file_info is None:
-           await process.edit_text("Balas ke format media yang valid")
-           return
-        file_path = safe_filename(await reply.download())
-        output_ = await runcmd(f'mediainfo "{file_path}"')
-        out = None
-        if len(output_) != 0:
-             out = output_[0]
-        body_text = f"""
-    <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
-    <h2>JSON</h2>
-    <pre>{file_info}.type</pre>
-    <br>
-    <h2>DETAILS</h2>
-    <pre>{out or 'Not Supported'}</pre>
-    """
-        title = f"MissKaty Bot Mediainfo"
-        text_ = file_info.message_type
-        link = post_to_telegraph(title, body_text)
-        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-        await process.edit_text("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup)
