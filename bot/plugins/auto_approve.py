@@ -6,7 +6,7 @@ from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboard
 async def approve_join_chat(c: Client, m: ChatJoinRequest):
    if not m.from_user:
       return
-   markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Setuju", callback_data=approve), InlineKeyboardButton(text="💬 Tidak Setuju", callback_data=declined)]])
+   markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Setuju", callback_data="approve"), InlineKeyboardButton(text="💬 Tidak Setuju", callback_data="declined")]])
    await c.send_message(m.from_user.id, "Apakah anda setuju..", reply_markup=markup)
 
 @app.on_callback_query(filters.regex(r"^approve$"))
