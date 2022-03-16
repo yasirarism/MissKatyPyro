@@ -405,9 +405,9 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         res_str += f"<b>⭐ Total Peringkat :</b> <code>{r_json['aggregateRating']['ratingCount']}</code> \n<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']}</code> \n"
       if r_json.get("genre"):
         all_genre = r_json['genre']
-        genre = "".join(f"{i}, " for i in all_genre)
+        genre = "".join(f"#{i}, " for i in all_genre)
         genre = genre[:-2]
-        res_str += f"<b>🎭⚡ Genre:</b> <code>{genre}</code> \n"
+        res_str += f"<b>🎭 Genre:</b> <code>{genre}</code> \n"
       if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
