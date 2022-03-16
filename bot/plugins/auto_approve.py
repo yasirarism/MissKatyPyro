@@ -8,6 +8,5 @@ async def approve_join_chat(c: Client, m: ChatJoinRequest):
       return
    try:
       await m.reply(m.chat.id, "Hai")
-   except FloodWait as e:
-      await asyncio.sleep(e.x + 2)
+   except Exception as e:
       await c.approve_chat_join_request(m.chat.id, m.from_user.id)
