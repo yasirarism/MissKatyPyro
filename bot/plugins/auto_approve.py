@@ -19,6 +19,6 @@ async def approve_chat(c: Client, q: CallbackQuery):
 async def decline_chat(c: Client, q: CallbackQuery):
       i, chat = q.data.split('_')
       await q.message.edit("Yahh, sayang banget kamu ga jadi subs ke channel ini karena menekan tombol tolak..")
-      await c.approve_chat_join_request(chat, q.from_user.id)
+      await c.decline_chat_join_request(chat, q.from_user.id)
 
 # Todo: Add exception if bot blocked
