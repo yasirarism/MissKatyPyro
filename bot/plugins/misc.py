@@ -423,7 +423,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             i = i.replace(" ", "_")
             key_ += f"#{i}, "
         key_ = key_[:-2]
-        res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n"
+        res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n\n"
+      res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
       if r_json.get("trailer"):
         trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
         markup = InlineKeyboardMarkup(
