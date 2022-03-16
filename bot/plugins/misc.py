@@ -413,7 +413,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
       if r_json.get("genre"):
         all_genre = r_json['genre']
         genre = "".join(f"#{i}, " for i in all_genre)
-        genre = genre[:-2]
+        genre = genre[:-2].replace("-","_")
         res_str += f"<b>🎭 Genre:</b> {genre}\n"
       if imdb.get("countries"):
         country = imdb['countries']
