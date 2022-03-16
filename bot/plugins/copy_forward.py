@@ -11,13 +11,12 @@ async def copy(client, message):
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
         user = await client.get_chat_member(-1001404537486, message.from_user.id)
-        if user.status in ['administrator','creator']:
-           if not reply and not to:
-              return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
-           await client.copy_message(to, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
-           return await message.reply_text("Pesan berhasil dikirim..")
-        else:
-           return await message.reply_text("😝😝😝")
+        if user.status not in ['administrator', 'creator']:
+            return await message.reply_text("😝😝😝")
+        if not reply and not to:
+           return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
+        await client.copy_message(to, message.chat.id, message.reply_to_message.message_id, reply_markup=message.reply_to_message.reply_markup)
+        return await message.reply_text("Pesan berhasil dikirim..")
     except IndexError:
         if not message.reply_to_message:
             return await message.reply_text("Silahkan balas pesan yang mau dicopy ke chat pribadi.")

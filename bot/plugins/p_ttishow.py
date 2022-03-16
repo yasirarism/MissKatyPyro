@@ -93,13 +93,13 @@ async def disable_chat(bot, message):
         chat_ = int(chat)
     except:
         return await message.reply('Give Me A Valid Chat ID')
-    cha_t = await db.get_chat(int(chat_))
+    cha_t = await db.get_chat(chat_)
     if not cha_t:
         return await message.reply("Chat Not Found In DB")
     if cha_t['is_disabled']:
         return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
-    await db.disable_chat(int(chat_), reason)
-    temp.BANNED_CHATS.append(int(chat_))
+    await db.disable_chat(chat_, reason)
+    temp.BANNED_CHATS.append(chat_)
     await message.reply('Chat Succesfully Disabled')
     try:
         buttons = [[
@@ -129,8 +129,8 @@ async def re_enable_chat(bot, message):
         return await message.reply("Chat Not Found In DB !")
     if not sts.get('is_disabled'):
         return await message.reply('This chat is not yet disabled.')
-    await db.re_enable_chat(int(chat_))
-    temp.BANNED_CHATS.remove(int(chat_))
+    await db.re_enable_chat(chat_)
+    temp.BANNED_CHATS.remove(chat_)
     await message.reply("Chat Succesfully re-enabled")
 
 
@@ -221,10 +221,8 @@ async def pin(_,message):
             await message.reply("Berhasil menyematkan pesan ini", reply_to_message_id=message_id)
     elif not await is_admin(message.chat.id , message.from_user.id): 
         await message.reply("Uppss, kamu bukan admin disini..")
-    elif not message.reply_to_message:
-        message.reply("Balas ke pesan yang mau dipin.")
     else:
-        message.reply("Pastikan aku admin dan punya ijin pin pesan")
+        message.reply("Balas ke pesan yang mau dipin.")
 
 @app.on_message(filters.command(['unpin','unpin@MissKatyRoBot'], COMMAND_HANDLER))
 async def unpin(_,message):
@@ -235,10 +233,8 @@ async def unpin(_,message):
             await message.reply("Berhasil unpin pesan ini", reply_to_message_id=message_id)
     elif not await is_admin(message.chat.id , message.from_user.id): 
         await message.reply("Upps, kamu bukan admin disini")
-    elif not message.reply_to_message:
-        await message.reply("Balas ke pesan yang mau diunpin")
     else:
-        await message.reply("Pastikan aku admin dan punya ijin unpin pesan")
+        await message.reply("Balas ke pesan yang mau diunpin")
 
 @app.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
 async def ban_a_user(_, message):
@@ -255,16 +251,17 @@ async def ban_a_user(_, message):
         return await message.reply_text(
             "Balas ke pesan untuk delete dan ban pengguna!")
 
-    if message.reply_to_message and not message.reply_to_message.from_user:
-        user_id, user_first_name = (
-            message.reply_to_message.sender_chat.id,
-            message.reply_to_message.sender_chat.title,
-        )
-    else:
-        user_id, user_first_name = (
+    user_id, user_first_name = (
+        (
             message.reply_to_message.from_user.id,
             message.reply_to_message.from_user.first_name,
         )
+        if message.reply_to_message.from_user
+        else (
+            message.reply_to_message.sender_chat.id,
+            message.reply_to_message.sender_chat.title,
+        )
+    )
 
     if not user_id:
         await message.reply_text("Aku tidak bisa menemukan pengguna untuk diban")
@@ -288,11 +285,8 @@ async def ban_a_user(_, message):
     try:
         await message.reply_to_message.delete()
         await message.chat.kick_member(user_id)
-        txt = ("{} banned {} di <b>{}</b>!").format(
-            message.from_user.mention,
-            message.reply_to_message.from_user.mention,
-            message.chat.title,
-        )
+        txt = f"{message.from_user.mention} banned {message.reply_to_message.from_user.mention} di <b>{message.chat.title}</b>!"
+
         txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
         keyboard = InlineKeyboardMarkup([[
             InlineKeyboardButton(
@@ -327,7 +321,7 @@ async def unbanbutton(bot: Client, q: CallbackQuery):
         )
         return
     whoo = await bot.get_chat(user_id)
-    doneto = whoo.title if whoo.title else whoo.first_name
+    doneto = whoo.title or whoo.first_name
     ids = whoo.id
     try:
         await q.message.chat.unban_member(user_id)

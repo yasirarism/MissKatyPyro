@@ -52,9 +52,7 @@ async def get_filters(group_id):
     texts = []
     query = mycol.find()
     try:
-        for file in query:
-            text = file['text']
-            texts.append(text)
+        texts.extend(file['text'] for file in query)
     except:
         pass
     return texts
@@ -94,10 +92,7 @@ async def count_filters(group_id):
     mycol = mydb[str(group_id)]
 
     count = mycol.count()
-    if count == 0:
-        return False
-    else:
-        return count
+    return False if count == 0 else count
 
 
 async def filter_stats():
