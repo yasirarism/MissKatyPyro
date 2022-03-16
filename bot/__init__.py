@@ -18,7 +18,7 @@ from utils import temp
 SESSION_PYRO = "BQB8sTuxz_Zroi-S_eEa3UqixsAh1VcX2u1DppoJjra-mF1PekV_fhlEZ6RiFoi0zaFtXqrK7OykwYuqU0kPJM6GQxk_wAutnhTQnY-xebxItME6psc_qhODVWGWJYq3O5bCxc57UxpGfdSgN908ipw7OuIX5iYCW9bC8qaNyQKE9A9QLdOZfu1hbL8Lk7cUygSL_2YFCRM7oOXcL4VXAUnZoC-rbkgM7p8QYVZ8lJBqFG8EW7Whqj6uQTHGxwOhIXE2AgJiEQsO5Ml9WmCpzuiYXtLmN-KsOb-f-_JBJsUB1hE42VU0R6KTBFbjy9o4rslXWJLacK-0Lzf6A7JHX7ULJM0vaAA"
 botStartTime = time.time()
 
-ARQ_API_URL = "https://thearq.tech/"
+ARQ_API_URL = "https://arq.hamker.in/"
 ARQ_API_KEY = "CYQWYJ-OMSAFJ-ARHIAT-SDADAX-ARQ"
 
 aiohttpsession = ClientSession()
