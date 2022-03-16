@@ -6,7 +6,5 @@ from pyrogram.types import ChatJoinRequest
 async def approve_join_chat(c: Client, m: ChatJoinRequest):
    if not m.from_user:
       return
-   try:
-      await c.send_message(m.chat.id, "Hai")
-   except Exception as e:
-      await c.approve_chat_join_request(m.chat.id, m.from_user.id)
+   await c.send_message(m.from_user.id, "Makasih udah join..")
+   await c.approve_chat_join_request(m.chat.id, m.from_user.id)
