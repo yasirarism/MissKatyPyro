@@ -385,32 +385,38 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
   if user == f"{query.from_user.id}":
     await query.message.edit_text("Permintaan kamu sedang diproses.. ")
     try:
+      trl = Translator()
       url = f"https://www.imdb.com/title/tt{movie}/"
       resp = await get_content(url)
       b = BeautifulSoup(resp, "lxml")
       r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
-      res_str = "<b>#IMDBSearchResults</b>"
+      res_str = ""
       if r_json.get("@type"):
-         res_str += f"\n<b>Type: </b> <code>{r_json['@type']}</code> \n"
+         res_str += f"\n<b>Tipe: </b> <code>{r_json['@type']}</code> \n"
       if r_json.get("name"):
-        res_str += f"<b>📹 Name:</b> {r_json['name']} \n"
+        res_str += f"<b>📹 Judul:</b> {r_json['name']}\n"
+      if r_json.get("alternateName"):
+        res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n"
       if r_json.get("contentRating"):
         res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
+      if r_json.get("datePublished"):
+        res_str += f"<b>Date Release :</b> <code>{r_json['datePublished']}</code> \n"
+      if r_json.get("aggregateRating"):
+        res_str += f"<b>⭐ Total Peringkat :</b> <code>{r_json['aggregateRating']['ratingCount']}</code> \n<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']}</code> \n"
       if r_json.get("genre"):
         all_genre = r_json['genre']
         genre = "".join(f"{i}, " for i in all_genre)
         genre = genre[:-2]
-        res_str += f"<b>🎭⚡ Genres:</b> <code>{genre}</code> \n"
+        res_str += f"<b>🎭⚡ Genre:</b> <code>{genre}</code> \n"
+      if r_json.get
       if r_json.get("actor"):
         all_actors = r_json['actor']
         actors = "".join(f"{i['name']}, " for i in all_actors)
         actors = actors[:-2]
-        res_str += f"<b>📺 Cast:</b> <code>{actors}</code> \n"
-      if r_json.get("trailer"):
-        trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
-        res_str += f"<b>🎬 Trailer:</b> {trailer_url} \n"
+        res_str += f"<b>📺 Pemeran:</b> <code>{actors}</code>\n\n"
       if r_json.get("description"):
-        res_str += f"<b>✍️ Line History: </b> <code>{r_json['description']}</code> \n"
+        summary = await trl(imdb['description'], targetlang='id')
+        res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
       if r_json.get("keywords"):
         keywords = r_json['keywords'].split(",")
         key_ = ""
@@ -418,11 +424,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             i = i.replace(" ", "_")
             key_ += f"#{i}, "
         key_ = key_[:-2]
-        res_str += f"<b>🔥 #Tags:</b> {key_} \n"
-      if r_json.get("datePublished"):
-        res_str += f"<b>Date Release :</b> <code>{r_json['datePublished']}</code> \n"
-      if r_json.get("aggregateRating"):
-        res_str += f"<b>⭐ Rating Count :</b> <code>{r_json['aggregateRating']['ratingCount']}</code> \n<b>🏆 Rating Value :</b> <code>{r_json['aggregateRating']['ratingValue']}</code> \n"
+        res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n"
       if r_json.get("trailer"):
         trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
         markup = InlineKeyboardMarkup(
@@ -433,7 +435,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 ])
       else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
-      res_str += f"<b>URL :</b> {url}"
       thumb = r_json.get('image')
       if thumb:
         try:
@@ -443,7 +444,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
            await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
         except Exception as e:
            await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
-           await query.message.delete()
+        await query.message.delete()
       else:
         await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
       await query.answer()
