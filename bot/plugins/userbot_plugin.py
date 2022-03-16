@@ -63,7 +63,7 @@ async def unafk(client, message):
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def del_msg(client, message):
-    async for a in user.get_chat_event_log(message.chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
+    async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
        if a.user.id == a.deleted_message.from_user.id:
           if a.deleted_message.text:
              await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Pesan:</b> {a.deleted_message.text}")
