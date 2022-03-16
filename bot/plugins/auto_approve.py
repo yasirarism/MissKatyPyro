@@ -17,5 +17,5 @@ async def approve_chat(c: Client, q: CallbackQuery):
 
 @app.on_callback_query(filters.regex(r"^declined$"))
 async def decline_chat(c: Client, q: CallbackQuery):
-      await q.message.edit("Yahh, sayang banget kamu ga jadi subs ke channel ini..:)
+      await q.message.edit("Yahh, sayang banget kamu ga jadi subs ke channel ini..")
       await c.approve_chat_join_request(q.chat.id, q.from_user.id)
