@@ -414,7 +414,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         actors = actors[:-2]
         res_str += f"<b>📺 Pemeran:</b> <code>{actors}</code>\n\n"
       if r_json.get("description"):
-        summary = await trl(imdb['description'], targetlang='id')
+        summary = await trl(r_json['description'], targetlang='id')
         res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
       if r_json.get("keywords"):
         keywords = r_json['keywords'].split(",")
