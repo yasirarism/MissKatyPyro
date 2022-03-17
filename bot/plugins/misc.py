@@ -374,8 +374,8 @@ async def imdb1_search(client, message):
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
-@Client.on_callback_query(filters.regex('^imdb1'))
-@capture_err
+# @Client.on_callback_query(filters.regex('^imdb1'))
+# @capture_err
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -466,9 +466,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
-# IMDB Versi 1
-# @Client.on_callback_query(filters.regex('^imdb1'))
-# @capture_err
+@Client.on_callback_query(filters.regex('^imdb1'))
+@capture_err
 async def imdb1_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -511,7 +510,7 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
                     rilis = await trl(parse['release_date']['NAME'], targetlang='id')
                     res_str += f"<b>📆 Tanggal Rilis :</b> <code>{rilis.text}</code>\n"
                 except:
-                    res_str += f"<b>📆 Tanggal Rilis :</b> <code>{parse['release_date']}</code>\n"
+                    res_str += f"<b>📆 Rilis :</b> <code>{parse['release_date']}</code>\n"
             if parse.get("genres"):
                 all_genre = parse['genres']
                 genre = "".join(f"{i} " for i in all_genre)
