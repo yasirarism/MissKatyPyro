@@ -7,7 +7,7 @@ async def approve_join_chat(c: Client, m: ChatJoinRequest):
    if not m.from_user:
       return
    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Sudah/Already", callback_data=f"approve_{m.chat.id}"), InlineKeyboardButton(text="Belum/Not Yet", callback_data=f"declined_{m.chat.id}")]])
-   await c.send_message(m.from_user.id, "ID: Sebelum masuk ke channel, apakah anda sudah membaca rules dipinned digrup? Jika sudah silahkan klik <b>Sudah</b> ..\n\nEN: Have you read the dipinned group rules? If so, please click <b>Already</b>", reply_markup=markup)
+   await c.send_message(m.from_user.id, "ID: Sebelum masuk ke channel, apakah anda sudah membaca catatan di https://t.me/YMovieZ_New/4 ? Jika sudah silahkan klik <b>Sudah</b> ..\n\nEN: Have you read the notes in https://t.me/YMovieZ_New/4 ? If so, please click <b>Already</b>", disable_web_page_preview=True, reply_markup=markup)
 
 @app.on_callback_query(filters.regex(r"^approve"))
 async def approve_chat(c: Client, q: CallbackQuery):
