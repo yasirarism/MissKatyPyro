@@ -140,7 +140,7 @@ async def topho(client, message):
             return await message.reply_text("Ini sticker animasi, command ini hanya untuk sticker biasa.")
         photo = await client.download_media(message.reply_to_message.sticker.file_id, f"tostick_{message.from_user.id}.jpg")
         await message.reply_photo(
-            photo=photo, caption='Sticker -> Image\\n@MissKatyRoBot'
+            photo=photo, caption='Sticker -> Image\n@MissKatyRoBot'
         )
 
         os.remove(photo)
