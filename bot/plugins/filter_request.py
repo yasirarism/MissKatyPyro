@@ -38,10 +38,10 @@ async def request_user(client, message):
         return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 10k per request 😝😝.")
       if message.text:
         forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
-        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
+        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
       if message.photo:
         forward = await client.send_photo(-1001575525902, message.photo.file_id, caption=f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.caption}", reply_markup=markup)
-        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek status request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
+        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
       await message.reply_text(text=f"Hai {message.from_user.mention}, request kamu sudah dikirim yaa. Harap bersabar mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3 - REQUEST_DB[user_id]}x", quote=True, reply_markup=markup2)
     except:
       pass
@@ -75,7 +75,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
         i, msg_id, chat_id = q.data.split('_')
         await c.send_message(
             chat_id=chat_id,
-            text="#Done\\nDone ✅, Selamat menonton...",
+            text="#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
             reply_to_message_id=int(msg_id),
         )
 
