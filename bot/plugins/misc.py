@@ -374,8 +374,8 @@ async def imdb1_search(client, message):
     else:
         await message.reply('Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️')
 
-# @Client.on_callback_query(filters.regex('^imdb1'))
-# @capture_err
+@Client.on_callback_query(filters.regex('^imdb1'))
+@capture_err
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
@@ -466,8 +466,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
-@Client.on_callback_query(filters.regex('^imdb1'))
-@capture_err
+# @Client.on_callback_query(filters.regex('^imdb1'))
+# @capture_err
 async def imdb1_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
