@@ -1,4 +1,4 @@
-FROM python:3.11.0a6
+FROM python:3-latest
 
 RUN apt update && apt upgrade -y
 RUN apt install git -y && apt install mediainfo -y && apt install ffmpeg -y
