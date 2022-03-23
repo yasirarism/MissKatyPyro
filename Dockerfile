@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM python:3.11.0a6
 
 RUN apt update && apt upgrade -y
 RUN apt install git -y && apt install mediainfo -y && apt install ffmpeg -y
