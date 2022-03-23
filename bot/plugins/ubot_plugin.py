@@ -65,7 +65,7 @@ async def unafk(client, message):
 async def del_msg(client, message):
     async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
        users = await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id)
-       if users.status in ['administrator','creator']:
+       if users.status in ['administrator','creator'] or users.user.is_bot:
           return
        if a.user.id == a.deleted_message.from_user.id:
           if a.deleted_message.text:
