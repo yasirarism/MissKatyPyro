@@ -1,4 +1,4 @@
-FROM python:3-latest
+FROM python3:latest
 
 RUN apt update && apt upgrade -y
 RUN apt install git -y && apt install mediainfo -y && apt install ffmpeg -y
