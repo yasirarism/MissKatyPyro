@@ -20,7 +20,7 @@ async def afk_handler(client, message):
 async def afk(client, message):
     global start, end, handler, reason
     start = datetime.datetime.now().replace(microsecond=0)
-    handler = await user.add_handler(
+    handler = user.add_handler(
         MessageHandler(afk_handler, (filters.mentioned & ~filters.me))
     )
     if len(message.text.split()) >= 2:
@@ -37,7 +37,7 @@ async def unafk(client, message):
         end = datetime.datetime.now().replace(microsecond=0)
         afk_time = end - start
         await message.edit(f"<b>I'm not AFK anymore.\nI was afk {afk_time}</b>")
-        await user.remove_handler(*handler)
+        user.remove_handler(*handler)
     except NameError:
         await message.edit("<b>You weren't afk</b>")
         await asyncio.sleep(3)
