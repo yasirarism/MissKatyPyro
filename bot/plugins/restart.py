@@ -2,7 +2,7 @@ import os
 from sys import executable
 from bot import app
 from pyrogram import filters
-from info import ADMINS
+from info import ADMINS, COMMAND_HANDLER
 
 @app.on_message(filters.command(["restart","restart@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(ADMINS))
 async def restart(client, message):
