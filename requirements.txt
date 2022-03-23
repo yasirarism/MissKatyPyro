@@ -2,7 +2,6 @@ pyrogram
 tgcrypto
 pymongo[srv]
 motor
-marshmallow
 umongo
 requests
 bs4
