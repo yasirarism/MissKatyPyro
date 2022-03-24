@@ -90,7 +90,7 @@ def google(query):
     for info in informations:
         text = f"**Judul:** `{info['title']}`"
         text += f"\n**Deskripsi:** `{info['description']}`"
-        text += "\\n\\nBy @MissKatyRoBot"
+        text += "\n\nBy @MissKatyRoBot"
         results.append({
             "title": info['title'],
             "description": info['description'],
