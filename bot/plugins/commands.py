@@ -152,11 +152,11 @@ async def channel_info(bot, message):
         os.remove(file)
 
 
-@Client.on_message(filters.command('logs') & filters.user(ADMINS))
+@Client.on_message(filters.command(['logs']) & filters.user(ADMINS))
 async def log_file(bot, message):
     """Send log file"""
     try:
-        await message.reply_document('TelegramBot.log')
+        await message.reply_document('MissKatyLogs.txt')
     except Exception as e:
         await message.reply(str(e))
 
