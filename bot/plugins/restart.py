@@ -10,4 +10,4 @@ async def restart(client, message):
     app.stop()
     user.stop()
     # os.execl(executable, executable, "-m", "bot")
-    os.execl("bash", "/start.sh")
+    os.execl("bash", "start.sh")
