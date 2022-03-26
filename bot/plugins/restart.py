@@ -8,4 +8,4 @@ from info import ADMINS, COMMAND_HANDLER
 async def restart(client, message):
     await message.reply("Restarting, Please wait!")
     # os.execl(executable, executable, "-m", "bot")
-    os.execl("/bin/sh", "/start.sh")
+    subprocess.run(["/bin/sh", "/start.sh"])
