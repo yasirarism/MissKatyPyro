@@ -1,3 +1,3 @@
 import subprocess
 
-subprocess.run(["/bin/bash", "./start.sh"])
+subprocess.run(["/bin/bash", "/start.sh"])
