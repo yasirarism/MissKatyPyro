@@ -4,7 +4,7 @@ from info import COMMAND_HANDLER
 from bot import app, user, botStartTime
 from bot.utils.human_read import get_readable_time
 
-@app.on_message(filters.command("ping", COMMAND_HANDLER))
+@app.on_message(filters.command(["ping","ping@MissKatyRoBot"], COMMAND_HANDLER))
 async def ping(_, message):
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
