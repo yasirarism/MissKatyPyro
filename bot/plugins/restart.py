@@ -7,4 +7,4 @@ from info import ADMINS, COMMAND_HANDLER
 @app.on_message(filters.command(["restart","restart@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(ADMINS))
 async def restart(client, message):
     await message.reply("Restarting, Please wait!")
-    os.execl(executable, executable, "-m", "bot")
+    os.execl(executable, executable, "update.py")
