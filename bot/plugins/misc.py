@@ -397,12 +397,15 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
               res_str += "\n"
             if imdb.get("kind") == "tv series":
               res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
+            if r_json.get("duration"):
+              durasi = r_json['duration'].replace("PT","").replace("H"," Jam ").replace("M"," Menit")
+              res_str += f"<b>Durasi:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
               res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
               res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if imdb.get("release_date"):
-              res_str += f"<b>📆 Tanggal Rilis:</b> <code>{imdb['release_date']}</code>\n"
+              res_str += f"<b>📆 Rilis:</b> <code>{imdb['release_date']}</code>\n"
             if r_json.get("genre"):
               all_genre = r_json['genre']
               genre = "".join(f"#{i}, " for i in all_genre)
@@ -411,11 +414,11 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             if imdb.get("countries"):
               country = imdb['countries']
               if country.endswith(", "): country = country[:-2]
-              res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
+              res_str += f"<b>🆔 Negara:</b> <code>{country.replace("  "," ")}</code>\n"
             if imdb.get("languages"):
               language = imdb['languages']
               if language.endswith(", "): language = language[:-2]
-              res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
+              res_str += f"<b>🔊 Bahasa:</b> <code>{language.replace("  "," ")}</code>\n"
             if r_json.get("director"):
               all_director = r_json['director']
               director = "".join(f"{i['name']}, " for i in all_director)
@@ -427,7 +430,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
               actors = actors[:-2]
               res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
-              summary = await trl(r_json['description'], targetlang='id')
+              summary = await trl(r_json['description'].replace("  "," "), targetlang='id')
               res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
             if r_json.get("keywords"):
               keywords = r_json['keywords'].split(",")
