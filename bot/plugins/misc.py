@@ -358,7 +358,10 @@ async def imdb1_search(client, message):
     if ' ' in message.text:
         r, title = message.text.split(None, 1)
         k = await message.reply('Sedang mencari di Database IMDB.. 😴')
-        movies = await get_poster(title, bulk=True)
+        try:
+            movies = await get_poster(title, bulk=True)
+        except:
+            return await k.edit("Ooppss, gagal mendapatkan daftar judul di IMDb")
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
         btn = [
