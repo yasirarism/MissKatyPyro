@@ -402,7 +402,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
               res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
             if r_json.get("duration"):
               durasi = r_json['duration'].replace("PT","").replace("H"," Jam ").replace("M"," Menit")
-              res_str += f"<b>Durasi:</b> <code>{durasi}</code>\n"
+              res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
               res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
