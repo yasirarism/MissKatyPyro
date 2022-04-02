@@ -66,22 +66,11 @@ async def job_open():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      res = requests.get("http://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
-      quotes = urllib.parse.quote(res['quotes'])
-      by = "MissKatyRoBot"
-      url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
-      response = requests.get(url)
-      if response.status_code == 200:
-          with open("quotes.jpg", 'wb') as f:
-           f.write(response.content)
-      else:
-          reqtemp = requests.get("https://bukrate.com/set_images/images?id=1754607&author=1512321&type=6")
-          with open("quotes.jpg", 'wb') as f:
-           f.write(reqtemp.content)
+      res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
       )
-      await app.send_photo(
-          -1001128045651, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await app.send_message(
+          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Quotes Ramadhan 1443H:</b>\n{res['result']}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
@@ -95,22 +84,11 @@ async def job_open_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      res = requests.get("http://python-api-zhirrr.herokuapp.com/api/randomquotes").json()
-      quotes = urllib.parse.quote(res['quotes'])
-      by = "MissKatyRoBot"
-      url = f"https://api.lolhuman.xyz/api/quotemaker2?apikey=d6933a59588ca5e57e7eb141&text={quotes}&author={by}"
-      response = requests.get(url)
-      if response.status_code == 200:
-          with open("quotes.jpg", 'wb') as f:
-           f.write(response.content)
-      else:
-          reqtemp = requests.get("https://bukrate.com/set_images/images?id=1754607&author=1512321&type=6")
-          with open("quotes.jpg", 'wb') as f:
-           f.write(reqtemp.content)
+      res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
       await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
       )
-      await app.send_photo(
-          -1001255283935, "quotes.jpg", caption=f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await app.send_message(
+          -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Quotes Ramadhan 1443H:</b>\n{res['result']}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
