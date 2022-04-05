@@ -33,14 +33,14 @@ async def afk(client, message):
     if len(message.text.split()) >= 2:
         reason = message.text.split(" ", maxsplit=1)[1]
     else:
-        reason = "Tidak ada alasan.."
+        reason = "Randue alesan.."
     AFK.append([start, reason])
-    await message.edit("<b>I'm going afk</b>")
+    await app.send_message("<b>Byee, kamu sekarang AFK.. </b>", reply_to_message_id=message.reply_to_message.message_id)
 
 @user.on_message(filters.command('unafk', "!") & filters.me)
 async def unafk(client, message):
     try:
-        await message.edit(f"<b>Saya tidak AFK lagi.")
+        await app.send_message(message.chat.id, f"<b>Kamu sudah tidak AFK lagi.. ", reply_to_message_id=message.reply_to_message.message_id)
         AFK.clear()
     except:
         pass
@@ -83,12 +83,15 @@ async def message_pm(client, message):
 async def mentioned(client, message):
     cid = message.chat.id
     pesan = message.text or message.caption
+    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.message_id}")]]))
     if AFK:
         end = datetime.now().replace(microsecond=0)
         afk_time = (end - AFK[0][0])
         alasan = AFK[0][1]
-        await message.reply(f"<b>Owner saya AFK sejak {afk_time}</b>.\n<b>Alasan:</b> {alasan}")
-    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.message_id}")]]))
+        try:
+            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf, Owner saya sedang AFK sejak {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>")
+        except:
+            pass
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
