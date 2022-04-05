@@ -50,7 +50,7 @@ def clear_reqdict():
     REQUEST_DB.clear()
 
     
-@Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat) & ~filters.edited)
+# @Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat) & ~filters.edited)
 async def start(_, message):
     pesan = [f"Sama-sama {message.from_user.first_name}",
              f"You're Welcome {message.from_user.first_name}",
