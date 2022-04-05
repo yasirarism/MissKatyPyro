@@ -35,7 +35,7 @@ async def afk(client, message):
     else:
         reason = "Randue alesan.."
     AFK.append([start, reason])
-    await app.send_message("<b>Byee, kamu sekarang AFK.. </b>", reply_to_message_id=message.reply_to_message.message_id)
+    await app.send_message(message.chat.id, "<b>Byee, kamu sekarang AFK.. </b>", reply_to_message_id=message.reply_to_message.message_id)
 
 @user.on_message(filters.command('unafk', "!") & filters.me)
 async def unafk(client, message):
