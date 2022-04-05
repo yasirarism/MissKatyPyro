@@ -35,14 +35,15 @@ async def afk(client, message):
     else:
         reason = "Randue alesan.."
     AFK.append([start, reason])
-    await app.send_message(message.chat.id, "<b>Byee, kamu sekarang AFK.. </b>", reply_to_message_id=message.reply_to_message.message_id)
+    await app.send_message(message.chat.id, "<b>Byee @YasirArisM, kamu sekarang di mode AFK.. </b>")
 
 @user.on_message(filters.command('unafk', "!") & filters.me)
 async def unafk(client, message):
     try:
-        await app.send_message(message.chat.id, f"<b>Kamu sudah tidak AFK lagi.. ", reply_to_message_id=message.reply_to_message.message_id)
+        await app.send_message(message.chat.id, f"<b>Kamu sudah tidak AFK lagi yakk.. ")
         AFK.clear()
     except:
+        AFK.clear()
         pass
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
