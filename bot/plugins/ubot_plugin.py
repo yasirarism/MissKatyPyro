@@ -90,7 +90,7 @@ async def mentioned(client, message):
         afk_time = (end - AFK[0][0])
         alasan = AFK[0][1]
         try:
-            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf, Owner saya sedang AFK sejak {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>")
+            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf {message.from_user.mention}, Owner saya sedang AFK selama {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>", reply_to_message_id=message.message_id)
         except:
             pass
 
