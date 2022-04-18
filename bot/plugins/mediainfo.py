@@ -17,7 +17,7 @@ from bot.utils.pyro_progress import (
 
 @Client.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
-async def mediainfo(_, message):
+async def mediainfo(client, message):
     if reply := message.reply_to_message:
         process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`")
         x_media = None
