@@ -19,7 +19,7 @@ async def download(client, message):
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
             progress=progress_for_pyrogram,
-            progress_args=("trying to download, sabar yakk..", message, c_time),
+            progress_args=("trying to download, sabar yakk..", pesan, c_time),
         )
         end_t = datetime.now()
         ms = (end_t - start_t).seconds
