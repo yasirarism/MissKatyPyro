@@ -26,7 +26,7 @@ async def mediainfo(client, message):
            await process.edit_text("Balas ke format media yang valid")
            return
         c_time = time.time()
-        file_path = safe_filename(await reply.download())
+        # file_path = safe_filename(await reply.download())
         file_path = await client.download_media(
             message=message.reply_to_message,
             progress=progress_for_pyrogram,
