@@ -1,5 +1,6 @@
 import io
 import json
+import time
 import requests
 import aiohttp
 import subprocess
@@ -9,6 +10,10 @@ from info import COMMAND_HANDLER
 from utils import get_file_id
 from bot.utils.media_helper import post_to_telegraph, runcmd, safe_filename, get_media_info
 from bot.utils.decorator import capture_err
+from bot.utils.pyro_progress import (
+    progress_for_pyrogram,
+    humanbytes,
+)
 
 @Client.on_message(filters.command(["mediainfo","mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
@@ -20,7 +25,13 @@ async def mediainfo(_, message):
         if file_info is None:
            await process.edit_text("Balas ke format media yang valid")
            return
+        c_time = time.time()
         file_path = safe_filename(await reply.download())
+        file_path = await client.download_media(
+            message=message.reply_to_message,
+            progress=progress_for_pyrogram,
+            progress_args=("trying to download, sabar yakk..", process, c_time),
+        )
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
