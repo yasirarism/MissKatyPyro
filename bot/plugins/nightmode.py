@@ -8,6 +8,7 @@ import traceback
 import requests
 from bot import app
 from datetime import datetime
+from subprocess import check_output
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from info import LOG_CHANNEL
 
@@ -23,6 +24,8 @@ def puasa():
   y = datetime(2022, 4, 2, 0, 0, 0)
   return y - x
 
+version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
+
 async def job_close():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
@@ -35,7 +38,7 @@ async def job_close():
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
       await app.send_message(
-        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Dbuat dengan Pyrogram v{__version__}..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Powered by <code>MissKaty v{version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
@@ -52,7 +55,7 @@ async def job_close_ymoviez():
       await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
       await app.send_message(
-        -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 9 pagi. Selamat beristirahat.....`\n\n~ Dbuat dengan Pyrogram v{__version__}..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+        -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 9 pagi. Selamat beristirahat.....`\n\n~ Powered by <code>MissKaty v{version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
@@ -70,7 +73,7 @@ async def job_open():
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
       )
       await app.send_message(
-          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Quotes Ramadhan 1443H:</b>\n{res['result']}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n~ Powered by <code>MissKaty v{version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
@@ -88,7 +91,7 @@ async def job_open_ymoviez():
       await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
       )
       await app.send_message(
-          -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n<b>Quotes Ramadhan 1443H:</b>\n{res['result']}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+          -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n~ Powered by <code>MissKaty v{version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       )
     except Exception:
        exc = traceback.format_exc()
@@ -96,7 +99,7 @@ async def job_open_ymoviez():
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 async def _callbackanightmd(c: Client, q: CallbackQuery):
-      await q.answer(f"🔖 Hai, Aku MissKatyRoBot dibuat menggunakan Pyrogram v{__version__}.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM", show_alert=True, cache_time=21600)
+      await q.answer(f"🔖 Hai, Aku MissKatyRoBot versi {version}</code> dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10 Slim Buster.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM", show_alert=True, cache_time=21600)
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
