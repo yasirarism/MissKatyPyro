@@ -15,7 +15,7 @@ from bot import app, user
 async def eval(client, message):
     if len(message.command) < 2 :
         return await message.reply("Masukkan kode yang ingin dijalankan..")
-    status_message = await message.reply_text("Sedang Memproses ...")
+    status_message = await message.reply_text("Sedang Memproses Eval...")
     cmd = message.text.split(" ", maxsplit=1)[1]
 
     reply_to_ = message
@@ -53,21 +53,23 @@ async def eval(client, message):
     final_output += "<b>OUTPUT</b>:\n"
     final_output += f"<code>{evaluation.strip()}</code> \n"
 
-    if len(final_output) > 3000:
+    if len(final_output) > 4096:
         with io.BytesIO(str.encode(final_output)) as out_file:
-            out_file.name = "eval.text"
+            out_file.name = "MissKaty_Eval.txt"
             await reply_to_.reply_document(
                 document=out_file,
-                caption=cmd,
-                disable_notification=True
+                caption=cmd[: 4096 // 4 - 1],
+                disable_notification=True,
+                quote=True,
             )
     else:
-        await reply_to_.reply_text(final_output)
-        await status_message.delete()
+        await reply_to_.reply_text(final_output, quote=True)
+    await status_message.delete()
+
 
 async def aexec(code, client, message):
     exec(
-        'async def __aexec(client, message): ' +
-        ''.join(f'\n {l_}' for l_ in code.split('\n'))
+        "async def __aexec(client, message): "
+        + "".join(f"\n {l_}" for l_ in code.split("\n"))
     )
-    return await locals()['__aexec'](client, message)
+    return await locals()["__aexec"](client, message)
