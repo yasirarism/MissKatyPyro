@@ -3,6 +3,7 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app, user, botStartTime
 from bot.utils.human_read import get_readable_time
+from subprocess import check_output
 
 @app.on_message(filters.command(["ping","ping@MissKatyRoBot"], COMMAND_HANDLER))
 async def ping(_, message):
