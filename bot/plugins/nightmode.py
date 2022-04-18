@@ -24,7 +24,7 @@ def puasa():
   y = datetime(2022, 4, 2, 0, 0, 0)
   return y - x
 
-version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
+version = check_output("git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd", shell=True).decode()
 
 async def job_close():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
