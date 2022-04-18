@@ -2,6 +2,7 @@ import time
 from bot import app
 from datetime import datetime
 from bot.utils.decorator import capture_err
+from info import COMMAND_HANDLER
 from pyrogram import filters
 from bot.utils.pyro_progress import (
     progress_for_pyrogram,
