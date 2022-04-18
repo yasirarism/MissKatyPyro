@@ -24,8 +24,6 @@ def puasa():
   y = datetime(2022, 4, 2, 0, 0, 0)
   return y - x
 
-version = check_output("git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd", shell=True).decode()
-
 async def job_close():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
     days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu']
@@ -33,6 +31,7 @@ async def job_close():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
+    version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
     try:
       await app.send_sticker(-1001128045651, "CAACAgQAAxkDAAEDfNhgygZBqbTlbOQ6Gk3CmtD-bnkRDAACLxsAAvEGNAY-qWSFYAqy3R4E")
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
@@ -51,6 +50,7 @@ async def job_close_ymoviez():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
+    version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
     try:
       await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
@@ -68,6 +68,7 @@ async def job_open():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
+    version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
     try:
       res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
@@ -86,6 +87,7 @@ async def job_open_ymoviez():
     tgl = now.strftime('%d')
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
+    version = check_output(["git log -1 date=format:v%y.%m%d.%H%M pretty=format:%cd"], shell=True).decode()
     try:
       res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
       await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
