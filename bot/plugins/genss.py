@@ -20,7 +20,7 @@ from bot.utils.pyro_progress import (
 @app.on_message(filters.command(["genss","genss@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def genss(client, message):
-    if update.reply_to_message is not None:
+    if message.reply_to_message is not None:
         download_location = "./MissKaty/"
         process = await message.reply_text("`Processing, please wait gan/sis...`")
         c_time = time.time()
