@@ -33,7 +33,7 @@ async def genss(client, message):
             await client.edit_message_text(
                 text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>",
                 chat_id=message.chat.id,
-                message_id=a.message_id
+                message_id=process.message_id
             )
             tmp_directory_for_each_user = "./MissKaty_Genss/" + str(update.from_user.id)
             if not os.path.isdir(tmp_directory_for_each_user):
@@ -48,7 +48,7 @@ async def genss(client, message):
             await client.edit_message_text(
                 text="Mencoba mengupload..",
                 chat_id=message.chat.id,
-                message_id=a.message_id
+                message_id=process.message_id
             )
             media_album_p = []
             if images is not None:
@@ -74,7 +74,7 @@ async def genss(client, message):
             await client.send_media_group(
                 chat_id=message.chat.id,
                 disable_notification=True,
-                reply_to_message_id=a.message_id,
+                reply_to_message_id=process.message_id,
                 media=media_album_p
             )
             #
@@ -86,7 +86,7 @@ async def genss(client, message):
             await client.edit_message_text(
                 text="Berhasil generate screenshoot video..",
                 chat_id=message.chat.id,
-                message_id=a.message_id,
+                message_id=process.message_id,
                 disable_web_page_preview=True
             )
     else:
