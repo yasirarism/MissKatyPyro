@@ -80,7 +80,7 @@ async def genss(client, message):
             )
             await client.delete_messages(
                 chat_id=message.chat.id,
-                message_id=process.message_id
+                message_ids=process.message_id
             )
             try:
                 rmtree(tmp_directory_for_each_user)
