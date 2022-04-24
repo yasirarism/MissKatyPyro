@@ -5,6 +5,7 @@ logging.basicConfig(level=logging.DEBUG,
 logger = logging.getLogger(__name__)
 
 import os, time
+from asyncio import sleep
 from shutil import rmtree
 from pyrogram import filters
 from pyrogram.types import InputMediaPhoto
@@ -21,7 +22,7 @@ from bot.utils.pyro_progress import (
 @capture_err
 async def genss(client, message):
     if message.reply_to_message is not None:
-        process = await message.reply_text("`Processing, please wait gan/sis...`")
+        process = await message.reply_text(f"`Processing, please wait {message.from_user.first_name}...`")
         c_time = time.time()
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
@@ -34,6 +35,7 @@ async def genss(client, message):
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
+            await sleep(2)
             tmp_directory_for_each_user = "./MissKaty_Genss/" + str(message.from_user.id)
             if not os.path.isdir(tmp_directory_for_each_user):
                 os.makedirs(tmp_directory_for_each_user)
@@ -71,7 +73,7 @@ async def genss(client, message):
                 reply_to_message_id=message.message_id,
                 media=media_album_p
             )
-            await process.delete()
+            await message.delete()
             try:
                 rmtree(tmp_directory_for_each_user)
                 os.remove(the_real_download_location)
