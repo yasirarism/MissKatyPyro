@@ -46,7 +46,7 @@ async def genss(client, message):
             )
             logger.info(images)
             await client.edit_message_text(
-                text="Mencoba mengupload..",
+                text="Mencoba mengupload, hasil generate screenshot..",
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
@@ -83,11 +83,5 @@ async def genss(client, message):
                 os.remove(the_real_download_location)
             except:
                 pass
-            await client.edit_message_text(
-                text="Berhasil generate screenshoot video..",
-                chat_id=message.chat.id,
-                message_id=process.message_id,
-                disable_web_page_preview=True
-            )
     else:
         await message.reply("Reply to a Telegram media to get screenshots..")
