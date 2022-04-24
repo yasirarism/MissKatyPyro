@@ -37,8 +37,6 @@ async def take_screen_shot(video_file, output_directory, ttl):
 async def generate_screen_shots(
     video_file,
     output_directory,
-    is_watermarkable,
-    wf,
     min_duration,
     no_of_photos
 ):
@@ -54,8 +52,6 @@ async def generate_screen_shots(
         for looper in range(0, no_of_photos):
             ss_img = await take_screen_shot(video_file, output_directory, current_ttl)
             current_ttl = current_ttl + ttl_step
-            if is_watermarkable:
-                ss_img = await place_water_mark(ss_img, output_directory + "/" + str(time.time()) + ".jpg", wf)
             images.append(ss_img)
         return images
     else:
