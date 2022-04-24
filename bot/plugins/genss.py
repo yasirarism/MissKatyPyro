@@ -35,7 +35,7 @@ async def genss(client, message):
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
-            tmp_directory_for_each_user = "./MissKaty_Genss/" + str(update.from_user.id)
+            tmp_directory_for_each_user = "./MissKaty_Genss/" + str(message.from_user.id)
             if not os.path.isdir(tmp_directory_for_each_user):
                 os.makedirs(tmp_directory_for_each_user)
             images = await generate_screen_shots(
