@@ -35,7 +35,6 @@ async def genss(client, message):
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
-            await sleep(2)
             tmp_directory_for_each_user = "./MissKaty_Genss/" + str(message.from_user.id)
             if not os.path.isdir(tmp_directory_for_each_user):
                 os.makedirs(tmp_directory_for_each_user)
@@ -46,6 +45,12 @@ async def genss(client, message):
                 9
             )
             logger.info(images)
+            await sleep(2)
+            await client.edit_message_text(
+                text="Mencoba mengupload, hasil generate screenshot..",
+                chat_id=message.chat.id,
+                message_id=process.message_id
+            )
             media_album_p = []
             if images is not None:
                 i = 0
@@ -73,7 +78,10 @@ async def genss(client, message):
                 reply_to_message_id=message.message_id,
                 media=media_album_p
             )
-            await message.delete()
+            await client.delete_message(
+                chat_id=message.chat.id,
+                message_id=process.message_id
+            )
             try:
                 rmtree(tmp_directory_for_each_user)
                 os.remove(the_real_download_location)
