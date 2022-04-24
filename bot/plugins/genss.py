@@ -30,8 +30,8 @@ async def genss(client, message):
             progress_args=("Trying to download, please wait..", process, c_time),
         )
         if the_real_download_location is not None:
-            await message.edit_message_text(
-                text="File video berhasil didownload..",
+            await client.edit_message_text(
+                text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>",
                 chat_id=message.chat.id,
                 message_id=a.message_id
             )
@@ -45,7 +45,7 @@ async def genss(client, message):
                 9
             )
             logger.info(images)
-            await message.edit_message_text(
+            await client.edit_message_text(
                 text="Mencoba mengupload..",
                 chat_id=message.chat.id,
                 message_id=a.message_id
