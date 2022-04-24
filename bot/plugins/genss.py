@@ -21,7 +21,6 @@ from bot.utils.pyro_progress import (
 @capture_err
 async def genss(client, message):
     if message.reply_to_message is not None:
-        download_location = "./MissKaty/"
         process = await message.reply_text("`Processing, please wait gan/sis...`")
         c_time = time.time()
         the_real_download_location = await client.download_media(
