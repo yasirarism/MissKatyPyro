@@ -74,7 +74,7 @@ async def genss(client, message):
             await client.send_media_group(
                 chat_id=message.chat.id,
                 disable_notification=True,
-                reply_to_message_id=process.message_id,
+                reply_to_message_id=message.message_id,
                 media=media_album_p
             )
             #
