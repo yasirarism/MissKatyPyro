@@ -30,7 +30,7 @@ async def genss(client, message):
         )
         if the_real_download_location is not None:
             await client.edit_message_text(
-                text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>",
+                text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.\n\nMencoba mengupload hasil generate screenshot..",
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
@@ -44,11 +44,6 @@ async def genss(client, message):
                 9
             )
             logger.info(images)
-            await client.edit_message_text(
-                text="Mencoba mengupload, hasil generate screenshot..",
-                chat_id=message.chat.id,
-                message_id=process.message_id
-            )
             media_album_p = []
             if images is not None:
                 i = 0
@@ -76,7 +71,7 @@ async def genss(client, message):
                 reply_to_message_id=message.message_id,
                 media=media_album_p
             )
-            #
+            await process.delete()
             try:
                 rmtree(tmp_directory_for_each_user)
                 os.remove(the_real_download_location)
