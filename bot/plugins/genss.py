@@ -4,7 +4,7 @@ logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-import os
+import os, time
 from shutil import rmtree
 from pyrogram import filters
 from pyrogram.types import InputMediaPhoto
