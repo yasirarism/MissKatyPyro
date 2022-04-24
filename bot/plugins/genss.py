@@ -31,7 +31,7 @@ async def genss(client, message):
         )
         if the_real_download_location is not None:
             await client.edit_message_text(
-                text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.\n\nMencoba mengupload hasil generate screenshot..",
+                text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.",
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
@@ -78,7 +78,7 @@ async def genss(client, message):
                 reply_to_message_id=message.message_id,
                 media=media_album_p
             )
-            await client.delete_message(
+            await client.delete_messages(
                 chat_id=message.chat.id,
                 message_id=process.message_id
             )
