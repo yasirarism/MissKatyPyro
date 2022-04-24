@@ -6,8 +6,7 @@ logger = logging.getLogger(__name__)
 
 import os
 from shutil import rmtree
-from pyrogram import filters
-from pyrogram.types import InputMediaPhoto
+from pyrogram import filters, InputMediaPhoto
 from bot import app
 from bot.utils.ffmpeg_helper import generate_screen_shots
 from info import COMMAND_HANDLER
@@ -58,7 +57,7 @@ async def genss(client, message):
                     if os.path.exists(image):
                         if i == 0:
                             media_album_p.append(
-                                pyrogram.InputMediaPhoto(
+                                InputMediaPhoto(
                                     media=image,
                                     caption=caption,
                                     parse_mode="html"
@@ -66,7 +65,7 @@ async def genss(client, message):
                             )
                         else:
                             media_album_p.append(
-                                pyrogram.InputMediaPhoto(
+                                InputMediaPhoto(
                                     media=image
                                 )
                             )
