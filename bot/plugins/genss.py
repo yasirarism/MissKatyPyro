@@ -6,7 +6,8 @@ logger = logging.getLogger(__name__)
 
 import os
 from shutil import rmtree
-from pyrogram import filters, InputMediaPhoto
+from pyrogram import filters
+from pyrogram.types import InputMediaPhoto
 from bot import app
 from bot.utils.ffmpeg_helper import generate_screen_shots
 from info import COMMAND_HANDLER
