@@ -1,4 +1,4 @@
-from pyrogram import filters, Client
+from pyrogram import filters, Client, enums
 from pyrogram.errors import PeerIdInvalid, UserIsBlocked
 from info import COMMAND_HANDLER
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -11,7 +11,7 @@ async def copy(client, message):
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
         user = await client.get_chat_member(-1001404537486, message.from_user.id)
-        if user.status not in ['administrator', 'creator']:
+        if user.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
             return await message.reply_text("😝😝😝")
         if not reply and not to:
            return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
@@ -35,7 +35,7 @@ async def forward(client, message):
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
         user = await client.get_chat_member(-1001404537486, message.from_user.id)
-        if user.status in ['administrator','creator']:
+        if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
            if not reply and not to:
               return await message.reply_text("Silahkan balas pesan yang mau diforward, lalu kirim command /forward [chat_tujuan]")
            await client.forward_messages(to, message.chat.id, message.reply_to_message.id)
