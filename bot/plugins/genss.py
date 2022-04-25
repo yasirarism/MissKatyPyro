@@ -61,8 +61,7 @@ async def genss(client, message):
                             media_album_p.append(
                                 InputMediaPhoto(
                                     media=image,
-                                    caption=caption,
-                                    parse_mode="html"
+                                    caption=caption
                                 )
                             )
                         else:
