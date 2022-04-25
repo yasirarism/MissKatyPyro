@@ -23,10 +23,10 @@ async def request_user(client, message):
     if is_in_gap:
         await message.reply("🙄")
         return
-    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.message_id}")],
-                                   [InlineKeyboardButton(text="🚫 Tolak", callback_data=f"rejectreq_{message.message_id}_{message.chat.id}"),InlineKeyboardButton(text="✅ Done", callback_data=f"donereq_{message.message_id}_{message.chat.id}")],
-                                   [InlineKeyboardButton(text="⚠️ Tidak Tersedia", callback_data=f"unavailablereq_{message.message_id}_{message.chat.id}")],
-                                   [InlineKeyboardButton(text="🔍 Sudah Ada", callback_data=f"dahada_{message.message_id}_{message.chat.id}")]
+    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.id}")],
+                                   [InlineKeyboardButton(text="🚫 Tolak", callback_data=f"rejectreq_{message.id}_{message.chat.id}"),InlineKeyboardButton(text="✅ Done", callback_data=f"donereq_{message.id}_{message.chat.id}")],
+                                   [InlineKeyboardButton(text="⚠️ Tidak Tersedia", callback_data=f"unavailablereq_{message.id}_{message.chat.id}")],
+                                   [InlineKeyboardButton(text="🔍 Sudah Ada", callback_data=f"dahada_{message.id}_{message.chat.id}")]
                                  ])
     try:
       user_id = message.from_user.id
@@ -38,10 +38,10 @@ async def request_user(client, message):
         return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 10k per request 😝😝.")
       if message.text:
         forward = await client.send_message(-1001575525902, f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a> (#id{message.from_user.id})\n\n{message.text}", reply_markup=markup)
-        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
+        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.id}")]])
       if message.photo:
         forward = await client.send_photo(-1001575525902, message.photo.file_id, caption=f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.caption}", reply_markup=markup)
-        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.message_id}")]])
+        markup2 = InlineKeyboardMarkup([[InlineKeyboardButton(text="⏳ Cek Status Request", url=f"https://t.me/c/1575525902/{forward.id}")]])
       await message.reply_text(text=f"Hai {message.from_user.mention}, request kamu sudah dikirim yaa. Harap bersabar mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3 - REQUEST_DB[user_id]}x", quote=True, reply_markup=markup2)
     except:
       pass

@@ -33,7 +33,7 @@ async def genss(client, message):
             await client.edit_message_text(
                 text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.",
                 chat_id=message.chat.id,
-                message_id=process.message_id
+                message_id=process.id
             )
             tmp_directory_for_each_user = "./MissKaty_Genss/" + str(message.from_user.id)
             if not os.path.isdir(tmp_directory_for_each_user):
@@ -49,7 +49,7 @@ async def genss(client, message):
             await client.edit_message_text(
                 text="Mencoba mengupload, hasil generate screenshot..",
                 chat_id=message.chat.id,
-                message_id=process.message_id
+                message_id=process.id
             )
             media_album_p = []
             if images is not None:
@@ -75,12 +75,12 @@ async def genss(client, message):
             await client.send_media_group(
                 chat_id=message.chat.id,
                 disable_notification=True,
-                reply_to_message_id=message.message_id,
+                reply_to_message_id=message.id,
                 media=media_album_p
             )
             await client.delete_messages(
                 chat_id=message.chat.id,
-                message_ids=process.message_id
+                message_ids=process.id
             )
             try:
                 rmtree(tmp_directory_for_each_user)

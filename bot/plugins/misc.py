@@ -298,7 +298,7 @@ async def mdlsearch(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdls_{message.from_user.id}_{message.message_id}_{movie['slug']}",
+                    callback_data=f"mdls_{message.from_user.id}_{message.id}_{movie['slug']}",
                 )
             ]
             for movie in res
@@ -368,7 +368,7 @@ async def imdb1_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdb1_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                    callback_data=f"imdb1_{message.from_user.id}_{message.id}_{movie.movieID}",
                 )
             ]
             for movie in movies
@@ -629,7 +629,7 @@ async def imdb2_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdb2_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                    callback_data=f"imdb2_{message.from_user.id}_{message.id}_{movie.movieID}",
                 )
             ]
             for movie in movies
@@ -782,7 +782,7 @@ async def imdb_en_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdben_{message.from_user.id}_{message.message_id}_{movie.movieID}",
+                    callback_data=f"imdben_{message.from_user.id}_{message.id}_{movie.movieID}",
                 )
             ]
             for movie in movies

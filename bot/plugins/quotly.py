@@ -73,8 +73,8 @@ async def quotly_func(client, message: Message):
                 i for i in await client.get_messages(
                     message.chat.id,
                     range(
-                        message.reply_to_message.message_id,
-                        message.reply_to_message.message_id + (count + 5),
+                        message.reply_to_message.id,
+                        message.reply_to_message.id + (count + 5),
                     ),
                     replies=0,
                 ) if not i.empty and not i.media
@@ -87,7 +87,7 @@ async def quotly_func(client, message: Message):
                 )
             reply_message = await client.get_messages(
                 message.chat.id,
-                message.reply_to_message.message_id,
+                message.reply_to_message.id,
                 replies=1,
             )
             messages = [reply_message]

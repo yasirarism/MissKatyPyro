@@ -10,23 +10,29 @@ from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
 
+
 @Client.on_message(filters.new_chat_members & filters.group)
 async def save_group(bot, message):
     r_j_check = [u.id for u in message.new_chat_members]
     if temp.ME in r_j_check:
         if not await db.get_chat(message.chat.id):
-            total=await bot.get_chat_members_count(message.chat.id)
-            r_j = message.from_user.mention if message.from_user else "Anonymous" 
-            await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, r_j))       
+            total = await bot.get_chat_members_count(message.chat.id)
+            r_j = message.from_user.mention if message.from_user else "Anonymous"
+            await bot.send_message(
+                LOG_CHANNEL,
+                script.LOG_TEXT_G.format(message.chat.title, message.chat.id,
+                                         total, r_j))
             await db.add_chat(message.chat.id, message.chat.title)
         if message.chat.id in temp.BANNED_CHATS:
             # Inspired from a boat of a banana tree
             buttons = [[
-                InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHAT}')
+                InlineKeyboardButton('Support',
+                                     url=f'https://t.me/{SUPPORT_CHAT}')
             ]]
-            reply_markup=InlineKeyboardMarkup(buttons)
+            reply_markup = InlineKeyboardMarkup(buttons)
             k = await message.reply(
-                text='<b>CHAT NOT ALLOWED 🐞\n\nMy admins has restricted me from working here ! If you want to know more about it contact support..</b>',
+                text=
+                '<b>CHAT NOT ALLOWED 🐞\n\nMy admins has restricted me from working here ! If you want to know more about it contact support..</b>',
                 reply_markup=reply_markup,
             )
 
@@ -37,12 +43,14 @@ async def save_group(bot, message):
             await bot.leave_chat(message.chat.id)
             return
         buttons = [[
-            InlineKeyboardButton('ℹ️ Help', url=f"https://t.me/{temp.U_NAME}?start=help"),
+            InlineKeyboardButton('ℹ️ Help',
+                                 url=f"https://t.me/{temp.U_NAME}?start=help"),
             InlineKeyboardButton('📢 Updates', url='https://t.me/TeamEvamaria')
         ]]
-        reply_markup=InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
-            text=f"<b>Terimakasih sudah menambahkan saya di {message.chat.title} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
+            text=
+            f"<b>Terimakasih sudah menambahkan saya di {message.chat.title} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
             reply_markup=reply_markup)
     else:
         for u in message.new_chat_members:
@@ -51,7 +59,9 @@ async def save_group(bot, message):
                     await (temp.MELCOW['welcome']).delete()
                 except:
                     pass
-            temp.MELCOW['welcome'] = await message.reply(f"<b>Hai, {u.mention}, Selamat datang di {message.chat.title}</b>")
+            temp.MELCOW['welcome'] = await message.reply(
+                f"<b>Hai, {u.mention}, Selamat datang di {message.chat.title}</b>"
+            )
 
 
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
@@ -67,16 +77,18 @@ async def leave_a_chat(bot, message):
         buttons = [[
             InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHAT}')
         ]]
-        reply_markup=InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat,
-            text='<b>Hai kawan, \nOwner aku bilang saya harus pergi! Jika kamu ingin menambahkan bot ini lagi silahkan kontak owner bot ini.</b>',
+            text=
+            '<b>Hai kawan, \nOwner aku bilang saya harus pergi! Jika kamu ingin menambahkan bot ini lagi silahkan kontak owner bot ini.</b>',
             reply_markup=reply_markup,
         )
 
         await bot.leave_chat(chat)
     except Exception as e:
         await message.reply(f'Error - {e}')
+
 
 @Client.on_message(filters.command('disable') & filters.user(ADMINS))
 async def disable_chat(bot, message):
@@ -97,7 +109,9 @@ async def disable_chat(bot, message):
     if not cha_t:
         return await message.reply("Chat Not Found In DB")
     if cha_t['is_disabled']:
-        return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
+        return await message.reply(
+            f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>"
+        )
     await db.disable_chat(chat_, reason)
     temp.BANNED_CHATS.append(chat_)
     await message.reply('Chat Succesfully Disabled')
@@ -105,10 +119,11 @@ async def disable_chat(bot, message):
         buttons = [[
             InlineKeyboardButton('Support', url=f'https://t.me/{SUPPORT_CHAT}')
         ]]
-        reply_markup=InlineKeyboardMarkup(buttons)
+        reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
-            chat_id=chat_, 
-            text=f'<b>Hello Friends, \nMy admin has told me to leave from group so i go! If you wanna add me again contact my support group.</b> \nReason : <code>{reason}</code>',
+            chat_id=chat_,
+            text=
+            f'<b>Hello Friends, \nMy admin has told me to leave from group so i go! If you wanna add me again contact my support group.</b> \nReason : <code>{reason}</code>',
             reply_markup=reply_markup)
         await bot.leave_chat(chat_)
     except Exception as e:
@@ -144,7 +159,8 @@ async def get_ststs(bot, message):
     free = 536870912 - size
     size = get_size(size)
     free = get_size(free)
-    await rju.edit(script.STATUS_TXT.format(files, total_users, totl_chats, size, free))
+    await rju.edit(
+        script.STATUS_TXT.format(files, total_users, totl_chats, size, free))
 
 
 # a function for trespassing into others groups, Inspired by a Vazha
@@ -161,25 +177,34 @@ async def gen_invite(bot, message):
     try:
         link = await bot.create_chat_invite_link(chat)
     except ChatAdminRequired:
-        return await message.reply("Invite Link Generation Failed, Iam Not Having Sufficient Rights")
+        return await message.reply(
+            "Invite Link Generation Failed, Iam Not Having Sufficient Rights")
     except Exception as e:
         return await message.reply(f'Error {e}')
     await message.reply(f'Here is your Invite Link {link.invite_link}')
 
-@app.on_message(filters.command(["adminlist","adminlist@MissKatyRoBot"], COMMAND_HANDLER))
+
+@app.on_message(
+    filters.command(["adminlist", "adminlist@MissKatyRoBot"], COMMAND_HANDLER))
 async def adminlist(_, message):
     if message.chat.type == 'private':
         return await message.reply("Perintah ini hanya untuk grup")
     try:
-        mem = await app.get_chat_members(message.chat.id, filter="administrators")
-        res = "".join(f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n" for i in mem)
-        return await message.reply(f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
+        mem = await app.get_chat_members(message.chat.id,
+                                         filter="administrators")
+        res = "".join(
+            f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n"
+            for i in mem)
+        return await message.reply(
+            f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
-@app.on_message(filters.command(["zombies","zombies@MissKatyRoBot"], COMMAND_HANDLER))
+
+@app.on_message(
+    filters.command(["zombies", "zombies@MissKatyRoBot"], COMMAND_HANDLER))
 async def zombie_clean(_, message):
-    
+
     zombie = 0
     wait = await message.reply_text("Searching ... and banning ...")
     async for member in app.iter_chat_members(m.chat.id):
@@ -194,10 +219,11 @@ async def zombie_clean(_, message):
     if zombie == 0:
         return await wait.edit_text("Group is clean!")
     return await wait.edit_text(
-        f"<b>{zombie}</b> Zombies ditemukan dan telah banned!",
-    )
+        f"<b>{zombie}</b> Zombies ditemukan dan telah banned!", )
 
-@Client.on_message(filters.command(["kickme","kickme@MissKatyRoBot"], COMMAND_HANDLER))
+
+@Client.on_message(
+    filters.command(["kickme", "kickme@MissKatyRoBot"], COMMAND_HANDLER))
 async def kickme(_, message):
     reason = None
     if len(message.text.split()) >= 2:
@@ -209,62 +235,70 @@ async def kickme(_, message):
         await message.reply_text(txt)
         await message.chat.unban_member(message.from_user.id)
     except RPCError as ef:
-        await message.reply_text(f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}")
+        await message.reply_text(
+            f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}"
+        )
     return
 
-@app.on_message(filters.command(['pin','pin@MissKatyRoBot'], COMMAND_HANDLER))
-async def pin(_,message):
+
+@app.on_message(filters.command(['pin', 'pin@MissKatyRoBot'], COMMAND_HANDLER))
+async def pin(_, message):
     if message.reply_to_message:
-        message_id = message.reply_to_message.message_id
-        if await is_admin(message.chat.id , message.from_user.id): 
-            await app.pin_chat_message(message.chat.id , message_id)
-            await message.reply("Berhasil menyematkan pesan ini", reply_to_message_id=message_id)
-    elif not await is_admin(message.chat.id , message.from_user.id): 
+        message_id = message.reply_to_message.id
+        if await is_admin(message.chat.id, message.from_user.id):
+            await app.pin_chat_message(message.chat.id, message_id)
+            await message.reply("Berhasil menyematkan pesan ini",
+                                reply_to_message_id=message_id)
+    elif not await is_admin(message.chat.id, message.from_user.id):
         await message.reply("Uppss, kamu bukan admin disini..")
     else:
         message.reply("Balas ke pesan yang mau dipin.")
 
-@app.on_message(filters.command(['unpin','unpin@MissKatyRoBot'], COMMAND_HANDLER))
-async def unpin(_,message):
+
+@app.on_message(
+    filters.command(['unpin', 'unpin@MissKatyRoBot'], COMMAND_HANDLER))
+async def unpin(_, message):
     if message.reply_to_message:
-        message_id = message.reply_to_message.message_id
-        if await is_admin(message.chat.id , message.from_user.id): 
-            await app.unpin_chat_message(message.chat.id , message_id)
-            await message.reply("Berhasil unpin pesan ini", reply_to_message_id=message_id)
-    elif not await is_admin(message.chat.id , message.from_user.id): 
+        message_id = message.reply_to_message.id
+        if await is_admin(message.chat.id, message.from_user.id):
+            await app.unpin_chat_message(message.chat.id, message_id)
+            await message.reply("Berhasil unpin pesan ini",
+                                reply_to_message_id=message_id)
+    elif not await is_admin(message.chat.id, message.from_user.id):
         await message.reply("Upps, kamu bukan admin disini")
     else:
         await message.reply("Balas ke pesan yang mau diunpin")
 
-@app.on_message(filters.command(['dban','dban@MissKatyRoBot'], COMMAND_HANDLER) & filters.group)
+
+@app.on_message(
+    filters.command(['dban', 'dban@MissKatyRoBot'], COMMAND_HANDLER)
+    & filters.group)
 async def ban_a_user(_, message):
     admin = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if admin.status not in ['administrator','creator']:
+    if admin.status not in ['administrator', 'creator']:
         await message.reply_text("Kamu bukan admin disini")
         await message.stop_propagation()
 
     if len(message.text.split()) == 1 and not message.reply_to_message:
-        await message.reply_text("Gunakan command ini dengan reply atau mention user")
+        await message.reply_text(
+            "Gunakan command ini dengan reply atau mention user")
         await message.stop_propagation()
 
     if not message.reply_to_message:
         return await message.reply_text(
             "Balas ke pesan untuk delete dan ban pengguna!")
 
-    user_id, user_first_name = (
-        (
-            message.reply_to_message.from_user.id,
-            message.reply_to_message.from_user.first_name,
-        )
-        if message.reply_to_message.from_user
-        else (
-            message.reply_to_message.sender_chat.id,
-            message.reply_to_message.sender_chat.title,
-        )
-    )
+    user_id, user_first_name = ((
+        message.reply_to_message.from_user.id,
+        message.reply_to_message.from_user.first_name,
+    ) if message.reply_to_message.from_user else (
+        message.reply_to_message.sender_chat.id,
+        message.reply_to_message.sender_chat.title,
+    ))
 
     if not user_id:
-        await message.reply_text("Aku tidak bisa menemukan pengguna untuk diban")
+        await message.reply_text(
+            "Aku tidak bisa menemukan pengguna untuk diban")
         return
     if user_id == message.chat.id:
         await message.reply_text("Itu adalah hal gila jika saya ban admin!")
@@ -273,8 +307,9 @@ async def ban_a_user(_, message):
         await message.reply_text("Hah, saya harus ban diriku sendiri?")
         await message.stop_propagation()
 
-    admin = await app.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)
-    if user_id in ['administrator','creator']:
+    admin = await app.get_chat_member(message.chat.id,
+                                      message.reply_to_message.from_user.id)
+    if user_id in ['administrator', 'creator']:
         await message.reply_text("Saya tidak bisa ban admin")
         await message.stop_propagation()
 
@@ -302,12 +337,18 @@ async def ban_a_user(_, message):
             "Aku belum pernah melihat pengguna ini sebelumnya...!\nMungkin bisa dengan forward pesan dia?",
         )
     except UserAdminInvalid:
-        await message.reply_text("Tidak dapat bertindak atas pengguna ini, mungkin bukan saya yang mengubah izinnya")
+        await message.reply_text(
+            "Tidak dapat bertindak atas pengguna ini, mungkin bukan saya yang mengubah izinnya"
+        )
     except RightForbidden:
-        await message.reply_text("Aku tidak punya ijin untuk membanned pengguna ini")
+        await message.reply_text(
+            "Aku tidak punya ijin untuk membanned pengguna ini")
     except RPCError as ef:
-        await message.reply_text(f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}")
-                                 
+        await message.reply_text(
+            f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}"
+        )
+
+
 @Client.on_callback_query(filters.regex("^unban_"))
 async def unbanbutton(bot: Client, q: CallbackQuery):
     splitter = (str(q.data).replace("unban_", "")).split("=")
@@ -328,9 +369,12 @@ async def unbanbutton(bot: Client, q: CallbackQuery):
     except RPCError as e:
         await q.message.edit_text(f"Error: {e}")
         return
-    await q.message.edit_text(f"{q.from_user.mention} unbanned <a href='tg://user?id={ids}'>{doneto}</a>!")
+    await q.message.edit_text(
+        f"{q.from_user.mention} unbanned <a href='tg://user?id={ids}'>{doneto}</a>!"
+    )
     return
-    
+
+
 @Client.on_message(filters.command('unban') & filters.user(ADMINS))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
@@ -349,9 +393,11 @@ async def unban_a_user(bot, message):
     try:
         k = await bot.get_users(chat)
     except PeerIdInvalid:
-        return await message.reply("This is an invalid user, make sure ia have met him before.")
+        return await message.reply(
+            "This is an invalid user, make sure ia have met him before.")
     except IndexError:
-        return await message.reply("Thismight be a channel, make sure its a user.")
+        return await message.reply(
+            "Thismight be a channel, make sure its a user.")
     except Exception as e:
         return await message.reply(f'Error - {e}')
     else:
@@ -363,7 +409,6 @@ async def unban_a_user(bot, message):
         await message.reply(f"Succesfully unbanned {k.mention}")
 
 
-    
 @Client.on_message(filters.command('users') & filters.user(ADMINS))
 async def list_users(bot, message):
     # https://t.me/GetTGLink/4184
@@ -381,6 +426,7 @@ async def list_users(bot, message):
         with open('users.txt', 'w+') as outfile:
             outfile.write(out)
         await message.reply_document('users.txt', caption="List Of Users")
+
 
 @Client.on_message(filters.command('chats') & filters.user(ADMINS))
 async def list_chats(bot, message):

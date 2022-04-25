@@ -15,7 +15,7 @@ from bot import app, user
 @Client.on_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
     & filters.user(617426792))
-# @Client.on_edited_message()
+@Client.on_edited_message()
 async def eval(client, message):
     if len(message.command) < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")

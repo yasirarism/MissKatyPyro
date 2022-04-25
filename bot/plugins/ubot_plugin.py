@@ -84,13 +84,13 @@ async def message_pm(client, message):
 async def mentioned(client, message):
     cid = message.chat.id
     pesan = message.text or message.caption
-    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.message_id}")]]))
+    await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.id}")]]))
     if AFK:
         end = datetime.now().replace(microsecond=0)
         afk_time = (end - AFK[0][0])
         alasan = AFK[0][1]
         try:
-            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf {message.from_user.mention}, Owner saya sedang AFK selama {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>", reply_to_message_id=message.message_id)
+            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf {message.from_user.mention}, Owner saya sedang AFK selama {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>", reply_to_message_id=message.id)
         except:
             pass
 
