@@ -17,7 +17,7 @@ from bot import app, user
     & filters.user(617426792))
 @Client.on_edited_message()
 async def eval(client, message):
-    if len(message.command) < 2:
+    if '' not in message.text < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")
     status_message = await message.reply_text("Sedang Memproses Eval...")
     cmd = message.text.split(" ", maxsplit=1)[1]
