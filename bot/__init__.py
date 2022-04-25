@@ -15,6 +15,7 @@ from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
 
+SESSION_PYRO = "BQCqknvhk_pwkA9yzwaJExMKUP4LyvCqnU1zJB6MpLobEQvH-kWdMek-D6WSDxpy6BZWVvFXa_dRvF-iGg4OoY5PpWRlPLxMbOpmdnzCp5wxuqqMKBhnUqohiorQv2HmsqQumK9wa6_nb_zwcAuGLgfqB3l5pLL39rj55-n8lYGsz8W_5kV-ng2PkcwWTaiZQhAjbTvtxuCp4xA4wPEjj_fhBqh1Trm0bZNjdDjh34LLIcpdOYjpU_VBJ_rpDoZLOONQQUpx24kf_lGocEC1sOucsBN6OT2OHcudtFJ56_19yxTlJfsbz5vOQgY2Fkum1QYvibudRLfL38PMtyZnoW3eJM0vaAA"
 botStartTime = time.time()
 
 ARQ_API_URL = "https://arq.hamker.in/"
@@ -23,9 +24,18 @@ ARQ_API_KEY = "CYQWYJ-OMSAFJ-ARHIAT-SDADAX-ARQ"
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
-app = Client("MissKatyBot",
-             workers=50,
-             plugins=dict(root="bot/plugins"),
-             sleep_threshold=5)
+app = Client(
+    name=SESSION,
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN,
+    workers=50,
+    plugins=dict(root="bot/plugins"),
+    sleep_threshold=5,
+)
 
-user = Client("YasirUBot")
+user = Client(
+    name=SESSION_PYRO,
+    api_id=API_ID,
+    api_hash=API_HASH,
+)
