@@ -35,7 +35,4 @@ app = Client(
     parse_mode=enums.ParseMode.HTML,
 )
 
-user = Client(
-    "UBot",
-    session_string=str(SESSION_PYRO),
-)
+user = Client(session_string=str(SESSION_PYRO), )
