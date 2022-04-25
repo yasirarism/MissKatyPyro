@@ -10,13 +10,13 @@ from bot.utils.time_gap import check_time_gap
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}
 
-@Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat) & ~filters.edited)
+@Client.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
 async def start(_, message):
     await message.reply_text(
         text=f"Wa'alaikumsalam {message.from_user.mention} 😇"
 )
 
-@Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935) & ~filters.edited)
+@Client.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935))
 @capture_err
 async def request_user(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
@@ -50,7 +50,7 @@ def clear_reqdict():
     REQUEST_DB.clear()
 
     
-# @Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat) & ~filters.edited)
+# @Client.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
 async def start(_, message):
     pesan = [f"Sama-sama {message.from_user.first_name}",
              f"You're Welcome {message.from_user.first_name}",
