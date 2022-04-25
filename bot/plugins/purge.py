@@ -2,16 +2,16 @@
 Syntax: .purge"""
 from info import COMMAND_HANDLER
 import asyncio
-from pyrogram import filters, Client
+from bot import app
+from pyrogram import filters
 
 
-@Client.on_message(
-    filters.command(["purge", "purge@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["purge", "purge@MissKatyRoBot"], COMMAND_HANDLER))
 async def purge(client, message):
     """ purge upto the replied message """
-    if message.chat.type not in (("supergroup", "channel")):
+    # if message.chat.type not in (("supergroup", "channel")):
         # https://t.me/c/1312712379/84174
-        return
+    #    return
 
     admin = await client.get_chat_member(message.chat.id, message.from_user.id)
 
