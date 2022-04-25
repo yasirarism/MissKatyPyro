@@ -19,7 +19,7 @@ from bot import app, user
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
     & filters.user(617426792))
 async def eval(client, message):
-    if '' not in message.text:
+    if len(message.command) < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")
     status_message = await message.reply_text("Sedang Memproses Eval...")
     cmd = message.text.split(" ", maxsplit=1)[1]
