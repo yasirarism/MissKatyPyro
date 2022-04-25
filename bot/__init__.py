@@ -15,7 +15,6 @@ from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
 
-SESSION_PYRO = "YasirUBot"
 botStartTime = time.time()
 
 ARQ_API_URL = "https://arq.hamker.in/"
@@ -25,12 +24,12 @@ aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
 app = Client(
-    name=SESSION,
+    "MissKatyBot",
     workers=50,
     plugins=dict(root="bot/plugins"),
     sleep_threshold=5
 )
 
 user = Client(
-    name=SESSION_PYRO
+    "YasirUBot"
 )
