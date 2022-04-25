@@ -22,11 +22,6 @@ ARQ_API_KEY = "CYQWYJ-OMSAFJ-ARHIAT-SDADAX-ARQ"
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
-app = Client(
-    SESSION,
-    workers=50,
-    plugins=dict(root="bot/plugins"),
-    sleep_threshold=5,
-)
+app = Client(SESSION)
 
 user = Client("YasirUBot", )
