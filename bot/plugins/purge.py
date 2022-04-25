@@ -3,7 +3,7 @@ Syntax: .purge"""
 from info import COMMAND_HANDLER
 import asyncio
 from bot import app
-from pyrogram import filters
+from pyrogram import filters, enums
 
 
 @app.on_message(filters.command(["purge", "purge@MissKatyRoBot"], COMMAND_HANDLER))
@@ -15,7 +15,7 @@ async def purge(client, message):
 
     admin = await client.get_chat_member(message.chat.id, message.from_user.id)
 
-    if admin.status not in ['ChatMemberStatus.ADMINISTRATOR', 'ChatMemberStatus.OWNER']:
+    if admin.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         return await message.reply_text("Command ini hanya untuk admin..",
                                         quote=True)
 
