@@ -15,7 +15,7 @@ async def purge(client, message):
 
     admin = await client.get_chat_member(message.chat.id, message.from_user.id)
 
-    if admin.status not in ['administrator', 'creator']:
+    if admin.status not in ['ChatMemberStatus.ADMINISTRATOR', 'ChatMemberStatus.OWNER']:
         return await message.reply_text("Command ini hanya untuk admin..",
                                         quote=True)
 
