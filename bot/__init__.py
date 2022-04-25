@@ -38,6 +38,4 @@ app = Client(
 user = Client(
     "UBot",
     session_string=str(SESSION_PYRO),
-    api_id=API_ID,
-    api_hash=API_HASH,
 )
