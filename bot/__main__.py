@@ -8,7 +8,7 @@ from pyrogram import idle, __version__
 # Run Bot
 if __name__ == "__main__":
     app.start()
-    user.start()
+    # user.start()
     idle()
     app.stop()
-    user.stop()
+    # user.stop()
