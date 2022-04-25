@@ -1,33 +1,28 @@
-import logging
-from bot import app, user
-from info import BOT_TOKEN
-from utils import temp
-from pyrogram.raw.all import layer
-from pyrogram import idle, __version__
+from pyrogram import Client, idle, filters
 
-# Run Bot
-if __name__ == "__main__":
-    app.start()
-    user.start()
-    me = app.get_me()
-    user = user.get_me()
-    temp.ME = me.id
-    temp.U_NAME = me.username
-    temp.B_NAME = me.first_name
-    try:
-        app.send_message(
-            617426792,
-            f"USERBOT AND BOT STARTED..\nUserBot: {user.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
-        )
-    except:
-        pass
-    logging.info(
-        f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
-    )
-    logging.info(
-        f"{user.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{user.username}."
-    )
-    idle()
-    app.stop()
-    user.stop()
-    logging.info("Userbot and Bot stopped..")
+api_id = 1046625
+api_hash = "c68afc924b92d73ce27708b155f1e5b4"
+bot_token = "1507530289:AAFLdrEV-SmWiQPyfmMe9r2Y-LmtgB0Shdw"
+
+app = Client("YasirUBot", api_id=api_id, api_hash=api_hash)
+app2 = Client("MissKatyBot",
+              api_id=api_id,
+              api_hash=api_hash,
+              bot_token=bot_token)
+
+
+@app.on_message(filters.command("hai"))
+def hai(client, message):
+    message.reply("hai")
+
+
+@app2.on_message(filters.command("hai2"))
+def hai2(client, message):
+    message.reply("ok")
+
+
+app.start()
+app2.start()
+s = app.export_session_string()
+print(s)
+idle()
