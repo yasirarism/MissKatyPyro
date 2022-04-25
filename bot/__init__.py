@@ -36,6 +36,7 @@ app = Client(
 )
 
 user = Client(
-    "YasirUBot",
     session_string=str(SESSION_PYRO),
+    api_id=API_ID,
+    api_hash=API_HASH,
 )
