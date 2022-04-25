@@ -11,10 +11,13 @@ from pyrogram import filters, Client
 from info import COMMAND_HANDLER
 from bot import app, user
 
-@Client.on_message(filters.command(["run","run@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
-@Client.on_edited_message()
+
+@Client.on_message(
+    filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user(617426792))
+# @Client.on_edited_message()
 async def eval(client, message):
-    if len(message.command) < 2 :
+    if len(message.command) < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")
     status_message = await message.reply_text("Sedang Memproses Eval...")
     cmd = message.text.split(" ", maxsplit=1)[1]
@@ -59,7 +62,7 @@ async def eval(client, message):
             out_file.name = "MissKaty_Eval.txt"
             await reply_to_.reply_document(
                 document=out_file,
-                caption=cmd[: 4096 // 4 - 1],
+                caption=cmd[:4096 // 4 - 1],
                 disable_notification=True,
                 quote=True,
             )
@@ -69,8 +72,6 @@ async def eval(client, message):
 
 
 async def aexec(code, client, message):
-    exec(
-        "async def __aexec(client, message): "
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
+    exec("async def __aexec(client, message): " +
+         "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](client, message)
