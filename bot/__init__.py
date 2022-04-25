@@ -23,7 +23,7 @@ aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
 app = Client(
-    SESSION,
+    "MissKatyBot",
     workers=50,
     plugins=dict(root="bot/plugins"),
     sleep_threshold=5,
