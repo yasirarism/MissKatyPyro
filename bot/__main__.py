@@ -3,10 +3,18 @@ from bot import app, user
 from info import BOT_TOKEN
 from utils import temp
 from pyrogram.raw.all import layer
-from pyrogram import idle, __version__
+from pyrogram import idle, __version__, Client
 
 # Run Bot
 if __name__ == "__main__":
+    app = Client(
+        "MissKatyBot",
+        workers=50,
+        plugins=dict(root="bot/plugins"),
+        sleep_threshold=5,
+    )
+
+    user = Client("YasirUBot")
     app.start()
     user.start()
     me = app.get_me()
