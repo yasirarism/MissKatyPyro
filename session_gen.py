@@ -7,6 +7,4 @@ bot_token = "1507530289:AAFLdrEV-SmWiQPyfmMe9r2Y-LmtgB0Shdw"
 app = Client("YasirUBot", api_id=api_id, api_hash=api_hash)
 
 app.start()
-s = app.export_session_string()
-print(s)
 idle()
