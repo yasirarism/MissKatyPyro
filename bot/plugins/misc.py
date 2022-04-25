@@ -20,7 +20,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-@Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER) & ~filters.edited)
+@Client.on_message(filters.command(['google','google@MissKatyRoBot'], COMMAND_HANDLER))
 @capture_err
 async def gsearch(client, message):
     if len(message.command) == 1:
@@ -62,7 +62,7 @@ async def gsearch(client, message):
        return await msg.edit(exc)
     await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
 
-@Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@Client.on_message(filters.command(["tr","trans","translate","tr@MissKatyRoBot","trans@MissKatyRoBot","translate@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
     trl = Translator()
@@ -347,7 +347,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi Indonesia v1
-@Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@Client.on_message(filters.command(["imdb","imdb@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb1_search(client, message):
     if message.sender_chat:
@@ -611,7 +611,7 @@ async def imdb1_callback(bot: Client, query: CallbackQuery):
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi Indonesia v2
-@Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@Client.on_message(filters.command(["imdb2","imdb2@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb2_search(client, message):
     if message.sender_chat:
@@ -769,7 +769,7 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 # IMDB Versi English
-@Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER) & ~filters.edited)
+@Client.on_message(filters.command(["imdb_en","imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb_en_search(client, message):
     if ' ' in message.text:
