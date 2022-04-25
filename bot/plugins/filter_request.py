@@ -1,7 +1,7 @@
 import re
 import random
 import datetime
-from pyrogram import filters, Client
+from pyrogram import filters, Client, enums
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from bot.utils.decorator import capture_err
@@ -71,7 +71,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
       user = await c.get_chat_member(-1001404537486, q.from_user.id)
     except:
       pass
-    if user.status in ['administrator','creator']:
+    if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         i, msg_id, chat_id = q.data.split('_')
         await c.send_message(
             chat_id=chat_id,
@@ -94,7 +94,7 @@ async def _callbackreqada(c: Client, q: CallbackQuery):
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
     except:
        pass
-    if user.status in ['administrator','creator']:
+    if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         i, msg_id, chat_id = q.data.split('_')
         await c.send_message(
             chat_id=chat_id,
@@ -117,7 +117,7 @@ async def _callbackreject(c: Client, q: CallbackQuery):
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
     except:
        pass
-    if user.status in ['administrator','creator']:
+    if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         i, msg_id, chat_id = q.data.split('_')
         await c.send_message(
             chat_id=chat_id,
@@ -140,7 +140,7 @@ async def _callbackunav(c: Client, q: CallbackQuery):
        user = await c.get_chat_member(-1001404537486, q.from_user.id)
     except:
        pass
-    if user.status in ['administrator','creator']:
+    if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         i, msg_id, chat_id = q.data.split('_')
         await c.send_message(
             chat_id=chat_id,
