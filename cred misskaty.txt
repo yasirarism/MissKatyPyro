@@ -1,0 +1,11 @@
+API_HASH=c68afc924b92d73ce27708b155f1e5b4
+DATABASE_NAME=MissKatyPyro
+API_ID=1046625
+UPSTREAM_REPO=https://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@github.com/yasirarism/MissKatyPyro
+ADMINS=617426792
+SUPPORT_CHAT=YMovieZChat
+CACHE_TIME=300
+DATABASE_URI=mongodb+srv://yasirarism:sopaten07@cluster0.dkxnl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+BOT_TOKEN=1507530289:AAFLdrEV-SmWiQPyfmMe9r2Y-LmtgB0Shdw
+COLLECTION_NAME=MissKatyBot
+LOG_CHANNEL=-1001381073004

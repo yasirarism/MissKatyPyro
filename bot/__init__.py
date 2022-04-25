@@ -25,7 +25,7 @@ aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
 app = Client(
-    session_name=SESSION,
+    name=SESSION,
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
@@ -35,7 +35,7 @@ app = Client(
 )
 
 user = Client(
-    session_name=SESSION_PYRO,
+    name=SESSION_PYRO,
     api_id=API_ID,
     api_hash=API_HASH,
 )
