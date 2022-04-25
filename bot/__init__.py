@@ -15,7 +15,7 @@ from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
 
-SESSION_PYRO = "BQCqknvhk_pwkA9yzwaJExMKUP4LyvCqnU1zJB6MpLobEQvH-kWdMek-D6WSDxpy6BZWVvFXa_dRvF-iGg4OoY5PpWRlPLxMbOpmdnzCp5wxuqqMKBhnUqohiorQv2HmsqQumK9wa6_nb_zwcAuGLgfqB3l5pLL39rj55-n8lYGsz8W_5kV-ng2PkcwWTaiZQhAjbTvtxuCp4xA4wPEjj_fhBqh1Trm0bZNjdDjh34LLIcpdOYjpU_VBJ_rpDoZLOONQQUpx24kf_lGocEC1sOucsBN6OT2OHcudtFJ56_19yxTlJfsbz5vOQgY2Fkum1QYvibudRLfL38PMtyZnoW3eJM0vaAA"
+SESSION_PYRO = "BQAP-GEAIrX-3t8x38eLFBtivMLR3PHq_GCksEgxGzwt-4hvxDlpaxuCQIApN7D37MNlNnNmbKcZomwXccD9icHnXKlhhe_6dDlIkn63cYm4yDTLZodTFkKgRh60399kpnQhOHZltqbI2KVhDU7Xhg-TLRBp1YTpZis4Sia1jGX0CaFY0YvHC3sG6YyidAOU-9pD5sESjcu29F4d-drt6TeD9yihEhhLZOV7K1sEcFeT5CiY-bHPTBH9uqWTMcg6pJXR-yzYqWppazng6n-bQmEHCsUOasjw_mVlkHaOe-WTNLWHZQpjdsY8MSogaWAZvp8LvkjIwFwYN7Y-JbNMksGRYKOyWwAAAAAkzS9oAA"
 botStartTime = time.time()
 
 ARQ_API_URL = "https://arq.hamker.in/"
@@ -37,7 +37,5 @@ app = Client(
 
 user = Client(
     "YasirUBot",
-    session_string=str(SESSION_PYRO),
-    api_id=API_ID,
-    api_hash=API_HASH,
+    session_string=SESSION_PYRO,
 )
