@@ -24,9 +24,16 @@ arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
 app = Client(
     "MissKatyBot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+    bot_token=BOT_TOKEN,
     workers=50,
     plugins=dict(root="bot/plugins"),
     sleep_threshold=5,
 )
 
-user = Client("YasirUBot")
+user = Client(
+    "YasirUBot",
+    api_id=API_ID,
+    api_hash=API_HASH,
+)
