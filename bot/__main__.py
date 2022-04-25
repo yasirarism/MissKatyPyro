@@ -17,7 +17,7 @@ from pyrogram import Client, idle
 
 
 async def main():
-    apps = [Client("MissKatyBot"), Client("YasirUbot")]
+    apps = [Client("MissKatyBot.session"), Client("YasirUbot.session")]
 
     ...  # Set up handlers
 
