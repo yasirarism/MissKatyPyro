@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import json
 import traceback
 import requests
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from gpytranslate import Translator
 from requests.utils import requote_uri
 from gtts import gTTS
