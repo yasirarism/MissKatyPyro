@@ -68,7 +68,7 @@ async def mediainfo(client, message):
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph)]])
             with io.BytesIO(str.encode(output)) as out_file:
                out_file.name = "MissKaty_Mediainfo.txt"
-               await message.reply_document(out_file, caption="Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}", reply_markup=markup)
+               await message.reply_document(out_file, caption=f"Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}", reply_markup=markup)
                await process.delete()
         except IndexError:
             return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
