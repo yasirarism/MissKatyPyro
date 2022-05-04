@@ -61,14 +61,14 @@ async def mediainfo(client, message):
                          <pre>{output}</pre>
                          """
             tgraph = post_to_telegraph(title, body_text)
-            siteurl = "https://spaceb.in/api/v1/documents/"
-            response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
-            response = response.json()
-            spacebin = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph), InlineKeyboardButton(text="💬 Spacebin", url=spacebin)]])
+            # siteurl = "https://spaceb.in/api/v1/documents/"
+            # response = requests.post(siteurl, data={"content": output, "extension": 'txt'} )
+            # response = response.json()
+            # spacebin = "https://spaceb.in/"+response['payload']['id']
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph)]])
             with io.BytesIO(str.encode(output)) as out_file:
                out_file.name = "MissKaty_Mediainfo.txt"
-               await message.reply_document(out_file, caption="Hasil mediainfo anda..", reply_markup=markup)
+               await message.reply_document(out_file, caption="Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}", reply_markup=markup)
                await process.delete()
         except IndexError:
             return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
