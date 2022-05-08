@@ -106,7 +106,7 @@ async def _callbackanightmd(c: Client, q: CallbackQuery):
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
-scheduler.add_job(job_close_ymoviez, trigger="cron", hour=22, minute=15)
+# scheduler.add_job(job_close_ymoviez, trigger="cron", hour=22, minute=15)
 scheduler.add_job(job_open, trigger="cron", hour=6, minute=0)
-scheduler.add_job(job_open_ymoviez, trigger="cron", hour=9, minute=0)
+# scheduler.add_job(job_open_ymoviez, trigger="cron", hour=9, minute=0)
 scheduler.start()
