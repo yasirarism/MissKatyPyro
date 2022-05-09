@@ -1,4 +1,4 @@
-from pyrogram import Client, filters
+from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
 from bot import app
@@ -187,16 +187,16 @@ async def gen_invite(bot, message):
 @app.on_message(
     filters.command(["adminlist", "adminlist@MissKatyRoBot"], COMMAND_HANDLER))
 async def adminlist(_, message):
-    if message.chat.type == 'private':
+    if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("Perintah ini hanya untuk grup")
     try:
         mem = await app.get_chat_members(message.chat.id,
-                                         filter="administrators")
+                                         filter=enums.ChatMembersFilter.ADMINISTRATORS)
         res = "".join(
             f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n"
             for i in mem)
         return await message.reply(
-            f"<b>Daftar Admin di {message.chat.title}:</b>\n{res}")
+            f"<b>Daftar Admin di {message.chat.title} ({message.chat.id}):</b>\n{res}")
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
