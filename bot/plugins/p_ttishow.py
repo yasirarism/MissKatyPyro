@@ -190,13 +190,12 @@ async def adminlist(_, message):
     if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("Perintah ini hanya untuk grup")
     try:
-        mem = await app.get_chat_members(message.chat.id,
-                                         filter=enums.ChatMembersFilter.ADMINISTRATORS)
-        res = "".join(
-            f"~ <a href='tg://user?id={i['user']['id']}'>{i['user']['first_name']}</a>\n"
-            for i in mem)
-        return await message.reply(
-            f"<b>Daftar Admin di {message.chat.title} ({message.chat.id}):</b>\n{res}")
+        administrators = []
+        async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+          administrators.append(f"{m.user.first_name}")
+
+        res = "".join(f"~ {i}\n" for i in administrators)
+        return await message.reply(f"Daftar Admin di <b>{message.chat.title}</b> ({message.chat.id}):\n~ {res}")
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
