@@ -23,7 +23,7 @@ from bot.utils.pyro_progress import (
 async def genss(client, message):
     if len(message.command) > 1 and message.command[1].isdigit():
         sscount = message.command[1]
-    else
+    else:
         sscount = 9
       
     if message.reply_to_message is not None:
