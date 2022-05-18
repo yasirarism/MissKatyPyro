@@ -61,7 +61,7 @@ async def del_msg(client, message):
           elif a.deleted_message.video:
              await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Nama file:</b> {a.deleted_message.video.file_name}")
 
-@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(^(/leech|/mirror))
+@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(^(/leech|/mirror)))
 async def edit_msg(client, message):
     edit_log = await user.send(
         functions.channels.GetAdminLog(
