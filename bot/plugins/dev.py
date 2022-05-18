@@ -7,7 +7,6 @@ Syntax: .eval PythonCode"""
 import io
 import sys
 import traceback
-import logging
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app, user
@@ -30,10 +29,8 @@ async def shell(client, message):
     stdout = process.stdout.decode('utf-8')
     if len(stdout) != 0:
         reply += f"*Stdout*\n<code>{stdout}</code>\n"
-        logging.info(f"Shell - {cmd} - {stdout}")
     if len(stderr) != 0:
         reply += f"*Stderr*\n<code>{stderr}</code>\n"
-        logging.error(f"Shell - {cmd} - {stderr}")
     if len(reply) > 3000:
         with open('shell_output.txt', 'w') as file:
             file.write(reply)
