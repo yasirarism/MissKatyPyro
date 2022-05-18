@@ -108,8 +108,7 @@ async def create(_, message):
             quote=True)
 
     msg = await message.reply_text(message,
-                                   f"`Pasting to Github Gist...`",
-                                   quote=True)
+                                   f"`Pasting to Github Gist...`")
     data = ''
     limit = 1024 * 1024
     if reply and reply.document:
@@ -182,4 +181,4 @@ async def delete(_, message):
     except Exception as e:
         result = str(e)
 
-    return await message.reply_text(result, quote=True)
+    return await message.reply_text(result)
