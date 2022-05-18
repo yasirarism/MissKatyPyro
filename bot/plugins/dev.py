@@ -7,15 +7,49 @@ Syntax: .eval PythonCode"""
 import io
 import sys
 import traceback
-from pyrogram import filters, Client
+import logging
+from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app, user
+from subprocess import run as srun
 
+@app.on_message(
+    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user(617426792))
+@app.on_edited_message(
+    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user(617426792))
+async def shell(client, message):
+    cmd = message.text.split(' ', 1)
+    if len(cmd) == 1:
+        return await message.reply('No command to execute was given.')
+    cmd = cmd[1]
+    process = srun(cmd, capture_output=True, shell=True)
+    reply = ''
+    stderr = process.stderr.decode('utf-8')
+    stdout = process.stdout.decode('utf-8')
+    if len(stdout) != 0:
+        reply += f"*Stdout*\n<code>{stdout}</code>\n"
+        logging.info(f"Shell - {cmd} - {stdout}")
+    if len(stderr) != 0:
+        reply += f"*Stderr*\n<code>{stderr}</code>\n"
+        logging.error(f"Shell - {cmd} - {stderr}")
+    if len(reply) > 3000:
+        with open('shell_output.txt', 'w') as file:
+            file.write(reply)
+        with open('shell_output.txt', 'rb') as doc:
+            await message.reply_document(
+                document=doc,
+                filename=doc.name)
+    elif len(reply) != 0:
+        await message.reply(reply)
+    else:
+        await message.reply('No Reply')
 
-@Client.on_message(
+@app.on_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
     & filters.user(617426792))
-@Client.on_edited_message(
+@app.on_edited_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
     & filters.user(617426792))
 async def eval(client, message):
