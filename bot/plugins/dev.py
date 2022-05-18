@@ -37,7 +37,7 @@ async def shell(client, message):
         with open('shell_output.txt', 'rb') as doc:
             await message.reply_document(
                 document=doc,
-                filename=doc.name)
+                file_name=doc.name)
     elif len(reply) != 0:
         await message.reply(reply)
     else:
