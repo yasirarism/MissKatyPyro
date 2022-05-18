@@ -69,7 +69,7 @@ async def download(client, message):
                 )
                 current_message += f"ETA: {estimated_total_time}"
                 if round(diff % 10.00) == 0 and current_message != display_message:
-                    await message.edit(
+                    await pesan.edit(
                         disable_web_page_preview=True, text=current_message
                     )
                     display_message = current_message
