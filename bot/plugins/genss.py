@@ -21,6 +21,11 @@ from bot.utils.pyro_progress import (
 @app.on_message(filters.command(["genss","genss@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def genss(client, message):
+    if len(message.command) > 1 and message.command[1].isdigit():
+        sscount = message.command[1]
+    else
+        sscount = 9
+      
     if message.reply_to_message is not None:
         process = await message.reply_text(f"`Processing, please wait {message.from_user.first_name}...`")
         c_time = time.time()
@@ -42,7 +47,7 @@ async def genss(client, message):
                 the_real_download_location,
                 tmp_directory_for_each_user,
                 5,
-                9
+                sscount
             )
             logger.info(images)
             await sleep(2)
