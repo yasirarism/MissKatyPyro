@@ -165,7 +165,7 @@ async def create(_, message):
                              url=f"https://telegram.me/share/url?url={url}")
     ])
 
-    pasted = f"**Here's your Github Gist URL successfully pasted.\n\nPaste by {uname}**"
+    pasted = f"**Your Github Gist URL successfully pasted<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 @app.on_message(filters.command(["delgist"], COMMAND_HANDLER) & filters.user(617426792))
