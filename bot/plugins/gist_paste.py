@@ -4,6 +4,7 @@ from re import compile as compiles
 from requests import post, delete
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from json import dumps
 from bot import app
 from info import COMMAND_HANDLER
 
@@ -142,7 +143,7 @@ async def create(_, message):
         uname = message.sender_chat.title
 
     try:
-        resp = Github_Gist.create(data)
+        resp = Github_Gist().create(data)
         url = resp.get("url")
         raw = resp.get("raw")
     except Exception as e:
