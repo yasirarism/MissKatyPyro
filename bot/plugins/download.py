@@ -2,6 +2,7 @@ import time
 import asyncio
 import math
 import os
+import logging
 from bot import app
 from pySmartDL import SmartDL
 from datetime import datetime
@@ -74,7 +75,7 @@ async def download(client, message):
                     display_message = current_message
                     await asyncio.sleep(10)
             except Exception as e:
-                LOGGER.info(str(e))
+                logging.info(str(e))
                 pass
         if os.path.exists(download_file_path):
             end_t = datetime.now()
