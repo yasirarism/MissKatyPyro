@@ -15,7 +15,7 @@ class Github_Gist: # Learn class for first time, PR if bad or want to improve
         self.title = title
         self.description = description
         self.secret = is_secret
-        self.username = app.get_me().username
+        self.username = "MissKatyRoBot"
         if not self.title:
             self.title = f"Gist Paste by @{self.username}"
         if not self.description:
