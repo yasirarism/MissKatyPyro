@@ -60,9 +60,10 @@ async def download(client, message):
             )
             estimated_total_time = downloader.get_eta(human=True)
             try:
-                current_message = "trying to download\n"
-                current_message += f"URL: {url}\n"
-                current_message += f"File Name: {custom_file_name}\n"
+                current_message = "trying to download...\n"
+                current_message += f"URL: <code>{url}</code>\n"
+                current_message += f"File Name: <code>{custom_file_name}</code>\n"
+                current_message += f"Speed: {speed}\n"
                 current_message += f"{progress_str}\n"
                 current_message += (
                     f"{humanbytes(downloaded)} of {humanbytes(total_length)}\n"
