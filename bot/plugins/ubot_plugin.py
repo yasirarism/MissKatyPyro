@@ -50,10 +50,11 @@ async def unafk(client, message):
 async def del_msg(client, message):
     async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
        try:
-          pengguna = await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id).status
+          pengguna = await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id)
+          ustat = pengguna.status
        except:
-          pass
-       if pengguna.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or pengguna.user.is_bot:
+          ustat = enums.ChatMemberStatus.MEMBER
+       if ustat not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or pengguna.user.is_bot:
           return
        if a.user.id == a.deleted_message.from_user.id:
           if a.deleted_message.text:
@@ -74,9 +75,10 @@ async def edit_msg(client, message):
         )
     )
     try:
-        pengguna = await user.get_chat_member(message[0].chat.id, edit_log.users[0].id).status
+        pengguna = await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)
+        ustat = pengguna.status
     except:
-        pass
+        ustat = enums.ChatMemberStatus.MEMBER
     if edit_log.users[0].bot or pengguna.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         return
     await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.message.message}")
