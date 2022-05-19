@@ -54,7 +54,7 @@ async def del_msg(client, message):
           ustat = pengguna.status
        except:
           ustat = enums.ChatMemberStatus.MEMBER
-       if ustat not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or pengguna.user.is_bot:
+       if ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or pengguna.user.is_bot:
           return
        if a.user.id == a.deleted_message.from_user.id:
           if a.deleted_message.text:
@@ -79,7 +79,7 @@ async def edit_msg(client, message):
         ustat = pengguna.status
     except:
         ustat = enums.ChatMemberStatus.MEMBER
-    if edit_log.users[0].bot or pengguna.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
+    if edit_log.users[0].bot or ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         return
     await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.message.message}")
     
