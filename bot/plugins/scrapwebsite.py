@@ -181,7 +181,7 @@ async def melongmovie(_, message):
 
 
 @app.on_message(
-    filters.command(["lk21", "lk21@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["lk21"], COMMAND_HANDLER))
 @capture_err
 async def lk21_scrap(_, message):
     try:
@@ -193,7 +193,7 @@ async def lk21_scrap(_, message):
             data = "".join(
                 f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n"
                 for i in res)
-            await msg.edit(data)
+            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://149.56.24.226):</b>\n{data}")
     except IndexError:
         res = await getcontent("https://149.56.24.226")
         soup = BeautifulSoup(res, 'lxml')
@@ -203,12 +203,12 @@ async def lk21_scrap(_, message):
             dl = link.split('/', maxsplit=3)[3]
             title = res.select('a')[0].find("img")['alt']
             data.append({
-             'judul': judul,
+             'title': title,
              'link': link,
              'dl': f'https://asdahsdkjajslkfbkaujsgfbjaeghfyjj76e8637e68723rhbfajkl.rodanesia.com/get/{dl}'
             })
-        res = "".join(f"<b>{i['judul']}</b>\n{i['kualitas']}\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
-        return await message.reply(res)
+        res = "".join(f"<b>{i['title']}</b>\n{i['kualitas']}\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
+        return await message.reply(f"<b>Daftar rilis terbaru di web lk21 (https://149.56.24.226)</b>:\n{res}")
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
