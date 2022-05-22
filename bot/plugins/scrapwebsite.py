@@ -195,7 +195,7 @@ async def lk21_scrap(_, message):
                 for i in res)
             await msg.edit(data)
     except IndexError:
-        res = await get_content("https://149.56.24.226")
+        res = await getcontent("https://149.56.24.226")
         soup = BeautifulSoup(res, 'lxml')
         data = []
         for res in soup.find_all(class_="featured-item"):
