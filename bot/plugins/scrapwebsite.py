@@ -195,9 +195,20 @@ async def lk21_scrap(_, message):
                 for i in res)
             await msg.edit(data)
     except IndexError:
-        return await message.reply(
-            "Gunakan command /lk21 [judul] untuk search film di web layarkaca21"
-        )
+        res = await get_content("https://149.56.24.226")
+        soup = BeautifulSoup(res, 'lxml')
+        data = []
+        for res in soup.find_all(class_="featured-item"):
+            link = res.select('a')[0]['href']
+            dl = link.split('/', maxsplit=3)[3]
+            title = res.select('a')[0].find("img")['alt']
+            data.append({
+             'judul': judul,
+             'link': link,
+             'dl': f'https://asdahsdkjajslkfbkaujsgfbjaeghfyjj76e8637e68723rhbfajkl.rodanesia.com/get/{dl}'
+            })
+        res = "".join(f"<b>{i['judul']}</b>\n{i['kualitas']}\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
+        return await message.reply(res)
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
