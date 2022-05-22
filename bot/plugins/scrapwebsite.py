@@ -110,7 +110,11 @@ async def movikucc(_, message):
 @capture_err
 async def savefilm21(_, message):
     try:
-        judul = message.text.split(" ", maxsplit=1)[1]
+       judul = message.text.split(" ", maxsplit=1)[1]
+    except IndexError:
+       judul = ''
+
+    try:
         msg = await message.reply("Sedang proses scrap, mohon tunggu..")
         headers = {
             'User-agent':
@@ -148,6 +152,10 @@ async def savefilm21(_, message):
 async def melongmovie(_, message):
     try:
         judul = message.text.split(" ", maxsplit=1)[1]
+    except IndexError:
+        judul = ''
+
+    try:
         msg = await message.reply("Sedang proses scrap, mohon tunggu..")
         headers = {
             'User-agent':
@@ -228,6 +236,7 @@ async def gomov_scrap(_, message):
         judul = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
         judul = ''
+
     try:
         msg = await message.reply(f"Scraping GoMov Website.."
                                   )
