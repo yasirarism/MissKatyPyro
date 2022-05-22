@@ -207,7 +207,7 @@ async def lk21_scrap(_, message):
              'link': link,
              'dl': f'https://asdahsdkjajslkfbkaujsgfbjaeghfyjj76e8637e68723rhbfajkl.rodanesia.com/get/{dl}'
             })
-        res = "".join(f"<b>{i['title']}</b>\n{i['kualitas']}\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
+        res = "".join(f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
         return await message.reply(f"<b>Daftar rilis terbaru di web lk21 (https://149.56.24.226)</b>:\n{res}")
     except Exception:
         exc = traceback.format_exc()
