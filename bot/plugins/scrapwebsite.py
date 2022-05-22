@@ -226,7 +226,10 @@ async def getcontent(url):
 async def gomov_scrap(_, message):
     try:
         judul = message.text.split(" ", maxsplit=1)[1]
-        msg = await message.reply(f"Mencari film di GoMov dg keyword {judul}.."
+    except IndexError:
+        judul = ''
+    try:
+        msg = await message.reply(f"Scraping GoMov Website.."
                                   )
         headers = {
             'User-agent':
@@ -234,8 +237,7 @@ async def gomov_scrap(_, message):
         }
 
         html = requests.get(f'https://185.173.38.216/?s={judul}',
-                            headers=headers,
-                            verify=False)
+                            headers=headers)
         soup = BeautifulSoup(html.text, 'lxml')
         entry = soup.find_all(class_="entry-title")
         DATA = []
@@ -250,9 +252,6 @@ async def gomov_scrap(_, message):
         await msg.edit(
             f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @MissKatyRoBot"
         )
-    except IndexError:
-        return await message.reply(
-            "Gunakan command /gomov [judul] untuk search film di GoMov.me")
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
