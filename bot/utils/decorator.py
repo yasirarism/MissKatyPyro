@@ -3,7 +3,7 @@
 import sys
 import traceback
 from functools import wraps
-
+from threading import Thread
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from info import LOG_CHANNEL
@@ -29,6 +29,7 @@ def split_limits(text):
 
 
 def capture_err(func):
+
     @wraps(func)
     async def capture(client, message, *args, **kwargs):
         try:
@@ -44,11 +45,23 @@ def capture_err(func):
                     message.chat.id if message.chat else 0,
                     message.text or message.caption,
                     exc,
-                )
-            )
+                ))
 
             for x in error_feedback:
                 await app.send_message(LOG_CHANNEL, x)
             raise err
 
     return capture
+
+
+def new_thread(fn):
+    """To use as decorator to make a function call threaded.
+    Needs import
+    from threading import Thread"""
+
+    def wrapper(*args, **kwargs):
+        thread = Thread(target=fn, args=args, kwargs=kwargs)
+        thread.start()
+        return thread
+
+    return wrapper
