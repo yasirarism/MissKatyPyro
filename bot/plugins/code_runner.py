@@ -28,7 +28,7 @@ async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
     return await message.reply(
-        f"Daftar Bahasa Pemrograman Yang Didukung:\n{list_}")
+        f"<b>Daftar Bahasa Pemrograman Yang Didukung:</b>\n{list_}")
 
 
 @Client.on_message(filters.command(["assembly"], "!"))
@@ -37,7 +37,8 @@ async def assembly(client, message):
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        res = await glot("assembly", "asm", message.text.split(None, 1)[1])
+        res = await glot(message.command[0], "asm",
+                         message.text.split(None, 1)[1])
         hasil = res['stdout'] if res['stdout'] else res['stderr']
         hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -45,865 +46,541 @@ async def assembly(client, message):
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["ats", "ats@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["ats"], "!"))
 async def ats(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/ats/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.dats", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "dats",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["bash", "bash@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["bash"], "!"))
 async def bash(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/bash/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.sh", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "sh",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["c", "c@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["c"], "!"))
 async def c(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/c/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.c", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "c",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["clojure", "clojure@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["clojure"], "!"))
 async def clojure(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/clojure/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.clj", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "clj",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["cobol", "cobol@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["cobol"], "!"))
 async def cobol(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/cobol/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.cob", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "cob",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(
-    filters.command(["coffeescript", "coffeescript@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["coffeescript"], "!"))
 async def coffeescript(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/coffeescript/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.coffee", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "coffee",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["cpp", "cpp@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["cpp"], "!"))
 async def cpp(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/cpp/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.cpp", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "cpp",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["crystal", "crystal@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["crystal"], "!"))
 async def crystal(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/crystal/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.cr", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "cr",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["csharp", "csharp@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["csharp"], "!"))
 async def csharp(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/csharp/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.cs", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "cs",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["d", "d@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["d"], "!"))
 async def d(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/d/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.d", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "d",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["elixir", "elixir@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["elixir"], "!"))
 async def elixir(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/elixir/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.ex", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "ex",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["elm", "elm@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["elm"], "!"))
 async def elm(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/elm/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.elm", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "elm",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["erlang", "erlang@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["erlang"], "!"))
 async def erlang(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/erlang/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.erl", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "erl",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["fsharp", "fsharp@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["fsharp"], "!"))
 async def fsharp(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/fsharp/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.fs", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "fs",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["go", "go@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["go"], "!"))
 async def go(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/go/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.go", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "go",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["groovy", "groovy@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["groovy"], "!"))
 async def groovy(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/groovy/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.groovy", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "groovy",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["haskell", "haskell@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["haskell"], "!"))
 async def haskell(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/haskell/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.hs", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "hs",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["idris", "idris@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["idris"], "!"))
 async def idris(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/idris/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.idr", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "idr",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["java", "java@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["java"], "!"))
 async def java(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/java/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.java", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "java",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(
-    filters.command(["javascript", "javascript@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["javascript"], "!"))
 async def javascript(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/javascript/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.js", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "js",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["julia", "julia@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["julia"], "!"))
 async def julia(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/julia/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.jl", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "jl",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["kotlin", "kotlin@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["kotlin"], "!"))
 async def kotlin(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/kotlin/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.kt", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "kt",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["lua", "lua@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["lua"], "!"))
 async def lua(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/lua/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.lua", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "lua",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["mercury", "mercury@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["mercury"], "!"))
 async def mercury(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/mercury/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.m", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "m",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["nim", "nim@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["nim"], "!"))
 async def nim(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/nim/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.nim", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "nim",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["nix", "nix@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["nix"], "!"))
 async def nix(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/nix/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.nix", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "nix",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["ocaml", "ocaml@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["ocaml"], "!"))
 async def ocaml(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/ocaml/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.ml", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "ml",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["perl", "perl@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["perl"], "!"))
 async def perl(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/perl/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.pl", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "pl",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["php", "php@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["php"], "!"))
 async def php(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/php/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.php", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "php",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["python", "python@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["python"], "!"))
 async def python(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/python/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.py", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "py",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["raku", "raku@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["raku"], "!"))
 async def raku(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/raku/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.raku", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "raku",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["ruby", "ruby@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["ruby"], "!"))
 async def ruby(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/ruby/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.rb", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "rb",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["rust", "rust@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["rust"], "!"))
 async def rust(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/rust/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.rs", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "rs",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["scala", "scala@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["scala"], "!"))
 async def scala(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/scala/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.scala", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "scala",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(filters.command(["swift", "swift@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["swift"], "!"))
 async def swift(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/ats/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.swift", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        stdout = response['stdout']
-
-        stderr = response['stderr']
-        hasil = f"Hasil : {stdout}\nStderr : {stderr}"
+        res = await glot(message.command[0], "swift",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
 
-@Client.on_message(
-    filters.command(["typescript", "typescript@MissKatyRoBot"], "!"))
+@Client.on_message(filters.command(["typescript"], "!"))
 async def typescript(client, message):
     if len(message.command) < 2:
         return await message.reply(
             "Silahkan masukkan kode yang ingin dijalankan.")
     try:
-        siteurl = "https://glot.io/api/run/typescript/latest"
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        code = message.text.split(None, 1)[1]
-        data = {"files": [{"name": "Yasir.ts", "content": code}]}
-        response = requests.post(siteurl, json=data, headers=headers)
-        response = response.json()
-        hasil = response['stdout'] if response['stdout'] else response['stderr']
-        hasil = f"Hasil :\n{stdout}"
+        res = await glot(message.command[0], "ts",
+                         message.text.split(None, 1)[1])
+        hasil = res['stdout'] if res['stdout'] else res['stderr']
+        hasil = f"Hasil :\n{hasil}"
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
