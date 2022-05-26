@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # (c) Shrimadhav U K
 
-
+import asyncio
 import math
 import time
 from pyrogram.errors import MessageNotModified, FloodWait
@@ -40,7 +40,10 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
         )
         try:
             await message.edit(f"{ud_type}\n {tmp}")
-        except (MessageNotModified, FloodWait):
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            await message.edit(f"{ud_type}\n {tmp}")
+        except MessageNotModified:
             pass
 
 
@@ -50,7 +53,7 @@ def humanbytes(size: int) -> str:
     # 2**10 = 1024
     if not size:
         return ""
-    power = 2 ** 10
+    power = 2**10
     number = 0
     dict_power_n = {0: " ", 1: "Ki", 2: "Mi", 3: "Gi", 4: "Ti"}
     while size > power:
@@ -63,7 +66,12 @@ def time_formatter(seconds: int) -> str:
     result = ""
     v_m = 0
     remainder = seconds
-    r_ange_s = {"days": (24 * 60 * 60), "hours": (60 * 60), "minutes": 60, "seconds": 1}
+    r_ange_s = {
+        "days": (24 * 60 * 60),
+        "hours": (60 * 60),
+        "minutes": 60,
+        "seconds": 1
+    }
     for age in r_ange_s:
         divisor = r_ange_s[age]
         v_m, remainder = divmod(remainder, divisor)
