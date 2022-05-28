@@ -53,7 +53,7 @@ async def take_screenshot(url: str, full: bool = False):
     return file
 
 
-@app.on_message(filters.command(["webss"]), COMMAND_HANDLER)
+@app.on_message(filters.command(["webss"], COMMAND_HANDLER))
 @capture_err
 async def take_ss(_, message):
     if len(message.command) < 2:
