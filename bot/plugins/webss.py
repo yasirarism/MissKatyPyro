@@ -25,7 +25,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from .. import app
-from ...info import COMMAND_HANDLER
+from info import COMMAND_HANDLER
 from ..utils.decorator import capture_err
 from ..utils.http import post
 
