@@ -57,7 +57,8 @@ async def take_screenshot(url: str, full: bool = False):
 @capture_err
 async def take_ss(_, message):
     if len(message.command) < 2:
-        return await eor(message, text="Give A Url To Fetch Screenshot.")
+        return await message.reply(message,
+                                   text="Give A Url To Fetch Screenshot.")
 
     if len(message.command) == 2:
         url = message.text.split(None, 1)[1]
