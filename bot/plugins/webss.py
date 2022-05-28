@@ -24,7 +24,7 @@ from io import BytesIO
 from pyrogram import filters
 from pyrogram.types import Message
 
-from .. import app
+from bot import app
 from info import COMMAND_HANDLER
 from ..utils.decorator import capture_err
 from ..utils.http import post
@@ -53,12 +53,11 @@ async def take_screenshot(url: str, full: bool = False):
     return file
 
 
-@app.on_message(filters.command("webss"), COMMAND_HANDLER)
+@app.on_message(filters.command(["webss"]), COMMAND_HANDLER)
 @capture_err
 async def take_ss(_, message):
     if len(message.command) < 2:
-        return await message.reply(message,
-                                   text="Give A Url To Fetch Screenshot.")
+        return await message.reply("Give A Url To Fetch Screenshot.")
 
     if len(message.command) == 2:
         url = message.text.split(None, 1)[1]
