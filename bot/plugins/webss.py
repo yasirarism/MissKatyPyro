@@ -26,8 +26,8 @@ from pyrogram.types import Message
 
 from bot import app
 from info import COMMAND_HANDLER
-from ..utils.decorator import capture_err
-from ..utils.http import post
+from bot.utils.decorator import capture_err
+from bot.utils.http import post
 
 
 async def take_screenshot(url: str, full: bool = False):
