@@ -37,7 +37,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(
-            user.joined_date or time.time()).strftime("%Y.%m.%d %H:%M:%S")
+            member.new_chat_member.joined_date
+            or time.time()).strftime("%Y.%m.%d %H:%M:%S")
         memjoin['welcome'] = await c.send_message(
             member.chat.id,
             f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
