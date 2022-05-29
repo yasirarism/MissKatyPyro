@@ -2,7 +2,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
 from bot import app
-from ...info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
+from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
 from database.users_chats_db import db
 from database.ia_filterdb import Media
