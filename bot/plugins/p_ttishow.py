@@ -18,7 +18,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             in {"banned", "left", "restricted"} or member.old_chat_member):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
-    r_j_check = [u.id for u in member]
+    r_j_check = [u.id for u in user]
     if temp.ME in r_j_check:
         if not await db.get_chat(member.chat.id):
             total = await app.get_chat_members_count(member.chat.id)
