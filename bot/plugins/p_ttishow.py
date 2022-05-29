@@ -32,7 +32,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     else:
         if (MEMJOIN).get('welcome') is not None:
             try:
-                await (memjoin['welcome']).delete()
+                await (MEMJOIN['welcome']).delete()
             except:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
@@ -43,6 +43,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
 
             <b>Nama :<b> <code>{member.from_user.first_name}</code>
+            <b>ID :<b> <code>{member.from_user.id}</code>
             <b>DC ID :<b> <code>{member.from_user.dc_id}</code>
             <b>Tanggal Join :<b>  <code>{joined_date}</code>
             """,
