@@ -1,4 +1,4 @@
-import logger
+import logging
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
@@ -17,7 +17,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     if (not member.new_chat_member or member.new_chat_member.status
             in {"banned", "left", "restricted"} or member.old_chat_member):
         return
-    logger.info(member)
+    logging.info(member)
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
     if user.id == 617426792:
         await c.send_message(
