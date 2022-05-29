@@ -16,7 +16,7 @@ from pyrogram.errors import ChatAdminRequired
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
 async def member_has_joined(c: app, member: ChatMemberUpdated):
-    memjoin = {}
+    MEMJOIN = {}
     if (not member.new_chat_member or member.new_chat_member.status
             in {"banned", "left", "restricted"} or member.old_chat_member):
         return
@@ -30,7 +30,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     elif user.is_bot:
         return  # ignore bots
     else:
-        if (memjoin).get('welcome') is not None:
+        if (MEMJOIN).get('welcome') is not None:
             try:
                 await (memjoin['welcome']).delete()
             except:
@@ -38,7 +38,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(
             time.time()).strftime("%Y.%m.%d %H:%M:%S")
-        memjoin['welcome'] = await c.send_message(
+        MEMJOIN['welcome'] = await c.send_message(
             member.chat.id,
             f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
 
