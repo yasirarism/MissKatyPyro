@@ -1,14 +1,36 @@
 from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
 from bot import app
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
+from ...info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
 from database.users_chats_db import db
 from database.ia_filterdb import Media
 from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
+
+
+@app.on_chat_member_updated(filters.group, group=69)
+async def member_has_joined(c: app, member: ChatMemberUpdated):
+    if (not member.new_chat_member or member.new_chat_member.status
+            in {"banned", "left", "restricted"} or member.old_chat_member):
+        return
+    user = member.new_chat_member.user if member.new_chat_member else member.from_user
+    if user.id == 617426792:
+        await c.send_message(
+            member.chat.id,
+            "Wew My Owner has also joined the chat!",
+        )
+        return
+    elif user.is_bot:
+        return  # ignore bots
+    else:
+        mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
+        await c.send_message(
+            member.chat.id,
+            f"Hai {mention}, Selamat datang digrup {member.chat.title}",
+        )
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
@@ -191,11 +213,15 @@ async def adminlist(_, message):
         return await message.reply("Perintah ini hanya untuk grup")
     try:
         administrators = []
-        async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-          administrators.append(f"{m.user.first_name}")
+        async for m in app.get_chat_members(
+                message.chat.id,
+                filter=enums.ChatMembersFilter.ADMINISTRATORS):
+            administrators.append(f"{m.user.first_name}")
 
         res = "".join(f"~ {i}\n" for i in administrators)
-        return await message.reply(f"Daftar Admin di <b>{message.chat.title}</b> ({message.chat.id}):\n~ {res}")
+        return await message.reply(
+            f"Daftar Admin di <b>{message.chat.title}</b> ({message.chat.id}):\n~ {res}"
+        )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
