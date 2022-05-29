@@ -19,7 +19,7 @@ SESSION_PYRO = "BQAP-GEAIrX-3t8x38eLFBtivMLR3PHq_GCksEgxGzwt-4hvxDlpaxuCQIApN7D3
 botStartTime = time.time()
 
 ARQ_API_URL = "https://arq.hamker.in/"
-ARQ_API_KEY = "CYQWYJ-OMSAFJ-ARHIAT-SDADAX-ARQ"
+ARQ_API_KEY = "GLDKXS-UDKRKL-GDVISK-COZFRF-ARQ"
 
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
