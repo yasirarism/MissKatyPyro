@@ -1,4 +1,5 @@
 import logging
+import datetime, time
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
@@ -12,31 +13,62 @@ from Script import script
 from pyrogram.errors import ChatAdminRequired
 
 
-@app.on_chat_member_updated(filters.group)
+@app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
 async def member_has_joined(c: app, member: ChatMemberUpdated):
+    memjoin = {}
     if (not member.new_chat_member or member.new_chat_member.status
             in {"banned", "left", "restricted"} or member.old_chat_member):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
-    r_j_check = [u.id for u in user]
+    if user.id == 617426792:
+        await c.send_message(
+            member.chat.id,
+            "Waw, owner kamu baru saja bergabung ke grup!",
+        )
+        return
+    elif user.is_bot:
+        return  # ignore bots
+    else:
+        if (memjoin).get('welcome') is not None:
+            try:
+                await (memjoin['welcome']).delete()
+            except:
+                pass
+        mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
+        joined_date = datetime.fromtimestamp(
+            user.joined_date or time.time()).strftime("%Y.%m.%d %H:%M:%S")
+        memjoin['welcome'] = await c.send_message(
+            member.chat.id,
+            f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
+
+            <b>Nama :<b> <code>{member.from_user.first_name}</code>
+            <b>DC ID :<b> <code>{member.from_user.dc_id}</code>
+            <b>Tanggal Join :<b>  <code>{joined_date}</code>
+            """,
+        )
+
+
+@Client.on_message(filters.new_chat_members & filters.group)
+async def save_group(bot, message):
+    r_j_check = [u.id for u in message.new_chat_members]
     if temp.ME in r_j_check:
-        if not await db.get_chat(member.chat.id):
-            total = await app.get_chat_members_count(member.chat.id)
-            r_j = member.from_user.mention if member.from_user else "Anonymous"
-            await c.send_message(
+        if not await db.get_chat(message.chat.id):
+            total = await bot.get_chat_members_count(message.chat.id)
+            r_j = message.from_user.mention if message.from_user else "Anonymous"
+            await bot.send_message(
                 LOG_CHANNEL,
-                script.LOG_TEXT_G.format(member.chat.title, member.chat.id,
+                script.LOG_TEXT_G.format(message.chat.title, message.chat.id,
                                          total, r_j))
-            await db.add_chat(member.chat.id, member.chat.title)
-        if member.chat.id in temp.BANNED_CHATS:
+            await db.add_chat(message.chat.id, message.chat.title)
+        if message.chat.id in temp.BANNED_CHATS:
             # Inspired from a boat of a banana tree
             buttons = [[
                 InlineKeyboardButton('Support',
                                      url=f'https://t.me/{SUPPORT_CHAT}')
             ]]
             reply_markup = InlineKeyboardMarkup(buttons)
-            k = await c.send_message(
-                member.chat.id,
+            k = await message.reply(
+                text=
                 '<b>CHAT NOT ALLOWED 🐞\n\nMy admins has restricted me from working here ! If you want to know more about it contact support..</b>',
                 reply_markup=reply_markup,
             )
@@ -45,7 +77,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
                 await k.pin()
             except:
                 pass
-            await app.leave_chat(member.chat.id)
+            await bot.leave_chat(message.chat.id)
             return
         buttons = [[
             InlineKeyboardButton('ℹ️ Help',
@@ -53,24 +85,19 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             InlineKeyboardButton('📢 Updates', url='https://t.me/TeamEvamaria')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await c.send_message(
-            member.chat.id,
-            f"<b>Terimakasih sudah menambahkan saya di {member.chat.title} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
+        await message.reply_text(
+            text=
+            f"<b>Terimakasih sudah menambahkan saya di {message.chat.title} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
             reply_markup=reply_markup)
     else:
-        if user.id == 617426792:
-            await c.send_message(
-                member.chat.id,
-                "Waw, owner kamu baru saja bergabung ke grup!",
-            )
-            return
-        if user.is_bot:
-            return  # ignore bots
-        else:
-            mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
-            await c.send_message(
-                member.chat.id,
-                f"Hai {mention}, Selamat datang digrup {member.chat.title}",
+        for u in message.new_chat_members:
+            if (temp.MELCOW).get('welcome') is not None:
+                try:
+                    await (temp.MELCOW['welcome']).delete()
+                except:
+                    pass
+            temp.MELCOW['welcome'] = await message.reply(
+                f"<b>Hai, {u.mention}, Selamat datang di {message.chat.title}</b>"
             )
 
 
