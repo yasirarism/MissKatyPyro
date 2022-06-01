@@ -1,5 +1,6 @@
 import logging
 import time
+import pyromod.listen
 import logging.config
 # Get logging configurations
 logging.config.fileConfig('logging.conf')

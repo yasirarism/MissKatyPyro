@@ -2,7 +2,7 @@ import os
 from pyrogram import Client, filters
 from info import COMMAND_HANDLER
 
-@Client.on_message(filters.command(["json","json@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["json"], COMMAND_HANDLER))
 async def jsonify(_, message):
     the_real_message = None
     reply_to_id = None

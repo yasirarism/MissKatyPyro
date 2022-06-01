@@ -12,6 +12,7 @@ heroku3
 imdbpy
 gTTS
 gpytranslate
+pyromod
 apscheduler
 pytz
 python-arq
