@@ -11,7 +11,7 @@ from info import ADMINS, COMMAND_HANDLER, HEROKU_APP
 async def restart(client, message):
     a = await message.reply("Ok, Let me restart!")
     if HEROKU_APP is None:
-        await a.edit(text="Restarting Bot & Userbot ..."e)
+        await a.edit(text="Restarting Bot & Userbot ...")
         # https://stackoverflow.com/a/57032597/15215201
         os.execl(executable, executable, *argv)
     else:
