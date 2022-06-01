@@ -8,6 +8,7 @@ umongo
 requests
 bs4
 aiohttp
+heroku3
 imdbpy
 gTTS
 gpytranslate
