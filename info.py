@@ -79,8 +79,9 @@ HEROKU_APP = heroku3.from_key(HEROKU_API_KEY).apps(
 # Forward From Chat ID
 FORWARD_FROM_CHAT_ID = list(
     set(
-        int(x) for x in environ.get("FORWARD_FROM_CHAT_ID",
-                                    "-1001128045651").split()))
+        int(x) for x in environ.get(
+            "FORWARD_FROM_CHAT_ID",
+            "-1001128045651 -1001455886928 -1001686184174").split()))
 # Forward To Chat ID
 FORWARD_TO_CHAT_ID = list(
     set(

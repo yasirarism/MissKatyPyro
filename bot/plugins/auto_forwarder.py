@@ -5,7 +5,7 @@ from pyrogram import filters
 from asyncio import sleep
 from pyrogram.types import Message
 from pyrogram.errors import FloodWait
-from info import FORWARD_FILTERS, BLOCK_FILES_WITHOUT_EXTENSIONS, BLOCKED_EXTENSIONS, FORWARD_TO_CHAT_ID, MINIMUM_FILE_SIZE
+from info import FORWARD_FILTERS, BLOCK_FILES_WITHOUT_EXTENSIONS, BLOCKED_EXTENSIONS, FORWARD_TO_CHAT_ID, FORWARD_FROM_CHAT_ID, MINIMUM_FILE_SIZE
 
 
 async def FilterMessage(message: Message):
@@ -91,6 +91,7 @@ async def ForwardMessage(client: user, msg: Message):
 
 @user.on_message(filters.text | filters.media)
 async def main(client: user, message: Message):
-    try_forward = await ForwardMessage(client, message)
-    if try_forward == 400:
-        return
+    if message.chat.id in FORWARD_FROM_CHAT_ID:
+        try_forward = await ForwardMessage(client, message)
+        if try_forward == 400:
+            return
