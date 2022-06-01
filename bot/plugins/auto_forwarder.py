@@ -90,7 +90,7 @@ async def ForwardMessage(client: user, msg: Message):
 
 
 @user.on_message(filters.text | filters.media)
-async def main(client: user, message: Message):
+async def forwarder(client: user, message: Message):
     if message.chat.id in FORWARD_FROM_CHAT_ID:
         try_forward = await ForwardMessage(client, message)
         if try_forward == 400:
