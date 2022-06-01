@@ -1,4 +1,4 @@
-import re
+import re, heroku3
 from os import environ
 
 id_pattern = re.compile(r'^.\d+$')
@@ -69,6 +69,11 @@ LONG_IMDB_DESCRIPTION = is_enabled(
 SPELL_CHECK_REPLY = is_enabled(environ.get("SPELL_CHECK_REPLY", "True"), True)
 MAX_LIST_ELM = environ.get("MAX_LIST_ELM", None)
 INDEX_REQ_CHANNEL = int(environ.get('INDEX_REQ_CHANNEL', LOG_CHANNEL))
+# Heroku Management
+HEROKU_API_KEY = environ.get("HEROKU_API_KEY")
+HEROKU_APP_NAME = environ.get("HEROKU_APP_NAME")
+HEROKU_APP = heroku3.from_key(HEROKU_API_KEY).apps(
+)[HEROKU_APP_NAME] if HEROKU_API_KEY and HEROKU_APP_NAME else None
 
 ## Config For AUtoForwarder
 # Forward From Chat ID
