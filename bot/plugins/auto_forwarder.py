@@ -77,13 +77,13 @@ async def ForwardMessage(client: user, msg: Message):
                 await client.send_message(
                     chat_id="me",
                     text=f"#FloodWait: Stopped Forwarder for `{e.x}s`!")
-                await sleep(10)
+                await sleep(10),
                 await ForwardMessage(client, msg)
             except Exception as err:
                 await client.send_message(
                     chat_id="me",
                     text=
-                    f"#ERROR: `{err}`\n\nUnable to Forward Message to `{str(FORWARD_TO_CHAT_ID[i])}`"
+                    f"#ERROR: `{err}`\n\nUnable to Forward Message to `{str(FORWARD_TO_CHAT_ID[i])}`, reason: <code>{err}</code>"
                 )
     except Exception as err:
         await client.send_message(chat_id="me", text=f"#ERROR: `{err}`")
