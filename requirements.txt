@@ -11,6 +11,7 @@ aiohttp
 heroku3
 imdbpy
 gTTS
+regex
 gpytranslate
 pyromod
 apscheduler

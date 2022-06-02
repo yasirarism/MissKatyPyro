@@ -1,7 +1,7 @@
 import logging
 import time
-import pyromod.listen
 import logging.config
+import pyromod.listen
 # Get logging configurations
 logging.config.fileConfig('logging.conf')
 logging.getLogger().setLevel(logging.INFO)
