@@ -1,7 +1,6 @@
 import logging
 import time
 import logging.config
-import pyromod.listen
 # Get logging configurations
 logging.config.fileConfig('logging.conf')
 logging.getLogger().setLevel(logging.INFO)
@@ -15,6 +14,7 @@ from info import SESSION, API_ID, API_HASH, BOT_TOKEN
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
+from pyromod import listen
 
 SESSION_PYRO = "BQAP-GEAIrX-3t8x38eLFBtivMLR3PHq_GCksEgxGzwt-4hvxDlpaxuCQIApN7D37MNlNnNmbKcZomwXccD9icHnXKlhhe_6dDlIkn63cYm4yDTLZodTFkKgRh60399kpnQhOHZltqbI2KVhDU7Xhg-TLRBp1YTpZis4Sia1jGX0CaFY0YvHC3sG6YyidAOU-9pD5sESjcu29F4d-drt6TeD9yihEhhLZOV7K1sEcFeT5CiY-bHPTBH9uqWTMcg6pJXR-yzYqWppazng6n-bQmEHCsUOasjw_mVlkHaOe-WTNLWHZQpjdsY8MSogaWAZvp8LvkjIwFwYN7Y-JbNMksGRYKOyWwAAAAAkzS9oAA"
 botStartTime = time.time()
