@@ -10,7 +10,7 @@ from bot import app
 
 
 @app.on_message(filters.regex(r"^s/(.+)?/(.+)?(/.+)?") & filters.reply)
-async def sed(c: app, m: Message, strings):
+async def sed(c: app, m: Message):
     exp = regex.split(r"(?<![^\\]\\)/", m.text)
     pattern = exp[1]
     replace_with = exp[2].replace(r"\/", "/")
