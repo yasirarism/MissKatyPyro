@@ -6,6 +6,7 @@ import html
 import regex
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.errors import MessageEmpty
 from bot import app
 
 
@@ -42,6 +43,8 @@ async def sed(c: app, m: Message):
                         timeout=1)
     except TimeoutError:
         await m.reply_text("Oops, your regex pattern has run for too long.")
+    except MessageEmpty:
+        await m.reply_text("Please reply message to use this feature.")
     except regex.error as e:
         await m.reply_text(str(e))
     else:
