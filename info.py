@@ -93,8 +93,8 @@ FORWARD_FILTERS = list(
 BLOCKED_EXTENSIONS = list(
     set(x for x in environ.get(
         "BLOCKED_EXTENSIONS",
-        "html htm json txt php gif png ink torrent url nfo xml xhtml").split())
-)
+        "html htm json txt php gif png ink torrent url nfo xml xhtml jpg").
+        split()))
 MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE", None)
 BLOCK_FILES_WITHOUT_EXTENSIONS = bool(
     environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True))
