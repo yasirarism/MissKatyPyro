@@ -89,9 +89,9 @@ async def ForwardMessage(client: user, msg: Message):
         await client.send_message(chat_id="me", text=f"#ERROR: `{err}`")
 
 
-@user.on_message(filters.text | filters.media)
+@user.on_message(
+    (filters.text | filters.media) & filters.chat(FORWARD_FROM_CHAT_ID))
 async def forwarder(client: user, message: Message):
-    if message.chat.id in FORWARD_FROM_CHAT_ID:
-        try_forward = await ForwardMessage(client, message)
-        if try_forward == 400:
-            return
+    try_forward = await ForwardMessage(client, message)
+    if try_forward == 400:
+        return
