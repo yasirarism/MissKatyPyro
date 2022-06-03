@@ -1,5 +1,5 @@
 # Code copy from https://github.com/AbirHasan2005/Forward-Client
-from bot import user
+from bot import user, app
 from os import environ
 from pyrogram import filters
 from asyncio import sleep
@@ -91,7 +91,14 @@ async def ForwardMessage(client: user, msg: Message):
 
 @user.on_message(
     (filters.text | filters.media) & filters.chat(FORWARD_FROM_CHAT_ID))
-async def forwarder(client: user, message: Message):
+async def forwardubot(client: user, message: Message):
+    try_forward = await ForwardMessage(client, message)
+    if try_forward == 400:
+        return
+
+@app.on_message(
+    (filters.text | filters.media) & filters.chat(-1001555123941))
+async def forwardbot(client: user, message: Message):
     try_forward = await ForwardMessage(client, message)
     if try_forward == 400:
         return
