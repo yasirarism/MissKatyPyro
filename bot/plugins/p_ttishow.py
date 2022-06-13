@@ -38,15 +38,13 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(
             time.time()).strftime("%Y.%m.%d %H:%M:%S")
+        first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
+        id = user.id
+        dc = user.dc_id if user.dc_id else "Member tanpa PPd"
+
         temp.MELCOW['welcome'] = await c.send_message(
             member.chat.id,
-            f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
-
-            <b>Nama :<b> <code>{member.from_user.first_name}</code>
-            <b>ID :<b> <code>{member.from_user.id}</code>
-            <b>DC ID :<b> <code>{member.from_user.dc_id}</code>
-            <b>Tanggal Join :<b>  <code>{joined_date}</code>
-            """,
+            f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
         )
 
 
