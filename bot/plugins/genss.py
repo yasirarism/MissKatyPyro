@@ -32,8 +32,9 @@ async def genss(client, message):
         sscount = 9
 
     if message.reply_to_message is not None:
+        name = message.from_user.first_name if message.from_user.first_name is not None else message.sender_chat.title
         process = await message.reply_text(
-            f"`Processing, please wait {message.from_user.first_name}...`")
+            f"`Processing, please wait {name}...`")
         c_time = time.time()
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
