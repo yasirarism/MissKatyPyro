@@ -18,8 +18,8 @@ from subprocess import run as srun
     & filters.user(617426792) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(' ', 1)
-    await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
     await m.delete()
+    await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
 
 
 @app.on_message(
