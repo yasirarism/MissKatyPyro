@@ -40,7 +40,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             time.time()).strftime("%Y.%m.%d %H:%M:%S")
         first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
         id = user.id
-        dc = user.dc_id if user.dc_id else "Member tanpa PPd"
+        dc = user.dc_id if user.dc_id else "Member tanpa PP"
 
         temp.MELCOW['welcome'] = await c.send_message(
             member.chat.id,
