@@ -30,15 +30,15 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     elif user.is_bot:
         return  # ignore bots
     else:
-        if (MEMJOIN).get('welcome') is not None:
+        if (temp.MELCOW).get('welcome') is not None:
             try:
-                await (MEMJOIN['welcome']).delete()
+                await (temp.MELCOW['welcome']).delete()
             except:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(
             time.time()).strftime("%Y.%m.%d %H:%M:%S")
-        MEMJOIN['welcome'] = await c.send_message(
+        temp.MELCOW['welcome'] = await c.send_message(
             member.chat.id,
             f"""Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.
 
@@ -123,7 +123,6 @@ async def leave_a_chat(bot, message):
             '<b>Hai kawan, \nOwner aku bilang saya harus pergi! Jika kamu ingin menambahkan bot ini lagi silahkan kontak owner bot ini.</b>',
             reply_markup=reply_markup,
         )
-
         await bot.leave_chat(chat)
     except Exception as e:
         await message.reply(f'Error - {e}')

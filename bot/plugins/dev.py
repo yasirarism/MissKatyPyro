@@ -12,6 +12,16 @@ from info import COMMAND_HANDLER
 from bot import app, user
 from subprocess import run as srun
 
+
+@app.on_message(
+    filters.command(["balas"], COMMAND_HANDLER)
+    & filters.user(617426792) & filters.reply)
+async def balas(c, m):
+    pesan = m.text.split(' ', 1)
+    await m.reply(pesan, reply_to_message_id=m.reply_to_message.id)
+    await m.delete()
+
+
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
     & filters.user(617426792))
@@ -35,13 +45,12 @@ async def shell(client, message):
         with open('shell_output.txt', 'w') as file:
             file.write(reply)
         with open('shell_output.txt', 'rb') as doc:
-            await message.reply_document(
-                document=doc,
-                file_name=doc.name)
+            await message.reply_document(document=doc, file_name=doc.name)
     elif len(reply) != 0:
         await message.reply(reply)
     else:
         await message.reply('No Reply')
+
 
 @app.on_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
