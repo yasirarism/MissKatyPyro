@@ -159,7 +159,8 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    await message.reply_text(f"{message.from_user.first_name} is now afk!")
+    return await message.reply_text(
+        f"{message.from_user.first_name} is now afk!")
 
 
 # Detect user that AFK
