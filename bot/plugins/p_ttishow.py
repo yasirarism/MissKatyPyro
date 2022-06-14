@@ -1,14 +1,13 @@
-import logging
+from asyncio import sleep
 from datetime import datetime
 import time
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
-from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid
+from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
 from database.users_chats_db import db
-from database.ia_filterdb import Media
 from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
@@ -82,7 +81,8 @@ async def save_group(bot, message):
         buttons = [[
             InlineKeyboardButton('ℹ️ Help',
                                  url=f"https://t.me/{temp.U_NAME}?start=help"),
-            InlineKeyboardButton('📢 Updates', url='https://t.me/YasirPediaChannel')
+            InlineKeyboardButton('📢 Updates',
+                                 url='https://t.me/YasirPediaChannel')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
@@ -185,20 +185,6 @@ async def re_enable_chat(bot, message):
     await message.reply("Chat Succesfully re-enabled")
 
 
-@Client.on_message(filters.command('stats') & filters.incoming)
-async def get_ststs(bot, message):
-    rju = await message.reply('Fetching stats..')
-    total_users = await db.total_users_count()
-    totl_chats = await db.total_chat_count()
-    files = await Media.count_documents()
-    size = await db.get_db_size()
-    free = 536870912 - size
-    size = get_size(size)
-    free = get_size(free)
-    await rju.edit(
-        script.STATUS_TXT.format(files, total_users, totl_chats, size, free))
-
-
 # a function for trespassing into others groups, Inspired by a Vazha
 # Not to be used , But Just to showcase his vazhatharam.
 # @Client.on_message(filters.command('invite') & filters.user(ADMINS))
@@ -242,10 +228,10 @@ async def adminlist(_, message):
 
 @app.on_message(
     filters.command(["zombies", "zombies@MissKatyRoBot"], COMMAND_HANDLER))
-async def zombie_clean(_, message):
+async def zombie_clean(_, m):
 
     zombie = 0
-    wait = await message.reply_text("Searching ... and banning ...")
+    wait = await m.reply_text("Searching ... and banning ...")
     async for member in app.iter_chat_members(m.chat.id):
         if member.user.is_deleted:
             zombie += 1
