@@ -165,7 +165,7 @@ async def active_afk(_, message):
 
 # Detect user that AFK
 @app.on_message(
-    ~filters.me & ~filters.bot & ~filters.via_bot,
+    ~filters.bot & ~filters.via_bot,
     group=1,
 )
 async def chat_watcher_func(_, message):
