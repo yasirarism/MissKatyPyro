@@ -18,6 +18,8 @@ async def chat_watcher_func(_, message):
         return
     userid = message.from_user.id
     user_name = message.from_user.first_name
+    if message.text == "/afk":
+        return
     if message.entities:
         for entity in message.entities:
             if entity.type == "bot_command":
