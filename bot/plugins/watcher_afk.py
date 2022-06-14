@@ -6,9 +6,12 @@ from database.afk_db import remove_afk, is_afk
 from bot.utils.human_read import get_readable_time2
 
 # Detect user that AFK
+chat_watcher_group = 1
+
+
 @app.on_message(
-    ~filters.bot & ~filters.via_bot,
-    group=1,
+    ~filters.me & ~filters.bot & ~filters.via_bot,
+    group=chat_watcher_group,
 )
 async def chat_watcher_func(_, message):
     if message.sender_chat:

@@ -1,9 +1,8 @@
+import imp
 from motor.motor_asyncio import AsyncIOMotorClient as MongoClient
-from info import DATABASE_URI
+from bot import db_afk
 
-mongo = MongoClient(DATABASE_URI)
-db = mongo.AFK
-usersdb = db.users
+usersdb = db_afk.users
 
 
 async def is_afk(user_id: int) -> bool:
