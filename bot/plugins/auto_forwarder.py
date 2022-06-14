@@ -1,5 +1,6 @@
 # Code copy from https://github.com/AbirHasan2005/Forward-Client
-from bot import user, app
+import logging
+from bot import user
 from os import environ
 from pyrogram import filters
 from asyncio import sleep
@@ -74,31 +75,19 @@ async def ForwardMessage(client: user, msg: Message):
                 await msg.copy(FORWARD_TO_CHAT_ID[i])
             except FloodWait as e:
                 await sleep(e.value)
-                await client.send_message(
-                    chat_id="me",
-                    text=f"#FloodWait: Stopped Forwarder for `{e.x}s`!")
-                await sleep(10),
+                logging.warning(f"#FloodWait: Stopped Forwarder for {e.x}s!")
                 await ForwardMessage(client, msg)
             except Exception as err:
-                await client.send_message(
-                    chat_id="me",
-                    text=
-                    f"#ERROR: `{err}`\n\nUnable to Forward Message to `{str(FORWARD_TO_CHAT_ID[i])}`, reason: <code>{err}</code>"
+                logging.warning(
+                    f"#ERROR: {err}\n\nUnable to Forward Message to {str(FORWARD_TO_CHAT_ID[i])}, reason: <code>{err}</code>"
                 )
     except Exception as err:
-        await client.send_message(chat_id="me", text=f"#ERROR: `{err}`")
+        logging.warning(f"#ERROR: {err}")
 
 
 @user.on_message(
     (filters.text | filters.media) & filters.chat(FORWARD_FROM_CHAT_ID))
 async def forwardubot(client: user, message: Message):
-    try_forward = await ForwardMessage(client, message)
-    if try_forward == 400:
-        return
-
-@app.on_message(
-    (filters.text | filters.media) & filters.chat(-1001555123941))
-async def forwardbot(client: user, message: Message):
     try_forward = await ForwardMessage(client, message)
     if try_forward == 400:
         return
