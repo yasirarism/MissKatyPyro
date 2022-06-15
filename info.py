@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 id_pattern = re.compile(r'^.\d+$')
 
-load_dotenv()
+load_dotenv("config.env", override=True)
 
 
 def is_enabled(value, default):
