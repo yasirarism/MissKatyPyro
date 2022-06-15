@@ -1,6 +1,7 @@
 pyrogram
 tgcrypto
 pymongo[srv]==3.12.3
+python-dotenv
 motor[srv]
 requests
 bs4
