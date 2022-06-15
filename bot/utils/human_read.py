@@ -37,7 +37,9 @@ def get_readable_time2(seconds: int) -> str:
     count = 0
     ping_time = ""
     time_list = []
-    time_suffix_list = ["s", "m", "h", "days"]
+    time_suffix_list = [
+        "detik", "menit", "jam", "hari", "minggu", "bulan", "tahun"
+    ]
     while count < 4:
         count += 1
         if count < 3:
