@@ -24,12 +24,12 @@ async def active_afk(_, message):
             seenago = get_readable_time2((int(time.time() - timeafk)))
             if afktype == "text":
                 return await message.reply_text(
-                    f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                    f"**{message.from_user.first_name}** telah kembali online dan sudah AFK selama {seenago}",
                     disable_web_page_preview=True,
                 )
             if afktype == "text_reason":
                 return await message.reply_text(
-                    f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                    f"**{message.from_user.first_name}** telah kembali online dan sudah AFK selama {seenago}\n\nReason: `{reasonafk}`",
                     disable_web_page_preview=True,
                 )
             if afktype == "animation":
@@ -56,11 +56,11 @@ async def active_afk(_, message):
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
                         caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
                     )
         except Exception as e:
             return await message.reply_text(
-                f"**{message.from_user.first_name}** is back online",
+                f"**{message.from_user.first_name}** kembali online.",
                 disable_web_page_preview=True,
             )
     if len(message.command) == 1 and not message.reply_to_message:
