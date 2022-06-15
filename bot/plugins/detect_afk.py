@@ -127,7 +127,7 @@ async def chat_watcher_func(_, message):
         entity = message.entities
         j = 0
         for x in range(len(entity)):
-            if (entity[j].type) == "mention":
+            if (entity[j].type) == enums.MessageEntityType.MENTION:
                 found = re.findall("@([_0-9a-zA-Z]+)", message.text)
                 try:
                     get_user = found[j]
@@ -179,7 +179,7 @@ async def chat_watcher_func(_, message):
                                 )
                     except:
                         msg += (f"**{user.first_name[:25]}** sedang AFK\n\n")
-            elif (entity[j].type) == "text_mention":
+            elif (entity[j].type) == enums.MessageEntityType.TEXT_MENTION:
                 try:
                     user_id = entity[j].user.id
                     if user_id == replied_user_id:
