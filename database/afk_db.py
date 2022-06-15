@@ -1,10 +1,11 @@
 import imp
 from motor.motor_asyncio import AsyncIOMotorClient as MongoClient
-from bot import DATABASE_URI
+from info import DATABASE_URI
 
 mongo = MongoClient(DATABASE_URI)
 db_afk = mongo.AFK
 usersdb = db_afk.users
+
 
 async def is_afk(user_id: int) -> bool:
     user = await usersdb.find_one({"user_id": user_id})
