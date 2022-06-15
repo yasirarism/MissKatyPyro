@@ -1,7 +1,10 @@
 import re, heroku3
 from os import environ
+from dotenv import load_dotenv
 
 id_pattern = re.compile(r'^.\d+$')
+
+load_dotenv()
 
 
 def is_enabled(value, default):
