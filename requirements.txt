@@ -2,9 +2,6 @@ pyrogram
 tgcrypto
 pymongo[srv]==3.12.3
 motor[srv]
-marshmallow==3.14.1
-umongo==3.0.1
-umongo
 requests
 bs4
 aiohttp
@@ -20,7 +17,6 @@ python-arq
 pySmartDL
 psutil
 html-telegraph-poster
-lottie[all]
 lk21
 telegraph
 hachoir
