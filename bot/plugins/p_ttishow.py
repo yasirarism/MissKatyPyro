@@ -1,16 +1,73 @@
 from asyncio import sleep
 from datetime import datetime
 import time
+import logging
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
+from PIL import Image, ImageChops, ImageDraw, ImageFont
+import textwrap
 from database.users_chats_db import db
 from utils import get_size, temp
 from Script import script
 from pyrogram.errors import ChatAdminRequired
+
+
+def circle(pfp, size=(215, 215)):
+    pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
+    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
+    mask = Image.new('L', bigsize, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + bigsize, fill=255)
+    mask = mask.resize(pfp.size, Image.ANTIALIAS)
+    mask = ImageChops.darker(mask, pfp.split()[-1])
+    pfp.putalpha(mask)
+    return pfp
+
+
+def draw_multiple_line_text(image, text, font, text_start_height):
+    '''
+    From unutbu on [python PIL draw multiline text on image](https://stackoverflow.com/a/7698300/395857)
+    '''
+    draw = ImageDraw.Draw(image)
+    image_width, image_height = image.size
+    y_text = text_start_height
+    lines = textwrap.wrap(text, width=38)
+    for line in lines:
+        line_width, line_height = font.getsize(line)
+        draw.text(((image_width - line_width) / 2, y_text),
+                  line,
+                  font=font,
+                  fill="black")
+        y_text += line_height
+
+
+async def welcomepic():
+    filename = "result.png"  # <- The name of the file that will be saved and deleted after (Should be PNG)
+    background = Image.open("bg.png")  # <- Background Image (Should be PNG)
+    background = background.resize((1024, 500), Image.ANTIALIAS)
+    pfp = Image.open("profile.png").convert("RGBA")
+    pfp = circle(pfp)
+    pfp = pfp.resize(
+        (265,
+         265))  # Resizes the Profilepicture so it fits perfectly in the circle
+    font = ImageFont.truetype(
+        "LemonMilkMedium-mLZYV.otf", 42
+    )  # <- Text Font of the Member Count. Change the text size for your preference
+    member_text = ("#5444 Selamat Datang Yasir Aris M"
+                   )  # <- Text under the Profilepicture with the Membercount
+    draw_multiple_line_text(background, member_text, font, 385)
+    draw_multiple_line_text(background,
+                            "Grup Nyanyian Kode: rental vhs & betamax", font,
+                            23)
+    background.paste(pfp, (379, 123),
+                     pfp)  # Pastes the Profilepicture on the Background Image
+    background.save(
+        filename)  # Saves the finished Image in the folder with the filename
+    return filename
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
@@ -29,6 +86,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     elif user.is_bot:
         return  # ignore bots
     else:
+        logging.info(member)
         if (temp.MELCOW).get('welcome') is not None:
             try:
                 await (temp.MELCOW['welcome']).delete()
@@ -91,6 +149,7 @@ async def save_group(bot, message):
             reply_markup=reply_markup)
     else:
         for u in message.new_chat_members:
+            logging.info(u)
             if (temp.MELCOW).get('welcome') is not None:
                 try:
                     await (temp.MELCOW['welcome']).delete()
