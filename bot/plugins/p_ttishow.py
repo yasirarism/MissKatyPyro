@@ -166,7 +166,6 @@ async def save_group(bot, message):
             reply_markup=reply_markup)
     else:
         for u in message.new_chat_members:
-            logging.info(u)
             count = await app.get_chat_members_count(message.chat.id)
             try:
                 pic = await app.download_media(u.photo.big_file_id,
