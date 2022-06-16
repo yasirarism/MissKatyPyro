@@ -100,7 +100,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         count = await app.get_chat_members_count(member.chat.id)
         try:
             pic = await app.download_media(user.photo.big_file_id,
-                                           file_name=f"pp{user.id}")
+                                           file_name=f"pp{user.id}.png")
         except AttributeError:
             pic = "/YasirBot/img/profilepic.png"
         welcomeimg = await welcomepic(pic, user.first_name, member.chat.title,
