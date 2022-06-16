@@ -98,8 +98,11 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         id = user.id
         dc = user.dc_id if user.dc_id else "Member tanpa PP"
         count = await app.get_chat_members_count(member.chat.id)
-        pic = await app.download_media(user.photo.big_file_id,
-                                       file_name=f"pp{user.id}")
+        try:
+            pic = await app.download_media(user.photo.big_file_id,
+                                           file_name=f"pp{user.id}")
+        except AttributeError:
+            pic = "/YasirBot/img/profilepic.png"
         welcomeimg = await welcomepic(pic, user.first_name, member.chat.title,
                                       count, user.id)
         temp.MELCOW['welcome'] = await c.send_photo(
@@ -164,14 +167,30 @@ async def save_group(bot, message):
     else:
         for u in message.new_chat_members:
             logging.info(u)
+            count = await app.get_chat_members_count(message.chat.id)
+            try:
+                pic = await app.download_media(u.photo.big_file_id,
+                                               file_name=f"pp{u.id}")
+            except AttributeError:
+                pic = "/YasirBot/img/profilepic.png"
+            welcomeimg = await welcomepic(pic, u.first_name,
+                                          message.chat.title, count, u.id)
             if (temp.MELCOW).get('welcome') is not None:
                 try:
                     await (temp.MELCOW['welcome']).delete()
                 except:
                     pass
-            temp.MELCOW['welcome'] = await message.reply(
-                f"<b>Hai, {u.mention}, Selamat datang di {message.chat.title}</b>"
+            temp.MELCOW['welcome'] = await app.send_photo(
+                message.chat.id,
+                photo=welcomeimg,
+                caption=
+                f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
             )
+            try:
+                os.remove(f"/YasirBot/welcome#{u.id}.png")
+                os.remove(f"/YasirBot/downloads/pp{u.id}.png")
+            except Exception as err:
+                logging.error(err)
 
 
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
