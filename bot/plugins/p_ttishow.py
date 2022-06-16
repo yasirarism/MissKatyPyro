@@ -171,7 +171,7 @@ async def save_group(bot, message):
                 pic = await app.download_media(u.photo.big_file_id,
                                                file_name=f"pp{u.id}.png")
             except AttributeError:
-                pic = "/YasirBot/img/profilepic.png"
+                pic = "img/profilepic.png"
             welcomeimg = await welcomepic(pic, u.first_name,
                                           message.chat.title, count, u.id)
             if (temp.MELCOW).get('welcome') is not None:
@@ -186,8 +186,8 @@ async def save_group(bot, message):
                 f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
             )
             try:
-                os.remove(f"/YasirBot/welcome#{u.id}.png")
-                os.remove(f"/YasirBot/downloads/pp{u.id}.png")
+                os.remove(f"welcome#{u.id}.png")
+                os.remove(f"downloads/pp{u.id}.png")
             except Exception as err:
                 logging.error(err)
 
