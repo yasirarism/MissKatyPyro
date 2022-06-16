@@ -48,7 +48,7 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 
 async def welcomepic(pic, user, chat, count, id):
     background = Image.open(
-        "/YasirBot/bg.png")  # <- Background Image (Should be PNG)
+        "/YasirBot/img/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
