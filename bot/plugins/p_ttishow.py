@@ -2,6 +2,7 @@ from asyncio import sleep
 from datetime import datetime
 import time
 import logging
+import os
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait
@@ -45,8 +46,7 @@ def draw_multiple_line_text(image, text, font, text_start_height):
         y_text += line_height
 
 
-async def welcomepic():
-    filename = "result.png"  # <- The name of the file that will be saved and deleted after (Should be PNG)
+async def welcomepic(user, chat, count, id):
     background = Image.open("bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open("profile.png").convert("RGBA")
@@ -55,19 +55,18 @@ async def welcomepic():
         (265,
          265))  # Resizes the Profilepicture so it fits perfectly in the circle
     font = ImageFont.truetype(
-        "LemonMilkMedium-mLZYV.otf", 42
+        "/YasirBot/LemonMilkMedium-mLZYV.otf", 42
     )  # <- Text Font of the Member Count. Change the text size for your preference
-    member_text = ("#5444 Selamat Datang Yasir Aris M"
+    member_text = (f"User#{count} Selamat Datang {user}"
                    )  # <- Text under the Profilepicture with the Membercount
     draw_multiple_line_text(background, member_text, font, 385)
-    draw_multiple_line_text(background,
-                            "Grup Nyanyian Kode: rental vhs & betamax", font,
-                            23)
+    draw_multiple_line_text(background, chat, font, 23)
     background.paste(pfp, (379, 123),
                      pfp)  # Pastes the Profilepicture on the Background Image
     background.save(
-        filename)  # Saves the finished Image in the folder with the filename
-    return filename
+        f"/welcome#{id}"
+    )  # Saves the finished Image in the folder with the filename
+    return f"/welcome#{id}"
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
@@ -98,11 +97,23 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
         id = user.id
         dc = user.dc_id if user.dc_id else "Member tanpa PP"
-
-        temp.MELCOW['welcome'] = await c.send_message(
+        count = await app.get_chat_members_count(member.chat.id)
+        welcomeimg = await welcomepic(user.first_name, member.chat.title,
+                                      count, user.id)
+        temp.MELCOW['welcome'] = await c.send_photo(
             member.chat.id,
+            photo=welcomeimg,
+            caption=
             f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
         )
+        try:
+            os.remove(f"/welcome#{user.id}")
+        except Exception as err:
+            logging.error(err)
+        #temp.MELCOW['welcome'] = await c.send_message(
+        #    member.chat.id,
+        #    f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
+        #)
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
