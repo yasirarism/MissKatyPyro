@@ -47,7 +47,8 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 
 
 async def welcomepic(pic, user, chat, count, id):
-    background = Image.open("/YasirBot/bg.png")  # <- Background Image (Should be PNG)
+    background = Image.open(
+        "/YasirBot/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
@@ -85,7 +86,6 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     elif user.is_bot:
         return  # ignore bots
     else:
-        logging.info(member)
         if (temp.MELCOW).get('welcome') is not None:
             try:
                 await (temp.MELCOW['welcome']).delete()
@@ -98,7 +98,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         id = user.id
         dc = user.dc_id if user.dc_id else "Member tanpa PP"
         count = await app.get_chat_members_count(member.chat.id)
-        pic = await app.download_media(user.photo.big_file_id)
+        pic = await app.download_media(user.photo.big_file_id,
+                                       file_name=f"pp{user.id}")
         welcomeimg = await welcomepic(pic, user.first_name, member.chat.title,
                                       count, user.id)
         temp.MELCOW['welcome'] = await c.send_photo(
@@ -109,7 +110,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         )
         try:
             os.remove(f"/YasirBot/welcome#{user.id}.png")
-            os.remove(f"/YasirBot/pp{user.id}")
+            os.remove(f"/YasirBot/downloads/pp{user.id}.png")
         except Exception as err:
             logging.error(err)
         #temp.MELCOW['welcome'] = await c.send_message(
