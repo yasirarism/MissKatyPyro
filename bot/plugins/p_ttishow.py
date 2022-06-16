@@ -46,10 +46,10 @@ def draw_multiple_line_text(image, text, font, text_start_height):
         y_text += line_height
 
 
-async def welcomepic(user, chat, count, id):
-    background = Image.open("bg.png")  # <- Background Image (Should be PNG)
+async def welcomepic(pic, user, chat, count, id):
+    background = Image.open("/YasirBot/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
-    pfp = Image.open("profile.png").convert("RGBA")
+    pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
     pfp = pfp.resize(
         (265,
@@ -64,9 +64,9 @@ async def welcomepic(user, chat, count, id):
     background.paste(pfp, (379, 123),
                      pfp)  # Pastes the Profilepicture on the Background Image
     background.save(
-        f"/welcome#{id}"
+        f"/YasirBot/welcome#{id}.png"
     )  # Saves the finished Image in the folder with the filename
-    return f"/welcome#{id}"
+    return f"/YasirBot/welcome#{id}.png"
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
@@ -98,7 +98,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         id = user.id
         dc = user.dc_id if user.dc_id else "Member tanpa PP"
         count = await app.get_chat_members_count(member.chat.id)
-        welcomeimg = await welcomepic(user.first_name, member.chat.title,
+        pic = await app.download_media(user.photo.big_file_id)
+        welcomeimg = await welcomepic(pic, user.first_name, member.chat.title,
                                       count, user.id)
         temp.MELCOW['welcome'] = await c.send_photo(
             member.chat.id,
@@ -107,7 +108,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
         )
         try:
-            os.remove(f"/welcome#{user.id}")
+            os.remove(f"/YasirBot/welcome#{user.id}.png")
+            os.remove(f"/YasirBot/pp{user.id}")
         except Exception as err:
             logging.error(err)
         #temp.MELCOW['welcome'] = await c.send_message(
