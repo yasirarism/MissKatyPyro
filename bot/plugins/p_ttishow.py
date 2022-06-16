@@ -169,7 +169,7 @@ async def save_group(bot, message):
             count = await app.get_chat_members_count(message.chat.id)
             try:
                 pic = await app.download_media(u.photo.big_file_id,
-                                               file_name=f"pp{u.id}")
+                                               file_name=f"pp{u.id}.png")
             except AttributeError:
                 pic = "/YasirBot/img/profilepic.png"
             welcomeimg = await welcomepic(pic, u.first_name,
