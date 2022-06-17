@@ -261,15 +261,15 @@ async def msg_quotly_cmd(c: Client, m: Message):
                             replies=-1,
                         ) if not i.empty and not i.media
                     ]
-                except:
-                    return await m.reply_text("¯\\_(ツ)_/¯")
+                except Exception as e:
+                    return await m.reply_text(f"ERROR: {e}")
                 try:
                     make_quotly = await pyrogram_to_quotly(messages)
                     bio_sticker = BytesIO(make_quotly)
                     bio_sticker.name = "biosticker.webp"
                     return await m.reply_sticker(bio_sticker)
-                except:
-                    return await m.reply_text("¯\\_(ツ)_/¯")
+                except Exception as e:
+                    return await m.reply_text(f"ERROR: {e}")
         else:
             pass
     try:
@@ -277,12 +277,12 @@ async def msg_quotly_cmd(c: Client, m: Message):
                                             message_ids=m.reply_to_message.id,
                                             replies=-1)
         messages = [messages_one]
-    except:
-        return await m.reply_text("¯\\_(ツ)_/¯")
+    except Exception as e:
+        return await m.reply_text(f"ERROR: {e}")
     try:
         make_quotly = await pyrogram_to_quotly(messages)
         bio_sticker = BytesIO(make_quotly)
         bio_sticker.name = "biosticker.webp"
         return await m.reply_sticker(bio_sticker)
-    except:
-        return await m.reply_text("¯\\_(ツ)_/¯")
+    except Exception as e:
+        return await m.reply_text(f"ERROR: {e}")
