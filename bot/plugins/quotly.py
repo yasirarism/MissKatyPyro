@@ -285,4 +285,4 @@ async def msg_quotly_cmd(c: Client, m: Message):
         bio_sticker.name = "biosticker.webp"
         return await m.reply_sticker(bio_sticker)
     except Exception as e:
-        return await m.reply_text(f"ERROR: {e}")
+        return await m.reply_text(f"🤷🏻‍♂️")
