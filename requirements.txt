@@ -21,3 +21,5 @@ html-telegraph-poster
 lk21
 telegraph
 hachoir
+Pillow
+httpx[http2]

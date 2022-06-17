@@ -1,47 +1,240 @@
-"""
-MIT License
-Copyright (c) 2021 TheHamkerCat
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-from io import BytesIO
-from traceback import format_exc
-
-from pyrogram import filters
+from pyrogram import Client, filters
 from pyrogram.types import Message
-from info import COMMAND_HANDLER
-from bot import app, arq
+
+from bot import app
+import httpx
+from io import BytesIO
 
 
-async def quotify(messages: list):
-    response = await arq.quotly(messages)
-    if not response.ok:
-        return [False, response.result]
-    sticker = response.result
-    sticker = BytesIO(sticker)
-    sticker.name = "sticker.webp"
-    return [True, sticker]
+class QuotlyException(Exception):
+    pass
 
 
-def getArg(message: Message) -> str:
-    return message.text.strip().split(None, 1)[1].strip()
+timeout = httpx.Timeout(
+    40,
+    pool=None,
+)
+
+http = httpx.AsyncClient(
+    http2=True,
+    timeout=timeout,
+)
 
 
-def isArgInt(message: Message) -> list:
-    count = getArg(message)
+async def get_message_sender_id(m: Message):
+    if m.forward_date:
+        if m.forward_sender_name:
+            return 1
+        elif m.forward_from:
+            return m.forward_from.id
+        elif m.forward_from_chat:
+            return m.forward_from_chat.id
+        else:
+            return 1
+    else:
+        if m.from_user:
+            return m.from_user.id
+        elif m.sender_chat:
+            return m.sender_chat.id
+        else:
+            return 1
+
+
+async def get_message_sender_name(m: Message):
+    if m.forward_date:
+        if m.forward_sender_name:
+            return m.forward_sender_name
+        elif m.forward_from:
+            if m.forward_from.last_name:
+                return f"{m.forward_from.first_name} {m.forward_from.last_name}"
+            else:
+                return m.forward_from.first_name
+        elif m.forward_from_chat:
+            return m.forward_from_chat.title
+        else:
+            return ""
+    else:
+        if m.from_user:
+            if m.from_user.last_name:
+                return f"{m.from_user.first_name} {m.from_user.last_name}"
+            else:
+                return m.from_user.first_name
+        elif m.sender_chat:
+            return m.sender_chat.title
+        else:
+            return ""
+
+
+async def get_message_sender_username(m: Message):
+    if m.forward_date:
+        if m.forward_sender_name:
+            return ""
+        elif m.forward_from:
+            if m.forward_from.username:
+                return m.forward_from.username
+            else:
+                return ""
+        elif m.forward_from_chat:
+            if m.forward_from_chat.username:
+                return m.forward_from_chat.username
+            else:
+                return ""
+        else:
+            return ""
+    else:
+        if m.from_user:
+            if m.from_user.username:
+                return m.from_user.username
+            else:
+                return ""
+        elif m.sender_chat:
+            if m.sender_chat.username:
+                return m.sender_chat.username
+            else:
+                return ""
+        else:
+            return ""
+
+
+async def get_message_sender_photo(m: Message):
+    if m.forward_date:
+        if m.forward_sender_name:
+            return ""
+        elif m.forward_from:
+            if m.forward_from.photo:
+                return {
+                    "small_file_id":
+                    m.forward_from.photo.small_file_id,
+                    "small_photo_unique_id":
+                    m.forward_from.photo.small_photo_unique_id,
+                    "big_file_id":
+                    m.forward_from.photo.big_file_id,
+                    "big_photo_unique_id":
+                    m.forward_from.photo.big_photo_unique_id,
+                }
+            else:
+                return ""
+        elif m.forward_from_chat:
+            if m.forward_from_chat.photo:
+                return {
+                    "small_file_id":
+                    m.forward_from_chat.photo.small_file_id,
+                    "small_photo_unique_id":
+                    m.forward_from_chat.photo.small_photo_unique_id,
+                    "big_file_id":
+                    m.forward_from_chat.photo.big_file_id,
+                    "big_photo_unique_id":
+                    m.forward_from_chat.photo.big_photo_unique_id,
+                }
+            else:
+                return ""
+        else:
+            return ""
+    else:
+        if m.from_user:
+            if m.from_user.photo:
+                return {
+                    "small_file_id": m.from_user.photo.small_file_id,
+                    "small_photo_unique_id":
+                    m.from_user.photo.small_photo_unique_id,
+                    "big_file_id": m.from_user.photo.big_file_id,
+                    "big_photo_unique_id":
+                    m.from_user.photo.big_photo_unique_id,
+                }
+            else:
+                return ""
+        elif m.sender_chat:
+            if m.sender_chat.photo:
+                return {
+                    "small_file_id": m.sender_chat.photo.small_file_id,
+                    "small_photo_unique_id":
+                    m.sender_chat.photo.small_photo_unique_id,
+                    "big_file_id": m.sender_chat.photo.big_file_id,
+                    "big_photo_unique_id":
+                    m.sender_chat.photo.big_photo_unique_id,
+                }
+            else:
+                return ""
+        else:
+            return ""
+
+
+async def get_text_or_caption(m: Message):
+    if m.text:
+        return m.text
+    elif m.caption:
+        return m.caption
+    else:
+        return ""
+
+
+async def pyrogram_to_quotly(messages):
+    if not isinstance(messages, list):
+        messages = [messages]
+    payload = {
+        "type": "quote",
+        "format": "png",
+        "backgroundColor": "#1b1429",
+        "messages": [],
+    }
+
+    for message in messages:
+        the_message_dict_to_append = {}
+        if message.entities:
+            the_message_dict_to_append["entities"] = [{
+                "type":
+                entity.type.name.lower(),
+                "offset":
+                entity.offset,
+                "length":
+                entity.length,
+            } for entity in message.entities]
+        elif message.caption_entities:
+            the_message_dict_to_append["entities"] = [{
+                "type":
+                entity.type.name.lower(),
+                "offset":
+                entity.offset,
+                "length":
+                entity.length,
+            } for entity in message.caption_entities]
+        else:
+            the_message_dict_to_append["entities"] = []
+        the_message_dict_to_append["chatId"] = await get_message_sender_id(
+            message)
+        the_message_dict_to_append["text"] = await get_text_or_caption(message)
+        the_message_dict_to_append["avatar"] = True
+        the_message_dict_to_append["from"] = {}
+        the_message_dict_to_append["from"]["id"] = await get_message_sender_id(
+            message)
+        the_message_dict_to_append["from"][
+            "name"] = await get_message_sender_name(message)
+        the_message_dict_to_append["from"][
+            "username"] = await get_message_sender_username(message)
+        the_message_dict_to_append["from"][
+            "type"] = message.chat.type.name.lower()
+        the_message_dict_to_append["from"][
+            "photo"] = await get_message_sender_photo(message)
+        if message.reply_to_message:
+            the_message_dict_to_append["replyMessage"] = {
+                "name": await
+                get_message_sender_name(message.reply_to_message),
+                "text": await get_text_or_caption(message.reply_to_message),
+                "chatId": await
+                get_message_sender_id(message.reply_to_message),
+            }
+        else:
+            the_message_dict_to_append["replyMessage"] = {}
+        payload["messages"].append(the_message_dict_to_append)
+    r = await http.post(f"https://bot.lyo.su/quote/generate.png", json=payload)
+    if not r.is_error:
+        return r.read()
+    else:
+        raise QuotlyException(r.json())
+
+
+def isArgInt(txt) -> list:
+    count = txt
     try:
         count = int(count)
         return [True, count]
@@ -49,66 +242,48 @@ def isArgInt(message: Message) -> list:
         return [False, 0]
 
 
-@app.on_message(filters.command(["q", "q@MissKatyRoBot"], COMMAND_HANDLER))
-async def quotly_func(client, message: Message):
-    if not message.reply_to_message:
-        return await message.reply_text("Reply to a message to quote it.")
-    if not message.reply_to_message.text:
-        return await message.reply_text("Silahkan reply pesan yang di quote")
-    m = await message.reply_text("Sedang quote pesan..")
-    if len(message.command) < 2:
-        messages = [message.reply_to_message]
-
-    elif len(message.command) == 2:
-        arg = isArgInt(message)
-        if arg[0]:
-            if arg[1] < 2 or arg[1] > 10:
-                return await m.edit("Argument harus diantara 2-10.")
-
-            count = arg[1]
-
-            # Fetching 5 extra messages so tha twe can ignore media
-            # messages and still end up with correct offset
-            messages = [
-                i for i in await client.get_messages(
-                    message.chat.id,
-                    range(
-                        message.reply_to_message.id,
-                        message.reply_to_message.id + (count + 5),
-                    ),
-                    replies=0,
-                ) if not i.empty and not i.media
-            ]
-            messages = messages[:count]
+@app.on_message(filters.command(["q"]) & filters.reply)
+async def msg_quotly_cmd(c: Client, m: Message, strings):
+    if len(m.text.split()) > 1:
+        check_arg = isArgInt(m.command[1])
+        if check_arg[0]:
+            if check_arg[1] < 2 or check_arg[1] > 10:
+                return await m.reply_text(
+                    strings("quotly_range_inavlid_string"))
+            else:
+                try:
+                    messages = [
+                        i for i in await c.get_messages(
+                            chat_id=m.chat.id,
+                            message_ids=range(
+                                m.reply_to_message.id,
+                                m.reply_to_message.id + (check_arg[1] + 5),
+                            ),
+                            replies=-1,
+                        ) if not i.empty and not i.media
+                    ]
+                except:
+                    return await m.reply_text("¯\\_(ツ)_/¯")
+                try:
+                    make_quotly = await pyrogram_to_quotly(messages)
+                    bio_sticker = BytesIO(make_quotly)
+                    bio_sticker.name = "biosticker.webp"
+                    return await m.reply_sticker(bio_sticker)
+                except:
+                    return await m.reply_text("¯\\_(ツ)_/¯")
         else:
-            if getArg(message) != "r":
-                return await m.edit(
-                    "Incorrect Argument, Pass **'r'** or **'INT'**, **EX:** __/q 2__"
-                )
-            reply_message = await client.get_messages(
-                message.chat.id,
-                message.reply_to_message.id,
-                replies=1,
-            )
-            messages = [reply_message]
-    else:
-        return await m.edit("Incorrect argument.")
+            pass
     try:
-        if not message:
-            return await m.edit("Ada sesuatu yang salah sepertinya.")
-
-        sticker = await quotify(messages)
-        if not sticker[0]:
-            await message.reply_text(sticker[1])
-            return await m.delete()
-        sticker = sticker[1]
-        await message.reply_sticker(sticker)
-        await m.delete()
-        sticker.close()
-    except Exception as e:
-        await m.edit("Something went wrong while quoting messages," +
-                     " This error usually happens when there's a " +
-                     " message containing something other than text," +
-                     " or one of the messages in-between are deleted.")
-        e = format_exc()
-        print(e)
+        messages_one = await c.get_messages(chat_id=m.chat.id,
+                                            message_ids=m.reply_to_message.id,
+                                            replies=-1)
+        messages = [messages_one]
+    except:
+        return await m.reply_text("¯\\_(ツ)_/¯")
+    try:
+        make_quotly = await pyrogram_to_quotly(messages)
+        bio_sticker = BytesIO(make_quotly)
+        bio_sticker.name = "biosticker.webp"
+        return await m.reply_sticker(bio_sticker)
+    except:
+        return await m.reply_text("¯\\_(ツ)_/¯")
