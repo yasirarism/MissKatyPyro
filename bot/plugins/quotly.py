@@ -248,8 +248,7 @@ async def msg_quotly_cmd(c: Client, m: Message, strings):
         check_arg = isArgInt(m.command[1])
         if check_arg[0]:
             if check_arg[1] < 2 or check_arg[1] > 10:
-                return await m.reply_text(
-                    strings("quotly_range_inavlid_string"))
+                return await m.reply_text("Invalid range")
             else:
                 try:
                     messages = [
