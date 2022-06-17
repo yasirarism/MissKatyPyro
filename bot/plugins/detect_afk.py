@@ -14,6 +14,8 @@ chat_watcher_group = 1
     group=chat_watcher_group,
 )
 async def chat_watcher_func(_, message):
+    if message.sender_chat:
+        return
     userid = message.from_user.id
     user_name = message.from_user.first_name
     if message.entities:
