@@ -72,7 +72,6 @@ async def welcomepic(pic, user, chat, count, id):
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
 async def member_has_joined(c: app, member: ChatMemberUpdated):
-    MEMJOIN = {}
     if (not member.new_chat_member or member.new_chat_member.status
             in {"banned", "left", "restricted"} or member.old_chat_member):
         return
@@ -86,9 +85,9 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     elif user.is_bot:
         return  # ignore bots
     else:
-        if (temp.MELCOW).get('welcome') is not None:
+        if (temp.MELCOW).get(f'welcome-{member.chat.id}') is not None:
             try:
-                await (temp.MELCOW['welcome']).delete()
+                await (temp.MELCOW[f'welcome-{member.chat.id}']).delete()
             except:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
@@ -105,7 +104,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             pic = "img/profilepic.png"
         welcomeimg = await welcomepic(pic, user.first_name, member.chat.title,
                                       count, user.id)
-        temp.MELCOW['welcome'] = await c.send_photo(
+        temp.MELCOW[f'welcome-{member.chat.id}'] = await c.send_photo(
             member.chat.id,
             photo=welcomeimg,
             caption=
@@ -174,12 +173,12 @@ async def save_group(bot, message):
                 pic = "img/profilepic.png"
             welcomeimg = await welcomepic(pic, u.first_name,
                                           message.chat.title, count, u.id)
-            if (temp.MELCOW).get('welcome') is not None:
+            if (temp.MELCOW).get(f'welcome-{message.chat.id}') is not None:
                 try:
-                    await (temp.MELCOW['welcome']).delete()
+                    await (temp.MELCOW[f'welcome-{message.chat.id}']).delete()
                 except:
                     pass
-            temp.MELCOW['welcome'] = await app.send_photo(
+            temp.MELCOW[f'welcome-{message.chat.id}'] = await app.send_photo(
                 message.chat.id,
                 photo=welcomeimg,
                 caption=

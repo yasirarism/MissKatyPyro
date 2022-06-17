@@ -1,4 +1,4 @@
- if [ -z $UPSTREAM_REPO ]
+# if [ -z $UPSTREAM_REPO ]
 then
   echo "Cloning main Repository"
   git clone https://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@github.com/yasirarism/MissKatyPyro.git /YasirBot
