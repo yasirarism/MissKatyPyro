@@ -114,7 +114,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             os.remove(f"welcome#{user.id}.png")
             os.remove(f"downloads/pp{user.id}.png")
         except Exception as err:
-            logging.error(err)
+            pass
         #temp.MELCOW['welcome'] = await c.send_message(
         #    member.chat.id,
         #    f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
@@ -188,7 +188,7 @@ async def save_group(bot, message):
                 os.remove(f"welcome#{u.id}.png")
                 os.remove(f"downloads/pp{u.id}.png")
             except Exception as err:
-                logging.error(err)
+                pass
 
 
 @Client.on_message(filters.command('leave') & filters.user(ADMINS))
