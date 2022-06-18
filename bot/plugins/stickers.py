@@ -32,7 +32,7 @@ MAX_STICKERS = (
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
-@app.on_message(filters.command("get_sticker") & ~filters.edited)
+@app.on_message(filters.command(["get_sticker"], COMMAND_HANDLER))
 async def sticker_image(_, message):
     r = message.reply_to_message
 
@@ -54,7 +54,7 @@ async def sticker_image(_, message):
     os.remove(f)
 
 
-@app.on_message(filters.command("kang", COMMAND_HANDLER))
+@app.on_message(filters.command(["kang"], COMMAND_HANDLER))
 async def kang(client, message):
     if not message.reply_to_message:
         return await message.reply_text("Reply to a sticker/image to kang it.")
