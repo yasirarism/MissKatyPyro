@@ -56,24 +56,22 @@ async def sticker_image(_, message):
     await m.delete()
     os.remove(f)
 
-
 @capture_err
 @app.on_message(filters.command(["unkang"], COMMAND_HANDLER))
 async def unkang(client, message):
     if not message.reply and not message.reply_to_message.sticker:
-        return await message.reply(
-            "Please reply to your pack that created by this bot.")
-    sticker = await get_document_from_file_id(
-        message.reply_to_message.sticker.file_id)
+        return await message.reply("Please reply to your pack that created by this bot.")
+    sticker = await get_document_from_file_id(message.reply_to_message.sticker.file_id)
     try:
-        return await gather(*[
+        await gather(
+        *[
             app.invoke(RemoveStickerFromSet(sticker=sticker)),
             message.reply("Success delete sticker from your pack."),
-        ])
+        ]
+        )
+        return
     except:
-        await message.reply(
-            "Failed to unkang sticker, maybe not added by me 🤷🏻‍♂️")
-
+        await message.reply("Failed to unkang sticker, maybe not added by me 🤷🏻‍♂️")
 
 @capture_err
 @app.on_message(filters.command(["kang"], COMMAND_HANDLER))
