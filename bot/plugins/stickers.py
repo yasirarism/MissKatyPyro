@@ -3,6 +3,7 @@ from traceback import format_exc
 from bot import app
 from asyncio import gather
 from pyrogram import filters
+from bot.utils.decorator import capture_err
 from info import COMMAND_HANDLER
 from utils import temp
 from pyrogram.errors import (
@@ -32,6 +33,7 @@ MAX_STICKERS = (
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
+@capture_err
 @app.on_message(filters.command(["get_sticker"], COMMAND_HANDLER))
 async def sticker_image(_, message):
     r = message.reply_to_message
@@ -54,6 +56,7 @@ async def sticker_image(_, message):
     os.remove(f)
 
 
+@capture_err
 @app.on_message(filters.command(["kang"], COMMAND_HANDLER))
 async def kang(client, message):
     if not message.reply_to_message:

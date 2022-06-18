@@ -5,9 +5,10 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from database.afk_db import remove_afk, is_afk, add_afk
 from bot.utils.human_read import get_readable_time2
-
+from bot.utils.decorator import capture_err
 
 # Handle set AFK Command
+@capture_err
 @app.on_message(filters.command(["afk"], COMMAND_HANDLER))
 async def active_afk(_, message):
     if message.sender_chat:
