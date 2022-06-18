@@ -10,7 +10,7 @@ chat_watcher_group = 1
 
 
 @app.on_message(
-    ~filters.bot & ~filters.via_bot,
+    filters.group & ~filters.bot & ~filters.via_bot,
     group=chat_watcher_group,
 )
 async def chat_watcher_func(_, message):
