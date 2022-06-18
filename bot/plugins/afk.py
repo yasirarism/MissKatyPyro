@@ -8,7 +8,7 @@ from bot.utils.human_read import get_readable_time2
 
 
 # Handle set AFK Command
-@app.on_message(filters.command(["afk"], COMMAND_HANDLER))
+@app.on_message(filters.command(["afk"], COMMAND_HANDLER) | filters.regex("^brb$"))
 async def active_afk(_, message):
     if message.sender_chat:
         return
