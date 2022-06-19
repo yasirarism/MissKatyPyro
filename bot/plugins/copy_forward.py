@@ -10,7 +10,7 @@ async def copy(client, message):
     try:
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
-        user = await client.get_chat_member(-1001404537486, message.from_user.id)
+        user = await client.get_chat_member(-1001686184174, message.from_user.id)
         if user.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
             return await message.reply_text("😝😝😝")
         if not reply and not to:
@@ -34,7 +34,7 @@ async def forward(client, message):
     try:
         to = message.text.split(" ")[1]
         reply = message.reply_to_message
-        user = await client.get_chat_member(-1001404537486, message.from_user.id)
+        user = await client.get_chat_member(-1001686184174, message.from_user.id)
         if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
            if not reply and not to:
               return await message.reply_text("Silahkan balas pesan yang mau diforward, lalu kirim command /forward [chat_tujuan]")
