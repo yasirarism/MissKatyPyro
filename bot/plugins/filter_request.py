@@ -68,7 +68,7 @@ async def start(_, message):
 @capture_err
 async def _callbackreq(c: Client, q: CallbackQuery):
     try:
-      user = await c.get_chat_member(-1001404537486, q.from_user.id)
+      user = await c.get_chat_member(-1001686184174, q.from_user.id)
     except:
       pass
     if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
@@ -91,7 +91,7 @@ async def _callbackreq(c: Client, q: CallbackQuery):
 @capture_err
 async def _callbackreqada(c: Client, q: CallbackQuery):
     try:
-       user = await c.get_chat_member(-1001404537486, q.from_user.id)
+       user = await c.get_chat_member(-1001686184174, q.from_user.id)
     except:
        pass
     if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
@@ -114,7 +114,7 @@ async def _callbackreqada(c: Client, q: CallbackQuery):
 @capture_err
 async def _callbackreject(c: Client, q: CallbackQuery):
     try:
-       user = await c.get_chat_member(-1001404537486, q.from_user.id)
+       user = await c.get_chat_member(-1001686184174, q.from_user.id)
     except:
        pass
     if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
@@ -137,7 +137,7 @@ async def _callbackreject(c: Client, q: CallbackQuery):
 @capture_err
 async def _callbackunav(c: Client, q: CallbackQuery):
     try:
-       user = await c.get_chat_member(-1001404537486, q.from_user.id)
+       user = await c.get_chat_member(-1001686184174, q.from_user.id)
     except:
        pass
     if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
