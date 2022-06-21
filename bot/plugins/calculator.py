@@ -1,7 +1,8 @@
 from bot import app
 from pyrogram import filters
-from pyrogram.types import filters, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
+
 
 @app.on_message(filters.command(["calc"], COMMAND_HANDLER))
 async def calculate(_, message):
@@ -57,12 +58,10 @@ async def calculate(_, message):
                 "+", callback_data=f"cal_{message.from_user.id}_+"),
         ]
     ])
-    await message.reply_text(
-        text="Calculator Inline By MissKaty",
-        reply_markup=CALCULATE_BUTTONS,
-        disable_web_page_preview=True,
-        quote=True
-    )
+    await message.reply_text(text="Calculator Inline By MissKaty",
+                             reply_markup=CALCULATE_BUTTONS,
+                             disable_web_page_preview=True,
+                             quote=True)
 
 
 @app.on_callback_query(filters.regex("^cal"))
@@ -132,9 +131,10 @@ async def cb_data(_, query):
                 text = ""
             else:
                 text = message_text + cmd
-            await query.message.edit_text(text=f"{text}\n\nCalculator Inline By MissKaty",
-                                            disable_web_page_preview=True,
-                                            reply_markup=CALCULATE_BUTTONS)
+            await query.message.edit_text(
+                text=f"{text}\n\nCalculator Inline By MissKaty",
+                disable_web_page_preview=True,
+                reply_markup=CALCULATE_BUTTONS)
         except Exception as error:
             print(error)
     else:
