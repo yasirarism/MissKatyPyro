@@ -122,7 +122,7 @@ async def cb_data(_, query):
         try:
             message_text = query.message.text.split("\n")[0].strip().split(
                 "=")[0].strip()
-            text = '' if "Calculator Inline By MissKaty" in message_text else message_text
+            # text = '' if "Calculator Inline By MissKaty" in message_text else message_text
             if cmd == "=":
                 text = str(eval(text))
             elif cmd == "DEL":
