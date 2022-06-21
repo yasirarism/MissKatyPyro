@@ -3,6 +3,8 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 
+CALCULATE_TEXT = "Calculator Inline By MissKaty"
+
 
 @app.on_message(filters.command(["calc"], COMMAND_HANDLER))
 async def calculate(_, message):
@@ -58,7 +60,7 @@ async def calculate(_, message):
                 "+", callback_data=f"cal_{message.from_user.id}_+"),
         ]
     ])
-    await message.reply_text(text="Calculator Inline By MissKaty",
+    await message.reply_text(text=CALCULATE_TEXT,
                              reply_markup=CALCULATE_BUTTONS,
                              disable_web_page_preview=True,
                              quote=True)
@@ -122,7 +124,7 @@ async def cb_data(_, query):
         try:
             message_text = query.message.text.split("\n")[0].strip().split(
                 "=")[0].strip()
-            # text = '' if "Calculator Inline By MissKaty" in message_text else message_text
+            text = '' if CALCULATE_TEXT in message_text else message_text
             if cmd == "=":
                 text = str(eval(text))
             elif cmd == "DEL":
@@ -131,10 +133,9 @@ async def cb_data(_, query):
                 text = ""
             else:
                 text = message_text + cmd
-            await query.message.edit_text(
-                text=f"{text}\n\nCalculator Inline By MissKaty",
-                disable_web_page_preview=True,
-                reply_markup=CALCULATE_BUTTONS)
+            await query.message.edit_text(text=f"{text}\n\n{CALCULATE_TEXT}",
+                                          disable_web_page_preview=True,
+                                          reply_markup=CALCULATE_BUTTONS)
         except Exception as error:
             print(error)
     else:
