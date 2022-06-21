@@ -56,7 +56,7 @@ async def welcomepic(pic, user, chat, count, id):
         (265,
          265))  # Resizes the Profilepicture so it fits perfectly in the circle
     font = ImageFont.truetype(
-        "PRISTINA.ttf", 40
+        "PRISTINA.TTF", 40
     )  # <- Text Font of the Member Count. Change the text size for your preference
     member_text = (f"User#{count} Selamat Datang {user}"
                    )  # <- Text under the Profilepicture with the Membercount
