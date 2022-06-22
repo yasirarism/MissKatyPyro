@@ -9,6 +9,7 @@ from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCEr
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
+from bot.utils.decorator import capture_err
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
 from database.users_chats_db import db
@@ -127,6 +128,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
 
 
 @Client.on_message(filters.new_chat_members & filters.group)
+@capture_err
 async def save_group(bot, message):
     r_j_check = [u.id for u in message.new_chat_members]
     if temp.ME in r_j_check:
@@ -303,6 +305,7 @@ async def gen_invite(bot, message):
 
 @app.on_message(
     filters.command(["adminlist", "adminlist@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def adminlist(_, message):
     if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("Perintah ini hanya untuk grup")
@@ -344,6 +347,7 @@ async def zombie_clean(_, m):
 
 @Client.on_message(
     filters.command(["kickme", "kickme@MissKatyRoBot"], COMMAND_HANDLER))
+@capture_err
 async def kickme(_, message):
     reason = None
     if len(message.text.split()) >= 2:
