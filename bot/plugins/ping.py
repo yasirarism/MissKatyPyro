@@ -5,7 +5,7 @@ from bot import app, user, botStartTime
 from bot.utils.human_read import get_readable_time
 from subprocess import check_output
 
-@app.on_message(filters.command(["ping""], COMMAND_HANDLER))
+@app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 async def ping(_, message):
     last_commit = check_output(["git log -1 --date=short --pretty=format:'%cd <b>From</b> %cr'"], shell=True).decode()
     botVersion = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
