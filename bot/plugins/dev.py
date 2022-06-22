@@ -12,7 +12,6 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app
 from subprocess import run as srun
-from bot.plugins.dev import shell_exec
 
 @app.on_message(
     filters.command(["balas"], COMMAND_HANDLER)
