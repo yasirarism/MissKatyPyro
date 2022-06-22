@@ -30,7 +30,7 @@ Jika kamu ada kendala, bisa tanya saya di grup @indoupload atau @YMovieZChat. Ja
 <b>Disk Digunakan:</b> <code>{}</code>
 <b>CPU:</b> {}% <b>RAM:</b> {}% <b>DISK:</b> {}%
 
-Semua command bisa digunakan dengan ! atau /."""
+Hampir command bisa digunakan dengan ! atau /. Beberapa fitur atau menu help mungkin ada yang bermasalah, saya belum ada waktu untuk fix itu."""
     ABOUT_TXT = """✯ Tentang Saya: {}
 ✯ OWNER: <a href=https://t.me/YasirArisM>Yasir Aris M</a>
 ✯ LIBRARY: Pyrogram
@@ -58,18 +58,8 @@ Semua command bisa digunakan dengan ! atau /."""
 • /pin - <code>Pin pesan digrup</code>
 • /unpin - <code>Unpin pesan tersemat digrup</code>
 • /adminlist - <code>Dapatkan daftar admin disebuah grup</code>
-Docs ini belum selesai harap bersabar.. 🙃"""
-    BUTTON_TXT = """Help: <b>Buttons</b>
-
-<b>NOTE:</b>
-1. Telegram will not allows you to send buttons without any content, so content is mandatory.
-xxxxxxxxxxxxxxxxx
-
-<b>URL buttons:</b>
-<code>[Button Text](buttonurl:https://t.me/MissKatyRoBot)</code>
-
-<b>Alert buttons:</b>
-<code>[Button Text](buttonalert:This is an alert message)</code>"""
+"""
+    BUTTON_TXT = """No help"""
     AUTOFILTER_TXT = """Help: <b>Code Runner</b>
 
 Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung. Untuk command sementara hanya support dengan tanda "!" seperti contoh dibawah.
@@ -118,15 +108,7 @@ Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Ber
 """
     CONNECTION_TXT = """Help: <b>Inline</b>
 
-- Used to connect bot to PM for managing filters 
-- it helps to avoid spamming in groups.
-
-<b>NOTE:</b>
-1. Only admins can add a connection.
-2. Send <code>/connect</code> for connecting me to ur PM
-
-<b>Commands and Usage:</b>
-• /connections - <code>list all your connections</code>"""
+- No help"""
     EXTRAMOD_TXT = """Help: <b>Extra Modules</b>
 
 <b>NOTE:</b>
@@ -137,7 +119,7 @@ Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berd
 • /info  - <code>Dapatkan informasi mengenai user.</code>
 • /imdb  - <code>Dapatkan informasi mengenai film/series dari IMDb. (Translate ke Bahasa Indonesia)</code>
 • /webss  - <code>Ambil screenshot dari sebuah website.</code>
-• /json - <code>Melihat struktur pesan di Telegram. (<b>Pyrogram Version</b>)
+• /json - <code>Melihat struktur pesan di Telegram. (<b>Pyrogram Versi 2</b>)
 • /mediainfo - <code>Reply ke pesan Telegram atau dengan command /mediainfo [direct link], untuk mengetahui metadata sebuah file. Sangat berguna jika kamu punya channel film..</code>
 • /tr, /trans - <code>Untuk menterjemahkan kalimat.</code>
 • /tts - <code>Mengubah pesan teks menjadi voice message.</code>
@@ -147,7 +129,8 @@ Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berd
 • /ocr - <code>Mengubah gambar atau sticker menjadi tulisan.</code>
 • /genss [jumlah] - <code>Generate screenshot dari file Video.</code>
 • /afk [alasan] - <code>Tandai diri kamu sedang AFK saat dimention.</code>
-
+• /q - <code>Membuat stiker dari pesan, pesan bot tidak bisa di quote.</code>
+• /paste - <code>Paste text ke Github Gist.</code>
 """
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
@@ -157,15 +140,12 @@ This module only works for my owner
 <b>Commands and Usage:</b>
 • /run - <code>Menjalankan kode python</code>
 • /logs - <code>to get the rescent errors</code>
-• /stats - <code>to get status of files in db.</code>
-• /delete - <code>to delete a specific file from db.</code>
 • /users - <code>to get list of my users and ids.</code>
 • /chats - <code>to get list of the my chats and ids </code>
 • /leave  - <code>to leave from a chat.</code>
 • /disable  -  <code>do disable a chat.</code>
 • /ban  - <code>to ban a user.</code>
 • /unban  - <code>to unban a user.</code>
-• /channel - <code>to get list of total connected channels</code>
 • /broadcast - <code>to broadcast a message to all users</code>"""
     STATUS_TXT = """★ 𝚃𝙾𝚃𝙰𝙻 𝙵𝙸𝙻𝙴𝚂: <code>{}</code>
 ★ Jumlah Pengguna: <code>{}</code>
