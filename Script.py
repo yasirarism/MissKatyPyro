@@ -112,15 +112,15 @@ Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Ber
     EXTRAMOD_TXT = """Help: <b>Extra Modules</b>
 
 <b>NOTE:</b>
-Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berdasarkan kategori jika sempat.
+Ini adalah fitur tambahan dari MissKatyRoBot.
 
-<b>Commands and Usage:</b>
+<b>Daftar Perintah:</b>
 • /id - <code>Dapatkan ID dari seorang user atau grup.</code>
 • /info  - <code>Dapatkan informasi mengenai user.</code>
 • /imdb  - <code>Dapatkan informasi mengenai film/series dari IMDb. (Translate ke Bahasa Indonesia)</code>
 • /webss  - <code>Ambil screenshot dari sebuah website.</code>
 • /json - <code>Melihat struktur pesan di Telegram. (<b>Pyrogram Versi 2</b>)
-• /mediainfo - <code>Reply ke pesan Telegram atau dengan command /mediainfo [direct link], untuk mengetahui metadata sebuah file. Sangat berguna jika kamu punya channel film..</code>
+• /mediainfo - <code>Reply ke pesan Telegram atau dengan command /mediainfo [direct link], untuk mengetahui metadata sebuah file.</code>
 • /tr, /trans - <code>Untuk menterjemahkan kalimat.</code>
 • /tts - <code>Mengubah pesan teks menjadi voice message.</code>
 • /google - <code>Browsing google melalui bot.</code>
