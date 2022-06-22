@@ -145,7 +145,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "scrap":
         buttons = [[InlineKeyboardButton('👩‍🦯 Back', callback_data='help')]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        teks = "Disini tersedia command scraper untuk beberapa web film:"
+        teks = script.SCRAP_TXT
         await query.message.edit_text(text=teks,
                                       reply_markup=reply_markup,
                                       parse_mode=enums.ParseMode.HTML)
