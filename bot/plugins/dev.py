@@ -24,7 +24,7 @@ async def balas(c, m):
 @app.on_message(filters.command(["neofetch"], COMMAND_HANDLER))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
-    await message.reply(f"<code>{neofetch}</code>")
+    await m.reply(f"<code>{neofetch}</code>")
 
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
