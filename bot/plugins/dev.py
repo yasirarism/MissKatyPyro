@@ -12,7 +12,7 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app
 from subprocess import run as srun
-
+from bot.plugins.dev import shell_exec
 
 @app.on_message(
     filters.command(["balas"], COMMAND_HANDLER)
@@ -21,7 +21,11 @@ async def balas(c, m):
     pesan = m.text.split(' ', 1)
     await m.delete()
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
-
+    
+@app.on_message(filters.command(["neofetch"], COMMAND_HANDLER))
+async def neofetch(c, m):
+    neofetch = (await shell_exec("neofetch --stdout"))[0]
+    await message.reply(f"<code>{neofetch}</code>")
 
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
