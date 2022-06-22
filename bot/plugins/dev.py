@@ -7,9 +7,10 @@ Syntax: .eval PythonCode"""
 import io
 import sys
 import traceback
+import asyncio
 from pyrogram import filters
 from info import COMMAND_HANDLER
-from bot import app, user
+from bot import app
 from subprocess import run as srun
 
 
@@ -117,3 +118,13 @@ async def aexec(code, client, message):
     exec("async def __aexec(client, message): " +
          "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](client, message)
+
+
+async def shell_exec(code, treat=True):
+    process = await asyncio.create_subprocess_shell(
+        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+
+    stdout = (await process.communicate())[0]
+    if treat:
+        stdout = stdout.decode().strip()
+    return stdout, process
