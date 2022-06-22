@@ -64,7 +64,7 @@ async def del_msg(client, message):
 
 @user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(r"^(/leech|/mirror), re.I"))
 async def edit_msg(client, message):
-    edit_log = await user.send(
+    edit_log = await user.invoke(
         functions.channels.GetAdminLog(
             channel= await user.resolve_peer(message[0].chat.id),
             q="",
@@ -135,7 +135,7 @@ async def memberstats(client, message):
 
 @user.on_message(filters.command("recent_action", "!") & filters.me)
 async def recent_act(client, message):
-    full_log = await user.send(
+    full_log = await user.invoke(
         functions.channels.GetAdminLog(
             channel= await user.resolve_peer(message.chat.id),
             q="",
@@ -151,7 +151,7 @@ async def recent_act(client, message):
 @user.on_message(filters.command(["screenshot"], prefixes="!"))
 async def take_a_screenshot(client, message):
     await message.delete()
-    await user.send(
+    await user.invoke(
         functions.messages.SendScreenshotNotification(
             peer=await user.resolve_peer(message.chat.id),
             reply_to_msg_id=0,
