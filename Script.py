@@ -1,6 +1,22 @@
 class script(object):
     START_TXT = """Hai {},
 Namaku adalah <a href=https://t.me/{}>{}</a>, aku punya beberapa fitur berguna loh 😍. Penasaran? silahkan dicoba yaa. Mungkin masih ada banyak bug di bot ini, jadi harap dimaklumi saja yaa 😃."""
+    SCRAP_TXT = """Disini tersedia command scraper untuk beberapa web film:
+>> Melongmovie <<
+Search: /melongmovie [judul]
+Download Link (Owner Only): /melong [link]
+>> Lk21 <<
+Search: /lk21 [judul]
+>> Movieku.cc <<
+Search: /movieku [judul]
+Download Link: /movieku_scrap [link]
+>> Savefilm21 <<
+Search: /savefilm21 [judul]
+Download Link: /savefilm21_scrap [link]
+>> Ngefilm21 <<
+Search: /ngefilm21 [judul]
+>> Nodrakor <<
+Search: /nodrakor [judul]"""
     HELP_TXT = """Hai {}
 Ini adalah daftar menu bantuan bot MissKatyRoBot. Kamu bisa membaca petunjuk melalui button dibawah ini.
 <b>Catatan:</b>
@@ -129,6 +145,9 @@ Ini adalah fitur tambahan dari MissKatyRoBot, mungkin akan saya kelompokkan berd
 • /tosticker - <code>Mengubah foto menjadi sticker.</code>
 • /toimage - <code>Mengubah sticker menjadi foto.</code>
 • /ocr - <code>Mengubah gambar atau sticker menjadi tulisan.</code>
+• /genss [jumlah] - <code>Generate screenshot dari file Video.</code>
+• /afk [alasan] - <code>Tandai diri kamu sedang AFK saat dimention.</code>
+
 """
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
