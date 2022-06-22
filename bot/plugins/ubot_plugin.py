@@ -89,6 +89,8 @@ async def message_pm(client, message):
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
 async def mentioned(client, message):
+    if message.sender_chat:
+        return
     cid = message.chat.id
     pesan = message.text or message.caption
     await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.id}")]]))
