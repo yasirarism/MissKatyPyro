@@ -18,7 +18,7 @@ async def ping(_, message):
     time_taken_s = round(end_t - start_t, 3)
     keyb = InlineKeyboardMarkup([[InlineKeyboardButton("Stats", callback_data=f"ping_{message.from_user.id}")]])
     try:
-        await rm.edit(f"<b>🐈 MissKaty {botVersion} online.</b> (<b>Last Commit:</b> <code>{last_commit}</code>)\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>", disable_web_page_preview=True)
+        await rm.edit(f"<b>🐈 MissKaty {botVersion} online.</b> (<b>Last Commit:</b> <code>{last_commit}</code>)\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>", reply_markup=keyb)
     except Exception:
         pass
 
