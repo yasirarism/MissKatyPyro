@@ -33,7 +33,7 @@ async def clearlocal(c, m):
     if len(cmd) == 1:
         return await m.reply('Give path file to delete.')
     remove = (await shell_exec(f"rm -rf {cmd[1]}"))[0]
-    await m.reply(bool(remove))
+    await m.reply("Done")
 
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
