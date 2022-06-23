@@ -28,10 +28,10 @@ async def neofetch(c, m):
     await m.reply(f"<code>{neofetch}</code>")
     
 @app.on_message(filters.command(["remove"], COMMAND_HANDLER))
-async def neofetch(c, m):
-    cmd = message.text.split(' ', 1)
+async def clearlocal(c, m):
+    cmd = m.text.split(' ', 1)
     if len(cmd) == 1:
-        return await message.reply('Give path file to delete.')
+        return await m.reply('Give path file to delete.')
     remove = (await shell_exec(f"rm -rf {cmd[1]}"))[0]
     await m.reply(bool(remove))
 
