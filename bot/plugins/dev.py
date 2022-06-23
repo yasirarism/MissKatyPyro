@@ -22,7 +22,7 @@ async def balas(c, m):
     await m.delete()
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
     
-@app.on_message(filters.command(["neofetch"], COMMAND_HANDLER))
+@app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     await m.reply(f"<code>{neofetch}</code>")
