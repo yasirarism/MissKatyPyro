@@ -11,7 +11,7 @@ import traceback
 import asyncio
 from pyrogram import filters
 from info import COMMAND_HANDLER
-from bot import app
+from bot import app, user
 from subprocess import run as srun
 
 @app.on_message(
