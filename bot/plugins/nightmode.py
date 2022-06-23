@@ -6,7 +6,7 @@ import pytz
 import urllib
 import traceback
 import requests
-from bot import app
+from bot import app, user
 from datetime import datetime
 from subprocess import check_output
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
@@ -33,15 +33,15 @@ async def job_close():
     jam = now.strftime('%H:%M')
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-      await app.send_sticker(-1001128045651, "CAACAgQAAxkDAAEDfNhgygZBqbTlbOQ6Gk3CmtD-bnkRDAACLxsAAvEGNAY-qWSFYAqy3R4E")
-      await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
+      reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
-      await app.send_message(
-        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`\n\n~ Powered by <code>MissKaty {version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.send_message(
+        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`"
       )
     except Exception:
        exc = traceback.format_exc()
-       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
 
 async def job_close_ymoviez():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
@@ -52,14 +52,15 @@ async def job_close_ymoviez():
     jam = now.strftime('%H:%M')
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-      await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
+      reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
-      await app.send_message(
-        -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 9 pagi. Selamat beristirahat.....`\n\n~ Powered by <code>MissKaty {version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.send_message(
+        -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup hingga jam 9 pagi. Selamat beristirahat.....`"
       )
     except Exception:
        exc = traceback.format_exc()
-       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
 
 async def job_open():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
@@ -70,15 +71,15 @@ async def job_open():
     jam = now.strftime('%H:%M')
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-      # res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
-      await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
+      reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
       )
-      await app.send_message(
-          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n~ Powered by <code>MissKaty {version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.send_message(
+          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`"
       )
     except Exception:
        exc = traceback.format_exc()
-       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
     
 async def job_open_ymoviez():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
@@ -89,15 +90,15 @@ async def job_open_ymoviez():
     jam = now.strftime('%H:%M')
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-      # res = requests.get("https://api.lolhuman.xyz/api/quotes/islami?apikey=d6933a59588ca5e57e7eb141").json()
-      await app.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
+      reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
       )
-      await app.send_message(
-          -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`\n\n~ Powered by <code>MissKaty {version}</code>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+      await user.send_message(
+          -1001255283935, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`"
       )
     except Exception:
        exc = traceback.format_exc()
-       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 async def _callbackanightmd(c: Client, q: CallbackQuery):
