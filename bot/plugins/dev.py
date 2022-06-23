@@ -37,7 +37,6 @@ async def shell(client, message):
     cmd = message.text.split(' ', 1)
     if len(cmd) == 1:
         return await message.reply('No command to execute was given.')
-    cmd = cmd[1]
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open('shell_output.txt', 'w') as file:
