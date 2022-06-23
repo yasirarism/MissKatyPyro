@@ -184,7 +184,7 @@ async def imdb_inl(_, query):
                 markup = InlineKeyboardMarkup([[
                     InlineKeyboardButton(
                         "🎬 Open IMDB",
-                        url=f"https://www.imdb.com/title/tt{movie}/"),
+                        url=f"https://www.imdb.com/title/{movie}/"),
                     InlineKeyboardButton("▶️ Trailer", url=trailer_url)
                 ]])
             else:
