@@ -92,7 +92,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(
                         text="Get IMDB details",
-                        callback_data=f"imdbinl_{inline_query.from_user.id}_({sraeo.get('id')})")
+                        callback_data=f"imdbinl_{inline_query.from_user.id}_{sraeo.get('id')}")
                 ]])))
     resfo = srch_results.get("q")
     await inline_query.answer(
