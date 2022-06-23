@@ -1,3 +1,5 @@
+import requests
+import json
 from bot import app
 from bot.utils.inline_func import *
 from bot.plugins.misc import get_content
@@ -52,12 +54,8 @@ async def inline_query_handler(client, query):
     except Exception as e:
         pass
 
-import requests
-import json
-from bot import udbbot
 
-
-@udbbot.on_inline_query(
+@app.on_inline_query(
     filters.create(
         lambda _, __, inline_query:
         (inline_query.query and inline_query.query.startswith("imdb ") and
@@ -108,7 +106,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@udbbot.on_callback_query(filters.regex('^imdbinl_'))
+@app.on_callback_query(filters.regex('^imdbinl_'))
 async def imdb_inl(_, query):
     i, user, movie = query.data.split('_')
     if user == f"{query.from_user.id}":
