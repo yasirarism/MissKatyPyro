@@ -1,6 +1,7 @@
 """ WRITTEN BY @pokurt, https://github.com/pokurt"""
 
 import sys
+import asyncio
 import traceback
 from functools import wraps
 from threading import Thread
@@ -9,6 +10,14 @@ from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from info import LOG_CHANNEL
 from bot import app
 
+def asyncify(func):
+
+    async def inner(*args, **kwargs):
+        loop = asyncio.get_running_loop()
+        func_out = await loop.run_in_executor(None, func, *args, **kwargs)
+        return func_out
+
+    return inner
 
 def split_limits(text):
     if len(text) < 4096:
