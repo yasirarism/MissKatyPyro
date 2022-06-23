@@ -112,7 +112,7 @@ async def imdb_inl(_, query):
     if user == f"{query.from_user.id}":
             trl = Translator()
             url = f"https://www.imdb.com/title/{movie}/"
-            imdb = await get_poster(query=movie, id=True)
+            imdb = await get_poster(query=movie.split("tt")[1], id=True)
             resp = await get_content(url)
             b = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
