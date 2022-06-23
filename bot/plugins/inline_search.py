@@ -76,7 +76,10 @@ async def inline_fn(_, inline_query: InlineQuery):
         stars = sraeo.get("s", "")
         imdb_url = f"https://imdb.com/title/{sraeo.get('id')}"
         year = sraeo.get("yr", "").rstrip('-')
-        image_url = sraeo.get("i").get("imageUrl")
+        try:
+            image_url = sraeo.get("i").get("imageUrl")
+        except:
+            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
         message_text = f"<a href='{image_url}'>🎬</a>"
         message_text += f"<a href='{imdb_url}'>{title} {year}</a>"
         oorse.append(
