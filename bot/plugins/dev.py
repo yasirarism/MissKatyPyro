@@ -26,6 +26,14 @@ async def balas(c, m):
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     await m.reply(f"<code>{neofetch}</code>")
+    
+@app.on_message(filters.command(["remove"], COMMAND_HANDLER))
+async def neofetch(c, m):
+    cmd = message.text.split(' ', 1)
+    if len(cmd) == 1:
+        return await message.reply('Give path file to delete.')
+    remove = (await shell_exec(f"rm -rf {cmd[1]}"))[0]
+    await m.reply(bool(remove))
 
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
