@@ -6,6 +6,7 @@ Syntax: .eval PythonCode"""
 
 import io
 import sys
+import os
 import traceback
 import asyncio
 from pyrogram import filters
@@ -37,21 +38,18 @@ async def shell(client, message):
     if len(cmd) == 1:
         return await message.reply('No command to execute was given.')
     cmd = cmd[1]
-    process = srun(cmd, capture_output=True, shell=True)
-    reply = ''
-    stderr = process.stderr.decode('utf-8')
-    stdout = process.stdout.decode('utf-8')
-    if len(stdout) != 0:
-        reply += f"*Stdout*\n<code>{stdout}</code>\n"
-    if len(stderr) != 0:
-        reply += f"*Stderr*\n<code>{stderr}</code>\n"
-    if len(reply) > 3000:
+    shell = (await shell_exec(cmd[1]))[0]
+    if len(shell) > 3000:
         with open('shell_output.txt', 'w') as file:
-            file.write(reply)
+            file.write(shell)
         with open('shell_output.txt', 'rb') as doc:
             await message.reply_document(document=doc, file_name=doc.name)
-    elif len(reply) != 0:
-        await message.reply(reply)
+            try:
+                os.remove('shell_output.txt')
+            except:
+                pass
+    elif len(shell) != 0:
+        await message.reply(shell)
     else:
         await message.reply('No Reply')
 
@@ -112,6 +110,10 @@ async def eval(client, message):
                 disable_notification=True,
                 quote=True,
             )
+            try:
+                os.remove("MissKaty_Eval.txt")
+            except:
+                pass
     else:
         await reply_to_.reply_text(final_output, quote=True)
     await status_message.delete()
