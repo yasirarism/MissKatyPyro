@@ -336,7 +336,7 @@ async def idris(client, message):
 
 
 @Client.on_message(filters.command(["java"], "!"))
-@Client.on_editd_message(filters.command(["java"], "!"))
+@Client.on_edited_message(filters.command(["java"], "!"))
 async def java(client, message):
     if len(message.command) < 2:
         return await message.reply(
