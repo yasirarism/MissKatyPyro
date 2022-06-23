@@ -9,7 +9,7 @@ from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCEr
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
-from bot.utils.decorator import capture_err
+from bot.utils.decorator import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
 from database.users_chats_db import db
@@ -46,8 +46,8 @@ def draw_multiple_line_text(image, text, font, text_start_height):
                   fill="black")
         y_text += line_height
 
-
-async def welcomepic(pic, user, chat, count, id):
+@asyncify
+def welcomepic(pic, user, chat, count, id):
     background = Image.open(
         "img/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
@@ -71,9 +71,9 @@ async def welcomepic(pic, user, chat, count, id):
     background.paste(pfp, (379, 123),
                      pfp)  # Pastes the Profilepicture on the Background Image
     background.save(
-        f"welcome#{id}.png"
+        f"downloads/welcome#{id}.png"
     )  # Saves the finished Image in the folder with the filename
-    return f"welcome#{id}.png"
+    return f"downloads/welcome#{id}.png"
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
@@ -117,7 +117,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
         )
         try:
-            os.remove(f"welcome#{user.id}.png")
+            os.remove(f"downloads/welcome#{user.id}.png")
             os.remove(f"downloads/pp{user.id}.png")
         except Exception as err:
             pass
@@ -192,7 +192,7 @@ async def save_group(bot, message):
                 f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
             )
             try:
-                os.remove(f"welcome#{u.id}.png")
+                os.remove(f"downloads/welcome#{u.id}.png")
                 os.remove(f"downloads/pp{u.id}.png")
             except Exception as err:
                 pass
