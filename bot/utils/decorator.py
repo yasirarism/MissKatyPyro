@@ -11,14 +11,14 @@ from bot import app
 
 
 def split_limits(text):
-    if len(text) < 2048:
+    if len(text) < 4096:
         return [text]
 
     lines = text.splitlines(True)
     small_msg = ""
     result = []
     for line in lines:
-        if len(small_msg) + len(line) < 2048:
+        if len(small_msg) + len(line) < 4096:
             small_msg += line
         else:
             result.append(small_msg)
@@ -49,6 +49,7 @@ def capture_err(func):
 
             for x in error_feedback:
                 await app.send_message(LOG_CHANNEL, x)
+                await message.reply(x)
             raise err
 
     return capture
