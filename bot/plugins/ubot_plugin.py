@@ -50,11 +50,10 @@ async def unafk(client, message):
 async def del_msg(client, message):
     async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
        try:
-          pengguna = await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id)
-          ustat = pengguna.status
+          ustat = (await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id)).status
        except:
           ustat = enums.ChatMemberStatus.MEMBER
-       if ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or pengguna.user.is_bot:
+       if ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or a.deleted_message.from_user.is_bot:
           return
        if a.user.id == a.deleted_message.from_user.id:
           if a.deleted_message.text:
@@ -62,7 +61,7 @@ async def del_msg(client, message):
           elif a.deleted_message.video:
              await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Nama file:</b> {a.deleted_message.video.file_name}")
 
-@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(r"^(/leech|/mirror), re.I"))
+@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(r"^(/leech|/mirror)"))
 async def edit_msg(client, message):
     edit_log = await user.invoke(
         functions.channels.GetAdminLog(
