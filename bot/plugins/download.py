@@ -40,7 +40,7 @@ async def download(client, message):
             url, custom_file_name = the_url_parts.split("|")
             url = url.strip()
             custom_file_name = custom_file_name.strip()
-        download_file_path = os.path.join("/YasirBot/downloads/", custom_file_name)
+        download_file_path = os.path.join("downloads/", custom_file_name)
         downloader = SmartDL(url, download_file_path, progress_bar=False)
         downloader.start(blocking=False)
         c_time = time.time()
