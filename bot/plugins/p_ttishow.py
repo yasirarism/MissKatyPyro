@@ -221,6 +221,7 @@ async def leave_a_chat(bot, message):
         await bot.leave_chat(chat)
     except Exception as e:
         await message.reply(f'Error - {e}')
+        await bot.leave_chat(chat)
 
 
 @Client.on_message(filters.command('disable') & filters.user(ADMINS))
@@ -330,7 +331,7 @@ async def zombie_clean(_, m):
 
     zombie = 0
     wait = await m.reply_text("Searching ... and banning ...")
-    async for member in app.iter_chat_members(m.chat.id):
+    async for member in app.get_chat_members(m.chat.id):
         if member.user.is_deleted:
             zombie += 1
             try:
@@ -338,7 +339,7 @@ async def zombie_clean(_, m):
             except UserAdminInvalid:
                 zombie -= 1
             except FloodWait as e:
-                await sleep(e.x)
+                await sleep(e.value)
     if zombie == 0:
         return await wait.edit_text("Group is clean!")
     return await wait.edit_text(
@@ -365,7 +366,7 @@ async def kickme(_, message):
     return
 
 
-@app.on_message(filters.command(['pin', 'pin@MissKatyRoBot'], COMMAND_HANDLER))
+@app.on_message(filters.command(['pin'], COMMAND_HANDLER))
 async def pin(_, message):
     if message.reply_to_message:
         message_id = message.reply_to_message.id
@@ -380,7 +381,7 @@ async def pin(_, message):
 
 
 @app.on_message(
-    filters.command(['unpin', 'unpin@MissKatyRoBot'], COMMAND_HANDLER))
+    filters.command(['unpin'], COMMAND_HANDLER))
 async def unpin(_, message):
     if message.reply_to_message:
         message_id = message.reply_to_message.id
@@ -399,7 +400,7 @@ async def unpin(_, message):
     & filters.group)
 async def ban_a_user(_, message):
     admin = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if admin.status not in ['administrator', 'creator']:
+    if admin.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         await message.reply_text("Kamu bukan admin disini")
         await message.stop_propagation()
 
@@ -433,7 +434,7 @@ async def ban_a_user(_, message):
 
     admin = await app.get_chat_member(message.chat.id,
                                       message.reply_to_message.from_user.id)
-    if user_id in ['administrator', 'creator']:
+    if user_id in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         await message.reply_text("Saya tidak bisa ban admin")
         await message.stop_propagation()
 
@@ -479,7 +480,7 @@ async def unbanbutton(bot: Client, q: CallbackQuery):
     user_id = int(splitter[1])
     user = await q.message.chat.get_member(q.from_user.id)
 
-    if not user.can_restrict_members and q.from_user.id != 617426792:
+    if user.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         await q.answer(
             "Kamu ga punya cukup ijin untuk melakukan ini!!",
             show_alert=True,
