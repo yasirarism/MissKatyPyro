@@ -11,7 +11,6 @@ from bot import user, app
 from datetime import datetime
 
 f = filters.chat([])
-AFK = []
 
 @user.on_message(f)
 async def auto_read(_, message: Message):
@@ -26,25 +25,6 @@ async def add_keep(_, message: Message):
     else:
         f.add(message.chat.id)
         await message.edit("Autoscroll diaktifkan, semua chat akan otomatis terbaca")
-
-@user.on_message(filters.command('afk', "!") & filters.me)
-async def afk(client, message):
-    start = datetime.now().replace(microsecond=0)
-    if len(message.text.split()) >= 2:
-        reason = message.text.split(" ", maxsplit=1)[1]
-    else:
-        reason = "Randue alesan.."
-    AFK.append([start, reason])
-    await app.send_message(message.chat.id, "<b>Byee @YasirArisM, kamu sekarang di mode AFK.. </b>")
-
-@user.on_message(filters.command('unafk', "!") & filters.me)
-async def unafk(client, message):
-    try:
-        await app.send_message(message.chat.id, f"<b>Kamu sudah tidak AFK lagi yakk.. ")
-        AFK.clear()
-    except:
-        AFK.clear()
-        pass
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def del_msg(client, message):
@@ -74,17 +54,16 @@ async def edit_msg(client, message):
         )
     )
     try:
-        pengguna = await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)
-        ustat = pengguna.status
+        ustat = (await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)).status
     except:
         ustat = enums.ChatMemberStatus.MEMBER
     if edit_log.users[0].bot or ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
         return
-    await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.message.message}")
+    await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.prev_message.message}")
     
-@user.on_message(filters.private & ~filters.bot & ~filters.me)
+@user.on_message(filters.private & ~filters.bot & ~filters.me & filters.text)
 async def message_pm(client, message):
-    await app.send_message(617426792, f"Ada pesan baru dari {message.from_user.mention}")
+    await app.send_message(617426792, f"Ada pesan baru dari {message.from_user.mention}\n\n<b>Pesan: </b>{message.text}")
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
 async def mentioned(client, message):
@@ -93,14 +72,6 @@ async def mentioned(client, message):
     cid = message.chat.id
     pesan = message.text or message.caption
     await app.send_message(617426792, f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/{str(cid)[4:]}/{message.id}")]]))
-    if AFK:
-        end = datetime.now().replace(microsecond=0)
-        afk_time = (end - AFK[0][0])
-        alasan = AFK[0][1]
-        try:
-            await app.send_message(message.chat.id, f"<b>⚠️ Mohon maaf {message.from_user.mention}, Owner saya sedang AFK selama {afk_time}</b>..\n<b>Alasan:</b> <code>{alasan}</code>", reply_to_message_id=message.id)
-        except:
-            pass
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
 async def join_date(app, message: Message):
