@@ -109,7 +109,7 @@ async def genss(client, message):
                 os.makedirs(tmp_directory_for_each_user)
             images = await genss_link(process, link,
                                                  tmp_directory_for_each_user,
-                                                 5, 10)
+                                                 5, 8)
             try:
                 await client.edit_message_text(
                     text="Mencoba mengupload, hasil generate screenshot..",
