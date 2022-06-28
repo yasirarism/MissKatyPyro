@@ -142,5 +142,5 @@ async def genss(client, message):
                 os.remove(the_real_download_location)
             except:
                 pass
-        except:
-            await message.reply("Use command to get ss link..")
+        except Exception as e:
+            await message.reply(e)
