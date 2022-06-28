@@ -45,7 +45,7 @@ async def del_msg(client, message):
 async def edit_msg(client, message):
     async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(edited_messages=True)):
         try:
-            ustat = (await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)).status
+            ustat = (await user.get_chat_member(message[0].chat.id, a.user.id)).status
         except:
             ustat = enums.ChatMemberStatus.MEMBER
         if a.user.is_bot or ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
