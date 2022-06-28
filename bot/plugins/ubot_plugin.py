@@ -41,26 +41,17 @@ async def del_msg(client, message):
           elif a.deleted_message.video:
              await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Nama file:</b> {a.deleted_message.video.file_name}")
 
-@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(r"^(/leech|/mirror)"))
+@user.on_edited_message(filters.chat([-1001455886928, -1001255283935]) & filters.regex(r"^(/leech|/mirror)") & filters.text)
 async def edit_msg(client, message):
-    edit_log = await user.invoke(
-        functions.channels.GetAdminLog(
-            channel= await user.resolve_peer(message[0].chat.id),
-            q="",
-            max_id=0,
-            min_id=0,
-            limit=1,
-            events_filter=types.ChannelAdminLogEventsFilter(edit=True),
-        )
-    )
-    try:
-        ustat = (await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)).status
-    except:
-        ustat = enums.ChatMemberStatus.MEMBER
-    if edit_log.users[0].bot or ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
-        return
-    await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={edit_log.users[0].id}'>{edit_log.users[0].first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {edit_log.events[0].action.prev_message.message}")
-    
+    async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(edited_messages=True)):
+        try:
+            ustat = (await user.get_chat_member(message[0].chat.id, edit_log.users[0].id)).status
+        except:
+            ustat = enums.ChatMemberStatus.MEMBER
+        if a.user.is_bot or ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
+            return
+        await app.send_message(message[0].chat.id, f"#EDITED_MESSAGE\n\n<a href='tg://user?id={a.user.id}'>{a.user.first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {a.old_message.text}")
+
 @user.on_message(filters.private & ~filters.bot & ~filters.me & filters.text)
 async def message_pm(client, message):
     await app.send_message(617426792, f"Ada pesan baru dari {message.from_user.mention}\n\n<b>Pesan: </b>{message.text}")
