@@ -101,7 +101,7 @@ async def genss(client, message):
 @capture_err
 async def genss(client, message):
         try:
-            link = message.text.split(" ")[2]
+            link = message.text.split(" ")[1]
             process = await message.reply_text(f"`Processing, please wait..`")
             tmp_directory_for_each_user = "./MissKaty_Genss/" + str(
                 message.from_user.id)
