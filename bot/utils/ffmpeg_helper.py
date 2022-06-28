@@ -59,6 +59,7 @@ async def generate_screen_shots(
             ss_img = await take_screen_shot(video_file, output_directory, current_ttl)
             images.append(InputMediaPhoto(media=ss_img, caption=f'Screenshot at {hhmmss(current_ttl)}'))
             await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
+            current_ttl = current_ttl + ttl_step
             await asyncio.sleep(1)
         return images
     else:
