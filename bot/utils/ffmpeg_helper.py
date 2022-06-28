@@ -73,7 +73,7 @@ async def genss_link(
     min_duration,
     no_of_photos
 ):
-    metadata = shell_exec(f"ffprobe -i {video_link} -show_entries format=duration -v quiet -of csv='p=0'")
+    metadata = await shell_exec(f"ffprobe -i {video_link} -show_entries format=duration -v quiet -of csv='p=0'")
     duration = 0
     if metadata > min_duration:
         images = []
