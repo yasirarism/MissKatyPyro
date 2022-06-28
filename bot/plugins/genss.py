@@ -99,6 +99,8 @@ async def genss(client, message):
                                               media=media_album_p)
             await client.delete_messages(chat_id=message.chat.id,
                                          message_ids=process.id)
+            await client.send_message(chat_id=message.chat.id, text="Generate Screenshot Done..",
+                                         reply_to_message_id=message.id)
             try:
                 rmtree(tmp_directory_for_each_user)
                 os.remove(the_real_download_location)
