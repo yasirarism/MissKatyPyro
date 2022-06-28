@@ -12,7 +12,7 @@ from shutil import rmtree
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
 from bot import app
-from bot.utils.ffmpeg_helper import generate_screen_shots
+from bot.utils.ffmpeg_helper import generate_screen_shots, genss_link
 from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
 from bot.utils.pyro_progress import (
