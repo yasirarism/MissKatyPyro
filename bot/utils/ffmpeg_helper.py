@@ -1,6 +1,7 @@
 import asyncio
 import os
 import time
+import logger
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pyrogram.types import InputMediaPhoto
@@ -74,6 +75,7 @@ async def genss_link(
     no_of_photos
 ):
     metadata = await shell_exec(f"ffprobe -i {video_link} -show_entries format=duration -v quiet -of csv='p=0'")
+    logger.info(metadata)
     duration = round(metadata)
     if duration > min_duration:
         images = []
