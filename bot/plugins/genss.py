@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 import os, time
 from asyncio import sleep
 from shutil import rmtree
-from pyrogram import filters
+from pyrogram import filters, enums
 from pyrogram.types import InputMediaPhoto
 from pyrogram.errors import FloodWait
 from bot import app
@@ -62,7 +62,6 @@ async def genss(client, message):
             images = await generate_screen_shots(process, the_real_download_location,
                                                  tmp_directory_for_each_user,
                                                  5, sscount)
-            # logger.info(images)
             try:
                 await client.edit_message_text(
                     text="Mencoba mengupload, hasil generate screenshot..",
@@ -86,6 +85,7 @@ async def genss(client, message):
                         else:
                             media_album_p.append(InputMediaPhoto(media=image))
                         i = i + 1
+            await client.send_chat_action(chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
             try:
                 await client.send_media_group(chat_id=message.chat.id,
                                               disable_notification=True,
