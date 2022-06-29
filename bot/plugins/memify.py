@@ -62,10 +62,10 @@ async def draw_meme_text(image_path, text):
     img.save(webp_file, "WebP")
     return webp_file
 
-@app.on_message(filters.command(["mmf"], COMMAND_HANDLER) & filters.reply)
+@app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
 @capture_err
 async def memify(client, message):
-  if message.reply_to_message.sticker or message.reply_to_message.photo:
+  if message.reply_to_message and (message.reply_to_message.sticker or message.reply_to_message.photo):
     try:
       file = await message.reply_to_message.download()
       res = await draw_meme_text(file, message.text.split(None, 1)[1].strip())
