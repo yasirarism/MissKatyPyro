@@ -64,7 +64,7 @@ async def draw_meme_text(image_path, text):
 
 @capture_err
 @app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
-async def memify():
+async def memify(client, message):
   if message.reply_to_message and (not message.reply_to_message.sticker.is_animated or message.reply_to_message.photo):
     try:
       file = await message.reply_to_message.download()
