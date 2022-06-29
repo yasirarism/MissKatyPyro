@@ -42,20 +42,20 @@ async def draw_meme_text(image_path, text):
 
             draw.text(
                 xy=(((i_width - u_width) / 2) - 1, i_height - u_height - int((20 / 640)*i_width)),
-                text=l_text, font=m_font, fill=(0, 0, 0))
+                text=l_text, font=m_font, fill=(0, 0, 0), stroke_width=4, stroke_fill='black')
             draw.text(
                 xy=(((i_width - u_width) / 2) + 1, i_height - u_height - int((20 / 640)*i_width)),
-                text=l_text, font=m_font, fill=(0, 0, 0))
+                text=l_text, font=m_font, fill=(0, 0, 0), stroke_width=4, stroke_fill='black')
             draw.text(
                 xy=((i_width - u_width) / 2, (i_height - u_height - int((20 / 640)*i_width)) - 1),
-                text=l_text, font=m_font, fill=(0, 0, 0))
+                text=l_text, font=m_font, fill=(0, 0, 0), stroke_width=4, stroke_fill='black')
             draw.text(
                 xy=((i_width - u_width) / 2, (i_height - u_height - int((20 / 640)*i_width)) + 1),
-                text=l_text, font=m_font, fill=(0, 0, 0))
+                text=l_text, font=m_font, fill=(0, 0, 0), stroke_width=4, stroke_fill='black')
 
             draw.text(
                 xy=((i_width - u_width) / 2, i_height - u_height - int((20 / 640)*i_width)),
-                text=l_text, font=m_font, fill=(255, 255, 255))
+                text=l_text, font=m_font, fill=(255, 255, 255), stroke_width=4, stroke_fill='black')
             current_h += u_height + pad
 
     webp_file = "memify.webp"
