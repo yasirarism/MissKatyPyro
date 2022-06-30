@@ -6,6 +6,7 @@ from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pyrogram.types import InputMediaPhoto
 from bot.plugins.dev import shell_exec
+from pyrogram.errors import FloodWait
 
 def hhmmss(seconds):
     x = time.strftime('%H:%M:%S',time.gmtime(seconds))
@@ -109,9 +110,13 @@ async def generate_screen_shots(
         for looper in range(0, no_of_photos):
             ss_img = await take_ss(video_file, output_directory, current_ttl)
             images.append(InputMediaPhoto(media=ss_img, caption=f'Screenshot at {hhmmss(current_ttl)}'))
-            await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
+            try:
+                await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
+            except Floodwait as e:
+                await asyncio.sleep(e.value)
+                await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
             current_ttl = current_ttl + ttl_step
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
         return images
     else:
         return None
