@@ -8,7 +8,7 @@ from pyrogram import Client, filters, enums
 from gpytranslate import Translator
 from requests.utils import requote_uri
 from gtts import gTTS
-from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
+from pyrogram.errors import UserNotParticipant, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty, FloodWait
 from info import IMDB_TEMPLATE, COMMAND_HANDLER
 from utils import extract_user, get_file_id, get_poster, last_online
 from bot.utils.time_gap import check_time_gap
