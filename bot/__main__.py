@@ -38,7 +38,7 @@ async def start_services():
             load = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(load)
             sys.modules[f"bot.plugins.{plugin_name}"] = load
-            print(f"Imported => {plugin_name}")
+            # print(f"Imported => {plugin_name}")
     await idle()
 
 
