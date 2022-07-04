@@ -35,4 +35,4 @@ async def main():
     logging.info("Userbot and Bot stopped..")
 
 
-main_loop.run_until_complete(main())
+main_loop.run_forever(main())
