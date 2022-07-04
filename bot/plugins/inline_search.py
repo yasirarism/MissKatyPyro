@@ -200,7 +200,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                               is_gallery=False,
                               is_personal=False,
                               next_offset="",
-                              switch_pm_text=f"Found {len(oorse)} results",
+                              switch_pm_text=f"Found {len(data)} results",
                               switch_pm_parameter="pypi")
     inline_query.stop_propagation()
 
