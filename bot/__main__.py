@@ -29,10 +29,14 @@ async def main():
     await idle()
 
 
+def ptb_main() -> None:
+    ptb.run_polling()
+
+
 if __name__ == '__main__':
     try:
         main_loop.run_until_complete(main())
-        ptb.run_polling()
+        ptb_main()
     except KeyboardInterrupt:
         logging.info(
             '----------------------- Service Stopped -----------------------')
