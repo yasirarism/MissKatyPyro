@@ -34,7 +34,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main_loop.run_until_complete(main())
+        main()
     except KeyboardInterrupt:
         logging.info(
             '----------------------- Service Stopped -----------------------')
