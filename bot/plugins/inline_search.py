@@ -80,7 +80,12 @@ async def inline_fn(_, inline_query: InlineQuery):
     for sraeo in asroe:
         title = sraeo.get("title")
         link = sraeo.get("link")
-        message_text = f"<a href='{link}'>{title}</a>"
+        view = sraeo["viewCount"]['text']
+        deskripsi = "".join(f"{i['text']} "
+                            for i in sraeo['results'][0]['descriptionSnippet'])
+        message_text = f"<a href='{link}'>{title}</a>\n"
+        message_text += f"Deskripsi: {deskripsi}\n"
+        message_text += f"Jumlah View: {view}"
         oorse.append(
             InlineQueryResultArticle(
                 title=f"{title}",
@@ -89,11 +94,9 @@ async def inline_fn(_, inline_query: InlineQuery):
                     parse_mode=enums.ParseMode.HTML,
                     disable_web_page_preview=False),
                 url=link,
-                description=f"tes deskripsi",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="Get YT details",
-                                         callback_data=f"https://google.com")
-                ]])))
+                description=deskripsi,
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text="Open YT Link", url=link)]])))
     await inline_query.answer(results=oorse,
                               cache_time=300,
                               is_gallery=False,
