@@ -39,6 +39,3 @@ user = Client(
     "YasirUBot",
     session_string=SESSION_PYRO,
 )
-
-# PTB Bot Api
-ptb = ApplicationBuilder().token(BOT_TOKEN).build()

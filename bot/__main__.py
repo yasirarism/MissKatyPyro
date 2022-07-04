@@ -8,16 +8,16 @@ main_loop = asyncio.get_event_loop()
 
 
 # Run Bot
-def main() -> None:
-    app.start()
-    user.start()
-    me = app.get_me()
-    ubot = user.get_me()
+async def main():
+    await app.start()
+    await user.start()
+    me = await app.get_me()
+    ubot = await user.get_me()
     temp.ME = me.id
     temp.U_NAME = me.username
     temp.B_NAME = me.first_name
     try:
-        app.send_message(
+        await app.send_message(
             617426792,
             f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
         )
@@ -26,9 +26,13 @@ def main() -> None:
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
-    # idle()
-    ptb.run_polling()
+    await idle()
+    # ptb.run_polling()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main_loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        logging.info(
+            '----------------------- Service Stopped -----------------------')
