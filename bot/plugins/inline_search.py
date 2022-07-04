@@ -219,7 +219,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     srch_results = json.loads(search_results.text)
     item = srch_results.get("items")
     data = []
-    for sraeo in srch_results:
+    for sraeo in item:
         title = sraeo.get("full_name")
         link = sraeo.get("html_url")
         deskripsi = sraeo.get("description")
