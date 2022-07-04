@@ -28,10 +28,4 @@ async def main():
     )
     ptb.run_polling()
 
-
-if __name__ == '__main__':
-    try:
-        main_loop.run_forever(main())
-    except KeyboardInterrupt:
-        logging.info(
-            '----------------------- Service Stopped -----------------------')
+    main_loop.run_forever()
