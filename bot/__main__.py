@@ -1,5 +1,5 @@
 import logging, asyncio
-from bot import app, user, ptb
+from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
