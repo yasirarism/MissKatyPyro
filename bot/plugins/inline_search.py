@@ -225,7 +225,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         deskripsi = sraeo.get("description")
         lang = sraeo.get("language")
         message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
-        message_text += f"<b>Description:</b> {deskripsi}"
+        message_text += f"<b>Description:</b> {deskripsi}\n"
         message_text += f"<b>Language:</b> {lang}"
         data.append(
             InlineQueryResultArticle(
