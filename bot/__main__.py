@@ -9,7 +9,6 @@ from pyrogram import idle, __version__
 def main():
     app.start()
     user.start()
-    ptb.run_polling()
     me = app.get_me()
     ubot = user.get_me()
     temp.ME = me.id
@@ -25,6 +24,7 @@ def main():
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
+    ptb.run_polling()
     idle()
 
 
