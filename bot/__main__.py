@@ -11,9 +11,9 @@ main_loop = get_event_loop()
 
 # Run Bot
 async def main():
+    await ptb.run_polling()
     await app.start()
     await user.start()
-    await ptb.run_polling()
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
