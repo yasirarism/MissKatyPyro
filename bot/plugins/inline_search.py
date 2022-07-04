@@ -1,3 +1,4 @@
+from ensurepip import version
 import requests
 import json
 from bot import app
@@ -112,6 +113,48 @@ async def inline_fn(_, inline_query: InlineQuery):
                               is_personal=False,
                               next_offset="",
                               switch_pm_text=f"Found {len(asroe)} results",
+                              switch_pm_parameter="yt")
+    inline_query.stop_propagation()
+
+
+@app.on_inline_query(
+    filters.create(lambda _, __, inline_query:
+                   (inline_query.query and inline_query.query.startswith(
+                       "pypi ") and inline_query.from_user),
+                   name="YtInlineFilter"),
+    group=-1)
+async def inline_fn(_, inline_query: InlineQuery):
+    query = inline_query.query.split("pypi ")[1].strip()
+    search_results = requests.get(
+        f"https://kamiselaluada.me/api/pypi?package={query}")
+    srch_results = json.loads(search_results.text)
+    oorse = []
+    for sraeo in srch_results:
+        title = sraeo.get("title")
+        link = sraeo.get("link")
+        deskripsi = sraeo.get("desc")
+        version = sraeo.get("version")
+        message_text = f"<a href='{link}'>{title}</a> {version}\n"
+        message_text += f"Description: {deskripsi}\n"
+        oorse.append(
+            InlineQueryResultArticle(
+                title=f"{title}",
+                input_message_content=InputTextMessageContent(
+                    message_text=message_text,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=False),
+                url=link,
+                description=deskripsi,
+                thumb_url=
+                "https://pypi.org/static/images/logo-small.95de8436.svg",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text="Open Link", url=link)]])))
+    await inline_query.answer(results=oorse,
+                              cache_time=300,
+                              is_gallery=False,
+                              is_personal=False,
+                              next_offset="",
+                              switch_pm_text=f"Found {len(oorse)} results",
                               switch_pm_parameter="yt")
     inline_query.stop_propagation()
 
