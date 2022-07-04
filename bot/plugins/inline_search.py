@@ -130,7 +130,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         f"https://www.google.com/search?q={judul}", headers=headers)
     soup = BeautifulSoup(search_results.text, 'lxml')
     data = []
-    for result in soup.select('.tF2Cxc')
+    for result in soup.select('.tF2Cxc'):
         title = result.select_one('.DKV0Md').text
         link = result.select_one('.yuRUbf a')['href']
         try:
