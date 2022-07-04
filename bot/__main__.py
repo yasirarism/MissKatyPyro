@@ -1,9 +1,12 @@
-import logging, asyncio
+import logging
+from asyncio import get_event_loop
 from unicodedata import name
 from bot import app, user, ptb
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, compose, Client
+
+main_loop = get_event_loop()
 
 
 # Run Bot
@@ -32,4 +35,4 @@ async def main():
     logging.info("Userbot and Bot stopped..")
 
 
-asyncio.run_until_complete(main())
+main_loop.run_forever()
