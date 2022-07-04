@@ -26,7 +26,7 @@ def main() -> None:
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
-    idle()
+    # idle()
     ptb.run_polling()
 
 
