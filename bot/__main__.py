@@ -26,7 +26,7 @@ async def main():
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
-    ptb.run_polling()
+    await ptb.run_polling()
     await idle()
 
 
