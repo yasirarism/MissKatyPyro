@@ -1,6 +1,6 @@
 import logging
 from unicodedata import name
-from bot import app, user
+from bot import app, user, ptb
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, compose, Client
@@ -9,6 +9,7 @@ from pyrogram import idle, __version__, compose, Client
 if __name__ == "__main__":
     app.start()
     user.start()
+    ptb.run_polling()
     me = app.get_me()
     ubot = user.get_me()
     temp.ME = me.id

@@ -7,7 +7,8 @@ logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 from pyrogram import Client, __version__
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN
+from info import API_ID, API_HASH, BOT_TOKEN
+from telegram.ext import ApplicationBuilder
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
@@ -22,6 +23,7 @@ ARQ_API_KEY = "GLDKXS-UDKRKL-GDVISK-COZFRF-ARQ"
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
+# Pyrogram Bot Client
 app = Client(
     "MissKatyBot",
     api_id=API_ID,
@@ -32,7 +34,11 @@ app = Client(
     sleep_threshold=5,
 )
 
+# Pyrogram UserBot Client
 user = Client(
     "YasirUBot",
     session_string=SESSION_PYRO,
 )
+
+# PTB Bot Api
+ptb = ApplicationBuilder().token(BOT_TOKEN).build()
