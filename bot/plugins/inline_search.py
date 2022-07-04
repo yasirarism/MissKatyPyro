@@ -1,5 +1,3 @@
-
-import requests
 import json
 from bot import app
 from bot.plugins.misc import get_content
@@ -117,6 +115,52 @@ async def inline_fn(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
+@app.on_inline_query(filters.create(
+    lambda _, __, inline_query: (inline_query.query and inline_query.query.
+                                 startswith("google ") and inline_query.from_user),
+    name="GoogleInlineFilter"),
+                     group=-1)
+async def inline_fn(_, inline_query: InlineQuery):
+    judul = inline_query.query.split("yt ")[1].strip()
+    headers = {   
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '   
+        'Chrome/61.0.3163.100 Safari/537.36'   
+    }
+    search_results = requests.get(
+        f"https://www.google.com/search?q={judul}", headers=headers)
+    soup = BeautifulSoup(search_results.text, 'lxml')
+    data = []
+    for result in soup.select('.tF2Cxc')
+        title = result.select_one('.DKV0Md').text
+        link = result.select_one('.yuRUbf a')['href']
+        try:
+            snippet = result.select_one('#rso .lyLwlc').text
+        except:
+            snippet = "-"
+        message_text = f"<a href='{link}'>{title}</a>\n"
+        message_text += f"Deskription: {snippet}"
+        data.append(
+            InlineQueryResultArticle(
+                title=f"{title}",
+                input_message_content=InputTextMessageContent(
+                    message_text=message_text,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=False),
+                url=link,
+                description=snippet,
+                thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text="Open YT Link", url=link)]])))
+    await inline_query.answer(results=data,
+                              cache_time=300,
+                              is_gallery=False,
+                              is_personal=False,
+                              next_offset="",
+                              switch_pm_text=f"Found {len(data)} results",
+                              switch_pm_parameter="google")
+    inline_query.stop_propagation()
+
+
 @app.on_inline_query(
     filters.create(lambda _, __, inline_query:
                    (inline_query.query and inline_query.query.startswith(
@@ -134,7 +178,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         link = sraeo.get("link")
         deskripsi = sraeo.get("desc")
         version = sraeo.get("version")
-        message_text = f"<a href='{link}'>{title}</a> {version}\n"
+        message_text = f"<a href='{link}'>{title} {version}</a>\n"
         message_text += f"Description: {deskripsi}\n"
         oorse.append(
             InlineQueryResultArticle(
@@ -146,7 +190,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 url=link,
                 description=deskripsi,
                 thumb_url=
-                "https://pypi.org/static/images/logo-small.95de8436.svg",
+                "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png",
                 reply_markup=InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text="Open Link", url=link)]])))
     await inline_query.answer(results=oorse,
@@ -155,7 +199,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                               is_personal=False,
                               next_offset="",
                               switch_pm_text=f"Found {len(oorse)} results",
-                              switch_pm_parameter="yt")
+                              switch_pm_parameter="pypi")
     inline_query.stop_propagation()
 
 
