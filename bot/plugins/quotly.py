@@ -278,11 +278,11 @@ async def msg_quotly_cmd(c: Client, m: Message):
                                             replies=-1)
         messages = [messages_one]
     except Exception as e:
-        return await m.reply_text(f"🤷🏻‍♂️")
+        messages = [m.reply_to_message]
     try:
         make_quotly = await pyrogram_to_quotly(messages)
         bio_sticker = BytesIO(make_quotly)
         bio_sticker.name = "biosticker.webp"
         return await m.reply_sticker(bio_sticker)
     except Exception as e:
-        return await m.reply_text(f"🤷🏻‍♂️")
+        return await m.reply_text(f"ERROR: {e}")
