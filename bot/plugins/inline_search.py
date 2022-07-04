@@ -152,7 +152,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 description=snippet,
                 thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Open YT Link", url=link)]])))
+                    [[InlineKeyboardButton(text="Open Website", url=link)]])))
     await inline_query.answer(results=data,
                               cache_time=300,
                               is_gallery=False,
