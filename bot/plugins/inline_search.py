@@ -81,6 +81,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         title = sraeo.get("title")
         link = sraeo.get("link")
         view = sraeo.get("viewCount").get('text')
+        thumb = sraeo.get("thumbnails")[0].get("url")
         try:
             deskripsi = "".join(f"{i['text']} "
                                 for i in sraeo.get('descriptionSnippet'))
@@ -98,6 +99,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     disable_web_page_preview=False),
                 url=link,
                 description=deskripsi,
+                thumb_url=thumb,
                 reply_markup=InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text="Open YT Link", url=link)]])))
     await inline_query.answer(results=oorse,
