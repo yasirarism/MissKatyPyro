@@ -174,7 +174,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     search_results = requests.get(
         f"https://kamiselaluada.me/api/pypi?package={query}")
     srch_results = json.loads(search_results.text)
-    oorse = []
+    data = []
     for sraeo in srch_results:
         title = sraeo.get("title")
         link = sraeo.get("link")
@@ -182,7 +182,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         version = sraeo.get("version")
         message_text = f"<a href='{link}'>{title} {version}</a>\n"
         message_text += f"Description: {deskripsi}\n"
-        oorse.append(
+        data.append(
             InlineQueryResultArticle(
                 title=f"{title}",
                 input_message_content=InputTextMessageContent(
@@ -195,7 +195,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png",
                 reply_markup=InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text="Open Link", url=link)]])))
-    await inline_query.answer(results=oorse,
+    await inline_query.answer(results=data,
                               cache_time=300,
                               is_gallery=False,
                               is_personal=False,
