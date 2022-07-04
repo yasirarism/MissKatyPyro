@@ -1,4 +1,4 @@
-import json
+import json, requests
 from bot import app
 from bot.plugins.misc import get_content
 from utils import get_poster
@@ -104,7 +104,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 description=deskripsi,
                 thumb_url=thumb,
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Open YT Link", url=link)]])))
+                    [[InlineKeyboardButton(text="Watch Video 📹", url=link)]])))
     await inline_query.answer(results=oorse,
                               cache_time=300,
                               is_gallery=False,
