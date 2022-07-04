@@ -1,38 +1,49 @@
+import sys
+import glob
+import asyncio
 import logging
-from asyncio import get_event_loop
-from unicodedata import name
+import importlib
+from pathlib import Path
+from pyrogram import idle
 from bot import app, user, ptb
-from utils import temp
-from pyrogram.raw.all import layer
-from pyrogram import idle, __version__, compose, Client
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
+logging.getLogger("apscheduler").setLevel(logging.WARNING)
+
+ppath = "bot/plugins/*.py"
+files = glob.glob(ppath)
+
+loop = asyncio.get_event_loop()
 
 
-# Run Bot
-def main():
-    ptb.run_polling()
-    app.start()
-    user.start()
-    me = app.get_me()
-    ubot = user.get_me()
-    temp.ME = me.id
-    temp.U_NAME = me.username
-    temp.B_NAME = me.first_name
-    try:
-        app.send_message(
-            617426792,
-            f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
-        )
-    except:
-        pass
-    logging.info(
-        f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
-    )
-    idle()
+async def start_services():
+    print('\n')
+    print('------------------- Initalizing Telegram Bot -------------------')
+    await app.start()
+    print('----------------------------- DONE -----------------------------')
+    print('\n')
+    print('--------------------------- Importing ---------------------------')
+    for name in files:
+        with open(name) as a:
+            patt = Path(a.name)
+            plugin_name = patt.stem.replace(".py", "")
+            plugins_dir = Path(f"bot/plugins/{plugin_name}.py")
+            import_path = f".plugins.{plugin_name}"
+            spec = importlib.util.spec_from_file_location(
+                import_path, plugins_dir)
+            load = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(load)
+            sys.modules[f"bot.plugins.{plugin_name}"] = load
+            print(f"Imported => {plugin_name}")
+    await idle()
 
 
 if __name__ == '__main__':
     try:
-        main()
+        loop.run_until_complete(start_services())
     except KeyboardInterrupt:
         logging.info(
             '----------------------- Service Stopped -----------------------')
