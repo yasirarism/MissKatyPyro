@@ -115,19 +115,21 @@ async def inline_fn(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@app.on_inline_query(filters.create(
-    lambda _, __, inline_query: (inline_query.query and inline_query.query.
-                                 startswith("google ") and inline_query.from_user),
-    name="GoogleInlineFilter"),
-                     group=-1)
+@app.on_inline_query(
+    filters.create(lambda _, __, inline_query:
+                   (inline_query.query and inline_query.query.startswith(
+                       "google ") and inline_query.from_user),
+                   name="GoogleInlineFilter"),
+    group=-1)
 async def inline_fn(_, inline_query: InlineQuery):
-    judul = inline_query.query.split("yt ")[1].strip()
-    headers = {   
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '   
-        'Chrome/61.0.3163.100 Safari/537.36'   
+    judul = inline_query.query.split("google ")[1].strip()
+    headers = {
+        'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+        'Chrome/61.0.3163.100 Safari/537.36'
     }
-    search_results = requests.get(
-        f"https://www.google.com/search?q={judul}", headers=headers)
+    search_results = requests.get(f"https://www.google.com/search?q={judul}",
+                                  headers=headers)
     soup = BeautifulSoup(search_results.text, 'lxml')
     data = []
     for result in soup.select('.tF2Cxc'):
