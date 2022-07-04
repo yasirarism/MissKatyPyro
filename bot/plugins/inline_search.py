@@ -223,7 +223,10 @@ async def inline_fn(_, inline_query: InlineQuery):
         title = sraeo.get("full_name")
         link = sraeo.get("html_url")
         deskripsi = sraeo.get("description")
-        message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}"
+        lang = sraeo.get("language")
+        message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
+        message_text += f"<b>Description:</b> {deskripsi}"
+        message_text += f"<b>Language:</b> {lang}"
         data.append(
             InlineQueryResultArticle(
                 title=f"{title}",
