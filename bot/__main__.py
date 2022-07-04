@@ -23,6 +23,8 @@ async def start_services():
     print('\n')
     print('------------------- Initalizing Telegram Bot -------------------')
     await app.start()
+    await user.start()
+    await ptb.run_polling()
     print('----------------------------- DONE -----------------------------')
     print('\n')
     print('--------------------------- Importing ---------------------------')
