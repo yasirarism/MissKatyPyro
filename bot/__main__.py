@@ -6,8 +6,6 @@ from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, compose, Client
 
-main_loop = get_event_loop()
-
 
 # Run Bot
 def main():
