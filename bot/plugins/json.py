@@ -30,7 +30,7 @@ async def json_ptb(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     the_real_message = update.message.reply_to_message or update.message
     try:
-        await update.message.reply_html(f"<code>{the_real_message}</code>")
+        await update.message.reply_html("<code>{the_real_message}</code>")
     except Exception as e:
         with open("json.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(the_real_message))
