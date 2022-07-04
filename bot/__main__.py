@@ -1,22 +1,23 @@
-import logging
+import logging, asyncio
 from unicodedata import name
 from bot import app, user, ptb
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, compose, Client
 
+
 # Run Bot
-if __name__ == "__main__":
-    app.start()
-    user.start()
+async def main():
+    await app.start()
+    await user.start()
     ptb.run_polling()
-    me = app.get_me()
-    ubot = user.get_me()
+    me = await app.get_me()
+    ubot = await user.get_me()
     temp.ME = me.id
     temp.U_NAME = me.username
     temp.B_NAME = me.first_name
     try:
-        app.send_message(
+        await app.send_message(
             617426792,
             f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
         )
@@ -26,6 +27,9 @@ if __name__ == "__main__":
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
     idle()
-    app.stop()
-    user.stop()
+    await app.stop()
+    await user.stop()
     logging.info("Userbot and Bot stopped..")
+
+
+asyncio.run_until_complete(main())
