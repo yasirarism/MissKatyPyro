@@ -206,6 +206,47 @@ async def inline_fn(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
+@app.on_inline_query(
+    filters.create(lambda _, __, inline_query:
+                   (inline_query.query and inline_query.query.startswith(
+                       "git ") and inline_query.from_user),
+                   name="GitInlineFilter"),
+    group=-1)
+async def inline_fn(_, inline_query: InlineQuery):
+    query = inline_query.query.split("git ")[1].strip()
+    search_results = await http.get(
+        f"https://api.github.com/search/repositories?q={query}")
+    srch_results = json.loads(search_results.text)
+    data = []
+    for sraeo in srch_results:
+        title = sraeo.get("full_name")
+        link = sraeo.get("html_url")
+        deskripsi = sraeo.get("description")
+        message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}"
+        data.append(
+            InlineQueryResultArticle(
+                title=f"{title}",
+                input_message_content=InputTextMessageContent(
+                    message_text=message_text,
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=False),
+                url=link,
+                description=deskripsi,
+                thumb_url=
+                "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text="Open Github Link",
+                                           url=link)]])))
+    await inline_query.answer(results=data,
+                              cache_time=300,
+                              is_gallery=False,
+                              is_personal=False,
+                              next_offset="",
+                              switch_pm_text=f"Found {len(data)} results",
+                              switch_pm_parameter="github")
+    inline_query.stop_propagation()
+
+
 @app.on_callback_query(filters.regex('^imdbinl_'))
 async def imdb_inl(_, query):
     i, user, movie = query.data.split('_')
