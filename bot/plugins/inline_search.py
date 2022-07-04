@@ -1,4 +1,4 @@
-from ensurepip import version
+
 import requests
 import json
 from bot import app
