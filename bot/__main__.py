@@ -29,7 +29,7 @@ async def main():
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
-    idle()
+    await idle()
     await app.stop()
     await user.stop()
     logging.info("Userbot and Bot stopped..")
