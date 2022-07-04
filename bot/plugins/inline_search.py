@@ -82,14 +82,18 @@ async def inline_fn(_, inline_query: InlineQuery):
         link = sraeo.get("link")
         view = sraeo.get("viewCount").get('text')
         thumb = sraeo.get("thumbnails")[0].get("url")
+        durasi = sraeo.get("accessibility").get("duration")
+        publishTime = sraeo.get("publishedTime")
         try:
             deskripsi = "".join(f"{i['text']} "
                                 for i in sraeo.get('descriptionSnippet'))
         except:
             deskripsi = "-"
         message_text = f"<a href='{link}'>{title}</a>\n"
-        message_text += f"Deskripsi: {deskripsi}\n"
-        message_text += f"Jumlah View: {view}"
+        message_text += f"Description: {deskripsi}\n"
+        message_text += f"Total View: {view}\n"
+        message_text += f"Duration: {durasi}\n"
+        message_text += f"Published Time: {publishTime}"
         oorse.append(
             InlineQueryResultArticle(
                 title=f"{title}",
