@@ -4,22 +4,23 @@ from bot import arq
 import requests, json
 from requests.utils import requote_uri
 
-GOOGLE_API = "https://api.abirhasan.wtf/google?query="
-YT_API = "https://api.abirhasan.wtf/youtube?query="
+GOOGLE_API = "https://api.abir-hasan.tk/google?query="
+YT_API = "https://api.abir-hasan.tk/youtube?query="
 
 
 async def google_search_func(answers, text):
     results = google(text)
-    answers = [InlineQueryResultArticle(
-                title=result["title"],
-                description=result["description"],
-                input_message_content=InputTextMessageContent(
-                    message_text=result["text"],
-                    disable_web_page_preview=True),
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="Buka Website",
-                                         url=result["link"])
-                ]])) for result in results]
+    answers = [
+        InlineQueryResultArticle(title=result["title"],
+                                 description=result["description"],
+                                 input_message_content=InputTextMessageContent(
+                                     message_text=result["text"],
+                                     disable_web_page_preview=True),
+                                 reply_markup=InlineKeyboardMarkup([[
+                                     InlineKeyboardButton(text="Buka Website",
+                                                          url=result["link"])
+                                 ]])) for result in results
+    ]
     return answers
 
 

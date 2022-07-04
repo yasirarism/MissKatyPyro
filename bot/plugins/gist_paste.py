@@ -8,11 +8,16 @@ from json import dumps
 from bot import app
 from info import COMMAND_HANDLER
 
-class Github_Gist: # Learn class for first time, PR if bad or want to improve
 
-    def __init__(self, title: str = "", description: str = "", is_secret: bool = False): # All Params For Custom, Maybe Later
+class Github_Gist:  # Learn class for first time, PR if bad or want to improve
+
+    def __init__(
+            self,
+            title: str = "",
+            description: str = "",
+            is_secret: bool = False):  # All Params For Custom, Maybe Later
         self.api = "https://api.github.com/gists"
-        self.token = "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" # Github Token with Gist Create Permission
+        self.token = "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"  # Github Token with Gist Create Permission
         self.title = title
         self.description = description
         self.secret = is_secret
@@ -22,7 +27,6 @@ class Github_Gist: # Learn class for first time, PR if bad or want to improve
         if not self.description:
             self.description = f"Github Gist created by @{self.username} from Telegram"
 
-
     def create(self, text: str) -> dict:
         data = {
             "description": self.description,
@@ -30,9 +34,9 @@ class Github_Gist: # Learn class for first time, PR if bad or want to improve
             "files": {
                 self.title: {
                     "content": text
-                    }
                 }
             }
+        }
         headers = {
             "Authorization": f"token {self.token}",
             "Content-Type": "application/json"
@@ -42,8 +46,11 @@ class Github_Gist: # Learn class for first time, PR if bad or want to improve
             resp = resp.json()
             if not resp.get('message'):
                 result = {
-                    "url": resp.get('html_url'),
-                    "raw": list(resp.get('files').values())[0].get('raw_url').replace(' ', '%20')
+                    "url":
+                    resp.get('html_url'),
+                    "raw":
+                    list(resp.get('files').values())[0].get('raw_url').replace(
+                        ' ', '%20')
                 }
                 return result
             else:
@@ -52,9 +59,7 @@ class Github_Gist: # Learn class for first time, PR if bad or want to improve
             raise Exception(f"ERROR : Failed To Create Github Gist")
 
     def delete(self, ids: str) -> str:
-        headers = {
-            "Authorization": f"token {self.token}"
-        }
+        headers = {"Authorization": f"token {self.token}"}
         resp = delete(self.api + '/' + ids, headers=headers)
         if resp.ok:
             return "Success Delete Gist With ID {}".format(ids)
@@ -96,8 +101,10 @@ def humanbytes(size: int):
         real_size = "Can't Define Real Size !"
     return real_size
 
+
 # Pattern if extension supported, PR if want to add more
 pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$")
+
 
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
 async def create(_, message):
@@ -105,8 +112,7 @@ async def create(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.reply_text(
-            f"**Reply To A Message With /{target} or with command**"
-        )
+            f"**Reply To A Message With /{target} or with command**")
 
     msg = await message.reply_text("`Pasting to Github Gist...`")
     data = ''
@@ -168,7 +174,9 @@ async def create(_, message):
     pasted = f"**Your Github Gist URL successfully pasted<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
-@app.on_message(filters.command(["delgist"], COMMAND_HANDLER) & filters.user(617426792))
+
+@app.on_message(
+    filters.command(["delgist"], COMMAND_HANDLER) & filters.user(617426792))
 async def delete(_, message):
     try:
         ids = message.command[1]
