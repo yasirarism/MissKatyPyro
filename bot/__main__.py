@@ -7,9 +7,9 @@ from pyrogram import idle, __version__
 
 # Run Bot
 def main():
-    ptb.run_polling()
     app.start()
     user.start()
+    ptb.run_polling()
     me = app.get_me()
     ubot = user.get_me()
     temp.ME = me.id
