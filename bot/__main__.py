@@ -1,8 +1,10 @@
-import logging
+import logging, asyncio
 from bot import app, user, ptb
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
+
+main_loop = asyncio.get_event_loop()
 
 
 # Run Bot
@@ -30,7 +32,7 @@ async def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        main_loop.run_until_complete(main())
     except KeyboardInterrupt:
         logging.info(
             '----------------------- Service Stopped -----------------------')
