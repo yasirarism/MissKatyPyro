@@ -80,7 +80,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     for sraeo in asroe:
         title = sraeo.get("title")
         link = sraeo.get("link")
-        message_text += f"<a href='{link}'>{title}</a>"
+        message_text = f"<a href='{link}'>{title}</a>"
         oorse.append(
             InlineQueryResultArticle(
                 title=f"{title}",
