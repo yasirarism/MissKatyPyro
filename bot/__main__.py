@@ -26,13 +26,13 @@ async def main():
     logging.info(
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
-    await ptb.run_polling()
     await idle()
 
 
 if __name__ == '__main__':
     try:
         main_loop.run_until_complete(main())
+        ptb.run_polling()
     except KeyboardInterrupt:
         logging.info(
             '----------------------- Service Stopped -----------------------')
