@@ -30,9 +30,11 @@ async def main():
         f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
     )
     await idle()
-    await app.stop()
-    await user.stop()
-    logging.info("Userbot and Bot stopped..")
 
 
-main_loop.run_forever(main())
+if __name__ == '__main__':
+    try:
+        main_loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        logging.info(
+            '----------------------- Service Stopped -----------------------')
