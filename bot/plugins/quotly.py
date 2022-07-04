@@ -2,23 +2,12 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from bot import app
-import httpx
+from bot.utils.http import http
 from io import BytesIO
 
 
 class QuotlyException(Exception):
     pass
-
-
-timeout = httpx.Timeout(
-    40,
-    pool=None,
-)
-
-http = httpx.AsyncClient(
-    http2=True,
-    timeout=timeout,
-)
 
 
 async def get_message_sender_id(m: Message):

@@ -1,7 +1,8 @@
-import json, requests
+import json
 from bot import app
 from bot.plugins.misc import get_content
 from utils import get_poster
+from bot.utils.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from gpytranslate import Translator
@@ -18,7 +19,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
     group=-1)
 async def inline_fn(_, inline_query: InlineQuery):
     movie_name = inline_query.query.split("imdb ")[1].strip()
-    search_results = requests.get(
+    search_results = await http.get(
         f"https://betterimdbot.herokuapp.com/search.php?_={movie_name}")
     srch_results = json.loads(search_results.text)
     asroe = srch_results.get("d")
@@ -71,7 +72,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                      group=-1)
 async def inline_fn(_, inline_query: InlineQuery):
     judul = inline_query.query.split("yt ")[1].strip()
-    search_results = requests.get(
+    search_results = await http.get(
         f"https://api.abir-hasan.tk/youtube?query={judul}")
     srch_results = json.loads(search_results.text)
     asroe = srch_results.get("results")
@@ -128,8 +129,8 @@ async def inline_fn(_, inline_query: InlineQuery):
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
         'Chrome/61.0.3163.100 Safari/537.36'
     }
-    search_results = requests.get(f"https://www.google.com/search?q={judul}",
-                                  headers=headers)
+    search_results = await http.get(f"https://www.google.com/search?q={judul}",
+                                    headers=headers)
     soup = BeautifulSoup(search_results.text, 'lxml')
     data = []
     for result in soup.select('.tF2Cxc'):
@@ -171,7 +172,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     group=-1)
 async def inline_fn(_, inline_query: InlineQuery):
     query = inline_query.query.split("pypi ")[1].strip()
-    search_results = requests.get(
+    search_results = await http.get(
         f"https://kamiselaluada.me/api/pypi?package={query}")
     srch_results = json.loads(search_results.text)
     data = []
