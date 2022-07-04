@@ -82,7 +82,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         link = sraeo.get("link")
         view = sraeo["viewCount"]['text']
         deskripsi = "".join(f"{i['text']} "
-                            for i in sraeo['results'][0]['descriptionSnippet'])
+                            for i in sraeo[0]['descriptionSnippet'])
         message_text = f"<a href='{link}'>{title}</a>\n"
         message_text += f"Deskripsi: {deskripsi}\n"
         message_text += f"Jumlah View: {view}"
