@@ -41,7 +41,7 @@ async def del_msg(client, message):
           elif a.deleted_message.video:
              await app.send_message(a.deleted_message.chat.id, f"#DELETED_MESSAGE\n\n<a href='tg://user?id={a.deleted_message.from_user.id}'>{a.deleted_message.from_user.first_name}</a> menghapus pesannya 🧐.\n<b>Nama file:</b> {a.deleted_message.video.file_name}")
 
-@user.on_edited_message(filters.text & filters.chat(-1001168126523))
+@user.on_edited_message(filters.text & filters.chat(-1001455886928))
 async def edit_msg(client, message):
     try:
             ustat = (await user.get_chat_member(message.chat.id, message.from_user.id)).status
