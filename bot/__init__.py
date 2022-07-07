@@ -8,7 +8,6 @@ logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 from pyrogram import Client, __version__
 from info import API_ID, API_HASH, BOT_TOKEN
-from telegram.ext import ApplicationBuilder
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
 from utils import temp
