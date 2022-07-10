@@ -16,11 +16,6 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, MessageNotModified, PeerIdInvalid
 from utils import get_size, is_subscribed, get_poster, search_gagala, temp
 from database.users_chats_db import db
-from database.ia_filterdb import (
-    del_all,
-    find_filter,
-    get_filters,
-)
 import logging
 
 logger = logging.getLogger(__name__)
