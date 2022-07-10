@@ -23,10 +23,7 @@ from aiohttp import ClientSession
 
 session = ClientSession()
 
-timeout = httpx.Timeout(
-    40,
-    pool=None,
-)
+timeout = httpx.Timeout(40)
 
 http = httpx.AsyncClient(
     http2=True,
