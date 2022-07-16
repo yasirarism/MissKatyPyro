@@ -116,6 +116,7 @@ async def eval(client, message):
                 caption=cmd[:4096 // 4 - 1],
                 disable_notification=True,
                 quote=True,
+                parse_mode=enums.ParseMode.DISABLED
             )
             try:
                 os.remove("MissKaty_Eval.txt")
