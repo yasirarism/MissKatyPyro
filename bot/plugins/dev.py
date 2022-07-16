@@ -103,10 +103,10 @@ async def eval(client, message):
     else:
         evaluation = "Berhasil"
 
-    final_output = "<b>EVAL</b>: "
-    final_output += f"<code>{cmd}</code>\n\n"
-    final_output += "<b>OUTPUT</b>:\n"
-    final_output += f"<code>{evaluation.strip()}</code> \n"
+    final_output = "**EVAL**: "
+    final_output += f"```{cmd}```\n\n"
+    final_output += "**OUTPUT***:\n"
+    final_output += f"```{evaluation.strip()}```\n"
 
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(final_output)) as out_file:
@@ -115,15 +115,14 @@ async def eval(client, message):
                 document=out_file,
                 caption=cmd[:4096 // 4 - 1],
                 disable_notification=True,
-                quote=True,
-                parse_mode=enums.ParseMode.DISABLED
+                quote=True
             )
             try:
                 os.remove("MissKaty_Eval.txt")
             except:
                 pass
     else:
-        await reply_to_.reply_text(final_output, quote=True, parse_mode=enums.ParseMode.HTML)
+        await reply_to_.reply_text(final_output, quote=True, parse_mode=enums.ParseMode.MARKDOWN)
     await status_message.delete()
 
 
