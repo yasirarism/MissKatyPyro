@@ -9,7 +9,7 @@ import sys
 import os
 import traceback
 import asyncio
-from pyrogram import filters
+from pyrogram import filters, enums
 from info import COMMAND_HANDLER
 from bot import app, user
 from subprocess import run as srun
@@ -25,7 +25,7 @@ async def balas(c, m):
 @app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
-    await m.reply(f"<code>{neofetch}</code>")
+    await m.reply(f"<code>{neofetch}</code>", parse_mode=enums.ParseMode.HTML)
     
 @app.on_message(filters.command(["remove"], COMMAND_HANDLER))
 async def clearlocal(c, m):
