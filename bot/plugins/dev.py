@@ -56,7 +56,7 @@ async def shell(client, message):
             except:
                 pass
     elif len(shell) != 0:
-        await message.reply(shell)
+        await message.reply(shell, parse_mode=enums.ParseMode.HTML)
     else:
         await message.reply('No Reply')
 
@@ -122,7 +122,7 @@ async def eval(client, message):
             except:
                 pass
     else:
-        await reply_to_.reply_text(final_output, quote=True)
+        await reply_to_.reply_text(final_output, quote=True, parse_mode=enums.ParseMode.HTML)
     await status_message.delete()
 
 
