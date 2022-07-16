@@ -88,7 +88,7 @@ async def translate(client, message):
         await msg.edit(f"Error: <code>{str(err)}</code>")
         return
     return await msg.edit(
-        f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>``{tekstr.text}``</code>",
+        f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>{tekstr.text}</code>",
     )
 
 @Client.on_message(filters.command(["tts","tts@MissKatyRoBot"], COMMAND_HANDLER))
