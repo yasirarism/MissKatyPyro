@@ -98,4 +98,4 @@ async def instatus(client, message):
         long_time_ago += 1
       else:
         uncached += 1
-    await sent_message.edit("**💠 {}\n👥 {} Anggota\nChat Member Status**\n\n```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
+    await sent_message.edit("**💠 {}\n👥 {} Anggota\n——————\n**👁‍🗨 Informasi Status Anggota**\n——————```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
