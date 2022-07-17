@@ -4,7 +4,7 @@ then
   git clone https://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@github.com/yasirarism/MissKatyPyro.git /MissKaty
 else
   echo "Cloning Custom Repo from $UPSTREAM_REPO "
-  git clone $UPSTREAM_REPO /YasirBot
+  git clone $UPSTREAM_REPO /MissKaty
  fi
 cd /MissKaty
 pip3 install -U -r requirements.txt
