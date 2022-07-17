@@ -1,6 +1,7 @@
 import logging
 from asyncio import sleep
-from bot import app, COMMAND_HANDLER
+from bot import app
+from info import COMMAND_HANDLER
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
