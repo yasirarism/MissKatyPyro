@@ -2,10 +2,10 @@ FROM python:3.10-slim-buster
 
 RUN apt update -y
 RUN apt install mediainfo neofetch ffmpeg git -y
+COPY requirements.txt /requirements.txt
+RUN cd /
+RUN pip3 install -U pip && pip3 install -U -r requirements.txt
+RUN mkdir /MissKaty
 WORKDIR /MissKaty
-RUN chmod 777 /MissKaty
-
-COPY . .
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-CMD ["bash", "start.sh"]
+COPY start.sh /start.sh
+CMD ["/bin/bash", "/start.sh"]
