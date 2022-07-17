@@ -78,6 +78,7 @@ async def instatus(client, message):
     long_time_ago = 0
     deleted_acc = 0
     premium_acc = 0
+    no_username = 0
     uncached = 0
     bot = 0
     async for member in app.get_chat_members(message.chat.id):
@@ -88,6 +89,8 @@ async def instatus(client, message):
         bot += 1
       elif user.is_premium:
         premium_acc += 1
+      elif not user.username:
+        no_username += 1
       elif user.status == enums.UserStatus.RECENTLY:
         recently += 1
       elif user.status == enums.UserStatus.LAST_WEEK:
@@ -100,4 +103,4 @@ async def instatus(client, message):
         uncached += 1
     stop_time = perf_counter()
     timelog = "{:.2f}".format(stop_time - stop_time)
-    await sent_message.edit("**💠 {}\n👥 {} Anggota\n——————\n**👁‍🗨 Informasi Status Anggota**\n——————\n🕒 ```recently``` - {}\n🕒 ```within_week``` - {}\n🕒 ```within_month``` - {}\n🕒 ```long_time_ago``` - {}\n👻 Deleted Account (```/dkick```) - {}\n🤖 Bot - {}\n⭐️ Premium User - {}\n👽 UnCached - {}\n\n⏱ Waktu eksekusi {} detik.".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached, timelog))
+    await sent_message.edit("**💠 {}\n👥 {} Anggota\n——————\n**👁‍🗨 Informasi Status Anggota**\n——————\n🕒 ```recently```: {}\n🕒 ```within_week```: {}\n🕒 ```within_month```: {}\n🕒 ```long_time_ago```: {}\n🉑 Tanpa Username: {}\n👻 Deleted Account (```/dkick```): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, no_username, deleted_acc, bot, premium_acc, uncached, timelog))
