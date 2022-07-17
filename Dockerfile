@@ -1,7 +1,7 @@
 FROM python:3.10-slim-buster
 
 RUN apt update -y
-RUN apt install mediainfo neofetch ffmpeg -y
+RUN apt install mediainfo neofetch ffmpeg git -y
 WORKDIR /MissKaty
 RUN chmod 777 /MissKaty
 
