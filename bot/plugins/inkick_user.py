@@ -79,8 +79,14 @@ async def instatus(client, message):
     deleted_acc = 0
     premium_acc = 0
     no_username = 0
+    restricted = 0
+    banned = 0
     uncached = 0
     bot = 0
+    async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.BANNED):
+      banned += 1
+    async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.RESTRICTED):
+      restricted += 1
     async for member in app.get_chat_members(message.chat.id):
       user = member.user
       if user.is_deleted:
@@ -102,5 +108,5 @@ async def instatus(client, message):
       else:
         uncached += 1
     stop_time = perf_counter()
-    timelog = "{:.2f}".format(stop_time - stop_time)
-    await sent_message.edit("<b>💠 {}\n👥 {} Anggota\n——————\n👁‍🗨 Informasi Status Anggota\n——————\n</b>🕒 <code>recently</code>: {}\n🕒 <code>within_week</code>: {}\n🕒 <code>within_month</code>: {}\n🕒 <code>long_time_ago</code>: {}\n🉑 Tanpa Username: {}\n👻 Deleted Account (<code>/dkick</code>): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, no_username, deleted_acc, bot, premium_acc, uncached, timelog))
+    timelog = "{:.2f}".format(stop_time - start_time)
+    await sent_message.edit("<b>💠 {}\n👥 {} Anggota\n——————\n👁‍🗨 Informasi Status Anggota\n——————\n</b>🕒 <code>recently</code>: {}\n🕒 <code>within_week</code>: {}\n🕒 <code>within_month</code>: {}\n🕒 <code>long_time_ago</code>: {}\n🉑 Tanpa Username: {}\n🤐 Dibatasi: {}\n🚫 Diblokir:\n👻 Deleted Account (<code>/dkick</code>): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, no_username, restricted, banned, deleted_acc, bot, premium_acc, uncached, timelog))
