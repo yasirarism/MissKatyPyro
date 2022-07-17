@@ -42,7 +42,7 @@ async def inkick(_, message):
 async def dkick(client, message):
   user = await app.get_chat_member(message.chat.id, message.from_user.id)
   if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
-    sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
+    sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
     count = 0
     async for member in app.get_chat_members(message.chat.id):
       if member.user.is_deleted and not member.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
