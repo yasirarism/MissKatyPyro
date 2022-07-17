@@ -23,4 +23,3 @@ telegraph
 hachoir
 Pillow
 httpx[http2]
-python-telegram-bot --pre
