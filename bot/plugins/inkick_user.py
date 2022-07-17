@@ -75,6 +75,7 @@ async def instatus(client, message):
     within_month = 0
     long_time_ago = 0
     deleted_acc = 0
+    premium_acc = 0
     uncached = 0
     bot = 0
     async for member in app.get_chat_members(message.chat.id):
@@ -84,14 +85,16 @@ async def instatus(client, message):
         deleted_acc += 1
       elif user.is_bot:
         bot += 1
-      elif user.status == "recently":
+      elif user.is_premium:
+        premium_acc += 1
+      elif user.status == enums.UserStatus.RECENTLY:
         recently += 1
-      elif user.status == "within_week":
+      elif user.status == enums.UserStatus.LAST_WEEK:
         within_week += 1
-      elif user.status == "within_month":
+      elif user.status == enums.UserStatus.LAST_MONTH:
         within_month += 1
-      elif user.status == "long_time_ago":
+      elif user.status == enums.UserStatus.LONG_AGO:
         long_time_ago += 1
       else:
         uncached += 1
-    await sent_message.edit("**{}\nChat Member Status**\n\n```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nUnCached - {}".format(message.chat.title, recently, within_week, within_month, long_time_ago, deleted_acc, bot, uncached))
+    await sent_message.edit("**{}\nChat Member Status**\n\n```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
