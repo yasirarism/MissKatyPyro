@@ -44,7 +44,7 @@ async def dkick(client, message):
   if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
     sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
     count = 0
-    async for member in client.iter_chat_members(message.chat.id):
+    async for member in app.get_chat_members(message.chat.id):
       if member.user.is_deleted and not member.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
         try:
           await app.ban_chat_member(message.chat.id, member.user.id, int(time() + 45))
@@ -61,7 +61,7 @@ async def dkick(client, message):
     except ChatWriteForbidden:
       pass
   else:
-    sent_message = await message.reply_text("❗ **You have to be the group creator to do that.**")
+    sent_message = await message.reply_text("❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**")
     await sleep(5)
     await sent_message.delete()
     
