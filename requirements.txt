@@ -23,3 +23,4 @@ telegraph
 hachoir
 Pillow
 httpx[http2]
+umongo
