@@ -19,7 +19,7 @@ async def inkick(_, message):
       async for member in app.get_chat_members(message.chat.id):
         if member.user.status in input_str and not member.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
           try:
-            await app.ban_chat_member(message.chat.id, member.user.id, int(time() + 45))
+            await app.ban_chat_member(message.chat.id, member.user.id, datetime.now() + timedelta(minute=30))
             count += 1
             await sleep(1)
           except (ChatAdminRequired, UserAdminInvalid):
@@ -48,7 +48,7 @@ async def dkick(client, message):
     async for member in app.get_chat_members(message.chat.id):
       if member.user.is_deleted and not member.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
         try:
-          await app.ban_chat_member(message.chat.id, member.user.id, datetime.now() + timedelta(minute=30)))
+          await app.ban_chat_member(message.chat.id, member.user.id, datetime.now() + timedelta(minute=30))
           count += 1
           await sleep(1)
         except (ChatAdminRequired, UserAdminInvalid):
