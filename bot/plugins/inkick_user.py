@@ -1,4 +1,4 @@
-import logging
+from time import perf_counter
 from asyncio import sleep
 from bot import app
 from info import COMMAND_HANDLER
@@ -67,6 +67,7 @@ async def dkick(client, message):
     
 @app.on_message(filters.incoming & ~filters.private & filters.command(['instatus'], COMMAND_HANDLER))
 async def instatus(client, message):
+  start_time = perf_counter()
   user = await app.get_chat_member(message.chat.id, message.from_user.id)
   count = await app.get_chat_members_count(message.chat.id)
   if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
@@ -80,7 +81,6 @@ async def instatus(client, message):
     uncached = 0
     bot = 0
     async for member in app.get_chat_members(message.chat.id):
-      logging.info(member)
       user = member.user
       if user.is_deleted:
         deleted_acc += 1
@@ -98,4 +98,6 @@ async def instatus(client, message):
         long_time_ago += 1
       else:
         uncached += 1
-    await sent_message.edit("**💠 {}\n👥 {} Anggota\n——————\n**👁‍🗨 Informasi Status Anggota**\n——————```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
+    stop_time = perf_counter()
+    timelog = "{:.2f}".format(stop_time - stop_time)
+    await sent_message.edit("**💠 {}\n👥 {} Anggota\n——————\n**👁‍🗨 Informasi Status Anggota**\n——————\n🕒 ```recently``` - {}\n🕒 ```within_week``` - {}\n🕒 ```within_month``` - {}\n🕒 ```long_time_ago``` - {}\n👻 Deleted Account (```/dkick```) - {}\n🤖 Bot - {}\n⭐️ Premium User - {}\n👽 UnCached - {}\n\n⏱ Waktu eksekusi {} detik.".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached, timelog))
