@@ -68,6 +68,7 @@ async def dkick(client, message):
 @app.on_message(filters.incoming & ~filters.private & filters.command(['instatus'], COMMAND_HANDLER))
 async def instatus(client, message):
   user = await app.get_chat_member(message.chat.id, message.from_user.id)
+  count = await app.get_chat_members_count(message.chat.id)
   if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
     sent_message = await message.reply_text("**Sedang mengumpulkan informasi pengguna...**")
     recently = 0
@@ -97,4 +98,4 @@ async def instatus(client, message):
         long_time_ago += 1
       else:
         uncached += 1
-    await sent_message.edit("**{}\nChat Member Status**\n\n```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
+    await sent_message.edit("**💠 {}\n👥 {} Anggota\nChat Member Status**\n\n```recently``` - {}\n```within_week``` - {}\n```within_month``` - {}\n```long_time_ago``` - {}\nDeleted Account - {}\nBot - {}\nPremium User - {}\nUnCached - {}".format(message.chat.title, count, recently, within_week, within_month, long_time_ago, deleted_acc, bot, premium_acc, uncached))
