@@ -24,7 +24,7 @@ async def extsubcallback(client, query):
     await query.answer()
     try:
        stream_type, mapping, keyword = query.data.split('_')
-       data = DATA[keyword][int(mapping)
+       data = DATA[keyword][int(mapping)]
        await query.message.edit_text("**Extracting Subtitle, Harap jangan spam bot..**")  
        await extract_subtitle(client, query.message, data)
     except:
