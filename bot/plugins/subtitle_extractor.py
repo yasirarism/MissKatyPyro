@@ -12,7 +12,7 @@ async def extractsub(_, msg):
   link = msg.text.split(' ', 1)
   if len(link) == 1:
      return await msg.reply('null.')
-  pesan = await message.reply("Processing...")
+  pesan = await msg.reply("Processing...")
   res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
   details = json.loads(res)
   buttons = []
