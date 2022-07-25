@@ -6,6 +6,8 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
 
+DATA = {}
+
 @capture_err
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 async def extractsub(_, msg):
