@@ -9,7 +9,6 @@ from bot.utils.decorator import capture_err
 @capture_err
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 async def extractsub(_, msg):
-  try:
     link = msg.text.split()[1]
     pesan = await msg.reply("Processing...")
     res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
@@ -48,5 +47,3 @@ async def extractsub(_, msg):
           "**Select the Stream to be Extracted...**",
           reply_markup=InlineKeyboardMarkup(buttons)
     )
-  except:
-    await msg.reply("....")
