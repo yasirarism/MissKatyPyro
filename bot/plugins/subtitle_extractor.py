@@ -38,12 +38,12 @@ async def extractsub(_, msg):
       }
       buttons.append([
               InlineKeyboardButton(
-                  f"{stream_type.upper()} - {str(lang).upper()}", f"{stream_type}_{mapping}_{msg.chat.id}-{pesan.id}"
+                  text=f"{stream_type.upper()} - {str(lang).upper()}", callback_data=f"{stream_type}_{mapping}_{msg.chat.id}-{pesan.id}"
               )
       ])
 
     buttons.append([
-          InlineKeyboardButton("CANCEL",f"cancel_{mapping}_{msg.chat.id}-{pesan.id}")
+          InlineKeyboardButton(text="Ga Jadi", callback_data=f"cancel_{mapping}_{msg.chat.id}-{pesan.id}")
     ])
     await pesan.edit_text(
           "**Select the Stream to be Extracted...**",
