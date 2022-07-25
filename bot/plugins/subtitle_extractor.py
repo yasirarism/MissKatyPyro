@@ -9,7 +9,7 @@ from bot.utils.decorator import capture_err
 @capture_err
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 async def extractsub(_, msg):
-  link = m.text.split(' ', 1)
+  link = msg.text.split(' ', 1)
   if len(link) == 1:
      return await msg.reply('null.')
   pesan = await message.reply("Processing...")
