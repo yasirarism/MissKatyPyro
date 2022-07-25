@@ -9,9 +9,11 @@ from bot.utils.decorator import capture_err
 @capture_err
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 async def extractsub(_, msg):
-  link = msg.text.split()[1]
+  link = m.text.split(' ', 1)
+  if len(link) == 1:
+     return await msg.reply('null.')
   pesan = await message.reply("Processing...")
-  res = (await shell_exec("ffprobe -loglevel 0 -print_format json -show_format -show_streams https://link.yasir.eu.org/unduh/19848/Gonjiam.Haunted.Asylum.2018.720p.BR+%40RickyChristanto.mkv"))[0]
+  res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
   details = json.loads(res)
   buttons = []
   DATA[f"{msg.chat.id}-{pesan.id}"] = {}
