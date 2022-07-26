@@ -39,13 +39,14 @@ async def extractsub(_, msg):
             InlineKeyboardButton(
                 text=f"{stream_type.upper()} - {str(lang).upper()}",
                 callback_data=
-                f"{stream_type}_{mapping}_{msg.chat.id}_{pesan.id}")
+                f"streamextract_{stream_type}_{mapping}_{msg.chat.id}-{pesan.id}"
+            )
         ])
 
     buttons.append([
         InlineKeyboardButton(
             text="Ga Jadi",
-            callback_data=f"cancel_{mapping}_{msg.chat.id}_{pesan.id}")
+            callback_data=f"cancel_{mapping}_{msg.chat.id}-{pesan.id}")
     ])
     await pesan.edit_text("**Select the Stream to be Extracted...**",
                           reply_markup=InlineKeyboardMarkup(buttons))
@@ -64,11 +65,11 @@ async def extract_subtitle(message, data):
     )
 
 
-@app.on_callback_query(filters.regex('^subtitle_'))
+@app.on_callback_query(filters.regex('^streamextract_'))
 async def sub_callback(_, query):
     await query.answer()
     try:
-        stream_type, mapping, keyword = query.data.split('_')
+        i, stream_type, mapping, keyword = query.data.split('_')
         data = DATA[keyword][int(mapping)]
         await extract_subtitle(query.message, data)
     except:
