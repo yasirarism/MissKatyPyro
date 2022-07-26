@@ -8,6 +8,7 @@ from bot.utils.decorator import capture_err
 
 DATA = {}
 
+
 @capture_err
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 async def extractsub(_, msg):
@@ -63,8 +64,8 @@ async def extract_subtitle(message, data):
     )
 
 
-@app.on_callback_query(filters.regex('^subtitle'))
-async def extsub_callback(_, query):
+@app.on_callback_query(filters.regex('^subtitle_'))
+async def sub_callback(_, query):
     await query.answer()
     try:
         stream_type, mapping, keyword = query.data.split('_')
