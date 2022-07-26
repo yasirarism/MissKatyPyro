@@ -1,12 +1,11 @@
 import json
+from types import MappingProxyType
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from bot.plugins.dev import shell_exec
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
-
-DATA = {}
 
 
 @capture_err
@@ -19,7 +18,6 @@ async def extractsub(_, msg):
     ))[0]
     details = json.loads(res)
     buttons = []
-    DATA[f"{msg.chat.id}-{msg.id}"] = {}
     for stream in details["streams"]:
         mapping = stream['index']
         stream_name = stream['codec_name']
@@ -28,36 +26,28 @@ async def extractsub(_, msg):
             lang = stream["tags"]["language"]
         except:
             lang = mapping
-        DATA[f"{msg.chat.id}-{msg.id}"][int(mapping)] = {
-            "map": mapping,
-            "name": stream_name,
-            "type": stream_type,
-            "lang": lang,
-            "link": link
-        }
         buttons.append([
             InlineKeyboardButton(
                 text=f"{stream_type.upper()} - {str(lang).upper()}",
                 callback_data=
-                f"streamextract_{stream_type}_{mapping}_{msg.chat.id}-{pesan.id}"
+                f"streamextract_{stream_type}_{mapping}_{msg.chat.id}_{pesan.id}"
             )
         ])
 
     buttons.append([
         InlineKeyboardButton(
             text="Ga Jadi",
-            callback_data=f"cancel_{mapping}_{msg.chat.id}-{pesan.id}")
+            callback_data=f"cancel_{mapping}_{msg.chat.id}_{pesan.id}")
     ])
     await pesan.edit_text("**Select the Stream to be Extracted...**",
                           reply_markup=InlineKeyboardMarkup(buttons))
 
 
-async def extract_subtitle(message, data):
+async def extract_subtitle(message, msg_id, map):
     await message.edit("Extracting Stream from file")
-    link = data['link']
+    link = (await app.get_messages(message.chat.id, msg_id)).text
     out_loc = "MissKatySub.srt"
-    out = (await
-           shell_exec(f"ffmpeg -i {link} -map 0:{data['map']} {out_loc}"))[0]
+    out = (await shell_exec(f"ffmpeg -i {link} -map 0:{map} {out_loc}"))[0]
     await app.send_document(
         chat_id=message.chat.id,
         document=out_loc,
@@ -69,8 +59,7 @@ async def extract_subtitle(message, data):
 async def sub_callback(_, query):
     await query.answer()
     try:
-        i, stream_type, mapping, keyword = query.data.split('_')
-        data = DATA[keyword][int(mapping)]
-        await extract_subtitle(query.message, data)
+        i, stream_type, mapping, cid, msg_id = query.data.split('_')
+        await extract_subtitle(query.message, msg_id, mapping)
     except:
         await query.message.edit_text("**Details Not Found**")
