@@ -128,7 +128,7 @@ async def tiktokdl(client, message):
         async with aiohttp.ClientSession() as ses:
           async with ses.get(f'https://tdl.besecure.eu.org/api/download?url={link}') as result:
             r = await result.json()
-            await message.reply_video(r['video']['urls'][0], caption=f"<b>Duration:</b> <code>{r['video']['urls']['duration']}</code>\n<b>Title:</b> <code>{r['video']['urls']['title']}</code>\n\nUploaded by @MissKatyRoBot")
+            await message.reply_video(r['video']['urls'][0], caption=f"<b>Duration:</b> <code>{r['video']['duration']}</code>\n<b>Title:</b> <code>{r['video']['title']}</code>\n\nUploaded by @MissKatyRoBot")
     except Exception as e:
         await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
 
