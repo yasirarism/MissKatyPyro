@@ -121,9 +121,9 @@ async def tts(_, message):
 @Client.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 async def tiktokdl(client, message):
-    link = message.text.split(' ', 1)
-    if len(link) == 1:
+    if len(message.command) == 1:
         return await message.reply('Use command /tiktokdl [link] to download tiktok video.')
+    link = message.command[1]
     try:
         async with aiohttp.ClientSession() as ses:
           async with ses.get(f'https://tdl.besecure.eu.org/api/download?url={link}') as result:
