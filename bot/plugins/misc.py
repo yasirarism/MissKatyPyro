@@ -118,6 +118,20 @@ async def tts(_, message):
     await msg.delete()
     return await msg.reply_audio(f'tts_{message.from_user.id}.mp3')
 
+@Client.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
+@capture_err
+async def tiktokdl(client, message):
+    link = message.text.split(' ', 1)
+    if len(link) == 1:
+        return await message.reply('Use command /tiktokdl [link] to download tiktok video.')
+    try:
+        async with aiohttp.ClientSession() as ses:
+          async with ses.get(f'https://tdl.besecure.eu.org/api/download?url={link}') as result:
+            r = await result.json()
+            await message.reply_video(r['video']['urls'][0], caption=f"<b>Duration:</b> <code>{r['video']['urls']['duration']}</code>\n<b>Title:</b> <code>{r['video']['urls']['title']}</code>\n\nUploaded by @MissKatyRoBot")
+    except:
+        await message.reply("Failed to download tiktok video")
+
 @Client.on_message(filters.command(["tosticker","tosticker@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def tostick(client, message):
@@ -282,7 +296,7 @@ async def mdlapi(title):
         async with ses.get(link) as result:
             return await result.json()
 
-@Client.on_message(filters.command(["mdl","mdl@MissKatyRoBot"], COMMAND_HANDLER))
+@Client.on_message(filters.command(["mdl"], COMMAND_HANDLER))
 @capture_err
 async def mdlsearch(client, message):
     if ' ' in message.text:
