@@ -5,7 +5,7 @@ from bot.utils.decorator import capture_err
 from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
-import urllib.parse
+from bot.utils.tools import get_random_string
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
@@ -63,13 +63,9 @@ async def extractsub(_, m):
         )
     link = m.command[1]
     index = m.command[2]
+    msg = await m.reply("Processing...")
     start_time = perf_counter()
-    ceknama = (await shell_exec(
-        f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
-    ))[0]
-    parse = json.loads(ceknama)
-    namafile = urllib.parse.quote(
-        f"{parse['format']['filename']}.srt".encode('utf8'))
+    namafile = f'{get_random_string(4)}.srt'
     extract = (await
                shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
     end_time = perf_counter()
@@ -77,7 +73,9 @@ async def extractsub(_, m):
     await m.reply_document(
         namafile,
         caption=
-        f"<code>{namafile}</code>\n\nExtracted by @MissKatyRoBot in {timelog}")
+        f"<code>Source: {link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
+    )
+    await msg.delete()
     try:
         os.remove(namafile)
     except:
