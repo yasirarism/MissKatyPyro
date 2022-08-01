@@ -48,4 +48,4 @@ async def ceksub(_, m):
     end_time = perf_counter()
     timelog = "{:.2f}".format(end_time - start_time) + " second"
     await pesan.edit(
-        f"<b>Daftar Sub & Audio File:</b>\n{res}\n\nProcessed in {timelog}")
+        f"<b>Daftar Sub & Audio File:</b>\n{res}Processed in {timelog}")
