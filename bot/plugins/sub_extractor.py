@@ -60,8 +60,8 @@ async def extractsub(_, m):
         return await m.reply(
             f'Use command /{m.command[0]} [link] to check subtitle available in video.'
         )
-    link = cmd[1]
-    index = cmd[2]
+    link = m.command[1]
+    index = m.command[2]
     start_time = perf_counter()
     ceknama = (await shell_exec(
         f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
