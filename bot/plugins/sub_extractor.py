@@ -23,7 +23,10 @@ async def ceksub(_, m):
     DATA = []
     for stream in details["streams"]:
         mapping = stream['index']
-        stream_name = stream['codec_name']
+        try:
+            stream_name = stream['codec_name']
+        except:
+            stream_name = "-"
         stream_type = stream['codec_type']
         if stream_type in ("audio", "subtitle"):
             pass
@@ -45,4 +48,4 @@ async def ceksub(_, m):
     end_time = perf_counter()
     timelog = "{:.2f}".format(end_time - start_time) + " second"
     await pesan.edit(
-        f"Daftar Sub & Audio File:\n{res}\n\nProcessed in {timelog}")
+        f"<b>Daftar Sub & Audio File:</b>\n{res}\n\nProcessed in {timelog}")
