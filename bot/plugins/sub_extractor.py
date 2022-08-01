@@ -17,7 +17,7 @@ async def ceksub(_, m):
     start_time = perf_counter()
     pesan = await m.reply("Processing..")
     res = (await shell_exec(
-        f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
+        f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link[1]}"
     ))[0]
     details = json.loads(res)
     DATA = []
