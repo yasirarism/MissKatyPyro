@@ -213,7 +213,7 @@ async def lk21_scrap(_, message):
                 f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n"
                 for i in res['result'])
             await message.reply(
-                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{res}"
+                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}"
             )
     except Exception:
         exc = traceback.format_exc()
