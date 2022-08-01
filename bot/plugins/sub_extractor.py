@@ -13,7 +13,7 @@ async def ceksub(_, m):
     link = m.text.split(' ', 1)
     if len(link) == 1:
         return await m.reply(
-            'Use command /{m.command[0]} [link] to check subtitle available in video.'
+            f'Use command /{m.command[0]} [link] to check subtitle available in video.'
         )
     start_time = perf_counter()
     pesan = await m.reply("Processing..")
@@ -58,7 +58,7 @@ async def extractsub(_, m):
     cmd = m.text.split(' ', 1)
     if len(cmd) == 1:
         return await m.reply(
-            'Use command /{m.command[0]} [link] to check subtitle available in video.'
+            f'Use command /{m.command[0]} [link] to check subtitle available in video.'
         )
     link = cmd[1]
     index = cmd[2]
