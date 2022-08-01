@@ -204,7 +204,7 @@ async def lk21_scrap(_, message):
                 return msg.edit("Yahh, ga ada hasil ditemukan")
             await msg.edit(
                 f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.\u79fb\u52a8):</b>\n{data}",
-                parse_mode=enums.ParseMode.DISABLED)
+                disable_web_page_preview=True)
     except IndexError:
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://api.yasir.eu.org/lk21")
@@ -213,7 +213,7 @@ async def lk21_scrap(_, message):
                 f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n"
                 for i in res['result'])
             await message.reply(
-                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}", parse_mode=enums.ParseMode.DISABLED
+                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}", disable_web_page_preview=True
             )
     except Exception:
         exc = traceback.format_exc()
