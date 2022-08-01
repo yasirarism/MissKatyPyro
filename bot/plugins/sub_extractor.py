@@ -50,7 +50,11 @@ async def ceksub(_, m):
     end_time = perf_counter()
     timelog = "{:.2f}".format(end_time - start_time) + " second"
     await pesan.edit(
-        f"<b>Daftar Sub & Audio File:</b>\n{res}Processed in {timelog}")
+        f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle.\nProcessed in {timelog}"
+    )
+
+
+ALLOWED_USER = [978550890, 617426792]
 
 
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
@@ -63,6 +67,8 @@ async def extractsub(_, m):
         )
     link = m.command[1]
     index = m.command[2]
+    if m.from_user.id not in ALLOWED_USER:
+        return m.reply("Hehehe, sorry yak kamu gabisa make command ini :)")
     msg = await m.reply("Processing...")
     start_time = perf_counter()
     namafile = f'{get_random_string(4)}.srt'
