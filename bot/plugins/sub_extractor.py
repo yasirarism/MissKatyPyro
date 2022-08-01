@@ -5,6 +5,7 @@ from bot.utils.decorator import capture_err
 from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
+import urllib.parse
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
@@ -67,7 +68,8 @@ async def extractsub(_, m):
         f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
     ))[0]
     parse = json.loads(ceknama)
-    namafile = parse['format']['filename'] + ".srt"
+    namafile = urllib.parse.quote(
+        f"{parse['format']['filename']}.srt".encode('utf8'))
     extract = (await
                shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
     end_time = perf_counter()
