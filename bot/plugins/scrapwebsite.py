@@ -12,10 +12,10 @@ from bot.utils.decorator import capture_err
 @capture_err
 async def nodrakor(_, message):
     try:
-       judul = message.text.split(" ", maxsplit=1)[1]
+        judul = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
-       judul = ''
-    
+        judul = ''
+
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
         headers = {
@@ -48,10 +48,10 @@ async def nodrakor(_, message):
 @capture_err
 async def ngefilm21(_, message):
     try:
-       title = message.text.split(" ", maxsplit=1)[1]
+        title = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
-       title = ''
-   
+        title = ''
+
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
         headers = {
@@ -73,8 +73,7 @@ async def ngefilm21(_, message):
         if not data:
             return await msg.edit('Oops, data film tidak ditemukan.')
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
-        await msg.edit(
-            f"<b>Hasil Scrap dari Ngefilm21:</b>\n{res}")
+        await msg.edit(f"<b>Hasil Scrap dari Ngefilm21:</b>\n{res}")
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
 
@@ -87,7 +86,7 @@ async def movikucc(_, message):
         judul = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
         judul = ''
-    
+
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
         headers = {
@@ -115,9 +114,9 @@ async def movikucc(_, message):
 @capture_err
 async def savefilm21(_, message):
     try:
-       judul = message.text.split(" ", maxsplit=1)[1]
+        judul = message.text.split(" ", maxsplit=1)[1]
     except IndexError:
-       judul = ''
+        judul = ''
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
@@ -189,35 +188,33 @@ async def melongmovie(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(
-    filters.command(["lk21"], COMMAND_HANDLER))
+@app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
 @capture_err
 async def lk21_scrap(_, message):
     try:
         judul = message.text.split(" ", maxsplit=1)[1]
         msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://link.yasir.eu.org/lk21/{judul}")
+            r = await session.get(f"https://api.yasir.eu.org/lk21?q={judul}")
             res = await r.json()
             data = "".join(
                 f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n"
-                for i in res)
-            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://149.56.24.226):</b>\n{data}")
+                for i in res['result'])
+            if not res['result']:
+                return msg.edit("Yahh, ga ada hasil ditemukan")
+            await msg.edit(
+                f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.\u79fb\u52a8):</b>\n{data}"
+            )
     except IndexError:
-        res = await getcontent("https://149.56.24.226")
-        soup = BeautifulSoup(res, 'lxml')
-        data = []
-        for res in soup.find_all(class_="featured-item"):
-            link = res.select('a')[0]['href']
-            dl = link.split('/', maxsplit=3)[3]
-            title = res.select('a')[0].find("img")['alt']
-            data.append({
-             'title': title,
-             'link': link,
-             'dl': f'https://asdahsdkjajslkfbkaujsgfbjaeghfyjj76e8637e68723rhbfajkl.rodanesia.com/get/{dl}'
-            })
-        res = "".join(f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in data)
-        return await message.reply(f"<b>Daftar rilis terbaru di web lk21 (https://149.56.24.226)</b>:\n{res}")
+        async with aiohttp.ClientSession() as session:
+            r = await session.get(f"https://api.yasir.eu.org/lk21")
+            res = await r.json()
+            data = "".join(
+                f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n"
+                for i in res['result'])
+            await message.reply(
+                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{res}"
+            )
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
@@ -374,6 +371,9 @@ async def melong_scrap(_, message):
             rep = f"{hardsub}\n{softsub}"
             await message.reply(rep)
     except IndexError:
-        await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+        await message.reply(
+            "Gunakan command /melong <b>[link]</b> untuk scrap link download")
+
+
 # except Exception as e:
 # await message.reply(f"ERROR: {str(e)}")

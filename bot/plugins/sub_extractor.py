@@ -59,7 +59,7 @@ async def extractsub(_, m):
     cmd = m.text.split(' ', 1)
     if len(cmd) == 1:
         return await m.reply(
-            f'Use command /{m.command[0]} [link] to check subtitle available in video.'
+            f'Use command /{m.command[0]} <b>[link]</b> to check subtitle available in video.'
         )
     link = m.command[1]
     index = m.command[2]
@@ -73,7 +73,7 @@ async def extractsub(_, m):
     await m.reply_document(
         namafile,
         caption=
-        f"<code>Source: {link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
+        f"<b>Source:</b> <code>{link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
     )
     await msg.delete()
     try:
