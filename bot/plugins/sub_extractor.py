@@ -3,7 +3,7 @@ from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
 from bot.plugins.dev import shell_exec
-import json
+import json, os
 from time import perf_counter
 
 
@@ -13,7 +13,8 @@ async def ceksub(_, m):
     link = m.text.split(' ', 1)
     if len(link) == 1:
         return await m.reply(
-            'Use command /ceksub [link] to check subtitle available in video.')
+            'Use command /{m.command[0]} [link] to check subtitle available in video.'
+        )
     start_time = perf_counter()
     pesan = await m.reply("Processing..")
     res = (await shell_exec(
@@ -49,3 +50,33 @@ async def ceksub(_, m):
     timelog = "{:.2f}".format(end_time - start_time) + " second"
     await pesan.edit(
         f"<b>Daftar Sub & Audio File:</b>\n{res}Processed in {timelog}")
+
+
+@app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
+@capture_err
+async def extractsub(_, m):
+    cmd = m.text.split(' ', 1)
+    if len(cmd) == 1:
+        return await m.reply(
+            'Use command /{m.command[0]} [link] to check subtitle available in video.'
+        )
+    link = cmd[1]
+    index = cmd[2]
+    start_time = perf_counter()
+    ceknama = (await shell_exec(
+        f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
+    ))[0]
+    parse = json.loads(ceknama)
+    namafile = parse['format']['filename'] + ".srt"
+    extract = (await
+               shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
+    end_time = perf_counter()
+    timelog = "{:.2f}".format(end_time - start_time) + " second"
+    await m.reply_document(
+        namafile,
+        caption=
+        f"<code>{namafile}</code>\n\nExtracted by @MissKatyRoBot in {timelog}")
+    try:
+        os.remove(namafile)
+    except:
+        pass
