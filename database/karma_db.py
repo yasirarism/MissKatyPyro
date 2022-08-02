@@ -8,6 +8,15 @@ db = mongo.KARMA
 karmadb = db.karma
 
 
+async def alpha_to_int(user_id_alphabet: str) -> int:
+    alphabet = list(ascii_lowercase)[:10]
+    user_id = ""
+    for i in user_id_alphabet:
+        index = alphabet.index(i)
+        user_id += str(index)
+    user_id = int(user_id)
+    return user_id
+
 async def int_to_alpha(user_id: int) -> str:
     alphabet = list(ascii_lowercase)[:10]
     text = ""
