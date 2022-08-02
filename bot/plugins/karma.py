@@ -131,7 +131,7 @@ async def downvote(_, message):
         f"Decremented Karma Of {user_mention} By 1 \nTotal Points: {karma}")
 
 
-@app.on_message(filters.command("karma") & filters.group & ~filters.edited)
+@app.on_message(filters.command("karma") & filters.group)
 @capture_err
 async def command_karma(_, message):
     chat_id = message.chat.id
