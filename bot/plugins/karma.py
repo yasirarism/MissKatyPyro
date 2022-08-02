@@ -5,7 +5,7 @@ from pyrogram import filters
 from bot import app
 from bot.utils.decorator import capture_err
 from bot.utils.admin_helper import is_admin
-from database import (
+from database.karma_db import (
     alpha_to_int,
     get_karma,
     get_karmas,
