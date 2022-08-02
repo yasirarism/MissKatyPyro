@@ -181,9 +181,10 @@ async def command_karma(_, message):
 
 
 @app.on_message(filters.command("karma_toggle") & ~filters.private)
-@is_admin
 async def captcha_state(_, message):
     usage = "**Usage:**\n/karma_toggle [ENABLE|DISABLE]"
+    if not is_admin:
+        return await message.reply("This command only for admin.")
     if len(message.command) != 2:
         return await message.reply_text(usage)
     chat_id = message.chat.id
