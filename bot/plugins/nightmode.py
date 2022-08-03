@@ -34,14 +34,14 @@ async def job_close():
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
-      await user.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
+      await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
-      await user.send_message(
-        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`"
+      await app.send_message(
+        -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ Jam : {jam}\n\n**🌗 Mode Malam Aktif**\n`Grup ditutup dan semua member tidak akan bisa mengirim pesan. Selamat beristirahat dan bermimpi indah !!`", reply_markup=reply_markup
       )
     except Exception:
        exc = traceback.format_exc()
-       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
 
 async def job_close_ymoviez():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
@@ -72,14 +72,14 @@ async def job_open():
     try:
       version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
-      await user.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
+      await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
       )
-      await user.send_message(
-          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`"
+      await app.send_message(
+          -1001128045651, f"📆 {days[now.weekday()]}, {tgl} {month[now.month]} {tahun}\n⏰ {jam}`\n\n🌗 Mode Malam Selesai\nSelamat pagi, grup kini telah dibuka semoga hari-harimu menyenangkan.`", reply_markup=reply_markup
       )
     except Exception:
        exc = traceback.format_exc()
-       await user.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
+       await app.send_message(LOG_CHANNEL, f"ERROR:\n<code>{exc}</code>")
     
 async def job_open_ymoviez():
     now = datetime.now(pytz.timezone('Asia/Jakarta'))
