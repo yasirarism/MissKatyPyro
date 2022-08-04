@@ -18,41 +18,43 @@ async def ceksub(_, m):
         )
     start_time = perf_counter()
     pesan = await m.reply("Processing..")
-    res = (await shell_exec(
-        f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link[1]}"
-    ))[0]
-    details = json.loads(res)
-    DATA = []
-    for stream in details["streams"]:
-        mapping = stream['index']
-        try:
-            stream_name = stream['codec_name']
-        except:
-            stream_name = "-"
-        stream_type = stream['codec_type']
-        if stream_type in ("audio", "subtitle"):
-            pass
-        else:
-            continue
-        try:
-            lang = stream["tags"]["language"]
-        except:
-            lang = mapping
-        DATA.append({
-            'mapping': mapping,
-            'stream_name': stream_name,
-            'stream_type': stream_type,
-            'lang': lang
-        })
-    res = "".join(
-        f"<b>Index:</b> {i['mapping']}\n<b>Stream Name:</b> {i['stream_name']}\n<b>Language:</b> {i['lang']}\n\n"
-        for i in DATA)
-    end_time = perf_counter()
-    timelog = "{:.2f}".format(end_time - start_time) + " second"
-    await pesan.edit(
-        f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle. Hanya support format .srt saja saat ini.\nProcessed in {timelog}"
-    )
-
+    try:
+        res = (await shell_exec(
+            f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link[1]}"
+        ))[0]
+        details = json.loads(res)
+        DATA = []
+        for stream in details["streams"]:
+            mapping = stream['index']
+            try:
+                stream_name = stream['codec_name']
+            except:
+                stream_name = "-"
+            stream_type = stream['codec_type']
+            if stream_type in ("audio", "subtitle"):
+                pass
+            else:
+                continue
+            try:
+                lang = stream["tags"]["language"]
+            except:
+                lang = mapping
+            DATA.append({
+                'mapping': mapping,
+                'stream_name': stream_name,
+                'stream_type': stream_type,
+                'lang': lang
+            })
+        res = "".join(
+            f"<b>Index:</b> {i['mapping']}\n<b>Stream Name:</b> {i['stream_name']}\n<b>Language:</b> {i['lang']}\n\n"
+            for i in DATA)
+        end_time = perf_counter()
+        timelog = "{:.2f}".format(end_time - start_time) + " second"
+        await pesan.edit(
+            f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle. Hanya support direct link & format .srt saja saat ini.\nProcessed in {timelog}"
+        )
+    except Exception as e:
+        await pesan.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
 
 ALLOWED_USER = [978550890, 617426792]
 
