@@ -50,7 +50,7 @@ async def ceksub(_, m):
     end_time = perf_counter()
     timelog = "{:.2f}".format(end_time - start_time) + " second"
     await pesan.edit(
-        f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle.\nProcessed in {timelog}"
+        f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle. Hanya support format .srt saja saat ini.\nProcessed in {timelog}"
     )
 
 
@@ -63,26 +63,31 @@ async def extractsub(_, m):
     cmd = m.text.split(' ', 1)
     if len(cmd) == 1:
         return await m.reply(
-            f'Use command /{m.command[0]} <b>[link]</b> to check subtitle available in video.'
+            f'Use command /{m.command[0]} <b>[link] [index]</b> to check subtitle available in video.'
         )
-    link = m.command[1]
-    index = m.command[2]
-    if m.from_user.id not in ALLOWED_USER:
-        return m.reply("Hehehe, sorry yak kamu gabisa make command ini :)")
     msg = await m.reply("Processing...")
-    start_time = perf_counter()
-    namafile = f'{get_random_string(4)}.srt'
-    extract = (await
-               shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
-    end_time = perf_counter()
-    timelog = "{:.2f}".format(end_time - start_time) + " second"
-    await m.reply_document(
-        namafile,
-        caption=
-        f"<b>Source:</b> <code>{link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
-    )
-    await msg.delete()
     try:
-        os.remove(namafile)
-    except:
-        pass
+        link = m.command[1]
+        index = m.command[2]
+        if m.from_user.id not in ALLOWED_USER:
+            return msg.edit("Hehehe, sorry yak kamu gabisa make command ini :)")
+        start_time = perf_counter()
+        namafile = f'{get_random_string(4)}.srt'
+        extract = (await
+                   shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
+        end_time = perf_counter()
+        timelog = "{:.2f}".format(end_time - start_time) + " second"
+        await m.reply_document(
+            namafile,
+            caption=
+            f"<b>Source:</b> <code>{link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
+        )
+        await msg.delete()
+        try:
+            os.remove(namafile)
+        except:
+            pass
+    except IndexError:
+        await msg.edit(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> to extract subtitle from video")
+    except Exception as e:
+        await msg.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
