@@ -14,10 +14,10 @@ async def ceksub(_, m):
     link = m.text.split(' ', 1)
     if len(link) == 1:
         return await m.reply(
-            f'Use command /{m.command[0]} [link] to check subtitle available in video.'
+            f'Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.'
         )
     start_time = perf_counter()
-    pesan = await m.reply("Processing..")
+    pesan = await m.reply("Sedang memproses perintah..")
     try:
         res = (await shell_exec(
             f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link[1]}"
@@ -65,16 +65,16 @@ async def extractsub(_, m):
     cmd = m.text.split(' ', 1)
     if len(cmd) == 1:
         return await m.reply(
-            f'Use command /{m.command[0]} <b>[link] [index]</b> to check subtitle available in video.'
+            f'Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk ekstrak subtitle dalam video.'
         )
-    msg = await m.reply("Processing...")
+    msg = await m.reply("Sedang memproses perintah...")
     try:
         link = m.command[1]
         index = m.command[2]
         if m.from_user.id not in ALLOWED_USER:
             return msg.edit("Hehehe, sorry yak kamu gabisa make command ini :)")
         start_time = perf_counter()
-        namafile = f'{get_random_string(4)}.srt'
+        namafile = f'MissKatySub_{get_random_string(4)}.srt'
         extract = (await
                    shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
@@ -82,7 +82,7 @@ async def extractsub(_, m):
         await m.reply_document(
             namafile,
             caption=
-            f"<b>Source:</b> <code>{link}</code>\n\nExtracted by @MissKatyRoBot in {timelog}"
+            f"<b>Source:</b> <code>{link}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}"
         )
         await msg.delete()
         try:
@@ -90,6 +90,6 @@ async def extractsub(_, m):
         except:
             pass
     except IndexError:
-        await msg.edit(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> to extract subtitle from video")
+        await msg.edit(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk extract subtitle dalam video")
     except Exception as e:
         await msg.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
