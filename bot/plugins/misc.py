@@ -411,12 +411,12 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             else:
               res_str += "\n"
             if imdb.get("kind") == "tv series":
-              res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
+              res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
             if r_json.get("duration"):
               durasi = r_json['duration'].replace("PT","").replace("H"," Jam ").replace("M"," Menit")
               res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
-              res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
+              res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
               res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if imdb.get("release_date"):
@@ -454,13 +454,13 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                   i = i.replace(" ", "_")
                   key_ += f"#{i}, "
               key_ = key_[:-2]
-              res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n\n"
-            res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
+              res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n\n"
+            res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
               trailer_url = "https://imdb.com" + r_json['trailer']['embedUrl']
               markup = InlineKeyboardMarkup(
                       [
-                          [InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
+                          [InlineKeyboardButton("🎬 Buka IMDB", url=f"https://www.imdb.com/title/tt{movie}/"),
                            InlineKeyboardButton("▶️ Trailer", url=trailer_url)
                           ]
                       ])
@@ -652,7 +652,7 @@ async def imdb_en_search(client, message):
         k = await message.reply('Searching Movie/Series in IMDB Database.. 😴')
         movies = await get_poster(title, bulk=True)
         if not movies:
-            return await k.edit("No Result.. 😕")
+            return await k.edit("Sad, No Result.. 😕")
         btn = [
             [
                 InlineKeyboardButton(
@@ -687,9 +687,9 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             else:
               res_str += "\n"
             if imdb.get("kind") == "tv series":
-              res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
+              res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} Season</code>\n"
             if r_json.get("duration"):
-              durasi = r_json['duration'].replace("PT","").replace("H"," Jam ").replace("M"," Menit")
+              durasi = r_json['duration'].replace("PT","").replace("H"," Hour ").replace("M"," Minute")
               res_str += f"<b>🕓 Duration:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
               res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
