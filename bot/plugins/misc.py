@@ -692,7 +692,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
               durasi = r_json['duration'].replace("PT","").replace("H"," Hour ").replace("M"," Minute")
               res_str += f"<b>🕓 Duration:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
-              res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
+              res_str += f"<b>🔞 Category:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
               res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if imdb.get("release_date"):
@@ -722,7 +722,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
               res_str += f"<b>Actor:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
               summary = r_json['description'].replace("  "," ")
-              res_str += f"<b>📜 Description: </b> <code>{summary.text}</code>\n\n"
+              res_str += f"<b>📜 Description: </b> <code>{summary}</code>\n\n"
             if r_json.get("keywords"):
               keywords = r_json['keywords'].split(",")
               key_ = ""
