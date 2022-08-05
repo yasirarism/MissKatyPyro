@@ -669,8 +669,8 @@ async def imdb_en_search(client, message):
 @Client.on_callback_query(filters.regex('^imdben'))
 @capture_err
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
-       i, user, msg_id, movie = query.data.split('_')
-       if user == f"{query.from_user.id}":
+    i, user, msg_id, movie = query.data.split('_')
+    if user == f"{query.from_user.id}":
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         try:
             url = f"https://www.imdb.com/title/tt{movie}/"
