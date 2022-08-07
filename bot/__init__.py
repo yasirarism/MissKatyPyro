@@ -23,7 +23,7 @@ ARQ_API_KEY = "GLDKXS-UDKRKL-GDVISK-COZFRF-ARQ"
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
 
-subprocess.Popen(f"gunicorn bot.web.wserver:app --bind 0.0.0.0", shell=True)
+subprocess.Popen(f"gunicorn bot.web.wserver:app", shell=True)
 
 # Pyrogram Bot Client
 app = Client(
