@@ -1,4 +1,3 @@
-# Source https://github.com/yourtulloh/Gist-Telegram-Bot
 from os import remove
 from re import compile as compiles
 from requests import post, delete
@@ -110,5 +109,5 @@ async def create(_, message):
                              url=f"https://telegram.me/share/url?url={url}")
     ])
 
-    pasted = f"**Successfully pasted to <a href='{url}'>.</a>\n\nPaste by {uname}**\nPaste will expired in 5 days."
+    pasted = f"**Successfully pasted to <a href='{url}'>Yasir Paste.</a>\n\nPaste by {uname}**\nPaste will expired in 5 days."
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
