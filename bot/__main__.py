@@ -15,6 +15,7 @@ def me():
 # Run Bot
 app.start()
 user.start()
+threading.Thread(target=web.run, daemon=True).start()
 me = app.get_me()
 ubot = user.get_me()
 temp.ME = me.id
@@ -27,7 +28,6 @@ try:
 except:
   pass
 logging.info(f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.")
-threading.Thread(target=web.run, daemon=True).start()
 idle()
 app.stop()
 ubot.stop()
