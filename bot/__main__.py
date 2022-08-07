@@ -9,8 +9,8 @@ from pyrogram import idle, __version__
 web = Flask(__name__)
 
 @web.route("/")
-def me():
-    return app.get_me()
+def home():
+    return "test"
 
 # Run Bot
 app.start()
