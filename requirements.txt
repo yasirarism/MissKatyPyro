@@ -24,3 +24,4 @@ hachoir
 Pillow
 httpx[http2]
 umongo
+flask
