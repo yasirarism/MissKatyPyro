@@ -4,7 +4,7 @@ from re import compile as compiles
 from requests import post, delete
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from json import dumps
+from json import loads as json_loads
 from bot import app
 from info import COMMAND_HANDLER
 
@@ -96,7 +96,7 @@ async def create(_, message):
             'e': (None, '5d'),
         }
         resp = post('https://paste.yasir.eu.org', files=files)
-        url = resp.text
+        url = json_loads(resp.text)['url']
     except Exception as e:
         await msg.edit(f"`{e}`")
         return
