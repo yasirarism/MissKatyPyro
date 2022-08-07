@@ -1,5 +1,6 @@
 import logging
 import time
+import subprocess
 import logging.config
 # Get logging configurations
 logging.config.fileConfig('logging.conf')
@@ -21,6 +22,8 @@ ARQ_API_KEY = "GLDKXS-UDKRKL-GDVISK-COZFRF-ARQ"
 
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
+
+subprocess.Popen(f"gunicorn web.wserver:app --bind 0.0.0.0:80", shell=True)
 
 # Pyrogram Bot Client
 app = Client(

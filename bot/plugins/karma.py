@@ -19,7 +19,7 @@ from database.karma_db import (
 karma_positive_group = 3
 karma_negative_group = 4
 
-regex_upvote = r"^(\+|\+\+|\+1|thx|tnx|ty|thank you|thanx|thanks|pro|cool|good|👍|\+\+ .+)$"
+regex_upvote = r"^(\+|\+\+|\+1|thx|tnx|ty|thank you|thanx|thanks|pro|cool|good|makasih|👍|\+\+ .+)$"
 regex_downvote = r"^(-|--|-1|👎|-- .+)$"
 
 n = "\n"
