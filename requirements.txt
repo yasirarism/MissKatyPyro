@@ -10,7 +10,6 @@ heroku3
 imdbpy==2021.4.18
 gTTS
 regex
-gunicorn
 gpytranslate
 pyromod
 apscheduler
