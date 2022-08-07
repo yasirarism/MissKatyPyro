@@ -1,12 +1,21 @@
 import logging
+import threading
+from flask import Flask
 from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
 
+web = Flask(__name__)
+
+@web.route("/")
+def home():
+    return "test"
+
 # Run Bot
 app.start()
 user.start()
+threading.Thread(target=web.run, daemon=True).start()
 me = app.get_me()
 ubot = user.get_me()
 temp.ME = me.id
