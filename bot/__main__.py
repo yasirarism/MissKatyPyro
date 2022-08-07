@@ -10,7 +10,7 @@ web = Flask(__name__)
 
 @web.route("/")
 def me():
-    return str(app.get_me())
+    return app.get_me()
 
 # Run Bot
 app.start()
