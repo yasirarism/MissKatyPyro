@@ -7,7 +7,6 @@ logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
 logging.getLogger("imdbpy").setLevel(logging.ERROR)
 from pyrogram import Client, __version__
-from flask import Flask
 from info import API_ID, API_HASH, BOT_TOKEN
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
