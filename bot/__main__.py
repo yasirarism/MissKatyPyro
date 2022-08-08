@@ -1,18 +1,12 @@
 import logging, threading
-from bot import app, user, web
+from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
 
 
-@web.route("/")
-def hello_world():
-    return str(app.get_me())
-
-
 # Run Bot
 app.start()
-threading.Thread(target=web.run, daemon=True).start()
 user.start()
 me = app.get_me()
 ubot = user.get_me()
