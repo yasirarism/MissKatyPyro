@@ -33,7 +33,7 @@ async def start_services():
     await user.start()
     webs = web.AppRunner(await web_server())
     await webs.setup()
-    await web.TCPSite(webs, "0.0.0.0", 8080).start()
+    await web.TCPSite(webs, "0.0.0.0").start()
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
