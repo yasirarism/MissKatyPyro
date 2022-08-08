@@ -1,1 +1,1 @@
-web: gunicorn -w 4 'bot:web'
+web: python3 -m bot
