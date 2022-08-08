@@ -1,9 +1,8 @@
-import logging, threading
+import logging
 from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
-
 
 # Run Bot
 app.start()
