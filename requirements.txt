@@ -11,6 +11,7 @@ imdbpy==2021.4.18
 gTTS
 regex
 flask
+gunicorn
 gpytranslate
 pyromod
 apscheduler
