@@ -10,6 +10,7 @@ logging.getLogger("imdbpy").setLevel(logging.ERROR)
 from pyrogram import Client, __version__
 from info import API_ID, API_HASH, BOT_TOKEN
 from Python_ARQ import ARQ
+from flask import Flask
 from aiohttp import ClientSession
 from utils import temp
 from pyromod import listen
@@ -22,6 +23,8 @@ ARQ_API_KEY = "GLDKXS-UDKRKL-GDVISK-COZFRF-ARQ"
 
 aiohttpsession = ClientSession()
 arq = ARQ(ARQ_API_URL, ARQ_API_KEY, aiohttpsession)
+
+web = Flask(__name__)
 
 # Pyrogram Bot Client
 app = Client(
