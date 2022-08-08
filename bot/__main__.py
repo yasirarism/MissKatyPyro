@@ -1,27 +1,8 @@
 import logging, asyncio
-from aiohttp import web
 from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
-
-routes = web.RouteTableDef()
-
-
-@routes.get("/", allow_head=True)
-async def root_route_handler(request):
-    return web.json_response({
-        "status": "Berjalan",
-        "maintained_by": "@YasirArisM",
-        "telegram_bot": '@' + (await app.get_me()).username,
-        "Bot Version": "3.0.1"
-    })
-
-async def web_server():
-    web_app = web.Application(client_max_size=30000000)
-    web_app.add_routes(routes)
-    return web_app
-
 
 loop = asyncio.get_event_loop()
 
@@ -30,9 +11,6 @@ loop = asyncio.get_event_loop()
 async def start_services():
     await app.start()
     await user.start()
-    webs = web.AppRunner(await web_server())
-    await webs.setup()
-    await web.TCPSite(webs, "0.0.0.0").start()
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
