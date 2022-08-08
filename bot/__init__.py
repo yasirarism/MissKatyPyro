@@ -30,8 +30,6 @@ app = Client(
     sleep_threshold=5,
 )
 
-web = Flask(__name__)
-
 # Pyrogram UserBot Client
 user = Client(
     "YasirUBot",

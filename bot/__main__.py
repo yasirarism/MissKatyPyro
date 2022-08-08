@@ -1,6 +1,6 @@
 import logging, asyncio
 from aiohttp import web
-from bot import app, user, web
+from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
