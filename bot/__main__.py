@@ -8,12 +8,6 @@ from pyrogram import idle, __version__
 routes = web.RouteTableDef()
 
 
-async def web_server():
-    web_app = web.Application(client_max_size=30000000)
-    web_app.add_routes(routes)
-    return web_app
-
-
 @routes.get("/", allow_head=True)
 async def root_route_handler(request):
     return web.json_response({
@@ -22,6 +16,11 @@ async def root_route_handler(request):
         "telegram_bot": '@' + (await app.get_me()).username,
         "Bot Version": "3.0.1"
     })
+
+async def web_server():
+    web_app = web.Application(client_max_size=30000000)
+    web_app.add_routes(routes)
+    return web_app
 
 
 loop = asyncio.get_event_loop()
