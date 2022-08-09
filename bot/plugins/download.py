@@ -14,7 +14,10 @@ from bot.utils.pyro_progress import (
     humanbytes,
 )
 
-@app.on_message(filters.command(["download","download@MissKatyRoBot"], COMMAND_HANDLER) & filters.user(617426792))
+
+@app.on_message(
+    filters.command(["download", "download@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]))
 @capture_err
 async def download(client, message):
     pesan = await message.reply_text("Processing...", quote=True)
@@ -69,10 +72,10 @@ async def download(client, message):
                     f"{humanbytes(downloaded)} of {humanbytes(total_length)}\n"
                 )
                 current_message += f"ETA: {estimated_total_time}"
-                if round(diff % 10.00) == 0 and current_message != display_message:
-                    await pesan.edit(
-                        disable_web_page_preview=True, text=current_message
-                    )
+                if round(diff %
+                         10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True,
+                                     text=current_message)
                     display_message = current_message
                     await asyncio.sleep(10)
             except Exception as e:
@@ -85,4 +88,5 @@ async def download(client, message):
                 f"Downloaded to <code>{download_file_path}</code> in {ms} seconds"
             )
     else:
-        await pesan.edit("Reply to a Telegram Media, to download it to my local server.")
+        await pesan.edit(
+            "Reply to a Telegram Media, to download it to my local server.")

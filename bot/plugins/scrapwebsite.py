@@ -213,8 +213,8 @@ async def lk21_scrap(_, message):
                 f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n"
                 for i in res['result'])
             await message.reply(
-                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}", disable_web_page_preview=True
-            )
+                f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}",
+                disable_web_page_preview=True)
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
@@ -352,7 +352,7 @@ async def muviku_scrap(_, message):
 
 @app.on_message(
     filters.command(["melong", "melong@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user([617426792, 1985689491, 1172699512]))
+    & filters.user([617426792, 1985689491, 1172699512, 2024984460]))
 @capture_err
 async def melong_scrap(_, message):
     try:

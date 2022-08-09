@@ -54,9 +54,12 @@ async def ceksub(_, m):
             f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle. Hanya support direct link & format .srt saja saat ini.\nProcessed in {timelog}"
         )
     except Exception as e:
-        await pesan.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
+        await pesan.edit(
+            f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}"
+        )
 
-ALLOWED_USER = [978550890, 617426792]
+
+ALLOWED_USER = [978550890, 617426792, 2024984460]
 
 
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
@@ -72,11 +75,12 @@ async def extractsub(_, m):
         link = m.command[1]
         index = m.command[2]
         if m.from_user.id not in ALLOWED_USER:
-            return msg.edit("Hehehe, sorry yak kamu gabisa make command ini :)")
+            return msg.edit(
+                "Hehehe, sorry yak kamu gabisa make command ini :)")
         start_time = perf_counter()
         namafile = f'MissKatySub_{get_random_string(4)}.srt'
-        extract = (await
-                   shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
+        extract = (
+            await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await m.reply_document(
@@ -90,6 +94,10 @@ async def extractsub(_, m):
         except:
             pass
     except IndexError:
-        await msg.edit(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk extract subtitle dalam video")
+        await msg.edit(
+            f"Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk extract subtitle dalam video"
+        )
     except Exception as e:
-        await msg.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
+        await msg.edit(
+            f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}"
+        )

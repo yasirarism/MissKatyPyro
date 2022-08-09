@@ -16,17 +16,17 @@ from subprocess import run as srun
 
 @app.on_message(
     filters.command(["balas"], COMMAND_HANDLER)
-    & filters.user(617426792) & filters.reply)
+    & filters.user([617426792, 2024984460]) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(' ', 1)
     await m.delete()
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
-    
+
 @app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     await m.reply(f"<code>{neofetch}</code>", parse_mode=enums.ParseMode.HTML)
-    
+
 @app.on_message(filters.command(["remove"], COMMAND_HANDLER))
 async def clearlocal(c, m):
     cmd = m.text.split(' ', 1)
@@ -37,10 +37,10 @@ async def clearlocal(c, m):
 
 @app.on_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user(617426792))
+    & filters.user([617426792, 2024984460]))
 @app.on_edited_message(
     filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user(617426792))
+    & filters.user([617426792, 2024984460]))
 async def shell(client, message):
     cmd = message.text.split(' ', 1)
     if len(cmd) == 1:
@@ -63,10 +63,10 @@ async def shell(client, message):
 
 @app.on_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user(617426792))
+    & filters.user([617426792, 2024984460]))
 @app.on_edited_message(
     filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user(617426792))
+    & filters.user([617426792, 2024984460]))
 async def eval(client, message):
     if len(message.command) < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")
