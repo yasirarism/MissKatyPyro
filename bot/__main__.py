@@ -3,12 +3,14 @@ from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
+from subprocess import Popen
 
 loop = asyncio.get_event_loop()
 
 
 # Run Bot
 async def start_services():
+    Popen(f"gunicorn web.wserver:app", shell=True)
     await app.start()
     await user.start()
     me = await app.get_me()
