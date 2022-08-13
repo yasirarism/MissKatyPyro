@@ -14,7 +14,7 @@ async def start_services():
     app.start()
     user.start()
     # Popen(f"gunicorn web.wserver:web", shell=True)
-    threading.Thread(target=app.run, daemon=True).start()
+    threading.Thread(target=web.run, daemon=True).start()
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
