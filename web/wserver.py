@@ -10,6 +10,4 @@ async def homepage():
 
 
 if __name__ == "__main__":
-    app.start()
-    user.start()
     web.run()
