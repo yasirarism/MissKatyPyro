@@ -1,5 +1,5 @@
 from flask import Flask, request
-from bot import app
+from bot import app, user
 
 web = Flask(__name__)
 
@@ -10,4 +10,6 @@ async def homepage():
 
 
 if __name__ == "__main__":
+    app.start()
+    user.start()
     web.run()
