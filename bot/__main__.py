@@ -1,15 +1,19 @@
 import logging, asyncio, threading
-from bot import app, user, loop
+from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
-
+from subprocess import Popen
 from web.wserver import web
+
+loop = asyncio.get_event_loop()
 
 
 # Run Bot
 async def start_services():
-
+    await app.start()
+    await user.start()
+    Popen(f"gunicorn web.wserver:web", shell=True)
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
@@ -31,7 +35,8 @@ async def start_services():
 
 
 if __name__ == '__main__':
-    app.start()
-    user.start()
-    threading.Thread(target=start_services).start()
-    loop.run_forever()
+    try:
+        loop.run_until_complete(start_services())
+    except KeyboardInterrupt:
+        logging.info(
+            '----------------------- Service Stopped -----------------------')
