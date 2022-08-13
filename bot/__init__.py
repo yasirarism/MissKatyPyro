@@ -35,6 +35,3 @@ user = Client(
     "YasirUBot",
     session_string=SESSION_PYRO,
 )
-
-app.start()
-user.start()
