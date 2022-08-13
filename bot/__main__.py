@@ -13,10 +13,9 @@ loop = asyncio.get_event_loop()
 async def start_services():
     await app.start()
     await user.start()
-    a = process = await asyncio.create_subprocess_shell(
-        "gunicorn web.wserver:web",
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE)
+    a = await asyncio.create_subprocess_shell("gunicorn web.wserver:web",
+                                              stdout=asyncio.subprocess.PIPE,
+                                              stderr=asyncio.subprocess.PIPE)
     stdout, stderr = await a.communicate()
     # Popen(f"gunicorn web.wserver:web", shell=True)
     me = await app.get_me()
