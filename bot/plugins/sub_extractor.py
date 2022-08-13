@@ -99,7 +99,7 @@ async def extractsub(_, m):
         await m.reply_document(
             namafile,
             caption=
-            f"Diekstrak oleh @MissKatyRoBot dalam waktu {timelog}"
+            f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}"
         )
         await msg.delete()
         try:
