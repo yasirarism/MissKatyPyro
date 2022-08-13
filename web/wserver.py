@@ -1,11 +1,13 @@
 from flask import Flask, request
+from bot import app
 
-app = Flask(__name__)
+web = Flask(__name__)
 
-@app.route('/')
+
+@web.route('/')
 def homepage():
-    return "<h1>See mirror-leech-telegram-bot <a href='https://www.github.com/anasty17/mirror-leech-telegram-bot'>@GitHub</a> By <a href='https://github.com/anasty17'>Anas</a></h1>"
+    return str(app.get_me())
 
 
 if __name__ == "__main__":
-    app.run()
+    web.run()
