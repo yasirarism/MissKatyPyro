@@ -6,7 +6,15 @@ from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
 from bot.utils.tools import get_random_string
+from os import path
 
+def get_subname(url):
+    fragment_removed = url.split("#")[0]  # keep to left of first #
+    query_string_removed = fragment_removed.split("?")[0]
+    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
+    if scheme_removed.find("/") == -1:
+        return f'MissKatySub_{get_random_string(4)}.srt'
+    return path.basename(scheme_removed)
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
 @capture_err
@@ -83,7 +91,7 @@ async def extractsub(_, m):
             return msg.edit(
                 "Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
         start_time = perf_counter()
-        namafile = f'MissKatySub_{get_random_string(4)}.srt'
+        namafile = get_filename(link)
         extract = (
             await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
@@ -91,7 +99,7 @@ async def extractsub(_, m):
         await m.reply_document(
             namafile,
             caption=
-            f"<b>Source:</b> <code>{link}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}"
+            f"Diekstrak oleh @MissKatyRoBot dalam waktu {timelog}"
         )
         await msg.delete()
         try:
