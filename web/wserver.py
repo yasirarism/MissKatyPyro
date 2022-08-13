@@ -9,7 +9,7 @@ async def homepage():
     return "Hai guys.."
 
 
-@web.route('/')
+@web.route('/me')
 async def me():
     return str(await user.get_me())
 
