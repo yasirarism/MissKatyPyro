@@ -16,8 +16,8 @@ async def ceksub(_, m):
         return await m.reply(
             f'Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.'
         )
-    if link.startswith("https://file.yasirweb.my.id"):
-        link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+    if link[1].startswith("https://file.yasirweb.my.id"):
+        link = link[1].replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..")
     try:
