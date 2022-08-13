@@ -5,8 +5,8 @@ web = Flask(__name__)
 
 
 @web.route('/')
-def homepage():
-    return str(app.get_me())
+async def homepage():
+    return str(await app.get_me())
 
 
 if __name__ == "__main__":
