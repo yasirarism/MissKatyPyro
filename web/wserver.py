@@ -9,5 +9,10 @@ async def homepage():
     return "Hai guys.."
 
 
+@web.route('/')
+async def me():
+    return str(await user.get_me())
+
+
 if __name__ == "__main__":
     web.run()
