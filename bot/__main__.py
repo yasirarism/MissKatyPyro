@@ -13,8 +13,7 @@ loop = asyncio.get_event_loop()
 async def start_services():
     await app.start()
     await user.start()
-    # Popen(f"gunicorn web.wserver:web", shell=True)
-    threading.Thread(target=web.run, daemon=True).start()
+    Popen(f"gunicorn web.wserver:web", shell=True)
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
