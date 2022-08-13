@@ -3,6 +3,9 @@ from bot import app, user
 
 web = Flask(__name__)
 
+app.start()
+user.start()
+
 
 @web.route('/')
 async def homepage():
