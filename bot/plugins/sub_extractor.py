@@ -11,18 +11,19 @@ from bot.utils.tools import get_random_string
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
 @capture_err
 async def ceksub(_, m):
-    link = m.text.split(' ', 1)
-    if len(link) == 1:
+    cmd = m.text.split(' ', 1)
+    if len(cmd) == 1:
         return await m.reply(
             f'Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.'
         )
-    if link[1].startswith("https://file.yasirweb.my.id"):
-        link = link[1].replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+    link = cmd[1]
+    if link.startswith("https://file.yasirweb.my.id"):
+        link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..")
     try:
         res = (await shell_exec(
-            f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link[1]}"
+            f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
         ))[0]
         details = json.loads(res)
         DATA = []
