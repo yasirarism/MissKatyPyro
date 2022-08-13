@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 import logging.config
 # Get logging configurations
 logging.config.fileConfig('logging.conf')
@@ -10,6 +11,11 @@ from pyrogram import Client, __version__
 from info import API_ID, API_HASH, BOT_TOKEN
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
+from subprocess import Popen
+
+loop = asyncio.get_event_loop()
+
+Popen(f"gunicorn web.wserver:web", shell=True)
 
 SESSION_PYRO = "BQAP-GEATby3DBNNTJn5UyrtcLj23-zikswHWtnKT4GVyW7Ace7UgQIszh0omGSwFVdM-Quz4a8P6-blmwTkeOf8vgZgtNyRvJNPvl7X02QklT7HpSYs9tBuScpQvqJFltwo0_8xm0sFlO3k0MccyMKic4Ba1JY4LiufsIhjd2BWkY1H-rk-cHiPvd_sJwUJgXn6gTsRVJ0xecHVTMi9QgxwMfMg9M2gtcu6vOMj-hYK23yIPHsrnmwpo36AvqdaWalgH3o9XkLdBSxsNS80z5-lwmG712D4W9JN_ON5dp5qUjsXf8ayGoqazQ_ALcUj922I53BIYluYUV7kTrZQPUlGMtSSkAAAAAAkzS9oAA"
 botStartTime = time.time()
