@@ -1,4 +1,4 @@
-import logging, asyncio, threading
+import logging, asyncio
 from bot import app, user
 from utils import temp
 from pyrogram.raw.all import layer
@@ -13,7 +13,7 @@ loop = asyncio.get_event_loop()
 async def start_services():
     await app.start()
     await user.start()
-    await asyncio.create_subprocess_shell("gunicorn web.wserver:web")
+    # await asyncio.create_subprocess_shell("gunicorn web.wserver:web")
     me = await app.get_me()
     ubot = await user.get_me()
     temp.ME = me.id
