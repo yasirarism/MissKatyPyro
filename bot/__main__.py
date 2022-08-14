@@ -4,7 +4,7 @@ from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__
 from subprocess import Popen
-from web.wserver import web
+# from web.wserver import web
 
 loop = asyncio.get_event_loop()
 
