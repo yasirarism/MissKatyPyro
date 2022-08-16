@@ -27,6 +27,8 @@ async def ceksub(_, m):
     link = cmd[1]
     if link.startswith("https://file.yasirweb.my.id"):
         link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+    if link.startswith("https://link.yasirweb.my.id"):
+        link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..")
     try:
@@ -86,6 +88,8 @@ async def extractsub(_, m):
         link = m.command[1]
         if link.startswith("https://file.yasirweb.my.id"):
             link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+        if link.startswith("https://link.yasirweb.my.id"):
+            link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
         index = m.command[2]
         if m.from_user.id not in ALLOWED_USER:
             return msg.edit(
