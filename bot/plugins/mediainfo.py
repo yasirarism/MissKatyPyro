@@ -60,6 +60,10 @@ async def mediainfo(client, message):
     else:
         try:
             link = message.text.split(" ", maxsplit=1)[1]
+            if link.startswith("https://file.yasirweb.my.id"):
+                link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+            if link.startswith("https://link.yasirweb.my.id"):
+                link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
                 output = subprocess.check_output(["mediainfo",
