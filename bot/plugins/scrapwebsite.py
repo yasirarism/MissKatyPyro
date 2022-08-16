@@ -195,7 +195,7 @@ async def lk21_scrap(_, message):
         judul = message.text.split(" ", maxsplit=1)[1]
         msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://api.yasir.eu.org/lk21?q={judul}")
+            r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
             res = await r.json()
             data = "".join(
                 f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n"
@@ -207,7 +207,7 @@ async def lk21_scrap(_, message):
                 disable_web_page_preview=True)
     except IndexError:
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://api.yasir.eu.org/lk21")
+            r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
             data = "".join(
                 f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n"
