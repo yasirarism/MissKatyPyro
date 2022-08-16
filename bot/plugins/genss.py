@@ -112,6 +112,10 @@ async def genss(client, message):
 async def genss(client, message):
     try:
         link = message.text.split(" ")[1]
+        if link.startswith("https://file.yasirweb.my.id"):
+            link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+        if link.startswith("https://link.yasirweb.my.id"):
+            link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
         process = await message.reply_text(f"`Processing, please wait..`")
         tmp_directory_for_each_user = "./MissKaty_Genss/" + str(
             message.from_user.id)
