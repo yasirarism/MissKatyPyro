@@ -694,7 +694,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             if r_json.get("contentRating"):
               res_str += f"<b>🔞 Category:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-              res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+              res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} from {r_json['aggregateRating']['ratingCount']} user</code> \n"
             if imdb.get("release_date"):
               res_str += f"<b>📆 Release Date:</b> <code>{imdb['release_date']}</code>\n"
             if r_json.get("genre"):
