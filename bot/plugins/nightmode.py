@@ -32,7 +32,7 @@ async def job_close():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
+      # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
@@ -51,7 +51,7 @@ async def job_close_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
+      # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       await user.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=False, can_invite_users=True)
       )
@@ -70,7 +70,7 @@ async def job_open():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
+      # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       await app.set_chat_permissions(-1001128045651, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=False)
       )
@@ -89,7 +89,7 @@ async def job_open_ymoviez():
     tahun = now.strftime('%Y')
     jam = now.strftime('%H:%M')
     try:
-      version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
+      # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
       reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
       await user.set_chat_permissions(-1001255283935, ChatPermissions(can_send_messages=True, can_send_media_messages=True, can_invite_users=True, can_add_web_page_previews=True, can_send_other_messages=True)
       )
@@ -102,8 +102,8 @@ async def job_open_ymoviez():
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 async def _callbackanightmd(c: Client, q: CallbackQuery):
-      version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-      await q.answer(f"🔖 Hai, Aku MissKatyRoBot build {version} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10 Slim Buster.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM", show_alert=True, cache_time=21600)
+      # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
+      await q.answer(f"🔖 Hai, Aku MissKatyRoBot dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM", show_alert=True, cache_time=21600)
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
