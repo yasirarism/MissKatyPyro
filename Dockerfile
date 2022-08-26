@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
-LABEL maintainer "yourtulloh@drivecok.eu.org"
-LABEL org.opencontainers.image.description "MLTB-NGOCOK"
+LABEL maintainer "mail@yasir.eu.org"
+LABEL org.opencontainers.image.description "MissKaty-Docker"
 
 WORKDIR /usr/src/app
 RUN chmod 777 /usr/src/app
