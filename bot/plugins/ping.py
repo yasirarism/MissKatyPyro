@@ -10,12 +10,6 @@ from subprocess import check_output, run as srun
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 async def ping(_, message):
-    last_commit = check_output(
-        ["git log -1 --date=short --pretty=format:'%cd <b>From</b> %cr'"],
-        shell=True).decode()
-    botVersion = check_output(
-        ["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"],
-        shell=True).decode()
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
     rm = await message.reply_text("🐱 Pong!!...")
@@ -23,7 +17,7 @@ async def ping(_, message):
     time_taken_s = round(end_t - start_t, 3)
     try:
         await rm.edit(
-            f"<b>🐈 MissKaty {botVersion} online.</b> (<b>Last Commit:</b> <code>{last_commit}</code>)\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>"
+            f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>"
         )
     except Exception:
         pass
