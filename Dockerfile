@@ -3,8 +3,8 @@ FROM ubuntu:22.04
 LABEL maintainer "mail@yasir.eu.org"
 LABEL org.opencontainers.image.description "MissKaty-Docker"
 
-WORKDIR /usr/src/app
-RUN chmod 777 /usr/src/app
+WORKDIR /MissKaty
+RUN chmod 777 /MissKaty
 
 ENV DEBIAN_FRONTEND="noninteractive" TZ="Asia/Jakarta"
 RUN apt update -y
