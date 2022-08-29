@@ -1,10 +1,11 @@
 from pyrogram import filters, Client, enums
-from pyrogram.errors import PeerIdInvalid, UserIsBlocked
+from pyrogram.errors import UserIsBlocked
 from info import COMMAND_HANDLER
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from bot.utils.decorator import capture_err
 
-@Client.on_message(filters.command(["copy","copy@MissKatyRoBot"], COMMAND_HANDLER))
+
+@Client.on_message(filters.command(["copy", "copy@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def copy(client, message):
     try:
@@ -14,7 +15,7 @@ async def copy(client, message):
         if user.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
             return await message.reply_text("😝😝😝")
         if not reply and not to:
-           return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
+            return await message.reply_text("Silahkan balas pesan yang mau dicopy, lalu kirim command /copy [chat_tujuan]")
         await client.copy_message(to, message.chat.id, message.reply_to_message.id, reply_markup=message.reply_to_message.reply_markup)
         return await message.reply_text("Pesan berhasil dikirim..")
     except IndexError:
@@ -27,8 +28,9 @@ async def copy(client, message):
             await message.reply_text("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
         except Exception as e:
             await message.reply(f"ERROR: {str(e)}")
-            
-@Client.on_message(filters.command(["forward","forward@MissKatyRoBot"], COMMAND_HANDLER))
+
+
+@Client.on_message(filters.command(["forward", "forward@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def forward(client, message):
     try:
@@ -36,11 +38,11 @@ async def forward(client, message):
         reply = message.reply_to_message
         user = await client.get_chat_member(-1001686184174, message.from_user.id)
         if user.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
-           if not reply and not to:
-              return await message.reply_text("Silahkan balas pesan yang mau diforward, lalu kirim command /forward [chat_tujuan]")
-           await client.forward_messages(to, message.chat.id, message.reply_to_message.id)
-           await message.reply_text("Pesan berhasil dikirim..")
+            if not reply and not to:
+                return await message.reply_text("Silahkan balas pesan yang mau diforward, lalu kirim command /forward [chat_tujuan]")
+            await client.forward_messages(to, message.chat.id, message.reply_to_message.id)
+            await message.reply_text("Pesan berhasil dikirim..")
         else:
-           await message.reply_text("😝😝😝")
-    except Exception as e:
+            await message.reply_text("😝😝😝")
+    except Exception:
         pass

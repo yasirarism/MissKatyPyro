@@ -17,6 +17,7 @@ async def alpha_to_int(user_id_alphabet: str) -> int:
     user_id = int(user_id)
     return user_id
 
+
 async def int_to_alpha(user_id: int) -> str:
     alphabet = list(ascii_lowercase)[:10]
     text = ""
@@ -24,6 +25,7 @@ async def int_to_alpha(user_id: int) -> str:
     for i in user_id:
         text += alphabet[int(i)]
     return text
+
 
 async def get_karmas_count() -> dict:
     chats_count = 0
@@ -64,10 +66,7 @@ async def update_karma(chat_id: int, name: str, karma: dict):
     name = name.lower().strip()
     karmas = await get_karmas(chat_id)
     karmas[name] = karma
-    await karmadb.update_one({"chat_id": chat_id}, {"$set": {
-        "karma": karmas
-    }},
-                             upsert=True)
+    await karmadb.update_one({"chat_id": chat_id}, {"$set": {"karma": karmas}}, upsert=True)
 
 
 async def is_karma_on(chat_id: int) -> bool:

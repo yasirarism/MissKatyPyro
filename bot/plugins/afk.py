@@ -37,29 +37,25 @@ async def active_afk(_, message):
                 if str(reasonafk) == "None":
                     return await message.reply_animation(
                         data,
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_animation(
                         data,
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}",
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
                     )
-        except Exception as e:
+        except Exception:
             return await message.reply_text(
                 f"**{message.from_user.first_name}** kembali online.",
                 disable_web_page_preview=True,
@@ -79,7 +75,7 @@ async def active_afk(_, message):
             "data": None,
             "reason": _reason,
         }
-    elif (len(message.command) == 1 and message.reply_to_message.animation):
+    elif len(message.command) == 1 and message.reply_to_message.animation:
         _data = message.reply_to_message.animation.file_id
         details = {
             "type": "animation",
@@ -87,7 +83,7 @@ async def active_afk(_, message):
             "data": _data,
             "reason": None,
         }
-    elif (len(message.command) > 1 and message.reply_to_message.animation):
+    elif len(message.command) > 1 and message.reply_to_message.animation:
         _data = message.reply_to_message.animation.file_id
         _reason = (message.text.split(None, 1)[1].strip())[:100]
         details = {
@@ -97,8 +93,7 @@ async def active_afk(_, message):
             "reason": _reason,
         }
     elif len(message.command) == 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message,
-                                 file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
         details = {
             "type": "photo",
             "time": time.time(),
@@ -106,8 +101,7 @@ async def active_afk(_, message):
             "reason": None,
         }
     elif len(message.command) > 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message,
-                                 file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
         _reason = message.text.split(None, 1)[1].strip()
         details = {
             "type": "photo",
@@ -115,7 +109,7 @@ async def active_afk(_, message):
             "data": None,
             "reason": _reason,
         }
-    elif (len(message.command) == 1 and message.reply_to_message.sticker):
+    elif len(message.command) == 1 and message.reply_to_message.sticker:
         if message.reply_to_message.sticker.is_animated:
             details = {
                 "type": "text",
@@ -124,15 +118,14 @@ async def active_afk(_, message):
                 "reason": None,
             }
         else:
-            await app.download_media(message.reply_to_message,
-                                     file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
                 "data": None,
                 "reason": None,
             }
-    elif (len(message.command) > 1 and message.reply_to_message.sticker):
+    elif len(message.command) > 1 and message.reply_to_message.sticker:
         _reason = (message.text.split(None, 1)[1].strip())[:100]
         if message.reply_to_message.sticker.is_animated:
             details = {
@@ -142,8 +135,7 @@ async def active_afk(_, message):
                 "reason": _reason,
             }
         else:
-            await app.download_media(message.reply_to_message,
-                                     file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -159,5 +151,4 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    return await message.reply_text(
-        f"{message.from_user.first_name} sekarang AFK!")
+    return await message.reply_text(f"{message.from_user.first_name} sekarang AFK!")

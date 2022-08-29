@@ -15,9 +15,7 @@ from bot.utils.pyro_progress import (
 )
 
 
-@app.on_message(
-    filters.command(["download", "download@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user([617426792, 2024984460]))
+@app.on_message(filters.command(["download", "download@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err
 async def download(client, message):
     pesan = await message.reply_text("Processing...", quote=True)
@@ -31,9 +29,7 @@ async def download(client, message):
         )
         end_t = datetime.now()
         ms = (end_t - start_t).seconds
-        await pesan.edit(
-            f"Downloaded to <code>{the_real_download_location}</code> in <u>{ms}</u> seconds."
-        )
+        await pesan.edit(f"Downloaded to <code>{the_real_download_location}</code> in <u>{ms}</u> seconds.")
     elif len(message.command) > 1:
         start_t = datetime.now()
         the_url_parts = " ".join(message.command[1:])
@@ -55,7 +51,7 @@ async def download(client, message):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed()
-            elapsed_time = round(diff) * 1000
+            round(diff) * 1000
             progress_str = "[{0}{1}]\nProgress: {2}%".format(
                 "".join(["█" for i in range(math.floor(percentage / 5))]),
                 "".join(["░" for i in range(20 - math.floor(percentage / 5))]),
@@ -68,25 +64,17 @@ async def download(client, message):
                 current_message += f"File Name: <code>{custom_file_name}</code>\n"
                 current_message += f"Speed: {speed}\n"
                 current_message += f"{progress_str}\n"
-                current_message += (
-                    f"{humanbytes(downloaded)} of {humanbytes(total_length)}\n"
-                )
+                current_message += f"{humanbytes(downloaded)} of {humanbytes(total_length)}\n"
                 current_message += f"ETA: {estimated_total_time}"
-                if round(diff %
-                         10.00) == 0 and current_message != display_message:
-                    await pesan.edit(disable_web_page_preview=True,
-                                     text=current_message)
+                if round(diff % 10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True, text=current_message)
                     display_message = current_message
                     await asyncio.sleep(10)
             except Exception as e:
                 logging.info(str(e))
-                pass
         if os.path.exists(download_file_path):
             end_t = datetime.now()
             ms = (end_t - start_t).seconds
-            await pesan.edit(
-                f"Downloaded to <code>{download_file_path}</code> in {ms} seconds"
-            )
+            await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
     else:
-        await pesan.edit(
-            "Reply to a Telegram Media, to download it to my local server.")
+        await pesan.edit("Reply to a Telegram Media, to download it to my local server.")

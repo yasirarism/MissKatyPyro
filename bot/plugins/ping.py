@@ -3,9 +3,9 @@ from re import findall, MULTILINE
 from asyncio import Lock
 from pyrogram import filters
 from info import COMMAND_HANDLER
-from bot import app, user, botStartTime
+from bot import app, botStartTime
 from bot.utils.human_read import get_readable_time
-from subprocess import check_output, run as srun
+from subprocess import run as srun
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
@@ -16,9 +16,7 @@ async def ping(_, message):
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
     try:
-        await rm.edit(
-            f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>"
-        )
+        await rm.edit(f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>")
     except Exception:
         pass
 
@@ -38,12 +36,8 @@ async def ping_handler(_, message):
 
         for dc, ip in ips.items():
             try:
-                shell = srun(["ping", "-c", "1", "-W", "2", ip],
-                             text=True,
-                             check=True,
-                             capture_output=True)
-                resp_time = findall(r"time=.+m?s", shell.stdout,
-                                    MULTILINE)[0].replace("time=", "")
+                shell = srun(["ping", "-c", "1", "-W", "2", ip], text=True, check=True, capture_output=True)
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:

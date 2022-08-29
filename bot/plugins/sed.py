@@ -35,15 +35,9 @@ async def sed(c: app, m: Message):
         return
 
     try:
-        res = regex.sub(pattern,
-                        replace_with,
-                        text,
-                        count=count,
-                        flags=rflags,
-                        timeout=1)
+        res = regex.sub(pattern, replace_with, text, count=count, flags=rflags, timeout=1)
     except TimeoutError:
-        return await m.reply_text(
-            "Oops, your regex pattern has run for too long.")
+        return await m.reply_text("Oops, your regex pattern has run for too long.")
     except regex.error as e:
         return await m.reply_text(str(e))
     else:
@@ -54,7 +48,6 @@ async def sed(c: app, m: Message):
                 reply_to_message_id=m.reply_to_message.id,
             )
         except MessageEmpty:
-            return await m.reply_text(
-                "Please reply message to use this feature.")
+            return await m.reply_text("Please reply message to use this feature.")
         except Exception as e:
             return await m.reply_text(f"ERROR: {str(e)}")

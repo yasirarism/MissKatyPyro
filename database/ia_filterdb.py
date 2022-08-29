@@ -19,7 +19,7 @@ instance = Instance.from_db(db)
 
 @instance.register
 class Media(Document):
-    file_id = fields.StrField(attribute='_id')
+    file_id = fields.StrField(attribute="_id")
     file_ref = fields.StrField(allow_none=True)
     file_name = fields.StrField(required=True)
     file_size = fields.IntField(required=True)
@@ -28,7 +28,7 @@ class Media(Document):
     caption = fields.StrField(allow_none=True)
 
     class Meta:
-        indexes = ('$file_name', )
+        indexes = ("$file_name",)
         collection_name = COLLECTION_NAME
 
 
@@ -49,42 +49,34 @@ async def save_file(media):
             caption=media.caption.html if media.caption else None,
         )
     except ValidationError:
-        logger.exception('Error occurred while saving file in database')
+        logger.exception("Error occurred while saving file in database")
         return False, 2
     else:
         try:
             await file.commit()
         except DuplicateKeyError:
-            logger.warning(
-                f'{getattr(media, "file_name", "NO_FILE")} is already saved in database'
-            )
+            logger.warning(f'{getattr(media, "file_name", "NO_FILE")} is already saved in database')
 
             return False, 0
         else:
-            logger.info(
-                f'{getattr(media, "file_name", "NO_FILE")} is saved to database'
-            )
+            logger.info(f'{getattr(media, "file_name", "NO_FILE")} is saved to database')
             return True, 1
 
 
-async def get_search_results(query,
-                             file_type=None,
-                             max_results=10,
-                             offset=0,
-                             filter=False):
+async def get_search_results(query, file_type=None, max_results=10, offset=0, filter=False):
     """For given query return (results, next_offset)"""
 
     query = query.strip()
-    #if filter:
-    #better ?
-    #query = query.replace(' ', r'(\s|\.|\+|\-|_)')
-    #raw_pattern = r'(\s|_|\-|\.|\+)' + query + r'(\s|_|\-|\.|\+)'
+    # if filter:
+    # better ?
+    # query = query.replace(' ', r'(\s|\.|\+|\-|_)')
+    # raw_pattern = r'(\s|_|\-|\.|\+)' + query + r'(\s|_|\-|\.|\+)'
     if not query:
-        raw_pattern = '.'
-    elif ' ' not in query:
-        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
+        raw_pattern = "."
+    elif " " not in query:
+        raw_pattern = r"(\b|[\.\+\-_])" + query + r"(\b|[\.\+\-_])"
     else:
-        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]')
+        raw_pattern = query.replace(" ", r".*[\s\.\+\-_]")
 
     try:
         regex = re.compile(raw_pattern, flags=re.IGNORECASE)
@@ -92,22 +84,22 @@ async def get_search_results(query,
         return []
 
     if USE_CAPTION_FILTER:
-        filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
+        filter = {"$or": [{"file_name": regex}, {"caption": regex}]}
     else:
-        filter = {'file_name': regex}
+        filter = {"file_name": regex}
 
     if file_type:
-        filter['file_type'] = file_type
+        filter["file_type"] = file_type
 
     total_results = await Media.count_documents(filter)
     next_offset = offset + max_results
 
     if next_offset > total_results:
-        next_offset = ''
+        next_offset = ""
 
     cursor = Media.find(filter)
     # Sort by recent
-    cursor.sort('$natural', -1)
+    cursor.sort("$natural", -1)
     # Slice files according to offset and max results
     cursor.skip(offset).limit(max_results)
     # Get list of files
@@ -117,7 +109,7 @@ async def get_search_results(query,
 
 
 async def get_file_details(query):
-    filter = {'file_id': query}
+    filter = {"file_id": query}
     cursor = Media.find(filter)
     filedetails = await cursor.to_list(length=1)
     return filedetails
@@ -147,8 +139,6 @@ def encode_file_ref(file_ref: bytes) -> str:
 def unpack_new_file_id(new_file_id):
     """Return file_id, file_ref"""
     decoded = FileId.decode(new_file_id)
-    file_id = encode_file_id(
-        pack("<iiqq", int(decoded.file_type), decoded.dc_id, decoded.media_id,
-             decoded.access_hash))
+    file_id = encode_file_id(pack("<iiqq", int(decoded.file_type), decoded.dc_id, decoded.media_id, decoded.access_hash))
     file_ref = encode_file_ref(decoded.file_reference)
     return file_id, file_ref

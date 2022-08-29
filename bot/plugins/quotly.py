@@ -92,28 +92,20 @@ async def get_message_sender_photo(m: Message):
         elif m.forward_from:
             if m.forward_from.photo:
                 return {
-                    "small_file_id":
-                    m.forward_from.photo.small_file_id,
-                    "small_photo_unique_id":
-                    m.forward_from.photo.small_photo_unique_id,
-                    "big_file_id":
-                    m.forward_from.photo.big_file_id,
-                    "big_photo_unique_id":
-                    m.forward_from.photo.big_photo_unique_id,
+                    "small_file_id": m.forward_from.photo.small_file_id,
+                    "small_photo_unique_id": m.forward_from.photo.small_photo_unique_id,
+                    "big_file_id": m.forward_from.photo.big_file_id,
+                    "big_photo_unique_id": m.forward_from.photo.big_photo_unique_id,
                 }
             else:
                 return ""
         elif m.forward_from_chat:
             if m.forward_from_chat.photo:
                 return {
-                    "small_file_id":
-                    m.forward_from_chat.photo.small_file_id,
-                    "small_photo_unique_id":
-                    m.forward_from_chat.photo.small_photo_unique_id,
-                    "big_file_id":
-                    m.forward_from_chat.photo.big_file_id,
-                    "big_photo_unique_id":
-                    m.forward_from_chat.photo.big_photo_unique_id,
+                    "small_file_id": m.forward_from_chat.photo.small_file_id,
+                    "small_photo_unique_id": m.forward_from_chat.photo.small_photo_unique_id,
+                    "big_file_id": m.forward_from_chat.photo.big_file_id,
+                    "big_photo_unique_id": m.forward_from_chat.photo.big_photo_unique_id,
                 }
             else:
                 return ""
@@ -124,11 +116,9 @@ async def get_message_sender_photo(m: Message):
             if m.from_user.photo:
                 return {
                     "small_file_id": m.from_user.photo.small_file_id,
-                    "small_photo_unique_id":
-                    m.from_user.photo.small_photo_unique_id,
+                    "small_photo_unique_id": m.from_user.photo.small_photo_unique_id,
                     "big_file_id": m.from_user.photo.big_file_id,
-                    "big_photo_unique_id":
-                    m.from_user.photo.big_photo_unique_id,
+                    "big_photo_unique_id": m.from_user.photo.big_photo_unique_id,
                 }
             else:
                 return ""
@@ -136,11 +126,9 @@ async def get_message_sender_photo(m: Message):
             if m.sender_chat.photo:
                 return {
                     "small_file_id": m.sender_chat.photo.small_file_id,
-                    "small_photo_unique_id":
-                    m.sender_chat.photo.small_photo_unique_id,
+                    "small_photo_unique_id": m.sender_chat.photo.small_photo_unique_id,
                     "big_file_id": m.sender_chat.photo.big_file_id,
-                    "big_photo_unique_id":
-                    m.sender_chat.photo.big_photo_unique_id,
+                    "big_photo_unique_id": m.sender_chat.photo.big_photo_unique_id,
                 }
             else:
                 return ""
@@ -170,47 +158,39 @@ async def pyrogram_to_quotly(messages):
     for message in messages:
         the_message_dict_to_append = {}
         if message.entities:
-            the_message_dict_to_append["entities"] = [{
-                "type":
-                entity.type.name.lower(),
-                "offset":
-                entity.offset,
-                "length":
-                entity.length,
-            } for entity in message.entities]
+            the_message_dict_to_append["entities"] = [
+                {
+                    "type": entity.type.name.lower(),
+                    "offset": entity.offset,
+                    "length": entity.length,
+                }
+                for entity in message.entities
+            ]
         elif message.caption_entities:
-            the_message_dict_to_append["entities"] = [{
-                "type":
-                entity.type.name.lower(),
-                "offset":
-                entity.offset,
-                "length":
-                entity.length,
-            } for entity in message.caption_entities]
+            the_message_dict_to_append["entities"] = [
+                {
+                    "type": entity.type.name.lower(),
+                    "offset": entity.offset,
+                    "length": entity.length,
+                }
+                for entity in message.caption_entities
+            ]
         else:
             the_message_dict_to_append["entities"] = []
-        the_message_dict_to_append["chatId"] = await get_message_sender_id(
-            message)
+        the_message_dict_to_append["chatId"] = await get_message_sender_id(message)
         the_message_dict_to_append["text"] = await get_text_or_caption(message)
         the_message_dict_to_append["avatar"] = True
         the_message_dict_to_append["from"] = {}
-        the_message_dict_to_append["from"]["id"] = await get_message_sender_id(
-            message)
-        the_message_dict_to_append["from"][
-            "name"] = await get_message_sender_name(message)
-        the_message_dict_to_append["from"][
-            "username"] = await get_message_sender_username(message)
-        the_message_dict_to_append["from"][
-            "type"] = message.chat.type.name.lower()
-        the_message_dict_to_append["from"][
-            "photo"] = await get_message_sender_photo(message)
+        the_message_dict_to_append["from"]["id"] = await get_message_sender_id(message)
+        the_message_dict_to_append["from"]["name"] = await get_message_sender_name(message)
+        the_message_dict_to_append["from"]["username"] = await get_message_sender_username(message)
+        the_message_dict_to_append["from"]["type"] = message.chat.type.name.lower()
+        the_message_dict_to_append["from"]["photo"] = await get_message_sender_photo(message)
         if message.reply_to_message:
             the_message_dict_to_append["replyMessage"] = {
-                "name": await
-                get_message_sender_name(message.reply_to_message),
+                "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
-                "chatId": await
-                get_message_sender_id(message.reply_to_message),
+                "chatId": await get_message_sender_id(message.reply_to_message),
             }
         else:
             the_message_dict_to_append["replyMessage"] = {}
@@ -241,32 +221,32 @@ async def msg_quotly_cmd(c: Client, m: Message):
             else:
                 try:
                     messages = [
-                        i for i in await c.get_messages(
+                        i
+                        for i in await c.get_messages(
                             chat_id=m.chat.id,
                             message_ids=range(
                                 m.reply_to_message.id,
                                 m.reply_to_message.id + (check_arg[1] + 5),
                             ),
                             replies=-1,
-                        ) if not i.empty and not i.media
+                        )
+                        if not i.empty and not i.media
                     ]
-                except Exception as e:
+                except Exception:
                     return await m.reply_text(f"🤷🏻‍♂️")
                 try:
                     make_quotly = await pyrogram_to_quotly(messages)
                     bio_sticker = BytesIO(make_quotly)
                     bio_sticker.name = "biosticker.webp"
                     return await m.reply_sticker(bio_sticker)
-                except Exception as e:
+                except Exception:
                     return await m.reply_text(f"🤷🏻‍♂️")
         else:
             pass
     try:
-        messages_one = await c.get_messages(chat_id=m.chat.id,
-                                            message_ids=m.reply_to_message.id,
-                                            replies=-1)
+        messages_one = await c.get_messages(chat_id=m.chat.id, message_ids=m.reply_to_message.id, replies=-1)
         messages = [messages_one]
-    except Exception as e:
+    except Exception:
         return await m.reply_text(f"🤷🏻‍♂️")
     try:
         make_quotly = await pyrogram_to_quotly(messages)
