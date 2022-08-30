@@ -4,11 +4,11 @@ from pyrogram import filters, idle, Client
 
 
 @app.on_message(filters.command("clonebot"))
-async def clone(bot, msg):
-    if len(msg.command == 1):
-        return await msg.reply("Usage:\n\n /clonebot token")
-    token = msg.command[1]
-    text = await msg.reply("Cloning bot..")
+async def clone(client, message):
+    if len(message.command) == 1:
+        return await message.reply("Usage:\n\n /clonebot token")
+    token = message.command[1]
+    text = await message.reply("Cloning bot..")
     try:
         await text.edit("Booting Your Client")
         # change this Directry according to ur repo
@@ -24,4 +24,4 @@ async def clone(bot, msg):
             f"Your Client Has Been Successfully Started As @{user.username}! ✅\n\nThanks for Cloning."
         )
     except Exception as e:
-        await msg.reply(f"**ERROR:** `{str(e)}`")
+        await message.reply(f"**ERROR:** `{str(e)}`")
