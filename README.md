@@ -13,7 +13,6 @@
 
 
 ## Features
-
 - [x] Google Search
 - [x] IMDB Translation
 - [x] Generator Screenshot
@@ -86,8 +85,6 @@ python3 bot.py
 
 ## Thanks to 
  - Thanks To Dan For His Awsome [Libary](https://github.com/pyrogram/pyrogram)
-
-Fork the repo and edit as per your needs.
 
 ## Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
