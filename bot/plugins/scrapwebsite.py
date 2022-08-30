@@ -152,7 +152,6 @@ async def melongmovie(_, message):
 
 
 @app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
-@capture_err
 async def lk21_scrap(_, message):
     try:
         judul = message.text.split(" ", maxsplit=1)[1]
@@ -160,10 +159,15 @@ async def lk21_scrap(_, message):
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
             res = await r.json()
-            data = "".join(f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in res["result"])
+            data = "".join(f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             if not res["result"]:
                 return msg.edit("Yahh, ga ada hasil ditemukan")
-            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}", disable_web_page_preview=True)
+            try:
+                await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}", disable_web_page_preview=True)
+            except MessageTooLong:
+                pesan = rentry(data)
+                await pesan.delete()
+                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
     except IndexError:
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
@@ -173,10 +177,7 @@ async def lk21_scrap(_, message):
                 return await message.reply(f"**Daftar rilis terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
-                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di taruh di rentry.\n{msg}")
-    except Exception:
-        exc = traceback.format_exc()
-        await msg.edit(f"<code>{exc}</code>")
+                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
 
 
 async def getcontent(url):
