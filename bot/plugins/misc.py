@@ -15,18 +15,26 @@ import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot.utils.decorator import capture_err
+from dateutil import parser
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+@Client.on_message(filters.command(["sof"], COMMAND_HANDLER))
+@capture_err
+async def gsearch(client, message):
+    if len(message.command) == 1:
+        return await message.reply("Give a query to search in StackOverflow!")
+    r = (requests.get(f"https://api.safone.tech/stackoverflow?query={message.command[1]}&limit=10")).json()
+    hasil = "".join(f"<a href='{i['link']}'>{i['title']} ({parser.parse(i['datecreated'])})</a>\n{i['description']}\n\n" for i in r['results'])
+    await message.reply(hasil)
 
 @Client.on_message(filters.command(["google", "google@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def gsearch(client, message):
     if len(message.command) == 1:
-        await message.reply("Give a query to search!")
-        return
+        return await message.reply("Give a query to search in Google!")
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
