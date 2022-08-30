@@ -6,9 +6,10 @@ import requests
 import traceback
 from bot import app
 from pyrogram import filters
+from pyrogram.errors import MessageTooLong
 from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
-
+from bot.utils.tools import rentry
 
 @app.on_message(filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
@@ -162,13 +163,17 @@ async def lk21_scrap(_, message):
             data = "".join(f"<b>Judul: {i['judul']}</b>\n<pre>{i['kualitas']}</pre>\n{i['link']}\n<b>Download:</b> <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in res["result"])
             if not res["result"]:
                 return msg.edit("Yahh, ga ada hasil ditemukan")
-            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.\u79fb\u52a8):</b>\n{data}", disable_web_page_preview=True)
+            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}", disable_web_page_preview=True)
     except IndexError:
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
-            data = "".join(f"<b>{i['title']}</b>\n{i['link']}\nDownload: <a href='{i['dl']}'>Klik Disini</a>\n\n" for i in res["result"])
-            await message.reply(f"<b>Daftar rilis terbaru di web LK21 (https://lk21.\u79fb\u52a8)</b>:\n{data}", disable_web_page_preview=True)
+            data = "".join(f"**{i['title']}**\n{i['link']}\nDownload: [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+            try:
+                await message.reply(f"**Daftar rilis terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
+            except MessageTooLong:
+                msg = rentry(data)
+                await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di taruh di rentry.\n{msg}")
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
