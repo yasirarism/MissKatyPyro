@@ -161,7 +161,7 @@ async def lk21_scrap(_, message):
             res = await r.json()
             data = "".join(f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             if not res["result"]:
-                return msg.edit("Yahh, ga ada hasil ditemukan")
+                return await msg.edit("Yahh, ga ada hasil ditemukan")
             try:
                 await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
