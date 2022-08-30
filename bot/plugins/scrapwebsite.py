@@ -170,10 +170,10 @@ async def lk21_scrap(_, message):
             res = await r.json()
             data = "".join(f"**{i['title']}**\n{i['link']}\nDownload: [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
-                await message.reply(f"**Daftar rilis terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
+                return await message.reply(f"**Daftar rilis terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
-                await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di taruh di rentry.\n{msg}")
+                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di taruh di rentry.\n{msg}")
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"<code>{exc}</code>")
