@@ -1,5 +1,4 @@
 from pyrogram import Client, filters
-from pyrogram.types import Client
 import os
 
 
