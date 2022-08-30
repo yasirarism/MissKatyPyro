@@ -1,5 +1,4 @@
-from pyrogram import Client
-from pyrogram.types import filters
+from pyrogram import Client, filters
 
 
 @Client.on_message(filters.command("start"))
