@@ -1,11 +1,12 @@
 # Sample menggunakan modul motor mongodb
-import time
+import time, asyncio
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from database.afk_db import remove_afk, is_afk, add_afk
 from bot.utils.human_read import get_readable_time2
 from bot.utils.decorator import capture_err
+
 
 # Handle set AFK Command
 @capture_err
@@ -37,23 +38,27 @@ async def active_afk(_, message):
                 if str(reasonafk) == "None":
                     return await message.reply_animation(
                         data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_animation(
                         data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}",
+                        caption=
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}",
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
+                        caption=
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
                     )
         except Exception:
             return await message.reply_text(
@@ -93,7 +98,8 @@ async def active_afk(_, message):
             "reason": _reason,
         }
     elif len(message.command) == 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message,
+                                 file_name=f"{user_id}.jpg")
         details = {
             "type": "photo",
             "time": time.time(),
@@ -101,7 +107,8 @@ async def active_afk(_, message):
             "reason": None,
         }
     elif len(message.command) > 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message,
+                                 file_name=f"{user_id}.jpg")
         _reason = message.text.split(None, 1)[1].strip()
         details = {
             "type": "photo",
@@ -118,7 +125,8 @@ async def active_afk(_, message):
                 "reason": None,
             }
         else:
-            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message,
+                                     file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -135,7 +143,8 @@ async def active_afk(_, message):
                 "reason": _reason,
             }
         else:
-            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message,
+                                     file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -151,4 +160,8 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    return await message.reply_text(f"{message.from_user.first_name} sekarang AFK!")
+    pesan = await message.reply_text(
+        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] sekarang AFK! Pesan ini akan terhapus dalam waktu 10 detik."
+    )
+    await asyncio.sleep(10)
+    await pesan.delete()

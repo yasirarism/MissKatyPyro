@@ -19,7 +19,7 @@ async def approve_join_chat(c: Client, m: ChatJoinRequest):
 @app.on_callback_query(filters.regex(r"^approve"))
 async def approve_chat(c: Client, q: CallbackQuery):
     i, chat = q.data.split("_")
-    await q.message.edit(f"Yeayy, selamat kamu bisa bergabung di Channel YMovieZ Reborn. Jangan lupa share yakk biar makin banyak subnya..")
+    await q.message.edit("Yeayy, selamat kamu bisa bergabung di Channel YMovieZ Reborn. Jangan lupa share yakk biar makin banyak subnya..")
     await c.approve_chat_join_request(chat, q.from_user.id)
 
 

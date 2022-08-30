@@ -1,5 +1,6 @@
 import re
 import time
+import asyncio
 from bot import app
 from pyrogram import filters, enums
 from database.afk_db import remove_afk, is_afk
@@ -24,7 +25,7 @@ async def chat_watcher_func(_, message):
                 if entity.offset == 0 and entity.length == 4:
                     text = message.text or message.caption
                     command_ = (text[0:4]).lower()
-                    if command_ == "/afk":
+                    if command_ == "/afk" or command_ == "!afk":
                         return
 
     msg = ""
@@ -48,23 +49,27 @@ async def chat_watcher_func(_, message):
                 if str(reasonafk) == "None":
                     await message.reply_animation(
                         data,
-                        caption=f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\n",
+                        caption=
+                        f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\n",
                     )
                 else:
                     await message.reply_animation(
                         data,
-                        caption=f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\Alasan: `{reasonafk}`\n\n",
+                        caption=
+                        f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\Alasan: `{reasonafk}`\n\n",
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
                     await message.reply_photo(
                         photo=f"downloads/{userid}.jpg",
-                        caption=f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\n",
+                        caption=
+                        f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\n",
                     )
                 else:
                     await message.reply_photo(
                         photo=f"downloads/{userid}.jpg",
-                        caption=f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\Alasan: `{reasonafk}`\n\n",
+                        caption=
+                        f"**{user_name[:25]}** kembali online dan telah AFK selama {seenago}\n\Alasan: `{reasonafk}`\n\n",
                     )
         except:
             msg += f"**{user_name[:25]}** kembali online.\n\n"
@@ -90,23 +95,27 @@ async def chat_watcher_func(_, message):
                         if str(reasonafk) == "None":
                             await message.reply_animation(
                                 data,
-                                caption=f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
+                                caption=
+                                f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
                             )
                         else:
                             await message.reply_animation(
                                 data,
-                                caption=f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\Alasan: `{reasonafk}`\n\n",
+                                caption=
+                                f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\Alasan: `{reasonafk}`\n\n",
                             )
                     if afktype == "photo":
                         if str(reasonafk) == "None":
                             await message.reply_photo(
                                 photo=f"downloads/{replied_user_id}.jpg",
-                                caption=f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
+                                caption=
+                                f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
                             )
                         else:
                             await message.reply_photo(
                                 photo=f"downloads/{replied_user_id}.jpg",
-                                caption=f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
+                                caption=
+                                f"**{replied_first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
                             )
                 except Exception:
                     msg += f"**{replied_first_name}** sedang AFK\n\n"
@@ -136,7 +145,8 @@ async def chat_watcher_func(_, message):
                         timeafk = reasondb["time"]
                         data = reasondb["data"]
                         reasonafk = reasondb["reason"]
-                        seenago = get_readable_time2((int(time.time() - timeafk)))
+                        seenago = get_readable_time2(
+                            (int(time.time() - timeafk)))
                         if afktype == "text":
                             msg += f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n"
                         if afktype == "text_reason":
@@ -145,23 +155,27 @@ async def chat_watcher_func(_, message):
                             if str(reasonafk) == "None":
                                 await message.reply_animation(
                                     data,
-                                    caption=f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
+                                    caption=
+                                    f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
                                 )
                             else:
                                 await message.reply_animation(
                                     data,
-                                    caption=f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
+                                    caption=
+                                    f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
                                 )
                         if afktype == "photo":
                             if str(reasonafk) == "None":
                                 await message.reply_photo(
                                     photo=f"downloads/{user.id}.jpg",
-                                    caption=f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
+                                    caption=
+                                    f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\n",
                                 )
                             else:
                                 await message.reply_photo(
                                     photo=f"downloads/{user.id}.jpg",
-                                    caption=f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
+                                    caption=
+                                    f"**{user.first_name[:25]}** sedang AFK sejak {seenago} yang lalu.\n\nAlasan: `{reasonafk}`\n\n",
                                 )
                     except:
                         msg += f"**{user.first_name[:25]}** sedang AFK\n\n"
@@ -182,7 +196,8 @@ async def chat_watcher_func(_, message):
                         timeafk = reasondb["time"]
                         data = reasondb["data"]
                         reasonafk = reasondb["reason"]
-                        seenago = get_readable_time2((int(time.time() - timeafk)))
+                        seenago = get_readable_time2(
+                            (int(time.time() - timeafk)))
                         if afktype == "text":
                             msg += f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\n"
                         if afktype == "text_reason":
@@ -191,29 +206,36 @@ async def chat_watcher_func(_, message):
                             if str(reasonafk) == "None":
                                 await message.reply_animation(
                                     data,
-                                    caption=f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\n",
+                                    caption=
+                                    f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\n",
                                 )
                             else:
                                 await message.reply_animation(
                                     data,
-                                    caption=f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\nAlasan: `{reasonafk}`\n\n",
+                                    caption=
+                                    f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\nAlasan: `{reasonafk}`\n\n",
                                 )
                         if afktype == "photo":
                             if str(reasonafk) == "None":
                                 await message.reply_photo(
                                     photo=f"downloads/{user_id}.jpg",
-                                    caption=f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\n",
+                                    caption=
+                                    f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\n",
                                 )
                             else:
                                 await message.reply_photo(
                                     photo=f"downloads/{user_id}.jpg",
-                                    caption=f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\nAlasan: `{reasonafk}`\n\n",
+                                    caption=
+                                    f"**{first_name[:25]}** sedang AFK sejak {seenago} yang lalu\n\nAlasan: `{reasonafk}`\n\n",
                                 )
                     except:
                         msg += f"**{first_name[:25]}** is AFK\n\n"
             j += 1
     if msg != "":
         try:
-            return await message.reply_text(msg, disable_web_page_preview=True)
+            pesan = await message.reply_text(msg,
+                                             disable_web_page_preview=True)
+            await asyncio.sleep(15)
+            pesan.delete()
         except:
             return
