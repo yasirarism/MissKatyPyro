@@ -2,7 +2,7 @@ import logging
 import time
 import logging.config
 
-# Get logging configurations
+# Get logging
 logging.config.fileConfig("logging.conf")
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
