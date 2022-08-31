@@ -172,7 +172,7 @@ async def lk21_scrap(_, message):
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
-            data = "".join(f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+            data = "".join(f"**Judul: {i['title']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
                 return await message.reply(f"**Daftar rilis movie terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
