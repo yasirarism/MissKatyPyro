@@ -15,7 +15,7 @@ def rentry(teks):
     # headernya
     header = {"Referer": 'https://rentry.co'}
 
-    payload = {'csrfmiddlewaretoken': kuki['csrftoken'], 'text': teks}
+    payload = {'csrfmiddlewaretoken': kuki['csrftoken'], 'text': f'Paste Result by @MissKatyRoBot\n\n{teks}'}
     res = requests.post('https://rentry.co/api/new',
                         payload,
                         headers=header,
