@@ -133,7 +133,7 @@ async def create(_, message):
 
     try:
         req = await http.post("https://tempaste.com/api/v1/create-paste/", data={"api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t", "title": "MissKaty Paste", "paste_content": data, "visibility":"public", "expiry_date_type":"months", "expiry_date":12})
-        url = f"https://tempaste.com/{req['url']}"
+        url = f"https://tempaste.com/{json_loads(req.text)['url']}"
     except Exception as e:
         await msg.edit(f"`{e}`")
         return
