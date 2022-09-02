@@ -438,10 +438,10 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n\n"
             res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
-                trailer_url = "https://imdb.com" + r_json["trailer"]["embedUrl"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Buka IMDB", url=f"https://www.imdb.com/title/tt{movie}/"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                trailer_url = r_json["trailer"]["url"]
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
             if thumb := r_json.get("image"):
                 try:
                     await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
@@ -571,10 +571,10 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                     res_str += ""
                 res_str += "\n"
             if r_json.get("trailer"):
-                trailer_url = "https://imdb.com" + r_json["trailer"]["embedUrl"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                trailer_url = r_json["trailer"]["url"]
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
             if imdb.get("plot"):
                 try:
                     summary = await transapi(imdb["plot"])
@@ -709,10 +709,10 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n\n"
             res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
             if r_json.get("trailer"):
-                trailer_url = "https://imdb.com" + r_json["trailer"]["embedUrl"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                trailer_url = r_json["trailer"]["url"]
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
             if thumb := r_json.get("image"):
                 try:
                     await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
