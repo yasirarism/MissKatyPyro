@@ -1,11 +1,12 @@
 from os import remove
 from re import compile as compiles
-from requests import post
+from bot.utils.http import http
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from json import loads as json_loads
 from bot import app
 from info import COMMAND_HANDLER
+from bot.utils.tools import rentry
 
 
 # Size Checker for Limit
@@ -43,7 +44,7 @@ async def create(_, message):
     if not reply and len(message.command) < 2:
         return await message.reply_text(f"**Reply To A Message With /{target} or with command**")
 
-    msg = await message.reply_text("`Pasting to Yasir Paste...`")
+    msg = await message.reply_text("`Pasting to Rentry...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
@@ -63,7 +64,7 @@ async def create(_, message):
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        data = reply.text or reply.caption
+        data = reply.text.markdown or reply.caption.markdown
     elif not reply and len(message.command) >= 2:
         data = message.text.split(None, 1)[1]
 
@@ -76,12 +77,7 @@ async def create(_, message):
         uname = message.sender_chat.title
 
     try:
-        files = {
-            "c": (None, data),
-            "e": (None, "5d"),
-        }
-        resp = post("https://paste.yasir.eu.org", files=files)
-        url = json_loads(resp.text)["url"]
+        url = rentry(data)
     except Exception as e:
         await msg.edit(f"`{e}`")
         return
@@ -92,5 +88,61 @@ async def create(_, message):
     button.append([InlineKeyboardButton("Open Link", url=url)])
     button.append([InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")])
 
-    pasted = f"**Successfully pasted to <a href='{url}'>Yasir Paste.</a>\n\nPaste by {uname}**\nPaste will expired in 5 days."
+    pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
+
+    
+@app.on_message(filters.command(["temp_paste"], COMMAND_HANDLER))
+async def create(_, message):
+    reply = message.reply_to_message
+    target = str(message.command[0]).split("@", maxsplit=1)[0]
+    if not reply and len(message.command) < 2:
+        return await message.reply_text(f"**Reply To A Message With /{target} or with command**")
+
+    msg = await message.reply_text("`Pasting to TempPaste...`")
+    data = ""
+    limit = 1024 * 1024
+    if reply and reply.document:
+        if reply.document.file_size > limit:
+            return await msg.edit(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+        if not pattern.search(reply.document.mime_type):
+            return await msg.edit("**Only text files can be pasted.**")
+        file = await reply.download()
+        try:
+            with open(file, "r") as text:
+                data = text.read()
+            remove(file)
+        except UnicodeDecodeError:
+            try:
+                remove(file)
+            except:
+                pass
+            return await msg.edit("`File Not Supported !`")
+    elif reply and (reply.text or reply.caption):
+        data = reply.text.html or reply.caption.html
+    elif not reply and len(message.command) >= 2:
+        data = message.text.split(None, 1)[1]
+
+    if message.from_user:
+        if message.from_user.username:
+            uname = f"@{message.from_user.username}"
+        else:
+            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+    else:
+        uname = message.sender_chat.title
+
+    try:
+        req = await http.post("https://tempaste.com/api/v1/create-paste/", data={"api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t", "title": "MissKaty Paste", "paste_content": data, "visibility":"public", "expiry_date_type":"months", "expiry_date":12})
+        url = f"https://tempaste.com/{req['url']}"
+    except Exception as e:
+        await msg.edit(f"`{e}`")
+        return
+
+    if not url:
+        return await msg.edit("Text Too Short Or File Problems")
+    button = []
+    button.append([InlineKeyboardButton("Open Link", url=url)])
+    button.append([InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")])
+
+    pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
