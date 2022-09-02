@@ -240,10 +240,10 @@ async def imdb_inl(_, query):
             res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n\n"
         res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
         if r_json.get("trailer"):
-            trailer_url = "https://imdb.com" + r_json["trailer"]["embedUrl"]
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/{movie}/"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+            trailer_url = r_json["trailer"]["embedUrl"]
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com/title/tt{movie}/")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
         await query.edit_message_text(res_str, reply_markup=markup, disable_web_page_preview=False)
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
