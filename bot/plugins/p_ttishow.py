@@ -4,7 +4,7 @@ import time
 import os
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
-from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait
+from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.utils.admin_helper import is_admin
@@ -146,11 +146,14 @@ async def save_group(bot, message):
                     await (temp.MELCOW[f"welcome-{message.chat.id}"]).delete()
                 except:
                     pass
-            temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
-                message.chat.id,
-                photo=welcomeimg,
-                caption=f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
-            )
+            try:
+                temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
+                    message.chat.id,
+                    photo=welcomeimg,
+                    caption=f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
+                )
+            except ChatWriteForbidden:
+                await app.leave_chat(message.chat.id)
             try:
                 os.remove(f"downloads/welcome#{u.id}.png")
                 os.remove(f"downloads/pp{u.id}.png")
