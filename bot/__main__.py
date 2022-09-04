@@ -185,7 +185,7 @@ async def help_button(client, query):
     back_match = re.match(r"bantuan_back", query.data)
     create_match = re.match(r"bantuan_create", query.data)
     top_text = f"""
-Hello {query.from_user.first_name}, My name is {BOT_NAME}.
+Hello {query.from_user.first_name}, My name is MissKaty.
 I'm a group management bot with some usefule features.
 You can choose an option below, by clicking a button.
 Also you can ask anything in Support Group.
