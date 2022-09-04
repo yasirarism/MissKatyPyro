@@ -12,6 +12,9 @@ from info import API_ID, API_HASH, BOT_TOKEN
 from Python_ARQ import ARQ
 from aiohttp import ClientSession
 
+MOD_LOAD = []
+MOD_NOLOAD = []
+
 SESSION_PYRO = "BQAP-GEADARdat8jfcn2J6H0bTv4jS4dUfozDEC5u-3SFi_BfBF0kpaOJircqRgaQhIZT-lEQyhQVFaSy0jogVfokQncZ1oGBRfU9C9eM6Bhv3cdugkVkDc_yUlWL5jLA5qFCm500msA-Vv1WwzWUqB4ftRiV4q6r2KipbB3qZ4TZfDmJDJtYc0zWOu2pv73vU9xG189g7DCgCaAV6V6VdiEQsKjFGQao6VQU0nME39e31hQWU1X_DYDfqpW0g8fXFZwqrtyRrQuyFpOx9PtlmdD1N88F6gtX6elVLr5BP1rvnMmNbQLRYFu3uHyujI3eRMcr2-4x7FMGfNBMUZ_AwnITq6PewAAAAAkzS9oAA"
 botStartTime = time.time()
 
@@ -27,7 +30,6 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    plugins=dict(root="bot/plugins"),
     sleep_threshold=5,
 )
 
