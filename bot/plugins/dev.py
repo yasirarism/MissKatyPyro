@@ -14,7 +14,7 @@ from info import COMMAND_HANDLER
 from bot import app
 
 __MODULE__ = "Dev Command"
-__HELP__ = """HHHHH"""
+__HELP__ = "This only for owner bot so you cannot use it."
 
 
 @app.on_message(
