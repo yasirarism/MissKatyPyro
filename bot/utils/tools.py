@@ -1,4 +1,27 @@
-import random, string, requests
+import random, string, requests, psutil, time, os
+from bot import botStartTime
+from bot.plugins import ALL_MODULES
+from bot.utils.human_read import get_readable_time
+
+
+async def bot_sys_stats():
+    bot_uptime = int(time.time() - botStartTime)
+    cpu = psutil.cpu_percent()
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage("/").percent
+    process = psutil.Process(os.getpid())
+    stats = f"""
+YasirArisM@MissKatyRoBot
+------------------
+UPTIME: {get_readable_time(bot_uptime)}
+BOT: {round(process.memory_info()[0] / 1024 ** 2)} MB
+CPU: {cpu}%
+RAM: {mem}%
+DISK: {disk}%
+
+TOTAL PLUGINS: {len(ALL_MODULES)}
+"""
+    return stats
 
 
 def get_random_string(length):
@@ -6,6 +29,7 @@ def get_random_string(length):
     letters = string.ascii_lowercase
     result_str = "".join(random.choice(letters) for i in range(length))
     return result_str
+
 
 def rentry(teks):
     # buat dapetin cookie
@@ -15,7 +39,10 @@ def rentry(teks):
     # headernya
     header = {"Referer": 'https://rentry.co'}
 
-    payload = {'csrfmiddlewaretoken': kuki['csrftoken'], 'text': f'Paste Result by @MissKatyRoBot\n\n{teks}'}
+    payload = {
+        'csrfmiddlewaretoken': kuki['csrftoken'],
+        'text': f'Paste Result by @MissKatyRoBot\n\n{teks}'
+    }
     res = requests.post('https://rentry.co/api/new',
                         payload,
                         headers=header,

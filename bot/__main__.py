@@ -3,6 +3,7 @@ from uvloop import install
 from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.utils import paginate_modules
+from bot.utils.tools import bot_sys_stats
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
@@ -138,6 +139,23 @@ async def start(_, message):
         )
     return
 
+
+@app.on_callback_query(filters.regex("bot_commands"))
+async def commands_callbacc(_, CallbackQuery):
+    text, keyboard = await help_parser(CallbackQuery.from_user.mention)
+    await app.send_message(
+        CallbackQuery.message.chat.id,
+        text=text,
+        reply_markup=keyboard,
+    )
+
+    await CallbackQuery.message.delete()
+
+
+@app.on_callback_query(filters.regex("stats_callback"))
+async def stats_callbacc(_, CallbackQuery):
+    text = await bot_sys_stats()
+    await app.answer_callback_query(CallbackQuery.id, text, show_alert=True)
 
 @app.on_message(filters.command("help"))
 async def help_command(_, message):
