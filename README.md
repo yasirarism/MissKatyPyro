@@ -1,5 +1,5 @@
 <h1 align="center">
-  <b>MissKaty RoBot</b>
+  <b>MissKaty Bot</b>
 </h1>
 
 
