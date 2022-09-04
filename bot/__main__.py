@@ -91,7 +91,7 @@ keyboard = InlineKeyboardMarkup([
     [
         InlineKeyboardButton(
             text="Help ❓",
-            url=f"t.me/MissKatyRoBot?start=bantuan",
+            url=f"t.me/MissKatyRoBot?start=help",
         ),
         InlineKeyboardButton(
             text="Github 🛠",
@@ -108,7 +108,38 @@ keyboard = InlineKeyboardMarkup([
 ])
 
 
-@app.on_message(filters.command("bantuan"))
+@app.on_message(filters.command("start"))
+async def start(_, message):
+    if message.chat.type.value != "private":
+        return await message.reply_photo(
+            photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
+            caption="Pm Me For More Details.",
+            reply_markup=keyboard,
+        )
+    if len(message.text.split()) > 1:
+        name = (message.text.split(None, 1)[1]).lower()
+        if "_" in name:
+            module = name.split("_", 1)[1]
+            text = (
+                f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n" +
+                HELPABLE[module].__HELP__)
+            await message.reply(text, disable_web_page_preview=True)
+        elif name == "help":
+            text, keyb = await help_parser(message.from_user.first_name)
+            await message.reply(
+                text,
+                reply_markup=keyb,
+            )
+    else:
+        await message.reply_photo(
+            photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
+            caption=home_text_pm,
+            reply_markup=home_keyboard_pm,
+        )
+    return
+
+
+@app.on_message(filters.command("help"))
 async def help_command(_, message):
     if message.chat.type.value != "private":
         if len(message.command) >= 2:
@@ -118,7 +149,7 @@ async def help_command(_, message):
                     [
                         InlineKeyboardButton(
                             text="Click here",
-                            url=f"t.me/MissKatyRoBot?start=bantuan_{name}",
+                            url=f"t.me/MissKatyRoBot?start=help_{name}",
                         )
                     ],
                 ])
@@ -159,8 +190,7 @@ async def help_command(_, message):
 
 async def help_parser(name, keyboard=None):
     if not keyboard:
-        keyboard = InlineKeyboardMarkup(
-            paginate_modules(0, HELPABLE, "bantuan"))
+        keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
 I'm a group management bot with some useful features.
@@ -174,14 +204,14 @@ Also you can ask anything in Support Group.
     )
 
 
-@app.on_callback_query(filters.regex(r"bantuan_(.*?)"))
+@app.on_callback_query(filters.regex(r"help_(.*?)"))
 async def help_button(client, query):
-    home_match = re.match(r"bantuan_home\((.+?)\)", query.data)
-    mod_match = re.match(r"bantuan_module\((.+?)\)", query.data)
-    prev_match = re.match(r"bantuan_prev\((.+?)\)", query.data)
-    next_match = re.match(r"bantuan_next\((.+?)\)", query.data)
-    back_match = re.match(r"bantuan_back", query.data)
-    create_match = re.match(r"bantuan_create", query.data)
+    home_match = re.match(r"help_home\((.+?)\)", query.data)
+    mod_match = re.match(r"help_module\((.+?)\)", query.data)
+    prev_match = re.match(r"help_prev\((.+?)\)", query.data)
+    next_match = re.match(r"help_next\((.+?)\)", query.data)
+    back_match = re.match(r"help_back", query.data)
+    create_match = re.match(r"help_create", query.data)
     top_text = f"""
 Hello {query.from_user.first_name}, My name is MissKaty.
 I'm a group management bot with some usefule features.
@@ -189,7 +219,7 @@ You can choose an option below, by clicking a button.
 Also you can ask anything in Support Group.
 General command are:
  - /start: Start the bot
- - /bantuan: Give this message
+ - /help: Give this message
  """
     if mod_match:
         module = (mod_match.group(1)).replace(" ", "_")
@@ -200,8 +230,7 @@ General command are:
         await query.message.edit(
             text=text,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("back",
-                                       callback_data="bantuan_back")]]),
+                [[InlineKeyboardButton("back", callback_data="help_back")]]),
             disable_web_page_preview=True,
         )
     elif home_match:
@@ -216,7 +245,7 @@ General command are:
         await query.message.edit(
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
-                paginate_modules(curr_page - 1, HELPABLE, "bantuan")),
+                paginate_modules(curr_page - 1, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 
@@ -225,7 +254,7 @@ General command are:
         await query.message.edit(
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
-                paginate_modules(next_page + 1, HELPABLE, "bantuan")),
+                paginate_modules(next_page + 1, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 
@@ -233,7 +262,7 @@ General command are:
         await query.message.edit(
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
-                paginate_modules(0, HELPABLE, "bantuan")),
+                paginate_modules(0, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 

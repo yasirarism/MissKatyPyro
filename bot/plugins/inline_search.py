@@ -8,9 +8,13 @@ from bs4 import BeautifulSoup
 from gpytranslate import Translator
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 
-__MODULE__ = "Inline Search"
+__MODULE__ = "InlineFeature"
 __HELP__ = """
 All inline search
+imdb
+pypi
+git
+google
 """
 
 

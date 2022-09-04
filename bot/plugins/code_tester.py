@@ -3,7 +3,7 @@ import aiohttp
 from info import COMMAND_HANDLER
 from bot import app
 
-__MODULE__ = "Code Runner"
+__MODULE__ = "CodeTester"
 __HELP__ = """
 Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung. Untuk command sementara hanya support dengan tanda "!" seperti contoh dibawah.
 
