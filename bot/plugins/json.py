@@ -3,6 +3,9 @@ from pyrogram import filters
 from bot import app
 from info import COMMAND_HANDLER
 
+__MODULE__ = "JSON"
+__HELP__ = "/json - Send JSON Telegram"
+
 
 @app.on_message(filters.command(["json"], COMMAND_HANDLER))
 async def jsonify(_, message):
@@ -15,5 +18,8 @@ async def jsonify(_, message):
     except Exception as e:
         with open("json.text", "w+", encoding="utf8") as out_file:
             out_file.write(str(the_real_message))
-        await message.reply_document(document="json.text", caption=str(e), disable_notification=True, reply_to_message_id=reply_to_id)
+        await message.reply_document(document="json.text",
+                                     caption=str(e),
+                                     disable_notification=True,
+                                     reply_to_message_id=reply_to_id)
         os.remove("json.text")

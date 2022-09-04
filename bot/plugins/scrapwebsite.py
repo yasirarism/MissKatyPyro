@@ -11,7 +11,15 @@ from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
 from bot.utils.tools import rentry
 
-@app.on_message(filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
+__MODULE__ = "Web Scraper"
+__HELP__ = """
+/melongmovie - Send JSON Telegram
+/lk21 - Send JSON Telegram
+"""
+
+
+@app.on_message(
+    filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def nodrakor(_, message):
     try:
@@ -21,8 +29,14 @@ async def nodrakor(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
-        html = requests.get(f"https://109.234.34.246/?s={judul}", headers=headers, allow_redirects=False, verify=False)
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
+        html = requests.get(f"https://109.234.34.246/?s={judul}",
+                            headers=headers,
+                            allow_redirects=False,
+                            verify=False)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="content-thumbnail text-center")
         data = []
@@ -33,12 +47,15 @@ async def nodrakor(_, message):
         if not data:
             return await msg.edit("Oops, data film tidak ditemukan.")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n\n" for i in data)
-        await msg.edit(f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @MissKatyRoBot")
+        await msg.edit(
+            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @MissKatyRoBot"
+        )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def ngefilm21(_, message):
     try:
@@ -48,9 +65,13 @@ async def ngefilm21(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
-        html = requests.get(f"http://185.237.253.209/search?q={title}", headers=headers)
+        html = requests.get(f"http://185.237.253.209/search?q={title}",
+                            headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all("h2")
         data = []
@@ -68,7 +89,8 @@ async def ngefilm21(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["movieku", "movieku@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["movieku", "movieku@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def movikucc(_, message):
     try:
@@ -78,18 +100,28 @@ async def movikucc(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
-        html = requests.get(f"https://107.152.39.187/?s={judul}", headers=headers)
+        html = requests.get(f"https://107.152.39.187/?s={judul}",
+                            headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         data = soup.find_all(class_="bx")
-        res = "".join(f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n" for i in data)
-        await msg.edit(f"<b>Hasil Scrap di Movieku.cc:</b>\n{res} ⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download (hanya untuk movie).")
+        res = "".join(
+            f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n"
+            for i in data)
+        await msg.edit(
+            f"<b>Hasil Scrap di Movieku.cc:</b>\n{res} ⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download (hanya untuk movie)."
+        )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["savefilm21", "savefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["savefilm21", "savefilm21@MissKatyRoBot"],
+                    COMMAND_HANDLER))
 @capture_err
 async def savefilm21(_, message):
     try:
@@ -99,9 +131,14 @@ async def savefilm21(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
-        html = requests.get(f"http://38.242.196.210/?s={judul}", headers=headers, allow_redirects=False)
+        html = requests.get(f"http://38.242.196.210/?s={judul}",
+                            headers=headers,
+                            allow_redirects=False)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="entry-title")
         data = []
@@ -112,13 +149,18 @@ async def savefilm21(_, message):
             data.append({"judul": judul, "link": link})
         if not data:
             return await msg.edit("Oops, data film tidak ditemukan")
-        res = "".join(f"<b>Judul: {i['judul']}</b>\nLink: {i['link']}\n\n" for i in data)
-        await msg.edit(f"Hasil Scrap <code>{judul}</code> dari Savefilm21:\n{res}\n\n⚠️ Gunakan /savefilm21_scrap <b>[link]</b> untuk mengambil link downloadnya.")
+        res = "".join(f"<b>Judul: {i['judul']}</b>\nLink: {i['link']}\n\n"
+                      for i in data)
+        await msg.edit(
+            f"Hasil Scrap <code>{judul}</code> dari Savefilm21:\n{res}\n\n⚠️ Gunakan /savefilm21_scrap <b>[link]</b> untuk mengambil link downloadnya."
+        )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["melongmovie", "melongmovie@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["melongmovie", "melongmovie@MissKatyRoBot"],
+                    COMMAND_HANDLER))
 @capture_err
 async def melongmovie(_, message):
     try:
@@ -128,7 +170,10 @@ async def melongmovie(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
         html = requests.get(f"http://167.99.31.48/?s={judul}", headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
@@ -143,8 +188,11 @@ async def melongmovie(_, message):
                 kualitas = ""
             data.append({"judul": title, "link": url, "kualitas": kualitas})
         if not data:
-            return await msg.edit("Oops, data film tidak ditemukan di melongmovie")
-        res = "".join(f"<b>Judul: {i['judul']}</b>\n<b>Kualitas:</b> {i['kualitas']}\n<b>Link</b>: {i['link']}\n\n" for i in data)
+            return await msg.edit(
+                "Oops, data film tidak ditemukan di melongmovie")
+        res = "".join(
+            f"<b>Judul: {i['judul']}</b>\n<b>Kualitas:</b> {i['kualitas']}\n<b>Link</b>: {i['link']}\n\n"
+            for i in data)
         # return await message.reply(json.dumps(data, indent=2, ensure_ascii=False))
         return await msg.edit(res)
     except Exception as e:
@@ -159,25 +207,37 @@ async def lk21_scrap(_, message):
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
             res = await r.json()
-            data = "".join(f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+            data = "".join(
+                f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
+                for i in res["result"])
             if not res["result"]:
                 return await msg.edit("Yahh, ga ada hasil ditemukan")
             try:
-                await msg.edit(f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}", disable_web_page_preview=True)
+                await msg.edit(
+                    f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}",
+                    disable_web_page_preview=True)
             except MessageTooLong:
                 pesan = rentry(data)
                 await pesan.delete()
-                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
+                return await message.reply(
+                    f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
+                )
     except IndexError:
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
-            data = "".join(f"**Judul: {i['title']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+            data = "".join(
+                f"**Judul: {i['title']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
+                for i in res["result"])
             try:
-                return await message.reply(f"**Daftar rilis movie terbaru di web LK21 (https://lk21.homes)**:\n{data}", disable_web_page_preview=True)
+                return await message.reply(
+                    f"**Daftar rilis movie terbaru di web LK21 (https://lk21.homes)**:\n{data}",
+                    disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
-                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
+                return await message.reply(
+                    f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
+                )
 
 
 async def getcontent(url):
@@ -186,7 +246,8 @@ async def getcontent(url):
         return await r.read()
 
 
-@app.on_message(filters.command(["gomov", "gomov@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["gomov", "gomov@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def gomov_scrap(_, message):
     try:
@@ -196,9 +257,13 @@ async def gomov_scrap(_, message):
 
     msg = await message.reply(f"Scraping GoMov Website..")
     try:
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
-        html = requests.get(f"https://185.173.38.216/?s={judul}", headers=headers)
+        html = requests.get(f"https://185.173.38.216/?s={judul}",
+                            headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         entry = soup.find_all(class_="entry-title")
         DATA = []
@@ -208,19 +273,27 @@ async def gomov_scrap(_, message):
             DATA.append({"judul": judul, "link": link})
         if not DATA:
             return await msg.edit("Oops, data film tidak ditemukan di GoMov")
-        res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n" for i in DATA)
-        await msg.edit(f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @MissKatyRoBot")
+        res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n"
+                      for i in DATA)
+        await msg.edit(
+            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @MissKatyRoBot"
+        )
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"ERROR: <code>{exc}</code>")
 
 
-@app.on_message(filters.command(["savefilm21_scrap", "savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["savefilm21_scrap", "savefilm21_scrap@MissKatyRoBot"],
+                    COMMAND_HANDLER))
 @capture_err
 async def savefilm21_scrap(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
         html = requests.get(link, headers=headers, allow_redirects=False)
         soup = BeautifulSoup(html.text, "lxml")
@@ -228,34 +301,51 @@ async def savefilm21_scrap(_, message):
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
         await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}")
     except IndexError:
-        return await message.reply("Gunakan command /savefilm21_scrap <b>[link]</b> untuk scrap link download")
+        return await message.reply(
+            "Gunakan command /savefilm21_scrap <b>[link]</b> untuk scrap link download"
+        )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["nodrakor_scrap", "nodrakor_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["nodrakor_scrap", "nodrakor_scrap@MissKatyRoBot"],
+                    COMMAND_HANDLER))
 @capture_err
 async def nodrakor_scrap(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
-        html = requests.get(link, headers=headers, allow_redirects=False, verify=False)
+        html = requests.get(link,
+                            headers=headers,
+                            allow_redirects=False,
+                            verify=False)
         soup = BeautifulSoup(html.text, "lxml")
         hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
         await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")
     except IndexError:
-        return await message.reply("Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download")
+        return await message.reply(
+            "Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download"
+        )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["movieku_scrap", "movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["movieku_scrap", "movieku_scrap@MissKatyRoBot"],
+                    COMMAND_HANDLER))
 @capture_err
 async def muviku_scrap(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
         html = requests.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
@@ -269,30 +359,40 @@ async def muviku_scrap(_, message):
                 data.append({"link": link, "kualitas": kualitas})
         if not data:
             return await message.reply("Oops, data film tidak ditemukan.")
-        res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
+        res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n"
+                      for i in data)
         await message.reply(res)
     except IndexError:
-        return await message.reply("Gunakan command /movieku_scrap <b>[link]</b> untuk scrap link download")
+        return await message.reply(
+            "Gunakan command /movieku_scrap <b>[link]</b> untuk scrap link download"
+        )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["melong", "melong@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 1985689491, 1172699512, 2024984460]))
+@app.on_message(
+    filters.command(["melong", "melong@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 1985689491, 1172699512, 2024984460]))
 @capture_err
 async def melong_scrap(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        headers = {
+            "User-agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        }
 
         html = requests.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
-        for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
+        for ep in soup.findAll(
+                text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
             hardsub = ep.findPrevious("div")
             softsub = ep.findNext("div")
             rep = f"{hardsub}\n{softsub}"
             await message.reply(rep)
     except IndexError:
-        await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
+        await message.reply(
+            "Gunakan command /melong <b>[link]</b> untuk scrap link download")
 
 
 # except Exception as e:
