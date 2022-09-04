@@ -1,6 +1,6 @@
 import json
 from bot import app
-from bot.plugins.misc import get_content
+from bot.plugins.other_tools import get_content
 from utils import get_poster
 from bot.utils.http import http
 from pyrogram import filters, enums

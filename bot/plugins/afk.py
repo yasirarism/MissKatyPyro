@@ -8,6 +8,11 @@ from bot.utils.human_read import get_readable_time2
 from bot.utils.decorator import capture_err
 
 
+__MODULE__ = "AFK"
+__HELP__ = """/afk - Tandai dirimu sedang AFK
+I tell users that you are away if you are, so they dont need to be hanging for your reply. Just type
+"""
+
 # Handle set AFK Command
 @capture_err
 @app.on_message(filters.command(["afk"], COMMAND_HANDLER))
