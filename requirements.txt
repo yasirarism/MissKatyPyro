@@ -24,5 +24,4 @@ hachoir
 Pillow
 httpx[http2]
 umongo
-# gunicorn
-# flask[async]
+uvloop

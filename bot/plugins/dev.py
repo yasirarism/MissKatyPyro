@@ -13,15 +13,21 @@ from pyrogram import filters, enums
 from info import COMMAND_HANDLER
 from bot import app
 
+__MODULE__ = "Dev COmmand"
+__HELP__ = """HHHHH"""
 
-@app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]) & filters.reply)
+
+@app.on_message(
+    filters.command(["balas"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(" ", 1)
     await m.delete()
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
 
 
-@app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
+@app.on_message(
+    filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     await m.reply(f"<code>{neofetch}</code>", parse_mode=enums.ParseMode.HTML)
@@ -36,8 +42,12 @@ async def clearlocal(c, m):
     await m.reply("Done")
 
 
-@app.on_message(filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
-@app.on_edited_message(filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
+@app.on_message(
+    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]))
+@app.on_edited_message(
+    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]))
 async def shell(client, message):
     cmd = message.text.split(" ", 1)
     if len(cmd) == 1:
@@ -58,8 +68,12 @@ async def shell(client, message):
         await message.reply("No Reply")
 
 
-@app.on_message(filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
-@app.on_edited_message(filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
+@app.on_message(
+    filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]))
+@app.on_edited_message(
+    filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
+    & filters.user([617426792, 2024984460]))
 async def eval(client, message):
     if len(message.command) < 2:
         return await message.reply("Masukkan kode yang ingin dijalankan..")
@@ -104,23 +118,30 @@ async def eval(client, message):
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(final_output)) as out_file:
             out_file.name = "MissKaty_Eval.txt"
-            await reply_to_.reply_document(document=out_file, caption=cmd[: 4096 // 4 - 1], disable_notification=True, quote=True)
+            await reply_to_.reply_document(document=out_file,
+                                           caption=cmd[:4096 // 4 - 1],
+                                           disable_notification=True,
+                                           quote=True)
             try:
                 os.remove("MissKaty_Eval.txt")
             except:
                 pass
     else:
-        await reply_to_.reply_text(final_output, quote=True, parse_mode=enums.ParseMode.MARKDOWN)
+        await reply_to_.reply_text(final_output,
+                                   quote=True,
+                                   parse_mode=enums.ParseMode.MARKDOWN)
     await status_message.delete()
 
 
 async def aexec(code, client, message):
-    exec("async def __aexec(client, message): " + "".join(f"\n {l_}" for l_ in code.split("\n")))
+    exec("async def __aexec(client, message): " +
+         "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](client, message)
 
 
 async def shell_exec(code, treat=True):
-    process = await asyncio.create_subprocess_shell(code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
+    process = await asyncio.create_subprocess_shell(
+        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
 
     stdout = (await process.communicate())[0]
     if treat:

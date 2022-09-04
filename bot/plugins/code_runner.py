@@ -3,6 +3,9 @@ import aiohttp
 from info import COMMAND_HANDLER
 from bot import app
 
+__MODULE__ = "Code Runner"
+__HELP__ = """HHHHH"""
+
 
 async def listcode():
     async with aiohttp.ClientSession() as session:
