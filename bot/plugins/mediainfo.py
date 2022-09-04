@@ -6,13 +6,14 @@ from pyrogram import filters, Client
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from utils import get_file_id
+from bot import app
 from bot.utils.media_helper import post_to_telegraph, runcmd
 from bot.utils.decorator import capture_err
 from bot.utils.pyro_progress import (
     progress_for_pyrogram, )
 
 
-@Client.on_message(
+@app.on_message(
     filters.command(["mediainfo", "mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def mediainfo(client, message):

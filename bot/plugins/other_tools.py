@@ -16,21 +16,29 @@ from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot.utils.decorator import capture_err
 from dateutil import parser
+from bot import app
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-@Client.on_message(filters.command(["sof"], COMMAND_HANDLER))
+
+@app.on_message(filters.command(["sof"], COMMAND_HANDLER))
 @capture_err
 async def stackoverflow(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
-    r = (requests.get(f"https://api.safone.tech/stackoverflow?query={message.command[1]}&limit=10")).json()
-    hasil = "".join(f"<a href='{i['link']}'>{i['title']} ({parser.parse(i['datecreated'])})</a>\n{i['description']}\n\n" for i in r['results'])
+    r = (requests.get(
+        f"https://api.safone.tech/stackoverflow?query={message.command[1]}&limit=10"
+    )).json()
+    hasil = "".join(
+        f"<a href='{i['link']}'>{i['title']} ({parser.parse(i['datecreated'])})</a>\n{i['description']}\n\n"
+        for i in r['results'])
     await message.reply(hasil)
 
-@Client.on_message(filters.command(["google", "google@MissKatyRoBot"], COMMAND_HANDLER))
+
+@app.on_message(
+    filters.command(["google", "google@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def gsearch(client, message):
     if len(message.command) == 1:
@@ -38,8 +46,13 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
-        html = requests.get(f"https://www.google.com/search?q={query}", headers=headers)
+        headers = {
+            "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/61.0.3163.100 Safari/537.36"
+        }
+        html = requests.get(f"https://www.google.com/search?q={query}",
+                            headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
 
         # collect data
@@ -54,28 +67,36 @@ async def gsearch(client, message):
                 snippet = "-"
 
             # appending data to an array
-            data.append(
-                {
-                    "title": title,
-                    "link": link,
-                    "snippet": snippet,
-                }
-            )
+            data.append({
+                "title": title,
+                "link": link,
+                "snippet": snippet,
+            })
         arr = json.dumps(data, indent=2, ensure_ascii=False)
         parse = json.loads(arr)
         total = len(parse)
-        res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse)
+        res = "".join(
+            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n"
+            for i in parse)
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
-    await msg.edit(text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>", disable_web_page_preview=True)
+    await msg.edit(
+        text=
+        f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>",
+        disable_web_page_preview=True)
 
 
-@Client.on_message(filters.command(["tr", "trans", "translate", "tr@MissKatyRoBot", "trans@MissKatyRoBot", "translate@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command([
+        "tr", "trans", "translate", "tr@MissKatyRoBot", "trans@MissKatyRoBot",
+        "translate@MissKatyRoBot"
+    ], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
     trl = Translator()
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+    if message.reply_to_message and (message.reply_to_message.text
+                                     or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
             target_lang = "id"
         else:
@@ -101,10 +122,11 @@ async def translate(client, message):
     )
 
 
-@Client.on_message(filters.command(["tts", "tts@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["tts", "tts@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def tts(_, message):
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+    if message.reply_to_message and (message.reply_to_message.text
+                                     or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
             target_lang = "id"
         else:
@@ -129,51 +151,69 @@ async def tts(_, message):
     return await msg.reply_audio(f"tts_{message.from_user.id}.mp3")
 
 
-@Client.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
+@app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 async def tiktokdl(client, message):
     if len(message.command) == 1:
-        return await message.reply("Use command /tiktokdl [link] to download tiktok video.")
+        return await message.reply(
+            "Use command /tiktokdl [link] to download tiktok video.")
     link = message.command[1]
     try:
         async with aiohttp.ClientSession() as ses:
-            async with ses.get(f"https://kamiselaluada.me/api/tiktok/3?url={link}") as result:
+            async with ses.get(
+                    f"https://kamiselaluada.me/api/tiktok/3?url={link}"
+            ) as result:
                 r = await result.json()
-                await message.reply_video(r["nowm"], caption=f"<b>Title:</b> <code>{r['caption']}</code>\n\nUploaded by @MissKatyRoBot")
+                await message.reply_video(
+                    r["nowm"],
+                    caption=
+                    f"<b>Title:</b> <code>{r['caption']}</code>\n\nUploaded by @MissKatyRoBot"
+                )
     except Exception as e:
-        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await message.reply(
+            f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
 
 
-@Client.on_message(filters.command(["tosticker", "tosticker@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["tosticker", "tosticker@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
-            return await message.reply_text("Reply ke foto untuk mengubah ke sticker")
-        sticker = await client.download_media(message.reply_to_message.photo.file_id, f"tostick_{message.from_user.id}.webp")
+            return await message.reply_text(
+                "Reply ke foto untuk mengubah ke sticker")
+        sticker = await client.download_media(
+            message.reply_to_message.photo.file_id,
+            f"tostick_{message.from_user.id}.webp")
         await message.reply_sticker(sticker)
         os.remove(sticker)
     except Exception as e:
         await message.reply_text(str(e))
 
 
-@Client.on_message(filters.command(["toimage", "toimage@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["toimage", "toimage@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def topho(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.sticker:
-            return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
+            return await message.reply_text(
+                "Reply ke sticker untuk mengubah ke foto")
         if message.reply_to_message.sticker.is_animated:
-            return await message.reply_text("Ini sticker animasi, command ini hanya untuk sticker biasa.")
-        photo = await client.download_media(message.reply_to_message.sticker.file_id, f"tostick_{message.from_user.id}.jpg")
-        await message.reply_photo(photo=photo, caption="Sticker -> Image\n@MissKatyRoBot")
+            return await message.reply_text(
+                "Ini sticker animasi, command ini hanya untuk sticker biasa.")
+        photo = await client.download_media(
+            message.reply_to_message.sticker.file_id,
+            f"tostick_{message.from_user.id}.jpg")
+        await message.reply_photo(photo=photo,
+                                  caption="Sticker -> Image\n@MissKatyRoBot")
 
         os.remove(photo)
     except Exception as e:
         await message.reply_text(str(e))
 
 
-@Client.on_message(filters.command(["id", "id@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["id", "id@MissKatyRoBot"], COMMAND_HANDLER))
 async def showid(client, message):
     chat_type = message.chat.type
     if chat_type == "private":
@@ -182,7 +222,9 @@ async def showid(client, message):
         last = message.from_user.last_name or ""
         username = message.from_user.username
         dc_id = message.from_user.dc_id or ""
-        await message.reply_text(f"<b>➲ First Name:</b> {first}\n<b>➲ Last Name:</b> {last}\n<b>➲ Username:</b> {username}\n<b>➲ Telegram ID:</b> <code>{user_id}</code>\n<b>➲ Data Centre:</b> <code>{dc_id}</code>", quote=True)
+        await message.reply_text(
+            f"<b>➲ First Name:</b> {first}\n<b>➲ Last Name:</b> {last}\n<b>➲ Username:</b> {username}\n<b>➲ Telegram ID:</b> <code>{user_id}</code>\n<b>➲ Data Centre:</b> <code>{dc_id}</code>",
+            quote=True)
 
     elif chat_type in ["group", "supergroup"]:
         _id = ""
@@ -203,7 +245,8 @@ async def showid(client, message):
         await message.reply_text(_id, quote=True)
 
 
-@Client.on_message(filters.command(["info", "info@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["info", "info@MissKatyRoBot"], COMMAND_HANDLER))
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     status_message = await message.reply_text("`Fetching user info...`")
@@ -216,7 +259,8 @@ async def who_is(client, message):
         await status_message.edit(str(error))
         return
     if from_user is None:
-        return await status_message.edit("no valid user_id / message specified")
+        return await status_message.edit("no valid user_id / message specified"
+                                         )
     message_out_str = ""
     message_out_str += f"<b>➲First Name:</b> {from_user.first_name}\n"
     last_name = from_user.last_name or "<b>None</b>"
@@ -230,20 +274,34 @@ async def who_is(client, message):
     if message.chat.type in (("supergroup", "channel")):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
-            joined_date = datetime.fromtimestamp(chat_member_p.joined_date or time.time()).strftime("%Y.%m.%d %H:%M:%S")
+            joined_date = datetime.fromtimestamp(
+                chat_member_p.joined_date
+                or time.time()).strftime("%Y.%m.%d %H:%M:%S")
             message_out_str += "<b>➲Joined this Chat on:</b> <code>" f"{joined_date}" "</code>\n"
         except UserNotParticipant:
             pass
     if chat_photo := from_user.photo:
-        local_user_photo = await client.download_media(message=chat_photo.big_file_id)
-        buttons = [[InlineKeyboardButton("🔐 Close", callback_data="close_data")]]
+        local_user_photo = await client.download_media(
+            message=chat_photo.big_file_id)
+        buttons = [[
+            InlineKeyboardButton("🔐 Close", callback_data="close_data")
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_photo(photo=local_user_photo, quote=True, reply_markup=reply_markup, caption=message_out_str, disable_notification=True)
+        await message.reply_photo(photo=local_user_photo,
+                                  quote=True,
+                                  reply_markup=reply_markup,
+                                  caption=message_out_str,
+                                  disable_notification=True)
         os.remove(local_user_photo)
     else:
-        buttons = [[InlineKeyboardButton("🔐 Close", callback_data="close_data")]]
+        buttons = [[
+            InlineKeyboardButton("🔐 Close", callback_data="close_data")
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_text(text=message_out_str, reply_markup=reply_markup, quote=True, disable_notification=True)
+        await message.reply_text(text=message_out_str,
+                                 reply_markup=reply_markup,
+                                 quote=True,
+                                 disable_notification=True)
     await status_message.delete()
 
 
@@ -254,7 +312,9 @@ async def get_content(url):
 
 
 async def transapi(text):
-    a = requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=id").json()
+    a = requests.get(
+        f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target=id"
+    ).json()
     return a["text"]
 
 
@@ -272,7 +332,7 @@ async def mdlapi(title):
             return await result.json()
 
 
-@Client.on_message(filters.command(["mdl"], COMMAND_HANDLER))
+@app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
 @capture_err
 async def mdlsearch(client, message):
     if " " in message.text:
@@ -282,21 +342,21 @@ async def mdlsearch(client, message):
         res = movies["results"]["dramas"]
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdls_{message.from_user.id}_{message.id}_{movie['slug']}",
-                )
-            ]
-            for movie in res
-        ]
-        await k.edit(f"Ditemukan {len(movies)} query dari <code>{title}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        btn = [[
+            InlineKeyboardButton(
+                text=f"{movie.get('title')} ({movie.get('year')})",
+                callback_data=
+                f"mdls_{message.from_user.id}_{message.id}_{movie['slug']}",
+            )
+        ] for movie in res]
+        await k.edit(
+            f"Ditemukan {len(movies)} query dari <code>{title}</code>",
+            reply_markup=InlineKeyboardMarkup(btn))
     else:
         await message.reply("Berikan aku nama drama yang ingin dicari. 🤷🏻‍♂️")
 
 
-@Client.on_callback_query(filters.regex("^mdls"))
+@app.on_callback_query(filters.regex("^mdls"))
 @capture_err
 async def mdl_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, slug = query.data.split("_")
@@ -328,7 +388,10 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
             result += f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
             result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
             result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
-            btn = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]])
+            btn = InlineKeyboardMarkup([[
+                InlineKeyboardButton("🎬 Open MyDramaList",
+                                     url=res["data"]["link"])
+            ]])
             await query.message.edit_text(result, reply_markup=btn)
         except Exception as e:
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
@@ -337,38 +400,45 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
 
 
 # IMDB Versi Indonesia v1
-@Client.on_message(filters.command(["imdb", "imdb@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["imdb", "imdb@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb1_search(client, message):
     if message.sender_chat:
-        return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
+        return await message.reply(
+            "Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa.."
+        )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
-        return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
+        return await message.reply(
+            f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi."
+        )
     if " " in message.text:
         r, title = message.text.split(None, 1)
         k = await message.reply("Sedang mencari di Database IMDB.. 😴")
         try:
             movies = await get_poster(title, bulk=True)
         except:
-            return await k.edit("Ooppss, gagal mendapatkan daftar judul di IMDb")
+            return await k.edit(
+                "Ooppss, gagal mendapatkan daftar judul di IMDb")
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdb1_{message.from_user.id}_{message.id}_{movie.movieID}",
-                )
-            ]
-            for movie in movies
-        ]
-        await k.edit(f"Ditemukan {len(movies)} query dari <code>{title}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        btn = [[
+            InlineKeyboardButton(
+                text=f"{movie.get('title')} ({movie.get('year')})",
+                callback_data=
+                f"imdb1_{message.from_user.id}_{message.id}_{movie.movieID}",
+            )
+        ] for movie in movies]
+        await k.edit(
+            f"Ditemukan {len(movies)} query dari <code>{title}</code>",
+            reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️")
+        await message.reply(
+            "Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️")
 
 
-@Client.on_callback_query(filters.regex("^imdb1"))
+@app.on_callback_query(filters.regex("^imdb1"))
 @capture_err
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split("_")
@@ -380,9 +450,13 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             imdb = await get_poster(query=movie, id=True)
             resp = await get_content(url)
             b = BeautifulSoup(resp, "lxml")
-            r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+            r_json = json.loads(
+                b.find("script", attrs={
+                    "type": "application/ld+json"
+                }).contents[0])
             res_str = ""
-            type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
+            type = f"<code>{r_json['@type']}</code>" if r_json.get(
+                "@type") else ""
             if r_json.get("name"):
                 res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
             if r_json.get("alternateName"):
@@ -392,7 +466,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             if imdb.get("kind") == "tv series":
                 res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
             if r_json.get("duration"):
-                durasi = r_json["duration"].replace("PT", "").replace("H", " Jam ").replace("M", " Menit")
+                durasi = r_json["duration"].replace("PT", "").replace(
+                    "H", " Jam ").replace("M", " Menit")
                 res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
@@ -426,7 +501,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
-                summary = await trl(r_json["description"].replace("  ", " "), targetlang="id")
+                summary = await trl(r_json["description"].replace("  ", " "),
+                                    targetlang="id")
                 res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
@@ -439,20 +515,43 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}"),
+                    InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                ]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}")
+                ]])
             if thumb := r_json.get("image"):
                 try:
-                    await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=thumb,
+                        quote=True,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=poster,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except Exception:
-                    await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
+                    await query.message.reply(res_str,
+                                              reply_markup=markup,
+                                              disable_web_page_preview=False,
+                                              reply_to_message_id=int(msg_id))
                 await query.message.delete()
             else:
-                await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
+                await query.message.edit(res_str,
+                                         reply_markup=markup,
+                                         disable_web_page_preview=False)
             await query.answer()
         except Exception:
             exc = traceback.format_exc()
@@ -462,35 +561,41 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
 
 
 # IMDB Versi Indonesia v2
-@Client.on_message(filters.command(["imdb2", "imdb2@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["imdb2", "imdb2@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb2_search(client, message):
     if message.sender_chat:
-        return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
+        return await message.reply(
+            "Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa.."
+        )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap and message.from_user.id != 617426792:
-        return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
+        return await message.reply(
+            f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi."
+        )
     if " " in message.text:
         r, title = message.text.split(None, 1)
         k = await message.reply("Sedang mencari di Database IMDB.. 😴")
         movies = await get_poster(title, bulk=True)
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdb2_{message.from_user.id}_{message.id}_{movie.movieID}",
-                )
-            ]
-            for movie in movies
-        ]
-        await k.edit(f"Ditemukan {len(movies)} query dari <code>{title}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        btn = [[
+            InlineKeyboardButton(
+                text=f"{movie.get('title')} ({movie.get('year')})",
+                callback_data=
+                f"imdb2_{message.from_user.id}_{message.id}_{movie.movieID}",
+            )
+        ] for movie in movies]
+        await k.edit(
+            f"Ditemukan {len(movies)} query dari <code>{title}</code>",
+            reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️")
+        await message.reply(
+            "Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️")
 
 
-@Client.on_callback_query(filters.regex("^imdb2"))
+@app.on_callback_query(filters.regex("^imdb2"))
 @capture_err
 async def imdb2_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split("_")
@@ -502,10 +607,15 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
             parse = await imdbapi(movie)
             b = BeautifulSoup(resp, "lxml")
-            r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+            r_json = json.loads(
+                b.find("script", attrs={
+                    "type": "application/ld+json"
+                }).contents[0])
             res_str = ""
             if r_json["@type"] == "Person":
-                return query.answer("⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..", show_alert=True)
+                return query.answer(
+                    "⚠ Tidak ada hasil ditemukan. Silahkan coba cari manual di Google..",
+                    show_alert=True)
             if parse.get("title"):
                 res_str += f"<b>📹 Judul:</b> <a href='https://www.imdb.com/title/tt{movie}/'>{parse['title']}</a>"
             if parse.get("title_type"):
@@ -524,7 +634,8 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Content Rating :</b> <code>{r_json['contentRating']}</code> \n"
             if parse.get("UserRating"):
-                user_rating = await transapi(parse["UserRating"]["description"])
+                user_rating = await transapi(parse["UserRating"]["description"]
+                                             )
                 res_str += f"<b>⭐ Rating :</b> <code>{user_rating}</code>\n"
             if parse.get("release_date"):
                 rilis = await transapi(parse["release_date"]["NAME"])
@@ -548,7 +659,9 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                 try:
                     director = parse["sum_mary"]["Directors"]
                     if director != "":
-                        director_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in director)
+                        director_ = "".join(
+                            f"<a href='{i['URL']}'>{i['NAME']}</a>, "
+                            for i in director)
                         director_ = director_[:-2]
                         res_str += f"<b>Sutradara:</b> {director_}\n"
                 except:
@@ -556,7 +669,9 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                 try:
                     writers = parse["sum_mary"]["Writers"]
                     if writers != "":
-                        writers_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in writers)
+                        writers_ = "".join(
+                            f"<a href='{i['URL']}'>{i['NAME']}</a>, "
+                            for i in writers)
                         writers_ = writers_[:-2]
                         res_str += f"<b>Penulis:</b> {writers_}\n"
                 except:
@@ -564,7 +679,9 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                 try:
                     stars = parse["sum_mary"]["Stars"]
                     if stars != "":
-                        stars_ = "".join(f"<a href='{i['URL']}'>{i['NAME']}</a>, " for i in stars)
+                        stars_ = "".join(
+                            f"<a href='{i['URL']}'>{i['NAME']}</a>, "
+                            for i in stars)
                         stars_ = stars_[:-2]
                         res_str += f"<b>Bintang:</b> {stars_}\n"
                 except:
@@ -572,9 +689,18 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
                 res_str += "\n"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}"),
+                    InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                ]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}")
+                ]])
             if imdb.get("plot"):
                 try:
                     summary = await transapi(imdb["plot"])
@@ -599,15 +725,29 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
             thumb = parse.get("poster")
             if thumb:
                 try:
-                    await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=thumb,
+                        quote=True,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=poster,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except Exception:
-                    await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
+                    await query.message.reply(res_str,
+                                              reply_markup=markup,
+                                              disable_web_page_preview=False,
+                                              reply_to_message_id=int(msg_id))
                 await query.message.delete()
             else:
-                await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
+                await query.message.edit(res_str,
+                                         reply_markup=markup,
+                                         disable_web_page_preview=False)
             await query.answer()
         except Exception:
             exc = traceback.format_exc()
@@ -617,7 +757,8 @@ async def imdb2_callback(bot: Client, query: CallbackQuery):
 
 
 # IMDB Versi English
-@Client.on_message(filters.command(["imdb_en", "imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["imdb_en", "imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def imdb_en_search(client, message):
     if " " in message.text:
@@ -626,21 +767,21 @@ async def imdb_en_search(client, message):
         movies = await get_poster(title, bulk=True)
         if not movies:
             return await k.edit("Sad, No Result.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"imdben_{message.from_user.id}_{message.id}_{movie.movieID}",
-                )
-            ]
-            for movie in movies
-        ]
-        await k.edit(f"Found {len(movies)} result from <code>{title}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        btn = [[
+            InlineKeyboardButton(
+                text=f"{movie.get('title')} ({movie.get('year')})",
+                callback_data=
+                f"imdben_{message.from_user.id}_{message.id}_{movie.movieID}",
+            )
+        ] for movie in movies]
+        await k.edit(f"Found {len(movies)} result from <code>{title}</code>",
+                     reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply("Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️")
+        await message.reply(
+            "Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️")
 
 
-@Client.on_callback_query(filters.regex("^imdben"))
+@app.on_callback_query(filters.regex("^imdben"))
 @capture_err
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, movie = query.data.split("_")
@@ -651,9 +792,13 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             imdb = await get_poster(query=movie, id=True)
             resp = await get_content(url)
             b = BeautifulSoup(resp, "lxml")
-            r_json = json.loads(b.find("script", attrs={"type": "application/ld+json"}).contents[0])
+            r_json = json.loads(
+                b.find("script", attrs={
+                    "type": "application/ld+json"
+                }).contents[0])
             res_str = ""
-            type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
+            type = f"<code>{r_json['@type']}</code>" if r_json.get(
+                "@type") else ""
             if r_json.get("name"):
                 res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
             if r_json.get("alternateName"):
@@ -663,7 +808,8 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             if imdb.get("kind") == "tv series":
                 res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} Season</code>\n"
             if r_json.get("duration"):
-                durasi = r_json["duration"].replace("PT", "").replace("H", " Hour ").replace("M", " Minute")
+                durasi = r_json["duration"].replace("PT", "").replace(
+                    "H", " Hour ").replace("M", " Minute")
                 res_str += f"<b>🕓 Duration:</b> <code>{durasi}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Category:</b> <code>{r_json['contentRating']}</code> \n"
@@ -710,20 +856,43 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"), InlineKeyboardButton("▶️ Trailer", url=trailer_url)]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}"),
+                    InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                ]])
             else:
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}")
+                ]])
             if thumb := r_json.get("image"):
                 try:
-                    await query.message.reply_photo(photo=thumb, quote=True, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=thumb,
+                        quote=True,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await query.message.reply_photo(photo=poster, caption=res_str, reply_to_message_id=int(msg_id), reply_markup=markup)
+                    await query.message.reply_photo(
+                        photo=poster,
+                        caption=res_str,
+                        reply_to_message_id=int(msg_id),
+                        reply_markup=markup)
                 except Exception:
-                    await query.message.reply(res_str, reply_markup=markup, disable_web_page_preview=False, reply_to_message_id=int(msg_id))
+                    await query.message.reply(res_str,
+                                              reply_markup=markup,
+                                              disable_web_page_preview=False,
+                                              reply_to_message_id=int(msg_id))
                 await query.message.delete()
             else:
-                await query.message.edit(res_str, reply_markup=markup, disable_web_page_preview=False)
+                await query.message.edit(res_str,
+                                         reply_markup=markup,
+                                         disable_web_page_preview=False)
             await query.answer()
         except Exception:
             exc = traceback.format_exc()
