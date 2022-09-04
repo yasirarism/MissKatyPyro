@@ -1,4 +1,4 @@
-import logging, asyncio, importlib
+import logging, asyncio, importlib, re
 from uvloop import install
 from bot import app, user
 from bot.plugins import ALL_MODULES
@@ -61,11 +61,39 @@ async def start_bot():
     print("[INFO]: Bye!")
 
 
+home_keyboard_pm = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton(text="Commands ❓", callback_data="bot_commands"),
+        InlineKeyboardButton(
+            text="Github 🛠",
+            url="https://github.com/yasirarism",
+        ),
+    ],
+    [
+        InlineKeyboardButton(
+            text="System Stats 🖥",
+            callback_data="stats_callback",
+        ),
+        InlineKeyboardButton(text="Support 👨",
+                             url="http://t.me/YasirPediaGroup"),
+    ],
+    [
+        InlineKeyboardButton(
+            text="Add Me To Your Group 🎉",
+            url=f"http://t.me/MissKatyRoBot?startgroup=new",
+        )
+    ],
+])
+
+home_text_pm = (f"Hey there! My name is MissKatyRoBot. I can manage your " +
+                "group with lots of useful features, feel free to " +
+                "add me to your group.")
+
 keyboard = InlineKeyboardMarkup([
     [
         InlineKeyboardButton(
             text="Help ❓",
-            url=f"t.me/MissKatyPyro?start=help",
+            url=f"t.me/MissKatyRoBot?start=bantuan",
         ),
         InlineKeyboardButton(
             text="Github 🛠",
@@ -92,7 +120,7 @@ async def help_command(_, message):
                     [
                         InlineKeyboardButton(
                             text="Click here",
-                            url=f"t.me/MissKatyRoBot?start=help_{name}",
+                            url=f"t.me/MissKatyRoBot?start=bantuan_{name}",
                         )
                     ],
                 ])
@@ -133,7 +161,8 @@ async def help_command(_, message):
 
 async def help_parser(name, keyboard=None):
     if not keyboard:
-        keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
+        keyboard = InlineKeyboardMarkup(
+            paginate_modules(0, HELPABLE, "bantuan"))
     return (
         """Hello {first_name}, My name is {bot_name}.
 I'm a group management bot with some useful features.
@@ -145,6 +174,80 @@ Also you can ask anything in Support Group.
         ),
         keyboard,
     )
+
+
+@app.on_callback_query(filters.regex(r"bantuan_(.*?)"))
+async def help_button(client, query):
+    home_match = re.match(r"bantuan_home\((.+?)\)", query.data)
+    mod_match = re.match(r"bantuan_module\((.+?)\)", query.data)
+    prev_match = re.match(r"bantuan_prev\((.+?)\)", query.data)
+    next_match = re.match(r"bantuan_next\((.+?)\)", query.data)
+    back_match = re.match(r"bantuan_back", query.data)
+    create_match = re.match(r"bantuan_create", query.data)
+    top_text = f"""
+Hello {query.from_user.first_name}, My name is {BOT_NAME}.
+I'm a group management bot with some usefule features.
+You can choose an option below, by clicking a button.
+Also you can ask anything in Support Group.
+General command are:
+ - /start: Start the bot
+ - /bantuan: Give this message
+ """
+    if mod_match:
+        module = (mod_match.group(1)).replace(" ", "_")
+        text = ("{} **{}**:\n".format("Here is the help for",
+                                      HELPABLE[module].__MODULE__) +
+                HELPABLE[module].__HELP__)
+
+        await query.message.edit(
+            text=text,
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("back",
+                                       callback_data="bantuan_back")]]),
+            disable_web_page_preview=True,
+        )
+    elif home_match:
+        await app.send_message(
+            query.from_user.id,
+            text=home_text_pm,
+            reply_markup=home_keyboard_pm,
+        )
+        await query.message.delete()
+    elif prev_match:
+        curr_page = int(prev_match.group(1))
+        await query.message.edit(
+            text=top_text,
+            reply_markup=InlineKeyboardMarkup(
+                paginate_modules(curr_page - 1, HELPABLE, "bantuan")),
+            disable_web_page_preview=True,
+        )
+
+    elif next_match:
+        next_page = int(next_match.group(1))
+        await query.message.edit(
+            text=top_text,
+            reply_markup=InlineKeyboardMarkup(
+                paginate_modules(next_page + 1, HELPABLE, "bantuan")),
+            disable_web_page_preview=True,
+        )
+
+    elif back_match:
+        await query.message.edit(
+            text=top_text,
+            reply_markup=InlineKeyboardMarkup(
+                paginate_modules(0, HELPABLE, "bantuan")),
+            disable_web_page_preview=True,
+        )
+
+    elif create_match:
+        text, keyboard = await help_parser(query)
+        await query.message.edit(
+            text=text,
+            reply_markup=keyboard,
+            disable_web_page_preview=True,
+        )
+
+    return await client.answer_callback_query(query.id)
 
 
 if __name__ == "__main__":
