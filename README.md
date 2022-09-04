@@ -16,6 +16,7 @@
 - [x] Google Search
 - [x] IMDB Translation
 - [x] Generator Screenshot
+- [x] Generator Screenshot
 
 ## Variables
 
