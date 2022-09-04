@@ -11,7 +11,7 @@ from info import COMMAND_HANDLER
 from bot.utils.decorator import capture_err
 from bot.utils.tools import rentry
 
-__MODULE__ = "Web Scraper"
+__MODULE__ = "WebScraper"
 __HELP__ = """
 /melongmovie - Send JSON Telegram
 /lk21 - Send JSON Telegram

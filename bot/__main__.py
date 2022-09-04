@@ -1,6 +1,6 @@
 import logging, asyncio, importlib, re
 from uvloop import install
-from bot import app, user
+from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.utils import paginate_modules
 from utils import temp
@@ -10,8 +10,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from contextlib import closing, suppress
 
 loop = asyncio.get_event_loop()
-
-HELPABLE = {}
 
 
 # Run Bot
