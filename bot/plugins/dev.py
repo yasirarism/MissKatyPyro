@@ -13,7 +13,7 @@ from pyrogram import filters, enums
 from info import COMMAND_HANDLER
 from bot import app
 
-__MODULE__ = "Dev COmmand"
+__MODULE__ = "Dev Command"
 __HELP__ = """HHHHH"""
 
 

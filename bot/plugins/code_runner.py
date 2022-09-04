@@ -4,7 +4,51 @@ from info import COMMAND_HANDLER
 from bot import app
 
 __MODULE__ = "Code Runner"
-__HELP__ = """HHHHH"""
+__HELP__ = """
+Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung. Untuk command sementara hanya support dengan tanda "!" seperti contoh dibawah.
+
+Daftar Bahasa Pemrograman Yang Didukung:
+~> assembly
+~> ats
+~> bash
+~> c
+~> clojure
+~> cobol
+~> coffeescript
+~> cpp
+~> crystal
+~> csharp
+~> d
+~> elixir
+~> elm
+~> erlang
+~> fsharp
+~> go
+~> groovy
+~> haskell
+~> idris
+~> java
+~> javascript
+~> julia
+~> kotlin
+~> lua
+~> mercury
+~> nim
+~> nix
+~> ocaml
+~> perl
+~> php
+~> python
+~> raku
+~> ruby
+~> rust
+~> scala
+~> swift
+~> typescript
+
+Cara penggunaan:
+~> !python print("Hai aku MissKatyRoBot")
+"""
 
 
 async def listcode():

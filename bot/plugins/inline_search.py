@@ -9,7 +9,9 @@ from gpytranslate import Translator
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 
 __MODULE__ = "Inline Search"
-__HELP__ = """HHHHH"""
+__HELP__ = """
+All inline search
+"""
 
 
 @app.on_inline_query(
