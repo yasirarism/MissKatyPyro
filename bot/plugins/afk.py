@@ -14,7 +14,7 @@ I tell users that you are away if you are, so they dont need to be hanging for y
 
 # Handle set AFK Command
 @capture_err
-@app.on_message(filters.command(["afk"], COMMAND_HANDLER))
+@app.on_message(filters.command(["afk"], COMMAND_HANDLER) & filters.regex("^brb$"))
 async def active_afk(_, message):
     if message.sender_chat:
         return

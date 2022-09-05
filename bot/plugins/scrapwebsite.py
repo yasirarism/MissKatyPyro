@@ -14,12 +14,12 @@ from bot.utils.tools import rentry
 __MODULE__ = "WebScraper"
 __HELP__ = """
 /melongmovie - Send JSON Telegram
-/lk21 - Send JSON Telegram
+/lk21 - Scrape website data from layarkaca21
 """
 
 
 @app.on_message(
-    filters.command(["nodrakor", "nodrakor@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["nodrakor"], COMMAND_HANDLER))
 @capture_err
 async def nodrakor(_, message):
     try:

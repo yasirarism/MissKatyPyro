@@ -235,7 +235,7 @@ async def chat_watcher_func(_, message):
         try:
             pesan = await message.reply_text(msg,
                                              disable_web_page_preview=True)
-            await asyncio.sleep(15)
-            pesan.delete()
+            await asyncio.sleep(20)
+            await pesan.delete()
         except:
             return
