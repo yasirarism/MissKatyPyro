@@ -1,9 +1,10 @@
-import logging, asyncio, importlib, re
+import asyncio, importlib, re
 from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.utils import paginate_modules
 from bot.utils.tools import bot_sys_stats
 from utils import temp
+from logging import info as log_info
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -36,15 +37,15 @@ async def start_bot():
     await user.start()
     me = await app.get_me()
     ubot = await user.get_me()
-    print("+===============================================================+")
-    print("|                        MissKatyPyro                           |")
-    print("+===============+===============+===============+===============+")
-    print(bot_modules)
-    print("+===============+===============+===============+===============+")
-    print(f"[INFO]: BOT STARTED AS @{me.username}!")
+    log_info("+===============================================================+")
+    log_info("|                        MissKatyPyro                           |")
+    log_info("+===============+===============+===============+===============+")
+    log_info(bot_modules)
+    log_info("+===============+===============+===============+===============+")
+    log_info(f"[INFO]: BOT STARTED AS @{me.username}!")
 
     try:
-        print("[INFO]: SENDING ONLINE STATUS")
+        prlog_infoint("[INFO]: SENDING ONLINE STATUS")
         await app.send_message(
             617426792,
             f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
