@@ -43,13 +43,13 @@ async def copy(client, message):
 
 
 @app.on_message(
-    filters.command(["forward", "forward@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["forward"], COMMAND_HANDLER))
 @capture_err
 async def forward(client, message):
     if len(message.command) == 1:
         if message.reply_to_message:
             try:
-                await message.reply_to_message.forward(message.from_user.id, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                await message.reply_to_message.forward(message.from_user.id)
                 return await message.reply_text("Pesan berhasil dikirim..")
             except UserIsBlocked:
                 return await message.reply(
@@ -68,7 +68,7 @@ async def forward(client, message):
                 idtujuan = message.command[1]
                 userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
                 if userstat.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or message.from_user.id == 2024984460:
-                    await message.reply_to_message.forward(idtujuan, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                    await message.reply_to_message.forward(idtujuan)
                     return await message.reply_text("Pesan berhasil dikirim..")
                 else:
                     return await message.reply_text("🦉🦉🦉")
