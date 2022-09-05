@@ -11,7 +11,7 @@ async def copy(client, message):
     if len(message.command) == 1:
         if message.reply_to_message:
             try:
-                await message.reply_to_message.copy(message.from_user.id, entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                await message.reply_to_message.copy(message.from_user.id, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                 return await message.reply_text("Pesan berhasil dikirim..")
             except UserIsBlocked:
                 return await message.reply(
@@ -30,7 +30,7 @@ async def copy(client, message):
                 idtujuan = message.command[1]
                 userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
                 if userstat.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
-                    await message.reply_to_message.copy(idtujuan, entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                    await message.reply_to_message.copy(idtujuan, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                     return await message.reply_text("Pesan berhasil dikirim..")
                 else:
                     return await message.reply_text("😝😝😝")
@@ -47,7 +47,7 @@ async def forward(client, message):
     if len(message.command) == 1:
         if message.reply_to_message:
             try:
-                await message.reply_to_message.forward(message.from_user.id, entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                await message.reply_to_message.forward(message.from_user.id, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                 return await message.reply_text("Pesan berhasil dikirim..")
             except UserIsBlocked:
                 return await message.reply(
@@ -66,7 +66,7 @@ async def forward(client, message):
                 idtujuan = message.command[1]
                 userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
                 if userstat.status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]:
-                    await message.reply_to_message.forward(idtujuan, entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+                    await message.reply_to_message.forward(idtujuan, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                     return await message.reply_text("Pesan berhasil dikirim..")
                 else:
                     return await message.reply_text("😝😝😝")
