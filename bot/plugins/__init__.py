@@ -1,6 +1,7 @@
 import glob
 import importlib
 import sys
+from logging import info as log_info
 from os.path import basename, dirname, isfile
 
 from bot import MOD_LOAD, MOD_NOLOAD
@@ -32,7 +33,7 @@ def __list_all_modules():
     return all_modules
 
 
-print("[INFO]: IMPORTING PLUGINS")
+log_info("[INFO]: IMPORTING PLUGINS")
 importlib.import_module("bot.plugins.__main__")
 ALL_MODULES = sorted(__list_all_modules())
 __all__ = ALL_MODULES + ["ALL_MODULES"]
