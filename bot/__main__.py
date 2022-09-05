@@ -1,5 +1,4 @@
 import logging, asyncio, importlib, re
-from uvloop import install
 from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.utils import paginate_modules
@@ -8,7 +7,6 @@ from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from contextlib import closing, suppress
 
 loop = asyncio.get_event_loop()
 
@@ -296,8 +294,8 @@ General command are:
 
 
 if __name__ == "__main__":
-    install()
-    with closing(loop):
-        with suppress(asyncio.exceptions.CancelledError):
-            loop.run_until_complete(start_bot())
-        loop.run_until_complete(asyncio.sleep(3.0))
+    try:
+        loop.run_until_complete(start_bot())
+    except KeyboardInterrupt:
+        logging.info(
+            '----------------------- Service Stopped -----------------------')

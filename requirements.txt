@@ -24,4 +24,3 @@ hachoir
 Pillow
 httpx[http2]
 umongo
-uvloop
