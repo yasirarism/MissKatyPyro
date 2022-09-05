@@ -45,7 +45,7 @@ async def start_bot():
     log_info(f"[INFO]: BOT STARTED AS @{me.username}!")
 
     try:
-        prlog_infoint("[INFO]: SENDING ONLINE STATUS")
+        log_info("[INFO]: SENDING ONLINE STATUS")
         await app.send_message(
             617426792,
             f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}."
