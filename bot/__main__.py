@@ -83,8 +83,8 @@ home_keyboard_pm = InlineKeyboardMarkup([
     ],
 ])
 
-home_text_pm = (f"Hey there! My name is MissKatyRoBot. I can manage your " +
-                "group with lots of useful features, feel free to " +
+home_text_pm = (f"Hey there! My name is MissKatyRoBot. I have many " +
+                "useful features for you, feel free to " +
                 "add me to your group.")
 
 keyboard = InlineKeyboardMarkup([
@@ -103,7 +103,7 @@ keyboard = InlineKeyboardMarkup([
             text="System Stats 💻",
             callback_data="stats_callback",
         ),
-        InlineKeyboardButton(text="Support 👨", url="t.me/YasirPediaGroup"),
+        InlineKeyboardButton(text="Support 👨", url="t.me/YasirPediaChannel"),
     ],
 ])
 
@@ -113,7 +113,7 @@ async def start(_, message):
     if message.chat.type.value != "private":
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption="Pm Me For More Details.",
+            caption=f"Hi {message.from_user.mention}, Pm Me For More Info About Me.",
             reply_markup=keyboard,
         )
     if len(message.text.split()) > 1:
@@ -210,9 +210,8 @@ async def help_parser(name, keyboard=None):
         keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
-I'm a group management bot with some useful features.
+I'm a bot with some useful features.
 You can choose an option below, by clicking a button.
-Also you can ask anything in Support Group.
 """.format(
             first_name=name,
             bot_name="MissKaty",
@@ -231,9 +230,9 @@ async def help_button(client, query):
     create_match = re.match(r"help_create", query.data)
     top_text = f"""
 Hello {query.from_user.first_name}, My name is MissKaty.
-I'm a group management bot with some usefule features.
-You can choose an option below, by clicking a button.
-Also you can ask anything in Support Group.
+I'm a bot with some usefule features.
+You can choose an option below, by clicking a button below.
+
 General command are:
  - /start: Start the bot
  - /help: Give this message

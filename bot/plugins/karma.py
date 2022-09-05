@@ -16,6 +16,14 @@ from database.karma_db import (
     update_karma,
 )
 
+__MODULE__ = "Karma"
+__HELP__ = """
+Give reputation to other people in group.
+
+/karma_toggle [enable/disable] - Enable/Disable Karma.
+/karma - View all karma from member group.
+"""
+
 karma_positive_group = 3
 karma_negative_group = 4
 

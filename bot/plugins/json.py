@@ -3,9 +3,6 @@ from pyrogram import filters
 from bot import app
 from info import COMMAND_HANDLER
 
-__MODULE__ = "JSON"
-__HELP__ = "/json - Send JSON Telegram"
-
 
 @app.on_message(filters.command(["json"], COMMAND_HANDLER))
 async def jsonify(_, message):

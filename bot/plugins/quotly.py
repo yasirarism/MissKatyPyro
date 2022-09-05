@@ -5,6 +5,11 @@ from bot import app
 from bot.utils.http import http
 from io import BytesIO
 
+__MODULE__ = "Fun"
+__HELP__ = """
+/q [int] - Generate quotly from message
+/memify [text] - Reply to sticker to give text on sticker.
+"""
 
 class QuotlyException(Exception):
     pass

@@ -158,36 +158,6 @@ logger = logging.getLogger(__name__)
 #                                   parse_mode=enums.ParseMode.HTML)
 #         return
 
-# @app.on_message(filters.command("channel") & filters.user(ADMINS))
-# async def channel_info(bot, message):
-#     """Send basic information of channel"""
-#     if isinstance(CHANNELS, (int, str)):
-#         channels = [CHANNELS]
-#     elif isinstance(CHANNELS, list):
-#         channels = CHANNELS
-#     else:
-#         raise ValueError("Unexpected type of CHANNELS")
-
-#     text = "📑 **Indexed channels/groups**\n"
-#     for channel in channels:
-#         chat = await bot.get_chat(channel)
-#         if chat.username:
-#             text += "\n@" + chat.username
-#         else:
-#             text += "\n" + chat.title or chat.first_name
-
-#     text += f"\n\n**Total:** {len(CHANNELS)}"
-
-#     if len(text) < 4096:
-#         await message.reply(text)
-#     else:
-#         file = "Indexed channels.txt"
-#         with open(file, "w") as f:
-#             f.write(text)
-#         await message.reply_document(file)
-#         os.remove(file)
-
-
 @app.on_message(filters.command(["logs"]) & filters.user(ADMINS))
 async def log_file(bot, message):
     """Send log file"""

@@ -6,7 +6,7 @@ from bot.utils.human_read import get_readable_time
 
 async def bot_sys_stats():
     bot_uptime = int(time.time() - botStartTime)
-    cpu = psutil.cpu_percent()
+    cpu = psutil.cpu_percent(interval=0.5)
     mem = psutil.virtual_memory().percent
     disk = psutil.disk_usage("/").percent
     process = psutil.Process(os.getpid())
@@ -41,7 +41,7 @@ def rentry(teks):
 
     payload = {
         'csrfmiddlewaretoken': kuki['csrftoken'],
-        'text': f'Paste Result by @MissKatyRoBot\n\n{teks}'
+        'text': teks
     }
     res = requests.post('https://rentry.co/api/new',
                         payload,

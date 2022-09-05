@@ -1,13 +1,15 @@
 from pyrogram import Client, filters, enums
+from pyrogram.errors import MessageTooLong
 import aiohttp
+from bot.utils.tools import rentry
 from info import COMMAND_HANDLER
 from bot import app
 
 __MODULE__ = "CodeTester"
 __HELP__ = """
-Fitur ini kamu bisa menjalankan beberapa bahasa pemrograman melalui bot ini. Berikut ini daftar bahasa yang didukung. Untuk command sementara hanya support dengan tanda "!" seperti contoh dibawah.
+This feature allows you to run multiple programming languages through this bot via the Glot.io api.  The following is a list of supported languages, for temporary commands only support with a "!"  like the example below.
 
-Daftar Bahasa Pemrograman Yang Didukung:
+List of Supported Programming Languages:
 ~> assembly
 ~> ats
 ~> bash
@@ -46,8 +48,8 @@ Daftar Bahasa Pemrograman Yang Didukung:
 ~> swift
 ~> typescript
 
-Cara penggunaan:
-~> !python print("Hai aku MissKatyRoBot")
+**Example:**
+~> `!python print("Hai aku MissKatyRoBot")`
 """
 
 
@@ -59,7 +61,7 @@ async def listcode():
 
 async def glot(lang, langcode, code):
     async with aiohttp.ClientSession() as session:
-        data = {"files": [{"name": f"Yasir.{langcode}", "content": code}]}
+        data = {"files": [{"name": f"misskaty.{langcode}", "content": code}]}
         headers = {
             "content-type": "application/json",
             "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
@@ -71,12 +73,12 @@ async def glot(lang, langcode, code):
 
 
 @app.on_message(
-    filters.command(["codelist", "codelist@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["codelist"], COMMAND_HANDLER))
 async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
     return await message.reply(
-        f"<b>Daftar Bahasa Pemrograman Yang Didukung:</b>\n{list_}")
+        f"<b>List of Supported Programming Languages:</b>\n{list_}")
 
 
 @app.on_message(filters.command(["assembly"], "!"))
@@ -84,13 +86,16 @@ async def list_lang(client, message):
 async def assembly(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "asm",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "asm",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -100,13 +105,16 @@ async def assembly(client, message):
 async def ats(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "dats",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "dats",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -116,13 +124,16 @@ async def ats(client, message):
 async def bash(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "sh",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "sh",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -132,13 +143,16 @@ async def bash(client, message):
 async def c(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "c",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "c",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -148,13 +162,16 @@ async def c(client, message):
 async def clojure(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "clj",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "clj",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -164,13 +181,16 @@ async def clojure(client, message):
 async def cobol(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "cob",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "cob",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -180,13 +200,16 @@ async def cobol(client, message):
 async def coffeescript(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "coffee",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "coffee",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -196,13 +219,16 @@ async def coffeescript(client, message):
 async def cpp(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "cpp",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "cpp",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -212,13 +238,16 @@ async def cpp(client, message):
 async def crystal(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "cr",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "cr",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -228,13 +257,16 @@ async def crystal(client, message):
 async def csharp(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "cs",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "cs",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -244,13 +276,16 @@ async def csharp(client, message):
 async def d(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "d",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "d",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -260,13 +295,16 @@ async def d(client, message):
 async def elixir(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "ex",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "ex",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -276,13 +314,16 @@ async def elixir(client, message):
 async def elm(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "elm",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "elm",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -292,13 +333,16 @@ async def elm(client, message):
 async def erlang(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "erl",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "erl",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -308,13 +352,16 @@ async def erlang(client, message):
 async def fsharp(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "fs",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "fs",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -324,13 +371,16 @@ async def fsharp(client, message):
 async def go(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "go",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "go",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -340,13 +390,16 @@ async def go(client, message):
 async def groovy(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "groovy",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "groovy",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -356,13 +409,16 @@ async def groovy(client, message):
 async def haskell(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "hs",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "hs",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -372,13 +428,16 @@ async def haskell(client, message):
 async def idris(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "idr",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "idr",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -388,13 +447,16 @@ async def idris(client, message):
 async def java(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "java",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "java",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -404,13 +466,16 @@ async def java(client, message):
 async def javascript(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "js",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "js",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -420,13 +485,16 @@ async def javascript(client, message):
 async def julia(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "jl",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "jl",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -436,13 +504,16 @@ async def julia(client, message):
 async def kotlin(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "kt",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "kt",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -452,13 +523,16 @@ async def kotlin(client, message):
 async def lua(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "lua",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "lua",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -468,13 +542,16 @@ async def lua(client, message):
 async def mercury(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "m",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "m",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -484,13 +561,16 @@ async def mercury(client, message):
 async def nim(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "nim",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "nim",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -500,13 +580,16 @@ async def nim(client, message):
 async def nix(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "nix",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "nix",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -516,13 +599,16 @@ async def nix(client, message):
 async def ocaml(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "ml",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "ml",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -532,13 +618,16 @@ async def ocaml(client, message):
 async def perl(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "pl",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "pl",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -548,13 +637,16 @@ async def perl(client, message):
 async def php(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "php",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "php",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -564,13 +656,16 @@ async def php(client, message):
 async def python(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "py",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "py",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -580,13 +675,16 @@ async def python(client, message):
 async def raku(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "raku",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "raku",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -596,13 +694,16 @@ async def raku(client, message):
 async def ruby(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "rb",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "rb",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -612,13 +713,16 @@ async def ruby(client, message):
 async def rust(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "rs",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "rs",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -628,13 +732,16 @@ async def rust(client, message):
 async def scala(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "scala",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "scala",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -644,13 +751,16 @@ async def scala(client, message):
 async def swift(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "swift",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "swift",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
 
@@ -660,12 +770,15 @@ async def swift(client, message):
 async def typescript(client, message):
     if len(message.command) < 2:
         return await message.reply(
-            "Silahkan masukkan kode yang ingin dijalankan.")
-    try:
-        res = await glot(message.command[0], "ts",
+            "Please enter the code you want to run.")
+    res = await glot(message.command[0], "ts",
                          message.text.split(None, 1)[1])
-        hasil = res["stdout"] if res["stdout"] else res["stderr"]
-        hasil = f"Hasil :\n{hasil}"
+    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = f"Result :\n{hasil}"
+    try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
+    except MessageTooLong:
+        post = rentry(hasil)
+        return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)

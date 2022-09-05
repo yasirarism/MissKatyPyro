@@ -8,6 +8,11 @@ from pyrogram.errors import FloodWait
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired, UserAdminInvalid
 
+__MODULE__ = "Inkick"
+__HELP__ = """"
+/instatus - View member status in group.
+/dkick - Remove deleted account from group.
+"""
 
 @app.on_message(filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER))
 async def inkick(_, message):

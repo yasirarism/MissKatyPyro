@@ -10,11 +10,11 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQue
 
 __MODULE__ = "InlineFeature"
 __HELP__ = """
-All inline search
-imdb
-pypi
-git
-google
+To use this feature, just type bot username with following args below.
+~ imdb [query] - Search movie details in IMDb.com.
+~ pypi [query] - Search package from Pypi.
+~ git [query] - Search in Git.
+~ google [query] - Search in Google.
 """
 
 

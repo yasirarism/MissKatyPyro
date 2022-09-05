@@ -15,7 +15,7 @@ from bot.utils.pyro_progress import (
 )
 
 
-@app.on_message(filters.command(["download", "download@MissKatyRoBot"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
+@app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err
 async def download(client, message):
     pesan = await message.reply_text("Processing...", quote=True)

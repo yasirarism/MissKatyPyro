@@ -22,6 +22,16 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+__MODULE__ = "Misc"
+__HELP__ = """
+/sof [query] - Search your problem in StackOverflow.
+/google [query] - Search using Google Search.
+(/tr, /trans, /translate) [lang code] - Translate text using Google Translate.
+/tts - Convert Text to Voice.
+/imdb [query] - Find Movie Details From IMDB.com in Indonesian Language.
+/imdb_en [query] - Find Movie Details From IMDB.com in English Language.
+/tiktokdl [link] - Download TikTok Video
+"""
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
 @capture_err
@@ -37,8 +47,7 @@ async def stackoverflow(client, message):
     await message.reply(hasil)
 
 
-@app.on_message(
-    filters.command(["google", "google@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
 async def gsearch(client, message):
     if len(message.command) == 1:
@@ -87,11 +96,7 @@ async def gsearch(client, message):
         disable_web_page_preview=True)
 
 
-@app.on_message(
-    filters.command([
-        "tr", "trans", "translate", "tr@MissKatyRoBot", "trans@MissKatyRoBot",
-        "translate@MissKatyRoBot"
-    ], COMMAND_HANDLER))
+@app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
     trl = Translator()
@@ -122,7 +127,7 @@ async def translate(client, message):
     )
 
 
-@app.on_message(filters.command(["tts", "tts@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
 async def tts(_, message):
     if message.reply_to_message and (message.reply_to_message.text

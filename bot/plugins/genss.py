@@ -17,8 +17,12 @@ from info import COMMAND_HANDLER
 from bot.utils.pyro_progress import (
     progress_for_pyrogram, )
 
-__MODULE__ = "GenSS"
-__HELP__ = "/genss - Generate Screenshot From Video"
+__MODULE__ = "MediaTool"
+__HELP__ = """"
+/genss [reply to video] - Generate Screenshot From Video.
+/genss_link [link] - Generate Screenshot Video From URL. (Unstable)
+/mediainfo [link/reply to TG Video] - Get Mediainfo From File.
+"""
 
 
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))

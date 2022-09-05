@@ -8,7 +8,6 @@ from time import perf_counter
 from bot.utils.tools import get_random_string
 from os import path
 
-
 def get_subname(url):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]

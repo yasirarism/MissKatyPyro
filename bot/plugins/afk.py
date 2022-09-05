@@ -8,13 +8,13 @@ from bot.utils.human_read import get_readable_time2
 from bot.utils.decorator import capture_err
 
 __MODULE__ = "AFK"
-__HELP__ = """/afk - Tandai dirimu sedang AFK
-I tell users that you are away if you are, so they dont need to be hanging for your reply. Just type"""
+__HELP__ = """/afk - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.
+Just type something in group to remove AFK Status."""
 
 
 # Handle set AFK Command
 @capture_err
-@app.on_message(filters.command(["afk"], COMMAND_HANDLER) | filters.regex("^brb$"))
+@app.on_message(filters.command(["afk"], COMMAND_HANDLER))
 async def active_afk(_, message):
     if message.sender_chat:
         return
@@ -30,12 +30,12 @@ async def active_afk(_, message):
             seenago = get_readable_time2((int(time.time() - timeafk)))
             if afktype == "text":
                 return await message.reply_text(
-                    f"**{message.from_user.first_name}** telah kembali online dan sudah AFK selama {seenago}",
+                    f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     disable_web_page_preview=True,
                 )
             if afktype == "text_reason":
                 return await message.reply_text(
-                    f"**{message.from_user.first_name}** telah kembali online dan sudah AFK selama {seenago}\n\nReason: `{reasonafk}`",
+                    f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     disable_web_page_preview=True,
                 )
             if afktype == "animation":
@@ -49,7 +49,7 @@ async def active_afk(_, message):
                     return await message.reply_animation(
                         data,
                         caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}",
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
@@ -62,11 +62,11 @@ async def active_afk(_, message):
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
                         caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nALasan: `{reasonafk}`",
+                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
         except Exception:
             return await message.reply_text(
-                f"**{message.from_user.first_name}** kembali online.",
+                f"**{message.from_user.first_name}** is back online.",
                 disable_web_page_preview=True,
             )
     if len(message.command) == 1 and not message.reply_to_message:
@@ -165,7 +165,11 @@ async def active_afk(_, message):
 
     await add_afk(user_id, details)
     pesan = await message.reply_text(
-        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] sekarang AFK! Pesan ini akan terhapus dalam waktu 10 detik."
+        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s."
     )
     await asyncio.sleep(10)
     await pesan.delete()
+    try:
+        await message.delete()
+    except:
+        pass

@@ -8,6 +8,11 @@ from bot import app
 from info import COMMAND_HANDLER
 from bot.utils.tools import rentry
 
+__MODULE__ = "Paste"
+__HELP__ = """
+/paste [Text/Reply To Message] - Post text to Rentry using markdown style.
+/temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
+"""
 
 # Size Checker for Limit
 def humanbytes(size: int):

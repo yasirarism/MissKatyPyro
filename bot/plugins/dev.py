@@ -14,7 +14,15 @@ from info import COMMAND_HANDLER
 from bot import app
 
 __MODULE__ = "DevCommand"
-__HELP__ = "This only for owner bot so you cannot use it."
+__HELP__ = """
+**For Owner Bot Only.**
+/run [args] - Run eval CMD
+/shell [args] - Run Exec/Terminal CMD
+/download [link/reply_to_telegram_file] - Download file from Telegram
+
+**For Public Use**
+/json - Send structure message Telegram using Pyrogram Style.
+"""
 
 
 @app.on_message(

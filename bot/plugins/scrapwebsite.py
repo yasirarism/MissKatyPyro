@@ -13,11 +13,14 @@ from bot.utils.tools import rentry
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
-/melongmovie - Send JSON Telegram
-/lk21 - Scrape website data from layarkaca21
+/melongmovie - Scrape website data from MelongMovie Web. If without query will give latest movie list.
+/lk21 [query <opsional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
+/savefilm21 [query <opsional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
+/movieku [query <opsional>] - Scrape website data from Movieku.cc
+/gomov [query <opsional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
-
+# Broken
 @app.on_message(
     filters.command(["nodrakor"], COMMAND_HANDLER))
 @capture_err
@@ -54,6 +57,7 @@ async def nodrakor(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
+# Broken
 @app.on_message(
     filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
@@ -90,7 +94,7 @@ async def ngefilm21(_, message):
 
 
 @app.on_message(
-    filters.command(["movieku", "movieku@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["movieku"], COMMAND_HANDLER))
 @capture_err
 async def movikucc(_, message):
     try:
