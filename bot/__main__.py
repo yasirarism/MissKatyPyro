@@ -73,7 +73,7 @@ home_keyboard_pm = InlineKeyboardMarkup([
             callback_data="stats_callback",
         ),
         InlineKeyboardButton(text="Support 👨",
-                             url="http://t.me/YasirPediaGroup"),
+                             url="https://t.me/YasirPedia_Discuss"),
     ],
     [
         InlineKeyboardButton(
@@ -103,7 +103,7 @@ keyboard = InlineKeyboardMarkup([
             text="System Stats 💻",
             callback_data="stats_callback",
         ),
-        InlineKeyboardButton(text="Support 👨", url="t.me/YasirPediaChannel"),
+        InlineKeyboardButton(text="Support 👨", url="https://t.me/YasirPedia_Discuss"),
     ],
 ])
 
