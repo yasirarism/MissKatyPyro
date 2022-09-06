@@ -1,4 +1,4 @@
-import asyncio, importlib, re
+import asyncio, importlib, re, logging
 from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.helper import paginate_modules
@@ -37,11 +37,15 @@ async def start_bot():
     await user.start()
     me = await app.get_me()
     ubot = await user.get_me()
-    log_info("+===============================================================+")
-    log_info("|                        MissKatyPyro                           |")
-    log_info("+===============+===============+===============+===============+")
+    log_info(
+        "+===============================================================+")
+    log_info(
+        "|                        MissKatyPyro                           |")
+    log_info(
+        "+===============+===============+===============+===============+")
     log_info(bot_modules)
-    log_info("+===============+===============+===============+===============+")
+    log_info(
+        "+===============+===============+===============+===============+")
     log_info(f"[INFO]: BOT STARTED AS @{me.username}!")
 
     try:
@@ -103,7 +107,8 @@ keyboard = InlineKeyboardMarkup([
             text="System Stats 💻",
             callback_data="stats_callback",
         ),
-        InlineKeyboardButton(text="Support 👨", url="https://t.me/YasirPedia_Discuss"),
+        InlineKeyboardButton(text="Support 👨",
+                             url="https://t.me/YasirPedia_Discuss"),
     ],
 ])
 
@@ -111,9 +116,10 @@ keyboard = InlineKeyboardMarkup([
 @app.on_message(filters.command("start"))
 async def start(_, message):
     if message.chat.type.value != "private":
+        nama = message.from_user.mention if message.from_user else message.sender_chat.title
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption=f"Hi {message.from_user.mention}, Pm Me For More Info About Me.",
+            caption=f"Hi {nama}, Pm Me For More Info About Me.",
             reply_markup=keyboard,
         )
     if len(message.text.split()) > 1:
@@ -155,6 +161,7 @@ async def commands_callbacc(_, CallbackQuery):
 async def stats_callbacc(_, CallbackQuery):
     text = await bot_sys_stats()
     await app.answer_callback_query(CallbackQuery.id, text, show_alert=True)
+
 
 @app.on_message(filters.command("help"))
 async def help_command(_, message):

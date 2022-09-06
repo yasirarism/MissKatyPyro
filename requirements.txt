@@ -14,6 +14,7 @@ gpytranslate
 pyromod
 apscheduler
 pytz
+pykeyboard
 pySmartDL
 psutil
 html-telegraph-poster
