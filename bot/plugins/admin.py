@@ -14,7 +14,7 @@ from database.warn_db import get_warn, remove_warns, add_warn
 
 __MODULE__ = "Admin"
 __HELP__ = """
-/ban - Ban A User
+/ban - Ban A User From A Group
 /dban - Delete the replied message banning its sender
 /tban - Ban A User For Specific Time
 /unban - Unban A User
