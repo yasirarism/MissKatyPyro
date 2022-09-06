@@ -6,10 +6,10 @@ import logging
 from bot import app
 from pySmartDL import SmartDL
 from datetime import datetime
-from bot.utils.decorator import capture_err
+from bot.core.decorator.errors import capture_err
 from info import COMMAND_HANDLER
 from pyrogram import filters
-from bot.utils.pyro_progress import (
+from bot.helper.pyro_progress import (
     progress_for_pyrogram,
     humanbytes,
 )

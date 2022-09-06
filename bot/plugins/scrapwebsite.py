@@ -8,8 +8,8 @@ from bot import app
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from info import COMMAND_HANDLER
-from bot.utils.decorator import capture_err
-from bot.utils.tools import rentry
+from bot.core.decorator.errors import capture_err
+from bot.helper.tools import rentry
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -20,9 +20,9 @@ __HELP__ = """
 /gomov [query <opsional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
+
 # Broken
-@app.on_message(
-    filters.command(["nodrakor"], COMMAND_HANDLER))
+@app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
 @capture_err
 async def nodrakor(_, message):
     try:
@@ -93,8 +93,7 @@ async def ngefilm21(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(
-    filters.command(["movieku"], COMMAND_HANDLER))
+@app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
 @capture_err
 async def movikucc(_, message):
     try:

@@ -4,7 +4,7 @@ import shutil, psutil
 
 from Script import script
 from bot import botStartTime, app
-from bot.utils.human_read import get_readable_time, get_readable_file_size
+from bot.helper.human_read import get_readable_time, get_readable_file_size
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, enums
 from utils import get_size, temp

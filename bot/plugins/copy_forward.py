@@ -2,7 +2,7 @@ from pyrogram import filters, enums
 from pyrogram.errors import UserIsBlocked, UserNotParticipant
 from info import COMMAND_HANDLER
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from bot.utils.decorator import capture_err
+from bot.core.decorator.errors import capture_err
 from bot import app
 
 

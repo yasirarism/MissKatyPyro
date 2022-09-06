@@ -4,8 +4,8 @@ from bot import app
 from pyrogram import filters, Client, enums
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from bot.utils.decorator import capture_err
-from bot.utils.time_gap import check_time_gap
+from bot.core.decorator.errors import capture_err
+from bot.helper.time_gap import check_time_gap
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}

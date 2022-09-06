@@ -4,7 +4,7 @@ from asyncio import Lock
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot import app, botStartTime
-from bot.utils.human_read import get_readable_time
+from bot.helper.human_read import get_readable_time
 from subprocess import run as srun
 
 

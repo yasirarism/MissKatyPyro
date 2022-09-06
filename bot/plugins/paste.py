@@ -1,12 +1,12 @@
 from os import remove
 from re import compile as compiles
-from bot.utils.http import http
+from bot.helper.http import http
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from json import loads as json_loads
 from bot import app
 from info import COMMAND_HANDLER
-from bot.utils.tools import rentry
+from bot.helper.tools import rentry
 
 __MODULE__ = "Paste"
 __HELP__ = """

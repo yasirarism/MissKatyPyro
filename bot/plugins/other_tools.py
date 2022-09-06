@@ -10,11 +10,11 @@ from gtts import gTTS
 from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty
 from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, get_poster
-from bot.utils.time_gap import check_time_gap
+from bot.helper.time_gap import check_time_gap
 import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from bot.utils.decorator import capture_err
+from bot.core.decorator.errors import capture_err
 from dateutil import parser
 from bot import app
 import logging

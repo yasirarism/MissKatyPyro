@@ -131,10 +131,6 @@ async def get_poster(query, bulk=False, id=False, file=None):
         "url": f"https://www.imdb.com/title/tt{movieid}",
     }
 
-
-# https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
-
-
 async def broadcast_messages(user_id, message):
     try:
         await message.copy(chat_id=user_id)

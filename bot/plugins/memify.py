@@ -1,4 +1,4 @@
-from bot.utils.decorator import capture_err
+from bot.core.decorator.errors import capture_err
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER

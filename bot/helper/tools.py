@@ -1,7 +1,7 @@
 import random, string, requests, psutil, time, os
 from bot import botStartTime
 from bot.plugins import ALL_MODULES
-from bot.utils.human_read import get_readable_time
+from bot.helper.human_read import get_readable_time
 
 
 async def bot_sys_stats():

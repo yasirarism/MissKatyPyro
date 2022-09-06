@@ -2,7 +2,7 @@ import json
 from bot import app
 from bot.plugins.other_tools import get_content
 from utils import get_poster
-from bot.utils.http import http
+from bot.helper.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from gpytranslate import Translator

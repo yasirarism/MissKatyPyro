@@ -8,7 +8,7 @@ import shutil, psutil
 
 from pyrogram import Client, filters, enums
 from bot import botStartTime, app
-from bot.utils.human_read import get_readable_time, get_readable_file_size
+from bot.helper.human_read import get_readable_time, get_readable_file_size
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from info import ADMINS, CHANNELS, COMMAND_HANDLER, LOG_CHANNEL, PICS

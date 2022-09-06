@@ -1,11 +1,11 @@
 from bot import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
-from bot.utils.decorator import capture_err
+from bot.core.decorator.errors import capture_err
 from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
-from bot.utils.tools import get_random_string
+from bot.helper.tools import get_random_string
 from os import path
 
 def get_subname(url):

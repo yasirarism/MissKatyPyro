@@ -3,7 +3,7 @@ from info import COMMAND_HANDLER
 import asyncio
 from bot import app
 from time import time
-from bot.utils.decorator import adminsOnly
+from bot.core.decorator.permissions import adminsOnly
 from pyrogram import filters, enums
 
 __MODULE__ = "Admin"

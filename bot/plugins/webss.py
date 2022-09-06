@@ -6,8 +6,8 @@ from pyrogram import filters
 
 from bot import app
 from info import COMMAND_HANDLER
-from bot.utils.decorator import capture_err
-from bot.utils.http import post
+from bot.core.decorator.errors import capture_err
+from bot.helper.http import post
 
 __MODULE__ = "WebSS"
 __HELP__ = """

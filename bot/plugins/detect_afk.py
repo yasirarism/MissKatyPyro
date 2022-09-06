@@ -4,7 +4,7 @@ import asyncio
 from bot import app
 from pyrogram import filters, enums
 from database.afk_db import remove_afk, is_afk
-from bot.utils.human_read import get_readable_time2
+from bot.helper.human_read import get_readable_time2
 
 # Detect user that AFK
 chat_watcher_group = 1

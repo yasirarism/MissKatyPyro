@@ -7,9 +7,9 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from utils import get_file_id
 from bot import app
-from bot.utils.media_helper import post_to_telegraph, runcmd
-from bot.utils.decorator import capture_err
-from bot.utils.pyro_progress import (
+from bot.helper.media_helper import post_to_telegraph, runcmd
+from bot.core.decorator.errors import capture_err
+from bot.helper.pyro_progress import (
     progress_for_pyrogram, )
 
 

@@ -1,8 +1,8 @@
 import asyncio, importlib, re
 from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
-from bot.utils import paginate_modules
-from bot.utils.tools import bot_sys_stats
+from bot.helper import paginate_modules
+from bot.helper.tools import bot_sys_stats
 from utils import temp
 from logging import info as log_info
 from pyrogram.raw.all import layer
