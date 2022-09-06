@@ -184,8 +184,9 @@ async def banFunc(_, message):
         return
     if reason:
         msg += f"**Reason:** {reason}"
+    keyboard = ikb({"🚨 Unban 🚨": f"unban_{user_id}"})
     await message.chat.ban_member(user_id)
-    await message.reply_text(msg)
+    await message.reply_text(msg, reply_markup=keyboard)
 
 
 # Unban members
@@ -390,8 +391,6 @@ async def demote(_, message):
 
 
 # Pin Messages
-
-
 @app.on_message(filters.command(["pin", "unpin"]) & ~filters.private)
 @adminsOnly("can_pin_messages")
 async def pin(_, message):
@@ -580,10 +579,29 @@ async def unmute_user(_, cq):
     user_id = cq.data.split("_")[1]
     text = cq.message.text.markdown
     text = f"~~{text}~~\n\n"
-    text += f"__Warn removed by {from_user.mention}__"
+    text += f"__Mute removed by {from_user.mention}__"
     await cq.message.chat.unban_member(user_id)
     await cq.message.edit(text)
 
+@app.on_callback_query(filters.regex("unban_"))
+async def unban_user(_, cq):
+    from_user = cq.from_user
+    chat_id = cq.message.chat.id
+    permissions = await member_permissions(chat_id, from_user.id)
+    permission = "can_restrict_members"
+    if permission not in permissions:
+        return await cq.answer(
+            "You don't have enough permissions to perform this action.\n" +
+            f"Permission needed: {permission}",
+            show_alert=True,
+        )
+    user_id = cq.data.split("_")[1]
+    umention = (await app.get_users(user_id)).mention
+    text = cq.message.text.markdown
+    text = f"~~{text}~~\n\n"
+    text += f"__Banned removed by {from_user.mention}__"
+    await cq.message.chat.unban_member(user_id)
+    await cq.message.edit(text)
 
 # Remove Warn
 @app.on_message(filters.command("rmwarn") & ~filters.private)
