@@ -3,7 +3,6 @@ from info import COMMAND_HANDLER
 import asyncio
 from bot import app
 from time import time
-from bot.core.decorator.permissions import adminsOnly
 from pyrogram import filters, enums
 
 __MODULE__ = "Admin"
@@ -61,6 +60,8 @@ async def member_permissions(chat_id: int, user_id: int):
         perms.append("can_manage_video_chats")
     return perms
 
+
+from bot.core.decorator.permissions import adminsOnly
 
 admins_in_chat = {}
 
