@@ -3,14 +3,15 @@
 import asyncio
 import traceback
 from functools import wraps
-from threading import Thread
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
-
+from pyrogram.types import Message
 from info import LOG_CHANNEL
-from bot import app
+from bot import app, SUDO
+from bot.plugins.admin import member_permissions
 
 
 def asyncify(func):
+
     async def inner(*args, **kwargs):
         loop = asyncio.get_running_loop()
         func_out = await loop.run_in_executor(None, func, *args, **kwargs)
@@ -38,6 +39,7 @@ def split_limits(text):
 
 
 def capture_err(func):
+
     @wraps(func)
     async def capture(client, message, *args, **kwargs):
         try:
@@ -53,8 +55,7 @@ def capture_err(func):
                     message.chat.id if message.chat else 0,
                     message.text or message.caption,
                     exc,
-                )
-            )
+                ))
 
             for x in error_feedback:
                 await app.send_message(LOG_CHANNEL, x)
@@ -64,14 +65,61 @@ def capture_err(func):
     return capture
 
 
-def new_thread(fn):
-    """To use as decorator to make a function call threaded.
-    Needs import
-    from threading import Thread"""
+async def authorised(func, subFunc2, client, message, *args, **kwargs):
+    chatID = message.chat.id
+    try:
+        await func(client, message, *args, **kwargs)
+    except ChatWriteForbidden:
+        await app.leave_chat(chatID)
+    except Exception as e:
+        try:
+            await message.reply_text(str(e.MESSAGE))
+        except AttributeError:
+            await message.reply_text(str(e))
+        e = traceback.format_exc()
+        print(e)
+    return subFunc2
 
-    def wrapper(*args, **kwargs):
-        thread = Thread(target=fn, args=args, kwargs=kwargs)
-        thread.start()
-        return thread
 
-    return wrapper
+async def unauthorised(message: Message, permission, subFunc2):
+    chatID = message.chat.id
+    text = ("You don't have the required permission to perform this action." +
+            f"\n**Permission:** __{permission}__")
+    try:
+        await message.reply_text(text)
+    except ChatWriteForbidden:
+        await app.leave_chat(chatID)
+    return subFunc2
+
+
+def adminsOnly(permission):
+
+    def subFunc(func):
+
+        @wraps(func)
+        async def subFunc2(client, message: Message, *args, **kwargs):
+            chatID = message.chat.id
+            if not message.from_user:
+                # For anonymous admins
+                if (message.sender_chat
+                        and message.sender_chat.id == message.chat.id):
+                    return await authorised(
+                        func,
+                        subFunc2,
+                        client,
+                        message,
+                        *args,
+                        **kwargs,
+                    )
+                return await unauthorised(message, permission, subFunc2)
+            # For admins and sudo users
+            userID = message.from_user.id
+            permissions = await member_permissions(chatID, userID)
+            if userID not in SUDO and permission not in permissions:
+                return await unauthorised(message, permission, subFunc2)
+            return await authorised(func, subFunc2, client, message, *args,
+                                    **kwargs)
+
+        return subFunc2
+
+    return subFunc
