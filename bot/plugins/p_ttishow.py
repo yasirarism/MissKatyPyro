@@ -7,7 +7,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
-from bot.helper.admin_helper import is_admin
+from bot.core.decorator.permissions import adminsOnly
 from bot.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
@@ -357,189 +357,16 @@ async def kickme(_, message):
     if len(message.text.split()) >= 2:
         reason = message.text.split(None, 1)[1]
     try:
-        await message.chat.kick_member(message.from_user.id)
+        await message.ban_member(message.from_user.id)
         txt = f"Pengguna {message.from_user.mention} menendang dirinya sendiri. Mungkin dia sedang frustasi 😕"
         txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
         await message.reply_text(txt)
-        await message.chat.unban_member(message.from_user.id)
+        await message.unban_member(message.from_user.id)
     except RPCError as ef:
         await message.reply_text(
             f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}"
         )
     return
-
-
-@app.on_message(filters.command(["pin"], COMMAND_HANDLER))
-async def pin(_, message):
-    if message.reply_to_message:
-        message_id = message.reply_to_message.id
-        if await is_admin(message.chat.id, message.from_user.id):
-            await app.pin_chat_message(message.chat.id, message_id)
-            await message.reply("Berhasil menyematkan pesan ini",
-                                reply_to_message_id=message_id)
-    elif not await is_admin(message.chat.id, message.from_user.id):
-        await message.reply("Uppss, kamu bukan admin disini..")
-    else:
-        message.reply("Balas ke pesan yang mau dipin.")
-
-
-@app.on_message(filters.command(["unpin"], COMMAND_HANDLER))
-async def unpin(_, message):
-    if message.reply_to_message:
-        message_id = message.reply_to_message.id
-        if await is_admin(message.chat.id, message.from_user.id):
-            await app.unpin_chat_message(message.chat.id, message_id)
-            await message.reply("Berhasil unpin pesan ini",
-                                reply_to_message_id=message_id)
-    elif not await is_admin(message.chat.id, message.from_user.id):
-        await message.reply("Upps, kamu bukan admin disini")
-    else:
-        await message.reply("Balas ke pesan yang mau diunpin")
-
-
-@app.on_message(
-    filters.command(["dban", "dban@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.group)
-async def ban_a_user(_, message):
-    admin = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if admin.status not in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        await message.reply_text("Kamu bukan admin disini")
-        await message.stop_propagation()
-
-    if len(message.text.split()) == 1 and not message.reply_to_message:
-        await message.reply_text(
-            "Gunakan command ini dengan reply atau mention user")
-        await message.stop_propagation()
-
-    if not message.reply_to_message:
-        return await message.reply_text(
-            "Balas ke pesan untuk delete dan ban pengguna!")
-
-    user_id, user_first_name = ((
-        message.reply_to_message.from_user.id,
-        message.reply_to_message.from_user.first_name,
-    ) if message.reply_to_message.from_user else (
-        message.reply_to_message.sender_chat.id,
-        message.reply_to_message.sender_chat.title,
-    ))
-
-    if not user_id:
-        await message.reply_text(
-            "Aku tidak bisa menemukan pengguna untuk diban")
-        return
-    if user_id == message.chat.id:
-        await message.reply_text("Itu adalah hal gila jika saya ban admin!")
-        await message.stop_propagation()
-    if user_id == 1507530289:
-        await message.reply_text("Hah, saya harus ban diriku sendiri?")
-        await message.stop_propagation()
-
-    admin = await app.get_chat_member(message.chat.id,
-                                      message.reply_to_message.from_user.id)
-    if user_id in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        await message.reply_text("Saya tidak bisa ban admin")
-        await message.stop_propagation()
-
-    reason = None
-    if len(message.text.split()) >= 2:
-        reason = message.text.split(None, 1)[1]
-
-    try:
-        await message.reply_to_message.delete()
-        await message.chat.kick_member(user_id)
-        txt = f"{message.from_user.mention} banned {message.reply_to_message.from_user.mention} di <b>{message.chat.title}</b>!"
-
-        txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
-        keyboard = InlineKeyboardMarkup([[
-            InlineKeyboardButton(
-                "⚠️ Unban (Hanya Admin)",
-                callback_data=f"unban_={user_id}",
-            ),
-        ]])
-        await app.send_message(message.chat.id, txt, reply_markup=keyboard)
-    except ChatAdminRequired:
-        await message.reply_text("Sepertinya aku bukan admin disini.")
-    except PeerIdInvalid:
-        await message.reply_text(
-            "Aku belum pernah melihat pengguna ini sebelumnya...!\nMungkin bisa dengan forward pesan dia?",
-        )
-    except UserAdminInvalid:
-        await message.reply_text(
-            "Tidak dapat bertindak atas pengguna ini, mungkin bukan saya yang mengubah izinnya"
-        )
-    except RightForbidden:
-        await message.reply_text(
-            "Aku tidak punya ijin untuk membanned pengguna ini")
-    except RPCError as ef:
-        await message.reply_text(
-            f"Sepertinya ada yg salah, silahkan lapor ke owner saya.\nERROR: {str(ef)}"
-        )
-
-
-@app.on_callback_query(filters.regex("^unban_"))
-async def unbanbutton(bot: Client, q: CallbackQuery):
-    splitter = (str(q.data).replace("unban_", "")).split("=")
-    user_id = int(splitter[1])
-    user = await q.message.chat.get_member(q.from_user.id)
-
-    if user.status not in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        await q.answer(
-            "Kamu ga punya cukup ijin untuk melakukan ini!!",
-            show_alert=True,
-        )
-        return
-    whoo = await bot.get_chat(user_id)
-    doneto = whoo.title or whoo.first_name
-    ids = whoo.id
-    try:
-        await q.message.chat.unban_member(user_id)
-    except RPCError as e:
-        await q.message.edit_text(f"Error: {e}")
-        return
-    await q.message.edit_text(
-        f"{q.from_user.mention} unbanned <a href='tg://user?id={ids}'>{doneto}</a>!"
-    )
-    return
-
-
-@app.on_message(filters.command("unban") & filters.user(ADMINS))
-async def unban_a_user(bot, message):
-    if len(message.command) == 1:
-        return await message.reply("Give me a user id / username")
-    r = message.text.split(None)
-    if len(r) > 2:
-        message.text.split(None, 2)[2]
-        chat = message.text.split(None, 2)[1]
-    else:
-        chat = message.command[1]
-    try:
-        chat = int(chat)
-    except:
-        pass
-    try:
-        k = await bot.get_users(chat)
-    except PeerIdInvalid:
-        return await message.reply(
-            "This is an invalid user, make sure ia have met him before.")
-    except IndexError:
-        return await message.reply(
-            "Thismight be a channel, make sure its a user.")
-    except Exception as e:
-        return await message.reply(f"Error - {e}")
-    else:
-        jar = await db.get_ban_status(k.id)
-        if not jar["is_banned"]:
-            return await message.reply(f"{k.mention} is not yet banned.")
-        await db.remove_ban(k.id)
-        temp.BANNED_USERS.remove(k.id)
-        await message.reply(f"Succesfully unbanned {k.mention}")
-
 
 @app.on_message(filters.command("users") & filters.user(ADMINS))
 async def list_users(bot, message):
