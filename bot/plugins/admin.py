@@ -272,8 +272,7 @@ async def list_ban_(c, message):
 
 # Unban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listunban") & ~filters.edited
-    & ~filters.private)
+    filters.user(SUDO) & filters.command("listunban") & ~filters.private)
 async def list_unban_(c, message):
     userid, msglink = await extract_user_and_reason(message)
     if not userid or not msglink:
@@ -326,7 +325,6 @@ async def deleteFunc(_, message):
 # Promote Members
 @app.on_message(
     filters.command(["promote", "fullpromote"])
-    & ~filters.edited
     & ~filters.private)
 @adminsOnly("can_promote_members")
 async def promoteFunc(_, message):
