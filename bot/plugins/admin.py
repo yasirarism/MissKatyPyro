@@ -134,6 +134,7 @@ async def kickFunc(_, message):
     await asyncio.sleep(1)
     await message.chat.unban_member(user_id)
 
+
 # Ban/DBan/TBan User
 @app.on_message(filters.command(["ban", "dban", "tban"]) & ~filters.private)
 @adminsOnly("can_restrict_members")
@@ -188,8 +189,6 @@ async def banFunc(_, message):
 
 
 # Unban members
-
-
 @app.on_message(filters.command("unban") & ~filters.private)
 @adminsOnly("can_restrict_members")
 async def unban_func(_, message):
@@ -242,7 +241,8 @@ async def list_ban_(c, message):
             "You Wanna Ban The Elevated One?, RECONSIDER!")
     splitted = messagelink.split("/")
     uname, mid = splitted[-2], int(splitted[-1])
-    m = await message.reply_text("`Banning User from multiple groups. This may take some time`")
+    m = await message.reply_text(
+        "`Banning User from multiple groups. This may take some time`")
     try:
         msgtext = (await app.get_messages(uname, mid)).text
         gusernames = re.findall("@\w+", msgtext)
@@ -323,9 +323,7 @@ async def deleteFunc(_, message):
 
 
 # Promote Members
-@app.on_message(
-    filters.command(["promote", "fullpromote"])
-    & ~filters.private)
+@app.on_message(filters.command(["promote", "fullpromote"]) & ~filters.private)
 @adminsOnly("can_promote_members")
 async def promoteFunc(_, message):
     user_id = await extract_user(message)

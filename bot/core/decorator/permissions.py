@@ -4,7 +4,7 @@ from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import Message
 from pyrogram import enums
 from bot import SUDO, app
-import time
+from time import time
 
 
 async def member_permissions(chat_id: int, user_id: int):
