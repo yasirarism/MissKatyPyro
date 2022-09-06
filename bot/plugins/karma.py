@@ -4,12 +4,11 @@ from pyrogram import filters
 
 from bot import app
 from bot.core.decorator.errors import capture_err
-from bot.helper.admin_helper import is_admin
+from bot.core.decorator.permissions import adminsOnly
+from bot.helper.functions import alpha_to_int, int_to_alpha
 from database.karma_db import (
-    alpha_to_int,
     get_karma,
     get_karmas,
-    int_to_alpha,
     is_karma_on,
     karma_off,
     karma_on,
@@ -173,10 +172,9 @@ async def command_karma(_, message):
 
 
 @app.on_message(filters.command("karma_toggle") & ~filters.private)
+@adminsOnly
 async def captcha_state(_, message):
     usage = "**Usage:**\n/karma_toggle [ENABLE|DISABLE]"
-    if not is_admin:
-        return await message.reply("This command only for admin.")
     if len(message.command) != 2:
         return await message.reply_text(usage)
     chat_id = message.chat.id
