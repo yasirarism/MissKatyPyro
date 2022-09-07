@@ -79,7 +79,7 @@ async def extractsub(_, m):
             return msg.edit("Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
-        format = json.loads(res)
+        format = json.loads(getformat_cmd)
         namafile = get_subname(link, format['streams'][{index}]['codec_name'])
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
