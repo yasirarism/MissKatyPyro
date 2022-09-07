@@ -7,7 +7,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 import os, time, traceback
-from asyncio import sleep
+from asyncio import sleep, gather
 from shutil import rmtree
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
@@ -69,12 +69,10 @@ async def genss(client, message):
                     action=enums.ChatAction.UPLOAD_PHOTO)
 
                 try:
-                    await message.reply_photo(
-                        images, reply_to_message_id=message.id)
+                    await gather(*[message.reply_document(images, reply_to_message_id=message.id), message.reply_photo(images, reply_to_message_id=message.id)])
                 except FloodWait as e:
                     await sleep(e.value)
-                    await message.reply_photo(
-                        images, reply_to_message_id=message.id)
+                    await gather(*[message.reply_document(images, reply_to_message_id=message.id), message.reply_photo(images, reply_to_message_id=message.id)])
                 try:
                     await message.reply(
                         f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @MissKatyRoBot",

@@ -15,7 +15,7 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
-    file_genertor_command = ["vcsi", video_file, "-t", "-w", "850", "-g", "3x5", "--end-delay-percent", "20", "-o", out_put_file_name]
+    file_genertor_command = ["vcsi", video_file, "-t", "-w", "850", "-g", "3x4", "--end-delay-percent", "20", "-o", out_put_file_name]
     process = await asyncio.create_subprocess_exec(
         *file_genertor_command,
         stdout=asyncio.subprocess.PIPE,

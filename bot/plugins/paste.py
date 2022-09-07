@@ -39,7 +39,7 @@ def humanbytes(size: int):
 
 
 # Pattern if extension supported, PR if want to add more
-pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$")
+pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip$")
 
 
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
