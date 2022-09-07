@@ -70,17 +70,17 @@ async def extractsub(_, m):
     msg = await m.reply("Sedang memproses perintah...")
     try:
         link = m.command[1]
+        index = m.command[2]
         if link.startswith("https://file.yasirweb.my.id"):
             link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
         if link.startswith("https://link.yasirweb.my.id"):
             link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
-        index = m.command[2]
         if m.from_user.id not in ALLOWED_USER:
             return msg.edit("Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
         format = json.loads(getformat_cmd)
-        namafile = get_subname(link, format['streams'][{int(index)}]['codec_name'])
+        namafile = get_subname(link, format['streams'][index]['codec_name']")
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
