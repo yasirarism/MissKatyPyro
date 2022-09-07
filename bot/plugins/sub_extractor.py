@@ -8,13 +8,13 @@ from time import perf_counter
 from bot.helper.tools import get_random_string
 from os import path
 
-def get_subname(url):
+def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1:
-        return f"MissKatySub_{get_random_string(4)}.srt"
-    return path.basename(scheme_removed) + ".srt"
+        return f"MissKatySub_{get_random_string(4)}.{format}"
+    return path.basename(scheme_removed) + ".{format}"
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
@@ -78,7 +78,9 @@ async def extractsub(_, m):
         if m.from_user.id not in ALLOWED_USER:
             return msg.edit("Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
         start_time = perf_counter()
-        namafile = get_subname(link)
+        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams https://link.yasirweb.my.id/unduh/31229/Ekram+%282020%29+Hindi+720p+HDRip+-+Downloadhub.mkv"))[0]
+        format = json.loads(res)
+        namafile = get_subname(link, format['streams'][2]['codec_name'])
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
