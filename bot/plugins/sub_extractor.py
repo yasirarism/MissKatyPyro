@@ -14,7 +14,7 @@ def get_subname(url, format):
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1:
         return f"MissKatySub_{get_random_string(4)}.{format}"
-    return path.basename(scheme_removed) + ".{format}"
+    return path.basename(scheme_removed) + f".{format}"
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
