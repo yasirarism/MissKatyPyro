@@ -78,7 +78,7 @@ async def extractsub(_, m):
         if m.from_user.id not in ALLOWED_USER:
             return msg.edit("Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
         start_time = perf_counter()
-        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams https://link.yasirweb.my.id/unduh/31229/Ekram+%282020%29+Hindi+720p+HDRip+-+Downloadhub.mkv"))[0]
+        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
         format = json.loads(res)
         namafile = get_subname(link, format['streams'][2]['codec_name'])
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
