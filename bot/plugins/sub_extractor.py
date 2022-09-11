@@ -6,15 +6,18 @@ from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
 from bot.helper.tools import get_random_string
-from os import path
 
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
+    if format == "ass":
+        frmt = "ass"
+    else:
+        frmt = "srt"
     if scheme_removed.find("/") == -1:
-        return f"MissKatySub_{get_random_string(4)}.{format}"
-    return path.basename(scheme_removed) + f".{format}"
+        return f"MissKatySub_{get_random_string(4)}.{frmt}"
+    return os.path.basename(scheme_removed) + f".{frmt}"
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
@@ -53,14 +56,30 @@ async def ceksub(_, m):
         res = "".join(f"<b>Index:</b> {i['mapping']}\n<b>Stream Name:</b> {i['stream_name']}\n<b>Language:</b> {i['lang']}\n\n" for i in DATA)
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        await pesan.edit(f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle. Hanya support direct link & format .srt saja saat ini.\nProcessed in {timelog}")
+        await pesan.edit(f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}")
     except Exception as e:
-        await pesan.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
+        await pesan.edit(f"Gagal ekstrak sub..\n\nERROR: {e}")
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460]
 
-
+@app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
+@capture_err
+async def convertsrt(_, m):
+    reply = m.reply_to_message
+    if not reply and reply.document:
+        return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
+    msg = await m.reply("Sedang memproses perintah...")
+    dl = await reply.download()
+    res = (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
+    await message.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
+    await msg.delete()
+    try:
+       os.remove(dl)
+       os.remove(f"{os.path.basename(dl)}.srt")
+    except:
+       pass
+    
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 @capture_err
 async def extractsub(_, m):
