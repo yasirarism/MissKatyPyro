@@ -7,7 +7,15 @@ WORKDIR /MissKaty
 RUN chmod 777 /MissKaty
 
 ENV TZ="Asia/Jakarta"
-RUN apk update && apk add --no-cache mediainfo neofetch ffmpeg git python3-pip -y
+RUN echo -e "\e[32m[INFO]: Installing basic packages.\e[0m" && \
+    apk update && apk upgrade && \
+    apk add --upgrade --no-cache \
+    sudo py3-wheel musl-dev musl python3 \
+    python3-dev busybox musl-locales github-cli lshw \
+    py3-pip py3-lxml aria2 p7zip \
+    xz curl pv jq ffmpeg parallel \
+    neofetch git make g++ gcc automake zip unzip \
+    autoconf speedtest-cli mediainfo bash
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
