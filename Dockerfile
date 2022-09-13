@@ -15,7 +15,10 @@ RUN echo -e "\e[32m[INFO]: Installing basic packages.\e[0m" && \
     py3-pip py3-lxml \
     xz curl pv jq ffmpeg parallel \
     neofetch git make g++ gcc automake \
-    autoconf mediainfo bash
+    autoconf mediainfo bash \
+    musl-utils tzdata gcompat \
+    alpine-sdk libffi-dev py3-virtualenv libffi \
+    dpkg cmake icu-data-ful
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
