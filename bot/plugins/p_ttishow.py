@@ -4,7 +4,7 @@ import time
 import os
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
-from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden
+from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden, ChatSendMediaForbidden, SlowmodeWait
 from bot import app
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.core.decorator.permissions import adminsOnly
@@ -192,7 +192,7 @@ async def save_group(bot, message):
                     caption=
                     f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
                 )
-            except ChatWriteForbidden:
+            except (ChatSendMediaForbidden, SlowmodeWait):
                 await app.leave_chat(message.chat.id)
             try:
                 os.remove(f"downloads/welcome#{u.id}.png")
