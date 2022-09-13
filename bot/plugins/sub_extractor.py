@@ -61,7 +61,7 @@ async def ceksub(_, m):
         await pesan.edit(f"Gagal ekstrak sub..\n\nERROR: {e}")
 
 
-ALLOWED_USER = [978550890, 617426792, 2024984460]
+ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
@@ -72,7 +72,7 @@ async def convertsrt(_, m):
     msg = await m.reply("Sedang memproses perintah...")
     dl = await reply.download()
     res = (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
-    await message.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
+    await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
     await msg.delete()
     try:
        os.remove(dl)
@@ -95,7 +95,7 @@ async def extractsub(_, m):
         if link.startswith("https://link.yasirweb.my.id"):
             link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
         if m.from_user.id not in ALLOWED_USER:
-            return msg.edit("Hehehe, silahkan donasi jika ingin menggunakan fitur ini :)")
+            return await msg.edit("Hehehe, khusus orang spesial yang bisa menggunakan fitur ini :)")
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
         format = json.loads(getformat_cmd)
