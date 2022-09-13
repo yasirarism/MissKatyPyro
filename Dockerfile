@@ -18,7 +18,7 @@ RUN echo -e "\e[32m[INFO]: Installing basic packages.\e[0m" && \
     autoconf mediainfo bash \
     musl-utils tzdata gcompat \
     alpine-sdk libffi-dev py3-virtualenv libffi \
-    dpkg cmake icu-data-ful
+    dpkg cmake
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
