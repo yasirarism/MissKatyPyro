@@ -667,9 +667,7 @@ async def report_user(_, message):
 
     user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     text = f"Reported {user_mention} to admins!"
-    admin_data = await app.get_chat_members(
-        chat_id=message.chat.id,
-        filter=enums.ChatMembersFilter.ADMINISTRATORS)  # will it giv floods ?
+    admin_data = [m async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]
     for admin in admin_data:
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins
