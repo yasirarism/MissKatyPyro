@@ -8,7 +8,7 @@ from bot.core.decorator.errors import capture_err
 @app.on_chat_join_request(filters.chat(-1001686184174))
 async def approve_join_chat(c, m):
     try:
-        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Sudah", callback_data=f"approve_{m.chat.id}"), InlineKeyboardButton(text="Belum/Not Yet", callback_data=f"declined_{m.chat.id}")]])
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Sudah", callback_data=f"approve_{m.chat.id}"), InlineKeyboardButton(text="Belum", callback_data=f"declined_{m.chat.id}")]])
         await c.send_message(
             m.from_user.id,
             "<b>PERMINTAAN JOIN CHANNEL YMOVIEZ REBORN</b>\n\nSebelum masuk ke channel ada tes kejujuran, apakah anda sudah membaca catatan di @YMovieZ_New? Jika sudah silahkan klik <b>Sudah</b>, jika kamu berbohong resiko kamu tanggung sendiri 😶‍🌫️.\n\nBot by @YasirPediaChannel",
