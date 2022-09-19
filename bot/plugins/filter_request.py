@@ -1,9 +1,10 @@
 import re
 import random
-from bot import app
+from bot import app, SUDO
 from pyrogram import filters, Client, enums
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.errors import UserNotParticipant
 from bot.core.decorator.errors import capture_err
 from bot.helper.time_gap import check_time_gap
 
@@ -20,13 +21,12 @@ async def start(_, message):
 
 @app.on_message(
     filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo)
-    & filters.chat(-1001255283935))
+    & filters.chat(-1001255283935) & ~filters.channel)
 @capture_err
 async def request_user(client, message):
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
-        await message.reply("🙄")
-        return
+        return await message.reply("Sabar dikit napa.. 🙄")
     markup = InlineKeyboardMarkup([
         [
             InlineKeyboardButton(text="💬 Lihat Pesan",
@@ -59,7 +59,7 @@ async def request_user(client, message):
             REQUEST_DB[user_id] = 1
         if REQUEST_DB[user_id] > 3:
             return await message.reply(
-                f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 10k per request 😝😝."
+                f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝😝."
             )
         if message.text:
             forward = await client.send_message(
@@ -76,7 +76,7 @@ async def request_user(client, message):
                 -1001575525902,
                 message.photo.file_id,
                 caption=
-                f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>\n\n{message.caption}",
+                f"Request by <a href='tg://user?id={message.from_user.id}'>{message.from_user.first_name}</a>  (#id{message.from_user.id})\n\n{message.caption}",
                 reply_markup=markup)
             markup2 = InlineKeyboardMarkup([[
                 InlineKeyboardButton(
@@ -92,7 +92,7 @@ async def request_user(client, message):
         pass
 
 
-def clear_reqdict():
+async def clear_reqdict():
     REQUEST_DB.clear()
 
 
@@ -113,188 +113,178 @@ async def start(_, message):
 
 
 @app.on_callback_query(filters.regex(r"^donereq"))
-@capture_err
-async def _callbackreq(c: Client, q: CallbackQuery):
+async def _callbackreq(c, q):
     try:
         user = await c.get_chat_member(-1001686184174, q.from_user.id)
-    except:
-        pass
-    if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        i, msg_id, chat_id = q.data.split("_")
-        await c.send_message(
-            chat_id=chat_id,
-            text=
-            "#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
-            reply_to_message_id=int(msg_id),
-        )
+        if user.status in [
+                enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
+        ] or q.from_user.id in SUDO:
+            i, msg_id, chat_id = q.data.split("_")
+            await c.send_message(
+                chat_id=chat_id,
+                text=
+                "#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
+                reply_to_message_id=int(msg_id),
+            )
 
-        if q.message.caption:
-            await q.message.edit_text(
-                f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="✅ Request Completed",
-                                         callback_data="reqcompl")
-                ]]))
+            if q.message.caption:
+                await q.message.edit_text(
+                    f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="✅ Request Completed",
+                                            callback_data="reqcompl")
+                    ]]))
+            else:
+                await q.message.edit_text(
+                    f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="✅ Request Completed",
+                                            callback_data="reqcompl")
+                    ]]))
+            await q.answer("Request berhasil diselesaikan ✅")
         else:
-            await q.message.edit_text(
-                f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="✅ Request Completed",
-                                         callback_data="reqcompl")
-                ]]))
-        await q.answer("Request berhasil diselesaikan ✅")
-    else:
-        await q.answer("Apa motivasi kamu menekan tombol ini?",
-                       show_alert=True)
+            await q.answer("Apa motivasi kamu menekan tombol ini?",
+                        show_alert=True)
+    except UserNotParticipant:
+        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^dahada"))
-@capture_err
-async def _callbackreqada(c: Client, q: CallbackQuery):
+async def _callbackreqada(c, q):
     try:
         user = await c.get_chat_member(-1001686184174, q.from_user.id)
-    except:
-        pass
-    if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        i, msg_id, chat_id = q.data.split("_")
-        await c.send_message(
-            chat_id=chat_id,
-            text=
-            "#Film/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
-            reply_to_message_id=int(msg_id),
-        )
+        if user.status in [
+                enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
+        ] or q.from_user.id in SUDO:
+            i, msg_id, chat_id = q.data.split("_")
+            await c.send_message(
+                chat_id=chat_id,
+                text=
+                "#SudahAda\nFilm/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
+                reply_to_message_id=int(msg_id),
+            )
 
-        if q.message.caption:
-            await q.message.edit_text(
-                f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="🔍 Request Sudah Ada",
-                                         callback_data="reqavailable")
-                ]]))
+            if q.message.caption:
+                await q.message.edit_text(
+                    f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="🔍 Request Sudah Ada",
+                                            callback_data="reqavailable")
+                    ]]))
+            else:
+                await q.message.edit_text(
+                    f"<b>Already Available</b>\n\n<s>{q.message.text}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="🔍 Request Sudah Ada",
+                                            callback_data="reqavailable")
+                    ]]))
+            await q.answer("Done ✔️")
         else:
-            await q.message.edit_text(
-                f"<b>Already Available</b>\n\n<s>{q.message.text}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="🔍 Request Sudah Ada",
-                                         callback_data="reqavailable")
-                ]]))
-        await q.answer("Done")
-    else:
-        await q.answer("Apa motivasi kamu menekan tombol ini?",
-                       show_alert=True)
-
+            await q.answer("Apa motivasi kamu menekan tombol ini?",
+                        show_alert=True)
+    except UserNotParticipant:
+        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
 
 @app.on_callback_query(filters.regex(r"^rejectreq"))
-@capture_err
-async def _callbackreject(c: Client, q: CallbackQuery):
+async def _callbackreject(c, q):
     try:
         user = await c.get_chat_member(-1001686184174, q.from_user.id)
-    except:
-        pass
-    if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        i, msg_id, chat_id = q.data.split("_")
-        await c.send_message(
-            chat_id=chat_id,
-            text=
-            "Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya no.6 yaa 🙃.",
-            reply_to_message_id=int(msg_id),
-        )
+        if user.status in [
+                enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
+        ] or q.from_user.id in SUDO:
+            i, msg_id, chat_id = q.data.split("_")
+            await c.send_message(
+                chat_id=chat_id,
+                text=
+                "Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya no.6 yaa 🙃.",
+                reply_to_message_id=int(msg_id),
+            )
 
-        if q.message.caption:
-            await q.message.edit_text(
-                f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="🚫 Request Rejected",
-                                         callback_data="reqreject")
-                ]]))
+            if q.message.caption:
+                await q.message.edit_text(
+                    f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="🚫 Request Rejected",
+                                            callback_data="reqreject")
+                    ]]))
+            else:
+                await q.message.edit_text(
+                    f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="🚫 Request Rejected",
+                                            callback_data="reqreject")
+                    ]]))
+            await q.answer("Requests berhasil ditolak 🚫")
         else:
-            await q.message.edit_text(
-                f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="🚫 Request Rejected",
-                                         callback_data="reqreject")
-                ]]))
-        await q.answer("Requests berhasil ditolak 🚫")
-    else:
-        await q.answer("Apa motivasi kamu menekan tombol ini?",
+            await q.answer("Apa motivasi kamu menekan tombol ini?",
                        show_alert=True)
+    except UserNotParticipant:
+        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^unavailablereq"))
-@capture_err
-async def _callbackunav(c: Client, q: CallbackQuery):
+async def _callbackunav(c, q):
     try:
         user = await c.get_chat_member(-1001686184174, q.from_user.id)
-    except:
-        pass
-    if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-    ]:
-        i, msg_id, chat_id = q.data.split("_")
-        await c.send_message(
-            chat_id=chat_id,
-            text=
-            "Mohon maaf, request kamu tidak tersedia, mungkin belum rilis atau memang ga ada versi digital..",
-            reply_to_message_id=int(msg_id),
-        )
+        if user.status in [
+                enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
+        ] or q.from_user.id in SUDO:
+            i, msg_id, chat_id = q.data.split("_")
+            await c.send_message(
+                chat_id=chat_id,
+                text=
+                "Mohon maaf, request kamu tidak tersedia, mungkin belum rilis atau memang ga ada versi digital..",
+                reply_to_message_id=int(msg_id),
+            )
 
-        if q.message.caption:
-            await q.message.edit_text(
-                f"<b>UNAVAILABLE</b>\n\n<s>{q.message.caption}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="⚠️ Request Unavailable",
-                                         callback_data="requnav")
-                ]]))
+            if q.message.caption:
+                await q.message.edit_text(
+                    f"<b>UNAVAILABLE</b>\n\n<s>{q.message.caption}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="⚠️ Request Unavailable",
+                                            callback_data="requnav")
+                    ]]))
+            else:
+                await q.message.edit_text(
+                    f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>",
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(text="⚠️ Request Unavailable",
+                                            callback_data="requnav")
+                    ]]))
+            await q.answer(
+                "Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital."
+            )
         else:
-            await q.message.edit_text(
-                f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>",
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(text="⚠️ Request Unavailable",
-                                         callback_data="requnav")
-                ]]))
-        await q.answer(
-            "Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital."
-        )
-    else:
-        await q.answer("Apa motivasi kamu menekan tombol ini?",
-                       show_alert=True)
-
+            await q.answer("Apa motivasi kamu menekan tombol ini?",
+                        show_alert=True, cache_time=1000)
+    except UserNotParticipant:
+        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
-@capture_err
-async def _callbackaft_done(c: Client, q: CallbackQuery):
+async def _callbackaft_done(c, q):
     await q.answer(
         "Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..",
-        show_alert=True)
+        show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^reqreject$"))
-@capture_err
-async def _callbackaft_rej(c: Client, q: CallbackQuery):
+async def _callbackaft_rej(c, q):
     await q.answer(
         "Request ini ditolak 💔, silahkan cek rules grup yaa. Jika belum paham bisa tanya ke admin lain digrup.",
-        show_alert=True)
+        show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^requnav$"))
-@capture_err
-async def _callbackaft_unav(c: Client, q: CallbackQuery):
+async def _callbackaft_unav(c, q):
     await q.answer(
-        "Request ini tidak tersedia 🥳, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
-        show_alert=True)
+        "Request ini tidak tersedia ☹️, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
+        show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
-@capture_err
-async def _callbackaft_dahada(c: Client, q: CallbackQuery):
+async def _callbackaft_dahada(c, q):
     await q.answer(
-        "Request ini sudah ada sebelumnya, silahkan cari 🔍 di channel atau grup yaa..",
+        "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..",
         show_alert=True)
 
 
