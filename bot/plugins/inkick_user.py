@@ -17,7 +17,7 @@ __HELP__ = """"
 @app.on_message(filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER))
 async def inkick(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if user.status.value in ('administrator', 'creator'):
+    if user.status.value in ('administrator', 'owner'):
         if len(message.command) > 1:
             input_str = message.command
             sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
@@ -49,7 +49,7 @@ async def inkick(_, message):
 @app.on_message(filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER))
 async def uname(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if user.status.value in ('administrator', 'creator'):
+    if user.status.value in ('administrator', 'owner'):
             sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
             count = 0
             async for member in app.get_chat_members(message.chat.id):
@@ -77,7 +77,7 @@ async def uname(_, message):
 @app.on_message(filters.incoming & ~filters.private & filters.command(["dkick"], COMMAND_HANDLER))
 async def dkick(client, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if user.status.value in ('administrator', 'creator'):
+    if user.status.value in ('administrator', 'owner'):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
