@@ -20,10 +20,10 @@ async def inkick(_, message):
     if user.status.value in ('administrator', 'owner'):
         if len(message.command) > 1:
             input_str = message.command
-            sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
+            sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
             count = 0
             async for member in app.get_chat_members(message.chat.id):
-                if member.user.status.value in input_str and not member.status.value in ('administrator', 'creator'):
+                if member.status.value in input_str and not member.status.value in ('administrator', 'owner'):
                     try:
                         await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                         count += 1
@@ -50,10 +50,10 @@ async def inkick(_, message):
 async def uname(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ('administrator', 'owner'):
-            sent_message = message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
+            sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
             count = 0
             async for member in app.get_chat_members(message.chat.id):
-                if not member.user.username and not member.status.value in ('administrator', 'creator'):
+                if not member.user.username and not member.status.value in ('administrator', 'owner'):
                     try:
                         await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                         count += 1
@@ -81,7 +81,7 @@ async def dkick(client, message):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
-            if member.user.is_deleted and not member.status.value in ('administrator', 'creator'):
+            if member.user.is_deleted and not member.status.value in ('administrator', 'owner'):
                 try:
                     await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                     count += 1
