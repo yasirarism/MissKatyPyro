@@ -1,5 +1,5 @@
 import asyncio, importlib, re, logging
-from bot import app, user, HELPABLE
+from bot import app, user, HELPABLE,
 from bot.plugins import ALL_MODULES
 from bot.helper import paginate_modules
 from bot.helper.tools import bot_sys_stats
@@ -121,7 +121,7 @@ async def start(_, message):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
-            await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
+            await app.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
             await db.add_chat(message.chat.id, message.chat.title)
         nama = message.from_user.mention if message.from_user else message.sender_chat.title
         return await message.reply_photo(
