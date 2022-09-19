@@ -1,6 +1,6 @@
 import re
 import random
-from bot import app, SUDO
+from bot import app
 from pyrogram import filters, Client, enums
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
@@ -115,10 +115,10 @@ async def start(_, message):
 @app.on_callback_query(filters.regex(r"^donereq"))
 async def _callbackreq(c, q):
     try:
-        user = await c.get_chat_member(-1001686184174, q.from_user.id)
+        user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
                 enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-        ] or q.from_user.id in SUDO:
+        ]:
             i, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
@@ -152,10 +152,10 @@ async def _callbackreq(c, q):
 @app.on_callback_query(filters.regex(r"^dahada"))
 async def _callbackreqada(c, q):
     try:
-        user = await c.get_chat_member(-1001686184174, q.from_user.id)
+        user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
                 enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-        ] or q.from_user.id in SUDO:
+        ]:
             i, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
@@ -188,15 +188,15 @@ async def _callbackreqada(c, q):
 @app.on_callback_query(filters.regex(r"^rejectreq"))
 async def _callbackreject(c, q):
     try:
-        user = await c.get_chat_member(-1001686184174, q.from_user.id)
+        user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
                 enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-        ] or q.from_user.id in SUDO:
+        ]:
             i, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text=
-                "Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules nya no.6 yaa 🙃.",
+                "Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules grup no.6 yaa 🙃.",
                 reply_to_message_id=int(msg_id),
             )
 
@@ -225,15 +225,15 @@ async def _callbackreject(c, q):
 @app.on_callback_query(filters.regex(r"^unavailablereq"))
 async def _callbackunav(c, q):
     try:
-        user = await c.get_chat_member(-1001686184174, q.from_user.id)
+        user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
                 enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER
-        ] or q.from_user.id in SUDO:
+        ]:
             i, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text=
-                "Mohon maaf, request kamu tidak tersedia, mungkin belum rilis atau memang ga ada versi digital..",
+                "Mohon maaf, request kamu tidak tersedia. Silahkan baca beberapa alasannya di channel @YMovieZ_New",
                 reply_to_message_id=int(msg_id),
             )
 
@@ -270,7 +270,7 @@ async def _callbackaft_done(c, q):
 @app.on_callback_query(filters.regex(r"^reqreject$"))
 async def _callbackaft_rej(c, q):
     await q.answer(
-        "Request ini ditolak 💔, silahkan cek rules grup yaa. Jika belum paham bisa tanya ke admin lain digrup.",
+        "Request ini ditolak 💔, silahkan cek rules grup yaa.",
         show_alert=True, cache_time=1000)
 
 
