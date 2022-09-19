@@ -23,7 +23,9 @@ async def inkick(_, message):
             sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
             count = 0
             async for member in app.get_chat_members(message.chat.id):
-                if member.status.value in input_str and not member.status.value in ('administrator', 'owner'):
+                if member.user.is_bot:
+                    continue
+                if member.user.status.value in input_str and not member.status.value in ('administrator', 'owner'):
                     try:
                         await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
                         count += 1
