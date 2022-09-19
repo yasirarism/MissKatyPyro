@@ -27,9 +27,10 @@ async def inkick(_, message):
                     continue
                 if member.user.status.value in input_str and not member.status.value in ('administrator', 'owner'):
                     try:
-                        await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
+                        await message.chat.ban_member(member.user.id)
                         count += 1
                         await sleep(1)
+                        await message.chat.unban_member(member.user.id)
                     except (ChatAdminRequired, UserAdminInvalid):
                         await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
                         await app.leave_chat(message.chat.id)
@@ -57,9 +58,10 @@ async def uname(_, message):
             async for member in app.get_chat_members(message.chat.id):
                 if not member.user.username and not member.status.value in ('administrator', 'owner'):
                     try:
-                        await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
+                        await message.chat.ban_member(member.user.id)
                         count += 1
                         await sleep(1)
+                        await message.chat.unban_member(member.user.id)
                     except (ChatAdminRequired, UserAdminInvalid):
                         await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
                         await app.leave_chat(message.chat.id)
@@ -85,9 +87,10 @@ async def dkick(client, message):
         async for member in app.get_chat_members(message.chat.id):
             if member.user.is_deleted and not member.status.value in ('administrator', 'owner'):
                 try:
-                    await message.chat.ban_member(member.user.id, datetime.now() + timedelta(seconds=30))
+                    await message.chat.ban_member(member.user.id)
                     count += 1
                     await sleep(1)
+                    await message.chat.unban_member(member.user.id)
                 except (ChatAdminRequired, UserAdminInvalid):
                     await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
                     await app.leave_chat(message.chat.id)
