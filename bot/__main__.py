@@ -1,5 +1,5 @@
 import asyncio, importlib, re, logging
-from bot import app, user, HELPABLE,
+from bot import app, user, HELPABLE
 from bot.plugins import ALL_MODULES
 from bot.helper import paginate_modules
 from bot.helper.tools import bot_sys_stats
