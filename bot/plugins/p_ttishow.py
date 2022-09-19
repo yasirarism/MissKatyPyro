@@ -5,7 +5,7 @@ import os
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden, ChatSendMediaForbidden, SlowmodeWait
-from bot import app
+from bot import app, SUDO
 from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.core.decorator.permissions import adminsOnly
 from bot.core.decorator.errors import capture_err, asyncify
@@ -329,27 +329,6 @@ async def adminlist(_, message):
 
 
 @app.on_message(
-    filters.command(["zombies", "zombies@MissKatyRoBot"], COMMAND_HANDLER))
-async def zombie_clean(_, m):
-
-    zombie = 0
-    wait = await m.reply_text("Searching ... and banning ...")
-    async for member in app.get_chat_members(m.chat.id):
-        if member.user.is_deleted:
-            zombie += 1
-            try:
-                await app.kick_chat_member(m.chat.id, member.user.id)
-            except UserAdminInvalid:
-                zombie -= 1
-            except FloodWait as e:
-                await sleep(e.value)
-    if zombie == 0:
-        return await wait.edit_text("Group is clean!")
-    return await wait.edit_text(
-        f"<b>{zombie}</b> Zombies ditemukan dan telah banned!", )
-
-
-@app.on_message(
     filters.command(["kickme", "kickme@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def kickme(_, message):
@@ -368,7 +347,7 @@ async def kickme(_, message):
         )
     return
 
-@app.on_message(filters.command("users") & filters.user(ADMINS))
+@app.on_message(filters.command("users") & filters.user(SUDO))
 async def list_users(bot, message):
     # https://t.me/GetTGLink/4184
     raju = await message.reply("Getting List Of Users")
@@ -387,7 +366,7 @@ async def list_users(bot, message):
         await message.reply_document("users.txt", caption="List Of Users")
 
 
-@app.on_message(filters.command("chats") & filters.user(ADMINS))
+@app.on_message(filters.command("chats") & filters.user(SUDO))
 async def list_chats(bot, message):
     raju = await message.reply("Getting List Of chats")
     chats = await db.get_all_chats()
