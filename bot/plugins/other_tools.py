@@ -448,7 +448,7 @@ async def imdb1_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie['title']})",
-                    callback_data=f"imdb#{movie['movieID']}",
+                    callback_data=f"imdb1#{movie['movieID']}",
                 )
             ]
             for movie in IMDBDATA
