@@ -490,7 +490,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
                 durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
-                res_str += f"<b>🕓 Durasi:</b> <code>{await trl(durasi, targetlang='id').text}</code>\n"
+                res_str += f"<b>🕓 Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
@@ -535,11 +535,11 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     key_ += f"#{i}, "
                 key_ = key_[:-2]
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
-            else:
-                res_str += "\n\n"
             if sop.select('li[data-testid="award_information"]'):
                 awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl(awards, targetlang='id').text}</code>\n\n"
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{(await trl(awards, targetlang='id')).text}</code>\n\n"
+            else:
+                res_str += "\n"
             res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
