@@ -4,7 +4,7 @@ from bot import app
 from pyrogram import filters, Client, enums
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
-from pyrogram.errors import UserNotParticipant
+from pyrogram.errors import UserNotParticipant, PeerIdInvalid
 from bot.core.decorator.errors import capture_err
 from bot.helper.time_gap import check_time_gap
 
@@ -147,6 +147,8 @@ async def _callbackreq(c, q):
                         show_alert=True)
     except UserNotParticipant:
         return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+    except PeerIdInvalid:
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^dahada"))
@@ -184,6 +186,9 @@ async def _callbackreqada(c, q):
                         show_alert=True)
     except UserNotParticipant:
         return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+    except PeerIdInvalid:
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+
 
 @app.on_callback_query(filters.regex(r"^rejectreq"))
 async def _callbackreject(c, q):
@@ -220,6 +225,8 @@ async def _callbackreject(c, q):
                        show_alert=True)
     except UserNotParticipant:
         await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+    except PeerIdInvalid:
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
 
 
 @app.on_callback_query(filters.regex(r"^unavailablereq"))
@@ -259,6 +266,9 @@ async def _callbackunav(c, q):
                         show_alert=True, cache_time=1000)
     except UserNotParticipant:
         await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+    except PeerIdInvalid:
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
 async def _callbackaft_done(c, q):
