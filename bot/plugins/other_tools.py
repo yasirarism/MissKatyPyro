@@ -470,7 +470,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         try:
             trl = Translator()
             url = f"https://www.imdb.com/title/tt{movie}/"
-            imdb = await get_poster(query=movie, id=True)
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
@@ -486,8 +485,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
             else:
                 res_str += "\n"
-            if imdb.get("kind") == "tv series":
-                res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
                 durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
                 res_str += f"<b>🕓 Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
@@ -503,13 +500,13 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 genre = "".join(f"#{i}, " for i in all_genre)
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
-            if imdb.get("countries"):
-                country = imdb["countries"].replace("  ", " ")
+            if sop.select('li[data-testid="title-details-origin"]'):
+                country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 if country.endswith(", "):
                     country = country[:-2]
                 res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
-            if imdb.get("languages"):
-                language = imdb["languages"].replace("  ", " ")
+            if sop.select('li[data-testid="title-details-languages"]'):
+                language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 if language.endswith(", "):
                     language = language[:-2]
                 res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
@@ -540,7 +537,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🏆 Penghargaan:</b> <code>{(await trl(awards, targetlang='id')).text}</code>\n\n"
             else:
                 res_str += "\n"
-            res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
+            res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 markup = InlineKeyboardMarkup([[
