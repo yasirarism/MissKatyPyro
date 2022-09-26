@@ -489,7 +489,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             if imdb.get("kind") == "tv series":
                 res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
-                durasi = soup.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+                durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
                 res_str += f"<b>🕓 Durasi:</b> <code>{await trl(durasi, targetlang='id')}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
