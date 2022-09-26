@@ -536,7 +536,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n\n"
             if sop.select('li[data-testid="award_information"]'):
                 awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl(awards), targetlang="id")}<code>\n\n"
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl(awards), targetlang="id"}</code>\n\n"
             res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
