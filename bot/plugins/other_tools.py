@@ -471,9 +471,9 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             trl = Translator()
             imdb = await get_poster(query=movie, id=True)
             resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
-            b = BeautifulSoup(resp, "lxml")
+            sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
-                b.find("script", attrs={
+                sop.find("script", attrs={
                     "type": "application/ld+json"
                 }).contents[0])
             res_str = ""
@@ -487,16 +487,16 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += "\n"
             if imdb.get("kind") == "tv series":
                 res_str += f"<b>🍂 Jumlah Season:</b> <code>{imdb['seasons']} season</code>\n"
-            if r_json.get("duration"):
-                durasi = r_json["duration"].replace("PT", "").replace(
-                    "H", " Jam ").replace("M", " Menit")
-                res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
+            if sop.select('li[data-testid="title-techspec_runtime"]'):
+                durasi = soup.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+                res_str += f"<b>🕓 Durasi:</b> <code>{await trl(durasi), targetlang='id')}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
                 res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
-            if imdb.get("release_date"):
-                res_str += f"<b>📆 Rilis:</b> <code>{imdb['release_date']}</code>\n"
+            if sop.select('li[data-testid="title-details-releasedate"]'):
+                rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+                res_str += f"<b>📆 Rilis:</b> <code>{rilis}</code>\n"
             if r_json.get("genre"):
                 all_genre = r_json["genre"]
                 genre = "".join(f"#{i}, " for i in all_genre)
