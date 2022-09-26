@@ -7,7 +7,7 @@ import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
 from gtts import gTTS
-from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty
+from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, get_poster
 from bot.helper.time_gap import check_time_gap
@@ -15,6 +15,7 @@ import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot.core.decorator.errors import capture_err
+from bot.helper.tools import rentry
 from dateutil import parser
 from bot import app
 import logging
@@ -122,10 +123,13 @@ async def translate(client, message):
     except ValueError as err:
         await msg.edit(f"Error: <code>{str(err)}</code>")
         return
-    return await msg.edit(
-        f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>{tekstr.text}</code>",
-    )
-
+    try:
+        await msg.edit(
+            f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>{tekstr.text}</code>",
+        )
+    except MessageTooLong:
+        url = rentry(tekstr.text)
+        await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
@@ -153,7 +157,11 @@ async def tts(_, message):
         await msg.edit(f"Error: <code>{str(err)}</code>")
         return
     await msg.delete()
-    return await msg.reply_audio(f"tts_{message.from_user.id}.mp3")
+    await msg.reply_audio(f"tts_{message.from_user.id}.mp3")
+    try:
+        os.remove(f"tts_{message.from_user.id}.mp3")
+    except:
+        pass
 
 
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
@@ -166,7 +174,7 @@ async def tiktokdl(client, message):
     try:
         async with aiohttp.ClientSession() as ses:
             async with ses.get(
-                    f"https://kamiselaluada.me/api/tiktok/3?url={link}"
+                    f"https://api.hayo.my.id/api/tiktok/3?url={link}"
             ) as result:
                 r = await result.json()
                 await message.reply_video(
@@ -406,9 +414,10 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
 
 # IMDB Versi Indonesia v1
 @app.on_message(
-    filters.command(["imdb", "imdb@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["imdb"], COMMAND_HANDLER))
 @capture_err
 async def imdb1_search(client, message):
+    IMDBDATA = []
     if message.sender_chat:
         return await message.reply(
             "Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa.."
@@ -418,42 +427,50 @@ async def imdb1_search(client, message):
         return await message.reply(
             f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi."
         )
-    if " " in message.text:
-        r, title = message.text.split(None, 1)
-        k = await message.reply("Sedang mencari di Database IMDB.. 😴")
+    if len(message.command) > 1:
+        r, judul = message.text.split(None, 1)
+        k = await message.reply("🔎 Sedang mencari di Database IMDB..", quote=True)
         try:
-            movies = await get_poster(title, bulk=True)
+            r = await get_content(f"https://www.imdb.com/find?q={judul}&s=tt&ref_=fn_tt")
+            soup = BeautifulSoup(r, "lxml")
+            res = soup.find_all(class_="result_text")
+            for i in res:
+                if len(IMDBDATA) == 10:
+                   break
+                title = i.text
+                movieID = re.findall(r'\/tt(\d+)/', i.find('a').get('href'))[0]
+                IMDBDATA.append({'title': title, 'movieID': movieID})
         except:
-            return await k.edit(
-                "Ooppss, gagal mendapatkan daftar judul di IMDb")
-        if not movies:
+            return await k.edit("Ooppss, gagal mendapatkan daftar judul di IMDb")
+        if not IMDBDATA:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [[
-            InlineKeyboardButton(
-                text=f"{movie.get('title')} ({movie.get('year')})",
-                callback_data=
-                f"imdb1_{message.from_user.id}_{message.id}_{movie.movieID}",
-            )
-        ] for movie in movies]
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"{movie.get('title')})",
+                    callback_data=f"imdb#{movie.movieID}",
+                )
+            ]
+            for movie in movies
+        ]
         await k.edit(
-            f"Ditemukan {len(movies)} query dari <code>{title}</code>",
+            f"Ditemukan {len(IMDBDATA)} query dari <code>{title}</code>",
             reply_markup=InlineKeyboardMarkup(btn))
     else:
-        await message.reply(
-            "Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️")
+        await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
 
 
 @app.on_callback_query(filters.regex("^imdb1"))
-@capture_err
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
-    i, user, msg_id, movie = query.data.split("_")
-    if user == f"{query.from_user.id}":
+        usr = query.message.reply_to_message
+        if query.from_user.id != usr.from_user.id:
+            return await query.answer("⚠️ Akses Ditolak!", True)
+        i, movie = query.data.split("#")
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         try:
             trl = Translator()
-            url = f"https://www.imdb.com/title/tt{movie}/"
             imdb = await get_poster(query=movie, id=True)
-            resp = await get_content(url)
+            resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
             b = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
                 b.find("script", attrs={
@@ -517,6 +534,9 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     key_ += f"#{i}, "
                 key_ = key_[:-2]
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n\n"
+            if sop.select('li[data-testid="award_information"]'):
+                awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl(awards), targetlang="id")}<code>\n\n"
             res_str += "<b>©️ Fitur IMDb</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
@@ -561,8 +581,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         except Exception:
             exc = traceback.format_exc()
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
-    else:
-        await query.answer("Tombol ini bukan untukmu", show_alert=True)
 
 
 # IMDB Versi Indonesia v2
