@@ -1,4 +1,4 @@
-import os
+import os, re
 import aiohttp
 from bs4 import BeautifulSoup
 import json
@@ -440,8 +440,8 @@ async def imdb1_search(client, message):
                 title = i.text
                 movieID = re.findall(r'\/tt(\d+)/', i.find('a').get('href'))[0]
                 IMDBDATA.append({'title': title, 'movieID': movieID})
-        except:
-            return await k.edit("Ooppss, gagal mendapatkan daftar judul di IMDb")
+        except Exception as err:
+            return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
         btn = [
