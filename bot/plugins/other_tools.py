@@ -469,8 +469,9 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         try:
             trl = Translator()
+            url = f"https://www.imdb.com/title/tt{movie}/
             imdb = await get_poster(query=movie, id=True)
-            resp = await get_content(f"https://www.imdb.com/title/tt{movie}/")
+            resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
                 sop.find("script", attrs={
