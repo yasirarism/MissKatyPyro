@@ -574,7 +574,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     await query.message.reply(res_str,
                                               reply_markup=markup,
                                               disable_web_page_preview=False,
-                                              reply_to_message_id=usr.id
+                                              reply_to_message_id=usr.id)
                 await query.message.delete()
             else:
                 await query.message.edit(res_str,
