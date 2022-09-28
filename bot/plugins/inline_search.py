@@ -1,4 +1,4 @@
-import json
+import json, traceback
 from bot import app
 from bot.plugins.other_tools import get_content
 from bot.helper.http import http

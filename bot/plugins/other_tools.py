@@ -441,7 +441,7 @@ async def imdb1_search(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie['title']}",
-                    callback_data=f"imdb#{movie['movieID']}",
+                    callback_data=f"imdbid#{movie['movieID']}",
                 )
             ]
             for movie in IMDBDATA
@@ -453,7 +453,7 @@ async def imdb1_search(client, message):
         await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
 
 
-@app.on_callback_query(filters.regex("^imdb"))
+@app.on_callback_query(filters.regex("^imdbid"))
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
         usr = query.message.reply_to_message
         if query.from_user.id != usr.from_user.id:
@@ -578,7 +578,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
 
 # IMDB Versi English
 @app.on_message(
-    filters.command(["imdb_en", "imdb_en@MissKatyRoBot"], COMMAND_HANDLER))
+    filters.command(["imdb_en"], COMMAND_HANDLER))
 @capture_err
 async def imdb_en_search(client, message):
     IMDBDATA = []
