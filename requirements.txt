@@ -17,6 +17,7 @@ pytz
 pykeyboard
 pySmartDL
 psutil
+python-dateutil
 html-telegraph-poster
 telegraph
 hachoir
