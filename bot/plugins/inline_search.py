@@ -273,7 +273,7 @@ async def imdb_inl(_, query):
             await query.edit_message_text("Permintaan kamu sedang diproses.. ")
             try:
                 trl = Translator()
-                url = f"https://www.imdb.com/title/tt{movie}/"
+                url = f"https://www.imdb.com/title/{movie}/"
                 resp = await get_content(url)
                 sop = BeautifulSoup(resp, "lxml")
                 r_json = json.loads(
