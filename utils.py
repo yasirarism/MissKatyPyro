@@ -6,6 +6,7 @@ from pyrogram.types import Message
 from typing import Union
 import re
 import os
+import emoji
 from datetime import datetime
 from typing import List
 from pyrogram.types import InlineKeyboardButton
@@ -35,6 +36,8 @@ class temp(object):
     U_NAME = None
     B_NAME = None
 
+def demoji(teks):
+    return emoji.emojize(f":{teks}:")
 
 async def is_subscribed(bot, query):
     try:
