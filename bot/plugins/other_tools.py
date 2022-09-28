@@ -4,13 +4,12 @@ from bs4 import BeautifulSoup
 import json
 import traceback
 import requests
-import emoji
 from pyrogram import Client, filters
 from gpytranslate import Translator
 from gtts import gTTS
 from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
-from utils import extract_user, get_file_id
+from utils import extract_user, get_file_id, demoji
 from bot.helper.time_gap import check_time_gap
 import time
 from datetime import datetime
@@ -495,7 +494,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(f"{emoji.emojize(':'country.text':')} {country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                country = "".join(f"{demoji(country.text)} {country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 country = country[:-2]
                 res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
             if sop.select('li[data-testid="title-details-languages"]'):
