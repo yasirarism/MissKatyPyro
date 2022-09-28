@@ -686,7 +686,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 actors = actors[:-2]
                 res_str += f"<b>Actor:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
-                res_str += f"<b>📜 Summary: </b> <code>{r_json["description"].replace("  ", " ")}</code>\n\n"
+                res_str += f"<b>📜 Summary: </b> <code>{r_json['description'].replace('  ', ' ')}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
                 key_ = ""
