@@ -21,9 +21,6 @@ RUN apk update && apk upgrade && \
     alpine-sdk libffi-dev py3-virtualenv libffi \
     dpkg cmake unzip && rm -rf /var/cache/apk/*
 
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
-
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
