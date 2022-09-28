@@ -216,7 +216,7 @@ async def pyrogram_to_quotly(messages):
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
                 "chatId": await get_message_sender_id(message.reply_to_message),
-                "emoji_status" = await get_custom_emoji(message.reply_to_message)
+                "emoji_status": await get_custom_emoji(message.reply_to_message),
             }
         else:
             the_message_dict_to_append["replyMessage"] = {}
