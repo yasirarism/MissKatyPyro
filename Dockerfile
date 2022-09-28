@@ -10,7 +10,7 @@ ENV TZ="Asia/Jakarta"
 
 # Installing basic packages
 RUN apk update && apk upgrade && \
-    apk add --upgrade --no-cache \
+    apk add --update \
     sudo py3-wheel musl-dev musl python3 \
     python3-dev musl-locales lshw \
     py3-pip py3-lxml \
@@ -19,7 +19,7 @@ RUN apk update && apk upgrade && \
     autoconf mediainfo bash \
     musl-utils tzdata gcompat \
     alpine-sdk libffi-dev py3-virtualenv libffi \
-    dpkg cmake unzip
+    dpkg cmake unzip && rm -rf /var/cache/apk/*
 
 RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
