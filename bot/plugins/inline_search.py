@@ -269,7 +269,7 @@ async def inline_fn(_, inline_query: InlineQuery):
 @app.on_callback_query(filters.regex("^imdbinl_"))
 async def imdb_inl(_, query):
         i, user, movie = query.data.split("_")
-        if user == query.from_user.id:
+        if user == f"{query.from_user.id}":
             await query.message.edit_text("Permintaan kamu sedang diproses.. ")
             try:
                 trl = Translator()
