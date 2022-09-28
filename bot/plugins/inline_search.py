@@ -357,6 +357,6 @@ async def imdb_inl(_, query):
                 await query.edit_message_text(res_str, reply_markup=markup, disable_web_page_preview=False)
             except Exception:
                 exc = traceback.format_exc()
-                await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
+                await query.edit_message_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
         else:
             await query.answer("⚠️ Akses Ditolak!", True)                
