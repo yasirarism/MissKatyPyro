@@ -266,7 +266,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@app.on_callback_query(filters.regex("^imdbinl_"))
+@app.on_callback_query(filters.regex("^imdbinl#"))
 async def imdb_inl(_, query):
         i, user, movie = query.data.split("#")
         if query.from_user.id != user:
@@ -307,13 +307,11 @@ async def imdb_inl(_, query):
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if country.endswith(", "):
-                    country = country[:-2]
+                country = country[:-2]
                 res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
             if sop.select('li[data-testid="title-details-languages"]'):
                 language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if language.endswith(", "):
-                    language = language[:-2]
+                language = language[:-2]
                 res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
             if r_json.get("director"):
                 all_director = r_json["director"]
