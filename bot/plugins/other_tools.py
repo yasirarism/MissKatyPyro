@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import json
 import traceback
 import requests
+import emoji
 from pyrogram import Client, filters
 from gpytranslate import Translator
 from gtts import gTTS
@@ -494,14 +495,12 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if country.endswith(", "):
-                    country = country[:-2]
+                country = "".join(f"{emoji.emojize(':'country.text':')} {country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                country = country[:-2]
                 res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
             if sop.select('li[data-testid="title-details-languages"]'):
                 language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if language.endswith(", "):
-                    language = language[:-2]
+                language = language[:-2]
                 res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
             if r_json.get("director"):
                 all_director = r_json["director"]
@@ -667,13 +666,11 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if country.endswith(", "):
-                    country = country[:-2]
+                country = country[:-2]
                 res_str += f"<b>🆔 Country:</b> <code>{country}</code>\n"
             if sop.select('li[data-testid="title-details-languages"]'):
                 language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
-                if language.endswith(", "):
-                    language = language[:-2]
+                language = language[:-2]
                 res_str += f"<b>🔊 Language:</b> <code>{language}</code>\n"
             if r_json.get("director"):
                 all_director = r_json["director"]
