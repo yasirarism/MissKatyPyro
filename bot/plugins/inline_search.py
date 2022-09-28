@@ -1,7 +1,6 @@
 import json
 from bot import app
 from bot.plugins.other_tools import get_content
-from utils import get_poster
 from bot.helper.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
@@ -61,7 +60,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     InlineKeyboardButton(
                         text="Get IMDB details",
                         callback_data=
-                        f"imdbinl_{inline_query.from_user.id}_{sraeo.get('id')}"
+                        f"imdbinl#{inline_query.from_user.id}#{sraeo.get('id')}"
                     )
                 ]]),
             ))
@@ -269,89 +268,121 @@ async def inline_fn(_, inline_query: InlineQuery):
 
 @app.on_callback_query(filters.regex("^imdbinl_"))
 async def imdb_inl(_, query):
-    i, user, movie = query.data.split("_")
-    if user == f"{query.from_user.id}":
-        trl = Translator()
-        url = f"https://www.imdb.com/title/{movie}/"
-        imdb = await get_poster(query=movie.split("tt")[1], id=True)
-        resp = await get_content(url)
-        b = BeautifulSoup(resp, "lxml")
-        r_json = json.loads(
-            b.find("script", attrs={
-                "type": "application/ld+json"
-            }).contents[0])
-        res_str = ""
-        type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
-        if r_json.get("name"):
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
-        if r_json.get("alternateName"):
-            res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
-        else:
-            res_str += "\n"
-        if imdb.get("kind") == "tv series":
-            res_str += f"<b>🍂 Total Season:</b> <code>{imdb['seasons']} season</code>\n"
-        if r_json.get("duration"):
-            durasi = r_json["duration"].replace("PT", "").replace(
-                "H", " Jam ").replace("M", " Menit")
-            res_str += f"<b>🕓 Durasi:</b> <code>{durasi}</code>\n"
-        if r_json.get("contentRating"):
-            res_str += f"<b>🔞 Content Rating:</b> <code>{r_json['contentRating']}</code> \n"
-        if r_json.get("aggregateRating"):
-            res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
-        if imdb.get("release_date"):
-            res_str += f"<b>📆 Rilis:</b> <code>{imdb['release_date']}</code>\n"
-        if r_json.get("genre"):
-            all_genre = r_json["genre"]
-            genre = "".join(f"#{i}, " for i in all_genre)
-            genre = genre[:-2].replace("-", "_")
-            res_str += f"<b>🎭 Genre:</b> {genre}\n"
-        if imdb.get("countries"):
-            country = imdb["countries"].replace("  ", " ")
-            if country.endswith(", "):
-                country = country[:-2]
-            res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
-        if imdb.get("languages"):
-            language = imdb["languages"].replace("  ", " ")
-            if language.endswith(", "):
-                language = language[:-2]
-            res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
-        if r_json.get("director"):
-            all_director = r_json["director"]
-            director = "".join(f"{i['name']}, " for i in all_director)
-            director = director[:-2]
-            res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
-        if r_json.get("actor"):
-            all_actors = r_json["actor"]
-            actors = "".join(f"{i['name']}, " for i in all_actors)
-            actors = actors[:-2]
-            res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
-        if r_json.get("description"):
-            summary = await trl(r_json["description"].replace("  ", " "),
-                                targetlang="id")
-            res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
-        if r_json.get("keywords"):
-            keywords = r_json["keywords"].split(",")
-            key_ = ""
-            for i in keywords:
-                i = i.replace(" ", "_")
-                key_ += f"#{i}, "
-            key_ = key_[:-2]
-            res_str += f"<b>🔥 Keyword/Tags:</b> {key_} \n\n"
-        res_str += "<b>IMDb Feature by</b> @MissKatyRoBot"
-        if r_json.get("trailer"):
-            trailer_url = r_json["trailer"]["embedUrl"]
-            markup = InlineKeyboardMarkup([[
-                InlineKeyboardButton(
-                    "🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
-                InlineKeyboardButton("▶️ Trailer", url=trailer_url)
-            ]])
-        else:
-            markup = InlineKeyboardMarkup([[
-                InlineKeyboardButton(
-                    "🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")
-            ]])
-        await query.edit_message_text(res_str,
-                                      reply_markup=markup,
-                                      disable_web_page_preview=False)
-    else:
-        await query.answer("Tombol ini bukan untukmu", show_alert=True)
+        i, user, movie = query.data.split("#")
+        if query.from_user.id != user:
+            return await query.answer("⚠️ Akses Ditolak!", True)
+        await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+        try:
+            trl = Translator()
+            url = f"https://www.imdb.com/title/tt{movie}/"
+            resp = await get_content(url)
+            sop = BeautifulSoup(resp, "lxml")
+            r_json = json.loads(
+                sop.find("script", attrs={
+                    "type": "application/ld+json"
+                }).contents[0])
+            res_str = ""
+            type = f"<code>{r_json['@type']}</code>" if r_json.get(
+                "@type") else ""
+            if r_json.get("name"):
+                res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
+            if r_json.get("alternateName"):
+                res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
+            else:
+                res_str += "\n"
+            if sop.select('li[data-testid="title-techspec_runtime"]'):
+                durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+                res_str += f"<b>🕓 Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
+            if r_json.get("contentRating"):
+                res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
+            if r_json.get("aggregateRating"):
+                res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+            if sop.select('li[data-testid="title-details-releasedate"]'):
+                rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+                res_str += f"<b>📆 Rilis:</b> <code>{rilis}</code>\n"
+            if r_json.get("genre"):
+                all_genre = r_json["genre"]
+                genre = "".join(f"#{i}, " for i in all_genre)
+                genre = genre[:-2].replace("-", "_")
+                res_str += f"<b>🎭 Genre:</b> {genre}\n"
+            if sop.select('li[data-testid="title-details-origin"]'):
+                country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                if country.endswith(", "):
+                    country = country[:-2]
+                res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
+            if sop.select('li[data-testid="title-details-languages"]'):
+                language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                if language.endswith(", "):
+                    language = language[:-2]
+                res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
+            if r_json.get("director"):
+                all_director = r_json["director"]
+                director = "".join(f"{i['name']}, " for i in all_director)
+                director = director[:-2]
+                res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
+            if r_json.get("actor"):
+                all_actors = r_json["actor"]
+                actors = "".join(f"{i['name']}, " for i in all_actors)
+                actors = actors[:-2]
+                res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
+            if r_json.get("description"):
+                summary = await trl(r_json["description"].replace("  ", " "),
+                                    targetlang="id")
+                res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
+            if r_json.get("keywords"):
+                keywords = r_json["keywords"].split(",")
+                key_ = ""
+                for i in keywords:
+                    i = i.replace(" ", "_")
+                    key_ += f"#{i}, "
+                key_ = key_[:-2]
+                res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
+            if sop.select('li[data-testid="award_information"]'):
+                awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{(await trl(awards, targetlang='id')).text}</code>\n\n"
+            else:
+                res_str += "\n"
+            res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+            if r_json.get("trailer"):
+                trailer_url = r_json["trailer"]["url"]
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}"),
+                    InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                ]])
+            else:
+                markup = InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        "🎬 Open IMDB",
+                        url=f"https://www.imdb.com{r_json['url']}")
+                ]])
+            if thumb := r_json.get("image"):
+                try:
+                    await query.message.reply_photo(
+                        photo=thumb,
+                        quote=True,
+                        caption=res_str,
+                        reply_to_message_id=usr.id,
+                        reply_markup=markup)
+                except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+                    poster = thumb.replace(".jpg", "._V1_UX360.jpg")
+                    await query.message.reply_photo(
+                        photo=poster,
+                        caption=res_str,
+                        reply_to_message_id=usr.id,
+                        reply_markup=markup)
+                except Exception:
+                    await query.message.reply(res_str,
+                                              reply_markup=markup,
+                                              disable_web_page_preview=False,
+                                              reply_to_message_id=usr.id)
+                await query.message.delete()
+            else:
+                await query.message.edit(res_str,
+                                         reply_markup=markup,
+                                         disable_web_page_preview=False)
+            await query.answer()
+        except Exception:
+            exc = traceback.format_exc()
+            await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
