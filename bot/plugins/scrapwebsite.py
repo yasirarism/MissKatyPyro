@@ -15,6 +15,7 @@ __MODULE__ = "WebScraper"
 __HELP__ = """
 /melongmovie - Scrape website data from MelongMovie Web. If without query will give latest movie list.
 /lk21 [query <opsional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
+/terbit21 [query <opsional>] - Scrape website data from Terbit21. If without query will give latest movie list.
 /savefilm21 [query <opsional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
 /movieku [query <opsional>] - Scrape website data from Movieku.cc
 /gomov [query <opsional>] - Scrape website data from GoMov. If without query will give latest movie list.
@@ -123,7 +124,7 @@ async def movikucc(_, message):
 
 
 @app.on_message(
-    filters.command(["savefilm21", "savefilm21@MissKatyRoBot"],
+    filters.command(["savefilm21"],
                     COMMAND_HANDLER))
 @capture_err
 async def savefilm21(_, message):
@@ -162,7 +163,7 @@ async def savefilm21(_, message):
 
 
 @app.on_message(
-    filters.command(["melongmovie", "melongmovie@MissKatyRoBot"],
+    filters.command(["melongmovie"],
                     COMMAND_HANDLER))
 @capture_err
 async def melongmovie(_, message):
@@ -202,45 +203,76 @@ async def melongmovie(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
-async def lk21_scrap(_, message):
-    try:
-        judul = message.text.split(" ", maxsplit=1)[1]
-        msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
+@app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
+async def terbit21_scrap(_, message):
+    if len(message.command) == 1:
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
+            r = await session.get(f"https://yasirapi.eu.org/terbit21")
             res = await r.json()
             data = "".join(
-                f"**Judul: {i['judul']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
-                for i in res["result"])
-            if not res["result"]:
-                return await msg.edit("Yahh, ga ada hasil ditemukan")
-            try:
-                await msg.edit(
-                    f"<b>Hasil pencarian query {judul} di lk21 (https://lk21.homes):</b>\n{data}",
-                    disable_web_page_preview=True)
-            except MessageTooLong:
-                pesan = rentry(data)
-                await pesan.delete()
-                return await message.reply(
-                    f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
-                )
-    except IndexError:
-        async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://yasirapi.eu.org/lk21")
-            res = await r.json()
-            data = "".join(
-                f"**Judul: {i['title']}**\n`{i['kualitas']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
+                f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
                 for i in res["result"])
             try:
                 return await message.reply(
-                    f"**Daftar rilis movie terbaru di web LK21 (https://lk21.homes)**:\n{data}",
+                    f"**Daftar rilis movie terbaru di web Terbit21**:\n{data}",
                     disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
                 return await message.reply(
                     f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
                 )
+    judul = message.text.split(" ", maxsplit=1)[1]
+    msg = await message.reply(f"Mencari film di Terbit21 dg keyword {judul}..")
+    async with aiohttp.ClientSession() as session:
+        r = await session.get(f"https://yasirapi.eu.org/terbit21?q={judul}")
+        res = await r.json()
+        data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+        if not res["result"]:
+            return await msg.edit("Yahh, ga ada hasil ditemukan")
+        try:
+            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
+        except MessageTooLong:
+            pesan = rentry(data)
+            await pesan.delete()
+            return await message.reply(
+                f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
+            )
+
+
+@app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
+async def lk21_scrap(_, message):
+    if len(message.command) == 1:
+        async with aiohttp.ClientSession() as session:
+            r = await session.get(f"https://yasirapi.eu.org/lk21")
+            res = await r.json()
+            data = "".join(
+                f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
+                for i in res["result"])
+            try:
+                return await message.reply(
+                    f"**Daftar rilis movie terbaru di web LK21**:\n{data}",
+                    disable_web_page_preview=True)
+            except MessageTooLong:
+                msg = rentry(data)
+                return await message.reply(
+                    f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
+                )
+    judul = message.text.split(" ", maxsplit=1)[1]
+    msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
+    async with aiohttp.ClientSession() as session:
+        r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
+        res = await r.json()
+        data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
+        if not res["result"]:
+            return await msg.edit("Yahh, ga ada hasil ditemukan")
+        try:
+            await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
+        except MessageTooLong:
+            pesan = rentry(data)
+            await pesan.delete()
+            return await message.reply(
+                f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
+            )
 
 
 async def getcontent(url):
