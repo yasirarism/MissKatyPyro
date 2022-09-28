@@ -270,7 +270,7 @@ async def inline_fn(_, inline_query: InlineQuery):
 async def imdb_inl(_, query):
         i, user, movie = query.data.split("_")
         if user == f"{query.from_user.id}":
-            await query.message.edit_text("Permintaan kamu sedang diproses.. ")
+            await query.edit_message_text("Permintaan kamu sedang diproses.. ")
             try:
                 trl = Translator()
                 url = f"https://www.imdb.com/title/tt{movie}/"
@@ -354,32 +354,7 @@ async def imdb_inl(_, query):
                             "🎬 Open IMDB",
                             url=f"https://www.imdb.com{r_json['url']}")
                     ]])
-                if thumb := r_json.get("image"):
-                    try:
-                        await query.message.reply_photo(
-                            photo=thumb,
-                            quote=True,
-                            caption=res_str,
-                            reply_to_message_id=usr.id,
-                            reply_markup=markup)
-                    except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-                        poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                        await query.message.reply_photo(
-                            photo=poster,
-                            caption=res_str,
-                            reply_to_message_id=usr.id,
-                            reply_markup=markup)
-                    except Exception:
-                        await query.message.reply(res_str,
-                                                reply_markup=markup,
-                                                disable_web_page_preview=False,
-                                                reply_to_message_id=usr.id)
-                    await query.message.delete()
-                else:
-                    await query.message.edit(res_str,
-                                            reply_markup=markup,
-                                            disable_web_page_preview=False)
-                await query.answer()
+                await query.edit_message_text(res_str, reply_markup=markup, disable_web_page_preview=False)
             except Exception:
                 exc = traceback.format_exc()
                 await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
