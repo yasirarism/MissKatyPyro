@@ -57,6 +57,25 @@ async def get_message_sender_name(m: Message):
             return m.sender_chat.title
         else:
             return ""
+        
+        
+async def get_custom_emoji(m: Message):
+    if m.forward_date:
+        if m.forward_sender_name:
+            return ""
+        elif m.forward_from:
+            return m.forward_from.emoji_status.custom_emoji_id
+        elif m.forward_from_chat:
+            return ""
+        else:
+            return ""
+    else:
+        if m.from_user:
+            return m.from_user.emoji_status.custom_emoji_id
+        elif m.sender_chat:
+            return ""
+        else:
+            return ""
 
 
 async def get_message_sender_username(m: Message):
@@ -187,6 +206,7 @@ async def pyrogram_to_quotly(messages):
         the_message_dict_to_append["avatar"] = True
         the_message_dict_to_append["from"] = {}
         the_message_dict_to_append["from"]["id"] = await get_message_sender_id(message)
+        the_message_dict_to_append["from"]["emoji_status"] = await get_custom_emoji(message)
         the_message_dict_to_append["from"]["name"] = await get_message_sender_name(message)
         the_message_dict_to_append["from"]["username"] = await get_message_sender_username(message)
         the_message_dict_to_append["from"]["type"] = message.chat.type.name.lower()
@@ -196,6 +216,7 @@ async def pyrogram_to_quotly(messages):
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
                 "chatId": await get_message_sender_id(message.reply_to_message),
+                "emoji_status" = await get_custom_emoji(message.reply_to_message)
             }
         else:
             the_message_dict_to_append["replyMessage"] = {}
