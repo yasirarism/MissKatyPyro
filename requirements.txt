@@ -1,3 +1,4 @@
+emoji
 pyrogram
 tgcrypto
 pymongo[srv]==3.12.3
@@ -6,7 +7,7 @@ motor[srv]
 requests
 bs4
 aiohttp
-heroku3
+emoji
 gTTS
 regex
 gpytranslate
@@ -17,11 +18,8 @@ pykeyboard
 pySmartDL
 psutil
 html-telegraph-poster
-lk21
 telegraph
 hachoir
 Pillow
-selenium
 httpx[http2]
-umongo
 vcsi
