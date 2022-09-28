@@ -656,7 +656,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Category:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-                res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+                res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} from {r_json['aggregateRating']['ratingCount']} user</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
                 res_str += f"<b>📆 Release Date:</b> <code>{rilis}</code>\n"
