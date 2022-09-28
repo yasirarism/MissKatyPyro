@@ -206,7 +206,6 @@ async def pyrogram_to_quotly(messages):
         the_message_dict_to_append["avatar"] = True
         the_message_dict_to_append["from"] = {}
         the_message_dict_to_append["from"]["id"] = await get_message_sender_id(message)
-        the_message_dict_to_append["from"]["emoji_status"] = await get_custom_emoji(message)
         the_message_dict_to_append["from"]["name"] = await get_message_sender_name(message)
         the_message_dict_to_append["from"]["username"] = await get_message_sender_username(message)
         the_message_dict_to_append["from"]["type"] = message.chat.type.name.lower()
@@ -216,7 +215,6 @@ async def pyrogram_to_quotly(messages):
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
                 "chatId": await get_message_sender_id(message.reply_to_message),
-                "emoji_status": await get_custom_emoji(message.reply_to_message),
             }
         else:
             the_message_dict_to_append["replyMessage"] = {}
