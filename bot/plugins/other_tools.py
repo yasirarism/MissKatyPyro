@@ -492,7 +492,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>⭐️ Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-                res_str += f"<b>📆 Rilis:</b> <code>{rilis}</code>\n"
+                rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")['href']
+                res_str += f"<b>📆 Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</code>\n"
             if r_json.get("genre"):
                 genre = ""
                 for i in r_json['genre']:
@@ -530,7 +531,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     url = i['url']
                     director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 director = director[:-2]
-                res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
+                res_str += f"<b>Sutradara:</b> {director}\n"
             if r_json.get("creator"):
                 creator = ""
                 for i in r_json['creator']:
@@ -539,7 +540,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                         url = i['url']
                         creator +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 creator = creator[:-2]
-                res_str += f"<b>Penulis:</b> <code>{creator}</code>\n"
+                res_str += f"<b>Penulis:</b> {creator}\n"
             if r_json.get("actor"):
                 actors = ""
                 for i in r_json['actor']:
@@ -547,7 +548,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     url = i['url']
                     actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
-                res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
+                res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
                 summary = await trl(r_json["description"].replace("  ", " "),
                                     targetlang="id")
@@ -701,7 +702,8 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 res_str += f"<b>⭐️ Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} from {r_json['aggregateRating']['ratingCount']} user</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-                res_str += f"<b>📆 Release Date:</b> <code>{rilis}</code>\n"
+                rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")['href']
+                res_str += f"<b>📆 Release Data:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</code>\n"
             if r_json.get("genre"):
                 genre = ""
                 for i in r_json['genre']:
@@ -739,7 +741,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                     url = i['url']
                     director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 director = director[:-2]
-                res_str += f"<b>Director:</b> <code>{director}</code>\n"
+                res_str += f"<b>Director:</b> {director}\n"
             if r_json.get("creator"):
                 creator = ""
                 for i in r_json['creator']:
@@ -748,7 +750,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                         url = i['url']
                         creator +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 creator = creator[:-2]
-                res_str += f"<b>Penulis:</b> <code>{creator}</code>\n"
+                res_str += f"<b>Penulis:</b> {creator}\n"
             if r_json.get("actor"):
                 actors = ""
                 for i in r_json['actor']:
@@ -756,7 +758,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                     url = i['url']
                     actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
-                res_str += f"<b>Stars:</b> <code>{actors}</code>\n\n"
+                res_str += f"<b>Stars:</b> {actors}\n\n"
             if r_json.get("description"):
                 res_str += f"<b>📜 Summary: </b> <code>{r_json['description'].replace('  ', ' ')}</code>\n\n"
             if r_json.get("keywords"):

@@ -330,11 +330,11 @@ async def imdb_inl(_, query):
                 if sop.select('li[data-testid="title-details-origin"]'):
                     country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_')}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                     country = country[:-2]
-                    res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
+                    res_str += f"<b>🆔 Negara:</b> {country}\n"
                 if sop.select('li[data-testid="title-details-languages"]'):
                     language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                     language = language[:-2]
-                    res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
+                    res_str += f"<b>🔊 Bahasa:</b> {language}\n"
                 res_str += "\n🙎 Info Pemeran:\n"
                 if r_json.get("director"):
                     director = ""
@@ -343,7 +343,7 @@ async def imdb_inl(_, query):
                         url = i['url']
                         director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                     director = director[:-2]
-                    res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
+                    res_str += f"<b>Sutradara:</b> {director}\n"
                 if r_json.get("creator"):
                     creator = ""
                     for i in r_json['creator']:
@@ -352,7 +352,7 @@ async def imdb_inl(_, query):
                             url = i['url']
                             creator +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                     creator = creator[:-2]
-                    res_str += f"<b>Penulis:</b> <code>{creator}</code>\n"
+                    res_str += f"<b>Penulis:</b> {creator}\n"
                 if r_json.get("actor"):
                     actors = ""
                     for i in r_json['actor']:
@@ -360,7 +360,7 @@ async def imdb_inl(_, query):
                         url = i['url']
                         actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                     actors = actors[:-2]
-                    res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
+                    res_str += f"<b>Pemeran:</b> {actors}\n\n"
                 if r_json.get("description"):
                     summary = await trl(r_json["description"].replace("  ", " "),
                                         targetlang="id")
