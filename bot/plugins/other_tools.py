@@ -522,7 +522,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>🔊 Bahasa:</b> {language}\n"
-            res_str += "🙎 Info Pemeran:\n"
+            res_str += "\n🙎 Info Pemeran:\n"
             if r_json.get("director"):
                 director = ""
                 for i in r_json['director']:
@@ -545,7 +545,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 for i in r_json['actor']:
                     name = i['name']
                     url = i['url']
-                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
@@ -754,7 +754,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 for i in r_json['actor']:
                     name = i['name']
                     url = i['url']
-                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
                 res_str += f"<b>Stars:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):

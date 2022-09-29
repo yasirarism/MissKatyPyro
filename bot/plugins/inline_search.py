@@ -358,7 +358,7 @@ async def imdb_inl(_, query):
                     for i in r_json['actor']:
                         name = i['name']
                         url = i['url']
-                        director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                        actors +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                     actors = actors[:-2]
                     res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
                 if r_json.get("description"):
