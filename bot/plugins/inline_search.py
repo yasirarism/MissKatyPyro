@@ -335,7 +335,7 @@ async def imdb_inl(_, query):
                     language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                     language = language[:-2]
                     res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
-                res_str += "🙎 Info Pemeran:\n"
+                res_str += "\n🙎 Info Pemeran:\n"
                 if r_json.get("director"):
                     director = ""
                     for i in r_json['director']:
