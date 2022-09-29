@@ -7,7 +7,7 @@ import requests
 from pyrogram import Client, filters
 from gpytranslate import Translator
 from gtts import gTTS
-from pyrogram.errors import MediaEmpty, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
+from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, demoji
 from bot.helper.time_gap import check_time_gap
@@ -459,8 +459,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         if query.from_user.id != usr.from_user.id:
             return await query.answer("⚠️ Akses Ditolak!", True)
         i, movie = query.data.split("#")
-        await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         try:
+            await query.message.edit_text("Permintaan kamu sedang diproses.. ")
             trl = Translator()
             url = f"https://www.imdb.com/title/tt{movie}/"
             resp = await get_content(url)
@@ -473,9 +473,14 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             type = f"<code>{r_json['@type']}</code>" if r_json.get(
                 "@type") else ""
             if r_json.get("name"):
-                res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
-            if r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
+                try:
+                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                except:
+                    tahun = "-"
+                res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
+            if sop.select('li[data-testid="title-details-akas"]'):
+                aka = sop.select('li[data-testid="title-details-akas"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
             else:
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
@@ -484,31 +489,63 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-                res_str += f"<b>🏆 Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+                res_str += f"<b>⭐️ Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
                 res_str += f"<b>📆 Rilis:</b> <code>{rilis}</code>\n"
             if r_json.get("genre"):
-                all_genre = r_json["genre"]
-                genre = "".join(f"#{i}, " for i in all_genre)
+                genre = ""
+                for i in r_json['genre']:
+                    if i == "Comedy":
+                        str += f"🤣 #{i}, "
+                    elif i == "Family":
+                        str += f"👨‍👩‍👧‍👧 #{i}, "
+                    elif i == "Drama":
+                        str += f"🎭 #{i}, "
+                    elif i == "Musical":
+                        str += f"🎸 #{i}, "
+                    elif i == "Adventure ":
+                        str += f"🌋 #{i}, "
+                    elif i == "Sci_Fi ":
+                        str += f"🤖 #{i}, "
+                    elif i == "Fantasy":
+                        str += f"✨ #{i}, "
+                    else:
+                        str += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(f"{demoji(country.text)} {country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_')}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 country = country[:-2]
-                res_str += f"<b>🆔 Negara:</b> <code>{country}</code>\n"
+                res_str += f"<b>🆔 Negara:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
-                res_str += f"<b>🔊 Bahasa:</b> <code>{language}</code>\n"
+                res_str += f"<b>🔊 Bahasa:</b> {language}\n"
+            res_str += "🙎 Info Pemeran:\n"
             if r_json.get("director"):
-                all_director = r_json["director"]
-                director = "".join(f"{i['name']}, " for i in all_director)
+                director = ""
+                for i in r_json['director']:
+                    name = i['name']
+                    url = i['url']
+                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 director = director[:-2]
                 res_str += f"<b>Sutradara:</b> <code>{director}</code>\n"
+            if r_json.get("creator"):
+                creator = ""
+                for i in r_json['creator']:
+                    if i['@type'] == 'Person':
+                        name = i['name']
+                        url = i['url']
+                        creator +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                creator = creator[:-2]
+                res_str += f"<b>Penulis:</b> <code>{creator}</code>\n"
             if r_json.get("actor"):
-                all_actors = r_json["actor"]
-                actors = "".join(f"{i['name']}, " for i in all_actors)
+                actors = ""
+                for i in r_json['actor']:
+                    name = i['name']
+                    url = i['url']
+                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
@@ -569,6 +606,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                                          reply_markup=markup,
                                          disable_web_page_preview=False)
             await query.answer()
+        except MessageNotModified:
+            pass
         except Exception:
             exc = traceback.format_exc()
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
@@ -643,9 +682,14 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             type = f"<code>{r_json['@type']}</code>" if r_json.get(
                 "@type") else ""
             if r_json.get("name"):
-                res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']}</a> (<code>{type}</code>)\n"
-            if r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{r_json['alternateName']}</code>\n\n"
+                try:
+                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                except:
+                    tahun = "-"
+                res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
+            if sop.select('li[data-testid="title-details-akas"]'):
+                aka = sop.select('li[data-testid="title-details-akas"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
             else:
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
@@ -654,33 +698,65 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             if r_json.get("contentRating"):
                 res_str += f"<b>🔞 Category:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-                res_str += f"<b>🏆 Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} from {r_json['aggregateRating']['ratingCount']} user</code> \n"
+                res_str += f"<b>⭐️ Rating:</b> <code>{r_json['aggregateRating']['ratingValue']} from {r_json['aggregateRating']['ratingCount']} user</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
                 res_str += f"<b>📆 Release Date:</b> <code>{rilis}</code>\n"
             if r_json.get("genre"):
-                all_genre = r_json["genre"]
-                genre = "".join(f"#{i}, " for i in all_genre)
+                genre = ""
+                for i in r_json['genre']:
+                    if i == "Comedy":
+                        str += f"🤣 #{i}, "
+                    elif i == "Family":
+                        str += f"👨‍👩‍👧‍👧 #{i}, "
+                    elif i == "Drama":
+                        str += f"🎭 #{i}, "
+                    elif i == "Musical":
+                        str += f"🎸 #{i}, "
+                    elif i == "Adventure ":
+                        str += f"🌋 #{i}, "
+                    elif i == "Sci_Fi ":
+                        str += f"🤖 #{i}, "
+                    elif i == "Fantasy":
+                        str += f"✨ #{i}, "
+                    else:
+                        str += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(f"{country.text}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_')}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 country = country[:-2]
-                res_str += f"<b>🆔 Country:</b> <code>{country}</code>\n"
+                res_str += f"<b>🆔 Country:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(f"{lang.text}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
-                res_str += f"<b>🔊 Language:</b> <code>{language}</code>\n"
+                res_str += f"<b>🔊 Language:</b> {language}\n"
+            res_str += "🙎 Cast Info:\n"
             if r_json.get("director"):
-                all_director = r_json["director"]
-                director = "".join(f"{i['name']}, " for i in all_director)
+                director = ""
+                for i in r_json['director']:
+                    name = i['name']
+                    url = i['url']
+                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 director = director[:-2]
                 res_str += f"<b>Director:</b> <code>{director}</code>\n"
+            if r_json.get("creator"):
+                creator = ""
+                for i in r_json['creator']:
+                    if i['@type'] == 'Person':
+                        name = i['name']
+                        url = i['url']
+                        creator +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                creator = creator[:-2]
+                res_str += f"<b>Penulis:</b> <code>{creator}</code>\n"
             if r_json.get("actor"):
-                all_actors = r_json["actor"]
-                actors = "".join(f"{i['name']}, " for i in all_actors)
+                actors = ""
+                for i in r_json['actor']:
+                    name = i['name']
+                    url = i['url']
+                    director +=  f"<a href='https://www.imdb.com{url}'>{name}</a>, "
                 actors = actors[:-2]
-                res_str += f"<b>Actor:</b> <code>{actors}</code>\n\n"
+                res_str += f"<b>Stars:</b> <code>{actors}</code>\n\n"
             if r_json.get("description"):
                 res_str += f"<b>📜 Summary: </b> <code>{r_json['description'].replace('  ', ' ')}</code>\n\n"
             if r_json.get("keywords"):

@@ -24,6 +24,8 @@ async def start(_, message):
     & filters.chat(-1001255283935) & ~filters.channel)
 @capture_err
 async def request_user(client, message):
+    if message.sender_chat:
+        return await message.reply(f"{message.from_user.mention} mohon gunakan akun asli saat request.")
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
         return await message.reply("Sabar dikit napa.. 🙄")

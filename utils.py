@@ -37,7 +37,7 @@ class temp(object):
     B_NAME = None
 
 def demoji(teks):
-    return emoji.emojize(f":{teks}:")
+    return emoji.emojize(f":{teks.replace(' ', '_')}:")
 
 async def is_subscribed(bot, query):
     try:

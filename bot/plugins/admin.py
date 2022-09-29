@@ -5,7 +5,7 @@ from bot import app, SUDO
 from bot.helper.functions import extract_user_and_reason, time_converter, extract_user, int_to_alpha
 from time import time
 from pyrogram import filters, enums
-from pyrogram.errors import FloodWait
+from pyrogram.errors import FloodWait, ChatAdminRequired
 from pyrogram.types import ChatPermissions
 from bot.core.decorator.permissions import adminsOnly, admins_in_chat, list_admins, member_permissions
 from bot.core.decorator.errors import capture_err
@@ -397,17 +397,23 @@ async def pin(_, message):
     if not message.reply_to_message:
         return await message.reply_text("Reply to a message to pin/unpin it.")
     r = message.reply_to_message
-    if message.command[0][0] == "u":
-        await r.unpin()
-        return await message.reply_text(
-            f"**Unpinned [this]({r.link}) message.**",
+    try:
+        if message.command[0][0] == "u":
+            await r.unpin()
+            return await message.reply_text(
+                f"**Unpinned [this]({r.link}) message.**",
+                disable_web_page_preview=True,
+            )
+        await r.pin(disable_notification=True)
+        await message.reply(
+            f"**Pinned [this]({r.link}) message.**",
             disable_web_page_preview=True,
         )
-    await r.pin(disable_notification=True)
-    await message.reply(
-        f"**Pinned [this]({r.link}) message.**",
-        disable_web_page_preview=True,
-    )
+    except ChatAdminRequired:
+        await message.reply(
+            f"Please give me admin access to use this command.",
+            disable_web_page_preview=True,
+        )
 
 
 # Mute members
