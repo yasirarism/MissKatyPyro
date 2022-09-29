@@ -305,7 +305,7 @@ async def imdb_inl(_, query):
                 if sop.select('li[data-testid="title-details-releasedate"]'):
                     rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
                     rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")['href']
-                    res_str += f"<b>📆 Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</code>\n"
+                    res_str += f"<b>📆 Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
                 if r_json.get("genre"):
                     genre = ""
                     for i in r_json['genre']:
