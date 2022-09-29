@@ -523,7 +523,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>🔊 Bahasa:</b> {language}\n"
-            res_str += "\n🙎 Info Pemeran:\n"
+            res_str += "\n<b>🙎 Info Pemeran:</b>\n"
             if r_json.get("director"):
                 director = ""
                 for i in r_json['director']:
@@ -733,7 +733,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>🔊 Language:</b> {language}\n"
-            res_str += "\n🙎 Cast Info:\n"
+            res_str += "\n<b>🙎 Cast Info:</b>\n"
             if r_json.get("director"):
                 director = ""
                 for i in r_json['director']:
