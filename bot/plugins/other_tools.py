@@ -497,21 +497,21 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 genre = ""
                 for i in r_json['genre']:
                     if i == "Comedy":
-                        str += f"🤣 #{i}, "
+                        genre += f"🤣 #{i}, "
                     elif i == "Family":
-                        str += f"👨‍👩‍👧‍👧 #{i}, "
+                        genre += f"👨‍👩‍👧‍👧 #{i}, "
                     elif i == "Drama":
-                        str += f"🎭 #{i}, "
+                        genre += f"🎭 #{i}, "
                     elif i == "Musical":
-                        str += f"🎸 #{i}, "
+                        genre += f"🎸 #{i}, "
                     elif i == "Adventure ":
-                        str += f"🌋 #{i}, "
+                        genre += f"🌋 #{i}, "
                     elif i == "Sci_Fi ":
-                        str += f"🤖 #{i}, "
+                        genre += f"🤖 #{i}, "
                     elif i == "Fantasy":
-                        str += f"✨ #{i}, "
+                        genre += f"✨ #{i}, "
                     else:
-                        str += f"#{i}, "
+                        genre += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
@@ -706,21 +706,21 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                 genre = ""
                 for i in r_json['genre']:
                     if i == "Comedy":
-                        str += f"🤣 #{i}, "
+                        genre += f"🤣 #{i}, "
                     elif i == "Family":
-                        str += f"👨‍👩‍👧‍👧 #{i}, "
+                        genre += f"👨‍👩‍👧‍👧 #{i}, "
                     elif i == "Drama":
-                        str += f"🎭 #{i}, "
+                        genre += f"🎭 #{i}, "
                     elif i == "Musical":
-                        str += f"🎸 #{i}, "
+                        genre += f"🎸 #{i}, "
                     elif i == "Adventure ":
-                        str += f"🌋 #{i}, "
+                        genre += f"🌋 #{i}, "
                     elif i == "Sci_Fi ":
-                        str += f"🤖 #{i}, "
+                        genre += f"🤖 #{i}, "
                     elif i == "Fantasy":
-                        str += f"✨ #{i}, "
+                        genre += f"✨ #{i}, "
                     else:
-                        str += f"#{i}, "
+                        genre += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")
                 res_str += f"<b>🎭 Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
