@@ -317,12 +317,14 @@ async def imdb_inl(_, query):
                             genre += f"🎭 #{i}, "
                         elif i == "Musical":
                             genre += f"🎸 #{i}, "
-                        elif i == "Adventure ":
+                        elif i == "Adventure":
                             genre += f"🌋 #{i}, "
-                        elif i == "Sci_Fi ":
+                        elif i == "Sci_Fi":
                             genre += f"🤖 #{i}, "
                         elif i == "Fantasy":
                             genre += f"✨ #{i}, "
+                        elif i == "Horror":
+                            genre += f"👻 #{i}, "
                         else:
                             genre += f"#{i}, "
                     genre = genre[:-2].replace("-", "_")
