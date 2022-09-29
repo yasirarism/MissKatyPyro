@@ -507,7 +507,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                         genre += f"🎸 #{i}, "
                     elif i == "Adventure":
                         genre += f"🌋 #{i}, "
-                    elif i == "Sci_Fi":
+                    elif i == "Sci-Fi":
                         genre += f"🤖 #{i}, "
                     elif i == "Fantasy":
                         genre += f"✨ #{i}, "
@@ -719,7 +719,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                         genre += f"🎸 #{i}, "
                     elif i == "Adventure":
                         genre += f"🌋 #{i}, "
-                    elif i == "Sci_Fi":
+                    elif i == "Sci-Fi":
                         genre += f"🤖 #{i}, "
                     elif i == "Fantasy":
                         genre += f"✨ #{i}, "
