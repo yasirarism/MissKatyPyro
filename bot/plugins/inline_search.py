@@ -289,23 +289,22 @@ async def imdb_inl(_, query):
                         tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
                     except:
                         tahun = "-"
-                    res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
-                if sop.select('li[data-testid="title-details-akas"]'):
-                    aka = sop.select('li[data-testid="title-details-akas"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                    res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
+                if r_json.get("alternateName"):
                     res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
                 else:
                     res_str += "\n"
                 if sop.select('li[data-testid="title-techspec_runtime"]'):
                     durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
-                    res_str += f"<b>🕓 Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
+                    res_str += f"<b>Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
                 if r_json.get("contentRating"):
-                    res_str += f"<b>🔞 Kategori:</b> <code>{r_json['contentRating']}</code> \n"
+                    res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
                 if r_json.get("aggregateRating"):
-                    res_str += f"<b>⭐️ Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']} dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+                    res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
                 if sop.select('li[data-testid="title-details-releasedate"]'):
                     rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
                     rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")['href']
-                    res_str += f"<b>📆 Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
+                    res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
                 if r_json.get("genre"):
                     genre = ""
                     for i in r_json['genre']:
@@ -328,16 +327,16 @@ async def imdb_inl(_, query):
                         else:
                             genre += f"#{i}, "
                     genre = genre[:-2].replace("-", "_")
-                    res_str += f"<b>🎭 Genre:</b> {genre}\n"
+                    res_str += f"<b>Genre:</b> {genre}\n"
                 if sop.select('li[data-testid="title-details-origin"]'):
                     country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_')}, " for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                     country = country[:-2]
-                    res_str += f"<b>🆔 Negara:</b> {country}\n"
+                    res_str += f"<b>Negara:</b> {country}\n"
                 if sop.select('li[data-testid="title-details-languages"]'):
                     language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                     language = language[:-2]
-                    res_str += f"<b>🔊 Bahasa:</b> {language}\n"
-                res_str += "\n<b>🙎 Info Pemeran:</b>\n"
+                    res_str += f"<b>Bahasa:</b> {language}\n"
+                res_str += "\n<b>🙎 Info Cast:</b>\n"
                 if r_json.get("director"):
                     director = ""
                     for i in r_json['director']:
