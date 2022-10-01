@@ -479,7 +479,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     tahun = "-"
                 res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
             if r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
+                res_str += f"<b>📢 AKA:</b> <code>{r_json.get("alternateName")}</code>\n\n"
             else:
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
@@ -690,7 +690,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                     tahun = "-"
                 res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
             if r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
+                res_str += f"<b>📢 AKA:</b> <code>{r_json.get("alternateName")}</code>\n\n"
             else:
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
