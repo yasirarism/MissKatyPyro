@@ -291,7 +291,7 @@ async def imdb_inl(_, query):
                         tahun = "-"
                     res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
                 if r_json.get("alternateName"):
-                    res_str += f"<b>📢 AKA:</b> <code>{r_json.get("alternateName")}</code>\n\n"
+                    res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
                 else:
                     res_str += "\n"
                 if sop.select('li[data-testid="title-techspec_runtime"]'):
