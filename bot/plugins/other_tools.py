@@ -5,7 +5,7 @@ import json
 import traceback
 import requests
 from pyrogram import Client, filters
-from async_google_trans_new import AsyncTranslator
+from deep_translator import GoogleTranslator
 from gtts import gTTS
 from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
@@ -103,13 +103,13 @@ async def translate(client, message):
     trl = AsyncTranslator()
     if message.reply_to_message and (message.reply_to_message.text
                                      or message.reply_to_message.caption):
-        if len(message.text.split()) == 1:
+        if len(message.command) == 1:
             target_lang = "id"
         else:
             target_lang = message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
-        if len(message.text.split()) <= 2:
+        if len(message.command) == 1:
             return await message.reply_text(
                 "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
             )
@@ -117,7 +117,7 @@ async def translate(client, message):
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
     try:
-        tekstr = await trl.translate(text, target_lang)
+        tekstr = GoogleTranslator(source='auto', target='id').translate(text=text)
     except ValueError as err:
         return await msg.edit(f"Error: <code>{str(err)}</code>")
     try:
@@ -456,7 +456,6 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         i, movie = query.data.split("#")
         try:
             await query.message.edit_text("Permintaan kamu sedang diproses.. ")
-            trl = AsyncTranslator()
             url = f"https://www.imdb.com/title/tt{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
@@ -479,7 +478,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
                 durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
-                res_str += f"<b>Durasi:</b> <code>{await trl.translate(durasi, 'id')}</code>\n"
+                res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
@@ -548,7 +547,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
-                summary = await trl.translate(r_json.get('description'), 'id')
+                summary = GoogleTranslator('auto', 'id').translate(r_json.get('description'))
                 res_str += f"<b>📜 Plot: </b> <code>{await trl.translate(summary, 'id')}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
@@ -560,7 +559,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
             if sop.select('li[data-testid="award_information"]'):
                 awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl.translate(awards, 'id')}</code>\n\n"
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
             else:
                 res_str += "\n"
             res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"

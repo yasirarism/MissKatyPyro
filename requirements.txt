@@ -22,4 +22,4 @@ hachoir
 Pillow
 httpx[http2]
 vcsi
-async_google_trans_new
+translator
