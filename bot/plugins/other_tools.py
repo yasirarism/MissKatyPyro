@@ -548,7 +548,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
                 summary = GoogleTranslator('auto', 'id').translate(r_json.get('description'))
-                res_str += f"<b>📜 Plot: </b> <code>{await trl.translate(summary, 'id')}</code>\n\n"
+                res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
                 key_ = ""
