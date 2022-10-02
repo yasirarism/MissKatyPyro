@@ -5,7 +5,7 @@ import json
 import traceback
 import requests
 from pyrogram import Client, filters
-from gpytranslate import Translator
+from async_google_trans_new import AsyncTranslator
 from gtts import gTTS
 from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
@@ -100,7 +100,7 @@ async def gsearch(client, message):
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
-    trl = Translator()
+    trl = AsyncTranslator()
     if message.reply_to_message and (message.reply_to_message.text
                                      or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
@@ -110,23 +110,18 @@ async def translate(client, message):
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
         if len(message.text.split()) <= 2:
-            await message.reply_text(
+            return await message.reply_text(
                 "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
             )
-            return
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
-    detectlang = await trl.detect(text)
     try:
-        tekstr = await trl(text, targetlang=target_lang)
+        tekstr = await trl.translate(text, target_lang)
     except ValueError as err:
-        await msg.edit(f"Error: <code>{str(err)}</code>")
-        return
+        return await msg.edit(f"Error: <code>{str(err)}</code>")
     try:
-        await msg.edit(
-            f"<b>Diterjemahkan:</b> dari {detectlang} ke {target_lang} \n<code>{tekstr.text}</code>",
-        )
+        await msg.edit(f"<code>{tekstr}</code>")
     except MessageTooLong:
         url = rentry(tekstr.text)
         await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
@@ -461,7 +456,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         i, movie = query.data.split("#")
         try:
             await query.message.edit_text("Permintaan kamu sedang diproses.. ")
-            trl = Translator()
+            trl = AsyncTranslator()
             url = f"https://www.imdb.com/title/tt{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
@@ -484,7 +479,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
                 durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
-                res_str += f"<b>Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
+                res_str += f"<b>Durasi:</b> <code>{await trl.translate(durasi, 'id')}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
@@ -512,6 +507,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                         genre += f"✨ #{i}, "
                     elif i == "Horror":
                         genre += f"👻 #{i}, "
+                    elif i == "Romance":
+                        genre += f"🌹 #{i}, "
                     else:
                         genre += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")
@@ -551,9 +548,8 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
-                summary = await trl(r_json["description"].replace("  ", " "),
-                                    targetlang="id")
-                res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
+                summary = await trl.translate(r_json.get('description'), 'id')
+                res_str += f"<b>📜 Plot: </b> <code>{await trl.translate(summary, 'id')}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
                 key_ = ""
@@ -564,7 +560,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
             if sop.select('li[data-testid="award_information"]'):
                 awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{(await trl(awards, targetlang='id')).text}</code>\n\n"
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl.translate(awards, 'id')}</code>\n\n"
             else:
                 res_str += "\n"
             res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
@@ -723,6 +719,8 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                         genre += f"✨ #{i}, "
                     elif i == "Horror":
                         genre += f"👻 #{i}, "
+                    elif i == "Romance":
+                        genre += f"🌹 #{i}, "
                     else:
                         genre += f"#{i}, "
                 genre = genre[:-2].replace("-", "_")

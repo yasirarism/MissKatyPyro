@@ -5,7 +5,7 @@ from bot.helper.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji
-from gpytranslate import Translator
+from async_google_trans_new import AsyncTranslator
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
 
 __MODULE__ = "InlineFeature"
@@ -273,7 +273,7 @@ async def imdb_inl(_, query):
         if user == f"{query.from_user.id}":
             await query.edit_message_text("Permintaan kamu sedang diproses.. ")
             try:
-                trl = Translator()
+                trl = AsyncTranslator()
                 url = f"https://www.imdb.com/title/{movie}/"
                 resp = await get_content(url)
                 sop = BeautifulSoup(resp, "lxml")
@@ -296,7 +296,7 @@ async def imdb_inl(_, query):
                     res_str += "\n"
                 if sop.select('li[data-testid="title-techspec_runtime"]'):
                     durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
-                    res_str += f"<b>Durasi:</b> <code>{(await trl(durasi, targetlang='id')).text}</code>\n"
+                    res_str += f"<b>Durasi:</b> <code>{await trl.translate(durasi, 'id')}</code>\n"
                 if r_json.get("contentRating"):
                     res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
                 if r_json.get("aggregateRating"):
@@ -324,6 +324,8 @@ async def imdb_inl(_, query):
                             genre += f"✨ #{i}, "
                         elif i == "Horror":
                             genre += f"👻 #{i}, "
+                        elif i == "Romance":
+                            genre += f"🌹 #{i}, "
                         else:
                             genre += f"#{i}, "
                     genre = genre[:-2].replace("-", "_")
@@ -363,9 +365,8 @@ async def imdb_inl(_, query):
                     actors = actors[:-2]
                     res_str += f"<b>Pemeran:</b> {actors}\n\n"
                 if r_json.get("description"):
-                    summary = await trl(r_json["description"].replace("  ", " "),
-                                        targetlang="id")
-                    res_str += f"<b>📜 Plot: </b> <code>{summary.text}</code>\n\n"
+                    summary = await trl.translate(r_json.get('description'), 'id')
+                    res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
                 if r_json.get("keywords"):
                     keywords = r_json["keywords"].split(",")
                     key_ = ""
@@ -376,7 +377,7 @@ async def imdb_inl(_, query):
                     res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
                 if sop.select('li[data-testid="award_information"]'):
                     awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                    res_str += f"<b>🏆 Penghargaan:</b> <code>{(await trl(awards, targetlang='id')).text}</code>\n\n"
+                    res_str += f"<b>🏆 Penghargaan:</b> <code>{await trl.translate(awards, 'id')}</code>\n\n"
                 else:
                     res_str += "\n"
                 res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"

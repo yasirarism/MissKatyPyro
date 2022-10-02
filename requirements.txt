@@ -7,10 +7,8 @@ motor[srv]
 requests
 bs4
 aiohttp
-emoji
 gTTS
 regex
-gpytranslate
 pyromod
 apscheduler
 pytz
@@ -24,3 +22,4 @@ hachoir
 Pillow
 httpx[http2]
 vcsi
+async_google_trans_new
