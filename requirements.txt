@@ -22,4 +22,4 @@ hachoir
 Pillow
 httpx[http2]
 vcsi
-translator
+deep-translator
