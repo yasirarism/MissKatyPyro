@@ -100,7 +100,6 @@ async def gsearch(client, message):
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
-    trl = AsyncTranslator()
     if message.reply_to_message and (message.reply_to_message.text
                                      or message.reply_to_message.caption):
         if len(message.command) == 1:
@@ -667,7 +666,6 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
         i, movie = query.data.split("#")
         await query.message.edit_text("Processing your request.. ")
         try:
-            trl = Translator()
             url = f"https://www.imdb.com/title/tt{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
