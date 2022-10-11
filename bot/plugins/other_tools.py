@@ -424,7 +424,7 @@ async def imdb1_search(client, message):
                 if len(IMDBDATA) == 10:
                    break
                 title = midb.get("l")
-                year = f"({y})" if midb.get("y") else ""
+                year = f"({midb.get('y')})" if midb.get("y") else ""
                 movieID = re.findall(r"tt(\d+)", midb.get("id"))[0]
                 IMDBDATA.append({"title": f"{title} {year}", "movieID": movieID})
         except Exception as err:
