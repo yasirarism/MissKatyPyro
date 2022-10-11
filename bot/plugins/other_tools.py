@@ -428,7 +428,7 @@ async def imdb1_search(client, message):
                 y = i.find("span", attrs={"class": "ipc-metadata-list-summary-item__li"}).text
                 year =  y if y.isdigit() else "-"
                 movieID = re.findall(r'\/tt(\d+)/', i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).get("href"))[0]
-                IMDBDATA.append({'title': title, 'movieID': movieID})
+                IMDBDATA.append({"title": f"{title} ({year})", "movieID": movieID})
         except Exception as err:
             return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
@@ -640,7 +640,7 @@ async def imdb_en_search(client, message):
                 y = i.find("span", attrs={"class": "ipc-metadata-list-summary-item__li"}).text
                 year =  y if y.isdigit() else "-"
                 movieID = re.findall(r'\/tt(\d+)/', i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).get("href"))[0]
-                IMDBDATA.append({"title": f"{title} {year}", "movieID": movieID})
+                IMDBDATA.append({"title": f"{title} ({year})", "movieID": movieID})
         except Exception as err:
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
