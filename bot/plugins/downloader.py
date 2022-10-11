@@ -116,16 +116,16 @@ async def tiktokdl(client, message):
 @capture_err
 async def fbdl(client, message):
     if len(message.command) == 1:
-        return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
+        return await message.reply(f"Use command /{message.command[0]} [link] to download Facebook video.")
     link = message.command[1]
     try:
         r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
         bs = BeautifulSoup(r, "lxml")
         resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>",""))
         try:
-            url = resjson['links']['hd']
+            url = resjson['links']['hd'].replace("&amp;", "&")
         except:
-            url = resjson['links']['sd']
+            url = resjson['links']['sd'].replace("&amp;", "&")
         obj = SmartDL(url, progress_bar=False)
         obj.start()
         path = obj.get_dest()
