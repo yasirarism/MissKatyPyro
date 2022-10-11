@@ -97,6 +97,7 @@ async def tiktokdl(client, message):
         return await message.reply(
             "Use command /{message.command[0]} [link] to download tiktok video.")
     link = message.command[1]
+    msg = await message.reply("Trying download...")
     try:
         async with aiohttp.ClientSession() as ses:
             async with ses.get(
@@ -108,9 +109,10 @@ async def tiktokdl(client, message):
                     caption=
                     f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]"
                 )
+        await msg.delete()
     except Exception as e:
-        await message.reply(
-            f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
 
 @app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
 @capture_err
@@ -118,6 +120,7 @@ async def fbdl(client, message):
     if len(message.command) == 1:
         return await message.reply(f"Use command /{message.command[0]} [link] to download Facebook video.")
     link = message.command[1]
+    msg = await message.reply("Trying download...")
     try:
         r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
         bs = BeautifulSoup(r, "lxml")
@@ -130,9 +133,11 @@ async def fbdl(client, message):
         obj.start()
         path = obj.get_dest()
         await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]")
+        await msg.delete()
         try:
             os.remove(path)
         except:
             pass
     except Exception as e:
         await message.reply(f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
