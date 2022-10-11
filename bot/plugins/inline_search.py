@@ -35,8 +35,6 @@ async def inline_fn(_, inline_query: InlineQuery):
     res = json.loads(search_results.text).get('result')
     oorse = []
     for midb in res:
-        if not midb.get("id").startswith("tt"): # Prevent if not IMDB ID
-            continue
         title = midb.get("l", "")
         description = midb.get("q", "")
         stars = midb.get("s", "")

@@ -397,8 +397,6 @@ async def imdb1_search(client, message):
             r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
             res = json.loads(r).get('result')
             for midb in res:
-                if not midb.get("id").startswith("tt"): # Prevent if not IMDB ID
-                    continue
                 title = midb.get("l")
                 year = f"({midb.get('y')})" if midb.get("y") else ""
                 movieID = re.findall(r"tt(\d+)", midb.get("id"))[0]
@@ -607,8 +605,6 @@ async def imdb_en_search(client, message):
             r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
             res = json.loads(r).get('result')
             for midb in res:
-                if not midb.get("id").startswith("tt"): # Prevent if not IMDB ID
-                    continue
                 title = midb.get("l")
                 year = f"({midb.get('y')})" if midb.get("y") else ""
                 movieID = re.findall(r"tt(\d+)", midb.get("id"))[0]
