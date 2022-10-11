@@ -420,12 +420,14 @@ async def imdb1_search(client, message):
         try:
             r = await get_content(f"https://www.imdb.com/find?q={judul}&s=tt&ref_=fn_tt")
             soup = BeautifulSoup(r, "lxml")
-            res = soup.find_all(class_="result_text")
+            res = soup.find_all("li", attrs={"class": "ipc-metadata-list-summary-item ipc-metadata-list-summary-item--click find-result-item find-title-result"})
             for i in res:
                 if len(IMDBDATA) == 10:
                    break
-                title = i.text
-                movieID = re.findall(r'\/tt(\d+)/', i.find('a').get('href'))[0]
+                title = i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).text
+                y = i.find("span", attrs={"class": "ipc-metadata-list-summary-item__li"}).text
+                year =  y if y.isdigit() else "-"
+                movieID = re.findall(r'\/tt(\d+)/', i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).get("href"))[0]
                 IMDBDATA.append({'title': title, 'movieID': movieID})
         except Exception as err:
             return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
@@ -630,12 +632,14 @@ async def imdb_en_search(client, message):
         try:
             r = await get_content(f"https://www.imdb.com/find?q={judul}&s=tt&ref_=fn_tt")
             soup = BeautifulSoup(r, "lxml")
-            res = soup.find_all(class_="result_text")
+            res = soup.find_all("li", attrs={"class": "ipc-metadata-list-summary-item ipc-metadata-list-summary-item--click find-result-item find-title-result"})
             for i in res:
                 if len(IMDBDATA) == 10:
                    break
-                title = i.text
-                movieID = re.findall(r'\/tt(\d+)/', i.find('a').get('href'))[0]
+                title = i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).text
+                y = i.find("span", attrs={"class": "ipc-metadata-list-summary-item__li"}).text
+                year =  y if y.isdigit() else "-"
+                movieID = re.findall(r'\/tt(\d+)/', i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).get("href"))[0]
                 IMDBDATA.append({'title': title, 'movieID': movieID})
         except Exception as err:
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
