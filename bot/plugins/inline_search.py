@@ -31,18 +31,17 @@ To use this feature, just type bot username with following args below.
 async def inline_fn(_, inline_query: InlineQuery):
     movie_name = inline_query.query.split("imdb ")[1].strip()
     search_results = await http.get(
-        f"https://betterimdbot.herokuapp.com/search.php?_={movie_name}")
-    srch_results = json.loads(search_results.text)
-    asroe = srch_results.get("d")
+        f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
+    res = json.loads(search_results.text)
     oorse = []
-    for sraeo in asroe:
-        title = sraeo.get("l", "")
-        description = sraeo.get("q", "")
-        stars = sraeo.get("s", "")
-        imdb_url = f"https://imdb.com/title/{sraeo.get('id')}"
-        year = sraeo.get("y", "")
+    for midb in res:
+        title = midb.get("l", "")
+        description = midb.get("q", "")
+        stars = midb.get("s", "")
+        imdb_url = f"https://imdb.com/title/{midb.get('id')}"
+        year = midb.get("y", "")
         try:
-            image_url = sraeo.get("i").get("imageUrl")
+            image_url = midb.get("i").get("imageUrl")
         except:
             image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
         message_text = f"<a href='{image_url}'>🎬</a>"
