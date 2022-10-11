@@ -105,7 +105,7 @@ async def tiktokdl(client, message):
                 await message.reply_video(
                     r["linkori"],
                     caption=
-                    f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [{<code>message.from_user.id</code>}]"
+                    f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]"
                 )
     except Exception as e:
         await message.reply(
