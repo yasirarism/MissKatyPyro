@@ -39,7 +39,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         description = midb.get("q", "")
         stars = midb.get("s", "")
         imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-        year = midb.get("y", "")
+        year = midb.get(f"({y})", "")
         try:
             image_url = midb.get("i").get("imageUrl")
         except:
@@ -48,7 +48,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         message_text += f"<a href='{imdb_url}'>{title} {year}</a>"
         oorse.append(
             InlineQueryResultArticle(
-                title=f"{title} ({year})",
+                title=f"{title} {year}",
                 input_message_content=InputTextMessageContent(
                     message_text=message_text,
                     parse_mode=enums.ParseMode.HTML,
