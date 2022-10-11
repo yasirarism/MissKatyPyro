@@ -5,7 +5,6 @@ import os
 import logging
 import aiohttp
 import json
-from bot.helper.http import http
 from bs4 import BeautifulSoup
 from bot import app
 from pySmartDL import SmartDL
@@ -118,7 +117,7 @@ async def fbdl(client, message):
         return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
     link = message.command[1]
     try:
-        r = await http.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
+        r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
         bs = BeautifulSoup(r, "lxml")
         resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>",""))
         try:
@@ -128,7 +127,7 @@ async def fbdl(client, message):
         obj = SmartDL(url, progress_bar=False)
         obj.start()
         path = obj.get_dest()
-        await message.reply_video(path)
+        await message.reply_video(path, caption=f"<code>{path}</code>")
         try:
             os.remove(path)
         except:
