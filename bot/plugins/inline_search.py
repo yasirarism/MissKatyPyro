@@ -60,7 +60,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     InlineKeyboardButton(
                         text="Get IMDB details",
                         callback_data=
-                        f"imdbinl_{inline_query.from_user.id}_{sraeo.get('id')}"
+                        f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}"
                     )
                 ]]),
             ))
