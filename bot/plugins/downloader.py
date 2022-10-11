@@ -5,6 +5,7 @@ import os
 import logging
 import aiohttp
 import json
+import requests
 from bs4 import BeautifulSoup
 from bot import app
 from pySmartDL import SmartDL
