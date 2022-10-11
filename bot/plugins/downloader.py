@@ -23,6 +23,7 @@ __HELP__ = """
 /download [url] - Download file from URL (Sudo Only)
 /download [reply_to_TG_File] - Download TG File
 /tiktokdl [link] - Download TikTok Video
+/fbdl [link] - Download Facebook Video
 """
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
@@ -128,7 +129,7 @@ async def fbdl(client, message):
         obj = SmartDL(url, progress_bar=False)
         obj.start()
         path = obj.get_dest()
-        await message.reply_video(path, caption=f"<code>{path}</code>")
+        await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]")
         try:
             os.remove(path)
         except:
