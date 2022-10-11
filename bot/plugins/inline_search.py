@@ -64,7 +64,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     )
                 ]]),
             ))
-    resfo = srch_results.get("q")
+    resfo = res.get("q")
     await inline_query.answer(
         results=oorse,
         cache_time=300,
