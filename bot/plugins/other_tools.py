@@ -628,17 +628,15 @@ async def imdb_en_search(client, message):
         r, judul = message.text.split(None, 1)
         k = await message.reply("Searching Movie/Series in IMDB Database.. 😴", quote=True)
         try:
-            r = await get_content(f"https://www.imdb.com/find?q={judul}&s=tt&ref_=fn_tt")
-            soup = BeautifulSoup(r, "lxml")
-            res = soup.find_all("li", attrs={"class": "ipc-metadata-list-summary-item ipc-metadata-list-summary-item--click find-result-item find-title-result"})
-            for i in res:
+            r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
+            res = json.loads(r).get('result')
+            for midb in res:
                 if len(IMDBDATA) == 10:
                    break
-                title = i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).text
-                y = i.find("span", attrs={"class": "ipc-metadata-list-summary-item__li"}).text
-                year =  y if y.isdigit() else "-"
-                movieID = re.findall(r'\/tt(\d+)/', i.find("a", attrs={"class": "ipc-metadata-list-summary-item__t"}).get("href"))[0]
-                IMDBDATA.append({"title": f"{title} ({year})", "movieID": movieID})
+                title = midb.get("l")
+                year = f"({midb.get('y')})" if midb.get("y") else ""
+                movieID = re.findall(r"tt(\d+)", midb.get("id"))[0]
+                IMDBDATA.append({"title": f"{title} {year}", "movieID": movieID})
         except Exception as err:
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
