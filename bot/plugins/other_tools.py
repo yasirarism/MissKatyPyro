@@ -419,7 +419,7 @@ async def imdb1_search(client, message):
         k = await message.reply("🔎 Sedang mencari di Database IMDB..", quote=True)
         try:
             r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
-            res = json.loads(r.text).get('result')
+            res = json.loads(r).get('result')
             for midb in res:
                 if len(IMDBDATA) == 10:
                    break
