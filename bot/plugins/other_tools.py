@@ -31,7 +31,6 @@ __HELP__ = """
 /tts - Convert Text to Voice.
 /imdb [query] - Find Movie Details From IMDB.com in Indonesian Language.
 /imdb_en [query] - Find Movie Details From IMDB.com in English Language.
-/tiktokdl [link] - Download TikTok Video
 """
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
@@ -116,8 +115,8 @@ async def translate(client, message):
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
     try:
-        tekstr = GoogleTranslator(source='auto', target='id').translate(text=text)
-    except ValueError as err:
+        tekstr = (requests.get(f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target={target_lang}")).json()["text"]
+    except Exception as err:
         return await msg.edit(f"Error: <code>{str(err)}</code>")
     try:
         await msg.edit(f"<code>{tekstr}</code>")
@@ -156,29 +155,6 @@ async def tts(_, message):
         os.remove(f"tts_{message.from_user.id}.mp3")
     except:
         pass
-
-
-@app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
-@capture_err
-async def tiktokdl(client, message):
-    if len(message.command) == 1:
-        return await message.reply(
-            "Use command /tiktokdl [link] to download tiktok video.")
-    link = message.command[1]
-    try:
-        async with aiohttp.ClientSession() as ses:
-            async with ses.get(
-                    f"https://api.hayo.my.id/api/tiktok/3?url={link}"
-            ) as result:
-                r = await result.json()
-                await message.reply_video(
-                    r["nowm"],
-                    caption=
-                    f"<b>Title:</b> <code>{r['caption']}</code>\n\nUploaded by @MissKatyRoBot"
-                )
-    except Exception as e:
-        await message.reply(
-            f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
 
 
 @app.on_message(

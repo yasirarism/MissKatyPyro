@@ -3,6 +3,10 @@ import asyncio
 import math
 import os
 import logging
+import aiohttp
+import json
+from bot.helper.http import http
+from bs4 import BeautifulSoup
 from bot import app
 from pySmartDL import SmartDL
 from datetime import datetime
@@ -14,6 +18,12 @@ from bot.helper.pyro_progress import (
     humanbytes,
 )
 
+__MODULE__ = "Downloader"
+__HELP__ = """
+/download [url] - Download file from URL (Sudo Only)
+/download [reply_to_TG_File] - Download TG File
+/tiktokdl [link] - Download TikTok Video
+"""
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err
@@ -78,3 +88,50 @@ async def download(client, message):
             await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
     else:
         await pesan.edit("Reply to a Telegram Media, to download it to my local server.")
+
+@app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
+@capture_err
+async def tiktokdl(client, message):
+    if len(message.command) == 1:
+        return await message.reply(
+            "Use command /{message.command[0]} [link] to download tiktok video.")
+    link = message.command[1]
+    try:
+        async with aiohttp.ClientSession() as ses:
+            async with ses.get(
+                    f"https://api.hayo.my.id/api/tiktok/4?url={link}"
+            ) as result:
+                r = await result.json()
+                await message.reply_video(
+                    r["linkori"],
+                    caption=
+                    f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [{<code>message.from_user.id</code>}]"
+                )
+    except Exception as e:
+        await message.reply(
+            f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+
+@app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
+@capture_err
+async def fbdl(client, message):
+    if len(message.command) == 1:
+        return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
+    link = message.command[1]
+    try:
+        r = await http.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
+        bs = BeautifulSoup(r, "lxml")
+        resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>",""))
+        try:
+            url = resjson['links']['hd']
+        except:
+            url = resjson['links']['sd']
+        obj = SmartDL(url, progress_bar=False)
+        obj.start()
+        path = obj.get_dest()
+        await message.reply_video(path)
+        try:
+            os.remove(path)
+        except:
+            pass
+    except Exception as e:
+        await message.reply(f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}")
