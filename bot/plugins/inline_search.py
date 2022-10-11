@@ -32,7 +32,7 @@ async def inline_fn(_, inline_query: InlineQuery):
     movie_name = inline_query.query.split("imdb ")[1].strip()
     search_results = await http.get(
         f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
-    res = json.loads(search_results.text)
+    res = json.loads(search_results.text).get('result')
     oorse = []
     for midb in res:
         title = midb.get("l", "")
