@@ -40,7 +40,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         description = sraeo.get("q", "")
         stars = sraeo.get("s", "")
         imdb_url = f"https://imdb.com/title/{sraeo.get('id')}"
-        year = sraeo.get("yr", "").rstrip("-")
+        year = sraeo.get("y", "")
         try:
             image_url = sraeo.get("i").get("imageUrl")
         except:
@@ -49,7 +49,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         message_text += f"<a href='{imdb_url}'>{title} {year}</a>"
         oorse.append(
             InlineQueryResultArticle(
-                title=f" {title} {year}",
+                title=f"{title} ({year})",
                 input_message_content=InputTextMessageContent(
                     message_text=message_text,
                     parse_mode=enums.ParseMode.HTML,
