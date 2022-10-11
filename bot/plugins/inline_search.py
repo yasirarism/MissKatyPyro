@@ -64,7 +64,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     )
                 ]]),
             ))
-    resfo = res.get("q")
+    resfo = json.loads(search_results.text).get('q')
     await inline_query.answer(
         results=oorse,
         cache_time=300,
