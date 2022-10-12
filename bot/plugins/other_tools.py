@@ -33,19 +33,33 @@ __HELP__ = """
 /imdb_en [query] - Find Movie Details From IMDB.com in English Language.
 """
 
+def remove_html_tags(text):
+    """Remove html tags from a string"""
+    import re
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
+
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
 @capture_err
 async def stackoverflow(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
     r = (requests.get(
-        f"https://api.safone.tech/stackoverflow?query={message.command[1]}&limit=10"
+        f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
     )).json()
-    hasil = "".join(
-        f"<a href='{i['link']}'>{i['title']} ({parser.parse(i['datecreated'])})</a>\n{i['description']}\n\n"
-        for i in r['results'])
-    await message.reply(hasil)
-
+    hasil = ""
+    for count, data in  enumerate(r['items'], start=1):
+       question = data['question_id']
+       title = data['title']
+       snippet = remove_html_tags(data['excerpt'])[:80].replace("\n","").replace("    ","") if len(remove_html_tags(data['excerpt'])) > 80 else remove_html_tags(data['excerpt']).replace("\n","").replace("    ","")
+       hasil += f"{count}. <a href='https://stackoverflow.com/questions/{question}'>{title}</a>\n<code>{snippet}</code>\n"
+    try:
+        await message.reply(hasil)
+    except MessageTooLong:
+        url = rentry(hasil)
+        await msg.edit(f"Your text pasted to rentry because has long text:\n{url}")
+    except Exception as e:
+        await message.reply(e)
 
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
