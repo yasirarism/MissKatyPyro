@@ -34,7 +34,7 @@ keywords_list = [
     ),
     group=-1,
 )
-async def inline_fn(_, inline_query: InlineQuery):
+async def inline_imdb(_, inline_query: InlineQuery):
     movie_name = inline_query.query.split("imdb ")[1].strip()
     search_results = await http.get(
         f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
@@ -62,7 +62,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                     InlineKeyboardButton(
                         text="Get IMDB details",
                         callback_data=
-                        f"imdbin1_{inline_query.from_user.id}_{midb.get('id')}"
+                        f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}"
                     )
                 ]]),
             ))
@@ -83,7 +83,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                                  startswith("yt ") and inline_query.from_user),
     name="YtInlineFilter"),
                      group=-1)
-async def inline_fn(_, inline_query: InlineQuery):
+async def inline_yt(_, inline_query: InlineQuery):
     judul = inline_query.query.split("yt ")[1].strip()
     search_results = await http.get(
         f"https://api.abir-hasan.tk/youtube?query={judul}")
@@ -136,7 +136,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                        "google ") and inline_query.from_user),
                    name="GoogleInlineFilter"),
     group=-1)
-async def inline_fn(_, inline_query: InlineQuery):
+async def inline_google(_, inline_query: InlineQuery):
     judul = inline_query.query.split("google ")[1].strip()
     headers = {
         "User-Agent":
@@ -185,7 +185,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                        "pypi ") and inline_query.from_user),
                    name="YtInlineFilter"),
     group=-1)
-async def inline_fn(_, inline_query: InlineQuery):
+async def inline_pypi(_, inline_query: InlineQuery):
     query = inline_query.query.split("pypi ")[1].strip()
     search_results = await http.get(
         f"https://api.hayo.my.id/api/pypi?package={query}")
@@ -228,7 +228,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                        "git ") and inline_query.from_user),
                    name="GitInlineFilter"),
     group=-1)
-async def inline_fn(_, inline_query: InlineQuery):
+async def inline_git(_, inline_query: InlineQuery):
     query = inline_query.query.split("git ")[1].strip()
     search_results = await http.get(
         f"https://api.github.com/search/repositories?q={query}")
