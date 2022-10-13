@@ -17,59 +17,12 @@ To use this feature, just type bot username with following args below.
 ~ google [query] - Search in Google.
 """
 
-@app.on_inline_query(
-    filters.create(
-        lambda _, __, inline_query:
-        (inline_query.query and inline_query.query.startswith("imdb2 ") and
-         inline_query.from_user),
-        # https://t.me/UserGeSpam/359404
-        name="Imdb2InlineFilter",
-    ),
-    group=-1,
-)
-async def inline_fn(_, inline_query: InlineQuery):
-    movie_name = inline_query.query.split("imdb2 ")[1].strip()
-    search_results = await http.get(
-        f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
-    res = json.loads(search_results.text).get('result')
-    oorse = []
-    for midb in res:
-        title = midb.get("l", "")
-        description = midb.get("q", "")
-        stars = midb.get("s", "")
-        imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-        year = f"({midb.get('y')})" if midb.get("y") else ""
-        try:
-            image_url = midb.get("i").get("imageUrl")
-        except:
-            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
-        caption = f"<a href='{image_url}'>🎬</a>"
-        caption += f"<a href='{imdb_url}'>{title} {year}</a>"
-        oorse.append(
-            InlineQueryResultPhoto(
-                title=f"{title} {year}",
-                caption=caption,
-                description=f" {description} | {stars}",
-                photo_url=image_url,
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        text="Get IMDB details",
-                        callback_data=
-                        f"imdbin2_{inline_query.from_user.id}_{midb.get('id')}"
-                    )
-                ]]),
-            ))
-    resfo = json.loads(search_results.text).get('q')
-    await inline_query.answer(
-        results=oorse,
-        cache_time=300,
-        is_gallery=False,
-        is_personal=False,
-        next_offset="",
-        switch_pm_text=f"Found {len(oorse)} results for {resfo}",
-        switch_pm_parameter="imdb")
-    inline_query.stop_propagation()
-
+keywords_list = [
+    "imdb",
+    "pypi",
+    "git",
+    "google",
+]
 
 @app.on_inline_query(
     filters.create(
@@ -97,23 +50,19 @@ async def inline_fn(_, inline_query: InlineQuery):
             image_url = midb.get("i").get("imageUrl")
         except:
             image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
-        message_text = f"<a href='{image_url}'>🎬</a>"
-        message_text += f"<a href='{imdb_url}'>{title} {year}</a>"
+        caption = f"<a href='{image_url}'>🎬</a>"
+        caption += f"<a href='{imdb_url}'>{title} {year}</a>"
         oorse.append(
-            InlineQueryResultArticle(
+            InlineQueryResultPhoto(
                 title=f"{title} {year}",
-                input_message_content=InputTextMessageContent(
-                    message_text=message_text,
-                    parse_mode=enums.ParseMode.HTML,
-                    disable_web_page_preview=False),
-                url=imdb_url,
+                caption=caption,
                 description=f" {description} | {stars}",
-                thumb_url=image_url,
+                photo_url=image_url,
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(
                         text="Get IMDB details",
                         callback_data=
-                        f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}"
+                        f"imdbin_{inline_query.from_user.id}_{midb.get('id')}"
                     )
                 ]]),
             ))
@@ -127,7 +76,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         switch_pm_text=f"Found {len(oorse)} results for {resfo}",
         switch_pm_parameter="imdb")
     inline_query.stop_propagation()
-
+    
 
 @app.on_inline_query(filters.create(
     lambda _, __, inline_query: (inline_query.query and inline_query.query.
@@ -239,7 +188,7 @@ async def inline_fn(_, inline_query: InlineQuery):
 async def inline_fn(_, inline_query: InlineQuery):
     query = inline_query.query.split("pypi ")[1].strip()
     search_results = await http.get(
-        f"https://kamiselaluada.me/api/pypi?package={query}")
+        f"https://api.hayo.my.id/api/pypi?package={query}")
     srch_results = json.loads(search_results.text)
     data = []
     for sraeo in srch_results:
@@ -446,9 +395,9 @@ async def imdb_inl(_, query):
                             "🎬 Open IMDB",
                             url=f"https://www.imdb.com{r_json['url']}")
                     ]])
-                await query.edit_message_text(res_str, reply_markup=markup, disable_web_page_preview=False)
+                await query.edit_message_caption(res_str, reply_markup=markup, disable_web_page_preview=False)
             except Exception:
                 exc = traceback.format_exc()
-                await query.edit_message_text(f"<b>ERROR:</b>\n<code>{exc}</code>")
+                await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
         else:
             await query.answer("⚠️ Akses Ditolak!", True)                
