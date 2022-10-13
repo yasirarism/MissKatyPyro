@@ -272,7 +272,7 @@ async def inline_fn(_, inline_query: InlineQuery):
 async def imdb_inl(_, query):
         i, user, movie = query.data.split("_")
         if user == f"{query.from_user.id}":
-            await query.edit_message_text("Permintaan kamu sedang diproses.. ")
+            await query.edit_message_caption("⏳ <i>Permintaan kamu sedang diproses.. </i>")
             try:
                 url = f"https://www.imdb.com/title/{movie}/"
                 resp = await get_content(url)
