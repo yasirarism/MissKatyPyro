@@ -31,8 +31,7 @@ keywords_list = [
          inline_query.from_user),
         # https://t.me/UserGeSpam/359404
         name="ImdbInlineFilter",
-    ),
-    group=-1,
+    )
 )
 async def inline_imdb(_, inline_query: InlineQuery):
     movie_name = inline_query.query.split("imdb ")[1].strip()
@@ -81,8 +80,7 @@ async def inline_imdb(_, inline_query: InlineQuery):
 @app.on_inline_query(filters.create(
     lambda _, __, inline_query: (inline_query.query and inline_query.query.
                                  startswith("yt ") and inline_query.from_user),
-    name="YtInlineFilter"),
-                     group=-1)
+    name="YtInlineFilter"))
 async def inline_yt(_, inline_query: InlineQuery):
     judul = inline_query.query.split("yt ")[1].strip()
     search_results = await http.get(
@@ -134,8 +132,7 @@ async def inline_yt(_, inline_query: InlineQuery):
     filters.create(lambda _, __, inline_query:
                    (inline_query.query and inline_query.query.startswith(
                        "google ") and inline_query.from_user),
-                   name="GoogleInlineFilter"),
-    group=-1)
+                   name="GoogleInlineFilter"))
 async def inline_google(_, inline_query: InlineQuery):
     judul = inline_query.query.split("google ")[1].strip()
     headers = {
@@ -183,8 +180,7 @@ async def inline_google(_, inline_query: InlineQuery):
     filters.create(lambda _, __, inline_query:
                    (inline_query.query and inline_query.query.startswith(
                        "pypi ") and inline_query.from_user),
-                   name="YtInlineFilter"),
-    group=-1)
+                   name="YtInlineFilter"))
 async def inline_pypi(_, inline_query: InlineQuery):
     query = inline_query.query.split("pypi ")[1].strip()
     search_results = await http.get(
@@ -226,8 +222,7 @@ async def inline_pypi(_, inline_query: InlineQuery):
     filters.create(lambda _, __, inline_query:
                    (inline_query.query and inline_query.query.startswith(
                        "git ") and inline_query.from_user),
-                   name="GitInlineFilter"),
-    group=-1)
+                   name="GitInlineFilter"))
 async def inline_git(_, inline_query: InlineQuery):
     query = inline_query.query.split("git ")[1].strip()
     search_results = await http.get(
@@ -395,7 +390,7 @@ async def imdb_inl(_, query):
                             "🎬 Open IMDB",
                             url=f"https://www.imdb.com{r_json['url']}")
                     ]])
-                await query.edit_message_caption(res_str, reply_markup=markup, disable_web_page_preview=False)
+                await query.edit_message_caption(res_str, reply_markup=markup)
             except Exception:
                 exc = traceback.format_exc()
                 await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
