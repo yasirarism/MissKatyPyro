@@ -6,7 +6,7 @@ from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji
 from deep_translator import GoogleTranslator
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultPhoto
 
 __MODULE__ = "InlineFeature"
 __HELP__ = """
@@ -16,6 +16,59 @@ To use this feature, just type bot username with following args below.
 ~ git [query] - Search in Git.
 ~ google [query] - Search in Google.
 """
+
+@app.on_inline_query(
+    filters.create(
+        lambda _, __, inline_query:
+        (inline_query.query and inline_query.query.startswith("imdb2 ") and
+         inline_query.from_user),
+        # https://t.me/UserGeSpam/359404
+        name="Imdb2InlineFilter",
+    ),
+    group=-1,
+)
+async def inline_fn(_, inline_query: InlineQuery):
+    movie_name = inline_query.query.split("imdb2 ")[1].strip()
+    search_results = await http.get(
+        f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
+    res = json.loads(search_results.text).get('result')
+    oorse = []
+    for midb in res:
+        title = midb.get("l", "")
+        description = midb.get("q", "")
+        stars = midb.get("s", "")
+        imdb_url = f"https://imdb.com/title/{midb.get('id')}"
+        year = midb.get(f"({y})", "")
+        try:
+            image_url = midb.get("i").get("imageUrl")
+        except:
+            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+        caption = f"<a href='{image_url}'>🎬</a>"
+        caption += f"<a href='{imdb_url}'>{title} {year}</a>"
+        oorse.append(
+            InlineQueryResultPhoto(
+                title=f"{title} {year}",
+                caption=caption,
+                description=f" {description} | {stars}",
+                thumb_url=image_url,
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text="Get IMDB details",
+                        callback_data=
+                        f"imdbin2_{inline_query.from_user.id}_{midb.get('id')}"
+                    )
+                ]]),
+            ))
+    resfo = json.loads(search_results.text).get('q')
+    await inline_query.answer(
+        results=oorse,
+        cache_time=300,
+        is_gallery=False,
+        is_personal=False,
+        next_offset="",
+        switch_pm_text=f"Found {len(oorse)} results for {resfo}",
+        switch_pm_parameter="imdb")
+    inline_query.stop_propagation()
 
 
 @app.on_inline_query(
