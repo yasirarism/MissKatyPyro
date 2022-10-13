@@ -38,7 +38,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         description = midb.get("q", "")
         stars = midb.get("s", "")
         imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-        year = midb.get(f"({y})", "")
+        year = f"({midb.get('y')})" if midb.get("y") else ""
         try:
             image_url = midb.get("i").get("imageUrl")
         except:
@@ -92,7 +92,7 @@ async def inline_fn(_, inline_query: InlineQuery):
         description = midb.get("q", "")
         stars = midb.get("s", "")
         imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-        year = midb.get(f"({y})", "")
+        year = f"({midb.get('y')})" if midb.get("y") else ""
         try:
             image_url = midb.get("i").get("imageUrl")
         except:
