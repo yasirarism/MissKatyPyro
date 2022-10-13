@@ -50,7 +50,7 @@ async def inline_fn(_, inline_query: InlineQuery):
                 title=f"{title} {year}",
                 caption=caption,
                 description=f" {description} | {stars}",
-                thumb_url=image_url,
+                photo_url=image_url,
                 reply_markup=InlineKeyboardMarkup([[
                     InlineKeyboardButton(
                         text="Get IMDB details",
