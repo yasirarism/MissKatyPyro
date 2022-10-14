@@ -26,7 +26,7 @@ keywords_list = [
 
 @app.on_inline_query(filters.regex("^imdb"))
 async def inline_imdb(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 3:
+    if len(inline_query.query.strip().lower().split()) < 2:
         return await inline_query.answer(
             results=[],
             switch_pm_text="IMDB Search | imdb [QUERY]",
@@ -77,7 +77,7 @@ async def inline_imdb(_, inline_query: InlineQuery):
 
 @app.on_inline_query(filters.regex("^yt"))
 async def inline_yt(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 3:
+    if len(inline_query.query.strip().lower().split()) < 2:
         return await inline_query.answer(
             results=[],
             switch_pm_text="YouTube Search | yt [QUERY]",
@@ -131,7 +131,7 @@ async def inline_yt(_, inline_query: InlineQuery):
 
 @app.on_inline_query(filters.regex("^google"))
 async def inline_google(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 3:
+    if len(inline_query.query.strip().lower().split()) < 2:
         return await inline_query.answer(
             results=[],
             switch_pm_text="Google Search | google [QUERY]",
@@ -181,7 +181,7 @@ async def inline_google(_, inline_query: InlineQuery):
 
 @app.on_inline_query(filters.regex("^pypi"))
 async def inline_pypi(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 3:
+    if len(inline_query.query.strip().lower().split()) < 2:
         return await inline_query.answer(
             results=[],
             switch_pm_text="Pypi Search | pypi [QUERY]",
@@ -225,7 +225,7 @@ async def inline_pypi(_, inline_query: InlineQuery):
 
 @app.on_inline_query(filters.regex("^git"))
 async def inline_git(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 3:
+    if len(inline_query.query.strip().lower().split()) < 2:
         return await inline_query.answer(
             results=[],
             switch_pm_text="Github Search | git [QUERY]",
