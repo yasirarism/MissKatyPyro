@@ -24,17 +24,15 @@ keywords_list = [
     "google",
 ]
 
-@app.on_inline_query(
-    filters.create(
-        lambda _, __, inline_query:
-        (inline_query.query and inline_query.query.startswith("imdb ") and
-         inline_query.from_user),
-        # https://t.me/UserGeSpam/359404
-        name="ImdbInlineFilter",
-    )
-)
+@app.on_inline_query(filters.regex("^imdb"))
 async def inline_imdb(_, inline_query: InlineQuery):
-    movie_name = inline_query.query.split("imdb ")[1].strip()
+    if len(inline_query.query.strip().lower().split()) < 3:
+        return await inline_query.answer(
+            results=answers,
+            switch_pm_text="IMDB Search | imdb [QUERY]",
+            switch_pm_parameter="inline",
+        )
+    movie_name = inline_query.query.split(None, 1)[1].strip()
     search_results = await http.get(
         f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
     res = json.loads(search_results.text).get('result')
@@ -77,12 +75,15 @@ async def inline_imdb(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
     
 
-@app.on_inline_query(filters.create(
-    lambda _, __, inline_query: (inline_query.query and inline_query.query.
-                                 startswith("yt ") and inline_query.from_user),
-    name="YtInlineFilter"))
+@app.on_inline_query(filters.regex("^yt"))
 async def inline_yt(_, inline_query: InlineQuery):
-    judul = inline_query.query.split("yt ")[1].strip()
+    if len(inline_query.query.strip().lower().split()) < 3:
+        return await inline_query.answer(
+            results=answers,
+            switch_pm_text="YouTube Search | yt [QUERY]",
+            switch_pm_parameter="inline",
+        )
+    judul = inline_query.query.split(None, 1)[1].strip()
     search_results = await http.get(
         f"https://api.abir-hasan.tk/youtube?query={judul}")
     srch_results = json.loads(search_results.text)
@@ -128,13 +129,15 @@ async def inline_yt(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@app.on_inline_query(
-    filters.create(lambda _, __, inline_query:
-                   (inline_query.query and inline_query.query.startswith(
-                       "google ") and inline_query.from_user),
-                   name="GoogleInlineFilter"))
+@app.on_inline_query(filters.regex("^google"))
 async def inline_google(_, inline_query: InlineQuery):
-    judul = inline_query.query.split("google ")[1].strip()
+    if len(inline_query.query.strip().lower().split()) < 3:
+        return await inline_query.answer(
+            results=answers,
+            switch_pm_text="Google Search | google [QUERY]",
+            switch_pm_parameter="inline",
+        )
+    judul = inline_query.query.split(None, 1)[1].strip()
     headers = {
         "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -176,13 +179,15 @@ async def inline_google(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@app.on_inline_query(
-    filters.create(lambda _, __, inline_query:
-                   (inline_query.query and inline_query.query.startswith(
-                       "pypi ") and inline_query.from_user),
-                   name="YtInlineFilter"))
+@app.on_inline_query(filters.regex("^pypi"))
 async def inline_pypi(_, inline_query: InlineQuery):
-    query = inline_query.query.split("pypi ")[1].strip()
+    if len(inline_query.query.strip().lower().split()) < 3:
+        return await inline_query.answer(
+            results=answers,
+            switch_pm_text="Pypi Search | pypi [QUERY]",
+            switch_pm_parameter="inline",
+        )
+    query = inline_query.query.split(None, 1)[1].strip()
     search_results = await http.get(
         f"https://api.hayo.my.id/api/pypi?package={query}")
     srch_results = json.loads(search_results.text)
@@ -218,13 +223,15 @@ async def inline_pypi(_, inline_query: InlineQuery):
     inline_query.stop_propagation()
 
 
-@app.on_inline_query(
-    filters.create(lambda _, __, inline_query:
-                   (inline_query.query and inline_query.query.startswith(
-                       "git ") and inline_query.from_user),
-                   name="GitInlineFilter"))
+@app.on_inline_query(filters.regex("^git"))
 async def inline_git(_, inline_query: InlineQuery):
-    query = inline_query.query.split("git ")[1].strip()
+    if len(inline_query.query.strip().lower().split()) < 3:
+        return await inline_query.answer(
+            results=answers,
+            switch_pm_text="Github Search | git [QUERY]",
+            switch_pm_parameter="inline",
+        )
+    wuery = inline_query.query.split(None, 1)[1].strip()
     search_results = await http.get(
         f"https://api.github.com/search/repositories?q={query}")
     srch_results = json.loads(search_results.text)
