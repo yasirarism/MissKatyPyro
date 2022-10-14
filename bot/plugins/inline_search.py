@@ -26,7 +26,7 @@ keywords_list = [
 ]
 
 @app.on_inline_query()
-async def inline_home(_, inline_query: InlineQuery):
+async def inline_menu(_, inline_query: InlineQuery):
     buttons = InlineKeyboard(row_width=2)
     buttons.add(
         *[
@@ -58,252 +58,232 @@ async def inline_home(_, inline_query: InlineQuery):
             results=answerss,
             cache_time=10,
         )
-
-@app.on_inline_query(filters.regex("^imdb"))
-async def inline_imdb(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 2:
-        return await inline_query.answer(
-            results=[],
-            switch_pm_text="IMDB Search | imdb [QUERY]",
-            switch_pm_parameter="inline",
-        )
-    movie_name = inline_query.query.split(None, 1)[1].strip()
-    search_results = await http.get(
-        f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
-    res = json.loads(search_results.text).get('result')
-    oorse = []
-    for midb in res:
-        title = midb.get("l", "")
-        description = midb.get("q", "")
-        stars = midb.get("s", "")
-        imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-        year = f"({midb.get('y')})" if midb.get("y") else ""
-        try:
-            image_url = midb.get("i").get("imageUrl")
-        except:
-            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
-        caption = f"<a href='{image_url}'>🎬</a>"
-        caption += f"<a href='{imdb_url}'>{title} {year}</a>"
-        oorse.append(
-            InlineQueryResultPhoto(
-                title=f"{title} {year}",
-                caption=caption,
-                description=f" {description} | {stars}",
-                photo_url=image_url,
-                reply_markup=InlineKeyboardMarkup([[
-                    InlineKeyboardButton(
-                        text="Get IMDB details",
-                        callback_data=
-                        f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}"
-                    )
-                ]]),
-            ))
-    resfo = json.loads(search_results.text).get('q')
-    await inline_query.answer(
-        results=oorse,
-        cache_time=10,
-        is_gallery=False,
-        is_personal=False,
-        next_offset="",
-        switch_pm_text=f"Found {len(oorse)} results for {resfo}",
-        switch_pm_parameter="imdb")
-    inline_query.stop_propagation()
-    
-
-@app.on_inline_query(filters.regex("^yt"))
-async def inline_yt(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 2:
-        return await inline_query.answer(
-            results=[],
-            switch_pm_text="YouTube Search | yt [QUERY]",
-            switch_pm_parameter="inline",
-        )
-    judul = inline_query.query.split(None, 1)[1].strip()
-    search_results = await http.get(
-        f"https://api.abir-hasan.tk/youtube?query={judul}")
-    srch_results = json.loads(search_results.text)
-    asroe = srch_results.get("results")
-    oorse = []
-    for sraeo in asroe:
-        title = sraeo.get("title")
-        link = sraeo.get("link")
-        view = sraeo.get("viewCount").get("text")
-        thumb = sraeo.get("thumbnails")[0].get("url")
-        durasi = sraeo.get("accessibility").get("duration")
-        publishTime = sraeo.get("publishedTime")
-        try:
-            deskripsi = "".join(f"{i['text']} "
-                                for i in sraeo.get("descriptionSnippet"))
-        except:
-            deskripsi = "-"
-        message_text = f"<a href='{link}'>{title}</a>\n"
-        message_text += f"Description: {deskripsi}\n"
-        message_text += f"Total View: {view}\n"
-        message_text += f"Duration: {durasi}\n"
-        message_text += f"Published Time: {publishTime}"
-        oorse.append(
-            InlineQueryResultArticle(
-                title=f"{title}",
-                input_message_content=InputTextMessageContent(
-                    message_text=message_text,
-                    parse_mode=enums.ParseMode.HTML,
-                    disable_web_page_preview=False),
-                url=link,
-                description=deskripsi,
-                thumb_url=thumb,
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Watch Video 📹", url=link)]]),
-            ))
-    await inline_query.answer(results=oorse,
-                              cache_time=300,
-                              is_gallery=False,
-                              is_personal=False,
-                              next_offset="",
-                              switch_pm_text=f"Found {len(asroe)} results",
-                              switch_pm_parameter="yt")
-    inline_query.stop_propagation()
-
-
-@app.on_inline_query(filters.regex("^google"))
-async def inline_google(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 2:
-        return await inline_query.answer(
-            results=[],
-            switch_pm_text="Google Search | google [QUERY]",
-            switch_pm_parameter="inline",
-        )
-    judul = inline_query.query.split(None, 1)[1].strip()
-    headers = {
-        "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/61.0.3163.100 Safari/537.36"
-    }
-    search_results = await http.get(f"https://www.google.com/search?q={judul}",
-                                    headers=headers)
-    soup = BeautifulSoup(search_results.text, "lxml")
-    data = []
-    for result in soup.select(".tF2Cxc"):
-        title = result.select_one(".DKV0Md").text
-        link = result.select_one(".yuRUbf a")["href"]
-        try:
-            snippet = result.select_one("#rso .lyLwlc").text
-        except:
-            snippet = "-"
-        message_text = f"<a href='{link}'>{title}</a>\n"
-        message_text += f"Deskription: {snippet}"
-        data.append(
-            InlineQueryResultArticle(
-                title=f"{title}",
-                input_message_content=InputTextMessageContent(
-                    message_text=message_text,
-                    parse_mode=enums.ParseMode.HTML,
-                    disable_web_page_preview=False),
-                url=link,
-                description=snippet,
-                thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Open Website", url=link)]]),
-            ))
-    await inline_query.answer(results=data,
-                              cache_time=10,
-                              is_gallery=False,
-                              is_personal=False,
-                              next_offset="",
-                              switch_pm_text=f"Found {len(data)} results",
-                              switch_pm_parameter="google")
-    inline_query.stop_propagation()
-
-
-@app.on_inline_query(filters.regex("^pypi"))
-async def inline_pypi(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 2:
-        return await inline_query.answer(
-            results=[],
-            switch_pm_text="Pypi Search | pypi [QUERY]",
-            switch_pm_parameter="inline",
-        )
-    query = inline_query.query.split(None, 1)[1].strip()
-    search_results = await http.get(
-        f"https://api.hayo.my.id/api/pypi?package={query}")
-    srch_results = json.loads(search_results.text)
-    data = []
-    for sraeo in srch_results:
-        title = sraeo.get("title")
-        link = sraeo.get("link")
-        deskripsi = sraeo.get("desc")
-        version = sraeo.get("version")
-        message_text = f"<a href='{link}'>{title} {version}</a>\n"
-        message_text += f"Description: {deskripsi}\n"
-        data.append(
-            InlineQueryResultArticle(
-                title=f"{title}",
-                input_message_content=InputTextMessageContent(
-                    message_text=message_text,
-                    parse_mode=enums.ParseMode.HTML,
-                    disable_web_page_preview=False),
-                url=link,
-                description=deskripsi,
-                thumb_url=
-                "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png",
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Open Link", url=link)]]),
-            ))
-    await inline_query.answer(results=data,
-                              cache_time=10,
-                              is_gallery=False,
-                              is_personal=False,
-                              next_offset="",
-                              switch_pm_text=f"Found {len(data)} results",
-                              switch_pm_parameter="pypi")
-    inline_query.stop_propagation()
-
-
-@app.on_inline_query(filters.regex("^git"))
-async def inline_git(_, inline_query: InlineQuery):
-    if len(inline_query.query.strip().lower().split()) < 2:
-        return await inline_query.answer(
-            results=[],
-            switch_pm_text="Github Search | git [QUERY]",
-            switch_pm_parameter="inline",
-        )
-    wuery = inline_query.query.split(None, 1)[1].strip()
-    search_results = await http.get(
-        f"https://api.github.com/search/repositories?q={query}")
-    srch_results = json.loads(search_results.text)
-    item = srch_results.get("items")
-    data = []
-    for sraeo in item:
-        title = sraeo.get("full_name")
-        link = sraeo.get("html_url")
-        deskripsi = sraeo.get("description")
-        lang = sraeo.get("language")
-        message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
-        message_text += f"<b>Description:</b> {deskripsi}\n"
-        message_text += f"<b>Language:</b> {lang}"
-        data.append(
-            InlineQueryResultArticle(
-                title=f"{title}",
-                input_message_content=InputTextMessageContent(
-                    message_text=message_text,
-                    parse_mode=enums.ParseMode.HTML,
-                    disable_web_page_preview=False),
-                url=link,
-                description=deskripsi,
-                thumb_url=
-                "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text="Open Github Link",
-                                           url=link)]]),
-            ))
-    await inline_query.answer(results=data,
-                              cache_time=10,
-                              is_gallery=False,
-                              is_personal=False,
-                              next_offset="",
-                              switch_pm_text=f"Found {len(data)} results",
-                              switch_pm_parameter="github")
-    inline_query.stop_propagation()
-
+    elif text.split()[0] == "google":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="Google Search | google [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        judul = inline_query.query.split(None, 1)[1].strip()
+        headers = {
+            "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/61.0.3163.100 Safari/537.36"
+        }
+        search_results = await http.get(f"https://www.google.com/search?q={judul}",
+                                        headers=headers)
+        soup = BeautifulSoup(search_results.text, "lxml")
+        data = []
+        for result in soup.select(".tF2Cxc"):
+            title = result.select_one(".DKV0Md").text
+            link = result.select_one(".yuRUbf a")["href"]
+            try:
+                snippet = result.select_one("#rso .lyLwlc").text
+            except:
+                snippet = "-"
+            message_text = f"<a href='{link}'>{title}</a>\n"
+            message_text += f"Deskription: {snippet}"
+            data.append(
+                InlineQueryResultArticle(
+                    title=f"{title}",
+                    input_message_content=InputTextMessageContent(
+                        message_text=message_text,
+                        parse_mode=enums.ParseMode.HTML,
+                        disable_web_page_preview=False),
+                    url=link,
+                    description=snippet,
+                    thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Website", url=link)]]),
+                ))
+        await inline_query.answer(results=data,
+                                  cache_time=10,
+                                  is_gallery=False,
+                                  is_personal=False,
+                                  next_offset="",
+                                  switch_pm_text=f"Found {len(data)} results",
+                                  switch_pm_parameter="google")
+    elif text.split()[0] == "git":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="Github Search | git [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        wuery = inline_query.query.split(None, 1)[1].strip()
+        search_results = await http.get(
+            f"https://api.github.com/search/repositories?q={query}")
+        srch_results = json.loads(search_results.text)
+        item = srch_results.get("items")
+        data = []
+        for sraeo in item:
+            title = sraeo.get("full_name")
+            link = sraeo.get("html_url")
+            deskripsi = sraeo.get("description")
+            lang = sraeo.get("language")
+            message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
+            message_text += f"<b>Description:</b> {deskripsi}\n"
+            message_text += f"<b>Language:</b> {lang}"
+            data.append(
+                InlineQueryResultArticle(
+                    title=f"{title}",
+                    input_message_content=InputTextMessageContent(
+                        message_text=message_text,
+                        parse_mode=enums.ParseMode.HTML,
+                        disable_web_page_preview=False),
+                    url=link,
+                    description=deskripsi,
+                    thumb_url=
+                    "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Github Link",
+                                               url=link)]]),
+                ))
+        await inline_query.answer(results=data,
+                                  cache_time=10,
+                                  is_gallery=False,
+                                  is_personal=False,
+                                  next_offset="",
+                                  switch_pm_text=f"Found {len(data)} results",
+                                  switch_pm_parameter="github")
+    elif text.split()[0] == "pypi":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="Pypi Search | pypi [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        query = inline_query.query.split(None, 1)[1].strip()
+        search_results = await http.get(
+            f"https://api.hayo.my.id/api/pypi?package={query}")
+        srch_results = json.loads(search_results.text)
+        data = []
+        for sraeo in srch_results:
+            title = sraeo.get("title")
+            link = sraeo.get("link")
+            deskripsi = sraeo.get("desc")
+            version = sraeo.get("version")
+            message_text = f"<a href='{link}'>{title} {version}</a>\n"
+            message_text += f"Description: {deskripsi}\n"
+            data.append(
+                InlineQueryResultArticle(
+                    title=f"{title}",
+                    input_message_content=InputTextMessageContent(
+                        message_text=message_text,
+                        parse_mode=enums.ParseMode.HTML,
+                        disable_web_page_preview=False),
+                    url=link,
+                    description=deskripsi,
+                    thumb_url=
+                    "https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png",
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Link", url=link)]]),
+                ))
+        await inline_query.answer(results=data,
+                                  cache_time=10,
+                                  is_gallery=False,
+                                  is_personal=False,
+                                  next_offset="",
+                                  switch_pm_text=f"Found {len(data)} results",
+                                  switch_pm_parameter="pypi")
+    elif text.split()[0] == "yt":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="YouTube Search | yt [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        judul = inline_query.query.split(None, 1)[1].strip()
+        search_results = await http.get(
+            f"https://api.abir-hasan.tk/youtube?query={judul}")
+        srch_results = json.loads(search_results.text)
+        asroe = srch_results.get("results")
+        oorse = []
+        for sraeo in asroe:
+            title = sraeo.get("title")
+            link = sraeo.get("link")
+            view = sraeo.get("viewCount").get("text")
+            thumb = sraeo.get("thumbnails")[0].get("url")
+            durasi = sraeo.get("accessibility").get("duration")
+            publishTime = sraeo.get("publishedTime")
+            try:
+                deskripsi = "".join(f"{i['text']} "
+                                    for i in sraeo.get("descriptionSnippet"))
+            except:
+                deskripsi = "-"
+            message_text = f"<a href='{link}'>{title}</a>\n"
+            message_text += f"Description: {deskripsi}\n"
+            message_text += f"Total View: {view}\n"
+            message_text += f"Duration: {durasi}\n"
+            message_text += f"Published Time: {publishTime}"
+            oorse.append(
+                InlineQueryResultArticle(
+                    title=f"{title}",
+                    input_message_content=InputTextMessageContent(
+                        message_text=message_text,
+                        parse_mode=enums.ParseMode.HTML,
+                        disable_web_page_preview=False),
+                    url=link,
+                    description=deskripsi,
+                    thumb_url=thumb,
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Watch Video 📹", url=link)]]),
+                ))
+        await inline_query.answer(results=oorse,
+                                  cache_time=300,
+                                  is_gallery=False,
+                                  is_personal=False,
+                                  next_offset="",
+                                  switch_pm_text=f"Found {len(asroe)} results",
+                                  switch_pm_parameter="yt")
+    elif text.split()[0] == "imdb":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="IMDB Search | imdb [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        movie_name = inline_query.query.split(None, 1)[1].strip()
+        search_results = await http.get(
+            f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
+        res = json.loads(search_results.text).get('result')
+        oorse = []
+        for midb in res:
+            title = midb.get("l", "")
+            description = midb.get("q", "")
+            stars = midb.get("s", "")
+            imdb_url = f"https://imdb.com/title/{midb.get('id')}"
+            year = f"({midb.get('y')})" if midb.get("y") else ""
+            try:
+                image_url = midb.get("i").get("imageUrl")
+            except:
+                image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+            caption = f"<a href='{image_url}'>🎬</a>"
+            caption += f"<a href='{imdb_url}'>{title} {year}</a>"
+            oorse.append(
+                InlineQueryResultPhoto(
+                    title=f"{title} {year}",
+                    caption=caption,
+                    description=f" {description} | {stars}",
+                    photo_url=image_url,
+                    reply_markup=InlineKeyboardMarkup([[
+                        InlineKeyboardButton(
+                            text="Get IMDB details",
+                            callback_data=
+                            f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}"
+                        )
+                    ]]),
+                ))
+        resfo = json.loads(search_results.text).get('q')
+        await inline_query.answer(
+            results=oorse,
+            cache_time=10,
+            is_gallery=False,
+            is_personal=False,
+            next_offset="",
+            switch_pm_text=f"Found {len(oorse)} results for {resfo}",
+            switch_pm_parameter="imdb")
 
 @app.on_callback_query(filters.regex("^imdbinl_"))
 async def imdb_inl(_, query):
