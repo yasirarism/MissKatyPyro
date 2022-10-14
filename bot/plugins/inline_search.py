@@ -111,7 +111,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_text="Github Search | git [QUERY]",
                 switch_pm_parameter="inline",
             )
-        wuery = inline_query.query.split(None, 1)[1].strip()
+        query = inline_query.query.split(None, 1)[1].strip()
         search_results = await http.get(
             f"https://api.github.com/search/repositories?q={query}")
         srch_results = json.loads(search_results.text)
