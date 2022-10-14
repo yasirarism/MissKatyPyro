@@ -28,7 +28,7 @@ keywords_list = [
 async def inline_imdb(_, inline_query: InlineQuery):
     if len(inline_query.query.strip().lower().split()) < 3:
         return await inline_query.answer(
-            results=answers,
+            results=[],
             switch_pm_text="IMDB Search | imdb [QUERY]",
             switch_pm_parameter="inline",
         )
@@ -79,7 +79,7 @@ async def inline_imdb(_, inline_query: InlineQuery):
 async def inline_yt(_, inline_query: InlineQuery):
     if len(inline_query.query.strip().lower().split()) < 3:
         return await inline_query.answer(
-            results=answers,
+            results=[],
             switch_pm_text="YouTube Search | yt [QUERY]",
             switch_pm_parameter="inline",
         )
@@ -133,7 +133,7 @@ async def inline_yt(_, inline_query: InlineQuery):
 async def inline_google(_, inline_query: InlineQuery):
     if len(inline_query.query.strip().lower().split()) < 3:
         return await inline_query.answer(
-            results=answers,
+            results=[],
             switch_pm_text="Google Search | google [QUERY]",
             switch_pm_parameter="inline",
         )
@@ -183,7 +183,7 @@ async def inline_google(_, inline_query: InlineQuery):
 async def inline_pypi(_, inline_query: InlineQuery):
     if len(inline_query.query.strip().lower().split()) < 3:
         return await inline_query.answer(
-            results=answers,
+            results=[],
             switch_pm_text="Pypi Search | pypi [QUERY]",
             switch_pm_parameter="inline",
         )
@@ -227,7 +227,7 @@ async def inline_pypi(_, inline_query: InlineQuery):
 async def inline_git(_, inline_query: InlineQuery):
     if len(inline_query.query.strip().lower().split()) < 3:
         return await inline_query.answer(
-            results=answers,
+            results=[],
             switch_pm_text="Github Search | git [QUERY]",
             switch_pm_parameter="inline",
         )
