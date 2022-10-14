@@ -58,7 +58,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             results=answerss,
             cache_time=10,
         )
-    elif query.query.strip().lower().split()[0] == "google":
+    elif inline_query.query.strip().lower().split()[0] == "google":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
                 results=[],
@@ -104,7 +104,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   next_offset="",
                                   switch_pm_text=f"Found {len(data)} results",
                                   switch_pm_parameter="google")
-    elif query.query.strip().lower().split()[0] == "git":
+    elif inline_query.query.strip().lower().split()[0] == "git":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
                 results=[],
@@ -147,7 +147,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   next_offset="",
                                   switch_pm_text=f"Found {len(data)} results",
                                   switch_pm_parameter="github")
-    elif query.query.strip().lower().split()[0] == "pypi":
+    elif inline_query.query.strip().lower().split()[0] == "pypi":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
                 results=[],
@@ -187,7 +187,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   next_offset="",
                                   switch_pm_text=f"Found {len(data)} results",
                                   switch_pm_parameter="pypi")
-    elif query.query.strip().lower().split()[0] == "yt":
+    elif inline_query.query.strip().lower().split()[0] == "yt":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
                 results=[],
@@ -237,7 +237,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   next_offset="",
                                   switch_pm_text=f"Found {len(asroe)} results",
                                   switch_pm_parameter="yt")
-    elif query.query.strip().lower().split()[0] == "imdb":
+    elif inline_query.query.strip().lower().split()[0] == "imdb":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
                 results=[],
