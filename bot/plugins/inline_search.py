@@ -5,6 +5,7 @@ from bot.helper.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji
+from pykeyboard import InlineKeyboard
 from deep_translator import GoogleTranslator
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InputTextMessageContent, InlineQueryResultPhoto
 
@@ -23,6 +24,40 @@ keywords_list = [
     "git",
     "google",
 ]
+
+@app.on_inline_query()
+async def inline_home(_, inline_query: InlineQuery):
+    buttons = InlineKeyboard(row_width=2)
+    buttons.add(
+        *[
+            (InlineKeyboardButton(text=i, switch_inline_query_current_chat=i))
+            for i in keywords_list
+        ]
+    )
+    answerss = [
+        InlineQueryResultArticle(
+            title="Inline Commands",
+            description="Help Related To Inline Usage.",
+            input_message_content=InputTextMessageContent(
+                "Click A Button To Get Started."
+            ),
+            thumb_url="https://hamker.me/cy00x5x.png",
+            reply_markup=buttons,
+        ),
+        InlineQueryResultArticle(
+            title="Github Dev",
+            description="Github Owner of Bot.",
+            input_message_content=InputTextMessageContent(
+                "https://github.com/yasirarism"
+            ),
+            thumb_url="https://hamker.me/gjc9fo3.png",
+        ),
+    ]
+    if inline_query.query.strip().lower().strip() == "":
+        await inline_query.answer(
+            results=answerss,
+            cache_time=10,
+        )
 
 @app.on_inline_query(filters.regex("^imdb"))
 async def inline_imdb(_, inline_query: InlineQuery):
@@ -66,7 +101,7 @@ async def inline_imdb(_, inline_query: InlineQuery):
     resfo = json.loads(search_results.text).get('q')
     await inline_query.answer(
         results=oorse,
-        cache_time=300,
+        cache_time=10,
         is_gallery=False,
         is_personal=False,
         next_offset="",
@@ -170,7 +205,7 @@ async def inline_google(_, inline_query: InlineQuery):
                     [[InlineKeyboardButton(text="Open Website", url=link)]]),
             ))
     await inline_query.answer(results=data,
-                              cache_time=300,
+                              cache_time=10,
                               is_gallery=False,
                               is_personal=False,
                               next_offset="",
@@ -214,7 +249,7 @@ async def inline_pypi(_, inline_query: InlineQuery):
                     [[InlineKeyboardButton(text="Open Link", url=link)]]),
             ))
     await inline_query.answer(results=data,
-                              cache_time=300,
+                              cache_time=10,
                               is_gallery=False,
                               is_personal=False,
                               next_offset="",
@@ -261,7 +296,7 @@ async def inline_git(_, inline_query: InlineQuery):
                                            url=link)]]),
             ))
     await inline_query.answer(results=data,
-                              cache_time=300,
+                              cache_time=10,
                               is_gallery=False,
                               is_personal=False,
                               next_offset="",
