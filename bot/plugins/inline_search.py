@@ -256,7 +256,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             imdb_url = f"https://imdb.com/title/{midb.get('id')}"
             year = f"({midb.get('y')})" if midb.get("y") else ""
             try:
-                image_url = midb.get("i").get("imageUrl")
+                image_url = midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg")
             except:
                 image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
             caption = f"<a href='{image_url}'>🎬</a>"
