@@ -55,8 +55,7 @@ async def inline_menu(_, inline_query: InlineQuery):
     ]
     if inline_query.query.strip().lower().strip() == "":
         await inline_query.answer(
-            results=answerss,
-            cache_time=10,
+            results=answerss
         )
     elif inline_query.query.strip().lower().split()[0] == "google":
         if len(inline_query.query.strip().lower().split()) < 2:
@@ -64,7 +63,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 results=[],
                 switch_pm_text="Google Search | google [QUERY]",
                 switch_pm_parameter="inline",
-            )
+            )https://www.google.com/search
         judul = inline_query.query.split(None, 1)[1].strip()
         headers = {
             "User-Agent":
@@ -98,7 +97,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                         [[InlineKeyboardButton(text="Open Website", url=link)]]),
                 ))
         await inline_query.answer(results=data,
-                                  cache_time=10,
                                   is_gallery=False,
                                   is_personal=False,
                                   next_offset="",
@@ -141,7 +139,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                                                url=link)]]),
                 ))
         await inline_query.answer(results=data,
-                                  cache_time=10,
                                   is_gallery=False,
                                   is_personal=False,
                                   next_offset="",
@@ -181,7 +178,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                         [[InlineKeyboardButton(text="Open Link", url=link)]]),
                 ))
         await inline_query.answer(results=data,
-                                  cache_time=10,
                                   is_gallery=False,
                                   is_personal=False,
                                   next_offset="",
@@ -231,7 +227,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                         [[InlineKeyboardButton(text="Watch Video 📹", url=link)]]),
                 ))
         await inline_query.answer(results=oorse,
-                                  cache_time=300,
                                   is_gallery=False,
                                   is_personal=False,
                                   next_offset="",
@@ -278,7 +273,6 @@ async def inline_menu(_, inline_query: InlineQuery):
         resfo = json.loads(search_results.text).get('q')
         await inline_query.answer(
             results=oorse,
-            cache_time=10,
             is_gallery=False,
             is_personal=False,
             next_offset="",
