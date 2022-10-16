@@ -250,7 +250,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             stars = midb.get("s", "")
             imdb_url = f"https://imdb.com/title/{midb.get('id')}"
             year = f"({midb.get('y')})" if midb.get("y") else ""
-            image_url = midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg") if midb.get("i").get("imageUrl") else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+            image_url = midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg") if midb.get("i") else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
             oorse.append(
