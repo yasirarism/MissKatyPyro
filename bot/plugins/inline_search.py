@@ -63,7 +63,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 results=[],
                 switch_pm_text="Google Search | google [QUERY]",
                 switch_pm_parameter="inline",
-            )https://www.google.com/search
+            )
         judul = inline_query.query.split(None, 1)[1].strip()
         headers = {
             "User-Agent":
