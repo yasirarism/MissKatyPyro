@@ -148,9 +148,9 @@ async def _callbackreq(c, q):
             await q.answer("Apa motivasi kamu menekan tombol ini?",
                         show_alert=True)
     except UserNotParticipant:
-        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
     except PeerIdInvalid:
-        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=10)
 
 
 @app.on_callback_query(filters.regex(r"^dahada"))
@@ -187,9 +187,9 @@ async def _callbackreqada(c, q):
             await q.answer("Apa motivasi kamu menekan tombol ini?",
                         show_alert=True)
     except UserNotParticipant:
-        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
     except PeerIdInvalid:
-        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=10)
 
 
 @app.on_callback_query(filters.regex(r"^rejectreq"))
@@ -226,9 +226,9 @@ async def _callbackreject(c, q):
             await q.answer("Apa motivasi kamu menekan tombol ini?",
                        show_alert=True)
     except UserNotParticipant:
-        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
     except PeerIdInvalid:
-        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=10)
 
 
 @app.on_callback_query(filters.regex(r"^unavailablereq"))
@@ -267,9 +267,9 @@ async def _callbackunav(c, q):
             await q.answer("Apa motivasi kamu menekan tombol ini?",
                         show_alert=True, cache_time=1000)
     except UserNotParticipant:
-        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=1000)
+        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
     except PeerIdInvalid:
-        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=1000)
+        return await q.answer("Silahkan kirim pesan digrup supaya bot bisa merespon.", show_alert=True, cache_time=10)
 
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
