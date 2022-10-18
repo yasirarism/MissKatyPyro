@@ -41,7 +41,7 @@ async def inline_menu(_, inline_query: InlineQuery):
 
         btn = InlineKeyboard(row_width=2)
         bot_state = "Dead" if not await app.get_me() else "Alive"
-        ubot_state = "Dead" if not await app2.get_me() else "Alive"
+        ubot_state = "Dead" if not await user.get_me() else "Alive"
         btn.add(
             InlineKeyboardButton("Stats", callback_data="stats_callback"),
             InlineKeyboardButton(
@@ -50,7 +50,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         )
 
         msg = f"""
-**[William✨](https://github.com/thehamkercat/WilliamButcherBot):**
+**[MissKaty✨](https://github.com/yasirarism):**
 **MainBot:** `{bot_state}`
 **UserBot:** `{ubot_state}`
 **Python:** `{pyver.split()[0]}`
