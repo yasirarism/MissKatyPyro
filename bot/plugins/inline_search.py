@@ -103,7 +103,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/61.0.3163.100 Safari/537.36"
         }
-        search_results = await http.get(f"https://www.google.com/search?q={judul}",
+        search_results = await http.get(f"https://www.google.com/search?q={judul}&num=20",
                                         headers=headers)
         soup = BeautifulSoup(search_results.text, "lxml")
         data = []
