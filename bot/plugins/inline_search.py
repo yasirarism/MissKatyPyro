@@ -1,6 +1,9 @@
 import json, traceback
-from bot import app
+from sys import version as pyver, platform
+from bot import app, user
+from motor import version as mongover
 from bot.plugins.other_tools import get_content
+from pyrogram import __version__ as pyrover
 from bot.helper.http import http
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
@@ -27,33 +30,63 @@ keywords_list = [
 
 @app.on_inline_query()
 async def inline_menu(_, inline_query: InlineQuery):
-    buttons = InlineKeyboard(row_width=2)
-    buttons.add(
-        *[
-            (InlineKeyboardButton(text=i, switch_inline_query_current_chat=i))
-            for i in keywords_list
-        ]
-    )
-    answerss = [
-        InlineQueryResultArticle(
-            title="Inline Commands",
-            description="Help Related To Inline Usage.",
-            input_message_content=InputTextMessageContent(
-                "Click A Button To Get Started."
-            ),
-            thumb_url="https://hamker.me/cy00x5x.png",
-            reply_markup=buttons,
-        ),
-        InlineQueryResultArticle(
-            title="Github Dev",
-            description="Github Owner of Bot.",
-            input_message_content=InputTextMessageContent(
-                "https://github.com/yasirarism"
-            ),
-            thumb_url="https://hamker.me/gjc9fo3.png",
-        ),
-    ]
     if inline_query.query.strip().lower().strip() == "":
+        buttons = InlineKeyboard(row_width=2)
+        buttons.add(
+            *[
+                (InlineKeyboardButton(text=i, switch_inline_query_current_chat=i))
+                for i in keywords_list
+            ]
+        )
+
+        btn = InlineKeyboard(row_width=2)
+        bot_state = "Dead" if not await app.get_me() else "Alive"
+        ubot_state = "Dead" if not await app2.get_me() else "Alive"
+        btn.add(
+            InlineKeyboardButton("Stats", callback_data="stats_callback"),
+            InlineKeyboardButton(
+                "Go Inline!", switch_inline_query_current_chat=""
+            ),
+        )
+
+        msg = f"""
+**[William✨](https://github.com/thehamkercat/WilliamButcherBot):**
+**MainBot:** `{bot_state}`
+**UserBot:** `{ubot_state}`
+**Python:** `{pyver.split()[0]}`
+**Pyrogram:** `{pyrover}`
+**MongoDB:** `{mongover}`
+**Platform:** `{platform}`
+**Profiles:** [BOT](t.me/{(await app.get_me()).username}) | [UBOT](t.me/{(await user.get_me()).username})
+        """
+        answerss = [
+            InlineQueryResultArticle(
+                title="Inline Commands",
+                description="Help Related To Inline Usage.",
+                input_message_content=InputTextMessageContent(
+                    "Click A Button To Get Started."
+                ),
+                thumb_url="https://hamker.me/cy00x5x.png",
+                reply_markup=buttons,
+            ),
+            InlineQueryResultArticle(
+                title="Github Dev",
+                description="Github Owner of Bot.",
+                input_message_content=InputTextMessageContent(
+                    "https://github.com/yasirarism"
+                ),
+                thumb_url="https://hamker.me/gjc9fo3.png",
+            ),
+            InlineQueryResultArticle(
+                title="Alive",
+                description="Check Bot's Stats",
+                thumb_url="https://yt3.ggpht.com/ytc/AMLnZu-zbtIsllERaGYY8Aecww3uWUASPMjLUUEt7ecu=s900-c-k-c0x00ffffff-no-rj",
+                input_message_content=InputTextMessageContent(
+                    msg, disable_web_page_preview=True
+                ),
+                reply_markup=btn,
+            )
+        ]
         await inline_query.answer(
             results=answerss
         )

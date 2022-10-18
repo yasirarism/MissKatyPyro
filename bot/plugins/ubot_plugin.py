@@ -24,7 +24,7 @@ async def add_keep(_, message: Message):
         await message.edit("Autoscroll diaktifkan, semua chat akan otomatis terbaca")
 
 
-@user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
+# @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def del_msg(client, message):
     async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
         try:
@@ -44,7 +44,7 @@ async def del_msg(client, message):
                 )
 
 
-@user.on_edited_message(filters.text & filters.chat(-1001455886928))
+# @user.on_edited_message(filters.text & filters.chat(-1001455886928))
 async def edit_msg(client, message):
     try:
         ustat = (await user.get_chat_member(message.chat.id, message.from_user.id)).status
