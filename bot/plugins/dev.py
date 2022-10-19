@@ -1,5 +1,3 @@
-"""Evaluate Python Code inside Telegram
-Syntax: .eval PythonCode"""
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -113,7 +111,7 @@ async def evaluation_cmd_t(client, message):
         os.remove("MissKatyEval.txt")
         await status_message.delete()
     else:
-        await status_message.edit(final_output, parse_mode=enums.ParseMode..MARKDOWN)
+        await status_message.edit(final_output, parse_mode=enums.ParseMode.MARKDOWN)
 
 
 async def aexec(code, client, message):
