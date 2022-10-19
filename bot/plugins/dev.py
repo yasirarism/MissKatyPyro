@@ -10,8 +10,9 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
+from bs4 import BeautifulSoup as soup
 from info import COMMAND_HANDLER
-from bot import app
+from bot import app, user
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -41,20 +42,11 @@ async def neofetch(c, m):
     await m.reply(f"<code>{neofetch}</code>", parse_mode=enums.ParseMode.HTML)
 
 
-@app.on_message(filters.command(["remove"], COMMAND_HANDLER))
-async def clearlocal(c, m):
-    cmd = m.text.split(" ", 1)
-    if len(cmd) == 1:
-        return await m.reply("Give path file to delete.")
-    (await shell_exec(f"rm -rf {cmd[1]}"))[0]
-    await m.reply("Done")
-
-
 @app.on_message(
-    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    filters.command(["shell","sh"], COMMAND_HANDLER)
     & filters.user([617426792, 2024984460]))
 @app.on_edited_message(
-    filters.command(["shell", "shell@MissKatyRoBot"], COMMAND_HANDLER)
+    filters.command(["shell","sh"], COMMAND_HANDLER)
     & filters.user([617426792, 2024984460]))
 async def shell(client, message):
     cmd = message.text.split(" ", 1)
@@ -75,23 +67,15 @@ async def shell(client, message):
     else:
         await message.reply("No Reply")
 
-
-@app.on_message(
-    filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user([617426792, 2024984460]))
-@app.on_edited_message(
-    filters.command(["run", "run@MissKatyRoBot"], COMMAND_HANDLER)
-    & filters.user([617426792, 2024984460]))
-async def eval(client, message):
-    if len(message.command) < 2:
-        return await message.reply("Masukkan kode yang ingin dijalankan..")
-    status_message = await message.reply_text("Sedang Memproses Eval...")
-    cmd = message.text.split(" ", maxsplit=1)[1]
-
-    reply_to_ = message
-    if message.reply_to_message:
-        reply_to_ = message.reply_to_message
-
+        
+@app.on_message(filters.command(["ev","run"]) & filters.user([617426792, 2024984460]))
+@app.on_edited_message(filters.command(["ev","run"]) & filters.user([617426792, 2024984460]))
+async def evaluation_cmd_t(client, message):
+    status_message = await message.reply("__Processing eval pyrogram...__")
+    try:
+        cmd = message.text.split(" ", maxsplit=1)[1]
+    except IndexError:
+        return await status_message.edit("__No evaluate message!__")
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -116,29 +100,20 @@ async def eval(client, message):
     elif stdout:
         evaluation = stdout
     else:
-        evaluation = "Berhasil"
+        evaluation = "Success"
 
-    final_output = "**EVAL**: "
-    final_output += f"```{cmd}```\n\n"
-    final_output += "**OUTPUT***:\n"
-    final_output += f"```{evaluation.strip()}```\n"
+    final_output = f"**EVAL**:```{cmd}```\n\n**OUTPUT**:\n```{evaluation.strip()}``` \n"
 
     if len(final_output) > 4096:
-        with io.BytesIO(str.encode(final_output)) as out_file:
-            out_file.name = "MissKaty_Eval.txt"
-            await reply_to_.reply_document(document=out_file,
-                                           caption=cmd[:4096 // 4 - 1],
-                                           disable_notification=True,
-                                           quote=True)
-            try:
-                os.remove("MissKaty_Eval.txt")
-            except:
-                pass
+        with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:
+            out_file.write(final_output)
+        await status_message.reply_document(document="MissKatyEval.txt",
+                                            caption=cmd[:4096 // 4 - 1],
+                                            disable_notification=True)
+        os.remove("MissKatyEval.txt")
+        await status_message.delete()
     else:
-        await reply_to_.reply_text(final_output,
-                                   quote=True,
-                                   parse_mode=enums.ParseMode.MARKDOWN)
-    await status_message.delete()
+        await status_message.edit(final_output, parse_mode=enums.ParseMode..MARKDOWN)
 
 
 async def aexec(code, client, message):
