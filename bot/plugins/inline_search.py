@@ -152,12 +152,12 @@ async def inline_menu(_, inline_query: InlineQuery):
             inline_query.stop_propagation()
         
         try:
-            user = await app.get_users(_id.strip())
+            penerima = await app.get_users(_id.strip())
         except Exception:  # pylint: disable=broad-except
             inline_query.stop_propagation()
             return
         
-        PRVT_MSGS[inline_query.id] = (user.id, user.first_name, inline_query.from_user.id, msg.strip(': '))
+        PRVT_MSGS[inline_query.id] = (penerima.id, penerima.first_name, inline_query.from_user.id, msg.strip(': '))
         prvte_msg = InlineKeyboardMarkup(
                   [[InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
                   [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]])
