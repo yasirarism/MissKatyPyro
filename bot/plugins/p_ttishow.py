@@ -1,8 +1,8 @@
 from asyncio import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import os
-import requests
+from bot.helper.http import http
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden, ChatSendMediaForbidden, SlowmodeWait
@@ -122,15 +122,17 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         # Spamwatch Detection
         try:
             headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
-            apispamwatch = (requests.get("https://api.spamwat.ch/banlist/1791347063", headers=headers)).json()
+            apispamwatch = (await http.get("https://api.spamwat.ch/banlist/1791347063", headers=headers)).json()
             if not apispamwatch.get("error"):
-                userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{r.get('reason')}</code>.\n"
+                await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
+                userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
         except:
             pass
         # Combot API Detection
         try:
-            apicombot = (requests.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
+            apicombot = (await http.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
             if apicombot.get("ok") == "true":
+                await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
                 userspammer += f"<b>#CAS Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={user.id}'>Combot AntiSpam.</a>"
         except:
             pass
