@@ -163,8 +163,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                       [InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
                       [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]
                   ])
-        mention = f"[{penerima.first_name}](tg://user?id={penerima.id})"
-        msg_c = f"🔒 A **private message** to {mention}, "
+        mention = f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>" if not penerima.username else penerima.username
+        msg_c = f"🔒 A <b>private message</b> to {mention} [<code>{penerima.id}</code>], "
         msg_c += "Only he/she can open it."
         results = [
             InlineQueryResultArticle(
