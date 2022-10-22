@@ -162,11 +162,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                   [[InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
                   [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]])
         
-        msg_c = f"🔒 A **private message** to {user.mention}, "
+        msg_c = f"🔒 A **private message** to {penerima.mention}, "
         msg_c += "Only he/she can open it."
         results = [
             InlineQueryResultArticle(
-                title=f"A Private Msg to {user.first_name}",
+                title=f"A Private Msg to {penerima.first_name}",
                 input_message_content=InputTextMessageContent(msg_c),
                 description="Only he/she can open it",
                 thumb_url="https://te.legra.ph/file/16133ab3297b3f73c8da5.png",
