@@ -142,7 +142,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         if len(inline_query.query.strip().lower().split()) < 3:
             return await inline_query.answer(
                 results=[],
-                switch_pm_text="Secret Message | secretmsg [USERNAME/ID] [MESSAGE]",
+                switch_pm_text="SecretMsg | secretmsg [USERNAME/ID] [MESSAGE]",
                 switch_pm_parameter="inline",
             )
         _id = inline_query.query.split()[1]
@@ -163,8 +163,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                       [InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
                       [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]
                   ])
-        
-        msg_c = f"🔒 A **private message** to {penerima.mention}, "
+        mention = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+        msg_c = f"🔒 A **private message** to {mention}, "
         msg_c += "Only he/she can open it."
         results = [
             InlineQueryResultArticle(
