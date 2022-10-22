@@ -139,7 +139,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   switch_pm_text=f"Found {len(data)} results",
                                   switch_pm_parameter="google")
     elif inline_query.query.strip().lower().split()[0] == "secretmsg":
-        if len(text.split()) < 3:
+        if len(inline_query.query.strip().lower().split()) < 3:
             return await inline_query.answer(
                 results=[],
                 switch_pm_text="Secret Message | secretmsg [USERNAME/ID] [MESSAGE]",
