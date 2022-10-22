@@ -26,7 +26,10 @@ keywords_list = [
     "pypi",
     "git",
     "google",
+    "secretmsg"
 ]
+
+PRVT_MSGS = {}
 
 @app.on_inline_query()
 async def inline_menu(_, inline_query: InlineQuery):
@@ -135,6 +138,42 @@ async def inline_menu(_, inline_query: InlineQuery):
                                   next_offset="",
                                   switch_pm_text=f"Found {len(data)} results",
                                   switch_pm_parameter="google")
+    elif text.split()[0] == "secretmsg":
+        if len(text.split()) < 3:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="Secret Message | secretmsg [USERNAME/ID] [MESSAGE]",
+                switch_pm_parameter="inline",
+            )
+        _id = text.split()[1]
+        msg = text.split(None, 2)[2].strip()
+        
+        if not (msg and msg.endswith(':')):
+            inline_query.stop_propagation()
+        
+        try:
+            user = await app.get_users(_id.strip())
+        except Exception:  # pylint: disable=broad-except
+            inline_query.stop_propagation()
+            return
+        
+        PRVT_MSGS[inline_query.id] = (user.id, user.first_name, inline_query.from_user.id, msg.strip(': '))
+        prvte_msg = InlineKeyboardMarkup(
+                  [[InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
+                  [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]])
+        
+        msg_c = f"🔒 A **private message** to {user.mention}, "
+        msg_c += "Only he/she can open it."
+        results = [
+            InlineQueryResultArticle(
+                title=f"A Private Msg to {user.first_name}",
+                input_message_content=InputTextMessageContent(msg_c),
+                description="Only he/she can open it",
+                thumb_url="https://te.legra.ph/file/16133ab3297b3f73c8da5.png",
+                reply_markup=InlineKeyboardMarkup(prvte_msg)
+            )
+        ]
+        await inline_query.answer(results=results, cache_time=3)
     elif inline_query.query.strip().lower().split()[0] == "git":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
@@ -309,6 +348,41 @@ async def inline_menu(_, inline_query: InlineQuery):
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
             switch_pm_parameter="imdb")
 
+        
+@app.on_callback_query(filters.regex(r"prvtmsg\((.+)\)"))
+async def prvt_msg(_, c_q):
+    msg_id = str(c_q.matches[0].group(1))
+
+    if msg_id not in PRVT_MSGS:
+        await c_q.answer("message now outdated !", show_alert=True)
+        return
+
+    user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
+
+    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
+        await c_q.answer(msg, show_alert=True)
+    else:
+        await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
+        
+        
+@app.on_callback_query(filters.regex(r"destroy\((.+)\)"))
+async def destroy_msg(_, c_q):
+    msg_id = str(c_q.matches[0].group(1))
+
+    if msg_id not in PRVT_MSGS:
+        await c_q.answer("message now outdated !", show_alert=True)
+        return
+
+    user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
+
+    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
+        del PRVT_MSGS[msg_id]
+        by = "receiver" if c_q.from_user.id == user_id else "sender"
+        await c_q.edit_message_text(f"This secret message is ☠️destroyed☠️ by msg {by}")
+    else:
+        await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
+        
+        
 @app.on_callback_query(filters.regex("^imdbinl_"))
 async def imdb_inl(_, query):
         i, user, movie = query.data.split("_")
