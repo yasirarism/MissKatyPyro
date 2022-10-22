@@ -145,8 +145,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_text="Secret Message | secretmsg [USERNAME/ID] [MESSAGE]",
                 switch_pm_parameter="inline",
             )
-        _id = text.split()[1]
-        msg = text.split(None, 2)[2].strip()
+        _id = inline_query.query.split()[1]
+        msg = inline_query.query.split(None, 2)[2].strip()
         
         if not (msg and msg.endswith(':')):
             inline_query.stop_propagation()
