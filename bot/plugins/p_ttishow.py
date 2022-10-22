@@ -122,7 +122,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         # Spamwatch Detection
         try:
             headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
-            apispamwatch = (await http.get("https://api.spamwat.ch/banlist/1791347063", headers=headers)).json()
+            apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{user.id}", headers=headers)).json()
             if not apispamwatch.get("error"):
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
                 userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
