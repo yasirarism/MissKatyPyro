@@ -159,8 +159,10 @@ async def inline_menu(_, inline_query: InlineQuery):
         
         PRVT_MSGS[inline_query.id] = (penerima.id, penerima.first_name, inline_query.from_user.id, msg.strip(': '))
         prvte_msg = InlineKeyboardMarkup(
-                  [[InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
-                  [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]])
+                  [
+                      [InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
+                      [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]
+                  ])
         
         msg_c = f"🔒 A **private message** to {penerima.mention}, "
         msg_c += "Only he/she can open it."
@@ -170,7 +172,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 input_message_content=InputTextMessageContent(msg_c),
                 description="Only he/she can open it",
                 thumb_url="https://te.legra.ph/file/16133ab3297b3f73c8da5.png",
-                reply_markup=InlineKeyboardMarkup(prvte_msg)
+                reply_markup=prvte_msg
             )
         ]
         await inline_query.answer(results=results, cache_time=3)
