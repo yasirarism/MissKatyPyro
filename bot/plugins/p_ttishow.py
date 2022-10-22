@@ -2,6 +2,7 @@ from asyncio import sleep
 from datetime import datetime
 import time
 import os
+import requests
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, ChatMemberUpdated
 from pyrogram.errors import MessageTooLong, PeerIdInvalid, RightForbidden, RPCError, UserAdminInvalid, FloodWait, ChatWriteForbidden, ChatSendMediaForbidden, SlowmodeWait
@@ -117,6 +118,24 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             caption=
             f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
         )
+        userspammer = ""
+        # Spamwatch Detection
+        try:
+            headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
+            apispamwatch = (requests.get("https://api.spamwat.ch/banlist/1791347063", headers=headers)).json()
+            if not apispamwatch.get("error"):
+                userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{r.get('reason')}</code>.\n"
+        except:
+            pass
+        # Combot API Detection
+        try:
+            apicombot = (requests.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
+            if apicombot.get("ok") == "true":
+                userspammer += f"<b>#CAS Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={user.id}'>Combot AntiSpam.</a>"
+        except:
+            pass
+        if userspammer != "":
+            await c.send_message(member.chat.id, userspammer)
         try:
             os.remove(f"downloads/welcome#{user.id}.png")
             os.remove(f"downloads/pp{user.id}.png")
