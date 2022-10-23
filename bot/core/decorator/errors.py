@@ -6,7 +6,6 @@ from bot import app
 
 
 def asyncify(func):
-
     async def inner(*args, **kwargs):
         loop = asyncio.get_running_loop()
         func_out = await loop.run_in_executor(None, func, *args, **kwargs)
@@ -34,7 +33,6 @@ def split_limits(text):
 
 
 def capture_err(func):
-
     @wraps(func)
     async def capture(client, message, *args, **kwargs):
         try:
@@ -50,7 +48,8 @@ def capture_err(func):
                     message.chat.id if message.chat else 0,
                     message.text or message.caption,
                     exc,
-                ))
+                )
+            )
 
             for x in error_feedback:
                 await app.send_message(LOG_CHANNEL, x)

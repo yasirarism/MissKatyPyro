@@ -1,4 +1,4 @@
-from pyrogram import Client, filters, enums
+from pyrogram import enums, filters
 from pyrogram.errors import MessageTooLong
 import aiohttp
 from bot.helper.tools import rentry
@@ -62,33 +62,24 @@ async def listcode():
 async def glot(lang, langcode, code):
     async with aiohttp.ClientSession() as session:
         data = {"files": [{"name": f"misskaty.{langcode}", "content": code}]}
-        headers = {
-            "content-type": "application/json",
-            "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"
-        }
-        r = await session.post(f"https://glot.io/api/run/{lang}/latest",
-                               headers=headers,
-                               json=data)
+        headers = {"content-type": "application/json", "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb"}
+        r = await session.post(f"https://glot.io/api/run/{lang}/latest", headers=headers, json=data)
         return await r.json()
 
 
-@app.on_message(
-    filters.command(["codelist"], COMMAND_HANDLER))
+@app.on_message(filters.command(["codelist"], COMMAND_HANDLER))
 async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
-    return await message.reply(
-        f"<b>List of Supported Programming Languages:</b>\n{list_}")
+    return await message.reply(f"<b>List of Supported Programming Languages:</b>\n{list_}")
 
 
 @app.on_message(filters.command(["assembly"], "!"))
 @app.on_edited_message(filters.command(["assembly"], "!"))
 async def assembly(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "asm",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "asm", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -104,10 +95,8 @@ async def assembly(client, message):
 @app.on_edited_message(filters.command(["ats"], "!"))
 async def ats(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "dats",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "dats", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -123,10 +112,8 @@ async def ats(client, message):
 @app.on_edited_message(filters.command(["bash"], "!"))
 async def bash(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "sh",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "sh", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -142,10 +129,8 @@ async def bash(client, message):
 @app.on_edited_message(filters.command(["c"], "!"))
 async def c(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "c",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "c", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -161,10 +146,8 @@ async def c(client, message):
 @app.on_edited_message(filters.command(["clojure"], "!"))
 async def clojure(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "clj",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "clj", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -180,10 +163,8 @@ async def clojure(client, message):
 @app.on_edited_message(filters.command(["cobol"], "!"))
 async def cobol(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "cob",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "cob", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -199,10 +180,8 @@ async def cobol(client, message):
 @app.on_edited_message(filters.command(["coffeescript"], "!"))
 async def coffeescript(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "coffee",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "coffee", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -218,10 +197,8 @@ async def coffeescript(client, message):
 @app.on_edited_message(filters.command(["cpp"], "!"))
 async def cpp(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "cpp",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "cpp", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -237,10 +214,8 @@ async def cpp(client, message):
 @app.on_edited_message(filters.command(["crystal"], "!"))
 async def crystal(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "cr",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "cr", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -256,10 +231,8 @@ async def crystal(client, message):
 @app.on_edited_message(filters.command(["csharp"], "!"))
 async def csharp(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "cs",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "cs", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -275,10 +248,8 @@ async def csharp(client, message):
 @app.on_edited_message(filters.command(["d"], "!"))
 async def d(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "d",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "d", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -294,10 +265,8 @@ async def d(client, message):
 @app.on_edited_message(filters.command(["elixir"], "!"))
 async def elixir(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "ex",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "ex", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -313,10 +282,8 @@ async def elixir(client, message):
 @app.on_edited_message(filters.command(["elm"], "!"))
 async def elm(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "elm",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "elm", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -332,10 +299,8 @@ async def elm(client, message):
 @app.on_edited_message(filters.command(["erlang"], "!"))
 async def erlang(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "erl",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "erl", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -351,10 +316,8 @@ async def erlang(client, message):
 @app.on_edited_message(filters.command(["fsharp"], "!"))
 async def fsharp(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "fs",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "fs", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -370,10 +333,8 @@ async def fsharp(client, message):
 @app.on_edited_message(filters.command(["go"], "!"))
 async def go(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "go",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "go", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -389,10 +350,8 @@ async def go(client, message):
 @app.on_edited_message(filters.command(["groovy"], "!"))
 async def groovy(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "groovy",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "groovy", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -408,10 +367,8 @@ async def groovy(client, message):
 @app.on_edited_message(filters.command(["haskell"], "!"))
 async def haskell(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "hs",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "hs", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -427,10 +384,8 @@ async def haskell(client, message):
 @app.on_edited_message(filters.command(["idris"], "!"))
 async def idris(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "idr",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "idr", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -446,10 +401,8 @@ async def idris(client, message):
 @app.on_edited_message(filters.command(["java"], "!"))
 async def java(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "java",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "java", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -465,10 +418,8 @@ async def java(client, message):
 @app.on_edited_message(filters.command(["javascript"], "!"))
 async def javascript(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "js",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "js", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -484,10 +435,8 @@ async def javascript(client, message):
 @app.on_edited_message(filters.command(["julia"], "!"))
 async def julia(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "jl",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "jl", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -503,10 +452,8 @@ async def julia(client, message):
 @app.on_edited_message(filters.command(["kotlin"], "!"))
 async def kotlin(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "kt",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "kt", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -522,10 +469,8 @@ async def kotlin(client, message):
 @app.on_edited_message(filters.command(["lua"], "!"))
 async def lua(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "lua",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "lua", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -541,10 +486,8 @@ async def lua(client, message):
 @app.on_edited_message(filters.command(["mercury"], "!"))
 async def mercury(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "m",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "m", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -560,10 +503,8 @@ async def mercury(client, message):
 @app.on_edited_message(filters.command(["nim"], "!"))
 async def nim(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "nim",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "nim", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -579,10 +520,8 @@ async def nim(client, message):
 @app.on_edited_message(filters.command(["nix"], "!"))
 async def nix(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "nix",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "nix", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -598,10 +537,8 @@ async def nix(client, message):
 @app.on_edited_message(filters.command(["ocaml"], "!"))
 async def ocaml(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "ml",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "ml", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -617,10 +554,8 @@ async def ocaml(client, message):
 @app.on_edited_message(filters.command(["perl"], "!"))
 async def perl(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "pl",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "pl", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -636,10 +571,8 @@ async def perl(client, message):
 @app.on_edited_message(filters.command(["php"], "!"))
 async def php(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "php",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "php", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -655,10 +588,8 @@ async def php(client, message):
 @app.on_edited_message(filters.command(["python"], "!"))
 async def python(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "py",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "py", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -674,10 +605,8 @@ async def python(client, message):
 @app.on_edited_message(filters.command(["raku"], "!"))
 async def raku(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "raku",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "raku", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -693,10 +622,8 @@ async def raku(client, message):
 @app.on_edited_message(filters.command(["ruby"], "!"))
 async def ruby(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "rb",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "rb", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -712,10 +639,8 @@ async def ruby(client, message):
 @app.on_edited_message(filters.command(["rust"], "!"))
 async def rust(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "rs",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "rs", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -731,10 +656,8 @@ async def rust(client, message):
 @app.on_edited_message(filters.command(["scala"], "!"))
 async def scala(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "scala",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "scala", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -750,10 +673,8 @@ async def scala(client, message):
 @app.on_edited_message(filters.command(["swift"], "!"))
 async def swift(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "swift",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "swift", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -769,10 +690,8 @@ async def swift(client, message):
 @app.on_edited_message(filters.command(["typescript"], "!"))
 async def typescript(client, message):
     if len(message.command) < 2:
-        return await message.reply(
-            "Please enter the code you want to run.")
-    res = await glot(message.command[0], "ts",
-                         message.text.split(None, 1)[1])
+        return await message.reply("Please enter the code you want to run.")
+    res = await glot(message.command[0], "ts", message.text.split(None, 1)[1])
     hasil = res["stdout"] if res["stdout"] else res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:

@@ -42,27 +42,23 @@ async def active_afk(_, message):
                 if str(reasonafk) == "None":
                     return await message.reply_animation(
                         data,
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_animation(
                         data,
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
                 else:
                     return await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=
-                        f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
         except Exception:
             return await message.reply_text(
@@ -102,8 +98,7 @@ async def active_afk(_, message):
             "reason": _reason,
         }
     elif len(message.command) == 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message,
-                                 file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
         details = {
             "type": "photo",
             "time": time.time(),
@@ -111,8 +106,7 @@ async def active_afk(_, message):
             "reason": None,
         }
     elif len(message.command) > 1 and message.reply_to_message.photo:
-        await app.download_media(message.reply_to_message,
-                                 file_name=f"{user_id}.jpg")
+        await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
         _reason = message.text.split(None, 1)[1].strip()
         details = {
             "type": "photo",
@@ -129,8 +123,7 @@ async def active_afk(_, message):
                 "reason": None,
             }
         else:
-            await app.download_media(message.reply_to_message,
-                                     file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -147,8 +140,7 @@ async def active_afk(_, message):
                 "reason": _reason,
             }
         else:
-            await app.download_media(message.reply_to_message,
-                                     file_name=f"{user_id}.jpg")
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -164,9 +156,7 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    pesan = await message.reply_text(
-        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s."
-    )
+    pesan = await message.reply_text(f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s.")
     await asyncio.sleep(10)
     await pesan.delete()
     try:

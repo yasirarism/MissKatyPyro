@@ -14,12 +14,7 @@ async def copy(client, message):
                 await message.reply_to_message.copy(message.from_user.id, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                 return await message.reply_text("Pesan berhasil dikirim..")
             except UserIsBlocked:
-                return await message.reply(
-                    "Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..",
-                    reply_markup=InlineKeyboardMarkup([[
-                        InlineKeyboardButton(text="💬 Chat Aku Yahh",
-                                            url="https://t.me/MissKatyRoBot")
-                    ]]))
+                return await message.reply("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
             except Exception as e:
                 return await message.reply(f"ERROR: {str(e)}")
         else:
@@ -29,7 +24,7 @@ async def copy(client, message):
             try:
                 idtujuan = message.command[1]
                 userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
-                if userstat.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER]  or message.from_user.id == 2024984460:
+                if userstat.status in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or message.from_user.id == 2024984460:
                     await message.reply_to_message.copy(idtujuan, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
                     return await message.reply_text("Pesan berhasil dikirim..")
                 else:
@@ -42,8 +37,7 @@ async def copy(client, message):
             await message.reply("Silahkan balas pesan yang mau dicopy.")
 
 
-@app.on_message(
-    filters.command(["forward"], COMMAND_HANDLER))
+@app.on_message(filters.command(["forward"], COMMAND_HANDLER))
 @capture_err
 async def forward(client, message):
     if len(message.command) == 1:
@@ -52,12 +46,7 @@ async def forward(client, message):
                 await message.reply_to_message.forward(message.from_user.id)
                 return await message.reply_text("Pesan berhasil dikirim..")
             except UserIsBlocked:
-                return await message.reply(
-                    "Silahkan PM Saya untuk memforward pesan ke chat pribadi..",
-                    reply_markup=InlineKeyboardMarkup([[
-                        InlineKeyboardButton(text="💬 Chat Aku Yahh",
-                                            url="https://t.me/MissKatyRoBot")
-                    ]]))
+                return await message.reply("Silahkan PM Saya untuk memforward pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
             except Exception as e:
                 return await message.reply(f"ERROR: {str(e)}")
         else:

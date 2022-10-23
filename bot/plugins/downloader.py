@@ -26,6 +26,7 @@ __HELP__ = """
 /fbdl [link] - Download Facebook Video
 """
 
+
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err
 async def download(client, message):
@@ -90,29 +91,24 @@ async def download(client, message):
     else:
         await pesan.edit("Reply to a Telegram Media, to download it to my local server.")
 
+
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 async def tiktokdl(client, message):
     if len(message.command) == 1:
-        return await message.reply(
-            "Use command /{message.command[0]} [link] to download tiktok video.")
+        return await message.reply("Use command /{message.command[0]} [link] to download tiktok video.")
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
         async with aiohttp.ClientSession() as ses:
-            async with ses.get(
-                    f"https://api.hayo.my.id/api/tiktok/4?url={link}"
-            ) as result:
+            async with ses.get(f"https://api.hayo.my.id/api/tiktok/4?url={link}") as result:
                 r = await result.json()
-                await message.reply_video(
-                    r["linkori"],
-                    caption=
-                    f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]"
-                )
+                await message.reply_video(r["linkori"], caption=f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]")
         await msg.delete()
     except Exception as e:
         await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
         await msg.delete()
+
 
 @app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
 @capture_err
@@ -122,13 +118,13 @@ async def fbdl(client, message):
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link,"vt": "facebook"}).text
+        r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link, "vt": "facebook"}).text
         bs = BeautifulSoup(r, "lxml")
-        resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>",""))
+        resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>", ""))
         try:
-            url = resjson['links']['hd'].replace("&amp;", "&")
+            url = resjson["links"]["hd"].replace("&amp;", "&")
         except:
-            url = resjson['links']['sd'].replace("&amp;", "&")
+            url = resjson["links"]["sd"].replace("&amp;", "&")
         obj = SmartDL(url, progress_bar=False)
         obj.start()
         path = obj.get_dest()

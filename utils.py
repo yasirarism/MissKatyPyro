@@ -36,8 +36,10 @@ class temp(object):
     U_NAME = None
     B_NAME = None
 
+
 def demoji(teks):
     return emoji.emojize(f":{teks.replace(' ', '_')}:")
+
 
 async def is_subscribed(bot, query):
     try:
@@ -51,6 +53,7 @@ async def is_subscribed(bot, query):
             return True
 
     return False
+
 
 async def broadcast_messages(user_id, message):
     try:

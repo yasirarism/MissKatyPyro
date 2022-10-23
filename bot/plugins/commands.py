@@ -1,18 +1,8 @@
-import os
-import time
 import logging
-import random
-import asyncio
-from Script import script
-import shutil, psutil
 
-from pyrogram import Client, filters, enums
-from bot import botStartTime, app
-from bot.helper.human_read import get_readable_time, get_readable_file_size
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.users_chats_db import db
-from info import ADMINS, CHANNELS, COMMAND_HANDLER, LOG_CHANNEL, PICS
-from utils import temp
+from pyrogram import filters
+from bot import app
+from info import ADMINS
 
 logger = logging.getLogger(__name__)
 
@@ -157,6 +147,7 @@ logger = logging.getLogger(__name__)
 #                                   reply_markup=reply_markup,
 #                                   parse_mode=enums.ParseMode.HTML)
 #         return
+
 
 @app.on_message(filters.command(["logs"]) & filters.user(ADMINS))
 async def log_file(bot, message):

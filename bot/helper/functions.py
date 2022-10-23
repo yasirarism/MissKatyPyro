@@ -69,8 +69,7 @@ async def extract_user_and_reason(message, sender_chat=False):
         reply = message.reply_to_message
         # if reply to a message and no reason is given
         if not reply.from_user:
-            if (reply.sender_chat and reply.sender_chat != message.chat.id
-                    and sender_chat):
+            if reply.sender_chat and reply.sender_chat != message.chat.id and sender_chat:
                 id_ = reply.sender_chat.id
             else:
                 return None, None

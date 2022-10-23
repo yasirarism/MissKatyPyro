@@ -11,10 +11,7 @@ async def is_afk(user_id: int) -> bool:
 
 
 async def add_afk(user_id: int, mode):
-    await usersdb.update_one({"user_id": user_id}, {"$set": {
-        "reason": mode
-    }},
-                             upsert=True)
+    await usersdb.update_one({"user_id": user_id}, {"$set": {"reason": mode}}, upsert=True)
 
 
 async def remove_afk(user_id: int):

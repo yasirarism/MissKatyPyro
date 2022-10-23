@@ -96,7 +96,7 @@ async def create(_, message):
     pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
-    
+
 @app.on_message(filters.command(["temp_paste"], COMMAND_HANDLER))
 async def create(_, message):
     reply = message.reply_to_message
@@ -137,7 +137,7 @@ async def create(_, message):
         uname = message.sender_chat.title
 
     try:
-        req = await http.post("https://tempaste.com/api/v1/create-paste/", data={"api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t", "title": "MissKaty Paste", "paste_content": data, "visibility":"public", "expiry_date_type":"months", "expiry_date":12})
+        req = await http.post("https://tempaste.com/api/v1/create-paste/", data={"api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t", "title": "MissKaty Paste", "paste_content": data, "visibility": "public", "expiry_date_type": "months", "expiry_date": 12})
         url = f"https://tempaste.com/{json_loads(req.text)['url']}"
     except Exception as e:
         await msg.edit(f"`{e}`")

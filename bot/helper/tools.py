@@ -34,17 +34,11 @@ def get_random_string(length):
 def rentry(teks):
     # buat dapetin cookie
     session = requests.Session()
-    response = session.get('https://rentry.co')
+    response = session.get("https://rentry.co")
     kuki = session.cookies.get_dict()
     # headernya
-    header = {"Referer": 'https://rentry.co'}
+    header = {"Referer": "https://rentry.co"}
 
-    payload = {
-        'csrfmiddlewaretoken': kuki['csrftoken'],
-        'text': teks
-    }
-    res = requests.post('https://rentry.co/api/new',
-                        payload,
-                        headers=header,
-                        cookies=kuki).json().get("url")
+    payload = {"csrfmiddlewaretoken": kuki["csrftoken"], "text": teks}
+    res = requests.post("https://rentry.co/api/new", payload, headers=header, cookies=kuki).json().get("url")
     return res

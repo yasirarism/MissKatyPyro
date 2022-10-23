@@ -7,6 +7,7 @@ import json, os
 from time import perf_counter
 from bot.helper.tools import get_random_string
 
+
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
@@ -56,12 +57,15 @@ async def ceksub(_, m):
         res = "".join(f"<b>Index:</b> {i['mapping']}\n<b>Stream Name:</b> {i['stream_name']}\n<b>Language:</b> {i['lang']}\n\n" for i in DATA)
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        await pesan.edit(f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}")
+        await pesan.edit(
+            f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}"
+        )
     except Exception as e:
         await pesan.edit(f"Gagal ekstrak sub..\n\nERROR: {e}")
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
+
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
@@ -71,15 +75,16 @@ async def convertsrt(_, m):
         return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
     msg = await m.reply("Sedang memproses perintah...")
     dl = await reply.download()
-    res = (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
+    (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
     await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
     await msg.delete()
     try:
-       os.remove(dl)
-       os.remove(f"{os.path.basename(dl)}.srt")
+        os.remove(dl)
+        os.remove(f"{os.path.basename(dl)}.srt")
     except:
-       pass
-    
+        pass
+
+
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 @capture_err
 async def extractsub(_, m):
@@ -99,7 +104,7 @@ async def extractsub(_, m):
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
         format = json.loads(getformat_cmd)
-        namafile = get_subname(link, format['streams'][int(index)]['codec_name'])
+        namafile = get_subname(link, format["streams"][int(index)]["codec_name"])
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"

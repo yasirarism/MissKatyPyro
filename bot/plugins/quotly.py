@@ -11,6 +11,7 @@ __HELP__ = """
 /memify [text] - Reply to sticker to give text on sticker.
 """
 
+
 class QuotlyException(Exception):
     pass
 
@@ -57,8 +58,8 @@ async def get_message_sender_name(m: Message):
             return m.sender_chat.title
         else:
             return ""
-        
-        
+
+
 async def get_custom_emoji(m: Message):
     if m.forward_date:
         if m.forward_sender_name:

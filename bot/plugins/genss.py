@@ -1,9 +1,7 @@
 # the logging things
 import logging
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 import os, time, traceback
@@ -15,7 +13,8 @@ from bot import app
 from bot.helper.ffmpeg_helper import take_ss, genss_link
 from info import COMMAND_HANDLER
 from bot.helper.pyro_progress import (
-    progress_for_pyrogram, )
+    progress_for_pyrogram,
+)
 
 __MODULE__ = "MediaTool"
 __HELP__ = """"
@@ -30,43 +29,23 @@ async def genss(client, message):
     if message.reply_to_message is not None:
         process = await message.reply_text("`Processing, please wait..`")
         c_time = time.time()
-        the_real_download_location = await client.download_media(
-            message=message.reply_to_message,
-            progress=progress_for_pyrogram,
-            progress_args=("Trying to download, please wait..", process,
-                           c_time))
+        the_real_download_location = await client.download_media(message=message.reply_to_message, progress=progress_for_pyrogram, progress_args=("Trying to download, please wait..", process, c_time))
 
         await sleep(2)
         if the_real_download_location is not None:
             try:
                 try:
-                    await client.edit_message_text(
-                        text=
-                        f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.",
-                        chat_id=message.chat.id,
-                        message_id=process.id)
+                    await client.edit_message_text(text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.", chat_id=message.chat.id, message_id=process.id)
                 except FloodWait as e:
                     await sleep(e.x)
-                    await client.edit_message_text(
-                        text=
-                        f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.",
-                        chat_id=message.chat.id,
-                        message_id=process.id)
+                    await client.edit_message_text(text=f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.", chat_id=message.chat.id, message_id=process.id)
                 images = await take_ss(the_real_download_location)
                 try:
-                    await client.edit_message_text(
-                        text="Mencoba mengupload, hasil generate screenshot..",
-                        chat_id=message.chat.id,
-                        message_id=process.id)
+                    await client.edit_message_text(text="Mencoba mengupload, hasil generate screenshot..", chat_id=message.chat.id, message_id=process.id)
                 except FloodWait as e:
                     await sleep(e.value)
-                    await client.edit_message_text(
-                        text="Mencoba mengupload, hasil generate screenshot..",
-                        chat_id=message.chat.id,
-                        message_id=process.id)
-                await client.send_chat_action(
-                    chat_id=message.chat.id,
-                    action=enums.ChatAction.UPLOAD_PHOTO)
+                    await client.edit_message_text(text="Mencoba mengupload, hasil generate screenshot..", chat_id=message.chat.id, message_id=process.id)
+                await client.send_chat_action(chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
 
                 try:
                     await gather(*[message.reply_document(images, reply_to_message_id=message.id), message.reply_photo(images, reply_to_message_id=message.id)])
@@ -74,14 +53,10 @@ async def genss(client, message):
                     await sleep(e.value)
                     await gather(*[message.reply_document(images, reply_to_message_id=message.id), message.reply_photo(images, reply_to_message_id=message.id)])
                 try:
-                    await message.reply(
-                        f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @MissKatyRoBot",
-                        reply_to_message_id=message.id)
+                    await message.reply(f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @MissKatyRoBot", reply_to_message_id=message.id)
                 except FloodWait as e:
                     await sleep(e.value)
-                    await message.reply(
-                        f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @MissKatyRoBot",
-                        reply_to_message_id=message.id)
+                    await message.reply(f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @MissKatyRoBot", reply_to_message_id=message.id)
 
                 await process.delete()
                 try:
@@ -106,47 +81,31 @@ async def genss_link(client, message):
     try:
         link = message.text.split(" ")[1]
         if link.startswith("https://file.yasirweb.my.id"):
-            link = link.replace("https://file.yasirweb.my.id",
-                                "https://file.yasiraris.workers.dev")
+            link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
         if link.startswith("https://link.yasirweb.my.id"):
-            link = link.replace("https://link.yasirweb.my.id",
-                                "https://yasirrobot.herokuapp.com")
+            link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
         process = await message.reply_text("`Processing, please wait..`")
         tmp_directory_for_each_user = f"./MissKaty_Genss/{str(message.from_user.id)}"
         if not os.path.isdir(tmp_directory_for_each_user):
             os.makedirs(tmp_directory_for_each_user)
-        images = await genss_link(process, link, tmp_directory_for_each_user,
-                                  5, 8)
+        images = await genss_link(process, link, tmp_directory_for_each_user, 5, 8)
         await sleep(3)
         try:
-            await client.edit_message_text(
-                text="Mencoba mengupload, hasil generate screenshot..",
-                chat_id=message.chat.id,
-                message_id=process.id)
+            await client.edit_message_text(text="Mencoba mengupload, hasil generate screenshot..", chat_id=message.chat.id, message_id=process.id)
         except FloodWait as e:
             await sleep(e.value)
-            await client.edit_message_text(
-                text="Mencoba mengupload, hasil generate screenshot..",
-                chat_id=message.chat.id,
-                message_id=process.id)
-        await client.send_chat_action(chat_id=message.chat.id,
-                                      action=enums.ChatAction.UPLOAD_PHOTO)
+            await client.edit_message_text(text="Mencoba mengupload, hasil generate screenshot..", chat_id=message.chat.id, message_id=process.id)
+        await client.send_chat_action(chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
         try:
-            await message.reply_media_group(images,
-                                            reply_to_message_id=message.id)
+            await message.reply_media_group(images, reply_to_message_id=message.id)
         except FloodWait as e:
             await sleep(e.value)
-            await message.reply_media_group(images,
-                                            reply_to_message_id=message.id)
+            await message.reply_media_group(images, reply_to_message_id=message.id)
         try:
-            await message.reply(
-                f"☑️ Uploaded [8] screenshoot.\n\nGenerated by @MissKatyRoBot.",
-                reply_to_message_id=message.id)
+            await message.reply(f"☑️ Uploaded [8] screenshoot.\n\nGenerated by @MissKatyRoBot.", reply_to_message_id=message.id)
         except FloodWait as e:
             await sleep(e.value)
-            await message.reply(
-                f"☑️ Uploaded [8] screenshoot.\n\nGenerated by @MissKatyRoBot.",
-                reply_to_message_id=message.id)
+            await message.reply(f"☑️ Uploaded [8] screenshoot.\n\nGenerated by @MissKatyRoBot.", reply_to_message_id=message.id)
         await process.delete()
         try:
             rmtree(tmp_directory_for_each_user)

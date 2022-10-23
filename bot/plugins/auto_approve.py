@@ -1,8 +1,9 @@
 from bot import app
 from pyrogram import filters
-from pyrogram.types import ChatJoinRequest, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserIsBlocked, UserAlreadyParticipant
 from bot.core.decorator.errors import capture_err
+
 
 @capture_err
 @app.on_chat_join_request(filters.chat(-1001686184174))
@@ -18,6 +19,7 @@ async def approve_join_chat(c, m):
     except UserIsBlocked:
         await m.decline()
 
+
 @app.on_callback_query(filters.regex(r"^approve"))
 async def approve_chat(c, q):
     i, chat = q.data.split("_")
@@ -28,6 +30,7 @@ async def approve_chat(c, q):
         await q.message.edit("Kamu sudah di acc join grup, jadi ga perlu menekan button.")
     except Exception as err:
         await q.message.edit(err)
+
 
 @app.on_callback_query(filters.regex(r"^declined"))
 async def decline_chat(c, q):
