@@ -165,6 +165,7 @@ async def melongmovie(_, message):
 
 
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
+@capture_err
 async def terbit21_scrap(_, message):
     if len(message.command) == 1:
         async with aiohttp.ClientSession() as session:
@@ -188,11 +189,11 @@ async def terbit21_scrap(_, message):
             await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
         except MessageTooLong:
             pesan = rentry(data)
-            await pesan.delete()
-            return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
+            await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 
 @app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
+@capture_err
 async def lk21_scrap(_, message):
     if len(message.command) == 1:
         async with aiohttp.ClientSession() as session:
@@ -203,7 +204,7 @@ async def lk21_scrap(_, message):
                 return await message.reply(f"**Daftar rilis movie terbaru di web LK21**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
-                return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
+                await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
     judul = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
     async with aiohttp.ClientSession() as session:
@@ -216,8 +217,7 @@ async def lk21_scrap(_, message):
             await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
         except MessageTooLong:
             pesan = rentry(data)
-            await pesan.delete()
-            return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
+            return await message.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 
 async def getcontent(url):
