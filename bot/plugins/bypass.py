@@ -3,6 +3,7 @@ from bot.helper.http import http
 from bot import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.errors import MessageTooLong
 from info import COMMAND_HANDLER
 from bot.helper.tools import rentry
 from urllib.parse import unquote
@@ -40,15 +41,16 @@ async def bypass(_, message):
   if len(message.command) == 1:
     return await message.reply(f"Gunakan perintah /{message.command[0]} untuk bypass url")
   url = message.command[1]
+  msg = "Bypassing URL.."
   mention = f"**Bypasser:** {message.from_user.mention} ({message.from_user.id})"
   if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
      data = await pling_bypass(url)
-     if len(data) > 3800:
+     try:
+        await message.edit(f"**Bypassed URL:**\n{pling}\n\n{mention}", quote=True)
+     except MessageTooLong:
         result = rentry(data)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=result), InlineKeyboardButton("Raw Link", url=f"{result}/raw")]])
-        await message.reply(f"**Bypassed URL:**\n{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}", reply_markup=markup, quote=True)
-     else:
-        await message.reply(f"**Bypassed URL:**\n{pling}\n\n{mention}", quote=True)
+        await message.edit(f"**Bypassed URL:**\n{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}", reply_markup=markup, quote=True)
   else:
-     await message.reply("Unsupported link..")
+     await message.edit("Unsupported link..")
     
