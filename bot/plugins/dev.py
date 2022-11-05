@@ -8,6 +8,7 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from bot import app
 
