@@ -90,9 +90,7 @@ home_keyboard_pm = InlineKeyboardMarkup([
     ],
 ])
 
-home_text_pm = (f"Hey there! My name is MissKatyRoBot. I have many " +
-                "useful features for you, feel free to " +
-                "add me to your group.")
+home_text_pm = (f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give donation to my owner you can send /donate command for more info.")
 
 keyboard = InlineKeyboardMarkup([
     [

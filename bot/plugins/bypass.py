@@ -8,7 +8,20 @@ from urllib.parse import unquote
 from bot.core.decorator.errors import capture_err
 from bot.helper.human_read import get_readable_file_size
 
-async def pling(url):
+LIST_LINK = """
+- Pling and all aliases.
+- Other link soon...
+"""
+
+__MODULE__ = "Bypass"
+__HELP__ = f"""
+/directurl [Link] - Bypass URL.
+
+Supported Link:
+{LIST_LINK}
+"""
+
+async def pling_bypass(url):
     try:
         id_url = re.search(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url)[2]
         link = f"https://www.pling.com/p/{id_url}/loadFiles"
@@ -22,15 +35,6 @@ async def pling(url):
             return msg
     except Exception as e:
         return e
-      
-__MODULE__ = "Bypass"
-__HELP__ = """
-/directurl [Link] - Bypass URL.
-
-Supported Link:
-- Pling and all aliases.
-- Soon..
-"""
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
 @capture_err
@@ -40,7 +44,7 @@ async def bypass(_, message):
   url = message.command[1]
   mention = f"{message.from_user.mention} ({message.from_user.id})"
   if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
-     pling = await pling(url)
+     pling = await pling_bypass(url)
      if len(pling) > 3800:
         result = rentry(data)
         await message.reply(result)
