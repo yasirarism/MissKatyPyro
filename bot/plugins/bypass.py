@@ -1,6 +1,7 @@
 import re
 from bot.helper.http import http
 from bot import app
+from pyrogram import filters
 from info import COMMAND_HANDLER
 from bot.helper.tools import rentry
 from urllib.parse import unquote
