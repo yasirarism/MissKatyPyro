@@ -47,9 +47,9 @@ async def bypass(_, message):
      data = await pling_bypass(url)
      if len(data) > 3800:
         result = rentry(data)
-        await message.reply(result)
+        await message.reply(f"**Bypassed URL:**\n{result}\n\n{mention}")
      else:
-        await message.reply(pling)
+        await message.reply(f"**Bypassed URL:**\n{pling}\n\n{mention}")
   else:
      await message.reply("Unsupported link..")
     
