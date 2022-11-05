@@ -44,8 +44,8 @@ async def bypass(_, message):
   url = message.command[1]
   mention = f"{message.from_user.mention} ({message.from_user.id})"
   if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
-     pling = await pling_bypass(url)
-     if len(pling) > 3800:
+     data = await pling_bypass(url)
+     if len(data) > 3800:
         result = rentry(data)
         await message.reply(result)
      else:
