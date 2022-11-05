@@ -46,7 +46,7 @@ async def bypass(_, message):
   if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
      data = await pling_bypass(url)
      try:
-        await message.edit(f"**Bypassed URL:**\n{pling}\n\n{mention}", quote=True)
+        await message.edit(f"**Bypassed URL:**\n{data}\n\n{mention}", quote=True)
      except MessageTooLong:
         result = rentry(data)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=result), InlineKeyboardButton("Raw Link", url=f"{result}/raw")]])
