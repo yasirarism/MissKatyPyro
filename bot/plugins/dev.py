@@ -23,7 +23,6 @@ __HELP__ = """
 """
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
-@capture_err
 async def donate(_, message):
     markup = InlineKeyboardMarkup([[InlineKeyboardButton("Dana", url="https://link.dana.id/qr/3kqod34"), InlineKeyboardButton("ShopeePay", url="https://wsa.wallet.airpay.co.id/qr/00c06de2ee3d0c7169e8?smtt=0.0.9")]])
     await message.reply(f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan payment yang tersedia untuk kebutuhan server dan lainnya. Terimakasih..", reply_markup=markup)
