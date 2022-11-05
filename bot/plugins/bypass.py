@@ -4,9 +4,10 @@ from bot import app
 from info import COMMAND_HANDLER
 from bot.helper.tools import rentry
 from urllib.parse import unquote
+from bot.core.decorator.errors import capture_err
 from bot.helper.human_read import get_readable_file_size
 
-def pling(url):
+async def pling(url):
     try:
         id_url = re.search(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url)[2]
         link = f"https://www.pling.com/p/{id_url}/loadFiles"
@@ -31,13 +32,14 @@ Supported Link:
 """
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
+@capture_err
 async def bypass(_, message):
   if len(message.command) == 1:
     return await message.reply(f"Gunakan perintah /{message.command[0]} untuk bypass url")
   url = message.command[1]
   mention = f"{message.from_user.mention} ({message.from_user.id})"
   if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
-     pling = pling(url)
+     pling = await pling(url)
      if len(pling) > 3800:
         result = rentry(data)
         await message.reply(result)
