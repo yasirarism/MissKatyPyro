@@ -1,7 +1,7 @@
 import os, logging, json, shutil, asyncio, time
 from bot import app
 from PIL import Image
-from pyrogram import filters, enums
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import COMMAND_HANDLER
 from datetime import datetime
@@ -13,13 +13,11 @@ from bot.plugins.dev import shell_exec
 from bot.core.decorator.errors import capture_err
 from bot.helper.pyro_progress import progress_for_pyrogram
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOGGER = logging.getLogger(__name__)
 
 user_time = {}
+
 
 @app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
 @capture_err
@@ -39,11 +37,7 @@ async def ytdown(_, message):
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
     t_response = (await shell_exec(command_to_exec))[0]
     if "ERROR" in t_response:
-        await message.reply_text(
-            text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response),
-            quote=True,
-            disable_web_page_preview=True
-        )
+        await message.reply_text(text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response), quote=True, disable_web_page_preview=True)
         return False
     if t_response:
         x_reponse = t_response
@@ -68,100 +62,41 @@ async def ytdown(_, message):
                     format_string = formats.get("format")
                 format_ext = formats.get("ext")
 
-                if formats.get('filesize'):
-                    size = formats['filesize']
-                elif formats.get('filesize_approx'):
-                    size = formats['filesize_approx']
+                if formats.get("filesize"):
+                    size = formats["filesize"]
+                elif formats.get("filesize_approx"):
+                    size = formats["filesize_approx"]
                 else:
                     size = 0
-                cb_string_video = "ytdl|{}|{}|{}|{}".format(
-                    "video", format_id, format_ext, randem)
-                cb_string_file = "ytdl|{}|{}|{}|{}".format(
-                    "file", format_id, format_ext, randem)
+                cb_string_video = "ytdl|{}|{}|{}|{}".format("video", format_id, format_ext, randem)
+                cb_string_file = "ytdl|{}|{}|{}|{}".format("file", format_id, format_ext, randem)
                 if format_string and "audio only" not in format_string:
                     ikeyboard = [
-                        InlineKeyboardButton(
-                            "🎬 " + format_string + " " + format_ext +
-                            " " + get_readable_file_size(size) + " ",
-                            callback_data=(cb_string_video).encode("UTF-8")
-                        ),
-                        InlineKeyboardButton(
-                            "📄 " + format_string + " " + format_ext +
-                            " " + get_readable_file_size(size) + " ",
-                            callback_data=(cb_string_file).encode("UTF-8")
-                        )
+                        InlineKeyboardButton("🎬 " + format_string + " " + format_ext + " " + get_readable_file_size(size) + " ", callback_data=(cb_string_video).encode("UTF-8")),
+                        InlineKeyboardButton("📄 " + format_string + " " + format_ext + " " + get_readable_file_size(size) + " ", callback_data=(cb_string_file).encode("UTF-8")),
                     ]
                 else:
                     # special weird case :\
                     ikeyboard = [
-                        InlineKeyboardButton(
-                            "SVideo [" +
-                            "] ( " +
-                            get_readable_file_size(size) + " )",
-                            callback_data=(cb_string_video).encode("UTF-8")
-                        ),
-                        InlineKeyboardButton(
-                            "DFile [" +
-                            "] ( " +
-                            get_readable_file_size(size) + " )",
-                            callback_data=(cb_string_file).encode("UTF-8")
-                        )
+                        InlineKeyboardButton("SVideo [" + "] ( " + get_readable_file_size(size) + " )", callback_data=(cb_string_video).encode("UTF-8")),
+                        InlineKeyboardButton("DFile [" + "] ( " + get_readable_file_size(size) + " )", callback_data=(cb_string_file).encode("UTF-8")),
                     ]
                 inline_keyboard.append(ikeyboard)
             if duration is not None:
-                cb_string_64 = "ytdl|{}|{}|{}|{}".format(
-                    "audio", "64k", "mp3", randem)
-                cb_string_128 = "ytdl|{}|{}|{}|{}".format(
-                    "audio", "128k", "mp3", randem)
-                cb_string = "ytdl|{}|{}|{}|{}".format(
-                    "audio", "320k", "mp3", randem)
-                inline_keyboard.append([
-                    InlineKeyboardButton(
-                        "MP3 " + "(" + "64 kbps" + ")",
-                        callback_data=cb_string_64.encode("UTF-8")
-                    ),
-                    InlineKeyboardButton(
-                        "MP3 " + "(" + "128 kbps" + ")",
-                        callback_data=cb_string_128.encode("UTF-8")
-                    )
-                ])
-                inline_keyboard.append([
-                    InlineKeyboardButton(
-                        "MP3 " + "(" + "320 kbps" + ")",
-                        callback_data=cb_string.encode("UTF-8")
-                    )
-                ])
+                cb_string_64 = "ytdl|{}|{}|{}|{}".format("audio", "64k", "mp3", randem)
+                cb_string_128 = "ytdl|{}|{}|{}|{}".format("audio", "128k", "mp3", randem)
+                cb_string = "ytdl|{}|{}|{}|{}".format("audio", "320k", "mp3", randem)
+                inline_keyboard.append([InlineKeyboardButton("MP3 " + "(" + "64 kbps" + ")", callback_data=cb_string_64.encode("UTF-8")), InlineKeyboardButton("MP3 " + "(" + "128 kbps" + ")", callback_data=cb_string_128.encode("UTF-8"))])
+                inline_keyboard.append([InlineKeyboardButton("MP3 " + "(" + "320 kbps" + ")", callback_data=cb_string.encode("UTF-8"))])
         else:
             format_id = response_json["format_id"]
             format_ext = response_json["ext"]
-            cb_string_file = "ytdl|{}|{}|{}|{}".format(
-                "file", format_id, format_ext, randem)
-            cb_string_video = "ytdl|{}|{}|{}|{}".format(
-                "video", format_id, format_ext, randem)
-            inline_keyboard.append([
-                InlineKeyboardButton(
-                    "SVideo",
-                    callback_data=(cb_string_video).encode("UTF-8")
-                ),
-                InlineKeyboardButton(
-                    "DFile",
-                    callback_data=(cb_string_file).encode("UTF-8")
-                )
-            ])
-            cb_string_file = "{}={}={}".format(
-                "file", format_id, format_ext)
-            cb_string_video = "{}={}={}".format(
-                "video", format_id, format_ext)
-            inline_keyboard.append([
-                InlineKeyboardButton(
-                    "video",
-                    callback_data=(cb_string_video).encode("UTF-8")
-                ),
-                InlineKeyboardButton(
-                    "file",
-                    callback_data=(cb_string_file).encode("UTF-8")
-                )
-            ])
+            cb_string_file = "ytdl|{}|{}|{}|{}".format("file", format_id, format_ext, randem)
+            cb_string_video = "ytdl|{}|{}|{}|{}".format("video", format_id, format_ext, randem)
+            inline_keyboard.append([InlineKeyboardButton("SVideo", callback_data=(cb_string_video).encode("UTF-8")), InlineKeyboardButton("DFile", callback_data=(cb_string_file).encode("UTF-8"))])
+            cb_string_file = "{}={}={}".format("file", format_id, format_ext)
+            cb_string_video = "{}={}={}".format("video", format_id, format_ext)
+            inline_keyboard.append([InlineKeyboardButton("video", callback_data=(cb_string_video).encode("UTF-8")), InlineKeyboardButton("file", callback_data=(cb_string_file).encode("UTF-8"))])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
         thumbnail = "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/no-video-icon.png"
         thumbnail_image = "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/no-video-icon.png"
@@ -169,15 +104,7 @@ async def ytdown(_, message):
             if response_json["thumbnail"] is not None:
                 thumbnail = response_json["thumbnail"]
                 thumbnail_image = response_json["thumbnail"]
-        thumb_image_path = DownLoadFile(
-            thumbnail_image,
-            f"YT_Down/{str(message.from_user.id)}{randem}.jpg",
-            128,
-            None,  # bot,
-            "Trying to download..",
-            message.id,
-            message.chat.id
-        )
+        thumb_image_path = DownLoadFile(thumbnail_image, f"YT_Down/{str(message.from_user.id)}{randem}.jpg", 128, None, "Trying to download..", message.id, message.chat.id)  # bot,
         await message.reply_photo(
             photo=thumb_image_path,
             quote=True,
@@ -187,28 +114,14 @@ async def ytdown(_, message):
     else:
         # fallback for nonnumeric port a.k.a seedbox.io
         inline_keyboard = []
-        cb_string_file = "{}={}={}".format(
-            "file", "LFO", "NONE")
-        cb_string_video = "{}={}={}".format(
-            "video", "OFL", "ENON")
-        inline_keyboard.append([
-            InlineKeyboardButton(
-                "SVideo",
-                callback_data=(cb_string_video).encode("UTF-8")
-            ),
-            InlineKeyboardButton(
-                "DFile",
-                callback_data=(cb_string_file).encode("UTF-8")
-            )
-        ])
+        cb_string_file = "{}={}={}".format("file", "LFO", "NONE")
+        cb_string_video = "{}={}={}".format("video", "OFL", "ENON")
+        inline_keyboard.append([InlineKeyboardButton("SVideo", callback_data=(cb_string_video).encode("UTF-8")), InlineKeyboardButton("DFile", callback_data=(cb_string_file).encode("UTF-8"))])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
         await message.reply_photo(
-            photo="https://telegra.ph/file/ce37f8203e1903feed544.png",
-            quote=True,
-            caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(""),
-            reply_markup=reply_markup,
-            reply_to_message_id=message.id
+            photo="https://telegra.ph/file/ce37f8203e1903feed544.png", quote=True, caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(""), reply_markup=reply_markup, reply_to_message_id=message.id
         )
+
 
 @app.on_callback_query(filters.regex(r"ytdl|"))
 async def youtube_dl_call_back(bot, update):
@@ -232,14 +145,11 @@ async def youtube_dl_call_back(bot, update):
     await update.message.edit_caption("Trying to download video...")
     description = " "
     if "fulltitle" in response_json:
-        description = response_json["fulltitle"][:1021] # escape Markdown and special characters
+        description = response_json["fulltitle"][:1021]  # escape Markdown and special characters
     tmp_directory_for_each_user = os.path.join(f"downloads/{str(update.from_user.id)}{random_char(5)}")
     if not os.path.isdir(tmp_directory_for_each_user):
         os.makedirs(tmp_directory_for_each_user)
-    download_directory = os.path.join(
-        tmp_directory_for_each_user,
-        custom_file_name
-    )
+    download_directory = os.path.join(tmp_directory_for_each_user, custom_file_name)
     if tg_send_type == "audio":
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} -o '{download_directory}'"
     else:
@@ -259,10 +169,7 @@ async def youtube_dl_call_back(bot, update):
         download_directory_dirname = os.path.dirname(download_directory)
         download_directory_contents = os.listdir(download_directory_dirname)
         for download_directory_c in download_directory_contents:
-            current_file_name = os.path.join(
-                download_directory_dirname,
-                download_directory_c
-            )
+            current_file_name = os.path.join(download_directory_dirname, download_directory_c)
             file_size = os.stat(current_file_name).st_size
 
             if file_size == 0:
@@ -271,18 +178,10 @@ async def youtube_dl_call_back(bot, update):
                 return
 
             if file_size > 2097152000:
-                await update.message.edit_caption(
-                    caption="I cannot upload files greater than 1.95GB due to Telegram API limitations.".format(
-                        time_taken_for_download,
-                        humanbytes(file_size)
-                    )
-                )
+                await update.message.edit_caption(caption="I cannot upload files greater than 1.95GB due to Telegram API limitations.".format(time_taken_for_download, humanbytes(file_size)))
 
             else:
-                is_w_f = False
-                await update.message.edit_caption(
-                    caption="Trying to upload.."
-                )
+                await update.message.edit_caption(caption="Trying to upload..")
                 # get the correct width, height, and duration
                 # for videos greater than 10MB
                 # ref: message from @BotSupport
@@ -292,14 +191,12 @@ async def youtube_dl_call_back(bot, update):
                 if tg_send_type != "file":
                     metadata = extractMetadata(createParser(current_file_name))
                     if metadata is not None and metadata.has("duration"):
-                        duration = metadata.get('duration').seconds
+                        duration = metadata.get("duration").seconds
                 # get the correct width, height, and duration
                 # for videos greater than 10MB
                 if os.path.exists(thumb_image_path):
                     # https://stackoverflow.com/a/21669827/4723940
-                    Image.open(thumb_image_path).convert(
-                        "RGB"
-                    ).save(thumb_image_path)
+                    Image.open(thumb_image_path).convert("RGB").save(thumb_image_path)
                     metadata = extractMetadata(createParser(thumb_image_path))
                     if metadata.has("width"):
                         width = metadata.get("width")
@@ -313,44 +210,15 @@ async def youtube_dl_call_back(bot, update):
                 # try to upload file
                 if tg_send_type == "audio":
                     await update.message.reply_audio(
-                        audio=current_file_name,
-                        caption=description,
-                        duration=duration,
-                        thumb=thumb_image_path,
-                        reply_to_message_id=usr.id,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            "Trying to upload...",
-                            update.message,
-                            start_time
-                        )
+                        audio=current_file_name, caption=description, duration=duration, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
                     )
                 elif tg_send_type == "file":
                     await update.message.reply_document(
-                        document=current_file_name,
-                        thumb=thumb_image_path,
-                        caption=description,
-                        reply_to_message_id=usr.id,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            "Trying to upload...",
-                            update.message,
-                            start_time
-                        )
+                        document=current_file_name, thumb=thumb_image_path, caption=description, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
                     )
                 elif tg_send_type == "vm":
                     await update.message.reply_video_note(
-                        video_note=current_file_name,
-                        duration=duration,
-                        length=width,
-                        thumb=thumb_image_path,
-                        reply_to_message_id=usr.id,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            "Trying to upload...",
-                            update.message,
-                            start_time
-                        )
+                        video_note=current_file_name, duration=duration, length=width, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
                     )
                 elif tg_send_type == "video":
                     await update.message.reply_video(
@@ -363,11 +231,7 @@ async def youtube_dl_call_back(bot, update):
                         reply_to_message_id=usr.id,
                         thumb=thumb_image_path,
                         progress=progress_for_pyrogram,
-                        progress_args=(
-                            "Trying to upload...",
-                            update.message,
-                            start_time
-                        )
+                        progress_args=("Trying to upload...", update.message, start_time),
                     )
                 else:
                     LOGGER.info("Did this happen? :\\")
@@ -377,17 +241,10 @@ async def youtube_dl_call_back(bot, update):
                     shutil.rmtree(tmp_directory_for_each_user)
                 except:
                     pass
-                await update.message.edit_caption(
-                    caption="Downloaded in {} seconds.\nUploaded in {} seconds.".format(
-                        time_taken_for_download, time_taken_for_upload)
-
-                )
+                await update.message.edit_caption(caption="Downloaded in {} seconds.\nUploaded in {} seconds.".format(time_taken_for_download, time_taken_for_upload))
                 LOGGER.info(f"[OK] Downloaded in: {str(time_taken_for_download)}")
                 LOGGER.info(f"[OK] Uploaded in: {str(time_taken_for_upload)}")
-            shutil.rmtree(
-                tmp_directory_for_each_user,
-                ignore_errors=True
-            )
+            shutil.rmtree(tmp_directory_for_each_user, ignore_errors=True)
             asyncio.create_task(clendir(thumb_image_path))
             asyncio.create_task(clendir(tmp_directory_for_each_user))
             asyncio.sleep(5)
