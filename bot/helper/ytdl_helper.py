@@ -44,9 +44,8 @@ def DownLoadFile(
                     client.edit_message_text(
                         chat_id,
                         message_id,
-                        text=f"{ud_type}: {humanbytes(downloaded_size)} of {humanbytes(total_size)}",
+                        text=f"{ud_type}: {get_readable_file_size(downloaded_size)} of {get_readable_file_size(total_size)}",
                     )
-
                 except:
                     pass
     return file_name

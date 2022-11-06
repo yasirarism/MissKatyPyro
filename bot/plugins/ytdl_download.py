@@ -168,7 +168,7 @@ async def ytdown(_, message):
                 thumbnail_image = response_json["thumbnail"]
         thumb_image_path = DownLoadFile(
             thumbnail_image,
-            f"./YT_Down/{str(message.from_user.id)}{randem}.jpg",
+            f"./YT_Down/{str(message.from_user.id)}{randem}.json"
             128,
             None,  # bot,
             "Trying to download..",
