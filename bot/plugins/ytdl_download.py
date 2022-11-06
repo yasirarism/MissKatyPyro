@@ -32,7 +32,7 @@ async def ytdown(_, message):
         pass
 
     url = message.command[1]
-    url, _, youtube_dl_username, youtube_dl_password = get_link(update)
+    url, _, youtube_dl_username, youtube_dl_password = get_link(message)
     command_to_exec = [
         "yt-dlp",
         "--no-warnings",
