@@ -32,7 +32,6 @@ async def ytdown(_, message):
         pass
 
     url = message.command[1]
-    url, _, youtube_dl_username, youtube_dl_password = get_link(message)
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
     t_response = (await shell_exec(command_to_exec))[0]
     LOGGER.info((await shell_exec(command_to_exec))[0])
