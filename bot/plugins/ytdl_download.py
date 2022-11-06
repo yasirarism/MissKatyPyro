@@ -74,9 +74,9 @@ async def ytdown(_, message):
                     size = formats['filesize_approx']
                 else:
                     size = 0
-                cb_string_video = "{}|{}|{}|{}".format(
+                cb_string_video = "ytdl|{}|{}|{}|{}".format(
                     "video", format_id, format_ext, randem)
-                cb_string_file = "{}|{}|{}|{}".format(
+                cb_string_file = "ytdl|{}|{}|{}|{}".format(
                     "file", format_id, format_ext, randem)
                 if format_string and "audio only" not in format_string:
                     ikeyboard = [
@@ -109,11 +109,11 @@ async def ytdown(_, message):
                     ]
                 inline_keyboard.append(ikeyboard)
             if duration is not None:
-                cb_string_64 = "{}|{}|{}|{}".format(
+                cb_string_64 = "ytdl|{}|{}|{}|{}".format(
                     "audio", "64k", "mp3", randem)
-                cb_string_128 = "{}|{}|{}|{}".format(
+                cb_string_128 = "ytdl|{}|{}|{}|{}".format(
                     "audio", "128k", "mp3", randem)
-                cb_string = "{}|{}|{}|{}".format(
+                cb_string = "ytdl|{}|{}|{}|{}".format(
                     "audio", "320k", "mp3", randem)
                 inline_keyboard.append([
                     InlineKeyboardButton(
@@ -134,9 +134,9 @@ async def ytdown(_, message):
         else:
             format_id = response_json["format_id"]
             format_ext = response_json["ext"]
-            cb_string_file = "{}|{}|{}|{}".format(
+            cb_string_file = "ytdl|{}|{}|{}|{}".format(
                 "file", format_id, format_ext, randem)
-            cb_string_video = "{}|{}|{}|{}".format(
+            cb_string_video = "ytdl|{}|{}|{}|{}".format(
                 "video", format_id, format_ext, randem)
             inline_keyboard.append([
                 InlineKeyboardButton(
@@ -212,10 +212,11 @@ async def ytdown(_, message):
             reply_to_message_id=message.id
         )
 
-async def youtube_dl_call_back(bot, update):
+@app.on_callback_query(filters.regex("^ytdl"))
+async def ytdl_button(bot, update):
     cb_data = update.data
     # youtube_dl extractors
-    tg_send_type, youtube_dl_format, youtube_dl_ext, ranom = cb_data.split("|")
+    _, tg_send_type, youtube_dl_format, youtube_dl_ext, ranom = cb_data.split("|")
     thumb_image_path = f"YT_Down/{str(update.from_user.id)}{ranom}.jpg"
     save_ytdl_json_path = f"YT_Down/{str(update.from_user.id)}{ranom}.json"
     try:
