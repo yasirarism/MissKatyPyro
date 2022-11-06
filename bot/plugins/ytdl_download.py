@@ -1,13 +1,16 @@
-import os, logging, json
+import os, logging, json, shutil, asyncio, time
 from bot import app
 from pyrogram import filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import COMMAND_HANDLER
 from datetime import datetime
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 from bot.helper.ytdl_helper import random_char, DownLoadFile
 from bot.helper.human_read import get_readable_file_size
 from bot.plugins.dev import shell_exec
 from bot.core.decorator.errors import capture_err
+from bot.helper.pyro_progress import progress_for_pyrogram
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -208,3 +211,199 @@ async def ytdown(_, message):
             reply_markup=reply_markup,
             reply_to_message_id=message.id
         )
+
+async def youtube_dl_call_back(bot, update):
+    cb_data = update.data
+    # youtube_dl extractors
+    tg_send_type, youtube_dl_format, youtube_dl_ext, ranom = cb_data.split("|")
+    thumb_image_path = f"YT_Down/{str(update.from_user.id)}{ranom}.jpg"
+    save_ytdl_json_path = f"YT_Down/{str(update.from_user.id)}{ranom}.json"
+    try:
+        with open(save_ytdl_json_path, "r", encoding="utf8") as f:
+            response_json = json.load(f)
+    except FileNotFoundError:
+        await update.message.delete()
+        return False
+
+    custom_file_name = f"{str(response_json.get('title'))_{youtube_dl_format}.{youtube_dl_ext}"
+    await update.message.edit_caption(
+        caption="Trying to download..."
+    )
+    description = " "
+    if "fulltitle" in response_json:
+        description = response_json["fulltitle"][:1021] # escape Markdown and special characters
+    tmp_directory_for_each_user = os.path.join(
+        f"downloads/{str(update.from_user.id)}{random_char(5)}
+    )
+    if not os.path.isdir(tmp_directory_for_each_user):
+        os.makedirs(tmp_directory_for_each_user)
+    download_directory = os.path.join(
+        tmp_directory_for_each_user,
+        custom_file_name
+    )
+    command_to_exec = []
+    if tg_send_type == "audio":
+        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} -o {download_directory}"
+    else:
+        minus_f_format = youtube_dl_format
+        if "youtu" in youtube_dl_url:
+            minus_f_format = f"{youtube_dl_format}+bestaudio"
+        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o {download_directory}"
+    start = datetime.now()
+    t_response = (await shell_exec(command_to_exec))[0]
+    if "ERROR" in t_response:
+        await update.message.edit_caption(
+            caption=t_response
+        )
+        return False
+    if t_response:
+        os.remove(save_ytdl_json_path)
+        end_one = datetime.now()
+        time_taken_for_download = (end_one - start).seconds
+        file_size = 2097152000 + 1
+        download_directory_dirname = os.path.dirname(download_directory)
+        download_directory_contents = os.listdir(download_directory_dirname)
+        for download_directory_c in download_directory_contents:
+            current_file_name = os.path.join(
+                download_directory_dirname,
+                download_directory_c
+            )
+            file_size = os.stat(current_file_name).st_size
+
+            if file_size == 0:
+                await update.message.edit(text="File Not found 🤒")
+                asyncio.create_task(clendir(tmp_directory_for_each_user))
+                return
+
+            if file_size > 2097152000:
+                await update.message.edit_caption(
+                    caption="I cannot upload files greater than 1.95GB due to Telegram API limitations.".format(
+                        time_taken_for_download,
+                        humanbytes(file_size)
+                    )
+                )
+
+            else:
+                is_w_f = False
+                await update.message.edit_caption(
+                    caption="Trying to upload.."
+                )
+                # get the correct width, height, and duration
+                # for videos greater than 10MB
+                # ref: message from @BotSupport
+                width = 0
+                height = 0
+                duration = 0
+                if tg_send_type != "file":
+                    metadata = extractMetadata(createParser(current_file_name))
+                    if metadata is not None and metadata.has("duration"):
+                        duration = metadata.get('duration').seconds
+                # get the correct width, height, and duration
+                # for videos greater than 10MB
+                if os.path.exists(thumb_image_path):
+                    # https://stackoverflow.com/a/21669827/4723940
+                    Image.open(thumb_image_path).convert(
+                        "RGB"
+                    ).save(thumb_image_path)
+                    metadata = extractMetadata(createParser(thumb_image_path))
+                    if metadata.has("width"):
+                        width = metadata.get("width")
+                    if metadata.has("height"):
+                        height = metadata.get("height")
+                    if tg_send_type == "vm":
+                        height = width
+                else:
+                    thumb_image_path = None
+                start_time = time.time()
+                # try to upload file
+                if tg_send_type == "audio":
+                    await update.message.reply_audio(
+                        audio=current_file_name,
+                        caption=description,
+                        parse_mode="HTML",
+                        duration=duration,
+                        thumb=thumb_image_path,
+                        progress=progress_for_pyrogram,
+                        progress_args=(
+                            "Trying to upload...",
+                            update.message,
+                            start_time
+                        )
+                    )
+                elif tg_send_type == "file":
+                    await update.message.reply_document(
+                        document=current_file_name,
+                        thumb=thumb_image_path,
+                        caption=description,
+                        parse_mode="HTML",
+                        # reply_markup=reply_markup,
+                        progress=progress_for_pyrogram,
+                        progress_args=(
+                            "Trying to upload...",
+                            update.message,
+                            start_time
+                        )
+                    )
+                elif tg_send_type == "vm":
+                    await update.message.reply_video_note(
+                        video_note=current_file_name,
+                        duration=duration,
+                        length=width,
+                        thumb=thumb_image_path,
+                        progress=progress_for_pyrogram,
+                        progress_args=(
+                            "Trying to upload...",
+                            update.message,
+                            start_time
+                        )
+                    )
+                elif tg_send_type == "video":
+                    await update.message.reply_video(
+                        video=current_file_name,
+                        caption=description,
+                        parse_mode="HTML",
+                        duration=duration,
+                        width=width,
+                        height=height,
+                        supports_streaming=True,
+                        thumb=thumb_image_path,
+                        progress=progress_for_pyrogram,
+                        progress_args=(
+                            "Trying to upload...",
+                            update.message,
+                            start_time
+                        )
+                    )
+                else:
+                    LOGGER.info("Did this happen? :\\")
+                end_two = datetime.now()
+                time_taken_for_upload = (end_two - end_one).seconds
+                try:
+                    shutil.rmtree(tmp_directory_for_each_user)
+                except:
+                    pass
+                await update.message.edit_caption(
+                    caption=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(
+                        time_taken_for_download, time_taken_for_upload)
+
+                )
+                LOGGER.info(f"[OK] Downloaded in: {str(time_taken_for_download)}")
+                LOGGER.info(f"[OK] Uploaded in: {str(time_taken_for_upload)}")
+            shutil.rmtree(
+                tmp_directory_for_each_user,
+                ignore_errors=True
+            )
+            asyncio.create_task(clendir(thumb_image_path))
+            asyncio.create_task(clendir(tmp_directory_for_each_user))
+            await update.message.delete()
+
+
+async def clendir(directory):
+    try:
+        shutil.rmtree(directory)
+    except:
+        pass
+    try:
+        os.remove(directory)
+    except:
+        pass
