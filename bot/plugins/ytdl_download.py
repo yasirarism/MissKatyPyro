@@ -225,7 +225,7 @@ async def youtube_dl_call_back(bot, update):
         await update.message.delete()
         return False
 
-    custom_file_name = f"{str(response_json.get('title'))_{youtube_dl_format}.{youtube_dl_ext}"
+    custom_file_name = f"{str(response_json.get('title'))}_{youtube_dl_format}.{youtube_dl_ext}"
     await update.message.edit_caption(
         caption="Trying to download..."
     )
