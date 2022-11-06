@@ -4,7 +4,7 @@ from pyrogram import filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import COMMAND_HANDLER
 from datetime import datetime
-from bot.helper.ytdl_helper import get_link, random_char
+from bot.helper.ytdl_helper import random_char
 from bot.helper.human_read import get_readable_file_size
 from bot.plugins.dev import shell_exec
 from bot.core.decorator.errors import capture_err
