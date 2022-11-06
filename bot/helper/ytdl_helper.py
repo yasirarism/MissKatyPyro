@@ -33,9 +33,9 @@ opts = {
 def extractYt(yturl):
     with yt_dlp.YoutubeDL(opts) as ydl:
         qualityList = []
-        r = ydl.extract_info(yturl, download=False)
+        info = ydl.extract_info(yturl, download=False)
         LOGGER.info(json.dumps(ydl.sanitize_info(info)))
-        for format in r['formats']:
+        for format in info['formats']:
             LOGGER.info(format)
             # Filter dash video(without audio)
             if not "dash" in str(format['format']).lower():
