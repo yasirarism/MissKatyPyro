@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 from pyrogram.types import InlineKeyboardButton
-import yt_dlp, logging
+import yt_dlp, logging, json
 from bot.helper.human_read import get_readable_file_size
 import asyncio
 
@@ -31,10 +31,10 @@ opts = {
 
 # extract Youtube info
 def extractYt(yturl):
-    ytdown = yt_dlp.YoutubeDL()
-    with ytdown(opts) as ydl:
+    with yt_dlp.YoutubeDL(opts) as ydl:
         qualityList = []
         r = ydl.extract_info(yturl, download=False)
+        LOGGER.info(json.dumps(ydl.sanitize_info(info)))
         for format in r['formats']:
             LOGGER.info(format)
             # Filter dash video(without audio)
