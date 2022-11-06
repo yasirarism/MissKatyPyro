@@ -120,4 +120,4 @@ async def shell_exec(code, treat=True):
     stdout = (await process.communicate())[0]
     if treat:
         stdout = stdout.decode().strip()
-    return stdout, process
+    return stdout, process.decode().strip()
