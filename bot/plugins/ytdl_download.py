@@ -37,7 +37,6 @@ async def ytdown(_, message):
     url = message.command[1]
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
     t_response = (await shell_exec(command_to_exec))[0]
-    LOGGER.info((await shell_exec(command_to_exec))[0])
     if "ERROR" in t_response:
         await message.reply_text(
             text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response),
@@ -213,8 +212,11 @@ async def ytdown(_, message):
         )
 
 @app.on_callback_query(filters.regex("^ytdl"))
-async def ytdl_button(bot, update):
+async def youtube_dl_call_back(bot, update):
     cb_data = update.data
+    usr = update.message.reply_to_message
+    if update.from_user.id != usr.from_user.id:
+        return await quer_y.answer("⚠️ Akses Denied!", True)
     # youtube_dl extractors
     _, tg_send_type, youtube_dl_format, youtube_dl_ext, ranom = cb_data.split("|")
     thumb_image_path = f"YT_Down/{str(update.from_user.id)}{ranom}.jpg"
