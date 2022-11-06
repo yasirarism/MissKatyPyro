@@ -1,4 +1,4 @@
-import os, logging
+import os, logging, traceback
 import urllib.request
 from bot import app
 from pyrogram import filters, enums

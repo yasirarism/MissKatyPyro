@@ -1,9 +1,10 @@
 from __future__ import unicode_literals
 from pyrogram.types import InlineKeyboardButton
-import yt_dlp
+import yt_dlp, logging
 from bot.helper.human_read import get_readable_file_size
 import asyncio
 
+LOGGER = logging.getLogger(__name__)
 
 def buttonmap(item):
     quality = item['format']
@@ -26,6 +27,7 @@ def extractYt(yturl):
         qualityList = []
         r = ydl.extract_info(yturl, download=False)
         for format in r['formats']:
+            LOGGER.info(format)
             # Filter dash video(without audio)
             if not "dash" in str(format['format']).lower():
                 qualityList.append(
