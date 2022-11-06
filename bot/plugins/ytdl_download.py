@@ -77,12 +77,12 @@ async def ytdown(_, message):
                     ikeyboard = [
                         InlineKeyboardButton(
                             "🎬 " + format_string + " " + format_ext +
-                            " " + humanbytes(size) + " ",
+                            " " + get_readable_file_size(size) + " ",
                             callback_data=(cb_string_video).encode("UTF-8")
                         ),
                         InlineKeyboardButton(
                             "📄 " + format_string + " " + format_ext +
-                            " " + humanbytes(size) + " ",
+                            " " + get_readable_file_size(size) + " ",
                             callback_data=(cb_string_file).encode("UTF-8")
                         )
                     ]
