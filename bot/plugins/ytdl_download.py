@@ -34,7 +34,8 @@ async def ytdown(_, message):
     url = message.command[1]
     url, _, youtube_dl_username, youtube_dl_password = get_link(message)
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
-    t_response, e_response = await shell_exec(command_to_exec)
+    # t_response, e_response = await shell_exec(command_to_exec)
+    LOGGER.info(await shell_exec(command_to_exec))
     # https://github.com/rg3/yt-dlp/issues/2630#issuecomment-38635239
     if e_response and "nonnumeric port" not in e_response:
         # logger.warn("Status : FAIL", exc.returncode, exc.output)
