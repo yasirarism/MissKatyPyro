@@ -37,7 +37,7 @@ async def ytdown(_, message):
     t_response = (await shell_exec(command_to_exec))[0]
     LOGGER.info((await shell_exec(command_to_exec))[0])
     if "ERROR" in t_response:
-        await update.reply_text(
+        await message.reply_text(
             text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response),
             quote=True,
             disable_web_page_preview=True
@@ -50,7 +50,7 @@ async def ytdown(_, message):
         response_json = json.loads(x_reponse)
         randem = random_char(5)
         save_ytdl_json_path = "./YT_Down" + \
-            "/" + str(update.from_user.id) + f'{randem}' + ".json"
+            "/" + str(message.from_user.id) + f'{randem}' + ".json"
         with open(save_ytdl_json_path, "w", encoding="utf8") as outfile:
             json.dump(response_json, outfile, ensure_ascii=False)
         inline_keyboard = []
@@ -169,14 +169,14 @@ async def ytdown(_, message):
         thumb_image_path = DownLoadFile(
             thumbnail_image,
             "./YT_Down" + "/" +
-            str(update.from_user.id) + f'{randem}' + ".jpg",
+            str(message.from_user.id) + f'{randem}' + ".jpg",
             128,
             None,  # bot,
             "Trying to download..",
-            update.id,
-            update.chat.id
+            message.id,
+            message.chat.id
         )
-        await update.reply_photo(
+        await message.reply_photo(
             photo=thumb_image_path,
             quote=True,
             caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(
@@ -202,10 +202,10 @@ async def ytdown(_, message):
             )
         ])
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
-        await update.reply_photo(
+        await message.reply_photo(
             photo="https://telegra.ph/file/ce37f8203e1903feed544.png",
             quote=True,
             caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(""),
             reply_markup=reply_markup,
-            reply_to_message_id=update.id
+            reply_to_message_id=message.id
         )
