@@ -33,19 +33,7 @@ async def ytdown(_, message):
 
     url = message.command[1]
     url, _, youtube_dl_username, youtube_dl_password = get_link(message)
-    command_to_exec = [
-        "yt-dlp",
-        "--no-warnings",
-        "--youtube-skip-dash-manifest",
-        "-j",
-        url
-    ]
-    if youtube_dl_username is not None:
-        command_to_exec.append("--username")
-        command_to_exec.append(youtube_dl_username)
-    if youtube_dl_password is not None:
-        command_to_exec.append("--password")
-        command_to_exec.append(youtube_dl_password)
+    command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
     t_response, e_response = await shell_exec(command_to_exec)
     # https://github.com/rg3/yt-dlp/issues/2630#issuecomment-38635239
     if e_response and "nonnumeric port" not in e_response:
@@ -54,7 +42,7 @@ async def ytdown(_, message):
             "Please report this issue on https://yt-dl.org/bug. Make sure you are using the latest version; see https://yt-dl.org/update on how to update. Be sure to call yt-dlp with the --verbose flag and include its complete output."
         )
         if "video is only available for registered users" in error_message:
-            error_message += "If you want to download premium videos, provide in the following format:\n\nURL | filename | username | password"
+            error_message += "This video only available for registered users."
         await update.reply_text(
             text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(str(error_message)),
             quote=True,
