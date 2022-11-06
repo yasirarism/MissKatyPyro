@@ -240,12 +240,12 @@ async def youtube_dl_call_back(bot, update):
         custom_file_name
     )
     if tg_send_type == "audio":
-        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} -o {download_directory}"
+        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} -o '{download_directory}'"
     else:
         minus_f_format = youtube_dl_format
         if "youtu" in youtube_dl_url:
             minus_f_format = f"{youtube_dl_format}+bestaudio"
-        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o {download_directory}"
+        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
     LOGGER.info(download_directory)
