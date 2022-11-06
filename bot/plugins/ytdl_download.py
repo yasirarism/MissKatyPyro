@@ -180,9 +180,7 @@ async def ytdown(_, message):
         await message.reply_photo(
             photo=thumb_image_path,
             quote=True,
-            caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(
-                thumbnail
-            ) + "\n" + "If you want to download premium videos, provide in the following format:\n\nURL | filename | username | password",
+            caption="Select the desired format: <a href='{}'>file size might be approximate</a>".format(thumbnail),
             reply_markup=reply_markup,
         )
     else:
@@ -230,9 +228,7 @@ async def youtube_dl_call_back(bot, update):
 
     custom_file_name = f"{str(response_json.get('title'))}_{youtube_dl_format}.{youtube_dl_ext}"
     youtube_dl_url = update.message.reply_to_message.text.split(" ", 1)[1]
-    await update.message.edit_caption(
-        caption="Trying to download..."
-    )
+    await update.message.edit_caption("Trying to download video...")
     description = " "
     if "fulltitle" in response_json:
         description = response_json["fulltitle"][:1021] # escape Markdown and special characters
@@ -253,11 +249,6 @@ async def youtube_dl_call_back(bot, update):
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o {download_directory}"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
-    if "ERROR" in t_response:
-        await update.message.edit_caption(
-            caption=t_response
-        )
-        return False
     if t_response:
         os.remove(save_ytdl_json_path)
         end_one = datetime.now()
@@ -385,7 +376,7 @@ async def youtube_dl_call_back(bot, update):
                 except:
                     pass
                 await update.message.edit_caption(
-                    caption=Translation.AFTER_SUCCESSFUL_UPLOAD_MSG_WITH_TS.format(
+                    caption="Downloaded in {} seconds.\nUploaded in {} seconds.".format(
                         time_taken_for_download, time_taken_for_upload)
 
                 )
