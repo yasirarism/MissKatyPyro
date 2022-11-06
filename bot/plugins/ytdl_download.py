@@ -34,18 +34,11 @@ async def ytdown(_, message):
     url = message.command[1]
     url, _, youtube_dl_username, youtube_dl_password = get_link(message)
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
-    t_response, e_response = await shell_exec(command_to_exec)
-    LOGGER.info(await shell_exec(command_to_exec))
-    # https://github.com/rg3/yt-dlp/issues/2630#issuecomment-38635239
-    if e_response and "nonnumeric port" not in e_response:
-        # logger.warn("Status : FAIL", exc.returncode, exc.output)
-        error_message = e_response.replace(
-            "Please report this issue on https://yt-dl.org/bug. Make sure you are using the latest version; see https://yt-dl.org/update on how to update. Be sure to call yt-dlp with the --verbose flag and include its complete output."
-        )
-        if "video is only available for registered users" in error_message:
-            error_message += "This video only available for registered users."
+    t_response = await shell_exec(command_to_exec)[0]
+    LOGGER.info(await shell_exec(command_to_exec)[0])
+    if "ERROR" in t_response:
         await update.reply_text(
-            text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(str(error_message)),
+            text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response)),
             quote=True,
             disable_web_page_preview=True
         )
