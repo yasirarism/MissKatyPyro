@@ -22,4 +22,5 @@ hachoir
 Pillow
 httpx[http2]
 vcsi
+yt-dlp
 deep-translator
