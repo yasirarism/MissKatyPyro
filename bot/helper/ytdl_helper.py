@@ -3,17 +3,10 @@ import os
 import requests
 import time
 import random
+from bot.helper.human_read import get_readable_file_size
 
 def random_char(y):
     return ''.join(random.choice(string.ascii_letters) for _ in range(y))
-
-import os
-import requests
-import time
-from Uploader.helper_funcs.display_progress import (
-    humanbytes
-)
-
 
 def DetectFileSize(url):
     r = requests.get(url, allow_redirects=True, stream=True)
