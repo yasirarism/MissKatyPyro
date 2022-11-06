@@ -1,89 +1,47 @@
-from __future__ import unicode_literals
-from pyrogram.types import InlineKeyboardButton
-import yt_dlp, logging, json
-from bot.helper.human_read import get_readable_file_size
-import asyncio
+import string
+import random
 
-LOGGER = logging.getLogger(__name__)
+def random_char(y):
+    return ''.join(random.choice(string.ascii_letters) for _ in range(y))
 
-def buttonmap(item):
-    quality = item['format']
-    if "audio" in quality:
-        return [InlineKeyboardButton(f"{quality} 🎵 {humanbytes(item['filesize'])}",
-                                     callback_data=f"ytdata||audio||{item['format_id']}||{item['yturl']}")]
+def get_link(update):
+    url = update.text
+    youtube_dl_username = None
+    youtube_dl_password = None
+    file_name = None
+    if "|" in url:
+        url_parts = url.split("|")
+        if len(url_parts) == 2:
+            url = url_parts[0]
+            file_name = url_parts[1]
+        elif len(url_parts) == 4:
+            url = url_parts[0]
+            file_name = url_parts[1]
+            youtube_dl_username = url_parts[2]
+            youtube_dl_password = url_parts[3]
+        else:
+            for entity in update.entities:
+                if entity.type.value == "text_link":
+                    url = entity.url
+                elif entity.type.value == "url":
+                    o_ = entity.offset
+                    l_ = entity.length
+                    url = url[o_:o_ + l_]
+        if url is not None:
+            url = url.strip()
+        if file_name is not None:
+            file_name = file_name.strip()
+        # https://stackoverflow.com/a/761825/4723940
+        if youtube_dl_username is not None:
+            youtube_dl_username = youtube_dl_username.strip()
+        if youtube_dl_password is not None:
+            youtube_dl_password = youtube_dl_password.strip()
     else:
-        return [InlineKeyboardButton(f"{quality} 📹 {humanbytes(item['filesize'])}",
-                                     callback_data=f"ytdata||video||{item['format_id']}||{item['yturl']}")]
+        for entity in update.entities:
+            if entity.type.value == "text_link":
+                url = entity.url
+            elif entity.type.value == "url":
+                o_ = entity.offset
+                url = url[o_:o_ + entity.length]
 
-# Return a array of Buttons
-def create_buttons(quailitylist):
-    return map(buttonmap, quailitylist)
-
-opts = {
-    "prefer_ffmpeg": True,
-    "cookiefile": "cookies.txt",
-    "trim_file_name": 200,
-    "extractor-args": "youtube:skip=dash",
-    "noprogress": True,
-    "allow_playlist_files": True,
-    "overwrites": True
-}
-
-# extract Youtube info
-def extractYt(yturl):
-    with yt_dlp.YoutubeDL(opts) as ydl:
-        qualityList = []
-        info = ydl.extract_info(yturl, download=False)
-        LOGGER.info(json.dumps(ydl.sanitize_info(info)))
-        for format in info['formats']:
-            LOGGER.info(format)
-            # Filter dash video(without audio)
-            if not "dash" in str(format['format']).lower():
-                qualityList.append(
-                {"format": format['format'], "filesize": format['filesize'], "format_id": format['format_id'],
-                 "yturl": yturl})
-
-        return r['title'], r['thumbnail'], qualityList
-
-
-#  Need to work on progress
-
-# def downloadyt(url, fmid, custom_progress):
-#     ydl_opts = {
-#         'format': f"{fmid}+bestaudio",
-#         "outtmpl": "test+.%(ext)s",
-#         'noplaylist': True,
-#         'progress_hooks': [custom_progress],
-#     }
-#     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-#         ydl.download([url])
-
-
-# https://github.com/SpEcHiDe/AnyDLBot
-
-async def downloadvideocli(command_to_exec):
-    process = await asyncio.create_subprocess_exec(
-        *command_to_exec,
-        # stdout must a pipe to be accessible as process.stdout
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE, )
-    stdout, stderr = await process.communicate()
-    e_response = stderr.decode().strip()
-    t_response = stdout.decode().strip()
-    print(e_response)
-    filename = t_response.split("Merging formats into")[-1].split('"')[1]
-    return filename
-
-
-async def downloadaudiocli(command_to_exec):
-    process = await asyncio.create_subprocess_exec(
-        *command_to_exec,
-        # stdout must a pipe to be accessible as process.stdout
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE, )
-    stdout, stderr = await process.communicate()
-    e_response = stderr.decode().strip()
-    t_response = stdout.decode().strip()
-    print("Download error:", e_response)
-
-    return t_response.split("Destination")[-1].split("Deleting")[0].split(":")[-1].strip()
+    return url, file_name, youtube_dl_username, youtube_dl_password
