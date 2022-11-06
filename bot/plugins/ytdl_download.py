@@ -242,8 +242,6 @@ async def youtube_dl_call_back(bot, update):
                 except:
                     pass
                 await update.message.edit_caption(caption="Downloaded in {} seconds.\nUploaded in {} seconds.".format(time_taken_for_download, time_taken_for_upload))
-                LOGGER.info(f"[OK] Downloaded in: {str(time_taken_for_download)}")
-                LOGGER.info(f"[OK] Uploaded in: {str(time_taken_for_upload)}")
             shutil.rmtree(tmp_directory_for_each_user, ignore_errors=True)
             asyncio.create_task(clendir(thumb_image_path))
             asyncio.create_task(clendir(tmp_directory_for_each_user))
