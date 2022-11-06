@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from pyrogram import InlineKeyboardButton
+from pyrogram.types import InlineKeyboardButton
 import yt_dlp
 from bot.helper.human_read import get_readable_file_size
 import asyncio
