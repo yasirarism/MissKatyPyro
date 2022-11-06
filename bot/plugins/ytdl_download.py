@@ -1,5 +1,6 @@
 import os, logging, json, shutil, asyncio, time
 from bot import app
+from PIL import Image
 from pyrogram import filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import COMMAND_HANDLER
