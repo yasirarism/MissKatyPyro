@@ -19,11 +19,20 @@ def buttonmap(item):
 def create_buttons(quailitylist):
     return map(buttonmap, quailitylist)
 
+opts = {
+    "prefer_ffmpeg": True,
+    "cookiefile": "cookies.txt",
+    "trim_file_name": 200,
+    "extractor-args": "youtube:skip=dash",
+    "noprogress": True,
+    "allow_playlist_files": True,
+    "overwrites": True
+}
 
 # extract Youtube info
 def extractYt(yturl):
-    ydl = yt_dlp.YoutubeDL()
-    with ydl:
+    ytdown = yt_dlp.YoutubeDL()
+    with ytdown(opts) as ydl:
         qualityList = []
         r = ydl.extract_info(yturl, download=False)
         for format in r['formats']:
