@@ -390,6 +390,7 @@ async def youtube_dl_call_back(bot, update):
             )
             asyncio.create_task(clendir(thumb_image_path))
             asyncio.create_task(clendir(tmp_directory_for_each_user))
+            asyncio.sleep(5)
             await update.message.delete()
 
 
