@@ -48,7 +48,7 @@ async def ytdown(_, message):
             x_reponse, _ = x_reponse.split("\n")
         response_json = json.loads(x_reponse)
         randem = random_char(5)
-        if os.path.exists("./YT_Down"):
+        if os.path.exists("/YT_Down"):
             os.mkdir("./YT_Down")
         save_ytdl_json_path = f"./YT_Down/{str(message.from_user.id)}{randem}.json"
         with open(save_ytdl_json_path, "w", encoding="utf8") as outfile:
