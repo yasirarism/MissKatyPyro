@@ -28,7 +28,7 @@ async def ytdown(_, message):
     except:
         pass
 
-    link = message.command[1]
+    url = message.command[1]
     await message.reply_chat_action(enums.ChatAction.TYPING)
     try:
         title, thumbnail_url, formats = extractYt(url)
