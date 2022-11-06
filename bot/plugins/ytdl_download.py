@@ -317,6 +317,7 @@ async def youtube_dl_call_back(bot, update):
                         caption=description,
                         duration=duration,
                         thumb=thumb_image_path,
+                        reply_to_message_id=usr.id,
                         progress=progress_for_pyrogram,
                         progress_args=(
                             "Trying to upload...",
@@ -329,7 +330,7 @@ async def youtube_dl_call_back(bot, update):
                         document=current_file_name,
                         thumb=thumb_image_path,
                         caption=description,
-                        # reply_markup=reply_markup,
+                        reply_to_message_id=usr.id,
                         progress=progress_for_pyrogram,
                         progress_args=(
                             "Trying to upload...",
@@ -343,6 +344,7 @@ async def youtube_dl_call_back(bot, update):
                         duration=duration,
                         length=width,
                         thumb=thumb_image_path,
+                        reply_to_message_id=usr.id,
                         progress=progress_for_pyrogram,
                         progress_args=(
                             "Trying to upload...",
@@ -358,6 +360,7 @@ async def youtube_dl_call_back(bot, update):
                         width=width,
                         height=height,
                         supports_streaming=True,
+                        reply_to_message_id=usr.id,
                         thumb=thumb_image_path,
                         progress=progress_for_pyrogram,
                         progress_args=(
