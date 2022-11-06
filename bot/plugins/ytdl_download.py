@@ -315,7 +315,6 @@ async def youtube_dl_call_back(bot, update):
                     await update.message.reply_audio(
                         audio=current_file_name,
                         caption=description,
-                        parse_mode="HTML",
                         duration=duration,
                         thumb=thumb_image_path,
                         progress=progress_for_pyrogram,
@@ -330,7 +329,6 @@ async def youtube_dl_call_back(bot, update):
                         document=current_file_name,
                         thumb=thumb_image_path,
                         caption=description,
-                        parse_mode="HTML",
                         # reply_markup=reply_markup,
                         progress=progress_for_pyrogram,
                         progress_args=(
@@ -356,7 +354,6 @@ async def youtube_dl_call_back(bot, update):
                     await update.message.reply_video(
                         video=current_file_name,
                         caption=description,
-                        parse_mode="HTML",
                         duration=duration,
                         width=width,
                         height=height,
