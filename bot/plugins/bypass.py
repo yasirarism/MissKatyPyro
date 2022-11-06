@@ -3,7 +3,7 @@ from bot.helper.http import http
 from bot import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.errors import MessageTooLong
+from pyrogram.errors import MessageTooLong, EntitiesTooLong
 from info import COMMAND_HANDLER
 from bot.helper.tools import rentry
 from urllib.parse import unquote
@@ -47,10 +47,10 @@ async def bypass(_, message):
      data = await pling_bypass(url)
      try:
         await msg.edit(f"{data}\n\n{mention}")
-     except MessageTooLong:
+     except (MessageTooLong, EntitiesTooLong):
         result = rentry(data)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=result), InlineKeyboardButton("Raw Link", url=f"{result}/raw")]])
-        await msg.edit(f"{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}", reply_markup=markup)
+        await msg.edit(f"{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}", reply_markup=markup, disable_web_page_preview=True)
   else:
      await msg.edit("Unsupported link..")
     
