@@ -232,9 +232,7 @@ async def youtube_dl_call_back(bot, update):
     description = " "
     if "fulltitle" in response_json:
         description = response_json["fulltitle"][:1021] # escape Markdown and special characters
-    tmp_directory_for_each_user = os.path.join(
-        f"downloads/{str(update.from_user.id)}{random_char(5)}
-    )
+    tmp_directory_for_each_user = os.path.join(f"downloads/{str(update.from_user.id)}{random_char(5)}")
     if not os.path.isdir(tmp_directory_for_each_user):
         os.makedirs(tmp_directory_for_each_user)
     download_directory = os.path.join(
