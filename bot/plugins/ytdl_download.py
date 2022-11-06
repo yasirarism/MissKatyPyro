@@ -49,8 +49,8 @@ async def ytdown(_, message):
         response_json = json.loads(x_reponse)
         randem = random_char(5)
         if os.path.exists("/YT_Down"):
-            os.mkdir("./YT_Down")
-        save_ytdl_json_path = f"./YT_Down/{str(message.from_user.id)}{randem}.json"
+            os.mkdir("/YT_Down")
+        save_ytdl_json_path = f"YT_Down/{str(message.from_user.id)}{randem}.json"
         with open(save_ytdl_json_path, "w", encoding="utf8") as outfile:
             json.dump(response_json, outfile, ensure_ascii=False)
         inline_keyboard = []
@@ -168,7 +168,7 @@ async def ytdown(_, message):
                 thumbnail_image = response_json["thumbnail"]
         thumb_image_path = DownLoadFile(
             thumbnail_image,
-            f"./YT_Down/{str(message.from_user.id)}{randem}.jpg",
+            f"YT_Down/{str(message.from_user.id)}{randem}.jpg",
             128,
             None,  # bot,
             "Trying to download..",
