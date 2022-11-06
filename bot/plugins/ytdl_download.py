@@ -48,8 +48,7 @@ async def ytdown(_, message):
             x_reponse, _ = x_reponse.split("\n")
         response_json = json.loads(x_reponse)
         randem = random_char(5)
-        save_ytdl_json_path = "./YT_Down" + \
-            "/" + str(message.from_user.id) + f'{randem}' + ".json"
+        save_ytdl_json_path = str(message.from_user.id) + f'{randem}' + ".json"
         with open(save_ytdl_json_path, "w", encoding="utf8") as outfile:
             json.dump(response_json, outfile, ensure_ascii=False)
         inline_keyboard = []
