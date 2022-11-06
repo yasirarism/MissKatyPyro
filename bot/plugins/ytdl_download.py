@@ -1,4 +1,5 @@
 import os, logging
+import urllib.request
 from bot import app
 from pyrogram import filters, enums
 from info import COMMAND_HANDLER
@@ -41,7 +42,7 @@ async def ytdown(_, message):
     try:
         # Todo add webp image support in thumbnail by default not supported by pyrogram
         # https://www.youtube.com/watch?v=lTTajzrSkCw
-        img = wget.download(thumbnail_url)
+        img = urllib.request.urlretrieve(thumbnail_url)
         im = Image.open(img).convert("RGB")
         output_directory = os.path.join(os.getcwd(), "downloads", str(message.chat.id))
         if not os.path.isdir(output_directory):
