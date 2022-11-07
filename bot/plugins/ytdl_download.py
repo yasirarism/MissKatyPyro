@@ -142,7 +142,7 @@ async def youtube_dl_call_back(bot, update):
 
     custom_file_name = f"{str(response_json.get('title'))}_{youtube_dl_format}.{youtube_dl_ext}"
     youtube_dl_url = update.message.reply_to_message.text.split(" ", 1)[1]
-    await update.message.edit_caption("Trying to download video...")
+    await update.message.edit_caption("Trying to download media...")
     description = " "
     if "fulltitle" in response_json:
         description = response_json["fulltitle"][:1021]  # escape Markdown and special characters
@@ -209,13 +209,10 @@ async def youtube_dl_call_back(bot, update):
                 start_time = time.time()
                 # try to upload file
                 if tg_send_type == "audio":
-                    await update.message.reply_audio(
-                        audio=current_file_name, caption=description, duration=duration, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
-                    )
+                    await update.message.edit_media(current_file_name)
+                    # await update.message.reply_audio(audio=current_file_name, caption=description, duration=duration, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time))
                 elif tg_send_type == "file":
-                    await update.message.reply_document(
-                        document=current_file_name, thumb=thumb_image_path, caption=description, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
-                    )
+                    await update.message.reply_document(document=current_file_name, thumb=thumb_image_path, caption=description, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time))
                 elif tg_send_type == "vm":
                     await update.message.reply_video_note(
                         video_note=current_file_name, duration=duration, length=width, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time)
