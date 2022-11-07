@@ -153,7 +153,7 @@ async def fbdl(client, message):
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        r = await http.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link, "vt": "facebook"}).text
+        r = (await http.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link, "vt": "facebook"})).text
         bs = BeautifulSoup(r, "lxml")
         resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>", ""))
         try:
