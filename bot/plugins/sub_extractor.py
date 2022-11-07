@@ -5,8 +5,20 @@ from bot.core.decorator.errors import capture_err
 from bot.plugins.dev import shell_exec
 import json, os
 from time import perf_counter
+from re import split as ngesplit, I
 from bot.helper.tools import get_random_string
 
+ARCH_EXT = [
+    ".mkv",
+    ".avi",
+    ".mp4",
+    ".mov"
+]
+
+def get_base_name(orig_path: str):
+    if ext := [ext for ext in ARCH_EXT if orig_path.lower().endswith(ext)]:
+        ext = ext[0]
+        return ngesplit(f"{ext}$", orig_path, maxsplit=1, flags=I)[0]
 
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
@@ -18,7 +30,7 @@ def get_subname(url, format):
         frmt = "srt"
     if scheme_removed.find("/") == -1:
         return f"MissKatySub_{get_random_string(4)}.{frmt}"
-    return os.path.basename(scheme_removed) + f".{frmt}"
+    return get_base_name(os.path.basename(scheme_removed)) + f".{frmt}"
 
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
@@ -28,10 +40,6 @@ async def ceksub(_, m):
     if len(cmd) == 1:
         return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
     link = cmd[1]
-    if link.startswith("https://file.yasirweb.my.id"):
-        link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
-    if link.startswith("https://link.yasirweb.my.id"):
-        link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..")
     try:
@@ -95,12 +103,6 @@ async def extractsub(_, m):
     try:
         link = m.command[1]
         index = m.command[2]
-        if link.startswith("https://file.yasirweb.my.id"):
-            link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
-        if link.startswith("https://link.yasirweb.my.id"):
-            link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
-        if m.from_user.id not in ALLOWED_USER:
-            return await msg.edit("Hehehe, khusus orang spesial yang bisa menggunakan fitur ini :)")
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
         format = json.loads(getformat_cmd)
