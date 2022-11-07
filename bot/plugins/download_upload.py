@@ -39,7 +39,7 @@ async def upload(bot, message):
             if v is not None:
                 media = v
                 break
-    m = await message.reply("Download You file to my Server...")
+    m = await message.reply("Download your file to my Server...")
     now = time.time()
     sed = await message.reply_to_message.download(
             progress=progress_for_pyrogram,
