@@ -5,7 +5,7 @@ import os
 import logging
 import aiohttp
 import json
-import requests
+from bot.helper.http import http
 from bs4 import BeautifulSoup
 from bot import app
 from pySmartDL import SmartDL
@@ -13,19 +13,54 @@ from datetime import datetime
 from bot.core.decorator.errors import capture_err
 from info import COMMAND_HANDLER
 from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, 
 from bot.helper.pyro_progress import (
     progress_for_pyrogram,
     humanbytes,
 )
 
-__MODULE__ = "Downloader"
+__MODULE__ = "Download/Upload"
 __HELP__ = """
 /download [url] - Download file from URL (Sudo Only)
 /download [reply_to_TG_File] - Download TG File
 /tiktokdl [link] - Download TikTok Video
 /fbdl [link] - Download Facebook Video
+/anon [link] - Upload files to Anonfiles
+/ytdown [link] - Download YouTube dengan YT-DLP
 """
 
+@app.on_message(filters.command(["anon"], COMMAND_HANDLER))
+async def upload(bot, message):
+    if not message.reply_to_message:
+        return await message.reply("Please reply to media file.")
+    if message.reply_to_message is not None:
+        vid = [message.reply_to_message.video, message.reply_to_message.document]
+        for v in vid:
+            if v is not None:
+                media = v
+                break
+    m = await message.reply("Download You file to my Server...")
+    now = time.time()
+    sed = await message.reply_to_message.download(
+            progress=progress_for_pyrogram,
+            progress_args=("Trying to download, please wait..", m, now)
+    )
+    try:
+        files = {'file': open(sed, 'rb')}
+        await m.edit("Uploading to Anonfile, Please Wait||")
+        callapi = await http.post("https://api.anonfiles.com/upload", files=files)
+        text = callapi.json()
+        output = "<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {}\n\n📦 File Size: {}\n\n📥 Download Link: {}".format(
+            text['data']['file']['metadata']['name'],
+            text['data']['file']['metadata']['size']['readable'],
+            text['data']['file']['url']['full']
+        )
+        btn = InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
+        await m.edit(output, reply_markup=btn)
+    except Exception as e:
+        await bot.send_message(message.chat.id, text=f"Something Went Wrong!\n\n{e}")
+    os.remove(sed)
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err
@@ -118,7 +153,7 @@ async def fbdl(client, message):
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        r = requests.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link, "vt": "facebook"}).text
+        r = await http.post("https://yt1s.io/api/ajaxSearch/facebook", data={"q": link, "vt": "facebook"}).text
         bs = BeautifulSoup(r, "lxml")
         resjson = json.loads(str(bs).replace("<html><body><p>", "").replace("</p></body></html>", ""))
         try:
