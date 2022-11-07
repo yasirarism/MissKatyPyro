@@ -18,7 +18,7 @@ from bot.helper.pyro_progress import (
 @capture_err
 async def mediainfo(client, message):
     if message.reply_to_message and message.reply_to_message.media:
-        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`")
+        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             await process.edit_text("Balas ke format media yang valid")
@@ -44,7 +44,8 @@ async def mediainfo(client, message):
         text_ = file_info.message_type
         link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-        await process.edit_text("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup)
+        await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
+        await process.delete()
         try:
             osremove(file_path)
         except Exception:
