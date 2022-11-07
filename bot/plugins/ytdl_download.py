@@ -2,7 +2,7 @@ import os, logging, json, shutil, asyncio, time
 from bot import app
 from PIL import Image
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMediaVideo, InputMediaAudio
 from info import COMMAND_HANDLER
 from datetime import datetime
 from hachoir.metadata import extractMetadata
@@ -209,7 +209,7 @@ async def youtube_dl_call_back(bot, update):
                 start_time = time.time()
                 # try to upload file
                 if tg_send_type == "audio":
-                    await update.message.edit_media(current_file_name)
+                    await update.message.edit_media(InputMediaAudio(current_file_name))
                     # await update.message.reply_audio(audio=current_file_name, caption=description, duration=duration, thumb=thumb_image_path, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time))
                 elif tg_send_type == "file":
                     await update.message.reply_document(document=current_file_name, thumb=thumb_image_path, caption=description, reply_to_message_id=usr.id, progress=progress_for_pyrogram, progress_args=("Trying to upload...", update.message, start_time))
