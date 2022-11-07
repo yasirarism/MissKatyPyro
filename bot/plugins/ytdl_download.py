@@ -155,7 +155,7 @@ async def youtube_dl_call_back(bot, update):
     else:
         minus_f_format = youtube_dl_format
         if "youtu" in youtube_dl_url:
-            minus_f_format = f"{youtube_dl_format}+bestaudio"
+            minus_f_format = f"{youtube_dl_format}+bestaudio[ext=mp4]"
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
