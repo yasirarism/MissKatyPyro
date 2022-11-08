@@ -24,7 +24,8 @@ def get_base_name(orig_path: str):
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
-    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]nd("/") == -1:
+    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
+    if scheme_removed.find("/") == -1:
         return f"MissKatySub_{get_random_string(4)}.{format}"
     return get_base_name(os.path.basename(scheme_removed)) + f".{format}"
 
