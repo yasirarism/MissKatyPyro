@@ -80,7 +80,7 @@ async def ceksub(_, m):
         buttons.append([
             InlineKeyboardButton("Cancel","cancel")
         ])
-        await pesan.edit(f"Gunakan command /extractsub <b>[link] [index -> angka setelah 0:]</b> untuk extract subtitle (Ex: /extractsub [LINK] 2 -> untuk extract sub index ke dua, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
+        await pesan.edit(f"Tekan button dibawah untuk extract subtitle. Gunakan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
