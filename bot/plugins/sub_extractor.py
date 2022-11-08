@@ -47,7 +47,7 @@ async def ceksub(_, m):
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
-        DATA[f"{m.chat.id}-{msg.message_id}"] = {}
+        DATA[f"{m.chat.id}-{m.message_id}"] = {}
         for stream in details["streams"]:
             mapping = stream["index"]
             try:
