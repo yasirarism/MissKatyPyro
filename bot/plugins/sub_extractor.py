@@ -63,7 +63,6 @@ async def ceksub(_, m):
                 lang = stream["tags"]["language"]
             except:
                 lang = mapping
-            # DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
             DATA[f"{m.chat.id}-{m.id}"][int(mapping)] = {
                 "map" : mapping,
                 "name" : stream_name,
@@ -73,7 +72,7 @@ async def ceksub(_, m):
             }
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{m.chat.id}_{m.id}"
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}"
                 )
             ])
         end_time = perf_counter()
@@ -111,7 +110,25 @@ async def streamextract(bot, update):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await quer_y.answer("⚠️ Akses Denied!", True)
-    _, mapping, type = cb_data.split("_")
+    _, type, map = cb_data.split("_")
+    link = update.message.reply_to_message.command[1]
+    try:
+        start_time = perf_counter()
+        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
+        format = json.loads(getformat_cmd)
+        namafile = get_subname(link, format["streams"][int(map)]["codec_name"])
+        extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
+        end_time = perf_counter()
+        timelog = "{:.2f}".format(end_time - start_time) + " second"
+        await update.message.reply_document(namafile, caption=f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}", reply_to_message_id=usr.id)
+        await update.message.delete()
+        try:
+            os.remove(namafile)
+        except:
+            pass
+    except Exception as e:
+        await msg.edit(f"Gagal ekstrak sub. \n\nERROR: {e}")
+
 
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 @capture_err
