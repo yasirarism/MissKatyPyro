@@ -24,16 +24,10 @@ def get_base_name(orig_path: str):
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
-    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
-    if format == "ass":
-        frmt = "ass"
-    else:
-        frmt = "srt"
-    if scheme_removed.find("/") == -1:
-        return f"MissKatySub_{get_random_string(4)}.{frmt}"
-    return get_base_name(os.path.basename(scheme_removed)) + f".{frmt}"
+    scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]nd("/") == -1:
+        return f"MissKatySub_{get_random_string(4)}.{format}"
+    return get_base_name(os.path.basename(scheme_removed)) + f".{format}"
 
-DATA = {}
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
 @capture_err
@@ -47,7 +41,6 @@ async def ceksub(_, m):
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
-        DATA[f"{m.chat.id}-{m.id}"] = {}
         for stream in details["streams"]:
             mapping = stream["index"]
             try:
@@ -63,16 +56,9 @@ async def ceksub(_, m):
                 lang = stream["tags"]["language"]
             except:
                 lang = mapping
-            DATA[f"{m.chat.id}-{m.id}"][int(mapping)] = {
-                "map" : mapping,
-                "name" : stream_name,
-                "type" : stream_type,
-                "lang" : lang,
-                "link" : link
-            }
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}"
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{stream_name}"
                 )
             ])
         end_time = perf_counter()
@@ -110,14 +96,22 @@ async def stream_extract(bot, update):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await quer_y.answer("⚠️ Akses Denied!", True)
-    _, type, map = cb_data.split("_")
+    _, type, map, codec = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
     await update.message.edit("Sedang memproses perintah...")
+    if codec == "aac":
+        format = ".aac"
+    elif codec = "mp3":
+        format = "mp3"
+    elif codec = "eac3":
+        format = "eac3"
+    elif codec = "subrip":
+        format = "srt"
+    else:
+        format = "ass"
     try:
         start_time = perf_counter()
-        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
-        format = json.loads(getformat_cmd)
-        namafile = get_subname(link, format["streams"][int(map)]["codec_name"])
+        namafile = get_subname(link, format)
         extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
@@ -129,32 +123,3 @@ async def stream_extract(bot, update):
             pass
     except Exception as e:
         await update.message.edit(f"Gagal ekstrak sub. \n\nERROR: {e}")
-
-
-@app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
-@capture_err
-async def extractsub(_, m):
-    cmd = m.text.split(" ", 1)
-    if len(cmd) == 1:
-        return await m.reply(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk ekstrak subtitle dalam video.")
-    msg = await m.reply("Sedang memproses perintah...")
-    try:
-        link = m.command[1]
-        index = m.command[2]
-        start_time = perf_counter()
-        getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
-        format = json.loads(getformat_cmd)
-        namafile = get_subname(link, format["streams"][int(index)]["codec_name"])
-        extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{index} {namafile}"))[0]
-        end_time = perf_counter()
-        timelog = "{:.2f}".format(end_time - start_time) + " second"
-        await m.reply_document(namafile, caption=f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}")
-        await msg.delete()
-        try:
-            os.remove(namafile)
-        except:
-            pass
-    except IndexError:
-        await msg.edit(f"Gunakan command /{m.command[0]} <b>[link] [index]</b> untuk extract subtitle dalam video")
-    except Exception as e:
-        await msg.edit(f"Gagal ekstrak sub, pastikan kamu menggunakan perasaan kamu saat menggunakan command ini..\n\nERROR: {e}")
