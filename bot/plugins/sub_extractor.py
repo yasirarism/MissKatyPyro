@@ -16,6 +16,11 @@ ARCH_EXT = [
     ".mov"
 ]
 
+__MODULE__ = "MediaExtract"
+__HELP__ = """
+/extractmedia [URL] - Extract subtitle or audio from video using link.
+"""
+
 def get_base_name(orig_path: str):
     if ext := [ext for ext in ARCH_EXT if orig_path.lower().endswith(ext)]:
         ext = ext[0]
@@ -30,7 +35,7 @@ def get_subname(url, format):
     return get_base_name(os.path.basename(scheme_removed)) + f".{format}"
 
 
-@app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
+@app.on_message(filters.command(["ceksub","extractmedia"], COMMAND_HANDLER))
 @capture_err
 async def ceksub(_, m):
         cmd = m.text.split(" ", 1)
@@ -59,7 +64,7 @@ async def ceksub(_, m):
                 lang = mapping
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{stream_name}"
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{mapping}_{stream_name}"
                 )
             ])
         end_time = perf_counter()
@@ -67,7 +72,7 @@ async def ceksub(_, m):
         buttons.append([
             InlineKeyboardButton("Cancel","cancel")
         ])
-        await pesan.edit(f"Tekan button dibawah untuk extract subtitle. Gunakan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
+        await pesan.edit(f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
@@ -97,11 +102,11 @@ async def stream_extract(bot, update):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await quer_y.answer("⚠️ Akses Denied!", True)
-    _, type, map, codec = cb_data.split("_")
+    _, map, codec = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
     await update.message.edit("Sedang memproses perintah...")
     if codec == "aac":
-        format = ".aac"
+        format = "aac"
     elif codec == "mp3":
         format = "mp3"
     elif codec == "eac3":
