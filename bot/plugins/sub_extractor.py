@@ -47,7 +47,7 @@ async def ceksub(_, m):
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
-        DATA[f"{m.chat.id}-{m.message_id}"] = {}
+        DATA[f"{m.chat.id}-{m.id}"] = {}
         for stream in details["streams"]:
             mapping = stream["index"]
             try:
@@ -66,7 +66,7 @@ async def ceksub(_, m):
             DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{m.chat.id}_{m.message_id}"
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{m.chat.id}_{m.id}"
                 )
             ])
         end_time = perf_counter()
