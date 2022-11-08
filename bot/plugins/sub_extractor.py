@@ -78,15 +78,6 @@ async def ceksub(_, m):
             ])
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"0:{data.get('mapping')}({data.get('lang')}): {data.get('stream_type')}: {data.get('stream_name')}",
-                    callback_data=f"streamextract_0:{data.get('mapping')}_{data.get('stream_name')}",
-                )
-            ]
-            for data in DATA
-        ]
         buttons.append([
             InlineKeyboardButton("Cancel","cancel")
         ])
