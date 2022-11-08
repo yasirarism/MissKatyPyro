@@ -102,14 +102,14 @@ async def stream_extract(bot, update):
     await update.message.edit("Sedang memproses perintah...")
     if codec == "aac":
         format = ".aac"
-    elif codec = "mp3":
+    elif codec == "mp3":
         format = "mp3"
-    elif codec = "eac3":
+    elif codec == "eac3":
         format = "eac3"
-    elif codec = "subrip":
+    elif codec == "subrip":
         format = "srt"
     else:
-        format = "ass"
+        format == "ass"
     try:
         start_time = perf_counter()
         namafile = get_subname(link, format)
