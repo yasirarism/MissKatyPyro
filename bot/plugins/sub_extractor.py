@@ -63,7 +63,14 @@ async def ceksub(_, m):
                 lang = stream["tags"]["language"]
             except:
                 lang = mapping
-            DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
+            # DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
+            DATA[f"{m.chat.id}-{m.id}"][int(mapping)] = {
+                "map" : mapping,
+                "name" : stream_name,
+                "type" : stream_type,
+                "lang" : lang,
+                "link" : link
+            }
             buttons.append([
                 InlineKeyboardButton(
                     f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{m.chat.id}_{m.id}"
