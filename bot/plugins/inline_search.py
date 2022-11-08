@@ -1,4 +1,5 @@
 import json, traceback
+from bot.plugins.dev import shell_exec
 from sys import version as pyver, platform
 from bot import app, user
 from motor import version as mongover
