@@ -49,7 +49,7 @@ async def inline_menu(_, inline_query: InlineQuery):
 **Pyrogram:** `{pyrover}`
 **MongoDB:** `{mongover}`
 **Platform:** `{platform}`
-**Profiles:** {(await app.get_me()).username}) | {(await user.get_me()).first_name}
+**Profiles:** {(await app.get_me()).username} | {(await user.get_me()).first_name}
         """
         answerss = [
             InlineQueryResultArticle(
