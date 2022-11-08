@@ -104,8 +104,8 @@ async def convertsrt(_, m):
         pass
 
     
-@app.on_message(filters.regex("^streamextract_"))
-async def streamextract(bot, update):
+@app.on_message(filters.regex(r"^streamextract_"))
+async def stream_extract(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
