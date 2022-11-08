@@ -128,7 +128,7 @@ async def stream_extract(bot, update):
         except:
             pass
     except Exception as e:
-        await msg.edit(f"Gagal ekstrak sub. \n\nERROR: {e}")
+        await update.message.edit(f"Gagal ekstrak sub. \n\nERROR: {e}")
 
 
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
