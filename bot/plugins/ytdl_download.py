@@ -123,7 +123,7 @@ async def ytdown(_, message):
         )
 
 
-@app.on_callback_query(filters.regex(r"ytdl|"))
+@app.on_callback_query(filters.regex(r"^ytdl|"))
 async def youtube_dl_call_back(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message
