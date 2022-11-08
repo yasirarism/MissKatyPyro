@@ -37,7 +37,7 @@ async def ytdown(_, message):
     command_to_exec = f"yt-dlp --no-warnings --youtube-skip-dash-manifest -j {url}"
     t_response = (await shell_exec(command_to_exec))[0]
     if "ERROR" in t_response:
-        await message.reply_text(text="No-one gonna help you\n<b>YT-DLP</b> said: {}".format(t_response), quote=True, disable_web_page_preview=True)
+        await message.reply_text(text="<b>YT-DLP</b> said: {}".format(t_response), quote=True, disable_web_page_preview=True)
         return False
     if t_response:
         x_reponse = t_response
@@ -159,8 +159,6 @@ async def youtube_dl_call_back(bot, update):
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs --embed-metadata -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
-    LOGGER.info(download_directory)
-    LOGGER.info(t_response)
     if t_response:
         os.remove(save_ytdl_json_path)
         end_one = datetime.now()
