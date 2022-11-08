@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from bot.core.decorator.errors import capture_err
 from bot.plugins.dev import shell_exec
-import json, os
+import json, os, base64
 from time import perf_counter
 from re import split as ngesplit, I
 from bot.helper.tools import get_random_string
@@ -33,6 +33,7 @@ def get_subname(url, format):
         return f"MissKatySub_{get_random_string(4)}.{frmt}"
     return get_base_name(os.path.basename(scheme_removed)) + f".{frmt}"
 
+DATA = {}
 
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
 @capture_err
@@ -42,10 +43,11 @@ async def ceksub(_, m):
             return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
         link = cmd[1]
         start_time = perf_counter()
-        pesan = await m.reply("Sedang memproses perintah..")
+        pesan = await m.reply("Sedang memproses perintah..", quote=True)
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
-        DATA = []
+        buttons = []
+        DATA[f"{m.chat.id}-{msg.message_id}"] = {}
         for stream in details["streams"]:
             mapping = stream["index"]
             try:
@@ -62,18 +64,26 @@ async def ceksub(_, m):
             except:
                 lang = mapping
             DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
+            buttons.append([
+                InlineKeyboardButton(
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{message.chat.id}_{msg.message_id}"
+                )
+            ])
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         btn = [
             [
                 InlineKeyboardButton(
                     text=f"0:{data.get('mapping')}({data.get('lang')}): {data.get('stream_type')}: {data.get('stream_name')}",
-                    callback_data=f"streamextract_0:{data.get('mapping')}_{m.from_user.id}_{data.get('stream_name')}",
+                    callback_data=f"streamextract_0:{data.get('mapping')}_{data.get('stream_name')}",
                 )
             ]
             for data in DATA
         ]
-        await pesan.edit(f"Gunakan command /extractsub <b>[link] [index -> angka setelah 0:]</b> untuk extract subtitle (Ex: /extractsub [LINK] 2 -> untuk extract sub index ke dua, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(btn))
+        buttons.append([
+            InlineKeyboardButton("Cancel","cancel")
+        ])
+        await pesan.edit(f"Gunakan command /extractsub <b>[link] [index -> angka setelah 0:]</b> untuk extract subtitle (Ex: /extractsub [LINK] 2 -> untuk extract sub index ke dua, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
@@ -96,6 +106,14 @@ async def convertsrt(_, m):
     except:
         pass
 
+    
+@app.on_message(filters.regex("^streamextract_"))
+async def streamextract(bot, update):
+    cb_data = update.data
+    usr = update.message.reply_to_message
+    if update.from_user.id != usr.from_user.id:
+        return await quer_y.answer("⚠️ Akses Denied!", True)
+    _, mapping, type = cb_data.split("_")
 
 @app.on_message(filters.command(["extractsub"], COMMAND_HANDLER))
 @capture_err
