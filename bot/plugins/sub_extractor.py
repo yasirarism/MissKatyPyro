@@ -66,7 +66,7 @@ async def ceksub(_, m):
             DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{message.chat.id}_{msg.message_id}"
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{stream_type}_{mapping}_{m.chat.id}_{m.message_id}"
                 )
             ])
         end_time = perf_counter()
