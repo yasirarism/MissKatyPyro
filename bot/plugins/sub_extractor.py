@@ -1,5 +1,6 @@
 from bot import app
 from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from bot.core.decorator.errors import capture_err
 from bot.plugins.dev import shell_exec
@@ -36,13 +37,12 @@ def get_subname(url, format):
 @app.on_message(filters.command(["ceksub"], COMMAND_HANDLER))
 @capture_err
 async def ceksub(_, m):
-    cmd = m.text.split(" ", 1)
-    if len(cmd) == 1:
-        return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
-    link = cmd[1]
-    start_time = perf_counter()
-    pesan = await m.reply("Sedang memproses perintah..")
-    try:
+        cmd = m.text.split(" ", 1)
+        if len(cmd) == 1:
+            return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
+        link = cmd[1]
+        start_time = perf_counter()
+        pesan = await m.reply("Sedang memproses perintah..")
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         DATA = []
@@ -62,14 +62,18 @@ async def ceksub(_, m):
             except:
                 lang = mapping
             DATA.append({"mapping": mapping, "stream_name": stream_name, "stream_type": stream_type, "lang": lang})
-        res = "".join(f"<b>Index:</b> {i['mapping']}\n<b>Stream Name:</b> {i['stream_name']}\n<b>Language:</b> {i['lang']}\n\n" for i in DATA)
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        await pesan.edit(
-            f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index]</b> untuk extract subtitle, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}"
-        )
-    except Exception as e:
-        await pesan.edit(f"Gagal ekstrak sub..\n\nERROR: {e}")
+        btn = [
+            [
+                InlineKeyboardButton(
+                    text=f"0:{data.get('mapping')}({data.get('lang')}): {data.get('stream_type')}: {data.get('stream_name')}",
+                    callback_data=f"streamextract_0:{data.get('mapping')}_{message.from_user.id}_{data.get('stream_name')}",
+                )
+            ]
+            for data in DATA
+        ]
+        await pesan.edit(f"<b>Daftar Sub & Audio File:</b>\n{res}\nGunakan command /extractsub <b>[link] [index -> angka setelah 0:]</b> untuk extract subtitle (Ex: /extractsub [LINK] 2 -> untuk extract sub index ke dua, dan command /converttosrt untuk convert ass ke srt. Hanya support direct link & format (.ass, .srt) saja saat ini.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(btn))
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
