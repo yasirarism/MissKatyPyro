@@ -112,6 +112,7 @@ async def streamextract(bot, update):
         return await quer_y.answer("⚠️ Akses Denied!", True)
     _, type, map = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
+    await update.message.edit("Sedang memproses perintah...")
     try:
         start_time = perf_counter()
         getformat_cmd = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_streams {link}"))[0]
