@@ -72,7 +72,8 @@ async def ytdown(_, message):
                 if format_string is None:
                     format_string = formats.get("format")
                 format_ext = formats.get("ext")
-
+                if format_ext == "mhtml":
+                    continue
                 if formats.get("filesize"):
                     size = formats["filesize"]
                 elif formats.get("filesize_approx"):
