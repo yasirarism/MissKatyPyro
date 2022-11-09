@@ -231,6 +231,7 @@ async def youtube_dl_call_back(bot, update):
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs --embed-metadata -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} -o '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
+    LOGGER.info(t_response)
     if t_response:
         os.remove(save_ytdl_json_path)
         end_one = datetime.now()
