@@ -234,9 +234,7 @@ async def youtube_dl_call_back(bot, update):
         time_taken_for_download = (end_one - start).seconds
         file_size = 2097152000 + 1
         download_directory_dirname = os.path.dirname(download_directory)
-        LOGGER.info(download_directory_dirname)
         download_directory_contents = os.listdir(download_directory_dirname)
-        LOGGER.info(download_directory_contents)
         for download_directory_c in download_directory_contents:
             current_file_name = os.path.join(download_directory_dirname,
                                              download_directory_c)
@@ -288,7 +286,7 @@ async def youtube_dl_call_back(bot, update):
                 if tg_send_type == "audio":
                     await update.message.reply_audio(
                         audio=current_file_name,
-                        caption=f"<code>{current_file_name}</code>",
+                        caption=f"<code>{download_directory_dirname}</code>",
                         duration=duration,
                         thumb=thumb_image_path,
                         reply_to_message_id=usr.id,
@@ -299,7 +297,7 @@ async def youtube_dl_call_back(bot, update):
                     await update.message.reply_document(
                         document=current_file_name,
                         thumb=thumb_image_path,
-                        caption=f"<code>{current_file_name}</code>",
+                        caption=f"<code>{download_directory_dirname}</code>",
                         reply_to_message_id=usr.id,
                         progress=progress_for_pyrogram,
                         progress_args=("Trying to upload...", update.message,
@@ -317,7 +315,7 @@ async def youtube_dl_call_back(bot, update):
                 elif tg_send_type == "video":
                     await update.message.reply_video(
                         video=current_file_name,
-                        caption=f"<code>{current_file_name}</code>",
+                        caption=f"<code>{download_directory_dirname}</code>",
                         duration=duration,
                         width=width,
                         height=height,
