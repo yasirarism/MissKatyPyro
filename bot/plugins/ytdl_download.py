@@ -205,7 +205,6 @@ async def youtube_dl_call_back(bot, update):
     try:
         with open(save_ytdl_json_path, "r", encoding="utf8") as f:
             response_json = json.load(f)
-            LOGGER.info(json.dumps(response_json, indent=3))
     except FileNotFoundError:
         await update.message.delete()
         return False
@@ -214,10 +213,6 @@ async def youtube_dl_call_back(bot, update):
     custom_file_name = "%(title,fulltitle,alt_title)s %(height& |)s%(height|)s%(height&p|)s%(fps|)s%(fps&fps|)s%(tbr& |)s%(tbr|)d.%(ext)s"
     youtube_dl_url = update.message.reply_to_message.text.split(" ", 1)[1]
     await update.message.edit_caption("Trying to download media...")
-    description = " "
-    if "fulltitle" in response_json:
-        description = response_json[
-            "fulltitle"][:1021]  # escape Markdown and special characters
     tmp_directory_for_each_user = os.path.join(
         f"downloads/{str(update.from_user.id)}{random_char(5)}")
     if not os.path.isdir(tmp_directory_for_each_user):
@@ -233,7 +228,6 @@ async def youtube_dl_call_back(bot, update):
         command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs --embed-metadata -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} --output '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
-    LOGGER.info(t_response)
     if t_response:
         os.remove(save_ytdl_json_path)
         end_one = datetime.now()
@@ -292,7 +286,7 @@ async def youtube_dl_call_back(bot, update):
                 if tg_send_type == "audio":
                     await update.message.reply_audio(
                         audio=current_file_name,
-                        caption=description,
+                        caption=f"<code>{current_file_name}</code>",
                         duration=duration,
                         thumb=thumb_image_path,
                         reply_to_message_id=usr.id,
@@ -303,7 +297,7 @@ async def youtube_dl_call_back(bot, update):
                     await update.message.reply_document(
                         document=current_file_name,
                         thumb=thumb_image_path,
-                        caption=description,
+                        caption=f"<code>{current_file_name}</code>",
                         reply_to_message_id=usr.id,
                         progress=progress_for_pyrogram,
                         progress_args=("Trying to upload...", update.message,
@@ -321,7 +315,7 @@ async def youtube_dl_call_back(bot, update):
                 elif tg_send_type == "video":
                     await update.message.reply_video(
                         video=current_file_name,
-                        caption=description,
+                        caption=f"<code>{current_file_name}</code>",
                         duration=duration,
                         width=width,
                         height=height,
