@@ -250,7 +250,8 @@ async def youtube_dl_call_back(bot, update):
                 await update.message.edit_caption(
                     caption=
                     "I cannot upload files greater than 1.95GB due to Telegram API limitations."
-                    .format(time_taken_for_download, humanbytes(file_size)))
+                    .format(time_taken_for_download,
+                            get_readable_file_size(file_size)))
 
             else:
                 await update.message.edit_caption(caption="Trying to upload..")

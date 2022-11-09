@@ -68,6 +68,15 @@ def get_size(size):
     return "%.2f %s" % (size, units[i])
 
 
+def get_file_id(msg: Message):
+    if msg.media:
+        for message_type in ("photo", "animation", "audio", "document",
+                             "video", "video_note", "voice", "sticker"):
+            if obj := getattr(msg, message_type):
+                setattr(obj, "message_type", message_type)
+                return obj
+
+
 def extract_user(message: Message) -> Union[int, str]:
     """extracts the user from a message"""
     # https://github.com/SpEcHiDe/PyroGramBot/blob/f30e2cca12002121bad1982f68cd0ff9814ce027/pyrobot/helper_functions/extract_user.py#L7
