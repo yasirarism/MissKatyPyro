@@ -209,7 +209,8 @@ async def youtube_dl_call_back(bot, update):
         await update.message.delete()
         return False
 
-    custom_file_name = f"{str(response_json.get('title'))}_{youtube_dl_format}.{youtube_dl_ext}"
+    # custom_file_name = f"{str(response_json.get('title'))}_{youtube_dl_format}.{youtube_dl_ext}"
+    custom_file_name = "%(title,fulltitle,alt_title)s%(season_number& |)s%(season_number&S|)s%(season_number|)02d%(episode_number&E|)s%(episode_number|)02d%(height& |)s%(height|)s%(height&p|)s%(fps|)s%(fps&fps|)s%(tbr& |)s%(tbr|)d.%(ext)s"
     youtube_dl_url = update.message.reply_to_message.text.split(" ", 1)[1]
     await update.message.edit_caption("Trying to download media...")
     description = " "
