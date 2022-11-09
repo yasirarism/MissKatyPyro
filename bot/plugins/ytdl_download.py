@@ -66,9 +66,10 @@ async def ytdown(_, message):
             duration = response_json["duration"]
         if "formats" in response_json:
             for formats in response_json["formats"]:
-                LOGGER.info(json.dumps(formats, indent=3))
                 format_id = formats.get("format_id")
                 format_string = formats.get("format_note")
+                if format_string in ["ultralow", "low", "medium"]:
+                    continue
                 if format_string is None:
                     format_string = formats.get("format")
                 format_ext = formats.get("ext")
