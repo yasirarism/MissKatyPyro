@@ -4,27 +4,24 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from bot.core.decorator.errors import capture_err
 from bot.plugins.dev import shell_exec
-import json, os, base64
+import json, os, traceback
 from time import perf_counter
 from re import split as ngesplit, I
 from bot.helper.tools import get_random_string
 
-ARCH_EXT = [
-    ".mkv",
-    ".avi",
-    ".mp4",
-    ".mov"
-]
+ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
 
 __MODULE__ = "MediaExtract"
 __HELP__ = """
 /extractmedia [URL] - Extract subtitle or audio from video using link.
 """
 
+
 def get_base_name(orig_path: str):
     if ext := [ext for ext in ARCH_EXT if orig_path.lower().endswith(ext)]:
         ext = ext[0]
         return ngesplit(f"{ext}$", orig_path, maxsplit=1, flags=I)[0]
+
 
 def get_subname(url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
@@ -35,16 +32,20 @@ def get_subname(url, format):
     return get_base_name(os.path.basename(scheme_removed)) + f".{format}"
 
 
-@app.on_message(filters.command(["ceksub","extractmedia"], COMMAND_HANDLER))
-@capture_err
+@app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 async def ceksub(_, m):
-        cmd = m.text.split(" ", 1)
-        if len(cmd) == 1:
-            return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
-        link = cmd[1]
-        start_time = perf_counter()
-        pesan = await m.reply("Sedang memproses perintah..", quote=True)
-        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
+    cmd = m.text.split(" ", 1)
+    if len(cmd) == 1:
+        return await m.reply(
+            f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video."
+        )
+    link = cmd[1]
+    start_time = perf_counter()
+    pesan = await m.reply("Sedang memproses perintah..", quote=True)
+    try:
+        res = (await shell_exec(
+            f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
+        ))[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -64,15 +65,19 @@ async def ceksub(_, m):
                 lang = mapping
             buttons.append([
                 InlineKeyboardButton(
-                    f"0:{mapping}({lang}): {stream_type}: {stream_name}", f"streamextract_{mapping}_{stream_name}"
-                )
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}",
+                    f"streamextract_{mapping}_{stream_name}")
             ])
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        buttons.append([
-            InlineKeyboardButton("Cancel","cancel")
-        ])
-        await pesan.edit(f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}", reply_markup=InlineKeyboardMarkup(buttons))
+        buttons.append([InlineKeyboardButton("Cancel", "cancel")])
+        await pesan.edit(
+            f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}",
+            reply_markup=InlineKeyboardMarkup(buttons))
+    except Exception:
+        err = traceback.format_exc()
+        await pesan.edit(
+            f"Gagal extract media data.\nLink: {link}\nERROR: {err}")
 
 
 ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
@@ -83,11 +88,14 @@ ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
 async def convertsrt(_, m):
     reply = m.reply_to_message
     if not reply and reply.document:
-        return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
+        return await m.reply(
+            f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt."
+        )
     msg = await m.reply("Sedang memproses perintah...")
     dl = await reply.download()
     (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
-    await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
+    await m.reply_document(f"{os.path.basename(dl)}.srt",
+                           caption=f"{os.path.basename(dl)}.srt")
     await msg.delete()
     try:
         os.remove(dl)
@@ -95,13 +103,13 @@ async def convertsrt(_, m):
     except:
         pass
 
-    
+
 @app.on_callback_query(filters.regex(r"^streamextract_"))
 async def stream_extract(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
-        return await quer_y.answer("⚠️ Akses Denied!", True)
+        return await update.answer("⚠️ Akses Denied!", True)
     _, map, codec = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
     await update.message.edit("Sedang memproses perintah...")
@@ -118,10 +126,15 @@ async def stream_extract(bot, update):
     try:
         start_time = perf_counter()
         namafile = get_subname(link, format)
-        extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{map} {namafile}"))[0]
+        extract = (await
+                   shell_exec(f"ffmpeg -i {link} -map 0:{map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        await update.message.reply_document(namafile, caption=f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}", reply_to_message_id=usr.id)
+        await update.message.reply_document(
+            namafile,
+            caption=
+            f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}",
+            reply_to_message_id=usr.id)
         await update.message.delete()
         try:
             os.remove(namafile)

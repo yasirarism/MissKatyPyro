@@ -251,9 +251,11 @@ async def youtube_dl_call_back(bot, update):
             if file_size > 2097152000:
                 await update.message.edit_caption(
                     caption=
-                    "I cannot upload files greater than 1.95GB due to Telegram API limitations."
-                    .format(time_taken_for_download,
-                            get_readable_file_size(file_size)))
+                    "I cannot upload files greater than 1.95GB due to Telegram API limitations. This file has size {}."
+                    .format(get_readable_file_size(file_size)))
+                asyncio.create_task(clendir(thumb_image_path))
+                asyncio.create_task(clendir(tmp_directory_for_each_user))
+                return
 
             else:
                 await update.message.edit_caption(caption="Trying to upload..")
@@ -331,14 +333,9 @@ async def youtube_dl_call_back(bot, update):
                     LOGGER.info("Did this happen? :\\")
                 end_two = datetime.now()
                 time_taken_for_upload = (end_two - end_one).seconds
-                try:
-                    shutil.rmtree(tmp_directory_for_each_user)
-                except:
-                    pass
                 await update.message.edit_caption(
                     caption="Downloaded in {} seconds.\nUploaded in {} seconds."
                     .format(time_taken_for_download, time_taken_for_upload))
-            shutil.rmtree(tmp_directory_for_each_user, ignore_errors=True)
             asyncio.create_task(clendir(thumb_image_path))
             asyncio.create_task(clendir(tmp_directory_for_each_user))
             await asyncio.sleep(5)
