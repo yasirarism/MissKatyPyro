@@ -4,7 +4,6 @@ from bot.plugins import ALL_MODULES
 from bot.helper import paginate_modules
 from bot.helper.tools import bot_sys_stats
 from database.users_chats_db import db
-from Script import script
 from info import LOG_CHANNEL
 from utils import temp
 from logging import info as log_info
@@ -90,7 +89,9 @@ home_keyboard_pm = InlineKeyboardMarkup([
     ],
 ])
 
-home_text_pm = (f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give donation to my owner you can send /donate command for more info.")
+home_text_pm = (
+    f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give donation to my owner you can send /donate command for more info."
+)
 
 keyboard = InlineKeyboardMarkup([
     [
@@ -119,7 +120,10 @@ async def start(_, message):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
-            await app.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
+            await app.send_message(
+                LOG_CHANNEL,
+                "#NewGroup\nGroup = {}(<code>{}</code>)\nMembers Count = <code>{}</code>\nAdded by - {}"
+                .format(message.chat.title, message.chat.id, total, "Unknown"))
             await db.add_chat(message.chat.id, message.chat.title)
         nama = message.from_user.mention if message.from_user else message.sender_chat.title
         return await message.reply_photo(
@@ -129,7 +133,9 @@ async def start(_, message):
         )
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
-        await app.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+        await app.send_message(
+            LOG_CHANNEL, "#NewUser\nID - <code>{}</code>\nName - {}".format(
+                message.from_user.id, message.from_user.mention))
     if len(message.text.split()) > 1:
         name = (message.text.split(None, 1)[1]).lower()
         if "_" in name:
@@ -175,7 +181,10 @@ async def help_command(_, message):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
-            await app.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))
+            await app.send_message(
+                LOG_CHANNEL,
+                "#NewGroup\nGroup = {}(<code>{}</code>)\nMembers Count = <code>{}</code>\nAdded by - {}".format(message.chat.title, message.chat.id,
+                                         total, "Unknown"))
             await db.add_chat(message.chat.id, message.chat.title)
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
@@ -200,8 +209,12 @@ async def help_command(_, message):
                                 reply_markup=keyboard)
     else:
         if not await db.is_user_exist(message.from_user.id):
-            await db.add_user(message.from_user.id, message.from_user.first_name)
-            await app.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+            await db.add_user(message.from_user.id,
+                              message.from_user.first_name)
+            await app.send_message(
+                LOG_CHANNEL,
+                "#NewUser\nID - <code>{}</code>\nName - {}".format(
+                    message.from_user.id, message.from_user.mention))
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
