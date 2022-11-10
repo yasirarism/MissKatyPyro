@@ -90,7 +90,7 @@ home_keyboard_pm = InlineKeyboardMarkup([
 ])
 
 home_text_pm = (
-    f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give donation to my owner you can send /donate command for more info."
+    f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give coffee to my owner you can send /donate command for more info."
 )
 
 keyboard = InlineKeyboardMarkup([
@@ -246,6 +246,8 @@ async def help_parser(name, keyboard=None):
         """Hello {first_name}, My name is {bot_name}.
 I'm a bot with some useful features.
 You can choose an option below, by clicking a button.
+
+If you want give coffee to my owner you can send /donate command for more info.
 """.format(
             first_name=name,
             bot_name="MissKaty",
