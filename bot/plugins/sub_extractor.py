@@ -7,6 +7,7 @@ from bot.plugins.dev import shell_exec
 import json, os, traceback
 from time import perf_counter
 from re import split as ngesplit, I
+from urllib.parse import unquote
 from bot.helper.tools import get_random_string
 
 ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
@@ -29,7 +30,7 @@ def get_subname(url, format):
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1:
         return f"MissKatySub_{get_random_string(4)}.{format}"
-    return get_base_name(os.path.basename(scheme_removed)) + f".{format}"
+    return get_base_name(os.path.basename(unquote(scheme_removed))) + f".{format}"
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -109,10 +110,10 @@ async def stream_extract(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
-        return await update.answer("⚠️ Akses Denied!", True)
+        return await update.answer("⚠️ Access Denied!", True)
     _, map, codec = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
-    await update.message.edit("Sedang memproses perintah...")
+    await update.message.edit("Processing...")
     if codec == "aac":
         format = "aac"
     elif codec == "mp3":
@@ -133,7 +134,7 @@ async def stream_extract(bot, update):
         await update.message.reply_document(
             namafile,
             caption=
-            f"<b>Nama File:</b> <code>{namafile}</code>\n\nDiekstrak oleh @MissKatyRoBot dalam waktu {timelog}",
+            f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @MissKatyRoBot in {timelog}",
             reply_to_message_id=usr.id)
         await update.message.delete()
         try:
@@ -141,4 +142,4 @@ async def stream_extract(bot, update):
         except:
             pass
     except Exception as e:
-        await update.message.edit(f"Gagal ekstrak sub. \n\nERROR: {e}")
+        await update.message.edit(f"Failed extract sub. \n\nERROR: {e}")
