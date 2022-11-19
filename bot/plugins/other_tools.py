@@ -357,9 +357,6 @@ async def imdb1_search(client, message):
     IMDBDATA = []
     if message.sender_chat:
         return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
-    is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
-    if is_in_gap and message.from_user.id != 617426792:
-        return await message.reply(f"Maaf, Silahkan tunggu <code>{str(sleep_time)} detik</code> sebelum menggunakan command ini lagi.")
     if len(message.command) > 1:
         r, judul = message.text.split(None, 1)
         k = await message.reply("🔎 Sedang mencari di Database IMDB..", quote=True)
@@ -534,9 +531,6 @@ async def imdb_en_search(client, message):
     IMDBDATA = []
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
-    is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
-    if is_in_gap and message.from_user.id != 617426792:
-        return await message.reply(f"Sorry, Please waiy <code>{str(sleep_time)} second</code> before use this command again.")
     if len(message.command) > 1:
         r, judul = message.text.split(None, 1)
         k = await message.reply("Searching Movie/Series in IMDB Database.. 😴", quote=True)
