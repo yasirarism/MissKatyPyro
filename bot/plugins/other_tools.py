@@ -266,17 +266,14 @@ async def who_is(client, message):
     await status_message.delete()
 
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10'
+}
+
 async def get_content(url):
     async with aiohttp.ClientSession() as session:
-        r = await session.get(url)
+        r = await session.get(url, headers=headers)
         return await r.read()
-
-
-async def imdbapi(ttid):
-    link = f"https://betterimdbot.herokuapp.com/?tt=tt{ttid}"
-    async with aiohttp.ClientSession() as ses:
-        async with ses.get(link) as result:
-            return await result.json()
 
 
 async def mdlapi(title):
