@@ -30,7 +30,7 @@ class temp(object):
 
 
 def demoji(teks):
-    return emoji.emojize(f":{teks.replace(' ', '_')}:")
+    return emoji.emojize(f":{teks.replace(' ', '_').replace('-', '_')}:")
 
 
 async def broadcast_messages(user_id, message):
