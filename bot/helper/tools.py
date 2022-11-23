@@ -3,7 +3,7 @@ from bot import botStartTime
 from bot.plugins import ALL_MODULES
 from bot.helper.human_read import get_readable_time
 
-GENRES_EMOJI = {"Action": "👊", "Adventure": random.choice(['🪂', '🧗‍♀']), "Comedy": "🤣", "Drama": " 🎭", "Ecchi": random.choice(['💋', '🥵']), "Fantasy": random.choice(['🧞', '🧞‍♂', '🧞‍♀','🌗']), "Hentai": "🔞", "Horror": "☠", "Mahou Shoujo": "☯", "Mecha": "🤖", "Music": "🎸", "Mystery": "🔮", "Psychological": "♟", "Romance": "💞", "Sci-Fi": "🛸", "Slice of Life": random.choice(['☘','🍁']), "Sports": "⚽️", "Supernatural": "🫧", "Thriller": random.choice(['🥶', '🔪','🤯'])}
+GENRES_EMOJI = {"Action": "👊", "Adventure": random.choice(['🪂', '🧗‍♀', '🌋']), "Family": "👨‍", "Musical": "🎸", "Comedy": "🤣", "Drama": " 🎭", "Ecchi": random.choice(['💋', '🥵']), "Fantasy": random.choice(['🧞', '🧞‍♂', '🧞‍♀','🌗']), "Hentai": "🔞", "Horror": "☠", "Mahou Shoujo": "☯", "Mecha": "🤖", "Music": "🎸", "Mystery": "🔮", "Psychological": "♟", "Romance": "💞", "Sci-Fi": "🛸", "Slice of Life": random.choice(['☘','🍁']), "Sports": "⚽️", "Supernatural": "🫧", "Thriller": random.choice(['🥶', '🔪','🤯'])}
 
 
 async def bot_sys_stats():
