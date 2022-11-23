@@ -13,6 +13,7 @@ GENRES_EMOJI = {
     "Ecchi": random.choice(["💋", "🥵"]),
     "Fantasy": random.choice(["🧞", "🧞‍♂", "🧞‍♀", "🌗"]),
     "Hentai": "🔞",
+    "History": "📜",
     "Horror": "☠",
     "Mahou Shoujo": "☯",
     "Mecha": "🤖",
