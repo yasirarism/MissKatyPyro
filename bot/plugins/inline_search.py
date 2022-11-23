@@ -2,7 +2,7 @@ import json, traceback
 from sys import version as pyver, platform
 from bot import app, user
 from motor import version as mongover
-from bot.plugins.other_tools import get_content
+from bot.plugins.misc_tools import get_content
 from pyrogram import __version__ as pyrover
 from bot.helper.http import http
 from bot.helper.tools import GENRES_EMOJI
