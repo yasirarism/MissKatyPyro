@@ -347,13 +347,13 @@ async def imdb_inl(_, query):
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
-                    f"{demoji(country.text)} #{country.text.replace(' ', '_').replace("-", "_")}, "
+                    f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                     for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
                 )
                 country = country[:-2]
                 res_str += f"<b>Negara:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(f"#{lang.text.replace(' ', '_').replace("-", "_")}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>Bahasa:</b> {language}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
