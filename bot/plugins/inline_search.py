@@ -1,5 +1,4 @@
 import json, traceback
-from bot.plugins.dev import shell_exec
 from sys import version as pyver, platform
 from bot import app, user
 from motor import version as mongover
@@ -343,7 +342,7 @@ async def imdb_inl(_, query):
                         genre += f"{GENRES_EMOJI[x]} #{i}, "
                     else:
                         genre += f"#{i}, "
-                genre = genre[:-2].replace("-", "_").replace(' ', '_')
+                genre = genre[:-2].replace("-", "_").replace(" ", "_")
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
@@ -353,7 +352,10 @@ async def imdb_inl(_, query):
                 country = country[:-2]
                 res_str += f"<b>Negara:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                language = "".join(
+                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
+                    for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                )
                 language = language[:-2]
                 res_str += f"<b>Bahasa:</b> {language}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"

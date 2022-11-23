@@ -1,6 +1,5 @@
 import logging
-from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
-from info import AUTH_CHANNEL
+from pyrogram.errors import FloodWait, InputUserDeactivated, PeerIdInvalid, UserIsBlocked
 import asyncio
 from pyrogram.types import Message
 from typing import Union
@@ -42,8 +41,7 @@ async def broadcast_messages(user_id, message):
         return await broadcast_messages(user_id, message)
     except InputUserDeactivated:
         await db.delete_user(int(user_id))
-        logging.info(
-            f"{user_id}-Removed from Database, since deleted account.")
+        logging.info(f"{user_id}-Removed from Database, since deleted account.")
         return False, "Deleted"
     except UserIsBlocked:
         logging.info(f"{user_id} -Blocked the bot.")
@@ -70,8 +68,7 @@ def get_size(size):
 
 def get_file_id(msg: Message):
     if msg.media:
-        for message_type in ("photo", "animation", "audio", "document",
-                             "video", "video_note", "voice", "sticker"):
+        for message_type in ("photo", "animation", "audio", "document", "video", "video_note", "voice", "sticker"):
             if obj := getattr(msg, message_type):
                 setattr(obj, "message_type", message_type)
                 return obj
@@ -87,8 +84,7 @@ def extract_user(message: Message) -> Union[int, str]:
         user_first_name = message.reply_to_message.from_user.first_name
 
     elif len(message.command) > 1:
-        if len(message.entities
-               ) > 1 and message.entities[1].type == "text_mention":
+        if len(message.entities) > 1 and message.entities[1].type == "text_mention":
 
             required_entity = message.entities[1]
             user_id = required_entity.user.id

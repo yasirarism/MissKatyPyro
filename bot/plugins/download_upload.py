@@ -29,6 +29,7 @@ __HELP__ = """
 /ytdown [link] - Download YouTube dengan YT-DLP
 """
 
+
 @app.on_message(filters.command(["anon"], COMMAND_HANDLER))
 async def upload(bot, message):
     if not message.reply_to_message:
@@ -37,30 +38,24 @@ async def upload(bot, message):
         vid = [message.reply_to_message.video, message.reply_to_message.document]
         for v in vid:
             if v is not None:
-                media = v
                 break
     m = await message.reply("Download your file to my Server...")
     now = time.time()
-    sed = await message.reply_to_message.download(
-            progress=progress_for_pyrogram,
-            progress_args=("Trying to download, please wait..", m, now)
-    )
+    sed = await message.reply_to_message.download(progress=progress_for_pyrogram, progress_args=("Trying to download, please wait..", m, now))
     try:
-        files = {'file': open(sed, 'rb')}
+        files = {"file": open(sed, "rb")}
         await m.edit("Uploading to Anonfile, Please Wait||")
         callapi = await http.post("https://api.anonfiles.com/upload", files=files)
         text = callapi.json()
         output = "<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {}\n\n📦 File Size: {}\n\n📥 Download Link: {}".format(
-            text['data']['file']['metadata']['name'],
-            text['data']['file']['metadata']['size']['readable'],
-            text['data']['file']['url']['full']
+            text["data"]["file"]["metadata"]["name"], text["data"]["file"]["metadata"]["size"]["readable"], text["data"]["file"]["url"]["full"]
         )
-        btn = InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
+        btn = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
         await m.edit(output, reply_markup=btn)
     except Exception as e:
         await bot.send_message(message.chat.id, text=f"Something Went Wrong!\n\n{e}")
     os.remove(sed)
+
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))
 @capture_err

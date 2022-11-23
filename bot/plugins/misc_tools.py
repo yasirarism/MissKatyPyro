@@ -10,7 +10,6 @@ from gtts import gTTS
 from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, UserNotParticipant, WebpageMediaEmpty, MessageTooLong
 from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, demoji
-from bot.helper.time_gap import check_time_gap
 import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
@@ -266,9 +265,8 @@ async def who_is(client, message):
     await status_message.delete()
 
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10'
-}
+headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
+
 
 async def get_content(url):
     async with aiohttp.ClientSession() as session:
@@ -425,7 +423,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
                     genre += f"{GENRES_EMOJI[x]} #{i}, "
                 else:
                     genre += f"#{i}, "
-            genre = genre[:-2].replace("-", "_").replace(' ', '_')
+            genre = genre[:-2].replace("-", "_").replace(" ", "_")
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
@@ -435,7 +433,9 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             country = country[:-2]
             res_str += f"<b>Negara:</b> {country}\n"
         if sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+            language = "".join(
+                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
@@ -471,7 +471,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             keywords = r_json["keywords"].split(",")
             key_ = ""
             for i in keywords:
-                i = i.replace(" ", "_").replace('-', '_')
+                i = i.replace(" ", "_").replace("-", "_")
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
@@ -584,7 +584,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
                     genre += f"{GENRES_EMOJI[x]} #{i}, "
                 else:
                     genre += f"#{i}, "
-            genre = genre[:-2].replace("-", "_").replace(' ', '_')
+            genre = genre[:-2].replace("-", "_").replace(" ", "_")
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
@@ -594,7 +594,9 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             country = country[:-2]
             res_str += f"<b>Country:</b> {country}\n"
         if sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+            language = "".join(
+                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
             language = language[:-2]
             res_str += f"<b>Language:</b> {language}\n"
         res_str += "\n<b>🙎 Cast Info:</b>\n"
@@ -629,7 +631,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             keywords = r_json["keywords"].split(",")
             key_ = ""
             for i in keywords:
-                i = i.replace(" ", "_").replace('-', '_')
+                i = i.replace(" ", "_").replace("-", "_")
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Keywords:</b> {key_} \n"

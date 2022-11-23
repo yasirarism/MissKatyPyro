@@ -8,7 +8,6 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
 from bot import app
 
@@ -26,7 +25,10 @@ __HELP__ = """
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, message):
-    await message.reply_photo("AgACAgQAAxkBAAECsVNjbMvjxbN4gRafvNBH-Kv-Zqml8wACzq4xG95tbVPDeZ_UusonbAAIAQADAgADeQAHHgQ", caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas untuk kebutuhan server dan lainnya. Terimakasih..")
+    await message.reply_photo(
+        "AgACAgQAAxkBAAECsVNjbMvjxbN4gRafvNBH-Kv-Zqml8wACzq4xG95tbVPDeZ_UusonbAAIAQADAgADeQAHHgQ",
+        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas untuk kebutuhan server dan lainnya. Terimakasih..",
+    )
 
 
 @app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]) & filters.reply)
