@@ -339,10 +339,10 @@ async def imdb_inl(_, query):
                 genre = ""
                 for i in r_json["genre"]:
                     if i in GENRES_EMOJI:
-                        genre += f"{GENRES_EMOJI[i]} #{i}, "
+                        genre += f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
                     else:
-                        genre += f"#{i}, "
-                genre = genre[:-2].replace("-", "_").replace(" ", "_")
+                        genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+                genre = genre[:-2]
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
