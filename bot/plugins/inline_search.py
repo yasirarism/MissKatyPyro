@@ -339,7 +339,7 @@ async def imdb_inl(_, query):
                 genre = ""
                 for i in r_json["genre"]:
                     if i in GENRES_EMOJI:
-                        genre += f"{GENRES_EMOJI[x]} #{i}, "
+                        genre += f"{GENRES_EMOJI[i]} #{i}, "
                     else:
                         genre += f"#{i}, "
                 genre = genre[:-2].replace("-", "_").replace(" ", "_")
