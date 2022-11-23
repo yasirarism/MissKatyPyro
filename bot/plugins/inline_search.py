@@ -6,6 +6,7 @@ from motor import version as mongover
 from bot.plugins.other_tools import get_content
 from pyrogram import __version__ as pyrover
 from bot.helper.http import http
+from bot.helper.tools import GENRES_EMOJI
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji
@@ -338,37 +339,21 @@ async def imdb_inl(_, query):
             if r_json.get("genre"):
                 genre = ""
                 for i in r_json["genre"]:
-                    if i == "Comedy":
-                        genre += f"🤣 #{i}, "
-                    elif i == "Family":
-                        genre += f"👨‍👩‍👧‍👧 #{i}, "
-                    elif i == "Drama":
-                        genre += f"🎭 #{i}, "
-                    elif i == "Musical":
-                        genre += f"🎸 #{i}, "
-                    elif i == "Adventure":
-                        genre += f"🌋 #{i}, "
-                    elif i == "Sci_Fi":
-                        genre += f"🤖 #{i}, "
-                    elif i == "Fantasy":
-                        genre += f"✨ #{i}, "
-                    elif i == "Horror":
-                        genre += f"👻 #{i}, "
-                    elif i == "Romance":
-                        genre += f"🌹 #{i}, "
+                    if i in GENRES_EMOJI:
+                        genre += f"{GENRES_EMOJI[x]} #{i}, "
                     else:
                         genre += f"#{i}, "
-                genre = genre[:-2].replace("-", "_")
+                genre = genre[:-2].replace("-", "_").replace(' ', '_')
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
-                    f"{demoji(country.text)} #{country.text.replace(' ', '_')}, "
+                    f"{demoji(country.text)} #{country.text.replace(' ', '_').replace("-", "_")}, "
                     for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
                 )
                 country = country[:-2]
                 res_str += f"<b>Negara:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+                language = "".join(f"#{lang.text.replace(' ', '_').replace("-", "_")}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>Bahasa:</b> {language}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
@@ -404,7 +389,7 @@ async def imdb_inl(_, query):
                 keywords = r_json["keywords"].split(",")
                 key_ = ""
                 for i in keywords:
-                    i = i.replace(" ", "_")
+                    i = i.replace(" ", "_").replace("-", "_")
                     key_ += f"#{i}, "
                 key_ = key_[:-2]
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
