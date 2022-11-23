@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot.core.decorator.errors import capture_err
-from bot.helper.tools import rentry
+from bot.helper.tools import rentry, GENRES_EMOJI
 from bot import app
 import logging
 
@@ -421,37 +421,21 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
         if r_json.get("genre"):
             genre = ""
             for i in r_json["genre"]:
-                if i == "Comedy":
-                    genre += f"🤣 #{i}, "
-                elif i == "Family":
-                    genre += f"👨‍👩‍👧‍👧 #{i}, "
-                elif i == "Drama":
-                    genre += f"🎭 #{i}, "
-                elif i == "Musical":
-                    genre += f"🎸 #{i}, "
-                elif i == "Adventure":
-                    genre += f"🌋 #{i}, "
-                elif i == "Sci-Fi":
-                    genre += f"🤖 #{i}, "
-                elif i == "Fantasy":
-                    genre += f"✨ #{i}, "
-                elif i == "Horror":
-                    genre += f"👻 #{i}, "
-                elif i == "Romance":
-                    genre += f"🌹 #{i}, "
+                if i in GENRES_EMOJI:
+                    genre += f"{GENRES_EMOJI[x]} #{i}, "
                 else:
                     genre += f"#{i}, "
-            genre = genre[:-2].replace("-", "_")
+            genre = genre[:-2].replace("-", "_").replace(' ', '_')
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
-                f"{demoji(country.text)} #{country.text.replace(' ', '_')}, "
+                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                 for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             country = country[:-2]
             res_str += f"<b>Negara:</b> {country}\n"
         if sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
@@ -487,7 +471,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             keywords = r_json["keywords"].split(",")
             key_ = ""
             for i in keywords:
-                i = i.replace(" ", "_")
+                i = i.replace(" ", "_").replace('-', '_')
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
@@ -596,37 +580,21 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
         if r_json.get("genre"):
             genre = ""
             for i in r_json["genre"]:
-                if i == "Comedy":
-                    genre += f"🤣 #{i}, "
-                elif i == "Family":
-                    genre += f"👨‍👩‍👧‍👧 #{i}, "
-                elif i == "Drama":
-                    genre += f"🎭 #{i}, "
-                elif i == "Musical":
-                    genre += f"🎸 #{i}, "
-                elif i == "Adventure":
-                    genre += f"🌋 #{i}, "
-                elif i == "Sci-Fi":
-                    genre += f"🤖 #{i}, "
-                elif i == "Fantasy":
-                    genre += f"✨ #{i}, "
-                elif i == "Horror":
-                    genre += f"👻 #{i}, "
-                elif i == "Romance":
-                    genre += f"🌹 #{i}, "
+                if i in GENRES_EMOJI:
+                    genre += f"{GENRES_EMOJI[x]} #{i}, "
                 else:
                     genre += f"#{i}, "
-            genre = genre[:-2].replace("-", "_")
+            genre = genre[:-2].replace("-", "_").replace(' ', '_')
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
-                f"{demoji(country.text)} #{country.text.replace(' ', '_')}, "
+                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                 for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             country = country[:-2]
             res_str += f"<b>Country:</b> {country}\n"
         if sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(f"#{lang.text.replace(' ', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
+            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             language = language[:-2]
             res_str += f"<b>Language:</b> {language}\n"
         res_str += "\n<b>🙎 Cast Info:</b>\n"
@@ -661,7 +629,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             keywords = r_json["keywords"].split(",")
             key_ = ""
             for i in keywords:
-                i = i.replace(" ", "_")
+                i = i.replace(" ", "_").replace('-', '_')
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Keywords:</b> {key_} \n"
