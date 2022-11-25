@@ -126,7 +126,7 @@ async def download(client, message):
 @capture_err
 async def tiktokdl(client, message):
     if len(message.command) == 1:
-        return await message.reply("Use command /{message.command[0]} [link] to download tiktok video.")
+        return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
