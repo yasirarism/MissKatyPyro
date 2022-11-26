@@ -201,20 +201,20 @@ async def lk21_scrap(_, message):
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
             if res.get("detail", None):
-                return await message.reply(f"ERROR: {res['detail']}")
+                return await msg.edit(f"ERROR: {res['detail']}")
             data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
-                return await message.reply(f"**Daftar rilis movie terbaru di web LK21**:\n{data}", disable_web_page_preview=True)
+                return await msg.edit(f"**Daftar rilis movie terbaru di web LK21**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
                 msg = rentry(data)
-                await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
+                await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
     judul = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
     async with aiohttp.ClientSession() as session:
         r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
         res = await r.json()
         if res.get("detail", None):
-            return await message.reply(f"ERROR: {res['detail']}")
+            return await msg.edit(f"ERROR: {res['detail']}")
         data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
         if not res["result"]:
             return await msg.edit("Yahh, ga ada hasil ditemukan")
