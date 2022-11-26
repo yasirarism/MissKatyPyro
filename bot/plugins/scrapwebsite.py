@@ -196,9 +196,12 @@ async def terbit21_scrap(_, message):
 @capture_err
 async def lk21_scrap(_, message):
     if len(message.command) == 1:
+        msg = await message.reply(f"Mendapatkan daftar post film terbaru di lk21")
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
+            if res["detail"]:
+                return await message.reply(f"ERROR: {res['detail']}")
             data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
                 return await message.reply(f"**Daftar rilis movie terbaru di web LK21**:\n{data}", disable_web_page_preview=True)
@@ -210,6 +213,8 @@ async def lk21_scrap(_, message):
     async with aiohttp.ClientSession() as session:
         r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
         res = await r.json()
+        if res["detail"]:
+            return await message.reply(f"ERROR: {res['detail']}")
         data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
         if not res["result"]:
             return await msg.edit("Yahh, ga ada hasil ditemukan")
@@ -217,7 +222,7 @@ async def lk21_scrap(_, message):
             await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
         except MessageTooLong:
             pesan = rentry(data)
-            return await message.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
+            return await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 
 async def getcontent(url):
