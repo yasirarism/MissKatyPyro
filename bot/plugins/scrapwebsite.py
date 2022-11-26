@@ -200,7 +200,7 @@ async def lk21_scrap(_, message):
         async with aiohttp.ClientSession() as session:
             r = await session.get(f"https://yasirapi.eu.org/lk21")
             res = await r.json()
-            if res["detail"]:
+            if res.get("detail", None):
                 return await message.reply(f"ERROR: {res['detail']}")
             data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
@@ -213,7 +213,7 @@ async def lk21_scrap(_, message):
     async with aiohttp.ClientSession() as session:
         r = await session.get(f"https://yasirapi.eu.org/lk21?q={judul}")
         res = await r.json()
-        if res["detail"]:
+        if res.get("detail", None):
             return await message.reply(f"ERROR: {res['detail']}")
         data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
         if not res["result"]:
