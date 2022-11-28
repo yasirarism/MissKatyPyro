@@ -370,7 +370,7 @@ async def imdb1_search(client, message):
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
         msg = f"Ditemukan {len(IMDBDATA)} query dari <code>{judul}</code> ~ {message.from_user.mention}\n\n"
         buttons = InlineKeyboard(row_width=3)
-        for count, movie in enumerate(IMDBDATA, start=1)
+        for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
         buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdb#{movieID}")) for count, movie in enumerate(IMDBDATA, start=1)])
         await k.edit(msg, reply_markup=buttons)
@@ -526,7 +526,7 @@ async def imdb_en_search(client, message):
             return await k.edit("Sad, No Result.. 😕")
         msg = f"Found {len(IMDBDATA)} result from <code>{judul}</code> ~ {message.from_user.mention}\n\n"
         buttons = InlineKeyboard(row_width=3)
-        for count, movie in enumerate(IMDBDATA, start=1)
+        for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
         buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdben#{movieID}")) for count, movie in enumerate(IMDBDATA, start=1)])
         await k.edit(msg, reply_markup=buttons)
