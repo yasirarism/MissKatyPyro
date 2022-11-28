@@ -12,6 +12,7 @@ from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, demoji
 import time
 from datetime import datetime
+from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from bot.core.decorator.errors import capture_err
 from bot.helper.tools import rentry, GENRES_EMOJI
@@ -367,16 +368,12 @@ async def imdb1_search(client, message):
             return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie['title']}",
-                    callback_data=f"imdbid#{movie['movieID']}",
-                )
-            ]
-            for movie in IMDBDATA
-        ]
-        await k.edit(f"Ditemukan {len(IMDBDATA)} query dari <code>{judul}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        msg = f"Ditemukan {len(IMDBDATA)} query dari <code>{judul}</code> ~ {message.from_user.mention}\n\n"
+        buttons = InlineKeyboard(row_width=3)
+        for count, movie in enumerate(IMDBDATA, start=1)
+            msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
+        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdb#{movieID}")) for count, movie in enumerate(IMDBDATA, start=1)])
+        await k.edit(msg, reply_markup=buttons)
     else:
         await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
 
@@ -527,16 +524,12 @@ async def imdb_en_search(client, message):
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
         if not IMDBDATA:
             return await k.edit("Sad, No Result.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie['title']}",
-                    callback_data=f"imdben#{movie['movieID']}",
-                )
-            ]
-            for movie in IMDBDATA
-        ]
-        await k.edit(f"Found {len(IMDBDATA)} result from <code>{judul}</code>", reply_markup=InlineKeyboardMarkup(btn))
+        msg = f"Found {len(IMDBDATA)} result from <code>{judul}</code> ~ {message.from_user.mention}\n\n"
+        buttons = InlineKeyboard(row_width=3)
+        for count, movie in enumerate(IMDBDATA, start=1)
+            msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
+        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdben#{movieID}")) for count, movie in enumerate(IMDBDATA, start=1)])
+        await k.edit(msg, reply_markup=buttons)
     else:
         await message.reply("Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️", quote=True)
 
