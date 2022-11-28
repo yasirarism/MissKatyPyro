@@ -373,7 +373,7 @@ async def imdb1_search(client, message):
         buttons = InlineKeyboard(row_width=3)
         for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
-        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie['movieID']}")) for count, movie in enumerate(IMDBDATA, start=1)])
+        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie.get('movieID')}")) for count, movie in enumerate(IMDBDATA, start=1)])
         await k.edit(msg, reply_markup=buttons)
     else:
         await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
@@ -530,7 +530,7 @@ async def imdb_en_search(client, message):
         buttons = InlineKeyboard(row_width=3)
         for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
-        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdben#{movie['movieID']}")) for count, movie in enumerate(IMDBDATA, start=1)])
+        buttons.add(*[(InlineKeyboardButton(text=count, callback_data=f"imdben#{movie.get('movieID')}")) for count, movie in enumerate(IMDBDATA, start=1)])
         await k.edit(msg, reply_markup=buttons)
     else:
         await message.reply("Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️", quote=True)
