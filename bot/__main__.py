@@ -78,8 +78,8 @@ home_keyboard_pm = InlineKeyboardMarkup([
             text="System Stats 🖥",
             callback_data="stats_callback",
         ),
-        InlineKeyboardButton(text="Support 👨",
-                             url="https://t.me/YasirPedia_Discuss"),
+        InlineKeyboardButton(text="Dev 👨",
+                             url="https://t.me/YasirArisM"),
     ],
     [
         InlineKeyboardButton(
