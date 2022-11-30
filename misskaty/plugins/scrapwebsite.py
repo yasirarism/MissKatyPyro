@@ -51,7 +51,7 @@ async def nodrakor(_, message):
 
 
 # Broken
-@app.on_message(filters.command(["ngefilm21", "ngefilm21@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["ngefilm21"], COMMAND_HANDLER))
 @capture_err
 async def ngefilm21(_, message):
     try:
@@ -225,12 +225,6 @@ async def lk21_scrap(_, message):
             return await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 
-async def getcontent(url):
-    async with aiohttp.ClientSession() as session:
-        r = await session.get(url)
-        return await r.read()
-
-
 @app.on_message(filters.command(["gomov", "gomov@MissKatyRoBot"], COMMAND_HANDLER))
 @capture_err
 async def gomov_scrap(_, message):
@@ -338,7 +332,3 @@ async def melong_scrap(_, message):
             await message.reply(rep)
     except IndexError:
         await message.reply("Gunakan command /melong <b>[link]</b> untuk scrap link download")
-
-
-# except Exception as e:
-# await message.reply(f"ERROR: {str(e)}")

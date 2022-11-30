@@ -24,8 +24,6 @@ BOT_TOKEN = environ["BOT_TOKEN"]
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 
 # Bot settings
-CACHE_TIME = int(environ.get("CACHE_TIME", 300))
-USE_CAPTION_FILTER = bool(environ.get("USE_CAPTION_FILTER", False))
 PICS = (
     environ.get(
         "PICS",

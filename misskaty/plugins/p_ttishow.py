@@ -1,19 +1,23 @@
 from datetime import datetime, timedelta
 import time
 import os
+import logging
 from bot.helper.http import http
 from pyrogram import enums, filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import ChatSendMediaForbidden, MessageTooLong, RPCError, SlowmodeWait
-from bot import app, SUDO
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
+from bot import app
+from info import LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from bot.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
 from database.users_chats_db import db
 from utils import temp
 from pyrogram.errors import ChatAdminRequired
+from misskaty.vars import SUDO, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+LOGGER = logging.getLogger(__name__)
 
 def circle(pfp, size=(215, 215)):
     pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
@@ -63,10 +67,10 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     if not member.new_chat_member or member.new_chat_member.status in {"banned", "left", "restricted"} or member.old_chat_member:
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
-    if user.id == 617426792:
+    if user.id in SUDO:
         await c.send_message(
             member.chat.id,
-            "Waw, owner kamu baru saja bergabung ke grup!",
+            "Waw, owner ku yang keren baru saja bergabung ke grup!",
         )
         return
     elif user.is_bot:
@@ -101,16 +105,16 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             if not apispamwatch.get("error"):
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
                 userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
-        except:
-            pass
+        except Exception as err:
+            LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
         # Combot API Detection
         try:
             apicombot = (await http.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
             if apicombot.get("ok") == "true":
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
                 userspammer += f"<b>#CAS Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={user.id}'>Combot AntiSpam.</a>"
-        except:
-            pass
+        except Exception as err:
+            LOGGER.error(f"ERROR in Combot API Detection. {err}")
         if userspammer != "":
             await c.send_message(member.chat.id, userspammer)
         try:
@@ -118,10 +122,6 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             os.remove(f"downloads/pp{user.id}.png")
         except Exception:
             pass
-        # temp.MELCOW['welcome'] = await c.send_message(
-        #    member.chat.id,
-        #    f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
-        # )
 
 
 @app.on_message(filters.new_chat_members & filters.group)
@@ -179,7 +179,7 @@ async def save_group(bot, message):
                 pass
 
 
-@app.on_message(filters.command("leave") & filters.user(ADMINS))
+@app.on_message(filters.command("leave") & filters.user(SUDO))
 async def leave_a_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -202,7 +202,7 @@ async def leave_a_chat(bot, message):
         await bot.leave_chat(chat)
 
 
-@app.on_message(filters.command("disable") & filters.user(ADMINS))
+@app.on_message(filters.command("disable") & filters.user(SUDO))
 async def disable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -234,7 +234,7 @@ async def disable_chat(bot, message):
         await message.reply(f"Error - {e}")
 
 
-@app.on_message(filters.command("enable") & filters.user(ADMINS))
+@app.on_message(filters.command("enable") & filters.user(SUDO))
 async def re_enable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -255,7 +255,7 @@ async def re_enable_chat(bot, message):
 
 # a function for trespassing into others groups, Inspired by a Vazha
 # Not to be used , But Just to showcase his vazhatharam.
-# @app.on_message(filters.command('invite') & filters.user(ADMINS))
+# @app.on_message(filters.command('invite') & filters.user(SUDO))
 async def gen_invite(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -289,7 +289,7 @@ async def adminlist(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(filters.command(["kickme", "kickme@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["kickme"], COMMAND_HANDLER))
 @capture_err
 async def kickme(_, message):
     reason = None

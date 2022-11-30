@@ -1,12 +1,15 @@
 <h1 align="center">
-  <b>MissKaty Bot</b>
+  <b>MissKaty Bot based on Pyrogram</b>
 </h1>
 
+## NOTES
+This repo has many bugs and i dont have time to fix it. If you can help me, please open pull request (PR).
+
+## Demo
+You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
+
 ## Features
-- [x] Google Search
-- [x] IMDB Translation
-- [x] Generator Screenshot
-- [x] Generator Screenshot
+I'm forget about it, try asking doraemon maybe know.. :)
 
 ## Variables
 
@@ -19,28 +22,20 @@
 * `DATABASE_NAME`: Name of the database in [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
 ### Optional Variables
-* `PICS`: Telegraph links of images to show in start message.( Multiple images can be used seperated by space )
-
+Check by yourself for optional vars.
 
 ## Deploy
-You can deploy this bot anywhere.
-
-<details><summary>Deploy To VPS</summary>
-<p>
-<pre>
-git clone https://github.com/EvamariaTG/evamaria
-# Install Packages
-pip3 install -r requirements.txt
-Edit info.py with variables as given below then run bot
-python3 bot.py
-</pre>
-</p>
-</details>
+You can deploy this bot anywhere. But i will not give any tutorial, learn by yourself.
 
 ## Thanks to 
- - Thanks To Dan For His Awsome [Libary](https://github.com/pyrogram/pyrogram)
+ - Thanks To Allah Swt.
+ - Thanks To Dan For His Awesome [Library](https://github.com/pyrogram/pyrogram).
+ - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For Some Code.
+ - Thanks To [Team Yukki](https://github.com/TeamYukki) For Some Code.
+ - Thanks To [Wrench](https://github.com/EverythingSuckz) For Some Code.
+ - And All People Who Help Me In My Life...
 
 ## Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
-Licensed under [GNU AGPL 2.0.](https://github.com/EvamariaTG/evamaria/blob/master/LICENSE)
-Selling The Codes To Other People For Money Is *Strictly Prohibited*.
+Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
+Selling The Codes To Other People For Money Is *Strictly Prohibited* God always sees you.

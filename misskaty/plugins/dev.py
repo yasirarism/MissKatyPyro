@@ -8,7 +8,7 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from info import COMMAND_HANDLER
+from bot.vars import COMMAND_HANDLER, SUDO
 from bot import app
 
 __MODULE__ = "DevCommand"
@@ -22,6 +22,14 @@ __HELP__ = """
 /json - Send structure message Telegram using Pyrogram Style.
 """
 
+
+@app.on_message(filters.command(["logs"]) & filters.user(SUDO))
+async def log_file(bot, message):
+    """Send log file"""
+    try:
+        await message.reply_document("MissKatyLogs.txt", caption="Log Bot MissKatyPyro")
+    except Exception as e:
+        await message.reply(str(e))
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, message):
@@ -41,7 +49,7 @@ async def balas(c, m):
 @app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(617426792))
 async def neofetch(c, m):
     neofetch = (await shell_exec("neofetch --stdout"))[0]
-    await m.reply(f"<code>{neofetch}</code>", parse_mode=enums.ParseMode.HTML)
+    await m.reply(f"<code>{neofetch}</code>")
 
 
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user([617426792, 2024984460]))

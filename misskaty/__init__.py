@@ -6,9 +6,8 @@ import logging.config
 logging.config.fileConfig("logging.conf")
 logging.getLogger().setLevel(logging.INFO)
 logging.getLogger("pyrogram").setLevel(logging.ERROR)
-logging.getLogger("imdbpy").setLevel(logging.ERROR)
-from pyrogram import Client, __version__
-from info import API_ID, API_HASH, BOT_TOKEN
+from pyrogram import Client
+from bot.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
 
 MOD_LOAD = []
 MOD_NOLOAD = []
@@ -30,5 +29,5 @@ app = Client(
 # Pyrogram UserBot Client
 user = Client(
     name="YasirUBot",
-    session_string=SESSION_PYRO,
+    session_string=USER_SESSION,
 )
