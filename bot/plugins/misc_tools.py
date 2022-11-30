@@ -370,7 +370,7 @@ async def imdb1_search(client, message):
                 type = movie.get("q").replace("feature", "movie").capitalize()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{count}. {title} {year} ~ {type}\n"
-                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movieID}"))
+                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{message.from_user.id}#{movieID}"))
         except Exception as err:
             return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
         buttons.add(*BTN)
@@ -382,9 +382,9 @@ async def imdb1_search(client, message):
 @app.on_callback_query(filters.regex("^imdbid"))
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
     usr = query.message.reply_to_message
-    if query.from_user.id != usr.from_user.id:
+    i, userid, movie = query.data.split("#")
+    if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
-    i, movie = query.data.split("#")
     try:
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         url = f"https://www.imdb.com/title/tt{movie}/"
@@ -527,7 +527,7 @@ async def imdb_en_search(client, message):
                 type = movie.get("qid").replace("feature", "movie").capitalize()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{count}. {titles} {year} ~ {type}\n"
-                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movieID}"))
+                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{message.from_user.id}#{movieID}"))
         except Exception as err:
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
         buttons.add(*BTN)
@@ -540,10 +540,10 @@ async def imdb_en_search(client, message):
 @capture_err
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
     usr = query.message.reply_to_message
-    if query.from_user.id != usr.from_user.id:
+    i, userid, movie = query.data.split("#")
+    if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
-    i, movie = query.data.split("#")
-    await query.message.edit_text("Processing your request.. ")
+    await query.message.edit_text("<i>⏳ Processing your request..</i>")
     try:
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await get_content(url)
