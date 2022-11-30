@@ -1,5 +1,5 @@
-from bot.core.decorator.errors import capture_err
-from bot import app
+from misskaty.core.decorator.errors import capture_err
+from misskaty import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from PIL import Image, ImageFont, ImageDraw

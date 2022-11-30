@@ -1,8 +1,8 @@
-from bot import app
+from misskaty import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserIsBlocked, UserAlreadyParticipant
-from bot.core.decorator.errors import capture_err
+from misskaty.core.decorator.errors import capture_err
 
 
 @capture_err

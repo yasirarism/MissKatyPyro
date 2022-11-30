@@ -3,7 +3,7 @@ import os
 import requests
 import time
 import random
-from bot.helper.human_read import get_readable_file_size
+from misskaty.helper.human_read import get_readable_file_size
 
 
 def random_char(y):

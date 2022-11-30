@@ -1,15 +1,16 @@
 import logging
 from info import COMMAND_HANDLER
 import asyncio, re
-from bot import app, SUDO
-from bot.helper.functions import extract_user_and_reason, time_converter, extract_user, int_to_alpha
+from misskaty import app
+from misskaty.helper.functions import extract_user_and_reason, time_converter, extract_user, int_to_alpha
 from time import time
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait, ChatAdminRequired
 from pyrogram.types import ChatPermissions
-from bot.core.decorator.permissions import adminsOnly, admins_in_chat, list_admins, member_permissions
-from bot.core.decorator.errors import capture_err
-from bot.core.keyboard import ikb
+from misskaty.core.decorator.permissions import adminsOnly, admins_in_chat, list_admins, member_permissions
+from misskaty.core.decorator.errors import capture_err
+from misskaty.core.keyboard import ikb
+from misskaty.vars import SUDO
 from database.warn_db import get_warn, remove_warns, add_warn
 
 __MODULE__ = "Admin"

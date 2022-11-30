@@ -14,9 +14,9 @@ import time
 from datetime import datetime
 from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from bot.core.decorator.errors import capture_err
-from bot.helper.tools import rentry, GENRES_EMOJI
-from bot import app
+from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.tools import rentry, GENRES_EMOJI
+from misskaty import app
 import logging
 
 logger = logging.getLogger(__name__)

@@ -1,5 +1,5 @@
 import os, logging, json, shutil, asyncio, time
-from bot import app
+from misskaty import app
 from PIL import Image
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -7,11 +7,11 @@ from info import COMMAND_HANDLER
 from datetime import datetime
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
-from bot.helper.ytdl_helper import random_char, DownLoadFile
-from bot.helper.human_read import get_readable_file_size
-from bot.plugins.dev import shell_exec
-from bot.core.decorator.errors import capture_err
-from bot.helper.pyro_progress import progress_for_pyrogram
+from misskaty.helper.ytdl_helper import random_char, DownLoadFile
+from misskaty.helper.human_read import get_readable_file_size
+from misskaty.plugins.dev import shell_exec
+from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOGGER = logging.getLogger(__name__)

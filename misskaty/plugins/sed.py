@@ -7,7 +7,7 @@ import regex
 from pyrogram import filters
 from pyrogram.types import Message
 from pyrogram.errors import MessageEmpty
-from bot import app
+from misskaty import app
 
 
 @app.on_message(filters.regex(r"^s/(.+)?/(.+)?(/.+)?") & filters.reply)

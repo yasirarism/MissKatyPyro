@@ -1,11 +1,11 @@
 import json, traceback
 from sys import version as pyver, platform
-from bot import app, user
+from misskaty import app, user
 from motor import version as mongover
-from bot.plugins.misc_tools import get_content
+from misskaty.plugins.misc_tools import get_content
 from pyrogram import __version__ as pyrover
-from bot.helper.http import http
-from bot.helper.tools import GENRES_EMOJI
+from misskaty.helper.http import http
+from misskaty.helper.tools import GENRES_EMOJI
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji

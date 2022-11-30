@@ -3,10 +3,10 @@ import string
 import psutil
 import time
 import os
-from bot import botStartTime
-from bot.plugins import ALL_MODULES
-from bot.helper.human_read import get_readable_time
-from bot.helper.http import http
+from misskaty import botStartTime
+from misskaty.plugins import ALL_MODULES
+from misskaty.helper.human_read import get_readable_time
+from misskaty.helper.http import http
 from http.cookies import SimpleCookie
 
 GENRES_EMOJI = {

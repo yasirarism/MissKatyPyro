@@ -1,9 +1,9 @@
 import re
 from pyrogram import filters
-from bot import app
-from bot.core.decorator.errors import capture_err
-from bot.core.decorator.permissions import adminsOnly
-from bot.helper.functions import alpha_to_int, int_to_alpha
+from misskaty import app
+from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.helper.functions import alpha_to_int, int_to_alpha
 from database.karma_db import (
     get_karma,
     get_karmas,

@@ -1,14 +1,14 @@
-from bot import app
+from misskaty import app
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from info import COMMAND_HANDLER
-from bot.core.decorator.errors import capture_err
-from bot.plugins.dev import shell_exec
+from misskaty.core.decorator.errors import capture_err
+from misskaty.plugins.dev import shell_exec
 import json, os, traceback
 from time import perf_counter
 from re import split as ngesplit, I
 from urllib.parse import unquote
-from bot.helper.tools import get_random_string
+from misskaty.helper.tools import get_random_string
 
 ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
 

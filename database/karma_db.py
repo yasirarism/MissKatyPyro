@@ -1,5 +1,5 @@
 from typing import Dict, Union
-from bot.helper.functions import int_to_alpha
+from misskaty.helper.functions import int_to_alpha
 from database import dbname
 
 karmadb = dbname.karma

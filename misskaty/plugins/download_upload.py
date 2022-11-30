@@ -5,16 +5,16 @@ import os
 import logging
 import aiohttp
 import json
-from bot.helper.http import http
+from misskaty.helper.http import http
 from bs4 import BeautifulSoup
-from bot import app
+from misskaty import app
 from pySmartDL import SmartDL
 from datetime import datetime
-from bot.core.decorator.errors import capture_err
+from misskaty.core.decorator.errors import capture_err
 from info import COMMAND_HANDLER
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from bot.helper.pyro_progress import (
+from misskaty.helper.pyro_progress import (
     progress_for_pyrogram,
     humanbytes,
 )

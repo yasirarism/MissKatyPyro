@@ -1,4 +1,4 @@
-from bot import app
+from misskaty import app
 from info import COMMAND_HANDLER
 from pyrogram import filters
 

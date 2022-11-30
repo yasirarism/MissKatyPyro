@@ -1,8 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-
-from bot import app
-from bot.helper.http import http
+from misskaty import app
+from misskaty.helper.http import http
 from io import BytesIO
 
 __MODULE__ = "Fun"

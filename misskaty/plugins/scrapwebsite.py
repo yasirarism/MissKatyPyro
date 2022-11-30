@@ -4,12 +4,12 @@ import aiohttp
 import re
 import requests
 import traceback
-from bot import app
+from misskaty import app
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from info import COMMAND_HANDLER
-from bot.core.decorator.errors import capture_err
-from bot.helper.tools import rentry
+from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.tools import rentry
 
 __MODULE__ = "WebScraper"
 __HELP__ = """

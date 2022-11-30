@@ -2,7 +2,7 @@ import traceback, asyncio
 from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from info import LOG_CHANNEL
-from bot import app
+from misskaty import app
 
 
 def asyncify(func):

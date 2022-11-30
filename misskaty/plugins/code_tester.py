@@ -1,9 +1,9 @@
 from pyrogram import enums, filters
 from pyrogram.errors import MessageTooLong
 import aiohttp
-from bot.helper.tools import rentry
+from misskaty.helper.tools import rentry
 from info import COMMAND_HANDLER
-from bot import app
+from misskaty import app
 
 __MODULE__ = "CodeTester"
 __HELP__ = """

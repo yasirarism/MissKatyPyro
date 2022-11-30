@@ -5,7 +5,7 @@ from database.users_chats_db import db
 from info import ADMINS
 from utils import broadcast_messages
 import asyncio
-from bot import app
+from misskaty import app
 
 
 @app.on_message(filters.command("broadcast") & filters.user(ADMINS) & filters.reply)

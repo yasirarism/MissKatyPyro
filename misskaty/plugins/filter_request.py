@@ -1,12 +1,12 @@
 import re
 import random
-from bot import app
+from misskaty import app
 from pyrogram import enums, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import UserNotParticipant, PeerIdInvalid
-from bot.core.decorator.errors import capture_err
-from bot.helper.time_gap import check_time_gap
+from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.time_gap import check_time_gap
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}

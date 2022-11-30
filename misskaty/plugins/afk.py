@@ -1,11 +1,11 @@
 # Sample menggunakan modul motor mongodb
 import time, asyncio
-from bot import app
+from misskaty import app
 from pyrogram import filters
 from info import COMMAND_HANDLER
 from database.afk_db import remove_afk, is_afk, add_afk
-from bot.helper.human_read import get_readable_time2
-from bot.core.decorator.errors import capture_err
+from misskaty.helper.human_read import get_readable_time2
+from misskaty.core.decorator.errors import capture_err
 
 __MODULE__ = "AFK"
 __HELP__ = """/afk - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.

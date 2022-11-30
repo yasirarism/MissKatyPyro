@@ -3,7 +3,8 @@ from traceback import format_exc as err
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import Message
 from pyrogram import enums
-from bot import SUDO, app
+from misskaty import app
+from misskaty.vars import SUDO
 from time import time
 
 

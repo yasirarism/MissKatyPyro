@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 import time
 import os
 import logging
-from bot.helper.http import http
+from misskaty.helper.http import http
 from pyrogram import enums, filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import ChatSendMediaForbidden, MessageTooLong, RPCError, SlowmodeWait
-from bot import app
-from info import LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
-from bot.core.decorator.errors import capture_err, asyncify
+from misskaty import app
+from misskaty.vars import LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
+from misskaty.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
 from database.users_chats_db import db

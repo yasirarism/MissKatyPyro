@@ -8,8 +8,8 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from bot.vars import COMMAND_HANDLER, SUDO
-from bot import app
+from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty import app
 
 __MODULE__ = "DevCommand"
 __HELP__ = """

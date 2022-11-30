@@ -2,7 +2,7 @@ import os
 from pyrogram import enums, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, ChatEventFilter
 from pyrogram.raw import functions
-from bot import user, app
+from misskaty import user, app
 from datetime import datetime
 
 f = filters.chat([])

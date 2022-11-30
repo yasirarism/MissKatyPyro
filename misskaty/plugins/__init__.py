@@ -3,8 +3,7 @@ import importlib
 import sys
 from logging import info as log_info
 from os.path import basename, dirname, isfile
-
-from bot import MOD_LOAD, MOD_NOLOAD
+from misskaty import MOD_LOAD, MOD_NOLOAD
 
 
 def __list_all_modules():

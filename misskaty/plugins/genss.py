@@ -9,10 +9,10 @@ from asyncio import sleep, gather
 from shutil import rmtree
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
-from bot import app
-from bot.helper.ffmpeg_helper import take_ss, genss_link
+from misskaty import app
+from misskaty.helper.ffmpeg_helper import take_ss, genss_link
 from info import COMMAND_HANDLER
-from bot.helper.pyro_progress import progress_for_pyrogram
+from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 __MODULE__ = "MediaTool"
 __HELP__ = """"

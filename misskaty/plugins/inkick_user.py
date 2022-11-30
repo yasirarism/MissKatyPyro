@@ -1,6 +1,6 @@
 import time
 from asyncio import sleep
-from bot import app
+from misskaty import app
 from info import COMMAND_HANDLER
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait

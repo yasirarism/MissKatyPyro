@@ -4,12 +4,12 @@ import time
 import subprocess
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from info import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
-from bot import app
-from bot.helper.media_helper import post_to_telegraph, runcmd
-from bot.core.decorator.errors import capture_err
-from bot.helper.pyro_progress import (
+from misskaty import app
+from misskaty.helper.media_helper import post_to_telegraph, runcmd
+from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.pyro_progress import (
     progress_for_pyrogram,
 )
 

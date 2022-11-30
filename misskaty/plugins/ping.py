@@ -3,8 +3,8 @@ from re import findall, MULTILINE
 from asyncio import Lock
 from pyrogram import filters
 from info import COMMAND_HANDLER
-from bot import app, botStartTime
-from bot.helper.human_read import get_readable_time
+from misskaty import app, botStartTime
+from misskaty.helper.human_read import get_readable_time
 from subprocess import run as srun
 
 

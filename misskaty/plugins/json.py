@@ -1,7 +1,7 @@
 import os
 from pyrogram import filters
-from bot import app
-from info import COMMAND_HANDLER
+from misskaty import app
+from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["json"], COMMAND_HANDLER))

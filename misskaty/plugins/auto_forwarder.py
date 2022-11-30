@@ -1,6 +1,6 @@
 # Code copy from https://github.com/AbirHasan2005/Forward-Client
 import logging
-from bot import user
+from misskaty import user
 from pyrogram import filters
 from asyncio import sleep
 from pyrogram.types import Message

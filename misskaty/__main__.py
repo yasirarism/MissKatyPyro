@@ -1,8 +1,8 @@
 import asyncio, importlib, re, logging
-from bot import app, user, HELPABLE
-from bot.plugins import ALL_MODULES
-from bot.helper import paginate_modules
-from bot.helper.tools import bot_sys_stats
+from misskaty import app, user, HELPABLE
+from misskaty.plugins import ALL_MODULES
+from misskaty.helper import paginate_modules
+from misskaty.helper.tools import bot_sys_stats
 from database.users_chats_db import db
 from info import LOG_CHANNEL
 from utils import temp

@@ -3,8 +3,8 @@ import requests
 import os
 from telegraph import upload_file
 from pyrogram import filters
-from bot import app
-from bot.core.decorator.errors import capture_err
+from misskaty import app
+from misskaty.core.decorator.errors import capture_err
 
 __MODULE__ = "OCR"
 __HELP__ = "/ocr [reply to photo] - Read Text From Image"
