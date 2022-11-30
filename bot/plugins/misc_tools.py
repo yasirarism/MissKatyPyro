@@ -353,30 +353,29 @@ async def imdb1_search(client, message):
     BTN = []
     if message.sender_chat:
         return await message.reply("Mohon maaf fitur tidak tersedia untuk akun channel, harap ganti ke akun biasa..")
-    if len(message.command) > 1:
-        r, judul = message.text.split(None, 1)
-        k = await message.reply("🔎 Sedang mencari di Database IMDB..", quote=True)
-        msg = ""
-        buttons = InlineKeyboard(row_width=4)
-        try:
-            r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
-            res = json.loads(r).get("result")
-            if not res:
-                return await k.edit("Tidak ada hasil ditemukan.. 😕")
-            msg += f"Ditemukan {len(res)} query dari <code>{judul}</code> ~ {message.from_user.mention}\n\n"
-            for count, movie in enumerate(res, start=1):
-                title = movie.get("l")
-                year = f"({movie.get('y')})" if movie.get("y") else ""
-                type = movie.get("q").replace("feature", "movie").capitalize()
-                movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-                msg += f"{count}. {title} {year} ~ {type}\n"
-                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{message.from_user.id}#{movieID}"))
-        except Exception as err:
-            return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
+    if len(message.command) == 1:
+        return await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
+    r, judul = message.text.split(None, 1)
+    k = await message.reply("🔎 Sedang mencari di Database IMDB..", quote=True)
+    msg = ""
+    buttons = InlineKeyboard(row_width=4)
+    try:
+        r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={judul}")
+        res = json.loads(r).get("result")
+        if not res:
+            return await k.edit("Tidak ada hasil ditemukan.. 😕")
+        msg += f"Ditemukan {len(res)} query dari <code>{judul}</code> ~ {message.from_user.mention}\n\n"
+        for count, movie in enumerate(res, start=1):
+            title = movie.get("l")
+            year = f"({movie.get('y')})" if movie.get("y") else ""
+            type = movie.get("q").replace("feature", "movie").capitalize()
+            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+            msg += f"{count}. {title} {year} ~ {type}\n"
+            BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{message.from_user.id}#{movieID}"))
         buttons.add(*BTN)
         await k.edit(msg, reply_markup=buttons)
-    else:
-        await message.reply("Berikan aku nama series atau movie yang ingin dicari. 🤷🏻‍♂️", quote=True)
+    except Exception as err:
+        await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
 
 
 @app.on_callback_query(filters.regex("^imdbid"))
@@ -510,30 +509,29 @@ async def imdb_en_search(client, message):
     BTN = []
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
-    if len(message.command) > 1:
-        r, title = message.text.split(None, 1)
-        k = await message.reply("Searching Movie/Series in IMDB Database.. 😴", quote=True)
-        msg = ""
-        buttons = InlineKeyboard(row_width=4)
-        try:
-            r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={title}")
-            res = json.loads(r).get("result")
-            if not res:
-                return await k.edit("Sad, No Result.. 😕")
-            msg = f"Found {len(res)} result from <code>{title}</code> ~ {message.from_user.mention}\n\n"
-            for count, movie in enumerate(res, start=1):
-                titles = movie.get("l")
-                year = f"({movie.get('y')})" if movie.get("y") else ""
-                type = movie.get("qid").replace("feature", "movie").capitalize()
-                movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-                msg += f"{count}. {titles} {year} ~ {type}\n"
-                BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{message.from_user.id}#{movieID}"))
-        except Exception as err:
-            return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
+    if len(message.command) == 1:
+        return await message.reply("Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️", quote=True)
+    r, title = message.text.split(None, 1)
+    k = await message.reply("Searching Movie/Series in IMDB Database.. 😴", quote=True)
+    msg = ""
+    buttons = InlineKeyboard(row_width=4)
+    try:
+        r = await get_content(f"https://yasirapi.eu.org/imdb-search?q={title}")
+        res = json.loads(r).get("result")
+        if not res:
+            return await k.edit("Sad, No Result.. 😕")
+        msg = f"Found {len(res)} result from <code>{title}</code> ~ {message.from_user.mention}\n\n"
+        for count, movie in enumerate(res, start=1):
+            titles = movie.get("l")
+            year = f"({movie.get('y')})" if movie.get("y") else ""
+            type = movie.get("qid").replace("feature", "movie").capitalize()
+            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+            msg += f"{count}. {titles} {year} ~ {type}\n"
+            BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdben#{message.from_user.id}#{movieID}"))
         buttons.add(*BTN)
         await k.edit(msg, reply_markup=buttons)
-    else:
-        await message.reply("Give movie name or series. Ex: <code>/imdb_en soul</code>. 🤷🏻‍♂️", quote=True)
+    except Exception as err:
+        await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")        
 
 
 @app.on_callback_query(filters.regex("^imdben"))
