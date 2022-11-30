@@ -374,7 +374,7 @@ async def imdb1_search(client, message):
         buttons = InlineKeyboard(row_width=4)
         for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
-            BTN.add(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie.get('movieID')}"))
+            BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie.get('movieID')}"))
         buttons.add(*BTN)
         await k.edit(msg, reply_markup=buttons)
     else:
@@ -533,7 +533,7 @@ async def imdb_en_search(client, message):
         buttons = InlineKeyboard(row_width=4)
         for count, movie in enumerate(IMDBDATA, start=1):
             msg += f"{count}. {movie['title']} ~ {movie['type']}\n"
-            BTN.add(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie.get('movieID')}"))
+            BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movie.get('movieID')}"))
         buttons.add(*BTN)
         await k.edit(msg, reply_markup=buttons)
     else:
