@@ -369,7 +369,7 @@ async def imdb1_search(client, message):
                 year = f"({movie.get('y')})" if movie.get("y") else ""
                 type = movie.get("q").replace("feature", "movie").capitalize()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-                msg += f"{count}. {title} ~ {type}\n"
+                msg += f"{count}. {title} {year} ~ {type}\n"
                 BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movieID}"))
         except Exception as err:
             return await k.edit(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\nERROR: {err}")
@@ -526,7 +526,7 @@ async def imdb_en_search(client, message):
                 year = f"({movie.get('y')})" if movie.get("y") else ""
                 type = movie.get("qid").replace("feature", "movie").capitalize()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-                msg += f"{count}. {title} ~ {type}\n"
+                msg += f"{count}. {titles} {year} ~ {type}\n"
                 BTN.append(InlineKeyboardButton(text=count, callback_data=f"imdbid#{movieID}"))
         except Exception as err:
             return await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
