@@ -1,7 +1,13 @@
-import random, string, requests, psutil, time, os
+import random
+import string
+import psutil
+import time
+import os
 from bot import botStartTime
 from bot.plugins import ALL_MODULES
 from bot.helper.human_read import get_readable_time
+from bot.helper.http import http
+from http.cookies import SimpleCookie
 
 GENRES_EMOJI = {
     "Action": "👊",
@@ -58,12 +64,12 @@ def get_random_string(length):
 
 def rentry(teks):
     # buat dapetin cookie
-    session = requests.Session()
-    response = session.get("https://rentry.co")
-    kuki = session.cookies.get_dict()
+    cookie = SimpleCookie()
+    kuki = (await http.get("https://rentry.co")).cookies
+    cookie.load(kuki)
+    kukidict = {key: value.value for key, value in cookie.items()}
     # headernya
     header = {"Referer": "https://rentry.co"}
-
-    payload = {"csrfmiddlewaretoken": kuki["csrftoken"], "text": teks}
-    res = requests.post("https://rentry.co/api/new", payload, headers=header, cookies=kuki).json().get("url")
+    payload = {"csrfmiddlewaretoken": kukidict["csrftoken"], "text": teks}
+    res = (await http.post("https://rentry.co/api/new", data=payload, headers=header, cookies=kukidict)).json().get("url")
     return res
