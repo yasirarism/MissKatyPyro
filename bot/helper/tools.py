@@ -62,7 +62,7 @@ def get_random_string(length):
     return result_str
 
 
-def rentry(teks):
+async def rentry(teks):
     # buat dapetin cookie
     cookie = SimpleCookie()
     kuki = (await http.get("https://rentry.co")).cookies

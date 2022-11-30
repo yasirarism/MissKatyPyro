@@ -56,7 +56,7 @@ async def stackoverflow(client, message):
     try:
         await message.reply(hasil)
     except MessageTooLong:
-        url = rentry(hasil)
+        url = await rentry(hasil)
         await msg.edit(f"Your text pasted to rentry because has long text:\n{url}")
     except Exception as e:
         await message.reply(e)
@@ -127,7 +127,7 @@ async def translate(client, message):
     try:
         await msg.edit(f"<code>{tekstr}</code>")
     except MessageTooLong:
-        url = rentry(tekstr.text)
+        url = await rentry(tekstr.text)
         await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
 
 

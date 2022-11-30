@@ -50,7 +50,7 @@ async def bypass(_, message):
         try:
             await msg.edit(f"{data}\n\n{mention}")
         except (MessageTooLong, EntitiesTooLong):
-            result = rentry(data)
+            result = await rentry(data)
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("Open Link", url=result), InlineKeyboardButton("Raw Link", url=f"{result}/raw")]])
             await msg.edit(f"{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}", reply_markup=markup, disable_web_page_preview=True)
     else:

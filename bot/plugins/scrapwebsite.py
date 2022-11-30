@@ -175,7 +175,7 @@ async def terbit21_scrap(_, message):
             try:
                 return await message.reply(f"**Daftar rilis movie terbaru di web Terbit21**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
-                msg = rentry(data)
+                msg = await rentry(data)
                 return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
     judul = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply(f"Mencari film di Terbit21 dg keyword {judul}..")
@@ -188,7 +188,7 @@ async def terbit21_scrap(_, message):
         try:
             await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
         except MessageTooLong:
-            pesan = rentry(data)
+            pesan = await rentry(data)
             await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 
@@ -206,7 +206,7 @@ async def lk21_scrap(_, message):
             try:
                 return await msg.edit(f"**Daftar rilis movie terbaru di web LK21**:\n{data}", disable_web_page_preview=True)
             except MessageTooLong:
-                msg = rentry(data)
+                msg = await rentry(data)
                 await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
     judul = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
@@ -221,7 +221,7 @@ async def lk21_scrap(_, message):
         try:
             await msg.edit(f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}", disable_web_page_preview=True)
         except MessageTooLong:
-            pesan = rentry(data)
+            pesan = await rentry(data)
             return await msg.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}")
 
 

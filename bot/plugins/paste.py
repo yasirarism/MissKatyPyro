@@ -82,7 +82,7 @@ async def create(_, message):
         uname = message.sender_chat.title
 
     try:
-        url = rentry(data)
+        url = await rentry(data)
     except Exception as e:
         await msg.edit(f"`{e}`")
         return

@@ -85,7 +85,7 @@ async def assembly(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -102,7 +102,7 @@ async def ats(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -119,7 +119,7 @@ async def bash(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -136,7 +136,7 @@ async def c(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -153,7 +153,7 @@ async def clojure(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -170,7 +170,7 @@ async def cobol(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -187,7 +187,7 @@ async def coffeescript(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -204,7 +204,7 @@ async def cpp(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -221,7 +221,7 @@ async def crystal(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -238,7 +238,7 @@ async def csharp(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -255,7 +255,7 @@ async def d(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -272,7 +272,7 @@ async def elixir(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -289,7 +289,7 @@ async def elm(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -306,7 +306,7 @@ async def erlang(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -323,7 +323,7 @@ async def fsharp(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -340,7 +340,7 @@ async def go(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -357,7 +357,7 @@ async def groovy(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -374,7 +374,7 @@ async def haskell(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -391,7 +391,7 @@ async def idris(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -408,7 +408,7 @@ async def java(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -425,7 +425,7 @@ async def javascript(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -442,7 +442,7 @@ async def julia(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -459,7 +459,7 @@ async def kotlin(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -476,7 +476,7 @@ async def lua(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -493,7 +493,7 @@ async def mercury(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -510,7 +510,7 @@ async def nim(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -527,7 +527,7 @@ async def nix(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -544,7 +544,7 @@ async def ocaml(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -561,7 +561,7 @@ async def perl(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -578,7 +578,7 @@ async def php(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -595,7 +595,7 @@ async def python(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -612,7 +612,7 @@ async def raku(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -629,7 +629,7 @@ async def ruby(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -646,7 +646,7 @@ async def rust(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -663,7 +663,7 @@ async def scala(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -680,7 +680,7 @@ async def swift(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
@@ -697,7 +697,7 @@ async def typescript(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
