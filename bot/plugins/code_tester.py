@@ -85,7 +85,7 @@ async def assembly(client, message):
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
     except MessageTooLong:
-        post = await await rentry(hasil)
+        post = await rentry(hasil)
         return await message.reply(f"<b>View Result in Rentry:</b>\n{post}")
     except Exception as e:
         return await message.reply(e, parse_mode=enums.ParseMode.DISABLED)
