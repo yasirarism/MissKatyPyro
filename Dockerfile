@@ -1,5 +1,5 @@
 # Base Docker
-FROM misskaty-docker:latest
+FROM yasirarism/misskaty-docker:latest
 
 COPY . .
 # Set CMD Bot
