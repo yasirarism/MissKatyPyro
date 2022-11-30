@@ -1,6 +1,7 @@
 import asyncio
 import os
 import time
+import logging
 from pyrogram.types import InputMediaPhoto
 from bot.plugins.dev import shell_exec
 from pyrogram.errors import FloodWait
@@ -13,7 +14,7 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
-    file_genertor_command = ["ssmedia", video_file, "-t", "-w", "850", "-g", "3x4", "--ffmpeg-name", "mediaextract" "--metadata-font", "Calistoga-Regular.ttf", "--timestamp-font", "Calistoga-Regular.ttf", "--quality", "100", "--end-delay-percent", "20", "-o", out_put_file_name]
+    file_genertor_command = ["ssmedia", video_file, "-t", "-w", "850", "-g", "3x4", "--ffmpeg-name", "mediaextract", "--quality", "100", "--end-delay-percent", "20", "-o", out_put_file_name]
     process = await asyncio.create_subprocess_exec(
         *file_genertor_command,
         stdout=asyncio.subprocess.PIPE,
@@ -22,6 +23,8 @@ async def take_ss(video_file):
     stdout, stderr = await process.communicate()
     stderr.decode().strip()
     stdout.decode().strip()
+    if stderr:
+        logging.error("stderr")
     if os.path.lexists(out_put_file_name):
         return out_put_file_name
     else:
