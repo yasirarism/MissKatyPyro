@@ -27,6 +27,6 @@ def __list_all_modules():
 
 
 log_info("[INFO]: IMPORTING PLUGINS")
-importlib.import_module("bot.plugins.__main__")
+importlib.import_module("misskaty.plugins.__main__")
 ALL_MODULES = sorted(__list_all_modules())
 __all__ = ALL_MODULES + ["ALL_MODULES"]
