@@ -13,7 +13,7 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
-    file_genertor_command = ["vcsi", video_file, "-t", "-w", "850", "-g", "3x4", "--metadata-font", "Calistoga-Regular.ttf", "--timestamp-font", "Calistoga-Regular.ttf", "--quality", "100", "--end-delay-percent", "20", "-o", out_put_file_name]
+    file_genertor_command = ["ssmedia", video_file, "-t", "-w", "850", "-g", "3x4", "--ffmpeg-name", "mediaextract" "--metadata-font", "Calistoga-Regular.ttf", "--timestamp-font", "Calistoga-Regular.ttf", "--quality", "100", "--end-delay-percent", "20", "-o", out_put_file_name]
     process = await asyncio.create_subprocess_exec(
         *file_genertor_command,
         stdout=asyncio.subprocess.PIPE,
@@ -31,7 +31,7 @@ async def take_ss(video_file):
 async def ssgen_link(video, output_directory, ttl):
     out_put_file_name = output_directory + "/" + str(time.time()) + ".png"
     cmd = [
-        "ffmpeg",
+        "mediaextract",
         "-ss",
         str(ttl),
         "-i",

@@ -81,7 +81,7 @@ async def convertsrt(_, m):
         return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
     msg = await m.reply("Sedang memproses perintah...")
     dl = await reply.download()
-    (await shell_exec(f"ffmpeg -i {dl} {os.path.basename(dl)}.srt"))[0]
+    (await shell_exec(f"mediaextract -i {dl} {os.path.basename(dl)}.srt"))[0]
     await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
     await msg.delete()
     try:
@@ -113,7 +113,7 @@ async def stream_extract(bot, update):
     try:
         start_time = perf_counter()
         namafile = get_subname(link, format)
-        extract = (await shell_exec(f"ffmpeg -i {link} -map 0:{map} {namafile}"))[0]
+        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(namafile, caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @MissKatyRoBot in {timelog}", reply_to_message_id=usr.id)

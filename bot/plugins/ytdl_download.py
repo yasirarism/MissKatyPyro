@@ -152,12 +152,12 @@ async def youtube_dl_call_back(bot, update):
         os.makedirs(tmp_directory_for_each_user)
     download_directory = os.path.join(tmp_directory_for_each_user, custom_file_name)
     if tg_send_type == "audio":
-        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --embed-metadata --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} --output '{download_directory}'"
+        command_to_exec = f"yt-dlp -c --ffmpeg-location '/usr/bin/mediaextract' --max-filesize 2097152000 --prefer-ffmpeg --extract-audio --embed-metadata --audio-format {youtube_dl_ext} --audio-quality {youtube_dl_format} {youtube_dl_url} --output '{download_directory}'"
     else:
         minus_f_format = youtube_dl_format
         if "youtu" in youtube_dl_url:
             minus_f_format = f"{youtube_dl_format}+bestaudio[ext=m4a]"
-        command_to_exec = f"yt-dlp -c --max-filesize 2097152000 --embed-subs --embed-metadata -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} --output '{download_directory}'"
+        command_to_exec = f"yt-dlp -c --ffmpeg-location '/usr/bin/mediaextract' --max-filesize 2097152000 --embed-subs --embed-metadata -f {minus_f_format} --hls-prefer-ffmpeg {youtube_dl_url} --output '{download_directory}'"
     start = datetime.now()
     t_response = (await shell_exec(command_to_exec))[0]
     if t_response:
