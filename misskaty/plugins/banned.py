@@ -3,7 +3,7 @@ from utils import temp
 from pyrogram.types import Message
 from database.users_chats_db import db
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from info import SUPPORT_CHAT
+from misskaty.vars import SUPPORT_CHAT
 from misskaty import app
 
 

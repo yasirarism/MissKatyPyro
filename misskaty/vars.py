@@ -29,3 +29,4 @@ except Exception as e:
     exit(1)
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = ["617426792, 2024984460"]
+SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")

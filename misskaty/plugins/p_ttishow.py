@@ -7,7 +7,6 @@ from pyrogram import enums, filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import ChatSendMediaForbidden, MessageTooLong, RPCError, SlowmodeWait
 from misskaty import app
-from misskaty.vars import LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
