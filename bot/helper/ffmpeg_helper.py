@@ -14,17 +14,8 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
-    file_genertor_command = ["ssmedia", video_file, "-t", "-w", "850", "-g", "3x4", "--ffmpeg-name", "mediaextract", "--quality", "100", "--end-delay-percent", "20", "-o", out_put_file_name]
-    process = await asyncio.create_subprocess_exec(
-        *file_genertor_command,
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-    stdout, stderr = await process.communicate()
-    stderr.decode().strip()
-    stdout.decode().strip()
-    if stderr:
-        logging.error("stderr")
+    cmd = f"ssmedia '{video_file}' -t -w 1340 -g 4x4 --ffmpeg-name mediaextract --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o {out_put_file_name}"
+    await shell_exec(cmd)
     if os.path.lexists(out_put_file_name):
         return out_put_file_name
     else:
