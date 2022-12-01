@@ -33,10 +33,7 @@ async def CheckBlockedExt(event: Message):
     if (media is not None) and (media.file_name is not None):
         _file = media.file_name.rsplit(".", 1)
         if len(_file) == 2:
-            return (
-                _file[-1].lower() in BLOCKED_EXTENSIONS
-                or _file[-1].upper() in BLOCKED_EXTENSIONS
-            )
+            return _file[-1].lower() in BLOCKED_EXTENSIONS or _file[-1].upper() in BLOCKED_EXTENSIONS
 
         else:
             return False

@@ -127,11 +127,7 @@ async def inline_menu(_, inline_query: InlineQuery):
 
         PRVT_MSGS[inline_query.id] = (penerima.id, penerima.first_name, inline_query.from_user.id, msg.strip(": "))
         prvte_msg = InlineKeyboardMarkup([[InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")], [InlineKeyboardButton("Destroy☠️ this msg", callback_data=f"destroy({inline_query.id})")]])
-        mention = (
-            f"@{penerima.username}"
-            if penerima.username
-            else f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
-        )
+        mention = f"@{penerima.username}" if penerima.username else f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
 
         msg_c = f"🔒 A <b>private message</b> to {mention} [<code>{penerima.id}</code>], "
         msg_c += "Only he/she can open it."
@@ -341,12 +337,7 @@ async def imdb_inl(_, query):
                 rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if r_json.get("genre"):
-                genre = "".join(
-                    f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    if i in GENRES_EMOJI
-                    else f"#{i.replace('-', '_').replace(' ', '_')}, "
-                    for i in r_json["genre"]
-                )
+                genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
 
                 genre = genre[:-2]
                 res_str += f"<b>Genre:</b> {genre}\n"

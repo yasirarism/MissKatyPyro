@@ -129,10 +129,7 @@ async def ytdown(_, message):
         reply_markup = InlineKeyboardMarkup(inline_keyboard)
         thumbnail = "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/no-video-icon.png"
         thumbnail_image = "https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/no-video-icon.png"
-        if (
-            "thumbnail" in response_json
-            and response_json["thumbnail"] is not None
-        ):
+        if "thumbnail" in response_json and response_json["thumbnail"] is not None:
             thumbnail = response_json["thumbnail"]
             thumbnail_image = response_json["thumbnail"]
         thumb_image_path = DownLoadFile(thumbnail_image, f"YT_Down/{str(message.from_user.id)}{randem}.jpg", 128, None, "Trying to download..", message.id, message.chat.id)  # bot,

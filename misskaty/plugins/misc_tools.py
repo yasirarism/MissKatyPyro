@@ -411,12 +411,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
-            genre = "".join(
-                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                if i in GENRES_EMOJI
-                else f"#{i.replace('-', '_').replace(' ', '_')}, "
-                for i in r_json["genre"]
-            )
+            genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
 
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
@@ -529,7 +524,7 @@ async def imdb_en_search(client, message):
         buttons.add(*BTN)
         await k.edit(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")        
+        await k.edit(f"Ooppss, failed get movie list from IMDb.\n\nERROR: {err}")
 
 
 @app.on_callback_query(filters.regex("^imdben"))
@@ -569,12 +564,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Release Data:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
-            genre = "".join(
-                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                if i in GENRES_EMOJI
-                else f"#{i.replace('-', '_').replace(' ', '_')}, "
-                for i in r_json["genre"]
-            )
+            genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
 
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"

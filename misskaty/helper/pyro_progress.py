@@ -31,7 +31,6 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
             round(percentage, 2),
         )
 
-
         tmp = progress + "{0} of {1}\nSpeed: {2}/s\nETA: {3}\n".format(
             humanbytes(current),
             humanbytes(total),

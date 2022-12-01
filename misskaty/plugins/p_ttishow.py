@@ -18,6 +18,7 @@ from misskaty.vars import SUDO, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOGGER = logging.getLogger(__name__)
 
+
 def circle(pfp, size=(215, 215)):
     pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
     bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)

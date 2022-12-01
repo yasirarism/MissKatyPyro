@@ -31,6 +31,7 @@ async def log_file(bot, message):
     except Exception as e:
         await message.reply(str(e))
 
+
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, message):
     await message.reply_photo(

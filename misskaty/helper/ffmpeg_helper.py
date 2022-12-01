@@ -1,7 +1,6 @@
 import asyncio
 import os
 import time
-import logging
 from pyrogram.types import InputMediaPhoto
 from misskaty.plugins.dev import shell_exec
 from pyrogram.errors import FloodWait

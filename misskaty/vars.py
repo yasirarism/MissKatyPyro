@@ -6,11 +6,13 @@ load_dotenv("config.env", override=True)
 
 LOGGER = logging.getLogger(__name__)
 
+
 def getConfig(name: str):
     try:
         return environ[name]
     except:
         return ""
+
 
 # Required ENV
 try:

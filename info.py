@@ -63,17 +63,10 @@ FORWARD_FROM_CHAT_ID = list(
 )
 
 # Forward To Chat ID
-FORWARD_TO_CHAT_ID = list(
-    {
-        int(x)
-        for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()
-    }
-)
+FORWARD_TO_CHAT_ID = list({int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()})
 
 # Filters for Forwards
-FORWARD_FILTERS = list(
-    set(environ.get("FORWARD_FILTERS", "video document").split())
-)
+FORWARD_FILTERS = list(set(environ.get("FORWARD_FILTERS", "video document").split()))
 
 BLOCKED_EXTENSIONS = list(
     set(

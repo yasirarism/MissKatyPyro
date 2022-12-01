@@ -38,11 +38,7 @@ async def get_message_sender_name(m: Message):
         if m.forward_sender_name:
             return m.forward_sender_name
         elif m.forward_from:
-            return (
-                f"{m.forward_from.first_name} {m.forward_from.last_name}"
-                if m.forward_from.last_name
-                else m.forward_from.first_name
-            )
+            return f"{m.forward_from.first_name} {m.forward_from.last_name}" if m.forward_from.last_name else m.forward_from.first_name
 
         elif m.forward_from_chat:
             return m.forward_from_chat.title
@@ -61,45 +57,22 @@ async def get_message_sender_name(m: Message):
 
 async def get_custom_emoji(m: Message):
     if m.forward_date:
-        return (
-            ""
-            if m.forward_sender_name
-            or not m.forward_from
-            and m.forward_from_chat
-            or not m.forward_from
-            else m.forward_from.emoji_status.custom_emoji_id
-        )
+        return "" if m.forward_sender_name or not m.forward_from and m.forward_from_chat or not m.forward_from else m.forward_from.emoji_status.custom_emoji_id
 
     return m.from_user.emoji_status.custom_emoji_id if m.from_user else ""
 
 
 async def get_message_sender_username(m: Message):
     if m.forward_date:
-        if (
-            not m.forward_sender_name
-            and not m.forward_from
-            and m.forward_from_chat
-            and m.forward_from_chat.username
-        ):
+        if not m.forward_sender_name and not m.forward_from and m.forward_from_chat and m.forward_from_chat.username:
             return m.forward_from_chat.username
-        elif (
-            not m.forward_sender_name
-            and not m.forward_from
-            and m.forward_from_chat
-            or m.forward_sender_name
-            or not m.forward_from
-        ):
+        elif not m.forward_sender_name and not m.forward_from and m.forward_from_chat or m.forward_sender_name or not m.forward_from:
             return ""
         else:
             return m.forward_from.username or ""
     elif m.from_user and m.from_user.username:
         return m.from_user.username
-    elif (
-        m.from_user
-        or m.sender_chat
-        and not m.sender_chat.username
-        or not m.sender_chat
-    ):
+    elif m.from_user or m.sender_chat and not m.sender_chat.username or not m.sender_chat:
         return ""
     else:
         return m.sender_chat.username
@@ -107,25 +80,14 @@ async def get_message_sender_username(m: Message):
 
 async def get_message_sender_photo(m: Message):
     if m.forward_date:
-        if (
-            not m.forward_sender_name
-            and not m.forward_from
-            and m.forward_from_chat
-            and m.forward_from_chat.photo
-        ):
+        if not m.forward_sender_name and not m.forward_from and m.forward_from_chat and m.forward_from_chat.photo:
             return {
                 "small_file_id": m.forward_from_chat.photo.small_file_id,
                 "small_photo_unique_id": m.forward_from_chat.photo.small_photo_unique_id,
                 "big_file_id": m.forward_from_chat.photo.big_file_id,
                 "big_photo_unique_id": m.forward_from_chat.photo.big_photo_unique_id,
             }
-        elif (
-            not m.forward_sender_name
-            and not m.forward_from
-            and m.forward_from_chat
-            or m.forward_sender_name
-            or not m.forward_from
-        ):
+        elif not m.forward_sender_name and not m.forward_from and m.forward_from_chat or m.forward_sender_name or not m.forward_from:
             return ""
         else:
             return (
@@ -146,12 +108,7 @@ async def get_message_sender_photo(m: Message):
             "big_file_id": m.from_user.photo.big_file_id,
             "big_photo_unique_id": m.from_user.photo.big_photo_unique_id,
         }
-    elif (
-        m.from_user
-        or m.sender_chat
-        and not m.sender_chat.photo
-        or not m.sender_chat
-    ):
+    elif m.from_user or m.sender_chat and not m.sender_chat.photo or not m.sender_chat:
         return ""
     else:
         return {
