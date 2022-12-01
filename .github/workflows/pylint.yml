@@ -1,0 +1,32 @@
+name: PyLint
+
+on: [pull_request, workflow_dispatch]
+
+jobs:
+  Pylint_Fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Install Python lint libraries
+        run: |
+          pip install autoflake black
+      - name: Remove unused imports and variables
+        run: |
+          autoflake --in-place --recursive --exclude "__main__.py" --remove-all-unused-imports --remove-unused-variables --ignore-init-module-imports .
+      - name: lint with black
+        run: |
+          black --exclude "__main__.py" --line-length 250 --target-version py310 .
+      # commit changes
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'reformating: code'
+          commit_options: '--no-verify'
+          repository: .
+          commit_user_name: yasirarism
+          commit_user_email: mail@yasir.eu.org
+          commit_author: yasirarism <mail@yasir.eu.org>
