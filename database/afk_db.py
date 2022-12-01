@@ -5,9 +5,7 @@ usersdb = dbname.users
 
 async def is_afk(user_id: int) -> bool:
     user = await usersdb.find_one({"user_id": user_id})
-    if not user:
-        return False, {}
-    return True, user["reason"]
+    return (True, user["reason"]) if user else (False, {})
 
 
 async def add_afk(user_id: int, mode):

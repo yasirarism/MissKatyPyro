@@ -39,8 +39,7 @@ class Database:
         return bool(user)
 
     async def total_users_count(self):
-        count = await self.col.count_documents({})
-        return count
+        return await self.col.count_documents({})
 
     async def remove_ban(self, id):
         ban_status = dict(is_banned=False, ban_reason="")
@@ -53,9 +52,7 @@ class Database:
     async def get_ban_status(self, id):
         default = dict(is_banned=False, ban_reason="")
         user = await self.col.find_one({"id": int(id)})
-        if not user:
-            return default
-        return user.get("ban_status", default)
+        return user.get("ban_status", default) if user else default
 
     async def get_all_users(self):
         return self.col.find({})
@@ -93,8 +90,7 @@ class Database:
         await self.grp.update_one({"id": int(chat)}, {"$set": {"chat_status": chat_status}})
 
     async def total_chat_count(self):
-        count = await self.grp.count_documents({})
-        return count
+        return await self.grp.count_documents({})
 
     async def get_all_chats(self):
         return self.grp.find({})

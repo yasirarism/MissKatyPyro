@@ -65,54 +65,58 @@ async def start_bot():
     print("[INFO]: Bye!")
 
 
-home_keyboard_pm = InlineKeyboardMarkup([
+home_keyboard_pm = InlineKeyboardMarkup(
     [
-        InlineKeyboardButton(text="Commands ❓", callback_data="bot_commands"),
-        InlineKeyboardButton(
-            text="Github 🛠",
-            url="https://github.com/yasirarism",
-        ),
-    ],
-    [
-        InlineKeyboardButton(
-            text="System Stats 🖥",
-            callback_data="stats_callback",
-        ),
-        InlineKeyboardButton(text="Dev 👨",
-                             url="https://t.me/YasirArisM"),
-    ],
-    [
-        InlineKeyboardButton(
-            text="Add Me To Your Group 🎉",
-            url=f"http://t.me/MissKatyRoBot?startgroup=new",
-        )
-    ],
-])
+        [
+            InlineKeyboardButton(
+                text="Commands ❓", callback_data="bot_commands"
+            ),
+            InlineKeyboardButton(
+                text="Github 🛠",
+                url="https://github.com/yasirarism",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="System Stats 🖥",
+                callback_data="stats_callback",
+            ),
+            InlineKeyboardButton(text="Dev 👨", url="https://t.me/YasirArisM"),
+        ],
+        [
+            InlineKeyboardButton(
+                text="Add Me To Your Group 🎉",
+                url="http://t.me/MissKatyRoBot?startgroup=new",
+            )
+        ],
+    ]
+)
+
 
 home_text_pm = (
     f"Hey there! My name is MissKatyRoBot. I have many useful features for you, feel free to add me to your group.\n\nIf you want give coffee to my owner you can send /donate command for more info."
 )
 
-keyboard = InlineKeyboardMarkup([
+keyboard = InlineKeyboardMarkup(
     [
-        InlineKeyboardButton(
-            text="Help ❓",
-            url=f"t.me/MissKatyRoBot?start=help",
-        ),
-        InlineKeyboardButton(
-            text="Github 🛠",
-            url="https://github.com/yasirarism",
-        ),
-    ],
-    [
-        InlineKeyboardButton(
-            text="System Stats 💻",
-            callback_data="stats_callback",
-        ),
-        InlineKeyboardButton(text="Dev 👨",
-                             url="https://t.me/YasirArisM"),
-    ],
-])
+        [
+            InlineKeyboardButton(
+                text="Help ❓", url="t.me/MissKatyRoBot?start=help"
+            ),
+            InlineKeyboardButton(
+                text="Github 🛠",
+                url="https://github.com/yasirarism",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="System Stats 💻",
+                callback_data="stats_callback",
+            ),
+            InlineKeyboardButton(text="Dev 👨", url="https://t.me/YasirArisM"),
+        ],
+    ]
+)
 
 
 @app.on_message(filters.command("start"))
@@ -122,8 +126,9 @@ async def start(_, message):
             total = await app.get_chat_members_count(message.chat.id)
             await app.send_message(
                 LOG_CHANNEL,
-                "#NewGroup\nGroup = {}(<code>{}</code>)\nMembers Count = <code>{}</code>\nAdded by - {}"
-                .format(message.chat.title, message.chat.id, total, "Unknown"))
+                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - Unknown",
+            )
+
             await db.add_chat(message.chat.id, message.chat.title)
         nama = message.from_user.mention if message.from_user else message.sender_chat.title
         return await message.reply_photo(
@@ -134,8 +139,10 @@ async def start(_, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await app.send_message(
-            LOG_CHANNEL, "#NewUser\nID - <code>{}</code>\nName - {}".format(
-                message.from_user.id, message.from_user.mention))
+            LOG_CHANNEL,
+            f"#NewUser\nID - <code>{message.from_user.id}</code>\nName - {message.from_user.mention}",
+        )
+
     if len(message.text.split()) > 1:
         name = (message.text.split(None, 1)[1]).lower()
         if "_" in name:
@@ -183,8 +190,9 @@ async def help_command(_, message):
             total = await app.get_chat_members_count(message.chat.id)
             await app.send_message(
                 LOG_CHANNEL,
-                "#NewGroup\nGroup = {}(<code>{}</code>)\nMembers Count = <code>{}</code>\nAdded by - {}".format(message.chat.title, message.chat.id,
-                                         total, "Unknown"))
+                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - Unknown",
+            )
+
             await db.add_chat(message.chat.id, message.chat.title)
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
@@ -213,8 +221,9 @@ async def help_command(_, message):
                               message.from_user.first_name)
             await app.send_message(
                 LOG_CHANNEL,
-                "#NewUser\nID - <code>{}</code>\nName - {}".format(
-                    message.from_user.id, message.from_user.mention))
+                f"#NewUser\nID - <code>{message.from_user.id}</code>\nName - {message.from_user.mention}",
+            )
+
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
@@ -274,10 +283,9 @@ General command are:
  - /help: Give this message
  """
     if mod_match:
-        module = (mod_match.group(1)).replace(" ", "_")
-        text = ("{} **{}**:\n".format("Here is the help for",
-                                      HELPABLE[module].__MODULE__) +
-                HELPABLE[module].__HELP__)
+        module = mod_match[1].replace(" ", "_")
+        text = f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n{HELPABLE[module].__HELP__}"
+
 
         await query.message.edit(
             text=text,
@@ -293,7 +301,7 @@ General command are:
         )
         await query.message.delete()
     elif prev_match:
-        curr_page = int(prev_match.group(1))
+        curr_page = int(prev_match[1])
         await query.message.edit(
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
@@ -302,7 +310,7 @@ General command are:
         )
 
     elif next_match:
-        next_page = int(next_match.group(1))
+        next_page = int(next_match[1])
         await query.message.edit(
             text=top_text,
             reply_markup=InlineKeyboardMarkup(

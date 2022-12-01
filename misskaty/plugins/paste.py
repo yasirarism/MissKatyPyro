@@ -19,7 +19,7 @@ def humanbytes(size: int):
     """Convert Bytes To Bytes So That Human Can Read It"""
     if not isinstance(command, int):
         try:
-            size = int(size)
+            size = size
         except ValueError:
             size = None
     if not size:
@@ -32,7 +32,7 @@ def humanbytes(size: int):
         size /= power
         raised_to_pow += 1
     try:
-        real_size = str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+        real_size = f"{str(round(size, 2))} {dict_power_n[raised_to_pow]}B"
     except KeyError:
         real_size = "Can't Define Real Size !"
     return real_size
@@ -89,8 +89,7 @@ async def create(_, message):
 
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
-    button = []
-    button.append([InlineKeyboardButton("Open Link", url=url)])
+    button = [[InlineKeyboardButton("Open Link", url=url)]]
     button.append([InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")])
 
     pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -145,8 +144,7 @@ async def create(_, message):
 
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
-    button = []
-    button.append([InlineKeyboardButton("Open Link", url=url)])
+    button = [[InlineKeyboardButton("Open Link", url=url)]]
     button.append([InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")])
 
     pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"

@@ -80,7 +80,7 @@ async def assembly(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "asm", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -97,7 +97,7 @@ async def ats(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "dats", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -114,7 +114,7 @@ async def bash(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "sh", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -131,7 +131,7 @@ async def c(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "c", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -148,7 +148,7 @@ async def clojure(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "clj", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -165,7 +165,7 @@ async def cobol(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cob", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -182,7 +182,7 @@ async def coffeescript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "coffee", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -199,7 +199,7 @@ async def cpp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cpp", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -216,7 +216,7 @@ async def crystal(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cr", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -233,7 +233,7 @@ async def csharp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cs", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -250,7 +250,7 @@ async def d(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "d", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -267,7 +267,7 @@ async def elixir(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ex", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -284,7 +284,7 @@ async def elm(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "elm", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -301,7 +301,7 @@ async def erlang(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "erl", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -318,7 +318,7 @@ async def fsharp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "fs", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -335,7 +335,7 @@ async def go(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "go", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -352,7 +352,7 @@ async def groovy(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "groovy", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -369,7 +369,7 @@ async def haskell(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "hs", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -386,7 +386,7 @@ async def idris(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "idr", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -403,7 +403,7 @@ async def java(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "java", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -420,7 +420,7 @@ async def javascript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "js", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -437,7 +437,7 @@ async def julia(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "jl", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -454,7 +454,7 @@ async def kotlin(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "kt", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -471,7 +471,7 @@ async def lua(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "lua", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -488,7 +488,7 @@ async def mercury(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "m", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -505,7 +505,7 @@ async def nim(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "nim", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -522,7 +522,7 @@ async def nix(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "nix", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -539,7 +539,7 @@ async def ocaml(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ml", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -556,7 +556,7 @@ async def perl(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "pl", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -573,7 +573,7 @@ async def php(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "php", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -590,7 +590,7 @@ async def python(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "py", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -607,7 +607,7 @@ async def raku(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "raku", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -624,7 +624,7 @@ async def ruby(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "rb", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -641,7 +641,7 @@ async def rust(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "rs", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -658,7 +658,7 @@ async def scala(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "scala", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -675,7 +675,7 @@ async def swift(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "swift", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)
@@ -692,7 +692,7 @@ async def typescript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ts", message.text.split(None, 1)[1])
-    hasil = res["stdout"] if res["stdout"] else res["stderr"]
+    hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
         return await message.reply(hasil, parse_mode=enums.ParseMode.DISABLED)

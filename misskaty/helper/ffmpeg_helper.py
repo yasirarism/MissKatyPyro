@@ -8,22 +8,18 @@ from pyrogram.errors import FloodWait
 
 
 def hhmmss(seconds):
-    x = time.strftime("%H:%M:%S", time.gmtime(seconds))
-    return x
+    return time.strftime("%H:%M:%S", time.gmtime(seconds))
 
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
     cmd = f"ssmedia '{video_file}' -t -w 1340 -g 4x4 --ffmpeg-name mediaextract --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o {out_put_file_name}"
     await shell_exec(cmd)
-    if os.path.lexists(out_put_file_name):
-        return out_put_file_name
-    else:
-        return None
+    return out_put_file_name if os.path.lexists(out_put_file_name) else None
 
 
 async def ssgen_link(video, output_directory, ttl):
-    out_put_file_name = output_directory + "/" + str(time.time()) + ".png"
+    out_put_file_name = f"{output_directory}/{str(time.time())}.png"
     cmd = [
         "mediaextract",
         "-ss",
@@ -41,10 +37,7 @@ async def ssgen_link(video, output_directory, ttl):
     stdout, stderr = await process.communicate()
     stderr.decode().strip()
     stdout.decode().strip()
-    if os.path.isfile(out_put_file_name):
-        return out_put_file_name
-    else:
-        return None
+    return out_put_file_name if os.path.isfile(out_put_file_name) else None
 
 
 async def genss_link(msg, video_link, output_directory, min_duration, no_of_photos):
@@ -54,7 +47,7 @@ async def genss_link(msg, video_link, output_directory, min_duration, no_of_phot
         images = []
         ttl_step = duration // no_of_photos
         current_ttl = ttl_step
-        for looper in range(0, no_of_photos):
+        for looper in range(no_of_photos):
             ss_img = await ssgen_link(video_link, output_directory, current_ttl)
             images.append(InputMediaPhoto(media=ss_img, caption=f"Screenshot at {hhmmss(current_ttl)}"))
             try:

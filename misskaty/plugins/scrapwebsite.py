@@ -169,7 +169,7 @@ async def melongmovie(_, message):
 async def terbit21_scrap(_, message):
     if len(message.command) == 1:
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://yasirapi.eu.org/terbit21")
+            r = await session.get("https://yasirapi.eu.org/terbit21")
             res = await r.json()
             data = "".join(f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n" for i in res["result"])
             try:
@@ -196,9 +196,9 @@ async def terbit21_scrap(_, message):
 @capture_err
 async def lk21_scrap(_, message):
     if len(message.command) == 1:
-        msg = await message.reply(f"Mendapatkan daftar post film terbaru di lk21")
+        msg = await message.reply("Mendapatkan daftar post film terbaru di lk21")
         async with aiohttp.ClientSession() as session:
-            r = await session.get(f"https://yasirapi.eu.org/lk21")
+            r = await session.get("https://yasirapi.eu.org/lk21")
             res = await r.json()
             if res.get("detail", None):
                 return await msg.edit(f"ERROR: {res['detail']}")
@@ -233,7 +233,7 @@ async def gomov_scrap(_, message):
     except IndexError:
         judul = ""
 
-    msg = await message.reply(f"Scraping GoMov Website..")
+    msg = await message.reply("Scraping GoMov Website..")
     try:
         headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 

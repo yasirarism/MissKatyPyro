@@ -25,7 +25,10 @@ async def inkick(_, message):
             async for member in app.get_chat_members(message.chat.id):
                 if member.user.is_bot:
                     continue
-                if member.user.status.value in input_str and not member.status.value in ("administrator", "owner"):
+                if (
+                    member.user.status.value in input_str
+                    and member.status.value not in ("administrator", "owner")
+                ):
                     try:
                         await message.chat.ban_member(member.user.id)
                         count += 1
@@ -38,7 +41,10 @@ async def inkick(_, message):
                     except FloodWait as e:
                         await sleep(e.value)
             try:
-                await sent_message.edit("✔️ **Berhasil menendang {} pengguna berdasarkan argumen.**".format(count))
+                await sent_message.edit(
+                    f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
+                )
+
             except ChatWriteForbidden:
                 await app.leave_chat(message.chat.id)
         else:
@@ -57,7 +63,10 @@ async def uname(_, message):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
-            if not member.user.username and not member.status.value in ("administrator", "owner"):
+            if not member.user.username and member.status.value not in (
+                "administrator",
+                "owner",
+            ):
                 try:
                     await message.chat.ban_member(member.user.id)
                     count += 1
@@ -70,7 +79,10 @@ async def uname(_, message):
                 except FloodWait as e:
                     await sleep(e.value)
         try:
-            await sent_message.edit("✔️ **Berhasil menendang {} pengguna berdasarkan argumen.**".format(count))
+            await sent_message.edit(
+                f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
+            )
+
         except ChatWriteForbidden:
             await app.leave_chat(message.chat.id)
     else:
@@ -86,7 +98,10 @@ async def dkick(client, message):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
-            if member.user.is_deleted and not member.status.value in ("administrator", "owner"):
+            if member.user.is_deleted and member.status.value not in (
+                "administrator",
+                "owner",
+            ):
                 try:
                     await message.chat.ban_member(member.user.id)
                     count += 1
@@ -99,7 +114,7 @@ async def dkick(client, message):
                 except FloodWait as e:
                     await sleep(e.value)
         try:
-            await sent_message.edit("✔️ **Berhasil menendang {} akun terhapus.**".format(count))
+            await sent_message.edit(f"✔️ **Berhasil menendang {count} akun terhapus.**")
         except ChatWriteForbidden:
             await app.leave_chat(message.chat.id)
     else:

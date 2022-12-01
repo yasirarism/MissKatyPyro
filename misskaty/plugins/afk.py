@@ -39,27 +39,31 @@ async def active_afk(_, message):
                     disable_web_page_preview=True,
                 )
             if afktype == "animation":
-                if str(reasonafk) == "None":
-                    return await message.reply_animation(
+                return (
+                    await message.reply_animation(
                         data,
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
-                else:
-                    return await message.reply_animation(
+                    if str(reasonafk) == "None"
+                    else await message.reply_animation(
                         data,
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
-            if afktype == "photo":
-                if str(reasonafk) == "None":
-                    return await message.reply_photo(
+                )
+
+            elif afktype == "photo":
+                return (
+                    await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
-                else:
-                    return await message.reply_photo(
+                    if str(reasonafk) == "None"
+                    else await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
                     )
+                )
+
         except Exception:
             return await message.reply_text(
                 f"**{message.from_user.first_name}** is back online.",

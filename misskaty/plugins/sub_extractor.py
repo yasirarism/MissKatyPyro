@@ -30,7 +30,7 @@ def get_subname(url, format):
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1:
         return f"MissKatySub_{get_random_string(4)}.{format}"
-    return get_base_name(os.path.basename(unquote(scheme_removed))) + f".{format}"
+    return f"{get_base_name(os.path.basename(unquote(scheme_removed)))}.{format}"
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -52,9 +52,7 @@ async def ceksub(_, m):
             except:
                 stream_name = "-"
             stream_type = stream["codec_type"]
-            if stream_type in ("audio", "subtitle"):
-                pass
-            else:
+            if stream_type not in ("audio", "subtitle"):
                 continue
             try:
                 lang = stream["tags"]["language"]

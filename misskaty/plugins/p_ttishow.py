@@ -84,7 +84,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         joined_date = datetime.fromtimestamp(time.time()).strftime("%Y.%m.%d %H:%M:%S")
         first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
         id = user.id
-        dc = user.dc_id if user.dc_id else "Member tanpa PP"
+        dc = user.dc_id or "Member tanpa PP"
         count = await app.get_chat_members_count(member.chat.id)
         try:
             pic = await app.download_media(user.photo.big_file_id, file_name=f"pp{user.id}.png")
@@ -130,7 +130,11 @@ async def save_group(bot, message):
         if not await db.get_chat(message.chat.id):
             total = await bot.get_chat_members_count(message.chat.id)
             r_j = message.from_user.mention if message.from_user else "Anonymous"
-            await bot.send_message(LOG_CHANNEL, "#NewGroup\nGroup = {}(<code>{}</code>)\nMembers Count = <code>{}</code>\nAdded by - {}".format(message.chat.title, message.chat.id, total, r_j))
+            await bot.send_message(
+                LOG_CHANNEL,
+                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - {r_j}",
+            )
+
             await db.add_chat(message.chat.id, message.chat.title)
         if message.chat.id in temp.BANNED_CHATS:
             # Inspired from a boat of a banana tree

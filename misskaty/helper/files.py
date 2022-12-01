@@ -48,8 +48,7 @@ async def resize_file_to_sticker_size(file_path: str) -> str:
         im.thumbnail(STICKER_DIMENSIONS)
     try:
         os.remove(file_path)
-        file_path = f"{file_path}.png"
-        return file_path
+        return f"{file_path}.png"
     finally:
         im.save(file_path)
 

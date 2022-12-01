@@ -9,7 +9,7 @@ def get_urls_from_text(text: str) -> bool:
                 [.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(
                 \([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\
                 ()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))""".strip()
-    return [x[0] for x in findall(regex, str(text))]
+    return [x[0] for x in findall(regex, text)]
 
 
 async def alpha_to_int(user_id_alphabet: str) -> int:
@@ -18,17 +18,13 @@ async def alpha_to_int(user_id_alphabet: str) -> int:
     for i in user_id_alphabet:
         index = alphabet.index(i)
         user_id += str(index)
-    user_id = int(user_id)
-    return user_id
+    return int(user_id)
 
 
 async def int_to_alpha(user_id: int) -> str:
     alphabet = list(ascii_lowercase)[:10]
-    text = ""
     user_id = str(user_id)
-    for i in user_id:
-        text += alphabet[int(i)]
-    return text
+    return "".join(alphabet[int(i)] for i in user_id)
 
 
 async def extract_userid(message, text: str):
@@ -68,18 +64,14 @@ async def extract_user_and_reason(message, sender_chat=False):
     if message.reply_to_message:
         reply = message.reply_to_message
         # if reply to a message and no reason is given
-        if not reply.from_user:
-            if reply.sender_chat and reply.sender_chat != message.chat.id and sender_chat:
-                id_ = reply.sender_chat.id
-            else:
-                return None, None
-        else:
+        if reply.from_user:
             id_ = reply.from_user.id
 
-        if len(args) < 2:
-            reason = None
+        elif reply.sender_chat and reply.sender_chat != message.chat.id and sender_chat:
+            id_ = reply.sender_chat.id
         else:
-            reason = text.split(None, 1)[1]
+            return None, None
+        reason = None if len(args) < 2 else text.split(None, 1)[1]
         return id_, reason
 
     # if not reply to a message and no reason is given

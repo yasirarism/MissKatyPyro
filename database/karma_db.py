@@ -28,9 +28,7 @@ async def user_global_karma(user_id) -> int:
 
 async def get_karmas(chat_id: int) -> Dict[str, int]:
     karma = await karmadb.find_one({"chat_id": chat_id})
-    if not karma:
-        return {}
-    return karma["karma"]
+    return karma["karma"] if karma else {}
 
 
 async def get_karma(chat_id: int, name: str) -> Union[bool, dict]:
@@ -49,9 +47,7 @@ async def update_karma(chat_id: int, name: str, karma: dict):
 
 async def is_karma_on(chat_id: int) -> bool:
     chat = await karmadb.find_one({"chat_id_toggle": chat_id})
-    if not chat:
-        return False
-    return True
+    return bool(chat)
 
 
 async def karma_on(chat_id: int):

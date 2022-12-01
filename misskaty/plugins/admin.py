@@ -388,7 +388,7 @@ async def pin(_, message):
         )
     except ChatAdminRequired:
         await message.reply(
-            f"Please give me admin access to use this command.",
+            "Please give me admin access to use this command.",
             disable_web_page_preview=True,
         )
 
@@ -454,13 +454,13 @@ async def unmute(_, message):
 async def ban_deleted_accounts(_, message):
     chat_id = message.chat.id
     deleted_users = []
-    banned_users = 0
     m = await message.reply("Finding ghosts...")
 
     async for i in app.iter_chat_members(chat_id):
         if i.user.is_deleted:
             deleted_users.append(i.user.id)
-    if len(deleted_users) > 0:
+    if deleted_users:
+        banned_users = 0
         for deleted_user in deleted_users:
             try:
                 await message.chat.ban_member(deleted_user)
@@ -491,10 +491,7 @@ async def warn_user(_, message):
     )
     mention = user.mention
     keyboard = ikb({"🚨  Remove Warn  🚨": f"unwarn_{user_id}"})
-    if warns:
-        warns = warns["warns"]
-    else:
-        warns = 0
+    warns = warns["warns"] if warns else 0
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     if warns >= 2:
@@ -625,13 +622,12 @@ async def report_user(_, message):
 
     list_of_admins = await list_admins(message.chat.id)
     linked_chat = (await app.get_chat(message.chat.id)).linked_chat
-    if linked_chat is not None:
-        if reply_id in list_of_admins or reply_id == message.chat.id or reply_id == linked_chat.id:
-            return await message.reply_text("Do you know that the user you are replying is an admin ?")
-    else:
+    if linked_chat is None:
         if reply_id in list_of_admins or reply_id == message.chat.id:
             return await message.reply_text("Do you know that the user you are replying is an admin ?")
 
+    elif reply_id in list_of_admins or reply_id == message.chat.id or reply_id == linked_chat.id:
+        return await message.reply_text("Do you know that the user you are replying is an admin ?")
     user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     text = f"Reported {user_mention} to admins!"
     admin_data = [m async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]

@@ -107,10 +107,7 @@ async def gsearch(client, message):
 @capture_err
 async def translate(client, message):
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
-        if len(message.command) == 1:
-            target_lang = "id"
-        else:
-            target_lang = message.text.split()[1]
+        target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
         if len(message.command) == 1:
@@ -414,12 +411,13 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
-            genre = ""
-            for i in r_json["genre"]:
-                if i in GENRES_EMOJI:
-                    genre += f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                else:
-                    genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+            genre = "".join(
+                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                if i in GENRES_EMOJI
+                else f"#{i.replace('-', '_').replace(' ', '_')}, "
+                for i in r_json["genre"]
+            )
+
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
@@ -571,12 +569,13 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Release Data:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
-            genre = ""
-            for i in r_json["genre"]:
-                if i in GENRES_EMOJI:
-                    genre += f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                else:
-                    genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+            genre = "".join(
+                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                if i in GENRES_EMOJI
+                else f"#{i.replace('-', '_').replace(' ', '_')}, "
+                for i in r_json["genre"]
+            )
+
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):

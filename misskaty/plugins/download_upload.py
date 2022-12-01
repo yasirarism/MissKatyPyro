@@ -47,9 +47,8 @@ async def upload(bot, message):
         await m.edit("Uploading to Anonfile, Please Wait||")
         callapi = await http.post("https://api.anonfiles.com/upload", files=files)
         text = callapi.json()
-        output = "<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {}\n\n📦 File Size: {}\n\n📥 Download Link: {}".format(
-            text["data"]["file"]["metadata"]["name"], text["data"]["file"]["metadata"]["size"]["readable"], text["data"]["file"]["url"]["full"]
-        )
+        output = f'<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {text["data"]["file"]["metadata"]["name"]}\n\n📦 File Size: {text["data"]["file"]["metadata"]["size"]["readable"]}\n\n📥 Download Link: {text["data"]["file"]["url"]["full"]}'
+
         btn = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
         await m.edit(output, reply_markup=btn)
     except Exception as e:
@@ -86,7 +85,7 @@ async def download(client, message):
         downloader.start(blocking=False)
         c_time = time.time()
         while not downloader.isFinished():
-            total_length = downloader.filesize if downloader.filesize else None
+            total_length = downloader.filesize or None
             downloaded = downloader.get_dl_size()
             display_message = ""
             now = time.time()
@@ -95,10 +94,11 @@ async def download(client, message):
             speed = downloader.get_speed()
             round(diff) * 1000
             progress_str = "[{0}{1}]\nProgress: {2}%".format(
-                "".join(["█" for i in range(math.floor(percentage / 5))]),
-                "".join(["░" for i in range(20 - math.floor(percentage / 5))]),
+                "".join(["█" for _ in range(math.floor(percentage / 5))]),
+                "".join(["░" for _ in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2),
             )
+
             estimated_total_time = downloader.get_eta(human=True)
             try:
                 current_message = "trying to download...\n"

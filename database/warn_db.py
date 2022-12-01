@@ -16,9 +16,7 @@ async def get_warns_count() -> dict:
 
 async def get_warns(chat_id: int) -> Dict[str, int]:
     warns = await warnsdb.find_one({"chat_id": chat_id})
-    if not warns:
-        return {}
-    return warns["warns"]
+    return warns["warns"] if warns else {}
 
 
 async def get_warn(chat_id: int, name: str) -> Union[bool, dict]:

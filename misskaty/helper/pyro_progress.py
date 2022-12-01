@@ -26,10 +26,11 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
         estimated_total_time = time_formatter(estimated_total_time)
 
         progress = "[{0}{1}] \nP: {2}%\n".format(
-            "".join(["█" for i in range(math.floor(percentage / 5))]),
-            "".join(["░" for i in range(20 - math.floor(percentage / 5))]),
+            "".join(["█" for _ in range(math.floor(percentage / 5))]),
+            "".join(["░" for _ in range(20 - math.floor(percentage / 5))]),
             round(percentage, 2),
         )
+
 
         tmp = progress + "{0} of {1}\nSpeed: {2}/s\nETA: {3}\n".format(
             humanbytes(current),
@@ -59,7 +60,7 @@ def humanbytes(size: int) -> str:
     while size > power:
         size /= power
         number += 1
-    return str(round(size, 2)) + " " + dict_power_n[number] + "B"
+    return f"{str(round(size, 2))} {dict_power_n[number]}B"
 
 
 def time_formatter(seconds: int) -> str:
@@ -67,8 +68,7 @@ def time_formatter(seconds: int) -> str:
     v_m = 0
     remainder = seconds
     r_ange_s = {"days": (24 * 60 * 60), "hours": (60 * 60), "minutes": 60, "seconds": 1}
-    for age in r_ange_s:
-        divisor = r_ange_s[age]
+    for age, divisor in r_ange_s.items():
         v_m, remainder = divmod(remainder, divisor)
         v_m = int(v_m)
         if v_m != 0:
