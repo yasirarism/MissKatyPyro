@@ -1,4 +1,4 @@
-from logging import basicConfig, FileHandler, StreamHandler
+from logging import basicConfig, FileHandler, StreamHandler, INFO
 import time
 from pyrogram import Client
 from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
