@@ -1,18 +1,18 @@
-import logging
+from logging import basicConfig, FileHandler, StreamHandler, getLogger
 import time
-import logging.config
-
-# Get logging
-logging.config.fileConfig("logging.conf")
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger("pyrogram").setLevel(logging.ERROR)
 from pyrogram import Client
 from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
+
+basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
+    level=INFO,
+)
 
 MOD_LOAD = []
 MOD_NOLOAD = []
 HELPABLE = {}
-
+LOGGER = getLogger(__name__)
 botStartTime = time.time()
 
 # Pyrogram Bot Client

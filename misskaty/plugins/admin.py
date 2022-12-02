@@ -1,4 +1,3 @@
-import logging
 import asyncio, re
 from misskaty import app
 from misskaty.helper.functions import (
@@ -64,7 +63,7 @@ async def admin_cache_func(_, cmu):
                 )
             ],
         }
-        logging.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
+        LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
 
 
 # Purge CMD

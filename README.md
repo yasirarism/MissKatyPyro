@@ -9,7 +9,7 @@ This repo has many bugs and i dont have time to fix it. If you can help me, plea
 You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
 
 ## Features
-I'm forget about it, try asking doraemon maybe know.. :)
+Check by yourself.. :)
 
 ## Variables
 

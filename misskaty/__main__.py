@@ -5,15 +5,14 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
  """
-import asyncio, importlib, re, logging
-from misskaty import app, user, HELPABLE
+import asyncio, importlib, re
+from misskaty import app, user, HELPABLE, LOGGER
 from misskaty.plugins import ALL_MODULES
 from misskaty.helper import paginate_modules
 from misskaty.helper.tools import bot_sys_stats
 from database.users_chats_db import db
 from misskaty.vars import LOG_CHANNEL
 from utils import temp
-from logging import info as log_info
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -44,15 +43,15 @@ async def start_bot():
     await user.start()
     me = await app.get_me()
     ubot = await user.get_me()
-    log_info("+===============================================================+")
-    log_info("|                        MissKatyPyro                           |")
-    log_info("+===============+===============+===============+===============+")
-    log_info(bot_modules)
-    log_info("+===============+===============+===============+===============+")
-    log_info(f"[INFO]: BOT STARTED AS @{me.username}!")
+    LOGGER.info("+===============================================================+")
+    LOGGER.info("|                        MissKatyPyro                           |")
+    LOGGER.info("+===============+===============+===============+===============+")
+    LOGGER.info(bot_modules)
+    LOGGER.info("+===============+===============+===============+===============+")
+    LOGGER.info(f"[INFO]: BOT STARTED AS @{me.username}!")
 
     try:
-        log_info("[INFO]: SENDING ONLINE STATUS")
+        LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         await app.send_message(
             617426792,
             f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
@@ -63,7 +62,7 @@ async def start_bot():
     await idle()
     await app.stop()
     await user.stop()
-    print("[INFO]: Bye!")
+    LOGGER.info("[INFO]: Bye!")
 
 
 home_keyboard_pm = InlineKeyboardMarkup(
@@ -339,4 +338,4 @@ if __name__ == "__main__":
     try:
         loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
-        logging.info("----------------------- Service Stopped -----------------------")
+        LOGGER.info("----------------------- Service Stopped -----------------------")

@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 import time
 import os
-import logging
 from misskaty.helper.http import http
 from pyrogram import enums, filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import ChatSendMediaForbidden, MessageTooLong, RPCError, SlowmodeWait
-from misskaty import app
+from misskaty import app, LOGGER
 from misskaty.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
@@ -14,9 +13,6 @@ from database.users_chats_db import db
 from utils import temp
 from pyrogram.errors import ChatAdminRequired
 from misskaty.vars import SUDO, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
-
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-LOGGER = logging.getLogger(__name__)
 
 
 def circle(pfp, size=(215, 215)):

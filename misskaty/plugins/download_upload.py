@@ -2,12 +2,11 @@ import time
 import asyncio
 import math
 import os
-import logging
 import aiohttp
 import json
 from misskaty.helper.http import http
 from bs4 import BeautifulSoup
-from misskaty import app
+from misskaty import app, LOGGER
 from pySmartDL import SmartDL
 from datetime import datetime
 from misskaty.core.decorator.errors import capture_err
@@ -130,7 +129,7 @@ async def download(client, message):
                     display_message = current_message
                     await asyncio.sleep(10)
             except Exception as e:
-                logging.info(str(e))
+                LOGGER.info(str(e))
         if os.path.exists(download_file_path):
             end_t = datetime.now()
             ms = (end_t - start_t).seconds

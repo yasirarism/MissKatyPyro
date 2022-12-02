@@ -1,17 +1,16 @@
-# the logging things
-import logging
-
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
-
+"""
+ * @author        yasir <yasiramunandar@gmail.com>
+ * @date          2022-12-01 09:12:27
+ * @lastModified  2022-12-01 09:32:31
+ * @projectName   MissKatyPyro
+ * Copyright @YasirPedia All rights reserved
+"""
 import os, time, traceback
 from asyncio import sleep, gather
 from shutil import rmtree
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
-from misskaty import app
+from misskaty import app, LOGGER
 from misskaty.helper.ffmpeg_helper import take_ss, genss_link
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.helper.pyro_progress import progress_for_pyrogram

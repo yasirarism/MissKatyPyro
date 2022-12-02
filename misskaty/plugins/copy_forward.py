@@ -12,10 +12,25 @@ async def copy(client, message):
         if not message.reply_to_message:
             return await message.reply("Silahkan balas pesan yang mau dicopy.")
         try:
-            await message.reply_to_message.copy(message.from_user.id, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+            await message.reply_to_message.copy(
+                message.from_user.id,
+                caption_entities=message.reply_to_message.entities,
+                reply_markup=message.reply_to_message.reply_markup,
+            )
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserIsBlocked:
-            return await message.reply("Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
+            return await message.reply(
+                "Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot"
+                            )
+                        ]
+                    ]
+                ),
+            )
         except Exception as e:
             return await message.reply(f"ERROR: {str(e)}")
     elif message.reply_to_message:
@@ -31,7 +46,11 @@ async def copy(client, message):
                 and message.from_user.id != 2024984460
             ):
                 return await message.reply_text("🦉🦉🦉")
-            await message.reply_to_message.copy(idtujuan, caption_entities=message.reply_to_message.entities, reply_markup=message.reply_to_message.reply_markup)
+            await message.reply_to_message.copy(
+                idtujuan,
+                caption_entities=message.reply_to_message.entities,
+                reply_markup=message.reply_to_message.reply_markup,
+            )
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserNotParticipant:
             return await message.reply("Command ini hanya untuk admin YMoviezNew")
@@ -51,7 +70,18 @@ async def forward(client, message):
             await message.reply_to_message.forward(message.from_user.id)
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserIsBlocked:
-            return await message.reply("Silahkan PM Saya untuk memforward pesan ke chat pribadi..", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot")]]))
+            return await message.reply(
+                "Silahkan PM Saya untuk memforward pesan ke chat pribadi..",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot"
+                            )
+                        ]
+                    ]
+                ),
+            )
         except Exception as e:
             return await message.reply(f"ERROR: {str(e)}")
     elif message.reply_to_message:

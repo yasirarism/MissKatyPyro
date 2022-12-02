@@ -1,10 +1,8 @@
-import logging
+from bot import LOGGER
 from os import environ
 from dotenv import load_dotenv
 
 load_dotenv("config.env", override=True)
-
-LOGGER = logging.getLogger(__name__)
 
 
 def getConfig(name: str):

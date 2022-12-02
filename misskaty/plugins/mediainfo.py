@@ -1,3 +1,10 @@
+"""
+ * @author        yasir <yasiramunandar@gmail.com>
+ * @date          2022-12-01 09:12:27
+ * @lastModified  2022-12-01 09:32:31
+ * @projectName   MissKatyPyro
+ * Copyright @YasirPedia All rights reserved
+"""
 import io
 from os import remove as osremove
 import time
@@ -14,11 +21,15 @@ from misskaty.helper.pyro_progress import (
 )
 
 
-@app.on_message(filters.command(["mediainfo", "mediainfo@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(
+    filters.command(["mediainfo", "mediainfo@MissKatyRoBot"], COMMAND_HANDLER)
+)
 @capture_err
 async def mediainfo(client, message):
     if message.reply_to_message and message.reply_to_message.media:
-        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
+        process = await message.reply_text(
+            "`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True
+        )
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             await process.edit_text("Balas ke format media yang valid")
@@ -54,14 +65,22 @@ async def mediainfo(client, message):
         try:
             link = message.text.split(" ", maxsplit=1)[1]
             if link.startswith("https://file.yasirweb.my.id"):
-                link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+                link = link.replace(
+                    "https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev"
+                )
             if link.startswith("https://link.yasirweb.my.id"):
-                link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
+                link = link.replace(
+                    "https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com"
+                )
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
+                output = subprocess.check_output(["mediainfo", f"{link}"]).decode(
+                    "utf-8"
+                )
             except Exception:
-                return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
+                return await process.edit(
+                    "Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download."
+                )
             title = "MissKaty Bot Mediainfo"
             body_text = f"""
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
@@ -72,10 +91,18 @@ async def mediainfo(client, message):
             # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
             # response = response.json()
             # spacebin = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph)]])
+            markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text="💬 Telegraph", url=tgraph)]]
+            )
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
-                await message.reply_document(out_file, caption=f"Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}", reply_markup=markup)
+                await message.reply_document(
+                    out_file,
+                    caption=f"Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}",
+                    reply_markup=markup,
+                )
                 await process.delete()
         except IndexError:
-            return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
+            return await message.reply_text(
+                "Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo."
+            )

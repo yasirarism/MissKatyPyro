@@ -1,14 +1,16 @@
-import logging
-from pyrogram.errors import FloodWait, InputUserDeactivated, PeerIdInvalid, UserIsBlocked
+from pyrogram.errors import (
+    FloodWait,
+    InputUserDeactivated,
+    PeerIdInvalid,
+    UserIsBlocked,
+)
 import asyncio
+from misskaty import LOGGER
 from pyrogram.types import Message
 from typing import Union
 import os
 import emoji
 from database.users_chats_db import db
-
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 BANNED = {}
 
@@ -38,14 +40,14 @@ async def broadcast_messages(user_id, message):
         return await broadcast_messages(user_id, message)
     except InputUserDeactivated:
         await db.delete_user(int(user_id))
-        logging.info(f"{user_id}-Removed from Database, since deleted account.")
+        LOGGER.info(f"{user_id}-Removed from Database, since deleted account.")
         return False, "Deleted"
     except UserIsBlocked:
-        logging.info(f"{user_id} -Blocked the bot.")
+        LOGGER.info(f"{user_id} -Blocked the bot.")
         return False, "Blocked"
     except PeerIdInvalid:
         await db.delete_user(int(user_id))
-        logging.info(f"{user_id} - PeerIdInvalid")
+        LOGGER.info(f"{user_id} - PeerIdInvalid")
         return False, "Error"
     except Exception:
         return False, "Error"
@@ -65,7 +67,16 @@ def get_size(size):
 
 def get_file_id(msg: Message):
     if msg.media:
-        for message_type in ("photo", "animation", "audio", "document", "video", "video_note", "voice", "sticker"):
+        for message_type in (
+            "photo",
+            "animation",
+            "audio",
+            "document",
+            "video",
+            "video_note",
+            "voice",
+            "sticker",
+        ):
             if obj := getattr(msg, message_type):
                 setattr(obj, "message_type", message_type)
                 return obj

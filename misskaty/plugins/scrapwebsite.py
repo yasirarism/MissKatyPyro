@@ -1,3 +1,11 @@
+"""
+ * @author        yasir <yasiramunandar@gmail.com>
+ * @date          2022-12-01 09:12:27
+ * @lastModified  2022-12-01 09:32:31
+ * @projectName   MissKatyPyro
+ * Copyright @YasirPedia All rights reserved
+"""
+
 # This plugin to scrape from melongmovie, and lk21
 from bs4 import BeautifulSoup
 import aiohttp

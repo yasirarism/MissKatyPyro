@@ -1,12 +1,5 @@
-"""
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
- """
-import os, logging, json, shutil, asyncio, time
-from misskaty import app
+import os, json, shutil, asyncio, time
+from misskaty import app, LOGGER
 from PIL import Image
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -19,11 +12,6 @@ from misskaty.helper.human_read import get_readable_file_size
 from misskaty.plugins.dev import shell_exec
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
-
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-LOGGER = logging.getLogger(__name__)
 
 user_time = {}
 

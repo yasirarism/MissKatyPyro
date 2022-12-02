@@ -1,6 +1,5 @@
 # Code copy from https://github.com/AbirHasan2005/Forward-Client
-import logging
-from misskaty import user
+from misskaty import user, LOGGER
 from pyrogram import filters
 from asyncio import sleep
 from pyrogram.types import Message
@@ -76,14 +75,14 @@ async def ForwardMessage(client: user, msg: Message):
                 await msg.copy(FORWARD_TO_CHAT_ID[i])
             except FloodWait as e:
                 await sleep(e.value)
-                logging.warning(f"#FloodWait: Stopped Forwarder for {e.x}s!")
+                LOGGER.warning(f"#FloodWait: Stopped Forwarder for {e.x}s!")
                 await ForwardMessage(client, msg)
             except Exception as err:
-                logging.warning(
+                LOGGER.warning(
                     f"#ERROR: {err}\n\nUnable to Forward Message to {str(FORWARD_TO_CHAT_ID[i])}, reason: <code>{err}</code>"
                 )
     except Exception as err:
-        logging.warning(f"#ERROR: {err}")
+        LOGGER.warning(f"#ERROR: {err}")
 
 
 @user.on_message((filters.text | filters.media) & filters.chat(FORWARD_FROM_CHAT_ID))

@@ -1,3 +1,10 @@
+"""
+ * @author        yasir <yasiramunandar@gmail.com>
+ * @date          2022-12-01 09:12:27
+ * @lastModified  2022-12-01 09:32:31
+ * @projectName   MissKatyPyro
+ * Copyright @YasirPedia All rights reserved
+"""
 import os
 from pyrogram import filters
 from telegraph import upload_file
@@ -28,7 +35,7 @@ async def ocr(_, message):
         req = (
             await http.get(
                 f"https://script.google.com/macros/s/AKfycbwURISN0wjazeJTMHTPAtxkrZTWTpsWIef5kxqVGoXqnrzdLdIQIfLO7jsR5OQ5GO16/exec?url={url}",
-                follow_redirects=True
+                follow_redirects=True,
             )
         ).json()
         await msg.edit(f"Hasil OCR:\n<code>{req['text']}</code>")
