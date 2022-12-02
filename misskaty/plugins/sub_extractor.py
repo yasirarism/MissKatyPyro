@@ -5,7 +5,7 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-from misskaty import app
+from misskaty import app, LOGGER
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty.vars import COMMAND_HANDLER

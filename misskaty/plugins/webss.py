@@ -2,7 +2,7 @@ from asyncio import gather
 from base64 import b64decode
 from io import BytesIO
 from pyrogram import filters
-from misskaty import app
+from misskaty import app, LOGGER
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import post
