@@ -37,6 +37,7 @@ SUDO = list(
     }
 )
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
+NIGHTMODE = environ.get("NIGHTMODE", False)
 
 ## Config For AUtoForwarder
 # Forward From Chat ID
