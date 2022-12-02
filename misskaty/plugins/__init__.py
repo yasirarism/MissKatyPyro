@@ -8,8 +8,11 @@
 import glob
 import importlib
 import sys
+from logging import getLogger
 from os.path import basename, dirname, isfile
-from misskaty import MOD_LOAD, MOD_NOLOAD, LOGGER
+from misskaty import MOD_LOAD, MOD_NOLOAD
+
+LOGGER = getLogger(__name__)
 
 
 def __list_all_modules():
