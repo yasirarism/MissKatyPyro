@@ -70,7 +70,7 @@ home_keyboard_pm = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(text="Commands ❓", callback_data="bot_commands"),
             InlineKeyboardButton(
-                text="Github Repo 🛠",
+                text="Source Code 🛠",
                 url="https://github.com/yasirarism/MissKatyPyro",
             ),
         ],
@@ -97,7 +97,7 @@ keyboard = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(text="Help ❓", url="t.me/MissKatyRoBot?start=help"),
             InlineKeyboardButton(
-                text="Github Repo �",
+                text="Source Code �",
                 url="https://github.com/yasirarism/MissKatyPyro",
             ),
         ],
