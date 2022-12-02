@@ -1,4 +1,4 @@
-from bot import LOGGER
+from misskaty import LOGGER
 from os import environ
 from dotenv import load_dotenv
 
