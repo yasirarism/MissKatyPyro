@@ -18,12 +18,15 @@ from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id, demoji
 import time
 from datetime import datetime
+from logging import getLogger
 from pykeyboard import InlineKeyboard
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.tools import rentry, GENRES_EMOJI
 from misskaty.helper.http import http
-from misskaty import app, LOGGER
+from misskaty import app
+
+LOGGER = getLogger(__name__)
 
 __MODULE__ = "Misc"
 __HELP__ = """

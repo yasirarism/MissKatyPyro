@@ -8,12 +8,15 @@
 import os, time, traceback
 from asyncio import sleep, gather
 from shutil import rmtree
+from logging import getLogger
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
-from misskaty import app, LOGGER
+from misskaty import app
 from misskaty.helper.ffmpeg_helper import take_ss, genss_link
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.helper.pyro_progress import progress_for_pyrogram
+
+LOGGER = getLogger(__name__)
 
 __MODULE__ = "MediaTool"
 __HELP__ = """"

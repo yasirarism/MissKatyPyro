@@ -5,7 +5,8 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-from misskaty import app, LOGGER
+from misskaty import app
+from logging import getLogger
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty.vars import COMMAND_HANDLER
@@ -16,6 +17,8 @@ from time import perf_counter
 from re import split as ngesplit, I
 from urllib.parse import unquote
 from misskaty.helper.tools import get_random_string
+
+LOGGER = getLogger(__name__)
 
 ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
 

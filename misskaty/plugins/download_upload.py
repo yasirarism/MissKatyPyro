@@ -5,8 +5,9 @@ import os
 import aiohttp
 import json
 from misskaty.helper.http import http
+from logging import getLogger
 from bs4 import BeautifulSoup
-from misskaty import app, LOGGER
+from misskaty import app
 from pySmartDL import SmartDL
 from datetime import datetime
 from misskaty.core.decorator.errors import capture_err
@@ -17,6 +18,8 @@ from misskaty.helper.pyro_progress import (
     progress_for_pyrogram,
     humanbytes,
 )
+
+LOGGER = getLogger(__name__)
 
 __MODULE__ = "Download/Upload"
 __HELP__ = """

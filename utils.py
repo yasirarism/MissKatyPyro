@@ -5,13 +5,14 @@ from pyrogram.errors import (
     UserIsBlocked,
 )
 import asyncio
-from misskaty import LOGGER
+from logging import getLogger
 from pyrogram.types import Message
 from typing import Union
 import os
 import emoji
 from database.users_chats_db import db
 
+LOGGER = getLogger(__name__)
 BANNED = {}
 
 

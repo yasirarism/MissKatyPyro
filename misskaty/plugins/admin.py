@@ -1,4 +1,5 @@
 import asyncio, re
+from logging import getLogger
 from misskaty import app
 from misskaty.helper.functions import (
     extract_user_and_reason,
@@ -20,6 +21,8 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.core.keyboard import ikb
 from misskaty.vars import SUDO, COMMAND_HANDLER
 from database.warn_db import get_warn, remove_warns, add_warn
+
+LOGGER = getLogger(__name__)
 
 __MODULE__ = "Admin"
 __HELP__ = """

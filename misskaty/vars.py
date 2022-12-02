@@ -1,8 +1,9 @@
-from misskaty import LOGGER
+from logging import getLogger
 from os import environ
 from dotenv import load_dotenv
 
 load_dotenv("config.env", override=True)
+LOGGER = getLogger(__name__)
 
 
 def getConfig(name: str):

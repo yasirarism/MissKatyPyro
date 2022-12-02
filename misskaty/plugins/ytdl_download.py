@@ -1,10 +1,11 @@
 import os, json, shutil, asyncio, time
-from misskaty import app, LOGGER
+from misskaty import app
 from PIL import Image
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty.vars import COMMAND_HANDLER
 from datetime import datetime
+from logging import getLogger
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from misskaty.helper.ytdl_helper import random_char, DownLoadFile

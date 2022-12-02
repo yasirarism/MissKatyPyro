@@ -6,7 +6,8 @@
  * Copyright @YasirPedia All rights reserved
  """
 import asyncio, importlib, re
-from misskaty import app, user, HELPABLE, LOGGER
+from logging import getLogger
+from misskaty import app, user, HELPABLE
 from misskaty.plugins import ALL_MODULES
 from misskaty.helper import paginate_modules
 from misskaty.helper.tools import bot_sys_stats
@@ -17,6 +18,7 @@ from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+LOGGER = getLogger(__name__)
 loop = asyncio.get_event_loop()
 
 # Run Bot

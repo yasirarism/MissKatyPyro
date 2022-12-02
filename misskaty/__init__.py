@@ -1,4 +1,4 @@
-from logging import basicConfig, FileHandler, StreamHandler, getLogger
+from logging import basicConfig, FileHandler, StreamHandler
 import time
 from pyrogram import Client
 from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
@@ -12,7 +12,6 @@ basicConfig(
 MOD_LOAD = []
 MOD_NOLOAD = []
 HELPABLE = {}
-LOGGER = getLogger(__name__)
 botStartTime = time.time()
 
 # Pyrogram Bot Client

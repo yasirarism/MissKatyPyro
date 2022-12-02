@@ -1,5 +1,6 @@
 # Code copy from https://github.com/AbirHasan2005/Forward-Client
-from misskaty import user, LOGGER
+from misskaty import user
+from logging import getLogger
 from pyrogram import filters
 from asyncio import sleep
 from pyrogram.types import Message
@@ -12,6 +13,8 @@ from misskaty.vars import (
     FORWARD_TO_CHAT_ID,
     MINIMUM_FILE_SIZE,
 )
+
+LOGGER = getLogger(__name__)
 
 
 async def FilterMessage(message: Message):
