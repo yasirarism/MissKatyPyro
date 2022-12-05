@@ -145,6 +145,3 @@ def extract_user(message: Message) -> Union[int, str]:
         user_id = message.from_user.id
         user_first_name = message.from_user.first_name
     return (user_id, user_first_name)
-
-
-loop.run_until_complete(auto_clean())

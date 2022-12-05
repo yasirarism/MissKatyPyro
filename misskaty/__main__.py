@@ -13,7 +13,7 @@ from misskaty.helper import paginate_modules
 from misskaty.helper.tools import bot_sys_stats
 from database.users_chats_db import db
 from misskaty.vars import LOG_CHANNEL, SUDO
-from utils import temp
+from utils import temp, auto_clean
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -337,4 +337,5 @@ General command are:
 
 
 if __name__ == "__main__":
+    asyncio.create_task(auto_clean())
     loop.run_until_complete(start_bot())
