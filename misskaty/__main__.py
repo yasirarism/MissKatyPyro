@@ -64,6 +64,7 @@ async def start_bot():
     await idle()
     await app.stop()
     await user.stop()
+    loop.close()
     LOGGER.info("[INFO]: Bye!")
 
 
