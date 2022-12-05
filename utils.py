@@ -17,6 +17,8 @@ from misskaty import app, cleanmode
 LOGGER = getLogger(__name__)
 BANNED = {}
 
+loop = asyncio.get_event_loop()
+
 
 async def put_cleanmode(chat_id, message_id):
     if chat_id not in cleanmode:
@@ -145,4 +147,4 @@ def extract_user(message: Message) -> Union[int, str]:
     return (user_id, user_first_name)
 
 
-asyncio.create_task(auto_clean())
+loop.run_until_complete(auto_clean)
