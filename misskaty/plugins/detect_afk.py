@@ -228,6 +228,6 @@ async def chat_watcher_func(_, message):
         except:
             return
     try:
-        await put_cleanmode(message.chat.id, send.message_id)
+        await put_cleanmode(message.chat.id, send.id)
     except:
         return

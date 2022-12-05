@@ -79,7 +79,7 @@ async def active_afk(_, message):
                 f"**{message.from_user.first_name}** is back online",
                 disable_web_page_preview=True,
             )
-        await put_cleanmode(message.chat.id, send.message_id)
+        await put_cleanmode(message.chat.id, send.id)
         return
     if len(message.command) == 1 and not message.reply_to_message:
         details = {
@@ -179,7 +179,7 @@ async def active_afk(_, message):
     send = await message.reply_text(
         f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s."
     )
-    await put_cleanmode(message.chat.id, send.message_id)
+    await put_cleanmode(message.chat.id, send.id)
 
 
 @app.on_message(filters.command("afkdel") & ~filters.private)

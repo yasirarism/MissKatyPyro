@@ -60,6 +60,7 @@ async def start_bot():
             )
     except Exception as e:
         LOGGER.error(str(e))
+    asyncio.create_task(auto_clean())
     await idle()
 
 
