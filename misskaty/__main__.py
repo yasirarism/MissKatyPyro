@@ -332,20 +332,13 @@ General command are:
     return await client.answer_callback_query(query.id)
 
 
-async def cleanup():
-    await user.stop()
-    await app.stop()
-
-
 if __name__ == "__main__":
     try:
-        asyncio.create_task(auto_clean())
         loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
         pass
     except Exception as err:
         logging.error(err.with_traceback(None))
     finally:
-        loop.run_until_complete(cleanup())
         loop.stop()
         print("------------------------ Stopped Services ------------------------")
