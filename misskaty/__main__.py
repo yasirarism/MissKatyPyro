@@ -60,7 +60,7 @@ async def start_bot():
             )
     except Exception:
         pass
-
+    asyncio.create_task(auto_clean())
     await idle()
     await app.stop()
     await user.stop()
@@ -337,5 +337,4 @@ General command are:
 
 
 if __name__ == "__main__":
-    asyncio.create_task(auto_clean())
     loop.run_until_complete(start_bot())
