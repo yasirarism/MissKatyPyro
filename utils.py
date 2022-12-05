@@ -11,9 +11,42 @@ from typing import Union
 import os
 import emoji
 from database.users_chats_db import db
+from database.afk_db import is_cleanmode_on
+from misskaty import app
 
 LOGGER = getLogger(__name__)
 BANNED = {}
+
+
+async def put_cleanmode(chat_id, message_id):
+    if chat_id not in cleanmode:
+        cleanmode[chat_id] = []
+    time_now = datetime.now()
+    put = {
+        "msg_id": message_id,
+        "timer_after": time_now + timedelta(minutes=1),
+    }
+    cleanmode[chat_id].append(put)
+
+
+async def auto_clean():
+    while not await asyncio.sleep(30):
+        try:
+            for chat_id in cleanmode:
+                if not await is_cleanmode_on(chat_id):
+                    continue
+                for x in cleanmode[chat_id]:
+                    if datetime.now() > x["timer_after"]:
+                        try:
+                            await app.delete_messages(chat_id, x["msg_id"])
+                        except FloodWait as e:
+                            await asyncio.sleep(e.x)
+                        except:
+                            continue
+                    else:
+                        continue
+        except:
+            continue
 
 
 # temp db for banned
@@ -110,3 +143,6 @@ def extract_user(message: Message) -> Union[int, str]:
         user_id = message.from_user.id
         user_first_name = message.from_user.first_name
     return (user_id, user_first_name)
+
+
+asyncio.create_task(auto_clean())

@@ -1,14 +1,28 @@
-# Sample menggunakan modul motor mongodb
+#
+# Copyright (C) 2021-2022 by TeamYukki@Github, < https://github.com/TeamYukki >.
+#
+# This file is part of < https://github.com/TeamYukki/YukkiAFKBot > project,
+# and is released under the "GNU v3.0 License Agreement".
+# Please see < https://github.com/TeamYukki/YukkiAFKBot/blob/master/LICENSE >
+#
+# All rights reserved.
+#
+
+# Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
 import time, asyncio
 from misskaty import app
+from utils import put_cleanmode
 from pyrogram import filters
 from misskaty.vars import COMMAND_HANDLER
-from database.afk_db import remove_afk, is_afk, add_afk
+from database.afk_db import remove_afk, is_afk, add_afk, is_cleanmode_on, cleanmode_off, cleanmode_on
 from misskaty.helper.human_read import get_readable_time2
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.permissions import adminsOnly
 
 __MODULE__ = "AFK"
 __HELP__ = """/afk [Reason > Optional] - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.
+/afk [reply to media] - AFK with media.
+/afkdel - Enable auto delete AFK message in group (Only for group admin).
 Just type something in group to remove AFK Status."""
 
 
@@ -29,46 +43,44 @@ async def active_afk(_, message):
             reasonafk = reasondb["reason"]
             seenago = get_readable_time2((int(time.time() - timeafk)))
             if afktype == "text":
-                return await message.reply_text(
+                send = await message.reply_text(
                     f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     disable_web_page_preview=True,
                 )
             if afktype == "text_reason":
-                return await message.reply_text(
-                    f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
+                send = await message.reply_text(
+                    f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
                     disable_web_page_preview=True,
                 )
             if afktype == "animation":
-                return (
-                    await message.reply_animation(
+                if str(reasonafk) == "None":
+                    send = await message.reply_animation(
                         data,
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
-                    if str(reasonafk) == "None"
-                    else await message.reply_animation(
+                else:
+                    send = await message.reply_animation(
                         data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
                     )
-                )
-
-            elif afktype == "photo":
-                return (
-                    await message.reply_photo(
+            if afktype == "photo":
+                if str(reasonafk) == "None":
+                    send = await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
                         caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     )
-                    if str(reasonafk) == "None"
-                    else await message.reply_photo(
+                else:
+                    send = await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\n**Reason:** {reasonafk}",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
                     )
-                )
-
-        except Exception:
-            return await message.reply_text(
-                f"**{message.from_user.first_name}** is back online.",
+        except Exception as e:
+            send = await message.reply_text(
+                f"**{message.from_user.first_name}** is back online",
                 disable_web_page_preview=True,
             )
+        await put_cleanmode(message.chat.id, send.message_id)
+        return
     if len(message.command) == 1 and not message.reply_to_message:
         details = {
             "type": "text",
@@ -164,12 +176,26 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    pesan = await message.reply_text(
+    send = await message.reply_text(
         f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s."
     )
-    await asyncio.sleep(10)
-    await pesan.delete()
-    try:
-        await message.delete()
-    except:
-        pass
+    await put_cleanmode(message.chat.id, send.message_id)
+
+
+@app.on_message(filters.command("afkdel") & ~filters.private)
+@adminsOnly
+async def captcha_state(_, message):
+    usage = "**Usage:**\n/afkdel [ENABLE|DISABLE]"
+    if len(message.command) == 1:
+        return await message.reply_text(usage)
+    chat_id = message.chat.id
+    state = message.text.split(None, 1)[1].strip()
+    state = state.lower()
+    if state == "enable":
+        await cleanmode_on(chat_id)
+        await message.reply_text("Enabled auto delete AFK message.")
+    elif state == "disable":
+        await cleanmode_off(chat_id)
+        await message.reply_text("Disabled auto delete AFK message.")
+    else:
+        await message.reply_text(usage)

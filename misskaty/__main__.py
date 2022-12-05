@@ -12,7 +12,7 @@ from misskaty.plugins import ALL_MODULES
 from misskaty.helper import paginate_modules
 from misskaty.helper.tools import bot_sys_stats
 from database.users_chats_db import db
-from misskaty.vars import LOG_CHANNEL
+from misskaty.vars import LOG_CHANNEL, SUDO
 from utils import temp
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
@@ -53,10 +53,11 @@ async def start_bot():
 
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
-        await app.send_message(
-            617426792,
-            f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
-        )
+        for i in SUDO:
+            await app.send_message(
+                SUDO,
+                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
+            )
     except Exception:
         pass
 
@@ -336,7 +337,4 @@ General command are:
 
 
 if __name__ == "__main__":
-    try:
-        loop.run_until_complete(start_bot())
-    except KeyboardInterrupt:
-        LOGGER.info("----------------------- Service Stopped -----------------------")
+    loop.run_until_complete(start_bot())
