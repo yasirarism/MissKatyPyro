@@ -190,7 +190,7 @@ async def active_afk(_, message):
 
 
 @app.on_message(filters.command("afkdel") & ~filters.private)
-@adminsOnly
+@adminsOnly("can_change_info")
 async def afk_state(_, message):
     usage = "**Usage:**\n/afkdel [ENABLE|DISABLE]"
     if len(message.command) == 1:
