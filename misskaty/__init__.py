@@ -1,4 +1,4 @@
-from logging import basicConfig, FileHandler, StreamHandler, INFO
+from logging import basicConfig, FileHandler, StreamHandler, ERROR
 import time
 from pyrogram import Client
 from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
@@ -6,7 +6,7 @@ from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
 basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
-    level=INFO,
+    level=ERROR,
 )
 
 MOD_LOAD = []
