@@ -14,7 +14,14 @@ from misskaty import app
 from utils import put_cleanmode
 from pyrogram import filters
 from misskaty.vars import COMMAND_HANDLER
-from database.afk_db import remove_afk, is_afk, add_afk, is_cleanmode_on, cleanmode_off, cleanmode_on
+from database.afk_db import (
+    remove_afk,
+    is_afk,
+    add_afk,
+    is_cleanmode_on,
+    cleanmode_off,
+    cleanmode_on,
+)
 from misskaty.helper.human_read import get_readable_time2
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
@@ -177,7 +184,7 @@ async def active_afk(_, message):
 
     await add_afk(user_id, details)
     send = await message.reply_text(
-        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK! This message will be deleted in 10s."
+        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!."
     )
     await put_cleanmode(message.chat.id, send.id)
 
