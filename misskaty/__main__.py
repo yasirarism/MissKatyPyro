@@ -58,9 +58,8 @@ async def start_bot():
                 SUDO,
                 f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
             )
-    except Exception:
-        pass
-    asyncio.create_task(auto_clean())
+    except Exception as e:
+        LOGGER.error(str(e))
     await idle()
 
 
@@ -340,6 +339,7 @@ async def cleanup():
 
 if __name__ == "__main__":
     try:
+        asyncio.create_task(auto_clean())
         loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
         pass
