@@ -12,6 +12,7 @@ basicConfig(
 MOD_LOAD = []
 MOD_NOLOAD = []
 HELPABLE = {}
+cleanmode = {}
 botStartTime = time.time()
 
 # Pyrogram Bot Client

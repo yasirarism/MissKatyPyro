@@ -12,7 +12,7 @@ import os
 import emoji
 from database.users_chats_db import db
 from database.afk_db import is_cleanmode_on
-from misskaty import app
+from misskaty import app, cleanmode
 
 LOGGER = getLogger(__name__)
 BANNED = {}
@@ -40,7 +40,7 @@ async def auto_clean():
                         try:
                             await app.delete_messages(chat_id, x["msg_id"])
                         except FloodWait as e:
-                            await asyncio.sleep(e.x)
+                            await asyncio.sleep(e.value)
                         except:
                             continue
                     else:
