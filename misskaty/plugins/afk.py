@@ -191,7 +191,7 @@ async def active_afk(_, message):
 
 @app.on_message(filters.command("afkdel") & ~filters.private)
 @adminsOnly
-async def captcha_state(_, message):
+async def afk_state(_, message):
     usage = "**Usage:**\n/afkdel [ENABLE|DISABLE]"
     if len(message.command) == 1:
         return await message.reply_text(usage)
