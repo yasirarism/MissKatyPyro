@@ -55,7 +55,7 @@ async def start_bot():
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         for i in SUDO:
             await app.send_message(
-                SUDO,
+                i,
                 f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
             )
     except Exception as e:
