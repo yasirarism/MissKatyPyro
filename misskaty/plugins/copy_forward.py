@@ -25,7 +25,8 @@ async def copy(client, message):
                     [
                         [
                             InlineKeyboardButton(
-                                text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot"
+                                text="💬 Chat Aku Yahh",
+                                url=f"https://t.me/{app.me.username}",
                             )
                         ]
                     ]
@@ -76,7 +77,8 @@ async def forward(client, message):
                     [
                         [
                             InlineKeyboardButton(
-                                text="💬 Chat Aku Yahh", url="https://t.me/MissKatyRoBot"
+                                text="💬 Chat Aku Yahh",
+                                url=f"https://t.me/{app.me.username}",
                             )
                         ]
                     ]

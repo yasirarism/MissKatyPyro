@@ -3,7 +3,7 @@ import string
 import psutil
 import time
 import os
-from misskaty import botStartTime
+from misskaty import botStartTime, user, app
 from misskaty.plugins import ALL_MODULES
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.http import http
@@ -42,7 +42,7 @@ async def bot_sys_stats():
     disk = psutil.disk_usage("/").percent
     process = psutil.Process(os.getpid())
     return f"""
-YasirArisM@MissKatyRoBot
+{user.me.first_name}@{app.me.first_name}
 ------------------
 UPTIME: {get_readable_time(bot_uptime)}
 BOT: {round(process.memory_info()[0] / 1024**2)} MB

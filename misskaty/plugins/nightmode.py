@@ -199,7 +199,7 @@ async def job_open_ymoviez():
 async def _callbackanightmd(c: Client, q: CallbackQuery):
     # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
     await q.answer(
-        f"🔖 Hai, Aku MissKatyRoBot dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+        f"🔖 Hai, Aku {app.me.username} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
         show_alert=True,
         cache_time=21600,
     )
@@ -207,8 +207,8 @@ async def _callbackanightmd(c: Client, q: CallbackQuery):
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
 if NIGHTMODE:
-   scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
-   scheduler.add_job(job_close_ymoviez, trigger="cron", hour=22, minute=0)
-   scheduler.add_job(job_open, trigger="cron", hour=6, minute=0)
-   scheduler.add_job(job_open_ymoviez, trigger="cron", hour=10, minute=0)
-   scheduler.start()
+    scheduler.add_job(job_close, trigger="cron", hour=22, minute=0)
+    scheduler.add_job(job_close_ymoviez, trigger="cron", hour=22, minute=0)
+    scheduler.add_job(job_open, trigger="cron", hour=6, minute=0)
+    scheduler.add_job(job_open_ymoviez, trigger="cron", hour=10, minute=0)
+    scheduler.start()

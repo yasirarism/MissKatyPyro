@@ -21,9 +21,7 @@ from misskaty.helper.pyro_progress import (
 )
 
 
-@app.on_message(
-    filters.command(["mediainfo", "mediainfo@MissKatyRoBot"], COMMAND_HANDLER)
-)
+@app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
 @capture_err
 async def mediainfo(client, message):
     if message.reply_to_message and message.reply_to_message.media:

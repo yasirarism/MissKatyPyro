@@ -77,7 +77,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 title="Github Repo",
                 description="Github Repo of This Bot.",
                 input_message_content=InputTextMessageContent(
-                    "<b>Github Repo @MissKatyRoBot</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"
+                    f"<b>Github Repo @{app.me.username}</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"
                 ),
                 thumb_url="https://hamker.me/gjc9fo3.png",
             ),
@@ -574,7 +574,7 @@ async def imdb_inl(_, query):
                 res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
             else:
                 res_str += "\n"
-            res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+            res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 markup = InlineKeyboardMarkup(

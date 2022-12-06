@@ -148,7 +148,7 @@ async def stream_extract(bot, update):
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(
             namafile,
-            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @MissKatyRoBot in {timelog}",
+            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{app.me.username} in {timelog}",
             reply_to_message_id=usr.id,
         )
         await update.message.delete()

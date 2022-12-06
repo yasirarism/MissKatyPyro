@@ -56,7 +56,7 @@ async def nodrakor(_, message):
             return await msg.edit("Oops, data film tidak ditemukan.")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n\n" for i in data)
         await msg.edit(
-            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @MissKatyRoBot"
+            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @{app.me.username}"
         )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
@@ -284,7 +284,7 @@ async def lk21_scrap(_, message):
         )
 
 
-@app.on_message(filters.command(["gomov", "gomov@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
 @capture_err
 async def gomov_scrap(_, message):
     try:
@@ -310,18 +310,14 @@ async def gomov_scrap(_, message):
             return await msg.edit("Oops, data film tidak ditemukan di GoMov")
         res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n" for i in DATA)
         await msg.edit(
-            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @MissKatyRoBot"
+            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @{app.me.username}"
         )
     except Exception:
         exc = traceback.format_exc()
         await msg.edit(f"ERROR: <code>{exc}</code>")
 
 
-@app.on_message(
-    filters.command(
-        ["savefilm21_scrap", "savefilm21_scrap@MissKatyRoBot"], COMMAND_HANDLER
-    )
-)
+@app.on_message(filters.command(["savefilm21_scrap"], COMMAND_HANDLER))
 @capture_err
 async def savefilm21_scrap(_, message):
     try:
@@ -343,9 +339,7 @@ async def savefilm21_scrap(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(
-    filters.command(["nodrakor_scrap", "nodrakor_scrap@MissKatyRoBot"], COMMAND_HANDLER)
-)
+@app.on_message(filters.command(["nodrakor_scrap"], COMMAND_HANDLER))
 @capture_err
 async def nodrakor_scrap(_, message):
     try:
@@ -367,9 +361,7 @@ async def nodrakor_scrap(_, message):
 
 
 # Scrape Link Download Movieku.CC
-@app.on_message(
-    filters.command(["movieku_scrap", "movieku_scrap@MissKatyRoBot"], COMMAND_HANDLER)
-)
+@app.on_message(filters.command(["movieku_scrap"], COMMAND_HANDLER))
 @capture_err
 async def muviku_scrap(_, message):
     try:
@@ -401,7 +393,7 @@ async def muviku_scrap(_, message):
 
 
 @app.on_message(
-    filters.command(["melong", "melong@MissKatyRoBot"], COMMAND_HANDLER)
+    filters.command(["melong"], COMMAND_HANDLER)
     & filters.user([617426792, 1985689491, 1172699512, 2024984460])
 )
 @capture_err

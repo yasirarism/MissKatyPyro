@@ -123,7 +123,7 @@ async def gsearch(client, message):
         exc = traceback.format_exc()
         return await msg.edit(exc)
     await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>",
+        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{app.me.username}</b>",
         disable_web_page_preview=True,
     )
 
@@ -195,9 +195,7 @@ async def tts(_, message):
         pass
 
 
-@app.on_message(
-    filters.command(["tosticker", "tosticker@MissKatyRoBot"], COMMAND_HANDLER)
-)
+@app.on_message(filters.command(["tosticker"], COMMAND_HANDLER))
 @capture_err
 async def tostick(client, message):
     try:
@@ -213,7 +211,7 @@ async def tostick(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["toimage", "toimage@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
 @capture_err
 async def topho(client, message):
     try:
@@ -228,7 +226,7 @@ async def topho(client, message):
             f"tostick_{message.from_user.id}.jpg",
         )
         await message.reply_photo(
-            photo=photo, caption="Sticker -> Image\n@MissKatyRoBot"
+            photo=photo, caption=f"Sticker -> Image\n@{app.me.username}"
         )
 
         os.remove(photo)
@@ -236,7 +234,7 @@ async def topho(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["id", "id@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["id"], COMMAND_HANDLER))
 async def showid(client, message):
     chat_type = message.chat.type
     if chat_type == "private":
@@ -610,7 +608,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+        res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(
@@ -844,7 +842,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+        res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(
