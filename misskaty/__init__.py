@@ -1,4 +1,4 @@
-from logging import getLogger, basicConfig, FileHandler, StreamHandler, INFO
+from logging import getLogger, basicConfig, FileHandler, StreamHandler, INFO, ERROR
 import time
 from pyrogram import Client
 from misskaty.vars import API_ID, API_HASH, BOT_TOKEN, USER_SESSION
@@ -8,7 +8,7 @@ basicConfig(
     handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
     level=INFO,
 )
-getLogger("pyrogram").setLevel(logging.WARNING)
+getLogger("pyrogram").setLevel(ERROR)
 
 MOD_LOAD = []
 MOD_NOLOAD = []
