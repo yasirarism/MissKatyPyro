@@ -3,9 +3,8 @@ import string
 import psutil
 import time
 import os
-from misskaty import botStartTime, user, app
+from misskaty import botStartTime, user, app, UBOT_NAME, BOT_NAME
 from misskaty.plugins import ALL_MODULES
-from misskaty.vars import UBOT_NAME, BOT_NAME
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.http import http
 from http.cookies import SimpleCookie

@@ -24,7 +24,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.tools import rentry, GENRES_EMOJI
 from misskaty.helper.http import http
-from misskaty import app
+from misskaty import app, BOT_USERNAME
 
 LOGGER = getLogger(__name__)
 

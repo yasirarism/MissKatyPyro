@@ -11,14 +11,14 @@ from pyrogram.errors import (
     RPCError,
     SlowmodeWait,
 )
-from misskaty import app
+from misskaty import app, BOT_USERNAME
 from misskaty.core.decorator.errors import capture_err, asyncify
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 import textwrap
 from database.users_chats_db import db
 from utils import temp
 from pyrogram.errors import ChatAdminRequired
-from misskaty.vars import SUDO, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER, BOT_USERNAME
+from misskaty.vars import SUDO, LOG_CHANNEL, SUPPORT_CHAT, COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
 

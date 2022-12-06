@@ -4,7 +4,7 @@ from pyrogram import Client, __version__, filters
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import pytz
 import traceback
-from misskaty import app
+from misskaty import app, BOT_USERNAME
 from datetime import datetime
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from misskaty.vars import LOG_CHANNEL, NIGHTMODE

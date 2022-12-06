@@ -12,8 +12,7 @@
 import re
 import time
 from utils import put_cleanmode
-from misskaty import app
-from misskaty.vars import BOT_USERNAME
+from misskaty import app, BOT_USERNAME
 from pyrogram import filters, enums
 from database.afk_db import remove_afk, is_afk
 from misskaty.helper.human_read import get_readable_time2

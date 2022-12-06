@@ -7,21 +7,22 @@
  """
 import asyncio, importlib, re
 from logging import getLogger
-from misskaty import app, user, HELPABLE
-from misskaty.plugins import ALL_MODULES
-from misskaty.helper import paginate_modules
-from misskaty.helper.tools import bot_sys_stats
-from database.users_chats_db import db
-from misskaty.vars import (
-    LOG_CHANNEL,
-    SUDO,
+from misskaty import (
+    app,
+    user,
+    HELPABLE,
     BOT_ID,
     BOT_NAME,
     BOT_USERNAME,
     UBOT_ID,
     UBOT_NAME,
-    UBOT_USERNAME,
+    UBOT_USERNAME
 )
+from misskaty.plugins import ALL_MODULES
+from misskaty.helper import paginate_modules
+from misskaty.helper.tools import bot_sys_stats
+from database.users_chats_db import db
+from misskaty.vars import LOG_CHANNEL, SUDO
 from utils import temp, auto_clean
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
@@ -49,16 +50,6 @@ async def start_bot():
         else:
             bot_modules += "|{:<15}".format(i)
         j += 1
-    await app.start()
-    await user.start()
-    bot = await app.get_me()
-    ubot = await user.get_me()
-    BOT_ID = bot.id
-    BOT_NAME = bot.first_name
-    BOT_USERNAME = bot.username
-    UBOT_ID = ubot.id
-    UBOT_NAME = ubot.first_name
-    UBOT_USERNAME = ubot.username
     LOGGER.info("+===============================================================+")
     LOGGER.info("|                        MissKatyPyro                           |")
     LOGGER.info("+===============+===============+===============+===============+")
@@ -71,7 +62,7 @@ async def start_bot():
         for i in SUDO:
             await app.send_message(
                 i,
-                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n{bot_modules}",
+                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
             )
     except Exception as e:
         LOGGER.error(str(e))
@@ -109,9 +100,7 @@ home_text_pm = f"Hey there! My name is {BOT_NAME}. I have many useful features f
 keyboard = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton(
-                text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"
-            ),
+            InlineKeyboardButton(text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"),
             InlineKeyboardButton(
                 text="Source Code �",
                 url="https://github.com/yasirarism/MissKatyPyro",

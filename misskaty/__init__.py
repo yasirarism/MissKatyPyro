@@ -30,3 +30,14 @@ user = Client(
     name="YasirUBot",
     session_string=USER_SESSION,
 )
+
+app.start()
+user.start()
+bot = app.get_me()
+ubot = user.get_me()
+BOT_ID = bot.id
+BOT_NAME = bot.first_name
+BOT_USERNAME = bot.username
+UBOT_ID = ubot.id
+UBOT_NAME = ubot.first_name
+UBOT_USERNAME = ubot.username

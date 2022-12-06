@@ -11,9 +11,9 @@ from shutil import rmtree
 from logging import getLogger
 from pyrogram import filters, enums
 from pyrogram.errors import FloodWait
-from misskaty import app
+from misskaty import app, BOT_USERNAME
 from misskaty.helper.ffmpeg_helper import take_ss, genss_link
-from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
+from misskaty.vars import COMMAND_HANDLER
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 LOGGER = getLogger(__name__)

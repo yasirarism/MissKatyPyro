@@ -5,11 +5,11 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-from misskaty import app
+from misskaty import app, BOT_USERNAME
 from logging import getLogger
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
+from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.plugins.dev import shell_exec
 import json, os, traceback
