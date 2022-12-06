@@ -10,7 +10,17 @@ This repo has many bugs and i dont have time to fix it. If you can help me, plea
 You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
 
 ## Features
-Check by yourself.. :)
+* AFK Feature, improved from Yuuki Repo.
+* Bypass URL, some code from PyBypass repo.
+* Improved IMDB Search with English and Indonesian Language by Me.
+* Download some video from web using YT-DLP (UnStable)
+* Extract subtitles & audio from URL.
+* Some website scraper (like melongmovie, lk21 and terbit21).
+* Mediainfo plugin.
+* Genss plugin based on vcsi.
+* Some pastebin (like rentry, tempaste)
+* Inline search plugins.
+* And some sample code to learn for you. Check more by yourself.. :)
 
 ## Variables
 
@@ -18,10 +28,10 @@ Check by yourself.. :)
 * `BOT_TOKEN`: Create a bot using [@BotFather](https://t.me/BotFather), and get the Telegram API token.
 * `API_ID`: Get this value from [telegram.org](https://my.telegram.org/apps)
 * `API_HASH`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `SUDO`: ID of have full access to bot. Separate multiple sudo by space
 * `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `DATABASE_NAME`: Name of the database in [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
+* `USER_SESSION` : Session string for Userbot.
 ### Optional Variables
 Check by yourself for optional vars.
 
@@ -53,8 +63,8 @@ sudo docker stop id
 ## Thanks to 
  - Thanks To Allah Swt.
  - Thanks To Dan For His Awesome [Library](https://github.com/pyrogram/pyrogram).
- - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For Some Code.
- - Thanks To [Team Yukki](https://github.com/TeamYukki) For Some Code.
+ - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For WilliamButcher Code.
+ - Thanks To [Team Yukki](https://github.com/TeamYukki) For AFK Bot Code.
  - Thanks To [Wrench](https://github.com/EverythingSuckz) For Some Code.
  - And All People Who Help Me In My Life...
  If your code used in this repo and want to give credit please open issue..
