@@ -15,7 +15,7 @@ from database.users_chats_db import db
 from misskaty.vars import LOG_CHANNEL, SUDO
 from utils import temp, auto_clean
 from pyrogram.raw.all import layer
-from pyrogram import idle, __version__, filters
+from pyrogram import idle, __version__, filters, compose
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 LOGGER = getLogger(__name__)
@@ -40,8 +40,10 @@ async def start_bot():
         else:
             bot_modules += "|{:<15}".format(i)
         j += 1
-    await app.start()
-    await user.start()
+    apps = [app, user]
+    await compose(apps)
+    # await app.start()
+    # await user.start()
     me = await app.get_me()
     ubot = await user.get_me()
     LOGGER.info("+===============================================================+")

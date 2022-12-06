@@ -8,6 +8,7 @@ basicConfig(
     handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
     level=INFO,
 )
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
 
 MOD_LOAD = []
 MOD_NOLOAD = []
