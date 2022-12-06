@@ -9,7 +9,7 @@ from misskaty import app
 from logging import getLogger
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
 from misskaty.core.decorator.errors import capture_err
 from misskaty.plugins.dev import shell_exec
 import json, os, traceback
@@ -148,7 +148,7 @@ async def stream_extract(bot, update):
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(
             namafile,
-            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{app.me.username} in {timelog}",
+            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{BOT_USERNAME} in {timelog}",
             reply_to_message_id=usr.id,
         )
         await update.message.delete()

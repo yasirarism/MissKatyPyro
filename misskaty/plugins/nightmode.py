@@ -199,9 +199,9 @@ async def job_open_ymoviez():
 async def _callbackanightmd(c: Client, q: CallbackQuery):
     # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
     await q.answer(
-        f"🔖 Hai, Aku {app.me.username} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+        f"🔖 Hai, Aku {BOT_USERNAME} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
         show_alert=True,
-        cache_time=21600,
+        cache_time=2160,
     )
 
 

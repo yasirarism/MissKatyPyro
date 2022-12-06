@@ -14,7 +14,7 @@ import traceback
 from misskaty import app
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.tools import rentry
 from misskaty.helper.http import http
@@ -56,7 +56,7 @@ async def nodrakor(_, message):
             return await msg.edit("Oops, data film tidak ditemukan.")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n\n" for i in data)
         await msg.edit(
-            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @{app.me.username}"
+            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @{BOT_USERNAME}"
         )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
@@ -310,7 +310,7 @@ async def gomov_scrap(_, message):
             return await msg.edit("Oops, data film tidak ditemukan di GoMov")
         res = "".join(f"<b>Judul: {i['judul']}</b>\n{i['link']}\n\n" for i in DATA)
         await msg.edit(
-            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @{app.me.username}"
+            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @{BOT_USERNAME}"
         )
     except Exception:
         exc = traceback.format_exc()

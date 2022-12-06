@@ -6,6 +6,7 @@ from misskaty.plugins.misc_tools import get_content
 from pyrogram import __version__ as pyrover
 from misskaty.helper.http import http
 from misskaty.helper.tools import GENRES_EMOJI
+from misskaty.vars import BOT_USERNAME
 from pyrogram import filters, enums
 from bs4 import BeautifulSoup
 from utils import demoji
@@ -77,7 +78,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 title="Github Repo",
                 description="Github Repo of This Bot.",
                 input_message_content=InputTextMessageContent(
-                    f"<b>Github Repo @{app.me.username}</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"
+                    f"<b>Github Repo @{BOT_USERNAME}</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"
                 ),
                 thumb_url="https://hamker.me/gjc9fo3.png",
             ),
@@ -574,7 +575,7 @@ async def imdb_inl(_, query):
                 res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
             else:
                 res_str += "\n"
-            res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
+            res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 markup = InlineKeyboardMarkup(

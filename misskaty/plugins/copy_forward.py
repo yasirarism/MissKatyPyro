@@ -1,6 +1,6 @@
 from pyrogram import filters, enums
 from pyrogram.errors import UserIsBlocked, UserNotParticipant
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty.core.decorator.errors import capture_err
 from misskaty import app
@@ -26,7 +26,7 @@ async def copy(client, message):
                         [
                             InlineKeyboardButton(
                                 text="💬 Chat Aku Yahh",
-                                url=f"https://t.me/{app.me.username}",
+                                url=f"https://t.me/{BOT_USERNAME}",
                             )
                         ]
                     ]
@@ -78,7 +78,7 @@ async def forward(client, message):
                         [
                             InlineKeyboardButton(
                                 text="💬 Chat Aku Yahh",
-                                url=f"https://t.me/{app.me.username}",
+                                url=f"https://t.me/{BOT_USERNAME}",
                             )
                         ]
                     ]

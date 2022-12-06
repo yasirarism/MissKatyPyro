@@ -26,6 +26,12 @@ try:
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
     exit(1)
+BOT_USERNAME = ""
+BOT_ID = ""
+BOT_NAME = ""
+UBOT_USERNAME = ""
+UBOT_ID = ""
+UBOT_NAME = ""
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
     {

@@ -123,7 +123,7 @@ async def gsearch(client, message):
         exc = traceback.format_exc()
         return await msg.edit(exc)
     await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{app.me.username}</b>",
+        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{BOT_USERNAME}</b>",
         disable_web_page_preview=True,
     )
 
@@ -226,7 +226,7 @@ async def topho(client, message):
             f"tostick_{message.from_user.id}.jpg",
         )
         await message.reply_photo(
-            photo=photo, caption=f"Sticker -> Image\n@{app.me.username}"
+            photo=photo, caption=f"Sticker -> Image\n@{BOT_USERNAME}"
         )
 
         os.remove(photo)
@@ -608,7 +608,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
+        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(
@@ -842,7 +842,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += f"<b>©️ IMDb by</b> @{app.me.username}"
+        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(

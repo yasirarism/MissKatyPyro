@@ -13,6 +13,7 @@ import re
 import time
 from utils import put_cleanmode
 from misskaty import app
+from misskaty.vars import BOT_USERNAME
 from pyrogram import filters, enums
 from database.afk_db import remove_afk, is_afk
 from misskaty.helper.human_read import get_readable_time2
@@ -28,7 +29,7 @@ async def chat_watcher_func(_, message):
     userid = message.from_user.id
     user_name = message.from_user.first_name
     if message.entities:
-        possible = ["/afk", f"/afk@{app.me.username}", "!afk"]
+        possible = ["/afk", f"/afk@{BOT_USERNAME}", "!afk"]
         message_text = message.text or message.caption
         for entity in message.entities:
             if entity.type == enums.MessageEntityType.BOT_COMMAND:

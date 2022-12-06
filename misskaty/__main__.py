@@ -12,7 +12,16 @@ from misskaty.plugins import ALL_MODULES
 from misskaty.helper import paginate_modules
 from misskaty.helper.tools import bot_sys_stats
 from database.users_chats_db import db
-from misskaty.vars import LOG_CHANNEL, SUDO
+from misskaty.vars import (
+    LOG_CHANNEL,
+    SUDO,
+    BOT_ID,
+    BOT_NAME,
+    BOT_USERNAME,
+    UBOT_ID,
+    UBOT_NAME,
+    UBOT_USERNAME,
+)
 from utils import temp, auto_clean
 from pyrogram.raw.all import layer
 from pyrogram import idle, __version__, filters
@@ -42,21 +51,27 @@ async def start_bot():
         j += 1
     await app.start()
     await user.start()
-    me = await app.get_me()
+    bot = await app.get_me()
     ubot = await user.get_me()
+    BOT_ID = bot.id
+    BOT_NAME = bot.first_name
+    BOT_USERNAME = bot.username
+    UBOT_ID = ubot.id
+    UBOT_NAME = ubot.first_name
+    UBOT_USERNAME = ubot.username
     LOGGER.info("+===============================================================+")
     LOGGER.info("|                        MissKatyPyro                           |")
     LOGGER.info("+===============+===============+===============+===============+")
     LOGGER.info(bot_modules)
     LOGGER.info("+===============+===============+===============+===============+")
-    LOGGER.info(f"[INFO]: BOT STARTED AS @{me.username}!")
+    LOGGER.info(f"[INFO]: BOT STARTED AS @{BOT_USERNAME}!")
 
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         for i in SUDO:
             await app.send_message(
                 i,
-                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {ubot.first_name}\nBot: {me.first_name}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{me.username}.",
+                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n{botmodules}",
             )
     except Exception as e:
         LOGGER.error(str(e))
@@ -83,18 +98,20 @@ home_keyboard_pm = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 text="Add Me To Your Group 🎉",
-                url=f"http://t.me/{app.me.first_name}?startgroup=new",
+                url=f"http://t.me/{BOT_USERNAME}?startgroup=new",
             )
         ],
     ]
 )
 
-home_text_pm = f"Hey there! My name is {app.me.first_name}. I have many useful features for you, feel free to add me to your group.\n\nIf you want give coffee to my owner you can send /donate command for more info."
+home_text_pm = f"Hey there! My name is {BOT_NAME}. I have many useful features for you, feel free to add me to your group.\n\nIf you want give coffee to my owner you can send /donate command for more info."
 
 keyboard = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton(text="Help ❓", url=f"t.me/{app.me.username}?start=help"),
+            InlineKeyboardButton(
+                text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"
+            ),
             InlineKeyboardButton(
                 text="Source Code �",
                 url="https://github.com/yasirarism/MissKatyPyro",
@@ -199,7 +216,7 @@ async def help_command(_, message):
                         [
                             InlineKeyboardButton(
                                 text="Click here",
-                                url=f"t.me/{app.me.first_name}?start=help_{name}",
+                                url=f"t.me/{BOT_USERNAME}?start=help_{name}",
                             )
                         ],
                     ]
