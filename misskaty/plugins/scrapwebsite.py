@@ -125,9 +125,10 @@ async def movikucc(_, message):
 @app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
 @capture_err
 async def savefilm21(_, message):
-    if len(message.command) == 1:
-        return await message.reply("Masukkan query yang akan dicari..!!")
-    judul = message.text.split(" ", maxsplit=1)[1]
+    try:
+        judul = message.text.split(" ", maxsplit=1)[1]
+    except IndexError:
+        judul = ""
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
         headers = {
@@ -135,7 +136,7 @@ async def savefilm21(_, message):
         }
 
         html = await http.get(
-            f"http://38.242.196.210/?s={judul}", headers=headers, follow_redirects=False
+            f"http://185.99.135.215/?s={judul}", headers=headers, follow_redirects=False
         )
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="entry-title")
