@@ -135,7 +135,7 @@ async def savefilm21(_, message):
         }
 
         html = await http.get(
-            f"http://38.242.196.210/?s={judul}", headers=headers, allow_redirects=False
+            f"http://38.242.196.210/?s={judul}", headers=headers, follow_redirects=False
         )
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="entry-title")
