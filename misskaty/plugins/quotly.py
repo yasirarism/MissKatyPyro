@@ -219,7 +219,7 @@ async def pyrogram_to_quotly(messages):
         else:
             the_message_dict_to_append["replyMessage"] = {}
         payload["messages"].append(the_message_dict_to_append)
-    r = await http.post("https://quote-api-production-901e.up.railway.app/generate", json=payload)
+    r = await http.post("https://bot.lyo.su/quote/generate.png", json=payload)
     if not r.is_error:
         return r.read()
     else:
