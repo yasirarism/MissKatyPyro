@@ -39,14 +39,13 @@ async def auto_clean():
                 if not await is_cleanmode_on(chat_id):
                     continue
                 for x in cleanmode[chat_id]:
-                    if datetime.now() > x["timer_after"]:
-                        try:
-                            await app.delete_messages(chat_id, x["msg_id"])
-                        except FloodWait as e:
-                            await asyncio.sleep(e.value)
-                        except:
-                            continue
-                    else:
+                    if datetime.now() <= x["timer_after"]:
+                        continue
+                    try:
+                        await app.delete_messages(chat_id, x["msg_id"])
+                    except FloodWait as e:
+                        await asyncio.sleep(e.value)
+                    except:
                         continue
         except:
             continue

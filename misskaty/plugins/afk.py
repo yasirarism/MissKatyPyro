@@ -9,7 +9,7 @@
 #
 
 # Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
-import time, asyncio
+import time
 from misskaty import app
 from utils import put_cleanmode
 from pyrogram import filters
@@ -18,7 +18,6 @@ from database.afk_db import (
     remove_afk,
     is_afk,
     add_afk,
-    is_cleanmode_on,
     cleanmode_off,
     cleanmode_on,
 )
@@ -49,39 +48,41 @@ async def active_afk(_, message):
             data = reasondb["data"]
             reasonafk = reasondb["reason"]
             seenago = get_readable_time2((int(time.time() - timeafk)))
-            if afktype == "text":
+            if afktype == "animation":
+                send = (
+                    await message.reply_animation(
+                        data,
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                    )
+                    if str(reasonafk) == "None"
+                    else await message.reply_animation(
+                        data,
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                    )
+                )
+            elif afktype == "photo":
+                send = (
+                    await message.reply_photo(
+                        photo=f"downloads/{user_id}.jpg",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                    )
+                    if str(reasonafk) == "None"
+                    else await message.reply_photo(
+                        photo=f"downloads/{user_id}.jpg",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                    )
+                )
+            elif afktype == "text":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     disable_web_page_preview=True,
                 )
-            if afktype == "text_reason":
+            elif afktype == "text_reason":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
                     disable_web_page_preview=True,
                 )
-            if afktype == "animation":
-                if str(reasonafk) == "None":
-                    send = await message.reply_animation(
-                        data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
-                    )
-                else:
-                    send = await message.reply_animation(
-                        data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
-                    )
-            if afktype == "photo":
-                if str(reasonafk) == "None":
-                    send = await message.reply_photo(
-                        photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
-                    )
-                else:
-                    send = await message.reply_photo(
-                        photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
-                    )
-        except Exception as e:
+        except Exception:
             send = await message.reply_text(
                 f"**{message.from_user.first_name}** is back online",
                 disable_web_page_preview=True,
@@ -146,9 +147,7 @@ async def active_afk(_, message):
                 "reason": None,
             }
         else:
-            await app.download_media(
-                message.reply_to_message, file_name=f"{user_id}.jpg"
-            )
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -165,9 +164,7 @@ async def active_afk(_, message):
                 "reason": _reason,
             }
         else:
-            await app.download_media(
-                message.reply_to_message, file_name=f"{user_id}.jpg"
-            )
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -183,9 +180,7 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    send = await message.reply_text(
-        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!."
-    )
+    send = await message.reply_text(f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!.")
     await put_cleanmode(message.chat.id, send.id)
 
 

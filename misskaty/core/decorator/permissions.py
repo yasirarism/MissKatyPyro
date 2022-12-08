@@ -49,12 +49,7 @@ async def list_admins(chat_id: int):
 
     admins_in_chat[chat_id] = {
         "last_updated_at": time(),
-        "data": [
-            member.user.id
-            async for member in app.get_chat_members(
-                chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
-            )
-        ],
+        "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
     }
     return admins_in_chat[chat_id]["data"]
 
@@ -76,11 +71,8 @@ async def authorised(func, subFunc2, client, message, *args, **kwargs):
 
 
 async def unauthorised(message: Message, permission, subFunc2):
+    text = f"You don't have the required permission to perform this action.\n**Permission:** __{permission}__"
     chatID = message.chat.id
-    text = (
-        "You don't have the required permission to perform this action."
-        + f"\n**Permission:** __{permission}__"
-    )
     try:
         await message.reply_text(text)
     except ChatWriteForbidden:

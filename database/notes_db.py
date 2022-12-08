@@ -6,9 +6,7 @@ notesdb = dbname.notes
 
 async def _get_notes(chat_id: int) -> Dict[str, int]:
     _notes = await notesdb.find_one({"chat_id": chat_id})
-    if not _notes:
-        return {}
-    return _notes["notes"]
+    return _notes["notes"] if _notes else {}
 
 
 async def delete_note(chat_id: int, name: str) -> bool:
@@ -28,9 +26,7 @@ async def delete_note(chat_id: int, name: str) -> bool:
 async def get_note(chat_id: int, name: str) -> Union[bool, dict]:
     name = name.lower().strip()
     _notes = await _get_notes(chat_id)
-    if name in _notes:
-        return _notes[name]
-    return False
+    return _notes[name] if name in _notes else False
 
 
 async def get_note_names(chat_id: int) -> List[str]:
@@ -45,6 +41,4 @@ async def save_note(chat_id: int, name: str, note: dict):
     _notes = await _get_notes(chat_id)
     _notes[name] = note
 
-    await notesdb.update_one(
-        {"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True
-    )
+    await notesdb.update_one({"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True)

@@ -24,7 +24,6 @@ SOFTWARE.
 from re import findall
 from pyrogram import filters
 from misskaty import app
-from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.keyboard import ikb
@@ -64,11 +63,9 @@ async def save_notee(_, message):
         _type = "text" if message.reply_to_message.text else "sticker"
         note = {
             "type": _type,
-            "data": message.reply_to_message.text.markdown
-            if _type == "text"
-            else message.reply_to_message.sticker.file_id,
+            "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
         }
-        prefix = message.text.split()[0][0]
+        message.text.split()[0][0]
         chat_id = message.chat.id
         await save_note(chat_id, name, note)
         await message.reply(f"__**Saved note {name}.**__")
@@ -77,7 +74,7 @@ async def save_notee(_, message):
 @app.on_message(filters.command("notes") & ~filters.private)
 @capture_err
 async def get_notes(_, message):
-    prefix = message.text.split()[0][0]
+    message.text.split()[0][0]
     chat_id = message.chat.id
 
     _notes = await get_note_names(chat_id)
@@ -104,8 +101,7 @@ async def get_one_note(_, message):
         data = _note["data"]
         keyb = None
         if findall(r"\[.+\,.+\]", data):
-            keyboard = extract_text_and_keyb(ikb, data)
-            if keyboard:
+            if keyboard := extract_text_and_keyb(ikb, data):
                 data, keyb = keyboard
         await message.reply_text(
             data,
@@ -125,7 +121,7 @@ async def del_note(_, message):
     if not name:
         return await message.reply("**Usage**\n__/delete [NOTE_NAME]__")
 
-    prefix = message.text.split()[0][0]
+    message.text.split()[0][0]
     chat_id = message.chat.id
 
     deleted = await delete_note(chat_id, name)

@@ -6,7 +6,6 @@ import asyncio
 from pyrogram import filters, enums
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER, SUDO
-from misskaty.core.custom_filter import edited
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -37,9 +36,7 @@ async def donate(_, message):
     )
 
 
-@app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
-)
+@app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(" ", 1)
     await m.delete()
@@ -53,9 +50,7 @@ async def neofetch(c, m):
 
 
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@app.on_edited_message(
-    filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO)
-)
+@app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
 async def shell(client, message):
     cmd = message.text.split(" ", 1)
     if len(cmd) == 1:
@@ -127,17 +122,12 @@ async def evaluation_cmd_t(client, message):
 
 
 async def aexec(code, client, message):
-    exec(
-        "async def __aexec(client, message): "
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
+    exec("async def __aexec(client, message): " + "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](client, message)
 
 
 async def shell_exec(code, treat=True):
-    process = await asyncio.create_subprocess_shell(
-        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
-    )
+    process = await asyncio.create_subprocess_shell(code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
 
     stdout = (await process.communicate())[0]
     if treat:

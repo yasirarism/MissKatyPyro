@@ -113,11 +113,8 @@ def extract_text_and_keyb(ikb, text: str, row_width: int = 2):
     keyboard = {}
     try:
         text = text.strip()
-        if text.startswith("`"):
-            text = text[1:]
-        if text.endswith("`"):
-            text = text[:-1]
-
+        text = text.removeprefix("`")
+        text = text.removesuffix("`")
         text, keyb = text.split("~")
 
         keyb = findall(r"\[.+\,.+\]", keyb)
