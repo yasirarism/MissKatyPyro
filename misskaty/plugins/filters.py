@@ -124,7 +124,7 @@ async def filters_re(_, message):
                         data, keyb = keyboard
 
                 if message.reply_to_message:
-                    await message.reply_to_message.reply_text(
+                    await message.reply_to_message.reply(
                         data,
                         reply_markup=keyb,
                         disable_web_page_preview=True,
@@ -134,7 +134,7 @@ async def filters_re(_, message):
                         await message.delete()
                     return
 
-                return await message.reply_text(
+                return await message.reply(
                     data,
                     reply_markup=keyb,
                     disable_web_page_preview=True,
