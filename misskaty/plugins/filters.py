@@ -84,7 +84,7 @@ async def get_filterss(_, message):
     await message.reply_text(msg)
 
 
-@app.on_message(filters.command("stop") & ~filters.private)
+@app.on_message(filters.command("stopfilter") & ~filters.private)
 @adminsOnly("can_change_info")
 async def del_filter(_, message):
     if len(message.command) < 2:
@@ -135,7 +135,8 @@ async def filters_re(_, message):
                         await message.delete()
                     return
 
-                return await message.reply(
+                return await app.send_message(
+                    message.chat.id,
                     data,
                     reply_markup=keyb,
                     reply_to_message_id=message.id,
@@ -147,4 +148,6 @@ async def filters_re(_, message):
                 if text.startswith("~"):
                     await message.delete()
                 return
-            return await message.reply_sticker(data, reply_to_message_id=message.id)
+            await app.send_sticker(
+                message.chat.id, data, reply_to_message_id=message.id
+            )
