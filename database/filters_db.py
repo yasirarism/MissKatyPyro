@@ -1,4 +1,5 @@
 from database import dbname
+from typing import Dict, Union
 
 filtersdb = dbname.filters
 
