@@ -68,7 +68,6 @@ async def save_filters(_, message):
     }
     await save_filter(chat_id, name, _filter)
     await message.reply(f"__**Saved filter {name}.**__")
-    await message.stop_propagation()
 
 
 @app.on_message(filters.command("filters") & ~filters.private)
@@ -135,11 +134,9 @@ async def filters_re(_, message):
                         await message.delete()
                     return
 
-                return await app.send_message(
-                    message.chat.id,
+                return await message.reply(
                     data,
                     reply_markup=keyb,
-                    reply_to_message_id=message.id,
                     disable_web_page_preview=True,
                 )
             if message.reply_to_message:
@@ -148,6 +145,4 @@ async def filters_re(_, message):
                 if text.startswith("~"):
                     await message.delete()
                 return
-            await app.send_sticker(
-                message.chat.id, data, reply_to_message_id=message.id
-            )
+            await message.reply_sticker(data)

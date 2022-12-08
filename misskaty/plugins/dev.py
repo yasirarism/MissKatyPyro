@@ -4,8 +4,9 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from misskaty.vars import COMMAND_HANDLER, SUDO
 from misskaty import app
+from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.core.custom_filter import edited
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -19,7 +20,7 @@ __HELP__ = """
 """
 
 
-@app.on_message(filters.command(["logs"]) & filters.user(SUDO))
+@app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 async def log_file(bot, message):
     """Send log file"""
     try:
@@ -75,7 +76,7 @@ async def shell(client, message):
         await message.reply("No Reply")
 
 
-@app.on_message(filters.command(["ev", "run"]) & filters.user(SUDO))
+@app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
 async def evaluation_cmd_t(client, message):
     status_message = await message.reply("__Processing eval pyrogram...__")
