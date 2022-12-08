@@ -128,7 +128,7 @@ async def stream_extract(bot, update):
     try:
         link = update.message.reply_to_message.command[1]
     except:
-        raise StopPropagation
+        return await update.answer("⚠️ DONT DELETE YOUR MESSAGE!", True)
     await update.message.edit("Processing...")
     try:
         if codec == "aac":
