@@ -77,7 +77,7 @@ async def get_filterss(_, message):
     if not _filters:
         return await message.reply_text("**No filters in this chat.**")
     _filters.sort()
-    msg = f"List of filters in {message.chat.title}\n"
+    msg = f"List of filters in {message.chat.title} - {message.chat.id}\n"
     for _filter in _filters:
         msg += f"**-** `{_filter}`\n"
     await message.reply_text(msg)
