@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -128,17 +127,17 @@ async def stream_extract(bot, update):
     _, map, codec = cb_data.split("_")
     link = update.message.reply_to_message.command[1]
     await update.message.edit("Processing...")
-    if codec == "aac":
-        format = "aac"
-    elif codec == "mp3":
-        format = "mp3"
-    elif codec == "eac3":
-        format = "eac3"
-    elif codec == "subrip":
-        format = "srt"
-    else:
-        format == "ass"
     try:
+        if codec == "aac":
+            format = "aac"
+        elif codec == "mp3":
+            format = "mp3"
+        elif codec == "eac3":
+            format = "eac3"
+        elif codec == "subrip":
+            format = "srt"
+        else:
+            format == "ass"
         start_time = perf_counter()
         namafile = get_subname(link, format)
         extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[
