@@ -125,7 +125,10 @@ async def stream_extract(bot, update):
     if update.from_user.id != usr.from_user.id:
         return await update.answer("⚠️ Access Denied!", True)
     _, map, codec = cb_data.split("_")
-    link = update.message.reply_to_message.command[1]
+    try:
+        link = update.message.reply_to_message.command[1]
+    except:
+        raise StopPropagation
     await update.message.edit("Processing...")
     try:
         if codec == "aac":
