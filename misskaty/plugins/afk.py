@@ -49,38 +49,40 @@ async def active_afk(_, message):
             data = reasondb["data"]
             reasonafk = reasondb["reason"]
             seenago = get_readable_time2((int(time.time() - timeafk)))
-            if afktype == "text":
+            if afktype == "animation":
+                send = (
+                    await message.reply_animation(
+                        data,
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                    )
+                    if str(reasonafk) == "None"
+                    else await message.reply_animation(
+                        data,
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                    )
+                )
+            elif afktype == "photo":
+                send = (
+                    await message.reply_photo(
+                        photo=f"downloads/{user_id}.jpg",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
+                    )
+                    if str(reasonafk) == "None"
+                    else await message.reply_photo(
+                        photo=f"downloads/{user_id}.jpg",
+                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
+                    )
+                )
+            elif afktype == "text":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** is back online and was away for {seenago}",
                     disable_web_page_preview=True,
                 )
-            if afktype == "text_reason":
+            elif afktype == "text_reason":
                 send = await message.reply_text(
                     f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
                     disable_web_page_preview=True,
                 )
-            if afktype == "animation":
-                if str(reasonafk) == "None":
-                    send = await message.reply_animation(
-                        data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
-                    )
-                else:
-                    send = await message.reply_animation(
-                        data,
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
-                    )
-            if afktype == "photo":
-                if str(reasonafk) == "None":
-                    send = await message.reply_photo(
-                        photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}",
-                    )
-                else:
-                    send = await message.reply_photo(
-                        photo=f"downloads/{user_id}.jpg",
-                        caption=f"**{message.from_user.first_name}** is back online and was away for {seenago}\n\nReason: `{reasonafk}`",
-                    )
         except Exception as e:
             send = await message.reply_text(
                 f"**{message.from_user.first_name}** is back online",

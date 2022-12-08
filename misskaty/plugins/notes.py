@@ -104,8 +104,7 @@ async def get_one_note(_, message):
         data = _note["data"]
         keyb = None
         if findall(r"\[.+\,.+\]", data):
-            keyboard = extract_text_and_keyb(ikb, data)
-            if keyboard:
+            if keyboard := extract_text_and_keyb(ikb, data):
                 data, keyb = keyboard
         await message.reply_text(
             data,

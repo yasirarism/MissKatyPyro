@@ -6,9 +6,7 @@ filtersdb = dbname.filters
 
 async def _get_filters(chat_id: int) -> Dict[str, int]:
     _filters = await filtersdb.find_one({"chat_id": chat_id})
-    if not _filters:
-        return {}
-    return _filters["filters"]
+    return _filters["filters"] if _filters else {}
 
 
 async def delete_filter(chat_id: int, name: str) -> bool:
@@ -28,9 +26,7 @@ async def delete_filter(chat_id: int, name: str) -> bool:
 async def get_filter(chat_id: int, name: str) -> Union[bool, dict]:
     name = name.lower().strip()
     _filters = await _get_filters(chat_id)
-    if name in _filters:
-        return _filters[name]
-    return False
+    return _filters[name] if name in _filters else False
 
 
 async def get_filters_names(chat_id: int) -> List[str]:
