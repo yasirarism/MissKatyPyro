@@ -18,7 +18,7 @@ botStartTime = time.time()
 
 # Pyrogram Bot Client
 app = Client(
-    name="MissKatyBot",
+    "MissKatyBot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
@@ -27,7 +27,7 @@ app = Client(
 
 # Pyrogram UserBot Client
 user = Client(
-    name="YasirUBot",
+    "YasirUBot",
     session_string=USER_SESSION,
 )
 
