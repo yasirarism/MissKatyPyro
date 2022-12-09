@@ -4,8 +4,6 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
