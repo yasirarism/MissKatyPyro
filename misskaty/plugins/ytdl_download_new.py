@@ -82,8 +82,26 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
     callback = cq.data.split("|")
     key = callback[1]
     if callback[0] == "yt_gen":
-        x = await main.Extractor().get_download_button(key)
-        await cq.edit_message_caption(caption=x.caption, reply_markup=x.buttons)
+        if match := regex.match(query):
+            x = await main.Extractor().get_download_button(key)
+            await cq.edit_message_caption(caption=x.caption, reply_markup=x.buttons)
+        else:
+            uid = callback[2]
+            type_ = callback[3]
+            if type_ == "a":
+                format_ = "audio"
+            else:
+                format_ = "video"
+            async with iYTDL(
+                log_group_id=LOG_CHANNEL,
+                cache_path="cache",
+                ffmpeg_location="/usr/bin/mediaextract",
+                delete_media=True,
+            ) as ytdl:
+                upload_key = await ytdl.download(
+                    "https://www.youtube.com/watch?v=" + key, uid, format_, cq, True, 3
+                )
+                await ytdl.upload(app, upload_key, format_, cq, True)
     else:
         uid = callback[2]
         type_ = callback[3]
@@ -98,7 +116,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
             delete_media=True,
         ) as ytdl:
             upload_key = await ytdl.download(
-                "https://www.youtube.com/watch?v="+key, uid, format_, cq, True, 3
+                "https://www.youtube.com/watch?v=" + key, uid, format_, cq, True, 3
             )
             await ytdl.upload(app, upload_key, format_, cq, True)
 
