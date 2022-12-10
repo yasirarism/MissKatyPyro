@@ -93,7 +93,7 @@ async def ytdl_listall_callback(_, cq: CallbackQuery):
 async def ytdl_extractinfo_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
-    await c_q.answer("Please Wait...")
+    await cq.answer("Please Wait...")
     callback = cq.data.split("|")
     async with iYTDL(
         log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
