@@ -5,6 +5,12 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from pyrogram import filters
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    CallbackQuery,
+    InputMediaPhoto,
+)
 from iytdl import iYTDL, main
 from uuid import uuid4
 
@@ -23,7 +29,7 @@ def rand_key():
 @capture_err
 async def ytsearch(_, message):
     if len(message.command) == 1:
-        return await message.reply("Please input a valid YT-DLP Supported URL")
+        return await message.reply("Please input a query..!")
     query = message.text.split(" ", maxsplit=1)[1]
     search_key = rand_key()
     YT_DB[search_key] = query
