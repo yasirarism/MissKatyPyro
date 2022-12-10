@@ -28,7 +28,7 @@ from misskaty.core.decorator.permissions import adminsOnly
 __MODULE__ = "AFK"
 __HELP__ = """/afk [Reason > Optional] - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.
 /afk [reply to media] - AFK with media.
-/afkdel - Enable auto delete AFK message in group (Only for group admin).
+/afkdel - Enable auto delete AFK message in group (Only for group admin). Default is **Enable**.
 Just type something in group to remove AFK Status."""
 
 

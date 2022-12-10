@@ -75,6 +75,47 @@ async def ytdownv2(_, message):
         await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
+@app.on_callback_query(filters.regex(r"^yt_listall"))
+async def ytdl_listall_callback(_, cq: CallbackQuery):
+    if cq.from_user.id != cq.message.reply_to_message.from_user.id:
+        return await cq.answer("Not your task", True)
+    callback = cq.data.split("|")
+    async with iYTDL(
+        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
+    ) as ytdl:
+        media, buttons = await ytdl.listview(callback[1])
+        await cq.edit_message_media(
+            media=media, reply_markup=buttons.add(cq.from_user.id)
+        )
+
+
+@app.on_callback_query(filters.regex(r"^yt_extract_info"))
+async def ytdl_extractinfo_callback(_, cq: CallbackQuery):
+    if cq.from_user.id != cq.message.reply_to_message.from_user.id:
+        return await cq.answer("Not your task", True)
+    await c_q.answer("Please Wait...")
+    callback = cq.data.split("|")
+    async with iYTDL(
+        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
+    ) as ytdl:
+        if data := await ytdl.extract_info_from_key(callback[1]):
+            if len(key) == 11:
+                await cq.edit_message_text(
+                    text=data.caption,
+                    reply_markup=data.buttons.add(cq.from_user.id),
+                )
+            else:
+                await cq.edit_message_media(
+                    media=(
+                        InputMediaPhoto(
+                            media=data.image_url,
+                            caption=data.caption,
+                        )
+                    ),
+                    reply_markup=data.buttons.add(cq.from_user.id),
+                )
+
+
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
 async def ytdl_gendl_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
