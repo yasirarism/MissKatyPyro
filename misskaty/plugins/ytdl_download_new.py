@@ -20,11 +20,11 @@ YT_DB = {}
 async def ytdownv2(_, message):
     if len(message.command) == 1:
         return await message.reply("Please input a valid YT-DLP Supported URL")
-    query = message.text.split(" ", maxsplit=1)[1]
+    url = message.text.split(" ", maxsplit=1)[1]
     async with iYTDL(
         log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
     ) as ytdl:
-        x = await ytdl.parse("https://www.youtube.com/watch?v=VGt-BZ-SxGI")
+        x = await ytdl.parse(url)
         img = x.image_url
         caption = x.caption
         markup = x.buttons
