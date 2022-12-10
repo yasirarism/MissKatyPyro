@@ -123,7 +123,9 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
     callback = cq.data.split("|")
     key = callback[1]
     if callback[0] == "yt_gen":
-        if match := regex.match(cq.message.reply_to_message.command[1]):
+        if match := regex.match(cq.message.reply_to_message.command[1]) or regex.match(
+            key
+        ):
             x = await main.Extractor().get_download_button(key)
             await cq.edit_message_caption(caption=x.caption, reply_markup=x.buttons)
         else:
