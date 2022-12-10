@@ -75,7 +75,7 @@ async def ytdownv2(_, message):
         await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
-@app.on_callback_query(filters.regex(r"yt_(gen|dl)\|(.*)"))
+@app.on_callback_query(filters.regex("^yt_(gen|dl)\|(.*)"))
 async def ytdl_gendl_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
@@ -103,7 +103,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
             await ytdl.upload(app, upload_key, format_, cq, True)
 
 
-@app.on_callback_query(filters.regex(r"ytdl_scroll\|(.*)"))
+@app.on_callback_query(filters.regex("^ytdl_scroll\|(.*)"))
 async def ytdl_scroll_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
