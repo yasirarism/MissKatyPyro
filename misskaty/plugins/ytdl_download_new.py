@@ -99,7 +99,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
                 delete_media=True,
             ) as ytdl:
                 upload_key = await ytdl.download(
-                    "https://www.youtube.com/watch?v=" + key, uid, format_, cq, True, 3
+                    cq.message.reply_to_message.command[1], uid, format_, cq, True, 3
                 )
                 await ytdl.upload(app, upload_key, format_, cq, True)
     else:
