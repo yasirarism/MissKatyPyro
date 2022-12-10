@@ -59,7 +59,7 @@ async def ytsearch(_, message):
     await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
-@app.on_message(filters.command(["ytdown2"], COMMAND_HANDLER) & ~filters.channel)
+@app.on_message(filters.command(["ytdown"], COMMAND_HANDLER) & ~filters.channel)
 @capture_err
 async def ytdownv2(_, message):
     if len(message.command) == 1:
@@ -98,7 +98,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
             delete_media=True,
         ) as ytdl:
             upload_key = await ytdl.download(
-                cq.message.reply_to_message.command[1], uid, format_, cq, True, 3
+                "https://www.youtube.com/watch?v="+key, uid, format_, cq, True, 3
             )
             await ytdl.upload(app, upload_key, format_, cq, True)
 
