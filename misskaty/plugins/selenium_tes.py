@@ -5,6 +5,7 @@ from pyrogram import filters
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
+from selenium import webdriver
 
 LOGGER = getLogger(__name__)
 
