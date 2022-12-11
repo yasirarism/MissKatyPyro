@@ -69,9 +69,8 @@ async def ytdownv2(_, message):
         log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
     ) as ytdl:
         x = await ytdl.parse(url)
-        LOGGER.info(x)
-        if "ERROR" in str(x):
-            return await message.reply(f"<code>{str(x)}</code>")
+        if x is None:
+            return await message.reply("Failed parse URL, check logs..")
         img = await get_ytthumb(x.key)
         caption = x.caption
         markup = x.buttons
