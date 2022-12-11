@@ -1,14 +1,17 @@
 import os
 import chromedriver_autoinstaller
+from logging import getLogger
 from pyrogram import filters
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 
+LOGGER = getLogger(__name__)
+
 
 @app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
 @capture_err
-async def pahe(clinet, msg):
+async def pahe(_, msg):
     chromedriver_autoinstaller.install()
     os.chmod("/MissKaty/chromedriver", 755)
     chrome_options = webdriver.ChromeOptions()
@@ -17,4 +20,4 @@ async def pahe(clinet, msg):
     chrome_options.add_argument("--disable-dev-shm-usage")
     wd = webdriver.Chrome("/MissKaty/chromedriver", chrome_options=chrome_options)
     wd.get("https://pahe.li/")
-    print(wd.page_source)
+    LOGGER.info(wd.page_source)
