@@ -130,6 +130,7 @@ async def filters_re(_, message):
                 return await message.reply(
                     data,
                     reply_markup=keyb,
+                    quote=True,
                     disable_web_page_preview=True,
                 )
             if message.reply_to_message:
@@ -138,4 +139,4 @@ async def filters_re(_, message):
                 if text.startswith("~"):
                     await message.delete()
                 return
-            await message.reply_sticker(data)
+            await message.reply_sticker(data, quote=True)
