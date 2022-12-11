@@ -12,7 +12,7 @@ LOGGER = getLogger(__name__)
 @app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
 @capture_err
 async def pahe(_, msg):
-    chromedriver_autoinstaller.install()
+    # chromedriver_autoinstaller.install()
     os.chmod("/MissKaty/chromedriver", 755)
     chrome_options = webdriver.ChromeOptions()
     chrome_options.binary_location = "/usr/bin/google-chrome"
