@@ -172,17 +172,18 @@ async def melongmovie(_, message):
 @capture_err
 async def pahe_scrap(_, message):
     judul = message.text.split(" ", maxsplit=1)[1] if len(message.command) > 1 else ""
-    r = await http.get("https://yasirapi.eu.org/terbit21")
+    r = await http.get(f"https://yasirapi.eu.org/pahe?q={judul}")
+    pesan = await message.reply("Please wait, scraping data..")
     res = r.json()
     data = "".join(f"**{count}. {i['judul']}**\n{i['link']}\n\n" for count, i in enumerate(res["result"], start=1))
     try:
-        return await message.reply(
+        await pesan.edit(
             f"**Daftar rilis movie terbaru di web Pahe**:\n{data}",
             disable_web_page_preview=True,
         )
     except MessageTooLong:
         msg = await rentry(data)
-        return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
+        await pesan.edit(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
         
         
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
