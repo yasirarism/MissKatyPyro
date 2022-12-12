@@ -172,8 +172,8 @@ async def melongmovie(_, message):
 @capture_err
 async def pahe_scrap(_, message):
     judul = message.text.split(" ", maxsplit=1)[1] if len(message.command) > 1 else ""
-    r = await http.get(f"https://yasirapi.eu.org/pahe?q={judul}")
     pesan = await message.reply("Please wait, scraping data..")
+    r = await http.get(f"https://yasirapi.eu.org/pahe?q={judul}")
     res = r.json()
     data = "".join(f"**{count}. {i['judul']}**\n{i['link']}\n\n" for count, i in enumerate(res["result"], start=1))
     try:
