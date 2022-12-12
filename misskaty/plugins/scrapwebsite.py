@@ -21,11 +21,12 @@ from misskaty.helper.http import http
 __MODULE__ = "WebScraper"
 __HELP__ = """
 /melongmovie - Scrape website data from MelongMovie Web. If without query will give latest movie list.
-/lk21 [query <opsional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
-/terbit21 [query <opsional>] - Scrape website data from Terbit21. If without query will give latest movie list.
-/savefilm21 [query <opsional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
-/movieku [query <opsional>] - Scrape website data from Movieku.cc
-/gomov [query <opsional>] - Scrape website data from GoMov. If without query will give latest movie list.
+/lk21 [query <optional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
+/pahe [query <optional>] - Scrape website data from Pahe.li. If without query will give latest post list.
+/terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
+/savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
+/movieku [query <optional>] - Scrape website data from Movieku.cc
+/gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
 
@@ -167,6 +168,23 @@ async def melongmovie(_, message):
         await msg.edit(f"ERROR: {str(e)}")
 
 
+@app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
+@capture_err
+async def pahe_scrap(_, message):
+    judul = message.text.split(" ", maxsplit=1)[1] if len(message.command) > 1 else ""
+    r = await http.get("https://yasirapi.eu.org/terbit21")
+    res = r.json()
+    data = "".join(f"**{count}. {i['judul']}**\n{i['link']}\n\n" for count, i in enumerate(res["result"], start=1))
+    try:
+        return await message.reply(
+            f"**Daftar rilis movie terbaru di web Pahe**:\n{data}",
+            disable_web_page_preview=True,
+        )
+    except MessageTooLong:
+        msg = await rentry(data)
+        return await message.reply(f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}")
+        
+        
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
 @capture_err
 async def terbit21_scrap(_, message):
