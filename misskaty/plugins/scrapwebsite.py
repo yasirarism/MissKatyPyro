@@ -175,6 +175,8 @@ async def pahe_scrap(_, message):
     pesan = await message.reply("Please wait, scraping data..")
     r = await http.get(f"https://yasirapi.eu.org/pahe?q={judul}")
     res = r.json()
+    if not res["result"]:
+        return await pesan.edit("Yahh, no result found.")
     data = "".join(f"**{count}. {i['judul']}**\n{i['link']}\n\n" for count, i in enumerate(res["result"], start=1))
     try:
         await pesan.edit(
