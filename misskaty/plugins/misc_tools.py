@@ -135,7 +135,7 @@ async def translate(client, message):
         'text': text
     }
     try:
-        tekstr = (await http.post("https://deep-translator-api.azurewebsites.net/google/", json=json_dara)).json()["translation"]
+        tekstr = (await http.post("https://deep-translator-api.azurewebsites.net/google/", json=json_data)).json()["translation"]
         await msg.edit(f"<code>{tekstr}</code>")
     except MessageTooLong:
         url = await rentry(tekstr)
