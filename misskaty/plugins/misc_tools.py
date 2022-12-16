@@ -136,8 +136,6 @@ async def translate(client, message):
     except MessageTooLong:
         url = await rentry(tresult)
         return await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
-    except Exception as err:
-        await msg.edit(f"ERROR: <code>{str(err)}</code>")
 
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
