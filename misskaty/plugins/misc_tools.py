@@ -132,10 +132,10 @@ async def translate(client, message):
     my_translator = GoogleTranslator(source='auto', target=target_lang)
     try:
         tresult = my_translator.translate(text=text)
-        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
+        return await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
         url = await rentry(tresult)
-        await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
+        return await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
     except Exception as err:
         await msg.edit(f"ERROR: <code>{str(err)}</code>")
 
