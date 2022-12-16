@@ -68,10 +68,9 @@ async def ytdownv2(_, message):
     async with iYTDL(
         log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
     ) as ytdl:
-        try:
-            x = await ytdl.parse(url)
-        except Exception err:
-            return await message.reply(f"<code>{err}</code>")
+        x = await ytdl.parse(url)
+        if x is None:
+            return await message.reply("Failed parse URL, check logs..")
         img = await get_ytthumb(x.key)
         caption = x.caption
         markup = x.buttons
