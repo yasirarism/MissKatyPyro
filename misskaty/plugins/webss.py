@@ -20,7 +20,7 @@ __HELP__ = """
 async def take_ss(_, message):
     if len(message.command) == 1:
         return await message.reply("Give A Url To Fetch Screenshot.")
-    url = message.command[1]
+    url = message.command[1] if message.command[1].startswith("http") else f"https://{message.command[1]}"
     filename = f"imageToSave_{message.from_user.id}.png"
     m = await message.reply("Capturing screenshot...")
     try:
