@@ -129,19 +129,15 @@ async def translate(client, message):
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
-    json_data = {
-        'source': 'auto',
-        'target': target_lang,
-        'text': text
-    }
+    my_translator = GoogleTranslator(source='auto', target=target_lang)
     try:
-        tekstr = (await http.post("https://deep-translator-api.azurewebsites.net/google/", json=json_data)).json()["translation"]
-        await msg.edit(f"<code>{tekstr}</code>")
+        tresult = my_translator.translate(text=text)
+        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
-        url = await rentry(tekstr)
+        url = await rentry(tresult)
         await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
     except Exception as err:
-        await msg.edit(f"Error: <code>{str(err)}</code>")
+        await msg.edit(f"ERROR: <code>{str(err)}</code>")
 
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
