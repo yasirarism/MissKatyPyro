@@ -134,10 +134,13 @@ async def kickFunc(_, message):
 **Reason:** {reason or '-'}"""
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
-    await message.chat.ban_member(user_id)
-    await message.reply_text(msg)
-    await asyncio.sleep(1)
-    await message.chat.unban_member(user_id)
+    try:
+        await message.chat.ban_member(user_id)
+        await message.reply_text(msg)
+        await asyncio.sleep(1)
+        await message.chat.unban_member(user_id)
+    except ChatAdminRequired:
+        await message.reply("Please give me ban permission to ban user in this group.")
 
 
 # Ban/DBan/TBan User

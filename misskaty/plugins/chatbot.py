@@ -1,6 +1,7 @@
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API
 from pyrogram import filters
+from pyrogram.errors import MessageNotModified
 from misskaty.helper.http import http
 
 
@@ -24,5 +25,7 @@ async def chatbot(c, m):
     try:
         response = (await http.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)).json()
         await msg.edit(response["choices"][0]["text"])
-    except:
+    except MessageNotModified:
+        pass
+    except Exception:
         await msg.edit("Yahh, sorry i can't get your answer.")

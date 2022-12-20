@@ -15,14 +15,12 @@ from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 from misskaty import app
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
-from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import (
     progress_for_pyrogram,
 )
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
-@capture_err
 async def mediainfo(client, message):
     if message.reply_to_message and message.reply_to_message.media:
         process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
@@ -31,12 +29,14 @@ async def mediainfo(client, message):
             await process.edit_text("Balas ke format media yang valid")
             return
         c_time = time.time()
-        # file_path = safe_filename(await reply.download())
-        file_path = await client.download_media(
-            message=message.reply_to_message,
-            progress=progress_for_pyrogram,
-            progress_args=("trying to download, sabar yakk..", process, c_time),
-        )
+        try:
+            file_path = await client.download_media(
+                message=message.reply_to_message,
+                progress=progress_for_pyrogram,
+                progress_args=("trying to download, sabar yakk..", process, c_time),
+            )
+        except Exception as err:
+            return await message.reply(f"Failed to download media. Err detail -> {err}")
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
@@ -51,7 +51,7 @@ async def mediainfo(client, message):
         text_ = file_info.message_type
         link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-        await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
+        await message.reply("ℹ️ **MEDIA INFO**", reply_markup=markup, quote=True)
         await process.delete()
         try:
             osremove(file_path)
@@ -84,7 +84,7 @@ async def mediainfo(client, message):
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(
                     out_file,
-                    caption=f"Hasil mediainfo anda..\n\n<b>Request by:</b> {message.from_user.mention}",
+                    caption=f"Hasil mediainfo anda..\n\n**Request by:** {message.from_user.mention}",
                     reply_markup=markup,
                 )
                 await process.delete()

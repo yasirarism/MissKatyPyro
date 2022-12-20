@@ -14,6 +14,7 @@ from pyrogram.errors import FloodWait
 from misskaty import app, BOT_USERNAME
 from misskaty.helper.ffmpeg_helper import take_ss, genss_link
 from misskaty.vars import COMMAND_HANDLER
+from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 LOGGER = getLogger(__name__)
@@ -27,6 +28,7 @@ __HELP__ = """"
 
 
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))
+@capture_err
 async def genss(client, message):
     if message.reply_to_message is not None:
         process = await message.reply_text("`Processing, please wait..`")
@@ -90,6 +92,7 @@ async def genss(client, message):
 
 
 @app.on_message(filters.command(["genss_link"], COMMAND_HANDLER))
+@capture_err
 async def genss_link(client, message):
     try:
         link = message.text.split(" ")[1]
