@@ -129,7 +129,8 @@ async def evaluation_cmd_t(_, m):
 async def aexec(code, client, message):
     exec(
         "async def __aexec(client, message): "
-        + p = print"".join(f"\n {l_}" for l_ in code.split("\n"))
+        + "\n p = print"
+        + "".join(f"\n {l_}" for l_ in code.split("\n"))
     )
     return await locals()["__aexec"](client, message)
 
