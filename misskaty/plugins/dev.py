@@ -91,7 +91,7 @@ async def evaluation_cmd_t(_, m):
     stdout, stderr, exc = None, None, None
 
     try:
-        await aexec(cmd, client, message)
+        await aexec(cmd, _, m)
     except Exception:
         exc = traceback.format_exc()
 
