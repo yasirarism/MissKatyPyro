@@ -83,7 +83,7 @@ async def evaluation_cmd_t(_, m):
         cmd = m.text.split(" ", maxsplit=1)[1]
     except IndexError:
         return await status_message.edit("__No evaluate message!__")
-    p = print
+
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -127,6 +127,7 @@ async def evaluation_cmd_t(_, m):
 
 
 async def aexec(code, client, message):
+    p = print
     exec(
         "async def __aexec(client, message): "
         + "".join(f"\n {l_}" for l_ in code.split("\n"))
