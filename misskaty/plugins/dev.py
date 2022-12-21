@@ -4,7 +4,7 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from misskaty import app
+from misskaty import app, user
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
@@ -55,34 +55,35 @@ async def neofetch(c, m):
 @app.on_edited_message(
     filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO)
 )
-async def shell(client, message):
-    cmd = message.text.split(" ", 1)
+async def shell(_, m):
+    cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await message.reply("No command to execute was given.")
+        return await m.reply("No command to execute was given.")
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open("shell_output.txt", "w") as file:
             file.write(shell)
         with open("shell_output.txt", "rb") as doc:
-            await message.reply_document(document=doc, file_name=doc.name)
+            await m.reply_document(document=doc, file_name=doc.name)
             try:
                 os.remove("shell_output.txt")
             except:
                 pass
     elif len(shell) != 0:
-        await message.reply(shell, parse_mode=enums.ParseMode.HTML)
+        await m.reply(shell, parse_mode=enums.ParseMode.HTML)
     else:
-        await message.reply("No Reply")
+        await m.reply("No Reply")
 
 
 @app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
-async def evaluation_cmd_t(client, message):
-    status_message = await message.reply("__Processing eval pyrogram...__")
+async def evaluation_cmd_t(_, m):
+    status_message = await m.reply("__Processing eval pyrogram...__")
     try:
-        cmd = message.text.split(" ", maxsplit=1)[1]
+        cmd = m.text.split(" ", maxsplit=1)[1]
     except IndexError:
         return await status_message.edit("__No evaluate message!__")
+    p = print
     old_stderr = sys.stderr
     old_stdout = sys.stdout
     redirected_output = sys.stdout = io.StringIO()
@@ -116,7 +117,7 @@ async def evaluation_cmd_t(client, message):
             out_file.write(final_output)
         await status_message.reply_document(
             document="MissKatyEval.txt",
-            caption=cmd[: 4096 // 4 - 1],
+            caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
             disable_notification=True,
         )
         os.remove("MissKatyEval.txt")
