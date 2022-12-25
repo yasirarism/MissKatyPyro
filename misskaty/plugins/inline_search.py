@@ -1,6 +1,6 @@
 import json, traceback
 from sys import version as pyver, platform
-from misskaty import app, user
+from misskaty import app, user, BOT_USERNAME
 from motor import version as mongover
 from misskaty.plugins.misc_tools import get_content
 from pyrogram import __version__ as pyrover
@@ -74,10 +74,10 @@ async def inline_menu(_, inline_query: InlineQuery):
                 reply_markup=buttons,
             ),
             InlineQueryResultArticle(
-                title="Github Dev",
-                description="Github Owner of Bot.",
+                title="Github Repo",
+                description="Github Repo of This Bot.",
                 input_message_content=InputTextMessageContent(
-                    "https://github.com/yasirarism"
+                    f"<b>Github Repo @{BOT_USERNAME}</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"
                 ),
                 thumb_url="https://hamker.me/gjc9fo3.png",
             ),
@@ -369,7 +369,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             image_url = (
                 midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg")
                 if midb.get("i")
-                else "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg"
+                else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
             )
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"

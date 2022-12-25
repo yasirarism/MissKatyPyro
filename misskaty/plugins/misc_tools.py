@@ -3,7 +3,6 @@ import aiohttp
 from bs4 import BeautifulSoup
 import json
 import traceback
-import requests
 from pyrogram import Client, filters
 from deep_translator import GoogleTranslator
 from gtts import gTTS
@@ -15,10 +14,10 @@ from pyrogram.errors import (
     WebpageMediaEmpty,
     MessageTooLong,
 )
-from info import COMMAND_HANDLER
 from utils import extract_user, get_file_id, demoji
 import time
 from datetime import datetime
+from logging import getLogger
 from pykeyboard import InlineKeyboard
 from pyrogram.types import (
     InlineKeyboardMarkup,
@@ -26,13 +25,14 @@ from pyrogram.types import (
     CallbackQuery,
     InputMediaPhoto,
 )
+from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.tools import rentry, GENRES_EMOJI
-from misskaty import app
-import logging
+from misskaty.vars import COMMAND_HANDLER
+from misskaty.helper.http import http
+from misskaty import app, BOT_USERNAME
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+LOGGER = getLogger(__name__)
 
 __MODULE__ = "Misc"
 __HELP__ = """
@@ -59,10 +59,11 @@ async def stackoverflow(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
     r = (
-        requests.get(
+        await http.get(
             f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
         )
     ).json()
+    msg = await message.reply("Getting data..")
     hasil = ""
     for count, data in enumerate(r["items"], start=1):
         question = data["question_id"]
@@ -74,12 +75,12 @@ async def stackoverflow(client, message):
         )
         hasil += f"{count}. <a href='https://stackoverflow.com/questions/{question}'>{title}</a>\n<code>{snippet}</code>\n"
     try:
-        await message.reply(hasil)
+        await msg.edit(hasil)
     except MessageTooLong:
         url = await rentry(hasil)
         await msg.edit(f"Your text pasted to rentry because has long text:\n{url}")
     except Exception as e:
-        await message.reply(e)
+        await msg.edit(e)
 
 
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
@@ -94,7 +95,7 @@ async def gsearch(client, message):
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
             "Chrome/61.0.3163.100 Safari/537.36"
         }
-        html = requests.get(
+        html = await http.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
             headers=headers,
         )
@@ -129,7 +130,7 @@ async def gsearch(client, message):
         exc = traceback.format_exc()
         return await msg.edit(exc)
     await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @MissKatyRoBot</b>",
+        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{BOT_USERNAME}</b>",
         disable_web_page_preview=True,
     )
 
@@ -140,34 +141,27 @@ async def translate(client, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
     ):
-        if len(message.command) == 1:
-            target_lang = "id"
-        else:
-            target_lang = message.text.split()[1]
+        target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
-        if len(message.command) == 1:
+        if len(message.command) < 3:
             return await message.reply_text(
                 "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
             )
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
+    my_translator = GoogleTranslator(source='auto', target=target_lang)
     try:
-        tekstr = (
-            requests.get(
-                f"https://script.google.com/macros/s/AKfycbyhNk6uVgrtJLEFRUT6y5B2pxETQugCZ9pKvu01-bE1gKkDRsw/exec?q={text}&target={target_lang}"
-            )
-        ).json()["text"]
-    except Exception as err:
-        return await msg.edit(f"Error: <code>{str(err)}</code>")
-    try:
-        await msg.edit(f"<code>{tekstr}</code>")
+        result = my_translator.translate(text=text)
+        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
         url = await rentry(tekstr.text)
         await msg.edit(
             f"Your translated text pasted to rentry because has long text:\n{url}"
         )
+    except Exception as err:
+        await msg.edit(f"Error: <code>{str(err)}</code>")
 
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
@@ -204,9 +198,7 @@ async def tts(_, message):
         pass
 
 
-@app.on_message(
-    filters.command(["tosticker", "tosticker@MissKatyRoBot"], COMMAND_HANDLER)
-)
+@app.on_message(filters.command(["tosticker"], COMMAND_HANDLER))
 @capture_err
 async def tostick(client, message):
     try:
@@ -222,7 +214,7 @@ async def tostick(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["toimage", "toimage@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
 @capture_err
 async def topho(client, message):
     try:
@@ -237,7 +229,7 @@ async def topho(client, message):
             f"tostick_{message.from_user.id}.jpg",
         )
         await message.reply_photo(
-            photo=photo, caption="Sticker -> Image\n@MissKatyRoBot"
+            photo=photo, caption="Sticker -> Image\n@{BOT_USERNAME}"
         )
 
         os.remove(photo)
@@ -245,7 +237,7 @@ async def topho(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["id", "id@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["id"], COMMAND_HANDLER))
 async def showid(client, message):
     chat_type = message.chat.type
     if chat_type == "private":
@@ -284,7 +276,7 @@ async def showid(client, message):
         await message.reply_text(_id, quote=True)
 
 
-@app.on_message(filters.command(["info", "info@MissKatyRoBot"], COMMAND_HANDLER))
+@app.on_message(filters.command(["info"], COMMAND_HANDLER))
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     status_message = await message.reply_text("`Fetching user info...`")
@@ -416,7 +408,7 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
         try:
-            res = requests.get(f"https://kuryana.vercel.app/id/{slug}").json()
+            res = (await http.get(f"https://kuryana.vercel.app/id/{slug}")).json()
             result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
             result += (
                 f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
@@ -650,7 +642,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(
@@ -879,7 +871,7 @@ async def imdb_en_callback(bot: Client, query: CallbackQuery):
             res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n\n"
         else:
             res_str += "\n"
-        res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if r_json.get("trailer"):
             trailer_url = r_json["trailer"]["url"]
             markup = InlineKeyboardMarkup(
