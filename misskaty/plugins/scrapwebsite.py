@@ -329,7 +329,7 @@ async def gomov_scrap(_, message):
         entry = soup.find_all(class_="entry-header")
         DATA = []
         for i in entry:
-            genre = f"{i.find(class_='gmr-movie-on').text}\n"
+            genre = f"{i.find(class_='gmr-movie-on').text}\n" if genre != "" else ""
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             DATA.append({"judul": judul, "link": link, "genre": genre})
