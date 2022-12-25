@@ -475,7 +475,7 @@ async def imdb1_search(client, message):
         )
     r, judul = message.text.split(None, 1)
     k = await message.reply_photo(
-        "AgACAgIAAxkBAAEDNDdjp-jrxffihNHv2UiQ63B2p3txagACL8QxG0hfQEkmUDEHspsSUgAIAQADAgADeAAHHgQ",
+        "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
         caption="🔎 Sedang mencari di Database IMDB..",
         quote=True,
     )
@@ -708,7 +708,7 @@ async def imdb_en_search(client, message):
         )
     r, title = message.text.split(None, 1)
     k = await message.reply_photo(
-        "AgACAgIAAxkBAAEDNDdjp-jrxffihNHv2UiQ63B2p3txagACL8QxG0hfQEkmUDEHspsSUgAIAQADAgADeAAHHgQ",
+        "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
         caption="Searching Movie/Series in IMDB Database.. 😴",
         quote=True,
     )
