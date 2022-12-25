@@ -13,7 +13,7 @@ import traceback
 from misskaty import app, BOT_USERNAME
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
-from misskaty.vars import COMMAND_HANDLER, BOT_USERNAME
+from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.tools import rentry
 from misskaty.helper.http import http
