@@ -329,14 +329,14 @@ async def gomov_scrap(_, message):
         entry = soup.find_all(class_="entry-header")
         DATA = []
         for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{i.find(class_='gmr-movie-on').text}\n"
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             DATA.append({"judul": judul, "link": link, "genre": genre})
         if not DATA:
             return await msg.edit("Oops, data film tidak ditemukan di GoMov")
         res = "".join(
-            f"<b>{num}. {i['judul']}</b>\n<code>{i['genre']}</code>\n{i['link']}\n\n"
+            f"<b>{num}. {i['judul']}</b>\n<code>{i['genre']}</code>{i['link']}\n\n"
             for num, i in enumerate(DATA, start=1)
         )
         await msg.edit(
