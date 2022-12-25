@@ -1,6 +1,6 @@
 import json, traceback
 from sys import version as pyver, platform
-from misskaty import app, user, BOT_USERNAME
+from misskaty import app, user
 from motor import version as mongover
 from misskaty.plugins.misc_tools import get_content
 from pyrogram import __version__ as pyrover
@@ -38,11 +38,16 @@ PRVT_MSGS = {}
 async def inline_menu(_, inline_query: InlineQuery):
     if inline_query.query.strip().lower().strip() == "":
         buttons = InlineKeyboard(row_width=2)
-        buttons.add(*[(InlineKeyboardButton(text=i, switch_inline_query_current_chat=i)) for i in keywords_list])
+        buttons.add(
+            *[
+                (InlineKeyboardButton(text=i, switch_inline_query_current_chat=i))
+                for i in keywords_list
+            ]
+        )
 
         btn = InlineKeyboard(row_width=2)
-        bot_state = "Alive" if await app.get_me() else "Dead"
-        ubot_state = "Alive" if await user.get_me() else "Dead"
+        bot_state = "Dead" if not await app.get_me() else "Alive"
+        ubot_state = "Dead" if not await user.get_me() else "Alive"
         btn.add(
             InlineKeyboardButton("Stats", callback_data="stats_callback"),
             InlineKeyboardButton("Go Inline!", switch_inline_query_current_chat=""),
@@ -62,21 +67,27 @@ async def inline_menu(_, inline_query: InlineQuery):
             InlineQueryResultArticle(
                 title="Inline Commands",
                 description="Help Related To Inline Usage.",
-                input_message_content=InputTextMessageContent("Click A Button To Get Started."),
+                input_message_content=InputTextMessageContent(
+                    "Click A Button To Get Started."
+                ),
                 thumb_url="https://hamker.me/cy00x5x.png",
                 reply_markup=buttons,
             ),
             InlineQueryResultArticle(
-                title="Github Repo",
-                description="Github Repo of This Bot.",
-                input_message_content=InputTextMessageContent(f"<b>Github Repo @{BOT_USERNAME}</b>\n\nhttps://github.com/yasirarism/MissKatyPyro"),
+                title="Github Dev",
+                description="Github Owner of Bot.",
+                input_message_content=InputTextMessageContent(
+                    "https://github.com/yasirarism"
+                ),
                 thumb_url="https://hamker.me/gjc9fo3.png",
             ),
             InlineQueryResultArticle(
                 title="Alive",
                 description="Check Bot's Stats",
                 thumb_url="https://yt3.ggpht.com/ytc/AMLnZu-zbtIsllERaGYY8Aecww3uWUASPMjLUUEt7ecu=s900-c-k-c0x00ffffff-no-rj",
-                input_message_content=InputTextMessageContent(msg, disable_web_page_preview=True),
+                input_message_content=InputTextMessageContent(
+                    msg, disable_web_page_preview=True
+                ),
                 reply_markup=btn,
             ),
         ]
@@ -89,8 +100,13 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
-        search_results = await http.get(f"https://www.google.com/search?q={judul}&num=20", headers=headers)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/61.0.3163.100 Safari/537.36"
+        }
+        search_results = await http.get(
+            f"https://www.google.com/search?q={judul}&num=20", headers=headers
+        )
         soup = BeautifulSoup(search_results.text, "lxml")
         data = []
         for result in soup.select(".tF2Cxc"):
@@ -113,7 +129,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                     url=link,
                     description=snippet,
                     thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Open Website", url=link)]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Website", url=link)]]
+                    ),
                 )
             )
         await inline_query.answer(
@@ -134,7 +152,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         _id = inline_query.query.split()[1]
         msg = inline_query.query.split(None, 2)[2].strip()
 
-        if not msg or not msg.endswith(":"):
+        if not (msg and msg.endswith(":")):
             inline_query.stop_propagation()
 
         try:
@@ -151,7 +169,11 @@ async def inline_menu(_, inline_query: InlineQuery):
         )
         prvte_msg = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})")],
+                [
+                    InlineKeyboardButton(
+                        "Show Message 🔐", callback_data=f"prvtmsg({inline_query.id})"
+                    )
+                ],
                 [
                     InlineKeyboardButton(
                         "Destroy☠️ this msg",
@@ -160,9 +182,14 @@ async def inline_menu(_, inline_query: InlineQuery):
                 ],
             ]
         )
-        mention = f"@{penerima.username}" if penerima.username else f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
-
-        msg_c = f"🔒 A <b>private message</b> to {mention} [<code>{penerima.id}</code>], "
+        mention = (
+            f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
+            if not penerima.username
+            else f"@{penerima.username}"
+        )
+        msg_c = (
+            f"🔒 A <b>private message</b> to {mention} [<code>{penerima.id}</code>], "
+        )
         msg_c += "Only he/she can open it."
         results = [
             InlineQueryResultArticle(
@@ -182,7 +209,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         query = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://api.github.com/search/repositories?q={query}")
+        search_results = await http.get(
+            f"https://api.github.com/search/repositories?q={query}"
+        )
         srch_results = json.loads(search_results.text)
         item = srch_results.get("items")
         data = []
@@ -205,7 +234,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                     url=link,
                     description=deskripsi,
                     thumb_url="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Open Github Link", url=link)]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Github Link", url=link)]]
+                    ),
                 )
             )
         await inline_query.answer(
@@ -224,7 +255,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         query = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://api.hayo.my.id/api/pypi?package={query}")
+        search_results = await http.get(
+            f"https://api.hayo.my.id/api/pypi?package={query}"
+        )
         srch_results = json.loads(search_results.text)
         data = []
         for sraeo in srch_results:
@@ -245,7 +278,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                     url=link,
                     description=deskripsi,
                     thumb_url="https://raw.githubusercontent.com/github/explore/666de02829613e0244e9441b114edb85781e972c/topics/pip/pip.png",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Open Link", url=link)]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Open Link", url=link)]]
+                    ),
                 )
             )
         await inline_query.answer(
@@ -264,7 +299,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://api.abir-hasan.tk/youtube?query={judul}")
+        search_results = await http.get(
+            f"https://api.abir-hasan.tk/youtube?query={judul}"
+        )
         srch_results = json.loads(search_results.text)
         asroe = srch_results.get("results")
         oorse = []
@@ -276,7 +313,9 @@ async def inline_menu(_, inline_query: InlineQuery):
             durasi = sraeo.get("accessibility").get("duration")
             publishTime = sraeo.get("publishedTime")
             try:
-                deskripsi = "".join(f"{i['text']} " for i in sraeo.get("descriptionSnippet"))
+                deskripsi = "".join(
+                    f"{i['text']} " for i in sraeo.get("descriptionSnippet")
+                )
             except:
                 deskripsi = "-"
             message_text = f"<a href='{link}'>{title}</a>\n"
@@ -295,7 +334,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                     url=link,
                     description=deskripsi,
                     thumb_url=thumb,
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Watch Video 📹", url=link)]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="Watch Video 📹", url=link)]]
+                    ),
                 )
             )
         await inline_query.answer(
@@ -314,7 +355,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         movie_name = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://yasirapi.eu.org/imdb-search?q={movie_name}")
+        search_results = await http.get(
+            f"https://yasirapi.eu.org/imdb-search?q={movie_name}"
+        )
         res = json.loads(search_results.text).get("result")
         oorse = []
         for midb in res:
@@ -323,7 +366,11 @@ async def inline_menu(_, inline_query: InlineQuery):
             stars = midb.get("s", "")
             imdb_url = f"https://imdb.com/title/{midb.get('id')}"
             year = f"({midb.get('y')})" if midb.get("y") else ""
-            image_url = midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg") if midb.get("i") else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+            image_url = (
+                midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg")
+                if midb.get("i")
+                else "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg"
+            )
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
             oorse.append(
@@ -360,15 +407,15 @@ async def prvt_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
     if msg_id not in PRVT_MSGS:
-        await c_q.answer("Message now outdated !", show_alert=True)
+        await c_q.answer("message now outdated !", show_alert=True)
         return
 
     user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
 
-    if c_q.from_user.id in [user_id, sender_id]:
+    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
         await c_q.answer(msg, show_alert=True)
     else:
-        await c_q.answer(f"Only {flname} can see this Private Msg!", show_alert=True)
+        await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
 
 
 @app.on_callback_query(filters.regex(r"destroy\((.+)\)"))
@@ -376,17 +423,17 @@ async def destroy_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
     if msg_id not in PRVT_MSGS:
-        await c_q.answer("Message now outdated !", show_alert=True)
+        await c_q.answer("message now outdated !", show_alert=True)
         return
 
     user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
 
-    if c_q.from_user.id in [user_id, sender_id]:
+    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
         del PRVT_MSGS[msg_id]
         by = "receiver" if c_q.from_user.id == user_id else "sender"
         await c_q.edit_message_text(f"This secret message is ☠️destroyed☠️ by msg {by}")
     else:
-        await c_q.answer(f"Only {flname} can see this Private Msg!", show_alert=True)
+        await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
 
 
 @app.on_callback_query(filters.regex("^imdbinl_"))
@@ -398,46 +445,82 @@ async def imdb_inl(_, query):
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
-            r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
+            r_json = json.loads(
+                sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
+            )
             res_str = ""
             type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
             if r_json.get("name"):
                 try:
-                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                    tahun = (
+                        sop.select('ul[data-testid="hero-title-block__metadata"]')[0]
+                        .find(class_="sc-8c396aa2-2 itZqyK")
+                        .text
+                    )
                 except:
                     tahun = "-"
                 res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
             if r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
+                res_str += (
+                    f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
+                )
             else:
                 res_str += "\n"
             if sop.select('li[data-testid="title-techspec_runtime"]'):
-                durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+                durasi = (
+                    sop.select('li[data-testid="title-techspec_runtime"]')[0]
+                    .find(class_="ipc-metadata-list-item__content-container")
+                    .text
+                )
                 res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
             if r_json.get("contentRating"):
                 res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
                 res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if sop.select('li[data-testid="title-details-releasedate"]'):
-                rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-                rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
+                rilis = (
+                    sop.select('li[data-testid="title-details-releasedate"]')[0]
+                    .find(
+                        class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                    )
+                    .text
+                )
+                rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[
+                    0
+                ].find(
+                    class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                )[
+                    "href"
+                ]
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if r_json.get("genre"):
-                genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
-
+                genre = ""
+                for i in r_json["genre"]:
+                    if i in GENRES_EMOJI:
+                        genre += f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                    else:
+                        genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
                 genre = genre[:-2]
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
                     f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                    for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                    for country in sop.select('li[data-testid="title-details-origin"]')[
+                        0
+                    ].findAll(
+                        class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                    )
                 )
                 country = country[:-2]
                 res_str += f"<b>Negara:</b> {country}\n"
             if sop.select('li[data-testid="title-details-languages"]'):
                 language = "".join(
                     f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
-                    for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                    for lang in sop.select('li[data-testid="title-details-languages"]')[
+                        0
+                    ].findAll(
+                        class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                    )
                 )
                 language = language[:-2]
                 res_str += f"<b>Bahasa:</b> {language}\n"
@@ -468,7 +551,9 @@ async def imdb_inl(_, query):
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
-                summary = GoogleTranslator("auto", "id").translate(r_json.get("description"))
+                summary = GoogleTranslator("auto", "id").translate(
+                    r_json.get("description")
+                )
                 res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
             if r_json.get("keywords"):
                 keywords = r_json["keywords"].split(",")
@@ -479,11 +564,15 @@ async def imdb_inl(_, query):
                 key_ = key_[:-2]
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
             if sop.select('li[data-testid="award_information"]'):
-                awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                awards = (
+                    sop.select('li[data-testid="award_information"]')[0]
+                    .find(class_="ipc-metadata-list-item__list-content-item")
+                    .text
+                )
                 res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
             else:
                 res_str += "\n"
-            res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
+            res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 markup = InlineKeyboardMarkup(
