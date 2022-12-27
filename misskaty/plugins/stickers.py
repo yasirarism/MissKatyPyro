@@ -24,6 +24,13 @@ from pyrogram.raw.types import (
 from misskaty import app, BOT_USERNAME
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
+__MODULE__ = "Stickers"
+__HELP__ = """
+/kang [Reply to sticker] - Add sticker to your pack.
+/getsticker - Convert sticker to png.
+/stickerid - View sticker ID
+"""
+
 
 def get_emoji_regex():
     e_list = [
@@ -245,7 +252,7 @@ async def kang_sticker(c, m):
             )
         else:
             await prog_msg.edit_text("<b>Creating a new sticker pack...</b>")
-            stkr_title = f"{m.from_user.first_name}'s "
+            stkr_title = f"{m.from_user.first_name}'s StickPack"
             if animated:
                 stkr_title += "MissKaty AnimPack"
             elif videos:
