@@ -82,8 +82,8 @@ async def getstickerid(c, m):
 
 @app.on_message(filters.command(["curi", "kang"], COMMAND_HANDLER))
 async def kang_sticker(c, m):
-    if not message.from_user:
-        return await message.reply_text("You are anon admin, kang stickers in my pm.")
+    if not m.from_user:
+        return await m.reply_text("You are anon admin, kang stickers in my pm.")
     prog_msg = await m.reply_text("Kanging Sticker..")
     sticker_emoji = "🤔"
     packnum = 0
