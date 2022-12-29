@@ -102,8 +102,8 @@ async def getstickerid(c, m):
             )
             await app.invoke(RemoveStickerFromSet(sticker=sticker))
             await m.reply_text("Sticker has been removed from your pack")
-        except:
-            await m.reply_text("Failed remove sticker from your pack.")
+        except Exception as e:
+            await m.reply_text(f"Failed remove sticker from your pack.\n\nERR: {e}")
     else:
         await m.reply_text(
             f"Please reply sticker that created by {c.me.username} to remove sticker from your pack."
@@ -324,10 +324,19 @@ async def kang_sticker(c, m):
     except Exception as all_e:
         await prog_msg.edit_text(f"{all_e.__class__.__name__} : {all_e}")
     else:
+        markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        text="👀 View Your Pack",
+                        url=f"https://t.me/addstickers/{packname}",
+                    )
+                ]
+            ]
+        )
         await prog_msg.edit_text(
-            "<b>Sticker successfully stolen!</b>\n<a href='t.me/addstickers/{}'>Pack</a>.\n<b>Emoji:</b> {}".format(
-                packname, sticker_emoji
-            )
+            f"<b>Sticker successfully stolen!</b>\n<b>Emoji:</b> {sticker_emoji}",
+            reply_markup=markup,
         )
         # Cleanup
         await c.delete_messages(chat_id=LOG_CHANNEL, message_ids=msg_.id, revoke=True)
