@@ -86,32 +86,35 @@ async def purge(_, message):
     message_ids = []
     del_total = 0
 
-    for message_id in range(
-        repliedmsg.id,
-        purge_to,
-    ):
-        message_ids.append(message_id)
+    try:
+        for message_id in range(
+            repliedmsg.id,
+            purge_to,
+        ):
+            message_ids.append(message_id)
 
-        # Max message deletion limit is 100
-        if len(message_ids) == 100:
+            # Max message deletion limit is 100
+            if len(message_ids) == 100:
+                await app.delete_messages(
+                    chat_id=chat_id,
+                    message_ids=message_ids,
+                    revoke=True,  # For both sides
+                )
+                del_total += len(message_ids)
+                # To delete more than 100 messages, start again
+                message_ids = []
+
+        # Delete if any messages left
+        if len(message_ids) > 0:
             await app.delete_messages(
                 chat_id=chat_id,
                 message_ids=message_ids,
-                revoke=True,  # For both sides
+                revoke=True,
             )
             del_total += len(message_ids)
-            # To delete more than 100 messages, start again
-            message_ids = []
-
-    # Delete if any messages left
-    if len(message_ids) > 0:
-        await app.delete_messages(
-            chat_id=chat_id,
-            message_ids=message_ids,
-            revoke=True,
-        )
-        del_total += len(message_ids)
-    await message.reply(f"Successfully deleted {del_total} messages..")
+        await message.reply(f"Successfully deleted {del_total} messages..")
+    except Exception as err:
+        await message.reply(f"ERR: {err}")
 
 
 # Kick members
