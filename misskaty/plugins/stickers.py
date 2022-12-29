@@ -7,9 +7,14 @@ import re
 from PIL import Image
 from misskaty.helper.http import http
 from pyrogram import emoji, filters
+from pyrogram.file_id import FileId
 from pyrogram.errors import PeerIdInvalid, StickersetInvalid, BadRequest
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import AddStickerToSet, CreateStickerSet
+from pyrogram.raw.functions.stickers import (
+    AddStickerToSet,
+    CreateStickerSet,
+    RemoveStickerFromSet,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.raw.types import (
     DocumentAttributeFilename,
@@ -24,6 +29,7 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 __MODULE__ = "Stickers"
 __HELP__ = """
 /kang [Reply to sticker] - Add sticker to your pack.
+/unkang [Reply to sticker] - Remove sticker from your pack.
 /getsticker - Convert sticker to png.
 /stickerid - View sticker ID
 """
@@ -81,6 +87,26 @@ async def getstickerid(c, m):
             "The ID of this sticker is: <code>{stickerid}</code>".format(
                 stickerid=m.reply_to_message.sticker.file_id
             )
+        )
+
+
+@app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
+async def getstickerid(c, m):
+    if m.reply_to_message.sticker:
+        try:
+            decoded = FileId.decode(m.reply_to_message.sticker.file_id)
+            sticker = InputDocument(
+                id=decoded.media_id,
+                access_hash=decoded.access_hash,
+                file_reference=decoded.file_reference,
+            )
+            await app.invoke(RemoveStickerFromSet(sticker=sticker))
+            await m.reply_text("Sticker has been removed from your pack")
+        except:
+            await m.reply_text("Failed remove sticker from your pack.")
+    else:
+        await m.reply_text(
+            f"Please reply sticker that created by {c.me.username} to remove sticker from your pack."
         )
 
 
