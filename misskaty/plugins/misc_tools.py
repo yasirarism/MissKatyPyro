@@ -159,10 +159,12 @@ async def translate(client, message):
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
-    my_translator = GoogleTranslator(source='auto', target=target_lang)
+    my_translator = GoogleTranslator(source="auto", target=target_lang)
     try:
         result = my_translator.translate(text=text)
-        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
+        await msg.edit(
+            f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}"
+        )
     except MessageTooLong:
         url = await rentry(tekstr.text)
         await msg.edit(

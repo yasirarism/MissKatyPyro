@@ -3,17 +3,14 @@ import shutil
 import tempfile
 import asyncio
 import re
-import math
 
 from PIL import Image
 from misskaty.helper.http import http
-from pyrogram import filters, emoji, enums
+from pyrogram import emoji, filters
 from pyrogram.errors import PeerIdInvalid, StickersetInvalid, BadRequest
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
 from pyrogram.raw.functions.stickers import AddStickerToSet, CreateStickerSet
-from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from typing import Tuple, Callable
-from functools import wraps, partial
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.raw.types import (
     DocumentAttributeFilename,
     InputDocument,

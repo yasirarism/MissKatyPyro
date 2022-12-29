@@ -16,7 +16,7 @@ from misskaty import (
     BOT_USERNAME,
     UBOT_ID,
     UBOT_NAME,
-    UBOT_USERNAME
+    UBOT_USERNAME,
 )
 from misskaty.plugins import ALL_MODULES
 from misskaty.helper import paginate_modules

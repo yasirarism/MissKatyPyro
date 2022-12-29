@@ -4,7 +4,7 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
-from misskaty import app, user
+from misskaty import app
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
