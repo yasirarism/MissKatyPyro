@@ -36,7 +36,11 @@ __HELP__ = """
 
 
 def get_emoji_regex():
-    e_list = [getattr(emoji, e).encode("unicode-escape").decode("ASCII") for e in dir(emoji) if not e.startswith("_")]
+    e_list = [
+        getattr(emoji, e).encode("unicode-escape").decode("ASCII")
+        for e in dir(emoji)
+        if not e.startswith("_")
+    ]
     # to avoid re.error excluding char that start with '*'
     e_sort = sorted([x for x in e_list if not x.startswith("*")], reverse=True)
     # Sort emojis by length to make sure multi-character emojis are
@@ -65,7 +69,11 @@ async def getsticker_(c, m):
             )
             await m.reply_to_message.reply_document(
                 document=sticker_file,
-                caption=(f"<b>Emoji:</b> {sticker.emoji}\n" f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n" f"<b>Send by:</b> @{BOT_USERNAME}"),
+                caption=(
+                    f"<b>Emoji:</b> {sticker.emoji}\n"
+                    f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n"
+                    f"<b>Send by:</b> @{BOT_USERNAME}"
+                ),
             )
             shutil.rmtree(tempdir, ignore_errors=True)
     else:
@@ -75,7 +83,11 @@ async def getsticker_(c, m):
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)
 async def getstickerid(c, m):
     if m.reply_to_message.sticker:
-        await m.reply_text("The ID of this sticker is: <code>{stickerid}</code>".format(stickerid=m.reply_to_message.sticker.file_id))
+        await m.reply_text(
+            "The ID of this sticker is: <code>{stickerid}</code>".format(
+                stickerid=m.reply_to_message.sticker.file_id
+            )
+        )
 
 
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
@@ -93,7 +105,9 @@ async def getstickerid(c, m):
         except Exception as e:
             await m.reply_text(f"Failed remove sticker from your pack.\n\nERR: {e}")
     else:
-        await m.reply_text(f"Please reply sticker that created by {c.me.username} to remove sticker from your pack.")
+        await m.reply_text(
+            f"Please reply sticker that created by {c.me.username} to remove sticker from your pack."
+        )
 
 
 @app.on_message(filters.command(["curi", "kang"], COMMAND_HANDLER))
@@ -124,7 +138,10 @@ async def kang_sticker(c, m):
             if "image" in reply.document.mime_type:
                 # mime_type: image/webp
                 resize = True
-            elif MessageMediaType.VIDEO == reply.document.mime_type or MessageMediaType.ANIMATION == reply.document.mime_type:
+            elif (
+                MessageMediaType.VIDEO == reply.document.mime_type
+                or MessageMediaType.ANIMATION == reply.document.mime_type
+            ):
                 # mime_type: application/video
                 videos = True
                 convert = True
@@ -154,7 +171,10 @@ async def kang_sticker(c, m):
             packname = f"{pack_prefix}{packnum}_{m.from_user.id}_by_{c.me.username}"
         if len(m.command) > 1:
             # matches all valid emojis in input
-            sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(m.command[1:])))) or sticker_emoji
+            sticker_emoji = (
+                "".join(set(EMOJI_PATTERN.findall("".join(m.command[1:]))))
+                or sticker_emoji
+            )
         filename = await c.download_media(m.reply_to_message)
         if not filename:
             # Failed to download
@@ -165,7 +185,11 @@ async def kang_sticker(c, m):
         filename = "sticker.png"
         packname = f"c{m.from_user.id}_by_{c.me.username}"
         img_url = next(
-            (m.text[y.offset : (y.offset + y.length)] for y in m.entities if y.type == "url"),
+            (
+                m.text[y.offset : (y.offset + y.length)]
+                for y in m.entities
+                if y.type == "url"
+            ),
             None,
         )
 
@@ -185,10 +209,15 @@ async def kang_sticker(c, m):
                 packnum = m.command.pop(2)
                 packname = f"a{packnum}_{m.from_user.id}_by_{c.me.username}"
             if len(m.command) > 2:
-                sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(m.command[2:])))) or sticker_emoji
+                sticker_emoji = (
+                    "".join(set(EMOJI_PATTERN.findall("".join(m.command[2:]))))
+                    or sticker_emoji
+                )
             resize = True
     else:
-        return await prog_msg.edit_text("Want me to guess the sticker?  Please tag a sticker.")
+        return await prog_msg.edit_text(
+            "Want me to guess the sticker?  Please tag a sticker."
+        )
     try:
         if resize:
             filename = resize_image(filename)
@@ -207,7 +236,9 @@ async def kang_sticker(c, m):
                 )
                 if stickerset.set.count >= max_stickers:
                     packnum += 1
-                    packname = f"{pack_prefix}_{packnum}_{m.from_user.id}_by_{c.me.username}"
+                    packname = (
+                        f"{pack_prefix}_{packnum}_{m.from_user.id}_by_{c.me.username}"
+                    )
                 else:
                     packname_found = True
             except StickersetInvalid:
@@ -287,7 +318,9 @@ async def kang_sticker(c, m):
                 )
 
     except BadRequest:
-        return await prog_msg.edit_text("Your Sticker Pack is full if your pack is not in v1 Type /kang 1, if it is not in v2 Type /kang 2 and so on.")
+        return await prog_msg.edit_text(
+            "Your Sticker Pack is full if your pack is not in v1 Type /kang 1, if it is not in v2 Type /kang 2 and so on."
+        )
     except Exception as all_e:
         await prog_msg.edit_text(f"{all_e.__class__.__name__} : {all_e}")
     else:
