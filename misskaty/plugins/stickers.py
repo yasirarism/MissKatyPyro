@@ -93,6 +93,7 @@ async def getstickerid(c, m):
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
 async def getstickerid(c, m):
     if m.reply_to_message.sticker:
+        pp = await m.reply_text("Trying to remove from pack..")
         try:
             decoded = FileId.decode(m.reply_to_message.sticker.file_id)
             sticker = InputDocument(
@@ -101,9 +102,9 @@ async def getstickerid(c, m):
                 file_reference=decoded.file_reference,
             )
             await app.invoke(RemoveStickerFromSet(sticker=sticker))
-            await m.reply_text("Sticker has been removed from your pack")
+            await pp.edit("Sticker has been removed from your pack")
         except Exception as e:
-            await m.reply_text(f"Failed remove sticker from your pack.\n\nERR: {e}")
+            await pp.edit(f"Failed remove sticker from your pack.\n\nERR: {e}")
     else:
         await m.reply_text(
             f"Please reply sticker that created by {c.me.username} to remove sticker from your pack."
@@ -114,7 +115,7 @@ async def getstickerid(c, m):
 async def kang_sticker(c, m):
     if not m.from_user:
         return await m.reply_text("You are anon admin, kang stickers in my pm.")
-    prog_msg = await m.reply_text("Kanging Sticker..")
+    prog_msg = await m.reply_text("Trying to steal your sticker...")
     sticker_emoji = "🤔"
     packnum = 0
     packname_found = False
@@ -275,11 +276,11 @@ async def kang_sticker(c, m):
             )
         else:
             await prog_msg.edit_text("<b>Creating a new sticker pack...</b>")
-            stkr_title = f"{m.from_user.first_name}'s StickPack"
+            stkr_title = f"{m.from_user.first_name}'s"
             if animated:
-                stkr_title += "MissKaty AnimPack"
+                stkr_title += "AnimPack"
             elif videos:
-                stkr_title += "MissKaty VidPack"
+                stkr_title += "VidPack"
             if packnum != 0:
                 stkr_title += f" v{packnum}"
             try:
