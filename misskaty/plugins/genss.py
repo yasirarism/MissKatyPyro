@@ -52,12 +52,16 @@ async def genss(client, message):
                     chat_id=message.chat.id,
                     message_id=process.id,
                 )
-                await client.send_chat_action(chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await client.send_chat_action(
+                    chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO
+                )
 
                 try:
                     await gather(
                         *[
-                            message.reply_document(images, reply_to_message_id=message.id),
+                            message.reply_document(
+                                images, reply_to_message_id=message.id
+                            ),
                             message.reply_photo(images, reply_to_message_id=message.id),
                         ]
                     )
@@ -65,7 +69,9 @@ async def genss(client, message):
                     await sleep(e.value)
                     await gather(
                         *[
-                            message.reply_document(images, reply_to_message_id=message.id),
+                            message.reply_document(
+                                images, reply_to_message_id=message.id
+                            ),
                             message.reply_photo(images, reply_to_message_id=message.id),
                         ]
                     )
@@ -97,9 +103,13 @@ async def genss_link(client, message):
     try:
         link = message.text.split(" ")[1]
         if link.startswith("https://file.yasirweb.my.id"):
-            link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
+            link = link.replace(
+                "https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev"
+            )
         if link.startswith("https://link.yasirweb.my.id"):
-            link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
+            link = link.replace(
+                "https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com"
+            )
         process = await message.reply_text("`Processing, please wait..`")
         tmp_directory_for_each_user = f"./MissKaty_Genss/{str(message.from_user.id)}"
         if not os.path.isdir(tmp_directory_for_each_user):
@@ -111,7 +121,9 @@ async def genss_link(client, message):
             chat_id=message.chat.id,
             message_id=process.id,
         )
-        await client.send_chat_action(chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+        await client.send_chat_action(
+            chat_id=message.chat.id, action=enums.ChatAction.UPLOAD_PHOTO
+        )
         try:
             await message.reply_media_group(images, reply_to_message_id=message.id)
         except FloodWait as e:

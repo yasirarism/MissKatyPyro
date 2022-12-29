@@ -59,7 +59,12 @@ async def admin_cache_func(_, cmu):
     if cmu.old_chat_member and cmu.old_chat_member.promoted_by:
         admins_in_chat[cmu.chat.id] = {
             "last_updated_at": time(),
-            "data": [member.user.id async for member in app.get_chat_members(cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+            "data": [
+                member.user.id
+                async for member in app.get_chat_members(
+                    cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                )
+            ],
         }
         LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
 
@@ -144,7 +149,9 @@ async def kickFunc(_, message):
 
 
 # Ban/DBan/TBan User
-@app.on_message(filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_restrict_members")
 async def banFunc(_, message):
     user_id, reason = await extract_user_and_reason(message, sender_chat=True)
@@ -156,14 +163,23 @@ async def banFunc(_, message):
     if user_id in SUDO:
         return await message.reply_text("You Wanna Ban The Elevated One?, RECONSIDER!")
     if user_id in (await list_admins(message.chat.id)):
-        return await message.reply_text("I can't ban an admin, You know the rules, so do i.")
+        return await message.reply_text(
+            "I can't ban an admin, You know the rules, so do i."
+        )
 
     try:
         mention = (await app.get_users(user_id)).mention
     except IndexError:
-        mention = message.reply_to_message.sender_chat.title if message.reply_to_message else "Anon"
+        mention = (
+            message.reply_to_message.sender_chat.title
+            if message.reply_to_message
+            else "Anon"
+        )
 
-    msg = f"**Banned User:** {mention}\n" f"**Banned By:** {message.from_user.mention if message.from_user else 'Anon'}\n"
+    msg = (
+        f"**Banned User:** {mention}\n"
+        f"**Banned By:** {message.from_user.mention if message.from_user else 'Anon'}\n"
+    )
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     if message.command[0] == "tban":
@@ -208,25 +224,33 @@ async def unban_func(_, message):
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
     else:
-        return await message.reply_text("Provide a username or reply to a user's message to unban.")
+        return await message.reply_text(
+            "Provide a username or reply to a user's message to unban."
+        )
     await message.chat.unban_member(user)
     umention = (await app.get_users(user)).mention
     await message.reply_text(f"Unbanned! {umention}")
 
 
 # Ban users listed in a message
-@app.on_message(filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & ~filters.private
+)
 async def list_ban_(c, message):
     userid, msglink_reason = await extract_user_and_reason(message)
     if not userid or not msglink_reason:
-        return await message.reply_text("Provide a userid/username along with message link and reason to list-ban")
+        return await message.reply_text(
+            "Provide a userid/username along with message link and reason to list-ban"
+        )
     if len(msglink_reason.split(" ")) == 1:  # message link included with the reason
         return await message.reply_text("You must provide a reason to list-ban")
     # seperate messge link from reason
     lreason = msglink_reason.split()
     messagelink, reason = lreason[0], " ".join(lreason[1:])
 
-    if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+", messagelink):  # validate link
+    if not re.search(
+        r"(https?://)?t(elegram)?\.me/\w+/\d+", messagelink
+    ):  # validate link
         return await message.reply_text("Invalid message link provided")
 
     if userid == 1507530289:
@@ -235,7 +259,9 @@ async def list_ban_(c, message):
         return await message.reply_text("You Wanna Ban The Elevated One?, RECONSIDER!")
     splitted = messagelink.split("/")
     uname, mid = splitted[-2], int(splitted[-1])
-    m = await message.reply_text("`Banning User from multiple groups. This may take some time`")
+    m = await message.reply_text(
+        "`Banning User from multiple groups. This may take some time`"
+    )
     try:
         msgtext = (await app.get_messages(uname, mid)).text
         gusernames = re.findall("@\w+", msgtext)
@@ -264,11 +290,17 @@ async def list_ban_(c, message):
 
 
 # Unban users listed in a message
-@app.on_message(filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.user(SUDO)
+    & filters.command("listunban", COMMAND_HANDLER)
+    & ~filters.private
+)
 async def list_unban_(c, message):
     userid, msglink = await extract_user_and_reason(message)
     if not userid or not msglink:
-        return await message.reply_text("Provide a userid/username along with message link to list-unban")
+        return await message.reply_text(
+            "Provide a userid/username along with message link to list-unban"
+        )
 
     if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+", msglink):  # validate link
         return await message.reply_text("Invalid message link provided")
@@ -315,7 +347,9 @@ async def deleteFunc(_, message):
 
 
 # Promote Members
-@app.on_message(filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_promote_members")
 async def promoteFunc(_, message):
     user_id = await extract_user(message)
@@ -419,10 +453,15 @@ async def mute(_, message):
     if user_id in SUDO:
         return await message.reply_text("You wanna mute the elevated one?, RECONSIDER!")
     if user_id in (await list_admins(message.chat.id)):
-        return await message.reply_text("I can't mute an admin, You know the rules, so do i.")
+        return await message.reply_text(
+            "I can't mute an admin, You know the rules, so do i."
+        )
     mention = (await app.get_users(user_id)).mention
     keyboard = ikb({"🚨   Unmute   🚨": f"unmute_{user_id}"})
-    msg = f"**Muted User:** {mention}\n" f"**Muted By:** {message.from_user.mention if message.from_user else 'Anon'}\n"
+    msg = (
+        f"**Muted User:** {mention}\n"
+        f"**Muted By:** {message.from_user.mention if message.from_user else 'Anon'}\n"
+    )
     if message.command[0] == "tmute":
         split = reason.split(None, 1)
         time_value = split[0]
@@ -498,7 +537,9 @@ async def warn_user(_, message):
     if user_id in SUDO:
         return await message.reply_text("You Wanna Warn The Elevated One?, RECONSIDER!")
     if user_id in (await list_admins(chat_id)):
-        return await message.reply_text("I can't warn an admin, You know the rules, so do i.")
+        return await message.reply_text(
+            "I can't warn an admin, You know the rules, so do i."
+        )
     user, warns = await asyncio.gather(
         app.get_users(user_id),
         get_warn(chat_id, await int_to_alpha(user_id)),
@@ -531,7 +572,8 @@ async def remove_warning(_, cq):
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
-            "You don't have enough permissions to perform this action.\n" + f"Permission needed: {permission}",
+            "You don't have enough permissions to perform this action.\n"
+            + f"Permission needed: {permission}",
             show_alert=True,
         )
     user_id = cq.data.split("_")[1]
@@ -556,7 +598,8 @@ async def unmute_user(_, cq):
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
-            "You don't have enough permissions to perform this action.\n" + f"Permission needed: {permission}",
+            "You don't have enough permissions to perform this action.\n"
+            + f"Permission needed: {permission}",
             show_alert=True,
         )
     user_id = cq.data.split("_")[1]
@@ -575,7 +618,8 @@ async def unban_user(_, cq):
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
-            "You don't have enough permissions to perform this action.\n" + f"Permission needed: {permission}",
+            "You don't have enough permissions to perform this action.\n"
+            + f"Permission needed: {permission}",
             show_alert=True,
         )
     user_id = cq.data.split("_")[1]
@@ -592,7 +636,9 @@ async def unban_user(_, cq):
 @adminsOnly("can_restrict_members")
 async def remove_warnings(_, message):
     if not message.reply_to_message:
-        return await message.reply_text("Reply to a message to remove a user's warnings.")
+        return await message.reply_text(
+            "Reply to a message to remove a user's warnings."
+        )
     user_id = message.reply_to_message.from_user.id
     mention = message.reply_to_message.from_user.mention
     chat_id = message.chat.id
@@ -623,7 +669,13 @@ async def check_warns(_, message):
 
 
 # Report User in Group
-@app.on_message((filters.command("report", COMMAND_HANDLER) | filters.command(["admins", "admin"], prefixes="@")) & ~filters.private)
+@app.on_message(
+    (
+        filters.command("report", COMMAND_HANDLER)
+        | filters.command(["admins", "admin"], prefixes="@")
+    )
+    & ~filters.private
+)
 @capture_err
 async def report_user(_, message):
     if not message.reply_to_message:
@@ -638,13 +690,28 @@ async def report_user(_, message):
     linked_chat = (await app.get_chat(message.chat.id)).linked_chat
     if linked_chat is None:
         if reply_id in list_of_admins or reply_id == message.chat.id:
-            return await message.reply_text("Do you know that the user you are replying is an admin ?")
+            return await message.reply_text(
+                "Do you know that the user you are replying is an admin ?"
+            )
 
-    elif reply_id in list_of_admins or reply_id == message.chat.id or reply_id == linked_chat.id:
-        return await message.reply_text("Do you know that the user you are replying is an admin ?")
-    user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
+    elif (
+        reply_id in list_of_admins
+        or reply_id == message.chat.id
+        or reply_id == linked_chat.id
+    ):
+        return await message.reply_text(
+            "Do you know that the user you are replying is an admin ?"
+        )
+    user_mention = (
+        reply.from_user.mention if reply.from_user else reply.sender_chat.title
+    )
     text = f"Reported {user_mention} to admins!"
-    admin_data = [m async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]
+    admin_data = [
+        m
+        async for m in app.get_chat_members(
+            message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+        )
+    ]
     for admin in admin_data:
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins
