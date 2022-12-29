@@ -12,12 +12,7 @@ def keyboard(buttons_list, row_width: int = 2):
     if theres, a url, it will make url button, else callback button
     """
     buttons = InlineKeyboard(row_width=row_width)
-    data = [
-        Ikb(text=str(i[0]), url=str(i[1]))
-        if is_url(i[1])
-        else Ikb(text=str(i[0]), callback_data=str(i[1]))
-        for i in buttons_list
-    ]
+    data = [Ikb(text=str(i[0]), url=str(i[1])) if is_url(i[1]) else Ikb(text=str(i[0]), callback_data=str(i[1])) for i in buttons_list]
 
     buttons.add(*data)
     return buttons
