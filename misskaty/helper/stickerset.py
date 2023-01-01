@@ -22,9 +22,7 @@ from typing import List
 from pyrogram import Client, errors, raw
 
 
-async def get_sticker_set_by_name(
-    client: Client, name: str
-) -> raw.base.messages.StickerSet:
+async def get_sticker_set_by_name(client: Client, name: str) -> raw.base.messages.StickerSet:
     try:
         return await client.invoke(
             raw.functions.messages.GetStickerSet(
@@ -65,15 +63,11 @@ async def add_sticker_to_set(
 ) -> raw.base.messages.StickerSet:
     return await client.invoke(
         raw.functions.stickers.AddStickerToSet(
-            stickerset=raw.types.InputStickerSetShortName(
-                short_name=stickerset.set.short_name
-            ),
+            stickerset=raw.types.InputStickerSetShortName(short_name=stickerset.set.short_name),
             sticker=sticker,
         )
     )
 
 
-async def create_sticker(
-    sticker: raw.base.InputDocument, emoji: str
-) -> raw.base.InputStickerSetItem:
+async def create_sticker(sticker: raw.base.InputDocument, emoji: str) -> raw.base.InputStickerSetItem:
     return raw.types.InputStickerSetItem(document=sticker, emoji=emoji)

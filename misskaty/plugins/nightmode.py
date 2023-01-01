@@ -47,9 +47,7 @@ async def job_close():
     jam = now.strftime("%H:%M")
     try:
         # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-        reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
-        )
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
         await app.set_chat_permissions(
             -1001128045651,
             ChatPermissions(can_send_messages=False, can_invite_users=True),
@@ -87,9 +85,7 @@ async def job_close_ymoviez():
     jam = now.strftime("%H:%M")
     try:
         # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-        reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
-        )
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
         await app.set_chat_permissions(
             -1001255283935,
             ChatPermissions(can_send_messages=False, can_invite_users=True),
@@ -126,9 +122,7 @@ async def job_open():
     jam = now.strftime("%H:%M")
     try:
         # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-        reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
-        )
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
         await app.set_chat_permissions(
             -1001128045651,
             ChatPermissions(
@@ -172,9 +166,7 @@ async def job_open_ymoviez():
     jam = now.strftime("%H:%M")
     try:
         # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
-        reply_markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
-        )
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
         await app.set_chat_permissions(
             -1001255283935,
             ChatPermissions(

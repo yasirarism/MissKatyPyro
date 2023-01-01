@@ -20,9 +20,7 @@ def post_to_telegraph(a_title: str, content: str) -> str:
 
 
 async def run_subprocess(cmd):
-    process = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+    process = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     return await process.communicate()
 
 
@@ -49,9 +47,7 @@ async def get_media_info(file_link):
 async def runcmd(cmd: str) -> Tuple[str, str, int, int]:
     """run command in terminal"""
     args = shlex.split(cmd)
-    process = await asyncio.create_subprocess_exec(
-        *args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+    process = await asyncio.create_subprocess_exec(*args, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
     stdout, stderr = await process.communicate()
     return (
         stdout.decode("utf-8", "replace").strip(),
