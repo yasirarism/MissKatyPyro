@@ -1,6 +1,7 @@
 import traceback, asyncio
 from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
+from pyrogram.errors.exceptions.flood_420 import FloodWait
 from misskaty.vars import LOG_CHANNEL
 from misskaty import app
 
@@ -52,8 +53,11 @@ def capture_err(func):
             )
 
             for x in error_feedback:
-                await app.send_message(LOG_CHANNEL, x)
-                await message.reply(x)
+                try:
+                    await app.send_message(LOG_CHANNEL, x)
+                    await message.reply(x)
+                except FloodWait as e:
+                    await asyncio.sleep(x.value)
             raise err
 
     return capture

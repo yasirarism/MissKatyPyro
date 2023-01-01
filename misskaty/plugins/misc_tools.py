@@ -188,7 +188,7 @@ async def tts(_, message):
     else:
         if len(message.text.split()) <= 2:
             await message.reply_text(
-                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tts en <text></code>",
+                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n*Usage:* /tts en [text]",
             )
             return
         target_lang = message.text.split(None, 2)[1]
@@ -515,7 +515,18 @@ async def imdb1_search(client, message):
 
 @app.on_callback_query(filters.regex("^imdbid"))
 async def imdbcb_backup(bot: Client, query: CallbackQuery):
-    i, userid, movie = query.data.split("#")
+    # ValueError: not enough values to unpack (expected 3, got 2)
+    # Idk how to reproduce it, so wait people report to me
+    try:
+        i, userid, movie = query.data.split("#")
+    except:
+        LOGGER.error(
+            f"ERROR IMDB Callback: {query.data} - {query.from_user.first_name} [{query.from_user.id}]"
+        )
+        return await query.answer(
+            "⚠️ Invalid callback query, silahkan laporkan ke pemilik bot atau buka issue baru di repository MissKaty dengan alasan yang jelas.",
+            True,
+        )
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
     try:
@@ -749,7 +760,16 @@ async def imdb_en_search(client, message):
 @app.on_callback_query(filters.regex("^imdben"))
 @capture_err
 async def imdb_en_callback(bot: Client, query: CallbackQuery):
-    i, userid, movie = query.data.split("#")
+    try:
+        i, userid, movie = query.data.split("#")
+    except:
+        LOGGER.error(
+            f"ERROR IMDB Callback: {query.data} - {query.from_user.first_name} [{query.from_user.id}]"
+        )
+        return await query.answer(
+            "⚠️ Invalid callback query, please report to bot owner or open issue in MissKaty repository with relevant details.",
+            True,
+        )
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
     await query.message.edit_caption("<i>⏳ Processing your request..</i>")

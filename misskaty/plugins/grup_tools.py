@@ -234,7 +234,7 @@ async def save_group(bot, message):
                     photo=welcomeimg,
                     caption=f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
                 )
-            except (ChatSendMediaForbidden, SlowmodeWait, TopicClosed):
+            except (ChatSendMediaForbidden, SlowmodeWait):
                 await app.leave_chat(message.chat.id)
             try:
                 os.remove(f"downloads/welcome#{u.id}.png")

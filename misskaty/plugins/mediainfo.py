@@ -8,9 +8,11 @@
 import io
 from os import remove as osremove
 import time
+import asyncio
 import subprocess
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.errors import FloodWait
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 from misskaty import app
@@ -51,7 +53,10 @@ async def mediainfo(client, message):
         text_ = file_info.message_type
         link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-        await message.reply("ℹ️ **MEDIA INFO**", reply_markup=markup, quote=True)
+        try:
+            await message.reply("ℹ️ **MEDIA INFO**", reply_markup=markup, quote=True)
+        except FloodWait as f:
+            await asyncio.sleep(f.value)
         await process.delete()
         try:
             osremove(file_path)
@@ -60,10 +65,6 @@ async def mediainfo(client, message):
     else:
         try:
             link = message.text.split(" ", maxsplit=1)[1]
-            if link.startswith("https://file.yasirweb.my.id"):
-                link = link.replace("https://file.yasirweb.my.id", "https://file.yasiraris.workers.dev")
-            if link.startswith("https://link.yasirweb.my.id"):
-                link = link.replace("https://link.yasirweb.my.id", "https://yasirrobot.herokuapp.com")
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
                 output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
