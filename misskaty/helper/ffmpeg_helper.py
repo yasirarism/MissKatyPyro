@@ -31,9 +31,7 @@ async def ssgen_link(video, output_directory, ttl):
         "image2",
         out_put_file_name,
     ]
-    process = await asyncio.create_subprocess_exec(
-        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
-    )
+    process = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
 
     stdout, stderr = await process.communicate()
     stderr.decode().strip()
@@ -42,11 +40,7 @@ async def ssgen_link(video, output_directory, ttl):
 
 
 async def genss_link(msg, video_link, output_directory, min_duration, no_of_photos):
-    metadata = (
-        await shell_exec(
-            f"ffprobe -i {video_link} -show_entries format=duration -v quiet -of csv='p=0'"
-        )
-    )[0]
+    metadata = (await shell_exec(f"ffprobe -i {video_link} -show_entries format=duration -v quiet -of csv='p=0'"))[0]
     duration = round(float(metadata))
     if duration > min_duration:
         images = []
@@ -54,20 +48,12 @@ async def genss_link(msg, video_link, output_directory, min_duration, no_of_phot
         current_ttl = ttl_step
         for looper in range(no_of_photos):
             ss_img = await ssgen_link(video_link, output_directory, current_ttl)
-            images.append(
-                InputMediaPhoto(
-                    media=ss_img, caption=f"Screenshot at {hhmmss(current_ttl)}"
-                )
-            )
+            images.append(InputMediaPhoto(media=ss_img, caption=f"Screenshot at {hhmmss(current_ttl)}"))
             try:
-                await msg.edit(
-                    f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>"
-                )
+                await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
             except FloodWait as e:
                 await asyncio.sleep(e.value)
-                await msg.edit(
-                    f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>"
-                )
+                await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
             current_ttl = current_ttl + ttl_step
             await asyncio.sleep(2)
         return images

@@ -46,18 +46,12 @@ def get_subname(url, format):
 async def ceksub(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await m.reply(
-            f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video."
-        )
+        return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
     link = cmd[1]
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..", quote=True)
     try:
-        res = (
-            await shell_exec(
-                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
-            )
-        )[0]
+        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -101,15 +95,11 @@ ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
 async def convertsrt(_, m):
     reply = m.reply_to_message
     if not reply and reply.document:
-        return await m.reply(
-            f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt."
-        )
+        return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
     msg = await m.reply("Sedang memproses perintah...")
     dl = await reply.download()
     (await shell_exec(f"mediaextract -i {dl} {os.path.basename(dl)}.srt"))[0]
-    await m.reply_document(
-        f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt"
-    )
+    await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
     await msg.delete()
     try:
         os.remove(dl)
@@ -143,9 +133,7 @@ async def stream_extract(bot, update):
             format == "ass"
         start_time = perf_counter()
         namafile = get_subname(link, format)
-        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[
-            0
-        ]
+        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(

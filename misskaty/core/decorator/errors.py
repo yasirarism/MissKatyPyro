@@ -56,7 +56,7 @@ def capture_err(func):
                 try:
                     await app.send_message(LOG_CHANNEL, x)
                     await message.reply(x)
-                except FloodWait as e:
+                except FloodWait:
                     await asyncio.sleep(x.value)
             raise err
 

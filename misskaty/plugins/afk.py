@@ -147,9 +147,7 @@ async def active_afk(_, message):
                 "reason": None,
             }
         else:
-            await app.download_media(
-                message.reply_to_message, file_name=f"{user_id}.jpg"
-            )
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -166,9 +164,7 @@ async def active_afk(_, message):
                 "reason": _reason,
             }
         else:
-            await app.download_media(
-                message.reply_to_message, file_name=f"{user_id}.jpg"
-            )
+            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -184,9 +180,7 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    send = await message.reply_text(
-        f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!."
-    )
+    send = await message.reply_text(f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!.")
     await put_cleanmode(message.chat.id, send.id)
 
 
