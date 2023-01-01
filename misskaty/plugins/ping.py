@@ -23,7 +23,9 @@ async def ping(_, message):
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
     try:
-        await rm.edit(f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>")
+        await rm.edit(
+            f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>"
+        )
     except Exception:
         pass
 
@@ -49,7 +51,9 @@ async def ping_handler(_, message):
                     check=True,
                     capture_output=True,
                 )
-                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace(
+                    "time=", ""
+                )
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:

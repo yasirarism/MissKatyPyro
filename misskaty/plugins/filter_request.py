@@ -17,17 +17,28 @@ async def start(_, message):
     await message.reply_text(text=f"Wa'alaikumsalam {message.from_user.mention} 😇")
 
 
-@app.on_message(filters.regex(r"#request|#req", re.I) & (filters.text | filters.photo) & filters.chat(-1001255283935) & ~filters.channel)
+@app.on_message(
+    filters.regex(r"#request|#req", re.I)
+    & (filters.text | filters.photo)
+    & filters.chat(-1001255283935)
+    & ~filters.channel
+)
 @capture_err
 async def request_user(client, message):
     if message.sender_chat:
-        return await message.reply(f"{message.from_user.mention} mohon gunakan akun asli saat request.")
+        return await message.reply(
+            f"{message.from_user.mention} mohon gunakan akun asli saat request."
+        )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
         return await message.reply("Sabar dikit napa.. 🙄")
     markup = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.id}")],
+            [
+                InlineKeyboardButton(
+                    text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.id}"
+                )
+            ],
             [
                 InlineKeyboardButton(
                     text="🚫 Tolak",
@@ -59,7 +70,9 @@ async def request_user(client, message):
         else:
             REQUEST_DB[user_id] = 1
         if REQUEST_DB[user_id] > 3:
-            return await message.reply(f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝😝.")
+            return await message.reply(
+                f"Mohon maaf {message.from_user.mention}, maksimal request hanya 3x perhari. Kalo mau tambah 5k per request 😝😝."
+            )
         if message.text:
             forward = await client.send_message(
                 -1001575525902,
@@ -140,18 +153,36 @@ async def _callbackreq(c, q):
             if q.message.caption:
                 await q.message.edit_text(
                     f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="✅ Request Completed", callback_data="reqcompl"
+                                )
+                            ]
+                        ]
+                    ),
                 )
             else:
                 await q.message.edit_text(
                     f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="✅ Request Completed", callback_data="reqcompl"
+                                )
+                            ]
+                        ]
+                    ),
                 )
             await q.answer("Request berhasil diselesaikan ✅")
         else:
             await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
     except UserNotParticipant:
-        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
+        return await q.answer(
+            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
+        )
     except PeerIdInvalid:
         return await q.answer(
             "Silahkan kirim pesan digrup supaya bot bisa merespon.",
@@ -207,7 +238,9 @@ async def _callbackreqada(c, q):
         else:
             await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
     except UserNotParticipant:
-        return await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
+        return await q.answer(
+            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
+        )
     except PeerIdInvalid:
         return await q.answer(
             "Silahkan kirim pesan digrup supaya bot bisa merespon.",
@@ -234,18 +267,36 @@ async def _callbackreject(c, q):
             if q.message.caption:
                 await q.message.edit_text(
                     f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="🚫 Request Rejected", callback_data="reqreject"
+                                )
+                            ]
+                        ]
+                    ),
                 )
             else:
                 await q.message.edit_text(
                     f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="🚫 Request Rejected", callback_data="reqreject"
+                                )
+                            ]
+                        ]
+                    ),
                 )
             await q.answer("Request berhasil ditolak 🚫")
         else:
             await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
     except UserNotParticipant:
-        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
+        await q.answer(
+            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
+        )
     except PeerIdInvalid:
         return await q.answer(
             "Silahkan kirim pesan digrup supaya bot bisa merespon.",
@@ -297,7 +348,9 @@ async def _callbackunav(c, q):
                         ]
                     ),
                 )
-            await q.answer("Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital.")
+            await q.answer(
+                "Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital."
+            )
         else:
             await q.answer(
                 "Apa motivasi kamu menekan tombol ini?",
@@ -305,7 +358,9 @@ async def _callbackunav(c, q):
                 cache_time=1000,
             )
     except UserNotParticipant:
-        await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10)
+        await q.answer(
+            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
+        )
     except PeerIdInvalid:
         return await q.answer(
             "Silahkan kirim pesan digrup supaya bot bisa merespon.",
@@ -343,7 +398,9 @@ async def _callbackaft_unav(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
 async def _callbackaft_dahada(c, q):
-    await q.answer("Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True)
+    await q.answer(
+        "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True
+    )
 
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
