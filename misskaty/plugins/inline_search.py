@@ -170,9 +170,9 @@ async def inline_menu(_, inline_query: InlineQuery):
         msg += f"<b>🇮🇩 Language:</b> {diaa.language_code}"
         results = [
             InlineQueryResultArticle(
-                title=f"Get information off {penerima.id}",
+                title=f"Get information off {diaa.id}",
                 input_message_content=InputTextMessageContent(msg),
-                description=f"Get information off {penerima.id}",
+                description=f"Get information off {diaa.id}",
             )
         ]
         await inline_query.answer(results=results, cache_time=3)
