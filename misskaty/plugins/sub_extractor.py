@@ -114,9 +114,9 @@ async def convertsrt(c, m):
     msg = await m.reply("⏳ Converting...")
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
-        LOGGER.info(
-            f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
-        )
+    LOGGER.info(
+        f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
+    )
     (await shell_exec(f"mediaextract -i '{dl}' {filename}.srt"))[0]
     await m.reply_document(
         f"{filename}.srt", caption=f"{filename}.srt\n\nConverted by @{c.me.username}"
