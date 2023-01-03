@@ -157,6 +157,7 @@ async def stream_extract(bot, update):
             )
         start_time = perf_counter()
         namafile = get_subname(link, format)
+        LOGGER.info(namafile)
         extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[
             0
         ]
