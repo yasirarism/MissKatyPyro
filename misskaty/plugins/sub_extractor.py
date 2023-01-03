@@ -23,7 +23,8 @@ ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
 
 __MODULE__ = "MediaExtract"
 __HELP__ = """
-/extractmedia [URL] - Extract subtitle or audio from video using link.
+/extractmedia [URL] - Extract subtitle or audio from video using link. (Not support TG File to reduce bandwith usage.)
+/converttosrt [Reply to .ass or .vtt TG File] - Convert from .ass or .vtt to srt
 """
 
 
@@ -46,12 +47,18 @@ def get_subname(url, format):
 async def ceksub(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
+        return await m.reply(
+            f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video."
+        )
     link = cmd[1]
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..", quote=True)
     try:
-        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
+        res = (
+            await shell_exec(
+                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
+            )
+        )[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -84,26 +91,37 @@ async def ceksub(_, m):
         )
     except Exception:
         err = traceback.format_exc()
-        await pesan.edit(f"Gagal extract media data.\nLink: {link}\nERROR: {err}")
-
-
-ALLOWED_USER = [978550890, 617426792, 2024984460, 1533008300, 1985689491]
+        await pesan.edit(
+            f"Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot."
+        )
 
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
-async def convertsrt(_, m):
+async def convertsrt(c, m):
     reply = m.reply_to_message
-    if not reply and reply.document:
-        return await m.reply(f"Gunakan command /{m.command[0]} dengan mereply ke file ass untuk convert subtitle ke srt.")
-    msg = await m.reply("Sedang memproses perintah...")
+    if (
+        not reply
+        and reply.document
+        and (
+            reply.document.file_name.endswith(".vtt")
+            or reply.document.file_name.endswith(".ass")
+        )
+    ):
+        return await m.reply(
+            f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt."
+        )
+    msg = await m.reply("⏳ Converting...")
     dl = await reply.download()
-    (await shell_exec(f"mediaextract -i {dl} {os.path.basename(dl)}.srt"))[0]
-    await m.reply_document(f"{os.path.basename(dl)}.srt", caption=f"{os.path.basename(dl)}.srt")
+    filename = dl.split("/", 3)[3]
+    (await shell_exec(f"mediaextract -i '{dl}' {filename}.srt"))[0]
+    await m.reply_document(
+        f"{filename}.srt", caption=f"{filename}.srt\n\nConverted by @{c.me.username}"
+    )
     await msg.delete()
     try:
         os.remove(dl)
-        os.remove(f"{os.path.basename(dl)}.srt")
+        os.remove(f"{filename}.srt")
     except:
         pass
 
@@ -119,7 +137,7 @@ async def stream_extract(bot, update):
         link = update.message.reply_to_message.command[1]
     except:
         return await update.answer("⚠️ DONT DELETE YOUR MESSAGE!", True)
-    await update.message.edit("Processing...")
+    await update.message.edit("⏳ Processing...")
     try:
         if codec == "aac":
             format = "aac"
@@ -129,16 +147,24 @@ async def stream_extract(bot, update):
             format = "eac3"
         elif codec == "subrip":
             format = "srt"
-        else:
+        elif codec == "ass":
             format == "ass"
+        else:
+            format = None
+        if not format:
+            return await update.answer(
+                "⚠️ Unsupported format, try extract manual using ffmpeg"
+            )
         start_time = perf_counter()
         namafile = get_subname(link, format)
-        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[0]
+        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[
+            0
+        ]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(
             namafile,
-            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{BOT_USERNAME} in {timelog}",
+            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{bot.me.username} in {timelog}",
             reply_to_message_id=usr.id,
         )
         await update.message.delete()

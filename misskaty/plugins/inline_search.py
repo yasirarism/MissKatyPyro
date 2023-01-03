@@ -27,9 +27,10 @@ To use this feature, just type bot username with following args below.
 ~ pypi [query] - Search package from Pypi.
 ~ git [query] - Search in Git.
 ~ google [query] - Search in Google.
+~ info [user id/username] - Check info about a user.
 """
 
-keywords_list = ["imdb", "pypi", "git", "google", "secretmsg"]
+keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info"]
 
 PRVT_MSGS = {}
 
@@ -142,6 +143,39 @@ async def inline_menu(_, inline_query: InlineQuery):
             switch_pm_text=f"Found {len(data)} results",
             switch_pm_parameter="google",
         )
+    elif inline_query.query.strip().lower().split()[0] == "info":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="User Info | info [id/username]",
+                switch_pm_parameter="inline",
+            )
+        userr = inline_query.query.split(None, 1)[1].strip()
+        try:
+            diaa = await app.get_users(userr)
+        except Exception:  # pylint: disable=broad-except
+            inline_query.stop_propagation()
+            return
+        namanya = (
+            f"{diaa.first_name} {diaa.last_name}" if diaa.last_name else diaa.first_name
+        )
+        msg = f"<b>🏷 Name:</b> {namanya}\n<b>🆔 ID:</b> {diaa.id}"
+        if diaa.username:
+            msg += f"<b>🌐 Username:</b> <code>@{diaa.username}</code>"
+        msg += f"<b>🕰 User Status:</b> {diaa.status}"
+        if diaa.dc_id:
+            msg += f"<b>🌏 DC:</b> {diaa.dc_id}"
+        msg += f"<b>✨ Premium:</b> {diaa.is_premium}"
+        msg += f"<b>⭐️ Verified:</b> {diaa.is_verified}"
+        msg += f"<b>🇮🇩 Language:</b> {diaa.language_code}"
+        results = [
+            InlineQueryResultArticle(
+                title=f"Get information off {penerima.id}",
+                input_message_content=InputTextMessageContent(msg),
+                description=f"Get information off {penerima.id}",
+            )
+        ]
+        await inline_query.answer(results=results, cache_time=3)
     elif inline_query.query.strip().lower().split()[0] == "secretmsg":
         if len(inline_query.query.strip().lower().split()) < 3:
             return await inline_query.answer(

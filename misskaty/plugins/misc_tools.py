@@ -530,7 +530,7 @@ async def imdbcb_backup(bot: Client, query: CallbackQuery):
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
     try:
-        await query.message.edit_caption("Permintaan kamu sedang diproses.. ")
+        await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await get_content(url)
         sop = BeautifulSoup(resp, "lxml")
