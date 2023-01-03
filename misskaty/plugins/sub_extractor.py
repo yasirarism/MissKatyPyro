@@ -117,7 +117,7 @@ async def convertsrt(c, m):
     LOGGER.info(
         f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
     )
-    (await shell_exec(f"mediaextract -i '{dl}' {filename}.srt"))[0]
+    (await shell_exec(f"mediaextract -i '{dl}' '{filename}'.srt"))[0]
     await m.reply_document(
         f"{filename}.srt", caption=f"{filename}.srt\n\nConverted by @{c.me.username}"
     )
