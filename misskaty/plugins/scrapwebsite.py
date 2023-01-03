@@ -6,16 +6,16 @@
  * Copyright @YasirPedia All rights reserved
 """
 
-# This plugin to scrape from melongmovie, and lk21
+# This plugin to scrape from melongmovie, lk21, pahe and many more
 from bs4 import BeautifulSoup
 import re
-import traceback
+import asyncio
+from logging import getLogger
 from misskaty import app, BOT_USERNAME
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.tools import rentry
 from misskaty.helper.http import http
 
 __MODULE__ = "WebScraper"
@@ -29,6 +29,7 @@ __HELP__ = """
 /gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
+LOGGER = getLogger(__name__)
 
 # Broken
 @app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
@@ -99,253 +100,426 @@ async def ngefilm21(_, message):
 # Scrape Web From Movieku.CC
 @app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
 @capture_err
-async def movikucc(_, message):
-    if len(message.command) == 1:
-        return await message.reply("Masukkan query yang akan dicari..!!")
-    judul = message.text.split(" ", maxsplit=1)[1]
-    msg = await message.reply("Sedang proses scrap, mohon tunggu..")
-    try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
-        html = await http.get(f"https://107.152.39.187/?s={judul}", headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        data = soup.find_all(class_="bx")
-        res = "".join(
-            f"<b>Judul: {i.find_all('a')[0]['title']}</b>\nLink: {i.find_all('a')[0]['href']}\n\n"
-            for i in data
-        )
-        await msg.edit(
-            f"<b>Hasil Scrap di Movieku.cc:</b>\n{res} ⚠️ Gunakan command /movieku_scrap <b>[link]</b> untuk mengambil link download (hanya untuk movie)."
-        )
-    except Exception as e:
-        await msg.edit(f"ERROR: {str(e)}")
+async def movikucc(_, msg):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
+    data = []
+    if len(msg.command) == 1:
+        try:
+            html = await ambil_source(f"https://107.152.37.223/")
+            r = BeautifulSoup(html, "lxml")
+            res = r.find_all(class_="bx")
+            for i in res:
+                judul = i.find_all("a")[0]["title"]
+                link = i.find_all("a")[0]["href"]
+                data.append({"judul": judul, "link": link})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Movieku Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.commnd[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+        except Exception as e:
+            LOGGER.error(e)
+            await m.delete()
+            await msg.reply(f"ERROR: {e}", True)
+    else:
+        title = msg.text.split(" ", 1)[1]
+        try:
+            html = await ambil_source(f"https://107.152.37.223/?s={title}")
+            r = BeautifulSoup(html, "lxml")
+            res = r.find_all(class_="bx")
+            for i in res:
+                judul = i.find_all("a")[0]["title"]
+                link = i.find_all("a")[0]["href"]
+                data.append({"judul": judul, "link": link})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Movieku Results For:</b> <code>{title}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+        except Exception as e:
+            LOGGER.error(e)
+            await m.delete()
+            await msg.reply(f"ERROR: {e}", True)
 
 
 @app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
 @capture_err
-async def savefilm21(_, message):
+async def savefilm21(_, msg):
+    SITE = "http://185.99.135.215"
     try:
-        judul = message.text.split(" ", maxsplit=1)[1]
-    except IndexError:
-        judul = ""
-    msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+        title = msg.text.split(" ", 1)[1]
+    except:
+        title = None
+    m = await msg.reply("**__⏳ Please wait, scraping data...__**", True)
+    data = []
     try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
-
-        html = await http.get(
-            f"http://185.99.135.215/?s={judul}", headers=headers, follow_redirects=False
-        )
-        soup = BeautifulSoup(html.text, "lxml")
-        res = soup.find_all(class_="entry-title")
-        data = []
-        for i in res:
-            pas = i.find_all("a")
-            judul = pas[0].text
-            link = pas[0]["href"]
-            data.append({"judul": judul, "link": link})
-        if not data:
-            return await msg.edit("Oops, data film tidak ditemukan")
-        res = "".join(
-            f"<b>Judul: {i['judul']}</b>\nLink: {i['link']}\n\n" for i in data
-        )
-        await msg.edit(
-            f"Hasil Scrap <code>{judul}</code> dari Savefilm21:\n{res}\n\n⚠️ Gunakan /savefilm21_scrap <b>[link]</b> untuk mengambil link downloadnya."
-        )
+        if title is not None:
+            html = await http.get(
+                f"{SITE}/?s={title}", headers=headers, follow_redirects=False
+            )
+            bs4 = BeautifulSoup(html.text, "lxml")
+            res = bs4.find_all(class_="entry-title")
+            for i in res:
+                pas = i.find_all("a")
+                judul = pas[0].text
+                link = pas[0]["href"]
+                data.append({"judul": judul, "link": link})
+            if not data:
+                await m.delete()
+                return await msg.reply("Result 404 Not found!", True)
+            await m.delete()
+            head = f"<b>#SaveFilm21 Results For:</b> <code>{title}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+        else:
+            html = await http.get(SITE, headers=headers, follow_redirects=False)
+            bs4 = BeautifulSoup(html.text, "lxml")
+            res = bs4.find_all(class_="entry-title")
+            for i in res:
+                pas = i.find_all("a")
+                judul = pas[0].text
+                link = pas[0]["href"]
+                data.append({"judul": judul, "link": link})
+            await m.delete()
+            head = f"<b>#SaveFilm21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{savefilm21_scrap} {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
     except Exception as e:
-        await msg.edit(f"ERROR: {str(e)}")
+        await m.delete()
+        LOGGER.error(e)
+        await msg.reply(f"ERROR: {e}", True)
 
 
 @app.on_message(filters.command(["melongmovie"], COMMAND_HANDLER))
 @capture_err
 async def melongmovie(_, message):
+    SITE = "http://167.99.31.48"
     try:
-        judul = message.text.split(" ", maxsplit=1)[1]
+        judul = msg.text.split(" ", 1)[1]
     except IndexError:
-        judul = ""
-
-    msg = await message.reply("Sedang proses scrap, mohon tunggu..")
-    try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
-
-        html = await http.get(f"http://167.99.31.48/?s={judul}", headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        data = []
-        for res in soup.select(".box"):
-            dd = res.select("a")
-            url = dd[0]["href"]
-            title = dd[0]["title"]
-            try:
-                kualitas = dd[0].find(class_="quality").text
-            except:
-                kualitas = ""
-            data.append({"judul": title, "link": url, "kualitas": kualitas})
-        if not data:
-            return await msg.edit("Oops, data film tidak ditemukan di melongmovie")
-        res = "".join(
-            f"<b>Judul: {i['judul']}</b>\n<b>Kualitas:</b> {i['kualitas']}\n<b>Link</b>: {i['link']}\n\n"
-            for i in data
-        )
-        # return await message.reply(json.dumps(data, indent=2, ensure_ascii=False))
-        return await msg.edit(res)
-    except Exception as e:
-        await msg.edit(f"ERROR: {str(e)}")
+        judul = None
+    data = []
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
+    if judul is not None:
+        try:
+            html = await http.get(f"{SITE}/?s={judul}", headers=headers)
+            bs4 = BeautifulSoup(html.text, "lxml")
+            for res in bs4.select(".box"):
+                dd = res.select("a")
+                url = dd[0]["href"]
+                title = dd[0]["title"]
+                try:
+                    quality = dd[0].find(class_="quality").text
+                except:
+                    quality = "N/A"
+                data.append({"judul": title, "link": url, "quality": quality})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Not found!", True)
+            await m.delete()
+            head = f"<b>#MelongMovie Results For:</b> <code>{judul}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
+    else:
+        try:
+            html = await http.get(SITE, headers=headers)
+            bs4 = BeautifulSoup(html.text, "lxml")
+            for res in bs4.select(".box"):
+                dd = res.select("a")
+                url = dd[0]["href"]
+                title = dd[0]["title"]
+                try:
+                    quality = dd[0].find(class_="quality").text
+                except:
+                    quality = "N/A"
+                data.append({"judul": title, "link": url, "quality": quality})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Not found!", True)
+            await m.delete()
+            head = f"<b>#MelongMovie Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(data[:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
 
 
 @app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
 @capture_err
-async def pahe_scrap(_, message):
-    judul = message.text.split(" ", maxsplit=1)[1] if len(message.command) > 1 else ""
-    pesan = await message.reply("Please wait, scraping data..")
-    r = await http.get(f"https://yasirapi.eu.org/pahe?q={judul}")
-    res = r.json()
-    if not res["result"]:
-        return await pesan.edit("Yahh, no result found.")
-    data = "".join(
-        f"**{count}. {i['judul']}**\n{i['link']}\n\n"
-        for count, i in enumerate(res["result"], start=1)
-    )
+async def pahe_scrap(_, msg):
+    title = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else ""
+    m = await msg.reply("**__⏳ Please wait, scraping data..__**", True)
     try:
-        await pesan.edit(
-            f"**Daftar rilis movie terbaru di web Pahe**:\n{data}",
-            disable_web_page_preview=True,
+        api = await http.get(f"https://yasirapi.eu.org/pahe?q={title}")
+        res = api.json()
+        if not res["result"]:
+            await m.delete()
+            return await m.reply("Result 404 Not found!", True)
+        head = (
+            f"<b>#Pahe Results For:</b> <code>{title}</code>\n\n"
+            if title
+            else f"<b>#Pahe Latest:</b>\n--> Use /{message.command[0]} [title] to start search with title.\n\n"
         )
-    except MessageTooLong:
-        msg = await rentry(data)
-        await pesan.edit(
-            f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
-        )
+        await m.delete()
+        msgs = ""
+        for c, i in enumerate(res["result"][:15], start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+                await asyncio.sleep(2)
+                msgs = ""
+        if msgs != "":
+            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+    except Exception as e:
+        await m.delete()
+        LOGGER.error(e)
+        await msg.reply(f"ERROR: {e}", True)
 
 
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
 @capture_err
 async def terbit21_scrap(_, message):
-    if len(message.command) == 1:
-        r = await http.get("https://yasirapi.eu.org/terbit21")
-        res = r.json()
-        data = "".join(
-            f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
-            for i in res["result"]
-        )
+    m = await msg.reply("**__Checking data list ...__**", True)
+    if len(msg.command) == 1:
         try:
-            return await message.reply(
-                f"**Daftar rilis movie terbaru di web Terbit21**:\n{data}",
-                disable_web_page_preview=True,
-            )
-        except MessageTooLong:
-            msg = await rentry(data)
-            return await message.reply(
-                f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
-            )
-    judul = message.text.split(" ", maxsplit=1)[1]
-    msg = await message.reply(f"Mencari film di Terbit21 dg keyword {judul}..")
-    r = await http.get(f"https://yasirapi.eu.org/terbit21?q={judul}")
-    res = r.json()
-    data = "".join(
-        f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
-        for i in res["result"]
-    )
-    if not res["result"]:
-        return await msg.edit("Yahh, ga ada hasil ditemukan")
-    try:
-        await msg.edit(
-            f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}",
-            disable_web_page_preview=True,
-        )
-    except MessageTooLong:
-        pesan = await rentry(data)
-        await msg.edit(
-            f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
-        )
+            r = await http.get("https://yasirapi.eu.org/terbit21")
+            res = r.json()
+            if not res["result"]:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Terbit21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(res["result"][:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
+    else:
+        try:
+            title = msg.text.split(" ", 1)[1]
+            r = await http.get("https://yasirapi.eu.org/terbit21?q={title}")
+            res = r.json()
+            if not res["result"]:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Terbit21 Results For:</b> <code>{title}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(res["result"][:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
 
 
 @app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
 @capture_err
-async def lk21_scrap(_, message):
-    if len(message.command) == 1:
-        msg = await message.reply("Mendapatkan daftar post film terbaru di lk21")
-        r = await http.get("https://yasirapi.eu.org/lk21")
-        res = r.json()
-        if res.get("detail", None):
-            return await msg.edit(f"ERROR: {res['detail']}")
-        data = "".join(
-            f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
-            for i in res["result"]
-        )
+async def lk21_scrap(_, msg):
+    m = await msg.reply("**__Checking data list ...__**", True)
+    if len(msg.command) == 1:
         try:
-            return await msg.edit(
-                f"**Daftar rilis movie terbaru di web LK21**:\n{data}",
-                disable_web_page_preview=True,
-            )
-        except MessageTooLong:
-            msg = await rentry(data)
-            await msg.edit(
-                f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{msg}"
-            )
-    judul = message.text.split(" ", maxsplit=1)[1]
-    msg = await message.reply(f"Mencari film di lk21 dg keyword {judul}..")
-    r = await http.get(f"https://yasirapi.eu.org/lk21?q={judul}")
-    res = r.json()
-    if res.get("detail", None):
-        return await msg.edit(f"ERROR: {res['detail']}")
-    data = "".join(
-        f"**Judul: {i['judul']}**\n`{i['kategori']}`\n{i['link']}\n**Download:** [Klik Disini]({i['dl']})\n\n"
-        for i in res["result"]
-    )
-    if not res["result"]:
-        return await msg.edit("Yahh, ga ada hasil ditemukan")
-    try:
-        await msg.edit(
-            f"<b>Hasil pencarian query {judul} di lk21:</b>\n{data}",
-            disable_web_page_preview=True,
-        )
-    except MessageTooLong:
-        pesan = await rentry(data)
-        return await msg.edit(
-            f"Karena hasil scrape terlalu panjang, maka hasil scrape di post ke rentry.\n\n{pesan}"
-        )
+            r = await http.get("https://yasirapi.eu.org/lk21")
+            res = r.json()
+            if res.get("detail", None):
+                await m.delete()
+                return await msg.reply(f"ERROR: {res['detail']}", True)
+            if not res["result"]:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Layarkaca21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(res["result"][:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
+    else:
+        try:
+            title = msg.text.split(" ", 1)[1]
+            r = await http.get("https://yasirapi.eu.org/lk21?q={title}")
+            res = r.json()
+            if res.get("detail", None):
+                await m.delete()
+                return await msg.reply(f"ERROR: {res['detail']}", True)
+            if not res["result"]:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Layarkaca21 Results For:</b> <code>{title}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(res["result"][:15], start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+        except Exception as e:
+            await m.delete()
+            LOGGER.error(e)
+            await msg.reply(str(e), True)
 
 
 @app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
 @capture_err
 async def gomov_scrap(_, message):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
     try:
-        judul = message.text.split(" ", maxsplit=1)[1]
+        title = msg.text.split(" ", 1)[1]
     except IndexError:
-        judul = ""
-
-    msg = await message.reply("Scraping GoMov Website..")
+        title = ""
     try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
-
-        html = await http.get(f"https://185.173.38.216/?s={judul}", headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        entry = soup.find_all(class_="entry-header")
+        html = await http.get(f"https://185.173.38.216/?s={title}", headers=headers)
+        text = BeautifulSoup(html.text, "lxml")
+        entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
-            return await msg.edit("Oops, data film tidak ditemukan di GoMov")
-        DATA = []
+            await m.delete()
+            if title != "":
+                await msg.reply(f"404 Not FOUND For: {key}", True)
+            else:
+                await msg.reply(f"404 Not FOUND!", True)
+            return
+        data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}\n" if genre != "" else ""
+            genre = f"{genre}" if genre != "" else "N/A"
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
-            DATA.append({"judul": judul, "link": link, "genre": genre})
-        res = "".join(
-            f"<b>{num}. {i['judul']}</b>\n<code>{i['genre']}</code>{i['link']}\n\n"
-            for num, i in enumerate(DATA, start=1)
-        )
-        await msg.edit(
-            f"<b>Hasil Pencarian di website GoMov:</b>\n{res}\nScraped by @{BOT_USERNAME}"
-        )
-    except Exception:
-        exc = traceback.format_exc()
-        await msg.edit(f"ERROR: <code>{exc}</code>")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        if title != "":
+            head = f"<b>#Gomov Results For:</b> <code>{title}</code>\n\n"
+        else:
+            head = f"<b>#Gomov Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+        msgs = ""
+        await m.delete()
+        for c, i in enumerate(data[:15], start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+                await asyncio.sleep(2)
+                msgs = ""
+        if msgs != "":
+            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+    except Exception as e:
+        LOGGER.error(e)
+        await m.delete()
+        await msg.reply(f"ERROR: <code>{e}</code>", True)
 
 
 @app.on_message(filters.command(["savefilm21_scrap"], COMMAND_HANDLER))
@@ -364,7 +538,7 @@ async def savefilm21_scrap(_, message):
         await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}")
     except IndexError:
         return await message.reply(
-            "Gunakan command /savefilm21_scrap <b>[link]</b> untuk scrap link download"
+            f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"
         )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
@@ -385,7 +559,7 @@ async def nodrakor_scrap(_, message):
         await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")
     except IndexError:
         return await message.reply(
-            "Gunakan command /nodrakor_scrap <b>[link]</b> untuk scrap link download"
+            f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"
         )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
@@ -417,14 +591,14 @@ async def muviku_scrap(_, message):
         await message.reply(res)
     except IndexError:
         return await message.reply(
-            "Gunakan command /movieku_scrap <b>[link]</b> untuk scrap link download"
+            f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"
         )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
 
 @app.on_message(
-    filters.command(["melong"], COMMAND_HANDLER)
+    filters.command(["melongmovie_scrap"], COMMAND_HANDLER)
     & filters.user([617426792, 1985689491, 1172699512, 2024984460])
 )
 @capture_err
@@ -444,7 +618,7 @@ async def melong_scrap(_, message):
             await message.reply(rep)
     except IndexError:
         await message.reply(
-            "Gunakan command /melong <b>[link]</b> untuk scrap link download"
+            f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"
         )
 
 
