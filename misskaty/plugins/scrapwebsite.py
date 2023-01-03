@@ -31,6 +31,10 @@ __HELP__ = """
 
 LOGGER = getLogger(__name__)
 
+headers = {
+    "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+}
+
 # Broken
 @app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
 @capture_err
@@ -42,9 +46,6 @@ async def nodrakor(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
         html = await http.get(f"https://109.234.34.246/?s={judul}", headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="content-thumbnail text-center")
@@ -73,10 +74,6 @@ async def ngefilm21(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        headers = {
-            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-        }
-
         html = await http.get(
             f"http://185.237.253.209/search?q={title}", headers=headers
         )
@@ -256,7 +253,7 @@ async def savefilm21(_, msg):
 
 @app.on_message(filters.command(["melongmovie"], COMMAND_HANDLER))
 @capture_err
-async def melongmovie(_, message):
+async def melongmovie(_, msg):
     SITE = "http://167.99.31.48"
     try:
         judul = msg.text.split(" ", 1)[1]
@@ -342,7 +339,7 @@ async def pahe_scrap(_, msg):
         head = (
             f"<b>#Pahe Results For:</b> <code>{title}</code>\n\n"
             if title
-            else f"<b>#Pahe Latest:</b>\n--> Use /{message.command[0]} [title] to start search with title.\n\n"
+            else f"<b>#Pahe Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
         )
         await m.delete()
         msgs = ""
@@ -366,7 +363,7 @@ async def pahe_scrap(_, msg):
 
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
 @capture_err
-async def terbit21_scrap(_, message):
+async def terbit21_scrap(_, msg):
     m = await msg.reply("**__Checking data list ...__**", True)
     if len(msg.command) == 1:
         try:
@@ -474,7 +471,7 @@ async def lk21_scrap(_, msg):
 
 @app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
 @capture_err
-async def gomov_scrap(_, message):
+async def gomov_scrap(_, msg):
     m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
     try:
         title = msg.text.split(" ", 1)[1]
