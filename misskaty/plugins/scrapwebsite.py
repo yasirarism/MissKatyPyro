@@ -113,7 +113,7 @@ async def movikucc(_, msg):
                 await m.delete()
                 return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
-            head = f"<b>#Movieku Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#Movieku Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
@@ -227,10 +227,10 @@ async def savefilm21(_, msg):
                 link = pas[0]["href"]
                 data.append({"judul": judul, "link": link})
             await m.delete()
-            head = f"<b>#SaveFilm21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(data, start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{savefilm21_scrap} {i['link']}</code>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
@@ -309,7 +309,7 @@ async def melongmovie(_, msg):
                 await m.delete()
                 return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
-            head = f"<b>#MelongMovie Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#MelongMovie Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
@@ -339,11 +339,11 @@ async def pahe_scrap(_, msg):
         head = (
             f"<b>#Pahe Results For:</b> <code>{title}</code>\n\n"
             if title
-            else f"<b>#Pahe Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            else f"<b>#Pahe Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
         )
         await m.delete()
         msgs = ""
-        for c, i in enumerate(res["result"][:15], start=1):
+        for c, i in enumerate(res["result"], start=1):
             msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
@@ -373,10 +373,10 @@ async def terbit21_scrap(_, msg):
                 await m.delete()
                 return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
-            head = f"<b>#Terbit21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#Terbit21 Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
                     await asyncio.sleep(2)
@@ -399,7 +399,7 @@ async def terbit21_scrap(_, msg):
             head = f"<b>#Terbit21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
                     await asyncio.sleep(2)
@@ -427,10 +427,10 @@ async def lk21_scrap(_, msg):
                 await m.delete()
                 return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
-            head = f"<b>#Layarkaca21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#Layarkaca21 Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
                     await asyncio.sleep(2)
@@ -456,7 +456,7 @@ async def lk21_scrap(_, msg):
             head = f"<b>#Layarkaca21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
                     await asyncio.sleep(2)
@@ -498,7 +498,7 @@ async def gomov_scrap(_, msg):
         if title != "":
             head = f"<b>#Gomov Results For:</b> <code>{title}</code>\n\n"
         else:
-            head = f"<b>#Gomov Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
+            head = f"<b>#Gomov Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
         msgs = ""
         await m.delete()
         for c, i in enumerate(data, start=1):
