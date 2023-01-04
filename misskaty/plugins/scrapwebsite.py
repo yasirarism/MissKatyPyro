@@ -116,7 +116,7 @@ async def movikucc(_, msg):
             head = f"<b>#Movieku Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(data, start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.commnd[0]}_scrap {i['link']}</code>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
@@ -532,7 +532,9 @@ async def savefilm21_scrap(_, message):
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-        await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", disable_web_page_preview=True)
+        await message.reply(
+            f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", disable_web_page_preview=True
+        )
     except IndexError:
         return await message.reply(
             f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"
