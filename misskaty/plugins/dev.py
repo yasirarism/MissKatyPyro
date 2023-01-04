@@ -77,7 +77,7 @@ async def shell(_, m):
 
 @app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
-async def evaluation_cmd_t(_, m):
+async def evaluation_cmd_t(c, m):
     status_message = await m.reply("__Processing eval pyrogram...__")
     try:
         cmd = m.text.split(" ", maxsplit=1)[1]
@@ -126,13 +126,14 @@ async def evaluation_cmd_t(_, m):
         await status_message.edit(final_output, parse_mode=enums.ParseMode.MARKDOWN)
 
 
-async def aexec(code, client, message):
+async def aexec(code, c, m):
     exec(
-        "async def __aexec(client, message): "
+        "async def __aexec(c, m): "
         + "\n p = print"
+        + "\n replied = m.reply_to_message"
         + "".join(f"\n {l_}" for l_ in code.split("\n"))
     )
-    return await locals()["__aexec"](client, message)
+    return await locals()["__aexec"](c, m)
 
 
 async def shell_exec(code, treat=True):

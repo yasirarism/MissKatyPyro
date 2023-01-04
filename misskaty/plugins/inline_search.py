@@ -159,15 +159,18 @@ async def inline_menu(_, inline_query: InlineQuery):
         namanya = (
             f"{diaa.first_name} {diaa.last_name}" if diaa.last_name else diaa.first_name
         )
-        msg = f"<b>🏷 Name:</b> {namanya}\n<b>🆔 ID:</b> {diaa.id}\n"
+        msg = f"<b>🏷 Name:</b> {namanya}\n<b>🆔 ID:</b> <code>{diaa.id}</code>\n"
         if diaa.username:
             msg += f"<b>🌐 Username:</b> <code>@{diaa.username}</code>\n"
-        msg += f"<b>🕰 User Status:</b> {diaa.status}\n"
+        if diaa.status:
+            msg += f"<b>🕰 User Status:</b> {diaa.status}\n"
         if diaa.dc_id:
             msg += f"<b>🌏 DC:</b> {diaa.dc_id}\n"
         msg += f"<b>✨ Premium:</b> {diaa.is_premium}\n"
         msg += f"<b>⭐️ Verified:</b> {diaa.is_verified}\n"
-        msg += f"<b>🇮🇩 Language:</b> {diaa.language_code}"
+        msg += f"<b>🤖 Verified:</b> {diaa.is_bot}\n"
+        if diaa.language_code:
+            msg += f"<b>🇮🇩 Language:</b> {diaa.language_code}"
         results = [
             InlineQueryResultArticle(
                 title=f"Get information off {diaa.id}",

@@ -102,8 +102,8 @@ async def movikucc(_, msg):
     data = []
     if len(msg.command) == 1:
         try:
-            html = await ambil_source(f"https://107.152.37.223/")
-            r = BeautifulSoup(html, "lxml")
+            html = await http.get(f"https://107.152.37.223/")
+            r = BeautifulSoup(html.text, "lxml")
             res = r.find_all(class_="bx")
             for i in res:
                 judul = i.find_all("a")[0]["title"]
@@ -115,7 +115,7 @@ async def movikucc(_, msg):
             await m.delete()
             head = f"<b>#Movieku Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.commnd[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -138,8 +138,8 @@ async def movikucc(_, msg):
     else:
         title = msg.text.split(" ", 1)[1]
         try:
-            html = await ambil_source(f"https://107.152.37.223/?s={title}")
-            r = BeautifulSoup(html, "lxml")
+            html = await http.get(f"https://107.152.37.223/?s={title}")
+            r = BeautifulSoup(html.text, "lxml")
             res = r.find_all(class_="bx")
             for i in res:
                 judul = i.find_all("a")[0]["title"]
@@ -151,7 +151,7 @@ async def movikucc(_, msg):
             await m.delete()
             head = f"<b>#Movieku Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -197,11 +197,11 @@ async def savefilm21(_, msg):
                 data.append({"judul": judul, "link": link})
             if not data:
                 await m.delete()
-                return await msg.reply("Result 404 Not found!", True)
+                return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
             head = f"<b>#SaveFilm21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -229,7 +229,7 @@ async def savefilm21(_, msg):
             await m.delete()
             head = f"<b>#SaveFilm21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{savefilm21_scrap} {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -276,11 +276,11 @@ async def melongmovie(_, msg):
                 data.append({"judul": title, "link": url, "quality": quality})
             if not data:
                 await m.delete()
-                return await msg.reply("404 Not found!", True)
+                return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
             head = f"<b>#MelongMovie Results For:</b> <code>{judul}</code>\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -307,11 +307,11 @@ async def melongmovie(_, msg):
                 data.append({"judul": title, "link": url, "quality": quality})
             if not data:
                 await m.delete()
-                return await msg.reply("404 Not found!", True)
+                return await msg.reply("404 Result not FOUND!", True)
             await m.delete()
             head = f"<b>#MelongMovie Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
-            for c, i in enumerate(data[:15], start=1):
+            for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -335,7 +335,7 @@ async def pahe_scrap(_, msg):
         res = api.json()
         if not res["result"]:
             await m.delete()
-            return await m.reply("Result 404 Not found!", True)
+            return await msg.reply("404 Result not FOUND!", True)
         head = (
             f"<b>#Pahe Results For:</b> <code>{title}</code>\n\n"
             if title
@@ -375,7 +375,7 @@ async def terbit21_scrap(_, msg):
             await m.delete()
             head = f"<b>#Terbit21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
-            for c, i in enumerate(res["result"][:15], start=1):
+            for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -390,7 +390,7 @@ async def terbit21_scrap(_, msg):
     else:
         try:
             title = msg.text.split(" ", 1)[1]
-            r = await http.get("https://yasirapi.eu.org/terbit21?q={title}")
+            r = await http.get(f"https://yasirapi.eu.org/terbit21?q={title}")
             res = r.json()
             if not res["result"]:
                 await m.delete()
@@ -398,7 +398,7 @@ async def terbit21_scrap(_, msg):
             await m.delete()
             head = f"<b>#Terbit21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
-            for c, i in enumerate(res["result"][:15], start=1):
+            for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -429,7 +429,7 @@ async def lk21_scrap(_, msg):
             await m.delete()
             head = f"<b>#Layarkaca21 Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
-            for c, i in enumerate(res["result"][:15], start=1):
+            for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -444,7 +444,7 @@ async def lk21_scrap(_, msg):
     else:
         try:
             title = msg.text.split(" ", 1)[1]
-            r = await http.get("https://yasirapi.eu.org/lk21?q={title}")
+            r = await http.get(f"https://yasirapi.eu.org/lk21?q={title}")
             res = r.json()
             if res.get("detail", None):
                 await m.delete()
@@ -455,7 +455,7 @@ async def lk21_scrap(_, msg):
             await m.delete()
             head = f"<b>#Layarkaca21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
-            for c, i in enumerate(res["result"][:15], start=1):
+            for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n--> <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(head + msgs, True, disable_web_page_preview=True)
@@ -501,7 +501,7 @@ async def gomov_scrap(_, msg):
             head = f"<b>#Gomov Latest:</b>\n--> Use /{msg.command[0]} [title] to start search with title.\n\n"
         msgs = ""
         await m.delete()
-        for c, i in enumerate(data[:15], start=1):
+        for c, i in enumerate(data, start=1):
             msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
@@ -532,7 +532,7 @@ async def savefilm21_scrap(_, message):
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-        await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}")
+        await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", disable_web_page_preview=True)
     except IndexError:
         return await message.reply(
             f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"

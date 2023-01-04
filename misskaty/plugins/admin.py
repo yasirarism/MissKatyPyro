@@ -363,9 +363,12 @@ async def deleteFunc(_, message):
     filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & ~filters.private
 )
 @adminsOnly("can_promote_members")
-async def promoteFunc(_, message):
-    user_id = await extract_user(message)
-    umention = (await app.get_users(user_id)).mention
+async def promoteFunc(client, message):
+    try:
+        user_id = await extract_user(message)
+        umention = (await app.get_users(user_id)).mention
+    except:
+        return await message.reply("⚠️ Invalid userid/username")
     if not user_id:
         return await message.reply_text("I can't find that user.")
     bot = await app.get_chat_member(message.chat.id, client.me.id)

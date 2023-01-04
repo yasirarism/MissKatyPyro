@@ -119,7 +119,7 @@ async def convertsrt(c, m):
     )
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}'.srt"))[0]
     await m.reply_document(
-        f"{filename}.srt", caption=f"{filename}.srt\n\nConverted by @{c.me.username}"
+        f"{filename}.srt", caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}"
     )
     await msg.delete()
     try:
