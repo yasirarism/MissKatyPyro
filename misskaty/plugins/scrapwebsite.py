@@ -26,6 +26,7 @@ __HELP__ = """
 /terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
 /savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
 /movieku [query <optional>] - Scrape website data from Movieku.cc
+/nodrakor [query] - Scrape website data from nodrakor
 /gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
@@ -35,33 +36,55 @@ headers = {
     "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
 }
 
-# Broken
+
 @app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
 @capture_err
-async def nodrakor(_, message):
+async def nodrakor(_, msg):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
     try:
-        judul = message.text.split(" ", maxsplit=1)[1]
+        title = msg.text.split(" ", 1)[1]
     except IndexError:
-        judul = ""
-
-    msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+        title = ""
     try:
-        html = await http.get(f"https://109.234.34.246/?s={judul}", headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        res = soup.find_all(class_="content-thumbnail text-center")
+        html = await http.get(f"http://173.212.199.27/?s={title}", headers=headers)
+        text = BeautifulSoup(html.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            await m.delete()
+            if title != "":
+                await msg.reply(f"404 Not FOUND For: {key}", True)
+            else:
+                await msg.reply(f"404 Not FOUND!", True)
+            return
         data = []
-        for i in res:
-            link = i.find_all("a")[0]["href"]
-            judul = i.find_all("a")[0]["title"].split(": ")[1]
-            data.append({"judul": judul, "link": link})
-        if not data:
-            return await msg.edit("Oops, data film tidak ditemukan.")
-        res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n\n" for i in data)
-        await msg.edit(
-            f"<b>Hasil Pencarian di Nodrakor:</b>\n{res}\nScraped by @{BOT_USERNAME}"
-        )
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre[:-2]}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        if title != "":
+            head = f"<b>#Nodrakor Results For:</b> <code>{title}</code>\n\n"
+        else:
+            head = f"<b>#Nodrakor Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        msgs = ""
+        await m.delete()
+        for c, i in enumerate(data, start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+                await asyncio.sleep(2)
+                msgs = ""
+        if msgs != "":
+            await msg.reply(head + msgs, True, disable_web_page_preview=True)
     except Exception as e:
-        await msg.edit(f"ERROR: {str(e)}")
+        LOGGER.error(e)
+        await m.delete()
+        await msg.reply(f"ERROR: <code>{e}</code>", True)
 
 
 # Broken
@@ -75,7 +98,7 @@ async def ngefilm21(_, message):
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
         html = await http.get(
-            f"http://185.237.253.209/search?q={title}", headers=headers
+            f"https://ngefilm.info/search?q={title}", headers=headers
         )
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all("h2")
