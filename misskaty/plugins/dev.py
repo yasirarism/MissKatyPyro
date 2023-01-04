@@ -77,7 +77,7 @@ async def shell(_, m):
 
 @app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
-async def evaluation_cmd_t(c, m):
+async def evaluation_cmd_t(_, m):
     status_message = await m.reply("__Processing eval pyrogram...__")
     try:
         cmd = m.text.split(" ", maxsplit=1)[1]
