@@ -52,7 +52,7 @@ async def nodrakor(_, msg):
         if "Nothing Found" in entry[0].text:
             await m.delete()
             if title != "":
-                await msg.reply(f"404 Not FOUND For: {key}", True)
+                await msg.reply(f"404 Not FOUND For: {title}", True)
             else:
                 await msg.reply(f"404 Not FOUND!", True)
             return
@@ -97,9 +97,7 @@ async def ngefilm21(_, message):
 
     msg = await message.reply("Sedang proses scrap, mohon tunggu..")
     try:
-        html = await http.get(
-            f"https://ngefilm.info/search?q={title}", headers=headers
-        )
+        html = await http.get(f"https://ngefilm.info/search?q={title}", headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all("h2")
         data = []
@@ -507,7 +505,7 @@ async def gomov_scrap(_, msg):
         if "Nothing Found" in entry[0].text:
             await m.delete()
             if title != "":
-                await msg.reply(f"404 Not FOUND For: {key}", True)
+                await msg.reply(f"404 Not FOUND For: {title}", True)
             else:
                 await msg.reply(f"404 Not FOUND!", True)
             return
