@@ -159,8 +159,8 @@ async def translate(client, message):
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Menerjemahkan...")
-    my_translator = GoogleTranslator(source="auto", target=target_lang)
     try:
+        my_translator = GoogleTranslator(source="auto", target=target_lang)
         result = my_translator.translate(text=text)
         await msg.edit(
             f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}"
@@ -289,6 +289,8 @@ async def showid(client, message):
 @app.on_message(filters.command(["info"], COMMAND_HANDLER))
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
+    if message.sender_chat:
+        return await message.reply("Not supported channel..")
     status_message = await message.reply_text("`Fetching user info...`")
     await status_message.edit("`Processing user info...`")
     from_user = None

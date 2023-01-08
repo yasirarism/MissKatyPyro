@@ -4,6 +4,7 @@ import os
 import traceback
 import asyncio
 from pyrogram import filters, enums
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
@@ -23,7 +24,20 @@ __HELP__ = """
 async def log_file(bot, message):
     """Send log file"""
     try:
-        await message.reply_document("MissKatyLogs.txt", caption="Log Bot MissKatyPyro")
+        await message.reply_document(
+            "MissKatyLogs.txt",
+            caption="Log Bot MissKatyPyro",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
+        )
     except Exception as e:
         await message.reply(str(e))
 
@@ -64,13 +78,37 @@ async def shell(_, m):
         with open("shell_output.txt", "w") as file:
             file.write(shell)
         with open("shell_output.txt", "rb") as doc:
-            await m.reply_document(document=doc, file_name=doc.name)
+            await m.reply_document(
+                document=doc,
+                file_name=doc.name,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="❌ Close", callback_data=f"close#{m.from_user.id}"
+                            )
+                        ]
+                    ]
+                ),
+            )
             try:
                 os.remove("shell_output.txt")
             except:
                 pass
     elif len(shell) != 0:
-        await m.reply(shell, parse_mode=enums.ParseMode.HTML)
+        await m.reply(
+            shell,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
+                        )
+                    ]
+                ]
+            ),
+        )
     else:
         await m.reply("No Reply")
 
@@ -119,11 +157,32 @@ async def evaluation_cmd_t(_, m):
             document="MissKatyEval.txt",
             caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
             disable_notification=True,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
+                        )
+                    ]
+                ]
+            ),
         )
         os.remove("MissKatyEval.txt")
         await status_message.delete()
     else:
-        await status_message.edit(final_output, parse_mode=enums.ParseMode.MARKDOWN)
+        await status_message.edit(
+            final_output,
+            parse_mode=enums.ParseMode.MARKDOWN,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
+                        )
+                    ]
+                ]
+            ),
+        )
 
 
 async def aexec(code, c, m):

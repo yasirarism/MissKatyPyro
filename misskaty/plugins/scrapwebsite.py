@@ -14,6 +14,7 @@ from logging import getLogger
 from misskaty import app, BOT_USERNAME
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
@@ -77,11 +78,35 @@ async def zonafilm(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
                 await asyncio.sleep(2)
                 msgs = ""
         if msgs != "":
-            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+            await msg.reply(
+                head + msgs,
+                True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="❌ Close",
+                                callback_data=f"close#{message.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
+            )
     except Exception as e:
         LOGGER.error(e)
         await m.delete()
@@ -127,6 +152,16 @@ async def nodrakor(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
                 await asyncio.sleep(2)
                 msgs = ""
@@ -161,7 +196,19 @@ async def ngefilm21(_, message):
         if not data:
             return await msg.edit("Oops, data film tidak ditemukan.")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
-        await msg.edit(f"<b>Hasil Scrap dari Ngefilm21:</b>\n{res}")
+        await msg.edit(
+            f"<b>Hasil Scrap dari Ngefilm21:</b>\n{res}",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
+        )
     except Exception as e:
         await msg.edit(f"ERROR: {str(e)}")
 
@@ -194,6 +241,16 @@ async def movikucc(_, msg):
                         head + msgs,
                         True,
                         disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
                     )
                     await asyncio.sleep(2)
                     msgs = ""
@@ -202,6 +259,16 @@ async def movikucc(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
         except Exception as e:
             LOGGER.error(e)
@@ -230,6 +297,16 @@ async def movikucc(_, msg):
                         head + msgs,
                         True,
                         disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
                     )
                     await asyncio.sleep(2)
                     msgs = ""
@@ -238,6 +315,16 @@ async def movikucc(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
         except Exception as e:
             LOGGER.error(e)
@@ -278,6 +365,16 @@ async def savefilm21(_, msg):
                         head + msgs,
                         True,
                         disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
                     )
                     await asyncio.sleep(2)
                     msgs = ""
@@ -286,6 +383,16 @@ async def savefilm21(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
         else:
             html = await http.get(SITE, headers=headers)
@@ -306,6 +413,16 @@ async def savefilm21(_, msg):
                         head + msgs,
                         True,
                         disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
                     )
                     await asyncio.sleep(2)
                     msgs = ""
@@ -314,6 +431,16 @@ async def savefilm21(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
     except Exception as e:
         await m.delete()
@@ -353,11 +480,39 @@ async def melongmovie(_, msg):
             for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -384,11 +539,39 @@ async def melongmovie(_, msg):
             for c, i in enumerate(data, start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -420,11 +603,35 @@ async def pahe_scrap(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
                 await asyncio.sleep(2)
                 msgs = ""
         if msgs != "":
-            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+            await msg.reply(
+                head + msgs,
+                True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="❌ Close",
+                                callback_data=f"close#{msg.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
+            )
     except Exception as e:
         await m.delete()
         LOGGER.error(e)
@@ -448,11 +655,39 @@ async def terbit21_scrap(_, msg):
             for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -471,11 +706,39 @@ async def terbit21_scrap(_, msg):
             for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -502,11 +765,39 @@ async def lk21_scrap(_, msg):
             for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -528,11 +819,39 @@ async def lk21_scrap(_, msg):
             for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                    await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
                     await asyncio.sleep(2)
                     msgs = ""
             if msgs != "":
-                await msg.reply(head + msgs, True, disable_web_page_preview=True)
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
         except Exception as e:
             await m.delete()
             LOGGER.error(e)
@@ -578,11 +897,35 @@ async def gomov_scrap(_, msg):
                     head + msgs,
                     True,
                     disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
                 )
                 await asyncio.sleep(2)
                 msgs = ""
         if msgs != "":
-            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+            await msg.reply(
+                head + msgs,
+                True,
+                disable_web_page_preview=True,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="❌ Close",
+                                callback_data=f"close#{msg.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
+            )
     except Exception as e:
         LOGGER.error(e)
         await m.delete()
@@ -603,7 +946,18 @@ async def savefilm21_scrap(_, message):
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
         await message.reply(
-            f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", disable_web_page_preview=True
+            f"<b>Hasil Scrap dari {link}</b>:\n\n{res}",
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
         )
     except IndexError:
         return await message.reply(
@@ -705,7 +1059,19 @@ async def gomov_zonafilm_dl(_, message):
             title = i.find("a").text
             link = i.find("a")["href"]
             hasil += f"\n{title}\n{link}\n"
-        await message.reply(hasil)
+        await message.reply(
+            hasil,
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
+        )
     except IndexError:
         await message.reply(
             f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download"

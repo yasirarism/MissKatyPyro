@@ -85,7 +85,7 @@ async def ceksub(_, m):
             )
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
-        buttons.append([InlineKeyboardButton("Cancel", "cancel")])
+        buttons.append([InlineKeyboardButton("❌ Cancel", f"close#{m.from_user.id}")])
         await pesan.edit(
             f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}",
             reply_markup=InlineKeyboardMarkup(buttons),
@@ -177,4 +177,4 @@ async def stream_extract(bot, update):
         except:
             pass
     except Exception as e:
-        await update.message.edit(f"Failed extract sub. \n\nERROR: {e}")
+        await update.message.edit("Failed extract sub, Maybe unsupported format..")
