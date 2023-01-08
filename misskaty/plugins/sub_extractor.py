@@ -78,7 +78,7 @@ async def ceksub(_, m):
                 [
                     InlineKeyboardButton(
                         f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                        f"streamextract_{mapping}_{stream_name}",
+                        f"streamextract_0:{mapping}_{stream_name}",
                     )
                 ]
             )
@@ -119,7 +119,8 @@ async def convertsrt(c, m):
     )
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}'.srt"))[0]
     await m.reply_document(
-        f"{filename}.srt", caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}"
+        f"{filename}.srt",
+        caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}",
     )
     await msg.delete()
     try:
@@ -148,24 +149,14 @@ async def stream_extract(bot, update):
             format = "mp3"
         elif codec == "eac3":
             format = "eac3"
-        elif codec == "subrip":
-            format = "srt"
-        elif codec == "ass":
-            format == "ass"
         else:
-            format = None
-        if not format:
-            return await update.answer(
-                "⚠️ Unsupported format, try extract manual using ffmpeg"
-            )
+            format = "srt"
         start_time = perf_counter()
         namafile = get_subname(link, format)
         LOGGER.info(
             f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
         )
-        extract = (await shell_exec(f"mediaextract -i {link} -map 0:{map} {namafile}"))[
-            0
-        ]
+        extract = (await shell_exec(f"mediaextract -i {link} -map {map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         await update.message.reply_document(

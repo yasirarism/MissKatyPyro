@@ -26,7 +26,8 @@ __HELP__ = """
 /terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
 /savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
 /movieku [query <optional>] - Scrape website data from Movieku.cc
-/nodrakor [query] - Scrape website data from nodrakor
+/nodrakor [query] - Scrape website data from nodrakor.icu
+/zonafilm [query] - Scrape website data from zonafilm.icu
 /gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
@@ -35,6 +36,56 @@ LOGGER = getLogger(__name__)
 headers = {
     "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
 }
+
+
+@app.on_message(filters.command(["zonafilm"], COMMAND_HANDLER))
+@capture_err
+async def zonafilm(_, msg):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
+    try:
+        title = msg.text.split(" ", 1)[1]
+    except IndexError:
+        title = ""
+    try:
+        html = await http.get(f"http://173.212.199.27/?s={title}", headers=headers)
+        text = BeautifulSoup(html.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            await m.delete()
+            if title != "":
+                await msg.reply(f"404 Not FOUND For: {title}", True)
+            else:
+                await msg.reply(f"404 Not FOUND!", True)
+            return
+        data = []
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        if title != "":
+            head = f"<b>#Zonafilm Results For:</b> <code>{title}</code>\n\n"
+        else:
+            head = f"<b>#Zonafilm Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        msgs = ""
+        await m.delete()
+        for c, i in enumerate(data, start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                )
+                await asyncio.sleep(2)
+                msgs = ""
+        if msgs != "":
+            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+    except Exception as e:
+        LOGGER.error(e)
+        await m.delete()
+        await msg.reply(f"ERROR: <code>{e}</code>", True)
 
 
 @app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
@@ -197,7 +248,7 @@ async def movikucc(_, msg):
 @app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
 @capture_err
 async def savefilm21(_, msg):
-    SITE = "http://185.99.135.215"
+    SITE = "https://185.99.135.215"
     try:
         title = msg.text.split(" ", 1)[1]
     except:
@@ -206,9 +257,7 @@ async def savefilm21(_, msg):
     data = []
     try:
         if title is not None:
-            html = await http.get(
-                f"{SITE}/?s={title}", headers=headers, follow_redirects=False
-            )
+            html = await http.get(f"{SITE}/?s={title}", headers=headers)
             bs4 = BeautifulSoup(html.text, "lxml")
             res = bs4.find_all(class_="entry-title")
             for i in res:
@@ -239,7 +288,7 @@ async def savefilm21(_, msg):
                     disable_web_page_preview=True,
                 )
         else:
-            html = await http.get(SITE, headers=headers, follow_redirects=False)
+            html = await http.get(SITE, headers=headers)
             bs4 = BeautifulSoup(html.text, "lxml")
             res = bs4.find_all(class_="entry-title")
             for i in res:
@@ -549,7 +598,7 @@ async def savefilm21_scrap(_, message):
             "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
 
-        html = await http.get(link, headers=headers, follow_redirects=False)
+        html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
@@ -573,7 +622,7 @@ async def nodrakor_scrap(_, message):
             "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
         }
 
-        html = await http.get(link, headers=headers, follow_redirects=False)
+        html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
         await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")

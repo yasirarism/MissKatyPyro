@@ -19,8 +19,8 @@ from misskaty import (
     UBOT_USERNAME,
 )
 from misskaty.plugins import ALL_MODULES
-from misskaty.helper import paginate_modules
-from misskaty.helper.tools import bot_sys_stats
+from misskaty.helper import paginate_modules, bot_sys_stats
+from misskaty.core.message_utils import *
 from database.users_chats_db import db
 from misskaty.vars import LOG_CHANNEL, SUDO
 from utils import temp, auto_clean
