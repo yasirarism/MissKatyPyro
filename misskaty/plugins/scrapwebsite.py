@@ -666,10 +666,7 @@ async def muviku_scrap(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 
-@app.on_message(
-    filters.command(["melongmovie_scrap"], COMMAND_HANDLER)
-    & filters.user([617426792, 1985689491, 1172699512, 2024984460])
-)
+@app.on_message(filters.command(["melongmovie_scrap"], COMMAND_HANDLER))
 @capture_err
 async def melong_scrap(_, message):
     try:

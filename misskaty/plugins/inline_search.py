@@ -421,7 +421,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                             [
                                 InlineKeyboardButton(
                                     text="Get IMDB details",
-                                    callback_data=f"imdbinl_{inline_query.from_user.id}_{midb.get('id')}",
+                                    callback_data=f"imdbinl#{inline_query.from_user.id}#{midb.get('id')}",
                                 )
                             ]
                         ]
@@ -475,7 +475,7 @@ async def destroy_msg(_, c_q):
 
 @app.on_callback_query(filters.regex("^imdbinl_"))
 async def imdb_inl(_, query):
-    i, user, movie = query.data.split("_")
+    i, user, movie = query.data.split("#")
     if user == f"{query.from_user.id}":
         await query.edit_message_caption("⏳ <i>Permintaan kamu sedang diproses.. </i>")
         try:

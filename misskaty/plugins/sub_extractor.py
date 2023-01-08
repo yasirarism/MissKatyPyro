@@ -78,7 +78,7 @@ async def ceksub(_, m):
                 [
                     InlineKeyboardButton(
                         f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                        f"streamextract_0:{mapping}_{stream_name}",
+                        f"streamextract#0:{mapping}#{stream_name}",
                     )
                 ]
             )
@@ -136,7 +136,7 @@ async def stream_extract(bot, update):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await update.answer("⚠️ Access Denied!", True)
-    _, map, codec = cb_data.split("_")
+    _, map, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
     except:

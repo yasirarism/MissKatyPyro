@@ -397,7 +397,7 @@ async def mdlsearch(client, message):
             [
                 InlineKeyboardButton(
                     text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdls_{message.from_user.id}_{message.id}_{movie['slug']}",
+                    callback_data=f"mdls#{message.from_user.id}#{message.id}#{movie['slug']}",
                 )
             ]
             for movie in res
@@ -413,7 +413,7 @@ async def mdlsearch(client, message):
 @app.on_callback_query(filters.regex("^mdls"))
 @capture_err
 async def mdl_callback(bot: Client, query: CallbackQuery):
-    i, user, msg_id, slug = query.data.split("_")
+    i, user, msg_id, slug = query.data.split("#")
     if user == f"{query.from_user.id}":
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
