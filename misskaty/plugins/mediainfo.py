@@ -17,9 +17,7 @@ from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 from misskaty import app
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
-from misskaty.helper.pyro_progress import (
-    progress_for_pyrogram,
-)
+from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))

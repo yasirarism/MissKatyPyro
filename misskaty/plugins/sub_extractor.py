@@ -12,10 +12,11 @@ from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.plugins.dev import shell_exec
 import json, os, traceback
-from time import perf_counter
+from time import perf_counter, time
 from re import split as ngesplit, I
 from urllib.parse import unquote
 from misskaty.helper.tools import get_random_string
+from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 LOGGER = getLogger(__name__)
 
@@ -118,9 +119,12 @@ async def convertsrt(c, m):
         f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
     )
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}'.srt"))[0]
+    c_time = time()
     await m.reply_document(
         f"{filename}.srt",
         caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}",
+        progress=progress_for_pyrogram,
+        progress_args=("Uploading files..", process, c_time),
     )
     await msg.delete()
     try:
@@ -159,10 +163,13 @@ async def stream_extract(bot, update):
         extract = (await shell_exec(f"mediaextract -i {link} -map {map} {namafile}"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
+        c_time = time()
         await update.message.reply_document(
             namafile,
             caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{bot.me.username} in {timelog}",
             reply_to_message_id=usr.id,
+            progress=progress_for_pyrogram,
+            progress_args=("Uploading files..", process, c_time),
         )
         await update.message.delete()
         try:
