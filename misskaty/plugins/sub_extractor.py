@@ -124,7 +124,7 @@ async def convertsrt(c, m):
         f"{filename}.srt",
         caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}",
         progress=progress_for_pyrogram,
-        progress_args=("Uploading files..", update.message, c_time),
+        progress_args=("Uploading files..", msg, c_time),
     )
     await msg.delete()
     try:
