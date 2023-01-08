@@ -130,7 +130,7 @@ async def convertsrt(c, m):
         pass
 
 
-@app.on_callback_query(filters.regex(r"^streamextract_"))
+@app.on_callback_query(filters.regex(r"^streamextract#"))
 async def stream_extract(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message

@@ -473,7 +473,7 @@ async def destroy_msg(_, c_q):
         await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
 
 
-@app.on_callback_query(filters.regex("^imdbinl_"))
+@app.on_callback_query(filters.regex("^imdbinl#"))
 async def imdb_inl(_, query):
     i, user, movie = query.data.split("#")
     if user == f"{query.from_user.id}":
