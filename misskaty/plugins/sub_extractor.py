@@ -124,7 +124,7 @@ async def convertsrt(c, m):
         f"{filename}.srt",
         caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}",
         progress=progress_for_pyrogram,
-        progress_args=("Uploading files..", process, c_time),
+        progress_args=("Uploading files..", update.message, c_time),
     )
     await msg.delete()
     try:
@@ -169,7 +169,7 @@ async def stream_extract(bot, update):
             caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{bot.me.username} in {timelog}",
             reply_to_message_id=usr.id,
             progress=progress_for_pyrogram,
-            progress_args=("Uploading files..", process, c_time),
+            progress_args=("Uploading files..", update.message, c_time),
         )
         await update.message.delete()
         try:
