@@ -47,7 +47,7 @@ async def zonafilm(_, msg):
     except IndexError:
         title = ""
     try:
-        html = await http.get(f"http://173.212.199.27/?s={title}", headers=headers)
+        html = await http.get(f"https://zonafilm.icu/?s={title}", headers=headers)
         text = BeautifulSoup(html.text, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
