@@ -691,9 +691,9 @@ async def melong_scrap(_, message):
         )
 
 
-@app.on_message(filters.command(["gomov_scrap"], COMMAND_HANDLER))
+@app.on_message(filters.command(["gomov_scrap", "zonafilm_scrap"], COMMAND_HANDLER))
 @capture_err
-async def gomov_dl(_, message):
+async def gomov_zonafilm_dl(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
         headers = {
