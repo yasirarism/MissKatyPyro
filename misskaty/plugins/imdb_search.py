@@ -58,7 +58,7 @@ async def imdbcari_id(client, query):
     del LIST_CARI[msg]
     await query.m.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
     msg = ""
-    buttons = InlineKeyboardMod(row_width=4)
+    buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}"
                                )
@@ -96,7 +96,7 @@ async def imdbcari_en(client, query):
     del LIST_CARI[msg]
     await query.message.edit_caption("<i>🔎 Looking in the IMDB Database..</i>")
     msg = ""
-    buttons = InlineKeyboardMod(row_width=4)
+    buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}"
                                )
