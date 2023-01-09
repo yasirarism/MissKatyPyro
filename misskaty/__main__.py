@@ -338,6 +338,9 @@ General command are:
 
     return await client.answer_callback_query(query.id)
 
+async def cleanup():
+    await app.stop()
+    await user.stop()
 
 if __name__ == "__main__":
     try:
@@ -347,5 +350,6 @@ if __name__ == "__main__":
     except Exception as err:
         LOGGER.error(err.with_traceback(None))
     finally:
+        loop.run_until_complete(cleanup())
         loop.stop()
         print("------------------------ Stopped Services ------------------------")
