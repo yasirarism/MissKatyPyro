@@ -919,7 +919,7 @@ async def gomov_scrap(_, msg):
             msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
             msgs += (
                 f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
-                if not re.search(r"series", i["genre"])
+                if not re.search(r"Series", i["genre"])
                 else "\n"
             )
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
