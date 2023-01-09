@@ -54,8 +54,11 @@ async def imdbcari_id(client, query):
     i, msg, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer(f"⚠️ Akses Ditolak!", True)
-    kueri = LIST_CARI.get(msg)
-    del LIST_CARI[msg]
+    try:
+        kueri = LIST_CARI.get(msg)
+        del LIST_CARI[msg]
+    except KeyError:
+        return await query.message.edit_caption(f"⚠️ Callback Query Expired!", True)
     await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
     msg = ""
     buttons = InlineKeyboard(row_width=4)
