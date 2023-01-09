@@ -28,5 +28,5 @@ jobs:
           commit_options: '--no-verify'
           repository: .
           commit_user_name: yasirarism
-          commit_user_email: mail@yasir.eu.org
-          commit_author: yasirarism <mail@yasir.eu.org>
+          commit_user_email: yasiramunandar@gmail.com
+          commit_author: yasirarism <yasiramunandar@gmail.com>
