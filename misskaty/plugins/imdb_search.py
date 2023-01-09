@@ -9,6 +9,8 @@ from pyrogram.types import (
     CallbackQuery,
     InputMediaPhoto,
 )
+from pyrogram.errors import MessageNotModified, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
+from deep_translator import GoogleTranslator
 from bs4 import BeautifulSoup
 from pyrogram import filters
 from misskaty import app, BOT_USERNAME
