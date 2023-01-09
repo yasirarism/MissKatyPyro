@@ -49,7 +49,7 @@ async def imdb_choose(_, m):
 
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
-async def imdbcari_id(client, query: CallbackQuery):
+async def imdbcari_id(client, query):
     BTN = []
     i, msg, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -87,7 +87,7 @@ async def imdbcari_id(client, query: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("^imdbcari_en"))
-async def imdbcari_en(client, query: CallbackQuery):
+async def imdbcari_en(client, query):
     BTN = []
     i, msg, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -122,7 +122,7 @@ async def imdbcari_en(client, query: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
-async def imdb_id_callback(bot: Client, query: CallbackQuery):
+async def imdb_id_callback(bot, query):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
@@ -292,7 +292,7 @@ async def imdb_id_callback(bot: Client, query: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
-async def imdb_en_callback(bot: Client, query: CallbackQuery):
+async def imdb_en_callback(bot, query):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
