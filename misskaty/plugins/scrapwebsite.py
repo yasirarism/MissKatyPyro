@@ -837,7 +837,7 @@ async def lk21_scrap(_, msg):
             head = f"<b>#Layarkaca21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                     if "Complete" or "Ongoing" not in i["kategori"]
