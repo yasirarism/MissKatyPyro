@@ -20,7 +20,7 @@ from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 LOGGER = getLogger(__name__)
 
-VIDEO_SUFFIXES = (
+ARCH_EXT = (
     "mkv",
     "mp4",
     "mov",
