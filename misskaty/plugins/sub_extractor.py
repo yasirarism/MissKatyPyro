@@ -190,4 +190,4 @@ async def stream_extract(bot, update):
         except:
             pass
     except Exception as e:
-        await update.message.edit("Failed extract sub, Maybe unsupported format..")
+        await update.message.edit(f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")
