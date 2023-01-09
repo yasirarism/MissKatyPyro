@@ -2,7 +2,7 @@ import json
 import re
 import logging
 from utils import demoji
-from pykeyboard import InlineKeyboard
+from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
