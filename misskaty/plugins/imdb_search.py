@@ -56,7 +56,7 @@ async def imdbcari_id(client, query):
         return await query.answer(f"⚠️ Akses Ditolak!", True)
     kueri = LIST_CARI.get(msg)
     del LIST_CARI[msg]
-    await query.m.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
+    await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
