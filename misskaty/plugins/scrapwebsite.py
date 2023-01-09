@@ -661,7 +661,7 @@ async def terbit21_scrap(_, msg):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-                    if ["Complete", "Ongoing"] not in i["kategori"]
+                    if "Complete" or "Ongoing" not in i["kategori"]
                     else ""
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
@@ -717,7 +717,7 @@ async def terbit21_scrap(_, msg):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-                    if ["complete", "ongoing"] not in i["kategori"]
+                    if "Complete" or "Ongoing" not in i["kategori"]
                     else ""
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
@@ -781,7 +781,7 @@ async def lk21_scrap(_, msg):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-                    if ["complete", "ongoing"] not in i["kategori"]
+                    if "Complete" or "Ongoing" not in i["kategori"]
                     else ""
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
@@ -838,6 +838,11 @@ async def lk21_scrap(_, msg):
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += (
+                    f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                    if "Complete" or "Ongoing" not in i["kategori"]
+                    else ""
+                )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
