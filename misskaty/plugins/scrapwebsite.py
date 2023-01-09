@@ -72,7 +72,12 @@ async def zonafilm(_, msg):
         msgs = ""
         await m.delete()
         for c, i in enumerate(data, start=1):
-            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            msgs += (
+                f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if not "/tv/" in i["link"]
+                else ""
+            )
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
                     head + msgs,
@@ -653,7 +658,12 @@ async def terbit21_scrap(_, msg):
             head = f"<b>#Terbit21 Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
+                msgs += (
+                    f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                    if ["complete", "ongoing"] not in i["kategori"]
+                    else ""
+                )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
@@ -704,7 +714,12 @@ async def terbit21_scrap(_, msg):
             head = f"<b>#Terbit21 Results For:</b> <code>{title}</code>\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
+                msgs += (
+                    f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                    if ["complete", "ongoing"] not in i["kategori"]
+                    else ""
+                )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
@@ -763,7 +778,12 @@ async def lk21_scrap(_, msg):
             head = f"<b>#Layarkaca21 Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
             msgs = ""
             for c, i in enumerate(res["result"], start=1):
-                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
+                msgs += (
+                    f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+                    if ["complete", "ongoing"] not in i["kategori"]
+                    else ""
+                )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
                         head + msgs,
@@ -891,7 +911,12 @@ async def gomov_scrap(_, msg):
         msgs = ""
         await m.delete()
         for c, i in enumerate(data, start=1):
-            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            msgs += (
+                f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if not "/tv/" in i["link"]
+                else ""
+            )
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
                     head + msgs,
