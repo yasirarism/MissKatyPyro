@@ -76,7 +76,7 @@ async def zonafilm(_, msg):
             msgs += (
                 f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if not "/tv/" in i["link"]
-                else ""
+                else "\n"
             )
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
@@ -661,7 +661,7 @@ async def terbit21_scrap(_, msg):
                 msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-                    if ["complete", "ongoing"] not in i["kategori"]
+                    if ["Complete", "Ongoing"] not in i["kategori"]
                     else ""
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
@@ -915,7 +915,7 @@ async def gomov_scrap(_, msg):
             msgs += (
                 f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
                 if not "/tv/" in i["link"]
-                else ""
+                else "\n"
             )
             if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                 await msg.reply(
