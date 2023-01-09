@@ -7,6 +7,7 @@ from pyrogram.types import (
     CallbackQuery,
     InputMediaPhoto,
 )
+from pyrogram import filters
 from misskaty import app, BOT_USERNAME
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
