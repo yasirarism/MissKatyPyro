@@ -662,7 +662,7 @@ async def terbit21_scrap(_, msg):
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                     if not re.search(r"Complete|Ongoing", i["kategori"])
-                    else ""
+                    else "\n"
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -718,7 +718,7 @@ async def terbit21_scrap(_, msg):
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                     if not re.search(r"Complete|Ongoing", i["kategori"])
-                    else ""
+                    else "\n"
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -782,7 +782,7 @@ async def lk21_scrap(_, msg):
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                     if not re.search(r"Complete|Ongoing", i["kategori"])
-                    else ""
+                    else "\n"
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
@@ -841,7 +841,7 @@ async def lk21_scrap(_, msg):
                 msgs += (
                     f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
                     if not re.search(r"Complete|Ongoing", i["kategori"])
-                    else ""
+                    else "\n"
                 )
                 if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
                     await msg.reply(
