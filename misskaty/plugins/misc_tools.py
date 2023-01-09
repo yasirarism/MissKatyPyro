@@ -239,7 +239,7 @@ async def topho(client, message):
             f"tostick_{message.from_user.id}.jpg",
         )
         await message.reply_photo(
-            photo=photo, caption="Sticker -> Image\n@{BOT_USERNAME}"
+            photo=photo, caption=f"Sticker -> Image\n@{client.me.username}"
         )
 
         os.remove(photo)

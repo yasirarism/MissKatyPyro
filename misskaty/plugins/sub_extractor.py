@@ -20,7 +20,18 @@ from misskaty.helper.pyro_progress import progress_for_pyrogram
 
 LOGGER = getLogger(__name__)
 
-ARCH_EXT = [".mkv", ".avi", ".mp4", ".mov"]
+VIDEO_SUFFIXES = (
+    "mkv",
+    "mp4",
+    "mov",
+    "wmv",
+    "3gp",
+    "mpg",
+    "webm",
+    "avi",
+    "flv",
+    "m4v",
+)
 
 __MODULE__ = "MediaExtract"
 __HELP__ = """
@@ -35,13 +46,13 @@ def get_base_name(orig_path: str):
         return ngesplit(f"{ext}$", orig_path, maxsplit=1, flags=I)[0]
 
 
-def get_subname(url, format):
+def get_subname(lang, url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1:
-        return f"MissKatySub_{get_random_string(4)}.{format}"
-    return f"{get_base_name(os.path.basename(unquote(scheme_removed)))}.{format}"
+        return f"[{lang.upper()}] MissKatySub_{get_random_string(4)}.{format}"
+    return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}.{format}"
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -79,7 +90,7 @@ async def ceksub(_, m):
                 [
                     InlineKeyboardButton(
                         f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                        f"streamextract#0:{mapping}#{stream_name}",
+                        f"streamextract#{lang}#0:{mapping}#{stream_name}",
                     )
                 ]
             )
@@ -118,7 +129,7 @@ async def convertsrt(c, m):
     LOGGER.info(
         f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
     )
-    (await shell_exec(f"mediaextract -i '{dl}' '{filename}'.srt"))[0]
+    (await shell_exec(f"mediaextract -i '{dl}' '{filename}.srt'"))[0]
     c_time = time()
     await m.reply_document(
         f"{filename}.srt",
@@ -140,7 +151,7 @@ async def stream_extract(bot, update):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await update.answer("⚠️ Access Denied!", True)
-    _, map, codec = cb_data.split("#")
+    _, lang, map, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
     except:
@@ -156,11 +167,13 @@ async def stream_extract(bot, update):
         else:
             format = "srt"
         start_time = perf_counter()
-        namafile = get_subname(link, format)
+        namafile = get_subname(lang, link, format)
         LOGGER.info(
             f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
         )
-        extract = (await shell_exec(f"mediaextract -i {link} -map {map} {namafile}"))[0]
+        extract = (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[
+            0
+        ]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         c_time = time()

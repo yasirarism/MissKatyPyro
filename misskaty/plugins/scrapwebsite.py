@@ -101,7 +101,7 @@ async def zonafilm(_, msg):
                         [
                             InlineKeyboardButton(
                                 text="❌ Close",
-                                callback_data=f"close#{message.from_user.id}",
+                                callback_data=f"close#{msg.from_user.id}",
                             )
                         ]
                     ]
