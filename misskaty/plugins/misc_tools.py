@@ -44,8 +44,6 @@ __HELP__ = """
 /imdb [query] - Find Movie Details From IMDB.com (Available in English and Indonesia version).
 """
 
-LIST_CARI = {}
-
 
 def remove_html_tags(text):
     """Remove html tags from a string"""

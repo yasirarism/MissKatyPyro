@@ -18,7 +18,7 @@ from misskaty.helper.tools import GENRES_EMOJI, get_random_string
 from misskaty.helper.http import http
 
 LOGGER = logging.getLogger(__name__)
-
+LIST_CARI = {}
 
 # IMDB Choose Language
 @app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
