@@ -1,4 +1,5 @@
 from logging import getLogger
+from utils import demoji
 from pykeyboard import InlineKeyboard
 from pyrogram.types import (
     InlineKeyboardMarkup,
