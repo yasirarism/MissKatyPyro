@@ -32,7 +32,7 @@ async def imdb_choose(_, m):
     if m.sender_chat:
         return await m.reply("This feature not supported for channel..")
     buttons = InlineKeyboard(row_width=2)
-    ranval = get_random_string()(4)
+    ranval = get_random_string(4)
     LIST_CARI[ranval] = m.text.split(None, 1)[1]
     buttons.add(
         InlineButton("🇺🇸 English", f"imdbcari_en#{ranval}#{m.from_user.id}"),
