@@ -27,7 +27,7 @@ async def broadcast(bot, message):
         pti, sh = await broadcast_messages(int(user["id"]), b_msg)
         if pti:
             success += 1
-        elif pti == False:
+        elif pti is False:
             if sh == "Bocked":
                 blocked += 1
             elif sh == "Deleted":
