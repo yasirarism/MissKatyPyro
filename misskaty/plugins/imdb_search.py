@@ -231,6 +231,7 @@ async def imdbcari_id(client, query):
                     text=num, callback_data=f"imdbres_id#{uid}#{movieID}"
                 )
             )
+        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"))
         BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"))
         buttons.add(*BTN)
         await query.message.edit_caption(msg, reply_markup=buttons)
@@ -270,12 +271,17 @@ async def imdbcari_en(client, query):
             msg += f"{num}. {title} {year} - {type}\n"
             BTN.append(
                 InlineKeyboardButton(
-                    text=num, callback_data=f"imdbres_en#{query.from_user.id}#{movieID}"
+                    text=num, callback_data=f"imdbres_en#{uid}#{movieID}"
                 )
             )
         BTN.append(
             InlineKeyboardButton(
-                text="❌ Close", callback_data=f"close#{query.from_user.id}"
+                text="🚩 Language", callback_data=f"imdbset#{uid}"
+            )
+        )
+        BTN.append(
+            InlineKeyboardButton(
+                text="❌ Close", callback_data=f"close#{uid}"
             )
         )
         buttons.add(*BTN)
