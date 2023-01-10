@@ -453,7 +453,7 @@ async def prvt_msg(_, c_q):
 
     user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
 
-    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
+    if c_q.from_user.id in (user_id, sender_id):
         await c_q.answer(msg, show_alert=True)
     else:
         await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
@@ -469,7 +469,7 @@ async def destroy_msg(_, c_q):
 
     user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
 
-    if c_q.from_user.id == user_id or c_q.from_user.id == sender_id:
+    if c_q.from_user.id in (user_id, sender_id):
         del PRVT_MSGS[msg_id]
         by = "receiver" if c_q.from_user.id == user_id else "sender"
         await c_q.edit_message_text(f"This secret message is ☠️destroyed☠️ by msg {by}")
