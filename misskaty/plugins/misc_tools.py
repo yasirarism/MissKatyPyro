@@ -6,32 +6,28 @@
  * Copyright @YasirPedia All rights reserved
 """
 
-import os
-import aiohttp
-from bs4 import BeautifulSoup
 import json
-import traceback
-from pyrogram import Client, filters
-from deep_translator import GoogleTranslator
-from gtts import gTTS
-from pyrogram.errors import (
-    UserNotParticipant,
-    MessageTooLong,
-)
-from utils import extract_user, get_file_id
+import os
 import time
+import traceback
 from datetime import datetime
 from logging import getLogger
-from pyrogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    CallbackQuery,
-)
+
+import aiohttp
+from bs4 import BeautifulSoup
+from deep_translator import GoogleTranslator
+from gtts import gTTS
+from pyrogram import Client, filters
+from pyrogram.errors import MessageTooLong, UserNotParticipant
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
+
+from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
-from misskaty.helper.http import http
-from misskaty import app, BOT_USERNAME
+from utils import extract_user, get_file_id
 
 LOGGER = getLogger(__name__)
 
@@ -141,7 +137,7 @@ async def translate(client, message):
         result = my_translator.translate(text=text)
         await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
-        url = await rentry(tekstr.text)
+        url = await rentry(result)
         await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
     except Exception as err:
         await msg.edit(f"Error: <code>{str(err)}</code>")

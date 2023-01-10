@@ -1,7 +1,8 @@
 # This plugin to learn session using pyrogram
+from pyrogram import filters
+
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
-from pyrogram import filters
 
 
 @app.on_message(filters.command(["session"], COMMAND_HANDLER))

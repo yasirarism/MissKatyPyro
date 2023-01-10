@@ -1,8 +1,9 @@
-from misskaty import app
-from misskaty.vars import COMMAND_HANDLER, OPENAI_API
 from pyrogram import filters
 from pyrogram.errors import MessageNotModified
+
+from misskaty import app
 from misskaty.helper.http import http
+from misskaty.vars import COMMAND_HANDLER, OPENAI_API
 
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER))

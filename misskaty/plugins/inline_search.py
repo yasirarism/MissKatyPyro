@@ -1,24 +1,21 @@
-import json, traceback
-from sys import version as pyver, platform
-from misskaty import app, user, BOT_USERNAME
+import json
+import traceback
+from sys import platform
+from sys import version as pyver
+
+from bs4 import BeautifulSoup
+from deep_translator import GoogleTranslator
 from motor import version as mongover
-from misskaty.plugins.misc_tools import get_content
+from pykeyboard import InlineKeyboard
 from pyrogram import __version__ as pyrover
+from pyrogram import enums, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQuery, InlineQueryResultArticle, InlineQueryResultPhoto, InputTextMessageContent
+
+from misskaty import BOT_USERNAME, app, user
 from misskaty.helper.http import http
 from misskaty.helper.tools import GENRES_EMOJI
-from pyrogram import filters, enums
-from bs4 import BeautifulSoup
+from misskaty.plugins.misc_tools import get_content
 from utils import demoji
-from pykeyboard import InlineKeyboard
-from deep_translator import GoogleTranslator
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InlineQuery,
-    InlineQueryResultArticle,
-    InputTextMessageContent,
-    InlineQueryResultPhoto,
-)
 
 __MODULE__ = "InlineFeature"
 __HELP__ = """

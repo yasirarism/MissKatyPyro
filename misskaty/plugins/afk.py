@@ -10,20 +10,14 @@
 
 # Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
 import time
-from misskaty import app
-from utils import put_cleanmode
 from pyrogram import filters
-from misskaty.vars import COMMAND_HANDLER
-from database.afk_db import (
-    remove_afk,
-    is_afk,
-    add_afk,
-    cleanmode_off,
-    cleanmode_on,
-)
-from misskaty.helper.human_read import get_readable_time2
+from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
+from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.helper.human_read import get_readable_time2
+from misskaty.vars import COMMAND_HANDLER
+from utils import put_cleanmode
 
 __MODULE__ = "AFK"
 __HELP__ = """/afk [Reason > Optional] - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.

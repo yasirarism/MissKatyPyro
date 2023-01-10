@@ -11,11 +11,14 @@
 # Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
 import re
 import time
-from utils import put_cleanmode
-from misskaty import app, BOT_USERNAME
-from pyrogram import filters, enums
-from database.afk_db import remove_afk, is_afk
+
+from pyrogram import enums, filters
+
+from database.afk_db import is_afk, remove_afk
+from misskaty import BOT_USERNAME, app
 from misskaty.helper.human_read import get_readable_time2
+from utils import put_cleanmode
+
 
 # Detect user that AFK based on Yukki Repo
 @app.on_message(

@@ -1,10 +1,12 @@
 import textwrap
 from os import remove as hapus
-from misskaty.core.decorator.errors import capture_err
-from misskaty import app
+
+from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
+
+from misskaty import app
+from misskaty.core.decorator.errors import capture_err
 from misskaty.vars import COMMAND_HANDLER
-from PIL import Image, ImageFont, ImageDraw
 
 
 async def draw_meme_text(image_path, text):

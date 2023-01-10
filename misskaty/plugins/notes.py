@@ -22,17 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 from re import findall
+
 from pyrogram import filters
+
+from database.notes_db import delete_note, get_note, get_note_names, save_note
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.keyboard import ikb
-from database.notes_db import (
-    delete_note,
-    get_note,
-    get_note_names,
-    save_note,
-)
 from misskaty.helper.functions import extract_text_and_keyb
 
 __MODULE__ = "Notes"

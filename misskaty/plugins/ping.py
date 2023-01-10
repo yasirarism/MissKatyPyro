@@ -6,13 +6,15 @@
  * Copyright @YasirPedia All rights reserved
 """
 import time
-from re import findall, MULTILINE
 from asyncio import Lock
+from re import MULTILINE, findall
+from subprocess import run as srun
+
 from pyrogram import filters
-from misskaty.vars import COMMAND_HANDLER
+
 from misskaty import app, botStartTime
 from misskaty.helper.human_read import get_readable_time
-from subprocess import run as srun
+from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))

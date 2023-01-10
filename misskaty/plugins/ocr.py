@@ -6,12 +6,14 @@
  * Copyright @YasirPedia All rights reserved
 """
 import os
+
 from pyrogram import filters
 from telegraph import upload_file
-from misskaty.vars import COMMAND_HANDLER
+
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
+from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "OCR"
 __HELP__ = "/ocr [reply to photo] - Read Text From Image"

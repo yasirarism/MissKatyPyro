@@ -1,29 +1,20 @@
+import asyncio
 import os
+import re
 import shutil
 import tempfile
-import asyncio
-import re
 
 from PIL import Image
-from misskaty.helper.http import http
 from pyrogram import emoji, filters
+from pyrogram.errors import BadRequest, PeerIdInvalid, StickersetInvalid
 from pyrogram.file_id import FileId
-from pyrogram.errors import PeerIdInvalid, StickersetInvalid, BadRequest
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import (
-    AddStickerToSet,
-    CreateStickerSet,
-    RemoveStickerFromSet,
-)
+from pyrogram.raw.functions.stickers import AddStickerToSet, CreateStickerSet, RemoveStickerFromSet
+from pyrogram.raw.types import DocumentAttributeFilename, InputDocument, InputMediaUploadedDocument, InputStickerSetItem, InputStickerSetShortName
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.raw.types import (
-    DocumentAttributeFilename,
-    InputDocument,
-    InputMediaUploadedDocument,
-    InputStickerSetItem,
-    InputStickerSetShortName,
-)
-from misskaty import app, BOT_USERNAME
+
+from misskaty import BOT_USERNAME, app
+from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"

@@ -1,19 +1,14 @@
 import json
 import logging
-from utils import demoji
-from pykeyboard import InlineKeyboard, InlineButton
-from pyrogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton,
-    CallbackQuery,
-    InputMediaPhoto,
-)
-from pyrogram.errors import MessageNotModified, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
+import re
+
+from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
@@ -321,8 +316,7 @@ async def imdb_id_callback(bot, query):
             await query.message.edit_caption(res_str, reply_markup=markup)
     except MessageNotModified:
         pass
-    except Exception:
-        exc = traceback.format_exc()
+    except Exception as exc:
         await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
 
 
@@ -502,6 +496,5 @@ async def imdb_en_callback(bot, query):
                 await query.message.edit_caption(res_str, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, reply_markup=markup)
-    except Exception:
-        exc = traceback.format_exc()
+    except Exception as exc:
         await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")

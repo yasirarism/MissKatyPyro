@@ -6,17 +6,18 @@
  * Copyright @YasirPedia All rights reserved
 """
 
-# This plugin to scrape from melongmovie, lk21, pahe and many more
-from bs4 import BeautifulSoup
-import re
 import asyncio
+import re
 from logging import getLogger
-from misskaty import app
+
+from bs4 import BeautifulSoup
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from misskaty.vars import COMMAND_HANDLER
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
+from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "WebScraper"
 __HELP__ = """

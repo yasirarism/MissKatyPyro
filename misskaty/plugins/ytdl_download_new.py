@@ -1,18 +1,15 @@
-from re import compile as recompile
 from logging import getLogger
+from re import compile as recompile
+from uuid import uuid4
+
+from iytdl import iYTDL, main
+from pyrogram import filters
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+
 from misskaty import app
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
-from pyrogram import filters
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    CallbackQuery,
-    InputMediaPhoto,
-)
-from iytdl import iYTDL, main
-from uuid import uuid4
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 LOGGER = getLogger(__name__)
 regex = recompile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})")
