@@ -1,9 +1,14 @@
 import json
 import logging
-import re
-import traceback
-
-from bs4 import BeautifulSoup
+from utils import demoji
+from pykeyboard import InlineKeyboard, InlineButton
+from pyrogram.types import (
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    CallbackQuery,
+    InputMediaPhoto,
+)
+from pyrogram.errors import MessageNotModified, MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
