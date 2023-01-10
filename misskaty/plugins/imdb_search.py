@@ -134,7 +134,7 @@ async def imdb_search_en(kueri, message):
             msg += f"{num}. {title} {year} - {type}\n"
             BTN.append(
                 InlineKeyboardButton(
-                    text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
+                    text=num, callback_data=f"imdbres_en#{message.from_user.id}#{movieID}"
                 )
             )
         BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"))
