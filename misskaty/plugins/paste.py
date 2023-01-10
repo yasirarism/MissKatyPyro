@@ -114,11 +114,14 @@ async def create(_, message):
 
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
-    button = [[InlineKeyboardButton("Open Link", url=url)], [
+    button = [
+        [InlineKeyboardButton("Open Link", url=url)],
+        [
             InlineKeyboardButton(
                 "Share Link", url=f"https://telegram.me/share/url?url={url}"
             )
-        ]]
+        ],
+    ]
 
     pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
@@ -188,11 +191,14 @@ async def create(_, message):
 
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
-    button = [[InlineKeyboardButton("Open Link", url=url)], [
+    button = [
+        [InlineKeyboardButton("Open Link", url=url)],
+        [
             InlineKeyboardButton(
                 "Share Link", url=f"https://telegram.me/share/url?url={url}"
             )
-        ]]
+        ],
+    ]
 
     pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
