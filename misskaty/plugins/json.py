@@ -25,7 +25,16 @@ async def jsonify(_, message):
     try:
         await message.reply_text(
             f"<code>{the_real_message}</code>",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
         )
     except Exception as e:
         with open("json.text", "w+", encoding="utf8") as out_file:
@@ -35,6 +44,15 @@ async def jsonify(_, message):
             caption=f"<code>{str(e)}</code>",
             disable_notification=True,
             reply_to_message_id=reply_to_id,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
         )
         os.remove("json.text")

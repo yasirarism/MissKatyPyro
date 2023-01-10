@@ -1,5 +1,6 @@
+from typing import Dict, List, Union
+
 from database import dbname
-from typing import Dict, Union, List
 
 filtersdb = dbname.filters
 

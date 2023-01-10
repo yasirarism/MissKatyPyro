@@ -1,11 +1,13 @@
 from functools import wraps
+from time import time
 from traceback import format_exc as err
+
+from pyrogram import enums
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import Message
-from pyrogram import enums
+
 from misskaty import app
 from misskaty.vars import SUDO
-from time import time
 
 
 async def member_permissions(chat_id: int, user_id: int):
@@ -49,7 +51,12 @@ async def list_admins(chat_id: int):
 
     admins_in_chat[chat_id] = {
         "last_updated_at": time(),
-        "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+        "data": [
+            member.user.id
+            async for member in app.get_chat_members(
+                chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+            )
+        ],
     }
     return admins_in_chat[chat_id]["data"]
 

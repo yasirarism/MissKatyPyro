@@ -6,6 +6,7 @@
  * Copyright @YasirPedia All rights reserved
 """
 from motor.motor_asyncio import AsyncIOMotorClient as MongoClient
+
 from misskaty.vars import DATABASE_URI
 
 mongo = MongoClient(DATABASE_URI)

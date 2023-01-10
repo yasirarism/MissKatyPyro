@@ -5,28 +5,32 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
  """
-import asyncio, importlib, re
+import asyncio
+import importlib
+import re
 from logging import getLogger
+
+from pyrogram import __version__, filters, idle
+from pyrogram.raw.all import layer
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from database.users_chats_db import db
 from misskaty import (
-    app,
-    user,
-    HELPABLE,
     BOT_ID,
     BOT_NAME,
     BOT_USERNAME,
+    HELPABLE,
     UBOT_ID,
     UBOT_NAME,
     UBOT_USERNAME,
+    app,
+    user,
 )
-from misskaty.plugins import ALL_MODULES
-from misskaty.helper import paginate_modules, bot_sys_stats
 from misskaty.core.message_utils import *
-from database.users_chats_db import db
+from misskaty.helper import bot_sys_stats, paginate_modules
+from misskaty.plugins import ALL_MODULES
 from misskaty.vars import LOG_CHANNEL, SUDO
-from utils import temp, auto_clean
-from pyrogram.raw.all import layer
-from pyrogram import idle, __version__, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from utils import auto_clean, temp
 
 LOGGER = getLogger(__name__)
 loop = asyncio.get_event_loop()
@@ -338,9 +342,11 @@ General command are:
 
     return await client.answer_callback_query(query.id)
 
+
 async def cleanup():
     await app.stop()
     await user.stop()
+
 
 if __name__ == "__main__":
     try:
