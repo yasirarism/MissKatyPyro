@@ -1,6 +1,7 @@
 from typing import Dict, Union
-from misskaty.helper.functions import int_to_alpha
+
 from database import dbname
+from misskaty.helper.functions import int_to_alpha
 
 karmadb = dbname.karma
 
@@ -42,7 +43,9 @@ async def update_karma(chat_id: int, name: str, karma: dict):
     name = name.lower().strip()
     karmas = await get_karmas(chat_id)
     karmas[name] = karma
-    await karmadb.update_one({"chat_id": chat_id}, {"$set": {"karma": karmas}}, upsert=True)
+    await karmadb.update_one(
+        {"chat_id": chat_id}, {"$set": {"karma": karmas}}, upsert=True
+    )
 
 
 async def is_karma_on(chat_id: int) -> bool:

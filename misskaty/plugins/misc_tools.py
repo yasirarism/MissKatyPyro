@@ -19,8 +19,7 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong, UserNotParticipant
-from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
-                            InlineKeyboardMarkup)
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
@@ -54,13 +53,21 @@ def remove_html_tags(text):
 async def stackoverflow(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
-    r = (await http.get(f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow")).json()
+    r = (
+        await http.get(
+            f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
+        )
+    ).json()
     msg = await message.reply("Getting data..")
     hasil = ""
     for count, data in enumerate(r["items"], start=1):
         question = data["question_id"]
         title = data["title"]
-        snippet = remove_html_tags(data["excerpt"])[:80].replace("\n", "").replace("    ", "") if len(remove_html_tags(data["excerpt"])) > 80 else remove_html_tags(data["excerpt"]).replace("\n", "").replace("    ", "")
+        snippet = (
+            remove_html_tags(data["excerpt"])[:80].replace("\n", "").replace("    ", "")
+            if len(remove_html_tags(data["excerpt"])) > 80
+            else remove_html_tags(data["excerpt"]).replace("\n", "").replace("    ", "")
+        )
         hasil += f"{count}. <a href='https://stackoverflow.com/questions/{question}'>{title}</a>\n<code>{snippet}</code>\n"
     try:
         await msg.edit(hasil)
@@ -79,7 +86,10 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/61.0.3163.100 Safari/537.36"
+        }
         html = await http.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
             headers=headers,
@@ -108,7 +118,9 @@ async def gsearch(client, message):
         arr = json.dumps(data, indent=2, ensure_ascii=False)
         parse = json.loads(arr)
         total = len(parse)
-        res = "".join(f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse)
+        res = "".join(
+            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse
+        )
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
@@ -121,7 +133,9 @@ async def gsearch(client, message):
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
 async def translate(client, message):
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+    if message.reply_to_message and (
+        message.reply_to_message.text or message.reply_to_message.caption
+    ):
         target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
@@ -135,10 +149,14 @@ async def translate(client, message):
     try:
         my_translator = GoogleTranslator(source="auto", target=target_lang)
         result = my_translator.translate(text=text)
-        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
+        await msg.edit(
+            f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}"
+        )
     except MessageTooLong:
         url = await rentry(result)
-        await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
+        await msg.edit(
+            f"Your translated text pasted to rentry because has long text:\n{url}"
+        )
     except Exception as err:
         await msg.edit(f"Error: <code>{str(err)}</code>")
 
@@ -146,7 +164,9 @@ async def translate(client, message):
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
 async def tts(_, message):
-    if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
+    if message.reply_to_message and (
+        message.reply_to_message.text or message.reply_to_message.caption
+    ):
         if len(message.text.split()) == 1:
             target_lang = "id"
         else:
@@ -198,12 +218,16 @@ async def topho(client, message):
         if not message.reply_to_message or not message.reply_to_message.sticker:
             return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
         if message.reply_to_message.sticker.is_animated:
-            return await message.reply_text("Ini sticker animasi, command ini hanya untuk sticker biasa.")
+            return await message.reply_text(
+                "Ini sticker animasi, command ini hanya untuk sticker biasa."
+            )
         photo = await client.download_media(
             message.reply_to_message.sticker.file_id,
             f"tostick_{message.from_user.id}.jpg",
         )
-        await message.reply_photo(photo=photo, caption=f"Sticker -> Image\n@{client.me.username}")
+        await message.reply_photo(
+            photo=photo, caption=f"Sticker -> Image\n@{client.me.username}"
+        )
 
         os.remove(photo)
     except Exception as e:
@@ -236,10 +260,16 @@ async def showid(client, message):
             )
             file_info = get_file_id(message.reply_to_message)
         else:
-            _id += "<b>➲ User ID</b>: " f"<code>{message.from_user.id if message.from_user else 'Anonymous'}</code>\n"
+            _id += (
+                "<b>➲ User ID</b>: "
+                f"<code>{message.from_user.id if message.from_user else 'Anonymous'}</code>\n"
+            )
             file_info = get_file_id(message)
         if file_info:
-            _id += f"<b>{file_info.message_type}</b>: " f"<code>{file_info.file_id}</code>\n"
+            _id += (
+                f"<b>{file_info.message_type}</b>: "
+                f"<code>{file_info.file_id}</code>\n"
+            )
         await message.reply_text(_id, quote=True)
 
 
@@ -272,13 +302,23 @@ async def who_is(client, message):
     if message.chat.type in (("supergroup", "channel")):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
-            joined_date = datetime.fromtimestamp(chat_member_p.joined_date or time.time()).strftime("%Y.%m.%d %H:%M:%S")
-            message_out_str += "<b>➲Joined this Chat on:</b> <code>" f"{joined_date}" "</code>\n"
+            joined_date = datetime.fromtimestamp(
+                chat_member_p.joined_date or time.time()
+            ).strftime("%Y.%m.%d %H:%M:%S")
+            message_out_str += (
+                "<b>➲Joined this Chat on:</b> <code>" f"{joined_date}" "</code>\n"
+            )
         except UserNotParticipant:
             pass
     if chat_photo := from_user.photo:
         local_user_photo = await client.download_media(message=chat_photo.big_file_id)
-        buttons = [[InlineKeyboardButton("🔐 Close", callback_data=f"close#{message.from_user.id}")]]
+        buttons = [
+            [
+                InlineKeyboardButton(
+                    "🔐 Close", callback_data=f"close#{message.from_user.id}"
+                )
+            ]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=local_user_photo,
@@ -289,7 +329,13 @@ async def who_is(client, message):
         )
         os.remove(local_user_photo)
     else:
-        buttons = [[InlineKeyboardButton("🔐 Close", callback_data=f"close#{message.from_user.id}")]]
+        buttons = [
+            [
+                InlineKeyboardButton(
+                    "🔐 Close", callback_data=f"close#{message.from_user.id}"
+                )
+            ]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
             text=message_out_str,
@@ -308,7 +354,9 @@ async def close_callback(bot: Client, query: CallbackQuery):
     await query.message.delete()
 
 
-headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
+}
 
 
 async def get_content(url):
@@ -361,16 +409,22 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         try:
             res = (await http.get(f"https://kuryana.vercel.app/id/{slug}")).json()
             result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
-            result += f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
+            result += (
+                f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
+            )
             result += f"<b>Rating:</b> <code>{res['data']['details']['score']}</code>\n"
             result += f"<b>Content Rating:</b> <code>{res['data']['details']['content_rating']}</code>\n"
             result += f"<b>Type:</b> <code>{res['data']['details']['type']}</code>\n"
-            result += f"<b>Country:</b> <code>{res['data']['details']['country']}</code>\n"
+            result += (
+                f"<b>Country:</b> <code>{res['data']['details']['country']}</code>\n"
+            )
             if res["data"]["details"]["type"] == "Movie":
                 result += f"<b>Release Date:</b> <code>{res['data']['details']['release_date']}</code>\n"
             elif res["data"]["details"]["type"] == "Drama":
                 result += f"<b>Episode:</b> {res['data']['details']['episodes']}\n"
-                result += f"<b>Aired:</b> <code>{res['data']['details']['aired']}</code>\n"
+                result += (
+                    f"<b>Aired:</b> <code>{res['data']['details']['aired']}</code>\n"
+                )
                 try:
                     result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
                 except:
@@ -379,11 +433,17 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
                     result += f"<b>Original Network:</b> <code>{res['data']['details']['original_network']}</code>\n"
                 except:
                     pass
-            result += f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"
-            result += f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
+            result += (
+                f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"
+            )
+            result += (
+                f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
+            )
             result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
             result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
-            btn = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]])
+            btn = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]]
+            )
             await query.message.edit_text(result, reply_markup=btn)
         except Exception as e:
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")

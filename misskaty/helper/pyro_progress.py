@@ -5,7 +5,8 @@
 import asyncio
 import math
 import time
-from pyrogram.errors import MessageNotModified, FloodWait
+
+from pyrogram.errors import FloodWait, MessageNotModified
 
 
 async def progress_for_pyrogram(current, total, ud_type, message, start):

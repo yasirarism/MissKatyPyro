@@ -24,7 +24,9 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 async def ocr(_, message):
     reply = message.reply_to_message
     if not reply or not reply.photo and not reply.sticker:
-        return await message.reply_text(f"Reply photo with /{message.command[0]} command")
+        return await message.reply_text(
+            f"Reply photo with /{message.command[0]} command"
+        )
     msg = await message.reply("Reading image...")
     try:
         file_path = await reply.download()

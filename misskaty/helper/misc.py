@@ -63,9 +63,15 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
     if len(pairs) > COLUMN_SIZE:
         pairs = pairs[modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)] + [
             (
-                EqInlineKeyboardButton("❮", callback_data=f"{prefix}_prev({modulo_page})"),
-                EqInlineKeyboardButton("Back", callback_data=f"{prefix}_home({modulo_page})"),
-                EqInlineKeyboardButton("❯", callback_data=f"{prefix}_next({modulo_page})"),
+                EqInlineKeyboardButton(
+                    "❮", callback_data=f"{prefix}_prev({modulo_page})"
+                ),
+                EqInlineKeyboardButton(
+                    "Back", callback_data=f"{prefix}_home({modulo_page})"
+                ),
+                EqInlineKeyboardButton(
+                    "❯", callback_data=f"{prefix}_next({modulo_page})"
+                ),
             )
         ]
 

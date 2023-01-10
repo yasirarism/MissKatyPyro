@@ -1,8 +1,10 @@
-import string
 import os
-import requests
-import time
 import random
+import string
+import time
+
+import requests
+
 from misskaty.helper.human_read import get_readable_file_size
 
 
