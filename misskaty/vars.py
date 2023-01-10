@@ -1,7 +1,7 @@
+import sys
 from logging import getLogger
 from os import environ
 
-import sys
 from dotenv import load_dotenv
 
 load_dotenv("config.env", override=True)
