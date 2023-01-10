@@ -67,7 +67,9 @@ async def imdbsetlang(client, query):
     buttons = InlineKeyboard()
     buttons.row(
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}")
+    )
+    buttons.row(
         InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
     )
     buttons.row(
