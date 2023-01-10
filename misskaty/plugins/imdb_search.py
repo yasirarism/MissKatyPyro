@@ -69,9 +69,11 @@ async def imdbsetlang(client, query):
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}")
     )
-    buttons.row(
-        InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
-    )
+    is_imdb, lang = await is_imdbset(query.from_user.id)
+    if is_imdb:
+        buttons.row(
+            InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
+        )
     buttons.row(
         InlineButton("❌ Close", f"close#{query.from_user.id}")
     )
