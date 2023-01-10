@@ -3,6 +3,7 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
+from database.imdb_db import add_imdbset, is_imdbset
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
@@ -31,9 +32,16 @@ async def imdb_choose(_, m):
         )
     if m.sender_chat:
         return await m.reply("This feature not supported for channel..")
+    kuery =  m.text.split(None, 1)[1]
+    is_imdb, lang = await is_imdbset(m.from_user.id)
+    if is_imdb:
+        if lang == "eng":
+            return await imdb_search_en(kuery, m)
+        else:
+            return await imdb_search_id(kuery, m)
     buttons = InlineKeyboard()
     ranval = get_random_string(4)
-    LIST_CARI[ranval] = m.text.split(None, 1)[1]
+    LIST_CARI[ranval] = kuery
     buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari_en#{ranval}#{m.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}")
@@ -46,7 +54,7 @@ async def imdb_choose(_, m):
     )
     await m.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
-        caption=f"Hi {m.from_user.mention}, Please select the language you want to use on IMDB Search.\n\nSilakan pilih bahasa yang ingin Anda gunakan di Pencarian IMDB.",
+        caption=f"Hi {m.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
         reply_markup=buttons,
         quote=True,
     )
@@ -72,9 +80,67 @@ async def imdbsetlang(client, query):
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     if lang == "eng":
+        await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Language interface for IMDB has been changed to English.")
     else:
+        await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Bahasa tampilan IMDB sudah diubah ke Indonesia.")
+
+async def imdb_search_id(kueri, message):
+    BTN = []
+    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> @ IMDb ...", quote=True)
+    msg = ""
+    buttons = InlineKeyboard(row_width=4)
+    try:
+        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
+        res = json.loads(r).get("result")
+        if not res:
+            return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
+        msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
+        for num, movie in enumerate(res, start=1):
+            title = movie.get("l")
+            year = f"({movie.get('y')})" if movie.get("y") else ""
+            type = movie.get("q").replace("feature", "movie").capitalize()
+            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+            msg += f"{num}. {title} {year} - {type}\n"
+            BTN.append(
+                InlineKeyboardButton(
+                    text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
+                )
+            )
+        BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
+        buttons.add(*BTN)
+        await k.edit_caption(msg, reply_markup=buttons)
+    except Exception as err:
+        await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
+
+async def imdb_search_en(kueri, message):
+    BTN = []
+    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> @ IMDb ...", quote=True)
+    msg = ""
+    buttons = InlineKeyboard(row_width=4)
+    try:
+        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
+        res = json.loads(r).get("result")
+        if not res:
+            return await k.edit_caption(f"⛔️ 404 not found for keywords: <code>{kueri}</code>")
+        msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
+        for num, movie in enumerate(res, start=1):
+            title = movie.get("l")
+            year = f"({movie.get('y')})" if movie.get("y") else ""
+            type = movie.get("q").replace("feature", "movie").capitalize()
+            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+            msg += f"{num}. {title} {year} - {type}\n"
+            BTN.append(
+                InlineKeyboardButton(
+                    text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
+                )
+            )
+        BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
+        buttons.add(*BTN)
+        await k.edit_caption(msg, reply_markup=buttons)
+    except Exception as err:
+        await k.edit_caption(f"Failed when requesting movies title @ IMDb\n\n<b>ERROR:</b> <code>{err}</code>")
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
