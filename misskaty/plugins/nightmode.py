@@ -52,7 +52,6 @@ async def job_close():
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
     try:
-        # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
         reply_markup = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
         )
@@ -92,7 +91,6 @@ async def job_close_ymoviez():
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
     try:
-        # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
         reply_markup = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
         )
@@ -131,7 +129,6 @@ async def job_open():
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
     try:
-        # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
         reply_markup = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
         )
@@ -177,7 +174,6 @@ async def job_open_ymoviez():
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
     try:
-        # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
         reply_markup = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
         )
@@ -203,7 +199,6 @@ async def job_open_ymoviez():
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 async def _callbackanightmd(c: Client, q: CallbackQuery):
-    # version = check_output(["git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"], shell=True).decode()
     await q.answer(
         f"🔖 Hai, Aku {BOT_USERNAME} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
         show_alert=True,
