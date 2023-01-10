@@ -197,7 +197,6 @@ async def ngefilm21(_, message):
             judul = a.find_all(class_="r-snippetized")
             b = i.find_all("a")[0]["href"]
             data.append({"judul": judul[0].text, "link": b})
-            # print(f"{judul[0].text}{b}\n")
         if not data:
             return await msg.edit("Oops, data film tidak ditemukan.")
         res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
