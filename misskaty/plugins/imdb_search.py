@@ -88,12 +88,12 @@ async def imdbsetlang(client, query):
 
 async def imdb_search_id(kueri, message):
     BTN = []
-    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> @ IMDb ...", quote=True)
+    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> di database IMDb ...", quote=True)
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r).get("result")
+        res = json.loads(r.text).get("result")
         if not res:
             return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
         msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
@@ -108,6 +108,7 @@ async def imdb_search_id(kueri, message):
                     text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
                 )
             )
+        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"))
         BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
@@ -116,14 +117,14 @@ async def imdb_search_id(kueri, message):
 
 async def imdb_search_en(kueri, message):
     BTN = []
-    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> @ IMDb ...", quote=True)
+    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Searching <code>{kueri}</code> in IMDb Database...", quote=True)
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r).get("result")
+        res = json.loads(r.text).get("result")
         if not res:
-            return await k.edit_caption(f"⛔️ 404 not found for keywords: <code>{kueri}</code>")
+            return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
             title = movie.get("l")
@@ -136,11 +137,12 @@ async def imdb_search_en(kueri, message):
                     text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
                 )
             )
+        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"))
         BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit_caption(f"Failed when requesting movies title @ IMDb\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
