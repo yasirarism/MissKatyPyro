@@ -39,7 +39,7 @@ async def imdb_choose(_, m):
         InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}")
     )
     buttons.row(
-        InlineButton("🚩 Set Default Languange", f"imdbset#{m.from_user.id}")
+        InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}")
     )
     buttons.row(
         InlineButton("❌ Close", f"close#{m.from_user.id}")
@@ -53,7 +53,7 @@ async def imdb_choose(_, m):
 
 @app.on_callback_query(filters.regex("^imdbset"))
 async def imdbsetlang(client, query):
-    i, msg, uid = query.data.split("#")
+    i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     buttons = InlineKeyboard()
@@ -64,7 +64,7 @@ async def imdbsetlang(client, query):
     buttons.row(
         InlineButton("❌ Close", f"close#{query.from_user.id}")
     )
-    await query.message.edit_caption("<i>Please select available languange below..</i>")
+    await query.message.edit_caption("<i>Please select available language below..</i>")
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
