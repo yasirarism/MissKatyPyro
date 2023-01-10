@@ -3,7 +3,7 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
-from database.imdb_db import add_imdbset, is_imdbset
+from database.imdb_db import *
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
@@ -68,6 +68,7 @@ async def imdbsetlang(client, query):
     buttons.row(
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}")
+        InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
     )
     buttons.row(
         InlineButton("❌ Close", f"close#{query.from_user.id}")
@@ -82,9 +83,12 @@ async def imdbsetlang(client, query):
     if lang == "eng":
         await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Language interface for IMDB has been changed to English.")
-    else:
+    elif lang == "ind":
         await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Bahasa tampilan IMDB sudah diubah ke Indonesia.")
+    else:
+        await remove_imdbset(query.from_user.id)
+        await query.message.edit_caption("UserSetting for IMDB has been deleted from database.")
 
 async def imdb_search_id(kueri, message):
     BTN = []

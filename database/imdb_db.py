@@ -9,3 +9,8 @@ async def is_imdbset(user_id: int) -> bool:
 
 async def add_imdbset(user_id: int, lang):
     await imbd_db.update_one({"user_id": user_id}, {"$set": {"lang": lang}}, upsert=True)
+
+async def remove_imdbset(user_id: int):
+    user = await imbd_db.find_one({"user_id": user_id})
+    if user:
+        return await imbd_db.delete_one({"user_id": user_id})
