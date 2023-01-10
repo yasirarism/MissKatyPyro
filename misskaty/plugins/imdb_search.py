@@ -31,13 +31,18 @@ async def imdb_choose(_, m):
         )
     if m.sender_chat:
         return await m.reply("This feature not supported for channel..")
-    buttons = InlineKeyboard(row_width=2)
+    buttons = InlineKeyboard()
     ranval = get_random_string(4)
     LIST_CARI[ranval] = m.text.split(None, 1)[1]
-    buttons.add(
+    buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari_en#{ranval}#{m.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}"),
-        InlineButton("❌ Close", f"close#{m.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}")
+    )
+    buttons.row(
+        InlineButton("🚩 Set Default Languange", f"imdbset#{m.from_user.id}")
+    )
+    buttons.row(
+        InlineButton("❌ Close", f"close#{m.from_user.id}")
     )
     await m.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
@@ -46,6 +51,20 @@ async def imdb_choose(_, m):
         quote=True,
     )
 
+@app.on_callback_query(filters.regex("^imdbset"))
+async def imdbsetlang(client, query):
+    i, msg, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    buttons = InlineKeyboard()
+    buttons.row(
+        InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}")
+    )
+    buttons.row(
+        InlineButton("❌ Close", f"close#{query.from_user.id}")
+    )
+    await query.message.edit_caption("<i>Please select available languange below..</i>")
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
