@@ -276,7 +276,7 @@ async def list_ban_(c, message):
     )
     try:
         msgtext = (await app.get_messages(uname, mid)).text
-        gusernames = re.findall("@\w+", msgtext)
+        gusernames = re.findall(r"@\w+", msgtext)
     except:
         return await m.edit_text("Could not get group usernames")
     count = 0
@@ -325,7 +325,7 @@ async def list_unban_(c, message):
     )
     try:
         msgtext = (await app.get_messages(uname, mid)).text
-        gusernames = re.findall("@\w+", msgtext)
+        gusernames = re.findall(r"@\w+", msgtext)
     except:
         return await m.edit_text("Could not get the group usernames")
     count = 0
