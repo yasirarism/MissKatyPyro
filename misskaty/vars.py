@@ -1,3 +1,4 @@
+import sys
 from logging import getLogger
 from os import environ
 
@@ -26,7 +27,7 @@ try:
     USER_SESSION = getConfig("USER_SESSION")
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
-    exit(1)
+    sys.exit(1)
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
     {
