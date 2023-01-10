@@ -64,7 +64,17 @@ async def imdbsetlang(client, query):
     buttons.row(
         InlineButton("❌ Close", f"close#{query.from_user.id}")
     )
-    await query.message.edit_caption("<i>Please select available language below..</i>")
+    await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+
+@app.on_callback_query(filters.regex("^setimdb"))
+async def imdbsetlang(client, query):
+    i, lang, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if lang == "eng":
+        await query.message.edit_caption("Language interface for IMDB has been changed to English.")
+    else:
+        await query.message.edit_caption("Bahasa tampilan IMDB sudah diubah ke Indonesia.")
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
