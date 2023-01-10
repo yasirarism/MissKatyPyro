@@ -195,7 +195,9 @@ async def chat_watcher_func(_, message):
                         reasonafk = reasondb["reason"]
                         seenago = get_readable_time2((int(time.time() - timeafk)))
                         if afktype == "text":
-                            msg += f"**{first_name[:25]}** is AFK since {seenago} ago.\n\n"
+                            msg += (
+                                f"**{first_name[:25]}** is AFK since {seenago} ago.\n\n"
+                            )
                         if afktype == "text_reason":
                             msg += f"**{first_name[:25]}** is AFK since {seenago} ago.\n\n**Reason:** {reasonafk}\n\n"
                         if afktype == "animation":

@@ -6,7 +6,13 @@ from logging import getLogger
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
-from pyrogram.errors import ChatAdminRequired, ChatSendMediaForbidden, MessageTooLong, RPCError, SlowmodeWait
+from pyrogram.errors import (
+    ChatAdminRequired,
+    ChatSendMediaForbidden,
+    MessageTooLong,
+    RPCError,
+    SlowmodeWait,
+)
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
@@ -41,7 +47,9 @@ def draw_multiple_line_text(image, text, font, text_start_height):
     lines = textwrap.wrap(text, width=50)
     for line in lines:
         line_width, line_height = font.getsize(line)
-        draw.text(((image_width - line_width) / 2, y_text), line, font=font, fill="black")
+        draw.text(
+            ((image_width - line_width) / 2, y_text), line, font=font, fill="black"
+        )
         y_text += line_height
 
 
@@ -51,8 +59,12 @@ def welcomepic(pic, user, chat, count, id):
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
-    pfp = pfp.resize((265, 265))  # Resizes the Profilepicture so it fits perfectly in the circle
-    font = ImageFont.truetype("Calistoga-Regular.ttf", 37)  # <- Text Font of the Member Count. Change the text size for your preference
+    pfp = pfp.resize(
+        (265, 265)
+    )  # Resizes the Profilepicture so it fits perfectly in the circle
+    font = ImageFont.truetype(
+        "Calistoga-Regular.ttf", 37
+    )  # <- Text Font of the Member Count. Change the text size for your preference
     member_text = f"User#{count}, Selamat Datang {user}"  # <- Text under the Profilepicture with the Membercount
     draw_multiple_line_text(background, member_text, font, 395)
     draw_multiple_line_text(background, chat, font, 47)
@@ -63,15 +75,23 @@ def welcomepic(pic, user, chat, count, id):
         size=20,
         align="right",
     )
-    background.paste(pfp, (379, 123), pfp)  # Pastes the Profilepicture on the Background Image
-    background.save(f"downloads/welcome#{id}.png")  # Saves the finished Image in the folder with the filename
+    background.paste(
+        pfp, (379, 123), pfp
+    )  # Pastes the Profilepicture on the Background Image
+    background.save(
+        f"downloads/welcome#{id}.png"
+    )  # Saves the finished Image in the folder with the filename
     return f"downloads/welcome#{id}.png"
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
 @capture_err
 async def member_has_joined(c: app, member: ChatMemberUpdated):
-    if not member.new_chat_member or member.new_chat_member.status in {"banned", "left", "restricted"} or member.old_chat_member:
+    if (
+        not member.new_chat_member
+        or member.new_chat_member.status in {"banned", "left", "restricted"}
+        or member.old_chat_member
+    ):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
     if user.id in SUDO:
@@ -90,15 +110,21 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(time.time()).strftime("%Y.%m.%d %H:%M:%S")
-        first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
+        first_name = (
+            f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
+        )
         id = user.id
         dc = user.dc_id or "Member tanpa PP"
         count = await app.get_chat_members_count(member.chat.id)
         try:
-            pic = await app.download_media(user.photo.big_file_id, file_name=f"pp{user.id}.png")
+            pic = await app.download_media(
+                user.photo.big_file_id, file_name=f"pp{user.id}.png"
+            )
         except AttributeError:
             pic = "img/profilepic.png"
-        welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, count, user.id)
+        welcomeimg = await welcomepic(
+            pic, user.first_name, member.chat.title, count, user.id
+        )
         temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
             member.chat.id,
             photo=welcomeimg,
@@ -107,18 +133,30 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         userspammer = ""
         # Spamwatch Detection
         try:
-            headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
-            apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{user.id}", headers=headers)).json()
+            headers = {
+                "Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"
+            }
+            apispamwatch = (
+                await http.get(
+                    f"https://api.spamwat.ch/banlist/{user.id}", headers=headers
+                )
+            ).json()
             if not apispamwatch.get("error"):
-                await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
+                await app.ban_chat_member(
+                    member.chat.id, user.id, datetime.now() + timedelta(seconds=30)
+                )
                 userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
         except Exception as err:
             LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
         # Combot API Detection
         try:
-            apicombot = (await http.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
+            apicombot = (
+                await http.get(f"https://api.cas.chat/check?user_id={user.id}")
+            ).json()
             if apicombot.get("ok") == "true":
-                await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
+                await app.ban_chat_member(
+                    member.chat.id, user.id, datetime.now() + timedelta(seconds=30)
+                )
                 userspammer += f"<b>#CAS Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={user.id}'>Combot AntiSpam.</a>"
         except Exception as err:
             LOGGER.error(f"ERROR in Combot API Detection. {err}")
@@ -147,7 +185,9 @@ async def save_group(bot, message):
             await db.add_chat(message.chat.id, message.chat.title)
         if message.chat.id in temp.BANNED_CHATS:
             # Inspired from a boat of a banana tree
-            buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+            buttons = [
+                [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+            ]
             reply_markup = InlineKeyboardMarkup(buttons)
             k = await message.reply(
                 text="<b>CHAT NOT ALLOWED 🐞\n\nMy admins has restricted me from working here ! If you want to know more about it contact support..</b>",
@@ -162,7 +202,9 @@ async def save_group(bot, message):
             return
         buttons = [
             [
-                InlineKeyboardButton("ℹ️ Help", url=f"https://t.me/{temp.U_NAME}?start=help"),
+                InlineKeyboardButton(
+                    "ℹ️ Help", url=f"https://t.me/{temp.U_NAME}?start=help"
+                ),
                 InlineKeyboardButton("📢 Updates", url="https://t.me/YasirPediaChannel"),
             ]
         ]
@@ -175,10 +217,14 @@ async def save_group(bot, message):
         for u in message.new_chat_members:
             count = await app.get_chat_members_count(message.chat.id)
             try:
-                pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
+                pic = await app.download_media(
+                    u.photo.big_file_id, file_name=f"pp{u.id}.png"
+                )
             except AttributeError:
                 pic = "img/profilepic.png"
-            welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, count, u.id)
+            welcomeimg = await welcomepic(
+                pic, u.first_name, message.chat.title, count, u.id
+            )
             if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
                 try:
                     await (temp.MELCOW[f"welcome-{message.chat.id}"]).delete()
@@ -209,7 +255,9 @@ async def leave_a_chat(bot, message):
     except:
         chat = chat
     try:
-        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+        buttons = [
+            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat,
@@ -241,12 +289,16 @@ async def disable_chat(bot, message):
     if not cha_t:
         return await message.reply("Chat Not Found In DB")
     if cha_t["is_disabled"]:
-        return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
+        return await message.reply(
+            f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>"
+        )
     await db.disable_chat(chat_, reason)
     temp.BANNED_CHATS.append(chat_)
     await message.reply("Chat Succesfully Disabled")
     try:
-        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+        buttons = [
+            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat_,
@@ -291,7 +343,9 @@ async def gen_invite(bot, message):
     try:
         link = await bot.create_chat_invite_link(chat)
     except ChatAdminRequired:
-        return await message.reply("Invite Link Generation Failed, Iam Not Having Sufficient Rights")
+        return await message.reply(
+            "Invite Link Generation Failed, Iam Not Having Sufficient Rights"
+        )
     except Exception as e:
         return await message.reply(f"Error {e}")
     await message.reply(f"Here is your Invite Link {link.invite_link}")
@@ -304,11 +358,15 @@ async def adminlist(_, message):
         return await message.reply("Perintah ini hanya untuk grup")
     try:
         administrators = []
-        async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+        async for m in app.get_chat_members(
+            message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+        ):
             administrators.append(f"{m.user.first_name}")
 
         res = "".join(f"~ {i}\n" for i in administrators)
-        return await message.reply(f"Daftar Admin di <b>{message.chat.title}</b> ({message.chat.id}):\n~ {res}")
+        return await message.reply(
+            f"Daftar Admin di <b>{message.chat.title}</b> ({message.chat.id}):\n~ {res}"
+        )
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
@@ -326,7 +384,9 @@ async def kickme(_, message):
         await message.reply_text(txt)
         await message.chat.unban_member(message.from_user.id)
     except RPCError as ef:
-        await message.reply_text(f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}")
+        await message.reply_text(
+            f"Sepertinya ada error, silahkan report ke owner saya. \nERROR: {str(ef)}"
+        )
     except Exception as err:
         await message.reply(f"ERROR: {err}")
 

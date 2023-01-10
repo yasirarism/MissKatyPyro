@@ -64,12 +64,18 @@ def get_subname(lang, url, format):
 async def ceksub(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
+        return await m.reply(
+            f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video."
+        )
     link = cmd[1]
     start_time = perf_counter()
     pesan = await m.reply("Sedang memproses perintah..", quote=True)
     try:
-        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
+        res = (
+            await shell_exec(
+                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
+            )
+        )[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -102,19 +108,32 @@ async def ceksub(_, m):
         )
     except Exception:
         traceback.format_exc()
-        await pesan.edit(f"Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot.")
+        await pesan.edit(
+            f"Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot."
+        )
 
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
 async def convertsrt(c, m):
     reply = m.reply_to_message
-    if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
-        return await m.reply(f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt.")
+    if (
+        not reply
+        and reply.document
+        and (
+            reply.document.file_name.endswith(".vtt")
+            or reply.document.file_name.endswith(".ass")
+        )
+    ):
+        return await m.reply(
+            f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt."
+        )
     msg = await m.reply("⏳ Converting...")
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
-    LOGGER.info(f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]")
+    LOGGER.info(
+        f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]"
+    )
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}.srt'"))[0]
     c_time = time()
     await m.reply_document(
@@ -154,8 +173,12 @@ async def stream_extract(bot, update):
             format = "srt"
         start_time = perf_counter()
         namafile = get_subname(lang, link, format)
-        LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        extract = (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
+        LOGGER.info(
+            f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
+        )
+        extract = (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[
+            0
+        ]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         c_time = time()
@@ -172,4 +195,6 @@ async def stream_extract(bot, update):
         except:
             pass
     except Exception as e:
-        await update.message.edit(f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")
+        await update.message.edit(
+            f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}"
+        )

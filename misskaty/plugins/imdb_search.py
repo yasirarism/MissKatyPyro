@@ -3,13 +3,18 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
-from database.imdb_db import *
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
-from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty
+from pyrogram.errors import (
+    MediaEmpty,
+    MessageNotModified,
+    PhotoInvalidDimensions,
+    WebpageMediaEmpty,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 
+from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
@@ -32,7 +37,7 @@ async def imdb_choose(_, m):
         )
     if m.sender_chat:
         return await m.reply("This feature not supported for channel..")
-    kuery =  m.text.split(None, 1)[1]
+    kuery = m.text.split(None, 1)[1]
     is_imdb, lang = await is_imdbset(m.from_user.id)
     if is_imdb:
         if lang == "eng":
@@ -44,20 +49,17 @@ async def imdb_choose(_, m):
     LIST_CARI[ranval] = kuery
     buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari_en#{ranval}#{m.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}")
+        InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}"),
     )
-    buttons.row(
-        InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}")
-    )
-    buttons.row(
-        InlineButton("❌ Close", f"close#{m.from_user.id}")
-    )
+    buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}"))
+    buttons.row(InlineButton("❌ Close", f"close#{m.from_user.id}"))
     await m.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
         caption=f"Hi {m.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
         reply_markup=buttons,
         quote=True,
     )
+
 
 @app.on_callback_query(filters.regex("^imdbset"))
 async def imdbsetlang(client, query):
@@ -67,17 +69,18 @@ async def imdbsetlang(client, query):
     buttons = InlineKeyboard()
     buttons.row(
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}")
+        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}"),
     )
     is_imdb, lang = await is_imdbset(query.from_user.id)
     if is_imdb:
         buttons.row(
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
         )
-    buttons.row(
-        InlineButton("❌ Close", f"close#{query.from_user.id}")
+    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
+    await query.message.edit_caption(
+        "<i>Please select available language below..</i>", reply_markup=buttons
     )
-    await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+
 
 @app.on_callback_query(filters.regex("^setimdb"))
 async def imdbsetlang(client, query):
@@ -86,24 +89,37 @@ async def imdbsetlang(client, query):
         return await query.answer("⚠️ Access Denied!", True)
     if lang == "eng":
         await add_imdbset(query.from_user.id, lang)
-        await query.message.edit_caption("Language interface for IMDB has been changed to English.")
+        await query.message.edit_caption(
+            "Language interface for IMDB has been changed to English."
+        )
     elif lang == "ind":
         await add_imdbset(query.from_user.id, lang)
-        await query.message.edit_caption("Bahasa tampilan IMDB sudah diubah ke Indonesia.")
+        await query.message.edit_caption(
+            "Bahasa tampilan IMDB sudah diubah ke Indonesia."
+        )
     else:
         await remove_imdbset(query.from_user.id)
-        await query.message.edit_caption("UserSetting for IMDB has been deleted from database.")
+        await query.message.edit_caption(
+            "UserSetting for IMDB has been deleted from database."
+        )
+
 
 async def imdb_search_id(kueri, message):
     BTN = []
-    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Menelusuri <code>{kueri}</code> di database IMDb ...", quote=True)
+    k = await message.reply_photo(
+        "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
+        caption=f"🔎 Menelusuri <code>{kueri}</code> di database IMDb ...",
+        quote=True,
+    )
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
         res = json.loads(r.text).get("result")
         if not res:
-            return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
+            return await k.edit_caption(
+                f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>"
+            )
         msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
             title = movie.get("l")
@@ -113,26 +129,44 @@ async def imdb_search_id(kueri, message):
             msg += f"{num}. {title} {year} - {type}\n"
             BTN.append(
                 InlineKeyboardButton(
-                    text=num, callback_data=f"imdbres_id#{message.from_user.id}#{movieID}"
+                    text=num,
+                    callback_data=f"imdbres_id#{message.from_user.id}#{movieID}",
                 )
             )
-        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"))
-        BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
+        BTN.append(
+            InlineKeyboardButton(
+                text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"
+            )
+        )
+        BTN.append(
+            InlineKeyboardButton(
+                text="❌ Close", callback_data=f"close#{message.from_user.id}"
+            )
+        )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(
+            f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>"
+        )
+
 
 async def imdb_search_en(kueri, message):
     BTN = []
-    k = await message.reply_photo("https://telegra.ph/file/270955ef0d1a8a16831a9.jpg", caption=f"🔎 Searching <code>{kueri}</code> in IMDb Database...", quote=True)
+    k = await message.reply_photo(
+        "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
+        caption=f"🔎 Searching <code>{kueri}</code> in IMDb Database...",
+        quote=True,
+    )
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
         r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
         res = json.loads(r.text).get("result")
         if not res:
-            return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
+            return await k.edit_caption(
+                f"⛔️ Result not found for keywords: <code>{kueri}</code>"
+            )
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
             title = movie.get("l")
@@ -142,15 +176,27 @@ async def imdb_search_en(kueri, message):
             msg += f"{num}. {title} {year} - {type}\n"
             BTN.append(
                 InlineKeyboardButton(
-                    text=num, callback_data=f"imdbres_en#{message.from_user.id}#{movieID}"
+                    text=num,
+                    callback_data=f"imdbres_en#{message.from_user.id}#{movieID}",
                 )
             )
-        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"))
-        BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{message.from_user.id}"))
+        BTN.append(
+            InlineKeyboardButton(
+                text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"
+            )
+        )
+        BTN.append(
+            InlineKeyboardButton(
+                text="❌ Close", callback_data=f"close#{message.from_user.id}"
+            )
+        )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit_caption(f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(
+            f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>"
+        )
+
 
 @app.on_callback_query(filters.regex("^imdcari_id"))
 async def imdbcari_id(client, query):
@@ -286,18 +332,20 @@ async def imdb_id_callback(bot, query):
         if r_json.get("aggregateRating"):
             res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
         if sop.select('li[data-testid="title-details-releasedate"]'):
-            rilis = (sop.select(
-                'li[data-testid="title-details-releasedate"]'
-            )[0].find(
-                class_=
-                "ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
-            ).text)
-            rilis_url = sop.select(
-                'li[data-testid="title-details-releasedate"]'
-            )[0].find(
-                class_=
-                "ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
-            )["href"]
+            rilis = (
+                sop.select('li[data-testid="title-details-releasedate"]')[0]
+                .find(
+                    class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                )
+                .text
+            )
+            rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[
+                0
+            ].find(
+                class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+            )[
+                "href"
+            ]
             res_str += (
                 f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             )

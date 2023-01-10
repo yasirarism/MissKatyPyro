@@ -1,13 +1,15 @@
+import os
 import random
 import string
-import psutil
 import time
-import os
-from misskaty import BOT_NAME, UBOT_NAME, botStartTime
-from misskaty.plugins import ALL_MODULES
-from misskaty.helper.human_read import get_readable_time
-from misskaty.helper.http import http
 from http.cookies import SimpleCookie
+
+import psutil
+
+from misskaty import BOT_NAME, UBOT_NAME, botStartTime
+from misskaty.helper.http import http
+from misskaty.helper.human_read import get_readable_time
+from misskaty.plugins import ALL_MODULES
 
 GENRES_EMOJI = {
     "Action": "👊",
@@ -55,7 +57,10 @@ TOTAL PLUGINS: {len(ALL_MODULES)}
 
 
 def get_random_string(length: int = 5):
-    text_str = "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(length))
+    text_str = "".join(
+        random.SystemRandom().choice(string.ascii_letters + string.digits)
+        for _ in range(length)
+    )
     return text_str.upper()
 
 
