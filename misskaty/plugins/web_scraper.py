@@ -46,7 +46,7 @@ async def getDataTerbit21(chat_id, message_id, kueri, CurrentPage):
         
         TerbitRes = ""
         for c, i in enumerate(LKTERBIT_DICT[message_id][0][index], start=1):
-            if not kueri:
+            if kueri:
                 TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
             else:
                 TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
@@ -82,7 +82,7 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
         
         lkResult = ""
         for c, i in enumerate(LKTERBIT_DICT[message_id][0][index], start=1):
-            if not kueri:
+            if kueri:
                 lkResult = f"<b>#Layarkaca21 Results For:</b> <code>{kueri}</code>\n\n"
             else:
                 lkResult = "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
