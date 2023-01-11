@@ -249,8 +249,8 @@ async def getDataLendrive(msg, kueri, CurrentPage):
         soup = BeautifulSoup(data.text, "lxml")
         lenddata = []
         for o in soup.find_all(class_="bsx"):
-            title = o.find("a")["href"]
-            link = o.find("a")["title"]
+            title = o.find("a")["title"]
+            link = o.find("a")["href"]
             status = o.find(class_="epx").text
             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
