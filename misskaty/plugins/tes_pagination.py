@@ -87,7 +87,7 @@ async def lk21tes(client, message):
 async def lk21page_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
         return await callback_query.answer("Not yours..", True)
-    message_id = callback_query.data.split('#')[2]
+    message_id = int(callback_query.data.split('#')[2])
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
