@@ -60,9 +60,4 @@ async def remove_afk(user_id: int):
 
 async def get_afk_users() -> list:
     users = usersdb.find({"user_id": {"$gt": 0}})
-    if not users:
-        return []
-    users_list = []
-    for user in await users.to_list(length=1000000000):
-        users_list.append(user)
-    return users_list
+    return list(await users.to_list(length=1000000000)) if users else []

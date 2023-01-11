@@ -133,14 +133,16 @@ async def imdb_search_id(kueri, message):
                     callback_data=f"imdbres_id#{message.from_user.id}#{movieID}",
                 )
             )
-        BTN.append(
-            InlineKeyboardButton(
-                text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"
-            )
-        )
-        BTN.append(
-            InlineKeyboardButton(
-                text="❌ Close", callback_data=f"close#{message.from_user.id}"
+        BTN.extend(
+            (
+                InlineKeyboardButton(
+                    text="🚩 Language",
+                    callback_data=f"imdbset#{message.from_user.id}",
+                ),
+                InlineKeyboardButton(
+                    text="❌ Close",
+                    callback_data=f"close#{message.from_user.id}",
+                ),
             )
         )
         buttons.add(*BTN)
@@ -180,14 +182,16 @@ async def imdb_search_en(kueri, message):
                     callback_data=f"imdbres_en#{message.from_user.id}#{movieID}",
                 )
             )
-        BTN.append(
-            InlineKeyboardButton(
-                text="🚩 Language", callback_data=f"imdbset#{message.from_user.id}"
-            )
-        )
-        BTN.append(
-            InlineKeyboardButton(
-                text="❌ Close", callback_data=f"close#{message.from_user.id}"
+        BTN.extend(
+            (
+                InlineKeyboardButton(
+                    text="🚩 Language",
+                    callback_data=f"imdbset#{message.from_user.id}",
+                ),
+                InlineKeyboardButton(
+                    text="❌ Close",
+                    callback_data=f"close#{message.from_user.id}",
+                ),
             )
         )
         buttons.add(*BTN)
@@ -231,8 +235,16 @@ async def imdbcari_id(client, query):
                     text=num, callback_data=f"imdbres_id#{uid}#{movieID}"
                 )
             )
-        BTN.append(InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"))
-        BTN.append(InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"))
+        BTN.extend(
+            (
+                InlineKeyboardButton(
+                    text="🚩 Language", callback_data=f"imdbset#{uid}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ Close", callback_data=f"close#{uid}"
+                ),
+            )
+        )
         buttons.add(*BTN)
         await query.message.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
@@ -246,12 +258,12 @@ async def imdbcari_en(client, query):
     BTN = []
     i, msg, uid = query.data.split("#")
     if query.from_user.id != int(uid):
-        return await query.answer(f"⚠️ Access Denied!", True)
+        return await query.answer("⚠️ Access Denied!", True)
     try:
         kueri = LIST_CARI.get(msg)
         del LIST_CARI[msg]
     except KeyError:
-        return await query.message.edit_caption(f"⚠️ Callback Query Expired!")
+        return await query.message.edit_caption("⚠️ Callback Query Expired!")
     await query.message.edit_caption("<i>🔎 Looking in the IMDB Database..</i>")
     msg = ""
     buttons = InlineKeyboard(row_width=4)
@@ -274,14 +286,14 @@ async def imdbcari_en(client, query):
                     text=num, callback_data=f"imdbres_en#{uid}#{movieID}"
                 )
             )
-        BTN.append(
-            InlineKeyboardButton(
-                text="🚩 Language", callback_data=f"imdbset#{uid}"
-            )
-        )
-        BTN.append(
-            InlineKeyboardButton(
-                text="❌ Close", callback_data=f"close#{uid}"
+        BTN.extend(
+            (
+                InlineKeyboardButton(
+                    text="🚩 Language", callback_data=f"imdbset#{uid}"
+                ),
+                InlineKeyboardButton(
+                    text="❌ Close", callback_data=f"close#{uid}"
+                ),
             )
         )
         buttons.add(*BTN)
@@ -356,14 +368,12 @@ async def imdb_id_callback(bot, query):
                 f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             )
         if r_json.get("genre"):
-            genre = ""
-            for i in r_json["genre"]:
-                if i in GENRES_EMOJI:
-                    genre += (
-                        f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    )
-                else:
-                    genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+            genre = "".join(
+                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                if i in GENRES_EMOJI
+                else f"#{i.replace('-', '_').replace(' ', '_')}, "
+                for i in r_json["genre"]
+            )
             genre = genre[:-2]
             res_str += f"<b>Genre :</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):
@@ -541,14 +551,12 @@ async def imdb_en_callback(bot, query):
             ]
             res_str += f"<b>Release Data:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
-            genre = ""
-            for i in r_json["genre"]:
-                if i in GENRES_EMOJI:
-                    genre += (
-                        f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    )
-                else:
-                    genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+            genre = "".join(
+                f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                if i in GENRES_EMOJI
+                else f"#{i.replace('-', '_').replace(' ', '_')}, "
+                for i in r_json["genre"]
+            )
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
         if sop.select('li[data-testid="title-details-origin"]'):

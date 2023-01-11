@@ -109,7 +109,7 @@ async def ceksub(_, m):
     except Exception:
         traceback.format_exc()
         await pesan.edit(
-            f"Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot."
+            "Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot."
         )
 
 

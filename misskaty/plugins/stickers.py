@@ -56,12 +56,10 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 @app.on_message(filters.command(["getsticker"], COMMAND_HANDLER))
 async def getsticker_(c, m):
-    sticker = m.reply_to_message.sticker
-
-    if sticker:
+    if sticker := m.reply_to_message.sticker:
         if sticker.is_animated:
             await m.reply_text("Animated sticker is not supported!")
-        elif not sticker.is_animated:
+        else:
             with tempfile.TemporaryDirectory() as tempdir:
                 path = os.path.join(tempdir, "getsticker")
             sticker_file = await c.download_media(

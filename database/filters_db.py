@@ -31,10 +31,7 @@ async def get_filter(chat_id: int, name: str) -> Union[bool, dict]:
 
 
 async def get_filters_names(chat_id: int) -> List[str]:
-    _filters = []
-    for _filter in await _get_filters(chat_id):
-        _filters.append(_filter)
-    return _filters
+    return list(await _get_filters(chat_id))
 
 
 async def save_filter(chat_id: int, name: str, _filter: dict):

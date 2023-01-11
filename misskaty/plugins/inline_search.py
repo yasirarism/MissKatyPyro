@@ -51,8 +51,8 @@ async def inline_menu(_, inline_query: InlineQuery):
         )
 
         btn = InlineKeyboard(row_width=2)
-        bot_state = "Dead" if not await app.get_me() else "Alive"
-        ubot_state = "Dead" if not await user.get_me() else "Alive"
+        bot_state = "Alive" if await app.get_me() else "Dead"
+        ubot_state = "Alive" if await user.get_me() else "Dead"
         btn.add(
             InlineKeyboardButton("Stats", callback_data="stats_callback"),
             InlineKeyboardButton("Go Inline!", switch_inline_query_current_chat=""),
@@ -193,7 +193,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         _id = inline_query.query.split()[1]
         msg = inline_query.query.split(None, 2)[2].strip()
 
-        if not (msg and msg.endswith(":")):
+        if not msg or not msg.endswith(":"):
             inline_query.stop_propagation()
 
         try:
@@ -224,9 +224,9 @@ async def inline_menu(_, inline_query: InlineQuery):
             ]
         )
         mention = (
-            f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
-            if not penerima.username
-            else f"@{penerima.username}"
+            f"@{penerima.username}"
+            if penerima.username
+            else f"<a href='tg://user?id={penerima.id}'>{penerima.first_name}</a>"
         )
         msg_c = (
             f"🔒 A <b>private message</b> to {mention} [<code>{penerima.id}</code>], "
@@ -535,12 +535,12 @@ async def imdb_inl(_, query):
                 ]
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if r_json.get("genre"):
-                genre = ""
-                for i in r_json["genre"]:
-                    if i in GENRES_EMOJI:
-                        genre += f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    else:
-                        genre += f"#{i.replace('-', '_').replace(' ', '_')}, "
+                genre = "".join(
+                    f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+                    if i in GENRES_EMOJI
+                    else f"#{i.replace('-', '_').replace(' ', '_')}, "
+                    for i in r_json["genre"]
+                )
                 genre = genre[:-2]
                 res_str += f"<b>Genre:</b> {genre}\n"
             if sop.select('li[data-testid="title-details-origin"]'):

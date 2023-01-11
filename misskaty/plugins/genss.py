@@ -36,13 +36,8 @@ __HELP__ = """"
 async def genss(client, message):
     replied = message.reply_to_message
     if replied is not None:
-        media = None
-        if replied is not None:
-            vid = [replied.video, replied.document]
-            for v in vid:
-                if v is not None:
-                    media = v
-                    break
+        vid = [replied.video, replied.document]
+        media = next((v for v in vid if v is not None), None)
         if media is None:
             return await message.reply(
                 "Reply to a Telegram Video or document as video to generate screenshoot!"

@@ -136,10 +136,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
         else:
             uid = callback[2]
             type_ = callback[3]
-            if type_ == "a":
-                format_ = "audio"
-            else:
-                format_ = "video"
+            format_ = "audio" if type_ == "a" else "video"
             async with iYTDL(
                 log_group_id=LOG_CHANNEL,
                 cache_path="cache",
@@ -153,18 +150,20 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
     else:
         uid = callback[2]
         type_ = callback[3]
-        if type_ == "a":
-            format_ = "audio"
-        else:
-            format_ = "video"
+        format_ = "audio" if type_ == "a" else "video"
         async with iYTDL(
-            log_group_id=LOG_CHANNEL,
-            cache_path="cache",
-            ffmpeg_location="/usr/bin/mediaextract",
-            delete_media=True,
-        ) as ytdl:
+                    log_group_id=LOG_CHANNEL,
+                    cache_path="cache",
+                    ffmpeg_location="/usr/bin/mediaextract",
+                    delete_media=True,
+                ) as ytdl:
             upload_key = await ytdl.download(
-                "https://www.youtube.com/watch?v=" + key, uid, format_, cq, True, 3
+                f"https://www.youtube.com/watch?v={key}",
+                uid,
+                format_,
+                cq,
+                True,
+                3,
             )
             await ytdl.upload(app, upload_key, format_, cq, True)
 
@@ -187,7 +186,7 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery):
     scroll_btn = [
         [
             InlineKeyboardButton(
-                f"Back", callback_data=f"ytdl_scroll|{search_key}|{page-1}"
+                "Back", callback_data=f"ytdl_scroll|{search_key}|{page-1}"
             ),
             InlineKeyboardButton(
                 f"{page+1}/{len(search['result'])}",
