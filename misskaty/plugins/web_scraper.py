@@ -160,7 +160,7 @@ async def getDataKuso(msg, kueri, CurrentPage):
         for i in res:
             ress = i.find_all("a")[0]
             title = ress.text
-            link = res["href"]
+            link = ress["href"]
             kusodata.append({"title": title, "link": link})
         if not kusodata:
             return await msg.edit("Sorry could not find any results!")
