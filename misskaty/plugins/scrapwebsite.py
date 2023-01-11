@@ -19,19 +19,6 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
 
-__MODULE__ = "WebScraper"
-__HELP__ = """
-/melongmovie - Scrape website data from MelongMovie Web. If without query will give latest movie list.
-/lk21 [query <optional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
-/pahe [query <optional>] - Scrape website data from Pahe.li. If without query will give latest post list.
-/terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
-/savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
-/movieku [query <optional>] - Scrape website data from Movieku.cc
-/nodrakor [query] - Scrape website data from nodrakor.icu
-/zonafilm [query] - Scrape website data from zonafilm.icu
-/gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
-"""
-
 LOGGER = getLogger(__name__)
 
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
@@ -531,63 +518,6 @@ async def melongmovie(_, msg):
             await m.delete()
             LOGGER.error(e)
             await msg.reply(str(e), True)
-
-
-@app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
-@capture_err
-async def pahe_scrap(_, msg):
-    title = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else ""
-    m = await msg.reply("**__⏳ Please wait, scraping data..__**", True)
-    try:
-        api = await http.get(f"https://yasirapi.eu.org/pahe?q={title}")
-        res = api.json()
-        if not res["result"]:
-            await m.delete()
-            return await msg.reply("404 Result not FOUND!", True)
-        head = f"<b>#Pahe Results For:</b> <code>{title}</code>\n\n" if title else f"<b>#Pahe Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
-        await m.delete()
-        msgs = ""
-        for c, i in enumerate(res["result"], start=1):
-            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
-            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
-                await msg.reply(
-                    head + msgs,
-                    True,
-                    disable_web_page_preview=True,
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="❌ Close",
-                                    callback_data=f"close#{msg.from_user.id}",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-                await asyncio.sleep(2)
-                msgs = ""
-        if msgs != "":
-            await msg.reply(
-                head + msgs,
-                True,
-                disable_web_page_preview=True,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="❌ Close",
-                                callback_data=f"close#{msg.from_user.id}",
-                            )
-                        ]
-                    ]
-                ),
-            )
-    except Exception as e:
-        await m.delete()
-        LOGGER.error(e)
-        await msg.reply(f"ERROR: {e}", True)
-
 
 @app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
 @capture_err
