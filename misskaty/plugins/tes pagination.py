@@ -3,8 +3,11 @@ import asyncio
 from pykeyboard import InlineKeyboard
 from pyrogram import filters
 from misskaty.helper.http import http
+from misskaty.helper.tools import get_random_string
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
+
+LK_DICT = {}
 
 def split_arr(arr, size):
      arrs = []
@@ -16,9 +19,7 @@ def split_arr(arr, size):
      return arrs
 
 async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
-    lk21json = (await http.get(
-            f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
-    res = split_arr(lk21json["result"], 6)
+    lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
     if not lk21json.get("result"):
         return await app.send_message(
             chat_id=chat_id,
@@ -28,16 +29,17 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
                 "Results: Sorry could not find any matching results!"
             )
         )
+    LK_DICT[message_id] = [split_arr(lk21json["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
-        PageLen = len(res)
+        PageLen = len(LK_DICT[message_id][0])
         
         msgs = ""
-        for c, i in enumerate(res[index], start=1):
+        for c, i in enumerate(LK_DICT[message_id][0][index], start=1):
             msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
         
         lkResult = (
-            f"**Tes of {kueri}**\n"
+            f"**Hasil pencarian dg kata kunci {kueri}**\n"
             f"{msgs}\n\n"
         )
         
@@ -78,7 +80,7 @@ async def lk21tes(client, message):
     lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
     
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{kueri}')
+    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'{message.from_user.id}')
     await message.reply(
         text=f"{lkres}",
         reply_markup=keyboard
@@ -86,10 +88,12 @@ async def lk21tes(client, message):
 
 @app.on_callback_query(filters.create(lambda _, __, query: 'pagination_lk21#' in query.data))
 async def lk21page_callback(client, callback_query):
+    if callback_query.from_user.id != callback_query.data.split('#')[3]:
+        return await callback_query.answer("Not yours..", True)
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1]) 
-    kueri = callback_query.data.split('#')[2]
+    kueri = LK_DICT[message_id][1]
 
     try:
         lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
@@ -97,7 +101,7 @@ async def lk21page_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{kueri}')
+    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{callback_query.from_user.id}')
     await app.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
