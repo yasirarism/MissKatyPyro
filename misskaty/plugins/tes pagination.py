@@ -79,22 +79,25 @@ async def lk21tes(client, message):
     
     CurrentPage = 1
     lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
-    
+    pesan = await message.reply("Getting data from LK21..")
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{message.from_user.id}')
-    await message.reply(
+    keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    await pesan.edit(
         text=f"{lkres}",
         reply_markup=keyboard
     ) 
 
-@app.on_callback_query(filters.create(lambda _, __, query: 'pagination_lk21#' in query.data))
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_lk21#' in query.data))
 async def lk21page_callback(client, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split('#')[2]):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
         return await callback_query.answer("Not yours..", True)
-    message_id = callback_query.message.id
+    message_id = callback_query.data.split('#')[2]
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
-    kueri = LK_DICT[int(message_id)][1]
+    try:
+        kueri = LK_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data..")
 
     try:
         lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
@@ -102,7 +105,7 @@ async def lk21page_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{callback_query.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
     await app.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
