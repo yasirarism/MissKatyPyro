@@ -94,8 +94,7 @@ async def lk21page_callback(client, callback_query):
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
-    LOGGER.info(LK_DICT)
-    kueri = LK_DICT[message_id][1]
+    kueri = LK_DICT[int(message_id)][1]
 
     try:
         lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
