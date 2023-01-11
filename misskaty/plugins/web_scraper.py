@@ -148,6 +148,39 @@ async def getDataMelong(msg, kueri, CurrentPage):
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
 
+# Zonafilm GetData
+async def getDataZonafilm(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
+        zonafilm = await http.get(f'https://zonafilm.icu/?s={kueri}', headers=headers)
+        text = BeautifulSoup(zonafilm.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            if not kueri:
+                return await msg.edit("404 Not FOUND!")
+            else:
+                return await msg.edit(f"404 Not FOUND For: {kueri}")
+        data = []
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        
+        ZonafilmResult = f"<b>#Zonafilm Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Zonafilm Latest:</b>\n🌀 Use /zonafilm [title] to start search with title.\n\n"
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            msgs += f"<b>Extract:</b> <code>/zonafilm_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
+        IGNORE_CHAR = "[]"
+        ZonafilmResult = ''.join(i for i in ZonafilmResult if not i in IGNORE_CHAR)
+        return ZonafilmResult, PageLen
+    except (IndexError, KeyError):
+        await msg.edit("Sorry could not find any matching results!")
+
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
@@ -247,6 +280,38 @@ async def gomov_s(client, message):
     )
     await editPesan(pesan, gomovres, reply_markup=keyboard)
 
+# Zonafilm CMD
+@app.on_message(filters.command(['zonafilm'], COMMAND_HANDLER))
+async def zonafilm_s(client, message):
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("Getting data from Zonafilm Web..")
+    CurrentPage = 1
+    zonafilmres, PageLen = await getDataZonafilm(pesan, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_zonafilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, zonafilmres, reply_markup=keyboard)
+
+# MelongMovie CMD
+@app.on_message(filters.command(['melongmovie'], COMMAND_HANDLER))
+async def melong_s(client, message):
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("Getting data from Gomov Web..")
+    CurrentPage = 1
+    melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, melongres, reply_markup=keyboard)
+
 # Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_terbit21#' in query.data))
 async def terbit21page_callback(client, callback_query):
@@ -266,6 +331,29 @@ async def terbit21page_callback(client, callback_query):
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_terbit21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, terbitres, reply_markup=keyboard)
+
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_melong#' in query.data))
+async def melongpage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        terbitres, PageLen = await getDataMelong(callback_query.message, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{message_id}#{callback_query.from_user.id}')
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -342,6 +430,29 @@ async def gomovpage_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, gomovres, reply_markup=keyboard)
+
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_zonafilm#' in query.data))
+async def zonafilmpage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        zonafilmres, PageLen = await getDataZonafilm(callback_query.message, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, zonafilmres, reply_markup=keyboard)
 
 ### Scrape DDL Link From Web ###
 
