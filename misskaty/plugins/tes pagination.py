@@ -1,5 +1,5 @@
 import asyncio
-
+import logging
 from pykeyboard import InlineKeyboard
 from pyrogram import filters
 from misskaty.helper.http import http
@@ -7,6 +7,7 @@ from misskaty.helper.tools import get_random_string
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 
+LOGGER = logging.getLogger(__name__)
 LK_DICT = {}
 
 def split_arr(arr, size):
@@ -92,7 +93,8 @@ async def lk21page_callback(client, callback_query):
         return await callback_query.answer("Not yours..", True)
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id 
-    CurrentPage = int(callback_query.data.split('#')[1]) 
+    CurrentPage = int(callback_query.data.split('#')[1])
+    LOGGER.info(LK_DICT[message_id])
     kueri = LK_DICT[message_id][1]
 
     try:
