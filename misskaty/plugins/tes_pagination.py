@@ -21,17 +21,18 @@ def split_arr(arr, size):
      return arrs
 
 async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
-    lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
-    if not lk21json.get("result"):
-        return await app.send_message(
-            chat_id=chat_id,
-            reply_to_message_id=message_id,
-            text=(
-                f"Kueri: {kueri}\n"
-                "Results: Sorry could not find any matching results!"
+    if not LK_DICT.get(message_id):
+        lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
+        if not lk21json.get("result"):
+            return await app.send_message(
+                chat_id=chat_id,
+                reply_to_message_id=message_id,
+                text=(
+                    f"Kueri: {kueri}\n"
+                    "Results: Sorry could not find any matching results!"
+                )
             )
-        )
-    LK_DICT[message_id] = [split_arr(lk21json["result"], 6), kueri]
+        LK_DICT[message_id] = [split_arr(lk21json["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(LK_DICT[message_id][0])
