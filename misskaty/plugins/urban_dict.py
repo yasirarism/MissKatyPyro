@@ -9,7 +9,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 async def getData(chat_id, message_id, GetWord, CurrentPage):
     UDJson = (await http.get(
-            f'http://api.urbandictionary.com/v0/define?term={GetWord}')).json()
+            f'https://api.urbandictionary.com/v0/define?term={GetWord}')).json()
 
     if not 'list' in UDJson:
         CNMessage = await app.send_message(
