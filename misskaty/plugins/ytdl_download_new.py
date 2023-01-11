@@ -17,9 +17,7 @@ from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 LOGGER = getLogger(__name__)
-regex = recompile(
-    r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
-)
+regex = recompile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})")
 YT_DB = {}
 
 
@@ -67,9 +65,7 @@ async def ytdownv2(_, message):
     if len(message.command) == 1:
         return await message.reply("Please input a valid YT-DLP Supported URL")
     url = message.text.split(" ", maxsplit=1)[1]
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         x = await ytdl.parse(url)
         if x is None:
             return await message.reply("Failed parse URL, check logs..")
@@ -84,13 +80,9 @@ async def ytdl_listall_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
     callback = cq.data.split("|")
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         media, buttons = await ytdl.listview(callback[1])
-        await cq.edit_message_media(
-            media=media, reply_markup=buttons.add(cq.from_user.id)
-        )
+        await cq.edit_message_media(media=media, reply_markup=buttons.add(cq.from_user.id))
 
 
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
@@ -99,9 +91,7 @@ async def ytdl_extractinfo_callback(_, cq: CallbackQuery):
         return await cq.answer("Not your task", True)
     await cq.answer("Please Wait...")
     callback = cq.data.split("|")
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         if data := await ytdl.extract_info_from_key(callback[1]):
             if len(key) == 11:
                 await cq.edit_message_text(
@@ -127,10 +117,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
     callback = cq.data.split("|")
     key = callback[1]
     if callback[0] == "yt_gen":
-        if (
-            match := regex.match(cq.message.reply_to_message.command[1])
-            or len(callback) == 2
-        ):
+        if match := regex.match(cq.message.reply_to_message.command[1]) or len(callback) == 2:
             x = await main.Extractor().get_download_button(key)
             await cq.edit_message_caption(caption=x.caption, reply_markup=x.buttons)
         else:
@@ -143,20 +130,18 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
                 ffmpeg_location="/usr/bin/mediaextract",
                 delete_media=True,
             ) as ytdl:
-                upload_key = await ytdl.download(
-                    cq.message.reply_to_message.command[1], uid, format_, cq, True, 3
-                )
+                upload_key = await ytdl.download(cq.message.reply_to_message.command[1], uid, format_, cq, True, 3)
                 await ytdl.upload(app, upload_key, format_, cq, True)
     else:
         uid = callback[2]
         type_ = callback[3]
         format_ = "audio" if type_ == "a" else "video"
         async with iYTDL(
-                    log_group_id=LOG_CHANNEL,
-                    cache_path="cache",
-                    ffmpeg_location="/usr/bin/mediaextract",
-                    delete_media=True,
-                ) as ytdl:
+            log_group_id=LOG_CHANNEL,
+            cache_path="cache",
+            ffmpeg_location="/usr/bin/mediaextract",
+            delete_media=True,
+        ) as ytdl:
             upload_key = await ytdl.download(
                 f"https://www.youtube.com/watch?v={key}",
                 uid,
@@ -185,9 +170,7 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery):
     out += f"\n<b>❯ Uploader:</b> <a href={i['channel']['link']}>{i['channel']['name']}</a>\n\n"
     scroll_btn = [
         [
-            InlineKeyboardButton(
-                "Back", callback_data=f"ytdl_scroll|{search_key}|{page-1}"
-            ),
+            InlineKeyboardButton("Back", callback_data=f"ytdl_scroll|{search_key}|{page-1}"),
             InlineKeyboardButton(
                 f"{page+1}/{len(search['result'])}",
                 callback_data=f"ytdl_scroll|{search_key}|{page+1}",
@@ -202,9 +185,7 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery):
         scroll_btn = [[scroll_btn.pop().pop(0)]]
     btn = [[InlineKeyboardButton("Download", callback_data=f"yt_gen|{i['id']}")]]
     btn = InlineKeyboardMarkup(scroll_btn + btn)
-    await cq.edit_message_media(
-        InputMediaPhoto(await get_ytthumb(i["id"]), caption=out), reply_markup=btn
-    )
+    await cq.edit_message_media(InputMediaPhoto(await get_ytthumb(i["id"]), caption=out), reply_markup=btn)
 
 
 async def get_ytthumb(videoid: str):

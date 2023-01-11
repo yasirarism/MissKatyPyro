@@ -135,9 +135,7 @@ async def draw_meme_text(image_path, text):
 @app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
 @capture_err
 async def memify(client, message):
-    if message.reply_to_message and (
-        message.reply_to_message.sticker or message.reply_to_message.photo
-    ):
+    if message.reply_to_message and (message.reply_to_message.sticker or message.reply_to_message.photo):
         try:
             file = await message.reply_to_message.download()
             res = await draw_meme_text(file, message.text.split(None, 1)[1].strip())
@@ -147,10 +145,6 @@ async def memify(client, message):
             except:
                 pass
         except:
-            await message.reply(
-                "Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah."
-            )
+            await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
     else:
-        await message.reply(
-            "Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah."
-        )
+        await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")

@@ -52,9 +52,7 @@ async def donate(_, message):
     )
 
 
-@app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
-)
+@app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(" ", 1)
     await m.delete()
@@ -68,9 +66,7 @@ async def neofetch(c, m):
 
 
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@app.on_edited_message(
-    filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO)
-)
+@app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
 async def shell(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
@@ -83,15 +79,7 @@ async def shell(_, m):
             await m.reply_document(
                 document=doc,
                 file_name=doc.name,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="❌ Close", callback_data=f"close#{m.from_user.id}"
-                            )
-                        ]
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
             )
             try:
                 os.remove("shell_output.txt")
@@ -101,15 +89,7 @@ async def shell(_, m):
         await m.reply(
             shell,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
     else:
         await m.reply("No Reply")
@@ -159,15 +139,7 @@ async def evaluation_cmd_t(_, m):
             document="MissKatyEval.txt",
             caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
             disable_notification=True,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
         await status_message.delete()
@@ -175,32 +147,17 @@ async def evaluation_cmd_t(_, m):
         await status_message.edit(
             final_output,
             parse_mode=enums.ParseMode.MARKDOWN,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close", callback_data=f"close#{m.from_user.id}"
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
 
 
 async def aexec(code, c, m):
-    exec(
-        "async def __aexec(c, m): "
-        + "\n p = print"
-        + "\n replied = m.reply_to_message"
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
+    exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](c, m)
 
 
 async def shell_exec(code, treat=True):
-    process = await asyncio.create_subprocess_shell(
-        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
-    )
+    process = await asyncio.create_subprocess_shell(code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
 
     stdout = (await process.communicate())[0]
     if treat:
