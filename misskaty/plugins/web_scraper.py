@@ -117,6 +117,34 @@ async def getDataPahe(msg, kueri, CurrentPage):
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
 
+# Savefilm21 GetData
+async def getDataSavefilm21(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
+        sfdata = []
+        data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
+        bs4 = BeautifulSoup(data.text, "lxml")
+        res = bs4.find_all(class_="entry-title")
+        for i in res:
+            pas = i.find_all("a")
+            judul = pas[0].text
+            link = pas[0]["href"]
+            sfdata.append({"judul": judul, "link": link})
+        if not sfdata:
+            return await msg.edit("Sorry could not find any results!", quote=True)
+        SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        
+        sfResult = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /savefilm21 [title] to start search with title.\n\n"
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/melongmovie_scrap {i['link']}</code>\n\n"
+        IGNORE_CHAR = "[]"
+        sfResult = ''.join(i for i in sfResult if not i in IGNORE_CHAR)
+        return sfResult, PageLen
+    except (IndexError, KeyError):
+        await msg.edit("Sorry could not find any matching results!")
+
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
@@ -133,7 +161,7 @@ async def getDataMelong(msg, kueri, CurrentPage):
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
-            return await msg.reply("Sorry could not find any results!", quote=True)
+            return await msg.edit("Sorry could not find any results!", quote=True)
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -220,7 +248,7 @@ async def terbit21_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = None
-    pesan = await message.reply("Getting data from Terbit21..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Terbit21..")
     CurrentPage = 1
     terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -237,7 +265,7 @@ async def lk21_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = None
-    pesan = await message.reply("Getting data from LK21..")
+    pesan = await message.reply("⏳ Please wait, scraping data from LK21..")
     CurrentPage = 1
     lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -254,7 +282,7 @@ async def pahe_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("Getting data from Pahe Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Pahe Web..")
     CurrentPage = 1
     paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -270,7 +298,7 @@ async def gomov_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("Getting data from Gomov Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data Gomov Web..")
     CurrentPage = 1
     gomovres, PageLen = await getDataGomov(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -286,7 +314,7 @@ async def zonafilm_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("Getting data from Zonafilm Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Zonafilm Web..")
     CurrentPage = 1
     zonafilmres, PageLen = await getDataZonafilm(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -302,7 +330,7 @@ async def melong_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("Getting data from Melongmovie..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Melongmovie..")
     CurrentPage = 1
     melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -311,6 +339,46 @@ async def melong_s(client, message):
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
     await editPesan(pesan, melongres, reply_markup=keyboard)
+
+# Savefilm21 CMD
+@app.on_message(filters.command(['savefilm21'], COMMAND_HANDLER))
+async def savefilm_s(client, message):
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("⏳ Please wait, scraping data from Savefilm21..")
+    CurrentPage = 1
+    savefilmres, PageLen = await getDataSavefilm21(pesan, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, savefilmres, reply_markup=keyboard)
+
+# Savefillm21 Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_savefilm#' in query.data))
+async def savefilmpage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        savefilmres, PageLen = await getDataSavefilm21(callback_query.message, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, savefilmres, reply_markup=keyboard)
 
 # Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_terbit21#' in query.data))
@@ -572,3 +640,215 @@ async def gomov_zonafilm_dl(_, message):
         await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
     except Exception as err:
         await message.reply(f"ERROR: {err}")
+
+######## REWRITE SOON #################
+@app.on_message(filters.command(["nodrakor"], COMMAND_HANDLER))
+async def nodrakor(_, msg):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
+    try:
+        title = msg.text.split(" ", 1)[1]
+    except IndexError:
+        title = ""
+    try:
+        html = await http.get(f"http://173.212.199.27/?s={title}", headers=headers)
+        text = BeautifulSoup(html.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            await m.delete()
+            if not title:
+                await msg.reply("404 Not FOUND!", True)
+            else:
+                await msg.reply(f"404 Not FOUND For: {title}", True)
+            return
+        data = []
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre[:-2]}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        head = f"<b>#Nodrakor Results For:</b> <code>{title}</code>\n\n" if title else f"<b>#Nodrakor Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        msgs = ""
+        await m.delete()
+        for c, i in enumerate(data, start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
+                await asyncio.sleep(2)
+                msgs = ""
+        if msgs != "":
+            await msg.reply(head + msgs, True, disable_web_page_preview=True)
+    except Exception as e:
+        LOGGER.error(e)
+        await m.delete()
+        await msg.reply(f"ERROR: <code>{e}</code>", True)
+
+
+# Broken
+@app.on_message(filters.command(["ngefilm21"], COMMAND_HANDLER))
+async def ngefilm21(_, message):
+    if len(message.command) == 1:
+        return await message.reply("Masukkan query yang akan dicari..!!")
+    title = message.text.split(" ", maxsplit=1)[1]
+
+    msg = await message.reply("Sedang proses scrap, mohon tunggu..")
+    try:
+        html = await http.get(f"https://ngefilm.info/search?q={title}", headers=headers)
+        soup = BeautifulSoup(html.text, "lxml")
+        res = soup.find_all("h2")
+        data = []
+        for i in res:
+            a = i.find_all("a")[0]
+            judul = a.find_all(class_="r-snippetized")
+            b = i.find_all("a")[0]["href"]
+            data.append({"judul": judul[0].text, "link": b})
+        if not data:
+            return await msg.edit("Oops, data film tidak ditemukan.")
+        res = "".join(f"<b>{i['judul']}</b>\n{i['link']}\n" for i in data)
+        await msg.edit(
+            f"<b>Hasil Scrap dari Ngefilm21:</b>\n{res}",
+            reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="❌ Close",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ]
+                ]
+            ),
+        )
+    except Exception as e:
+        await msg.edit(f"ERROR: {str(e)}")
+
+
+# Scrape Web From Movieku.CC
+@app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
+async def movikucc(_, msg):
+    m = await msg.reply("**__⏳ Please wait, scraping data ...__**", True)
+    data = []
+    if len(msg.command) == 1:
+        try:
+            html = await http.get("https://107.152.37.223/")
+            r = BeautifulSoup(html.text, "lxml")
+            res = r.find_all(class_="bx")
+            for i in res:
+                judul = i.find_all("a")[0]["title"]
+                link = i.find_all("a")[0]["href"]
+                data.append({"judul": judul, "link": link})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Movieku Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+            msgs = ""
+            for c, i in enumerate(data, start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
+        except Exception as e:
+            LOGGER.error(e)
+            await m.delete()
+            await msg.reply(f"ERROR: {e}", True)
+    else:
+        title = msg.text.split(" ", 1)[1]
+        try:
+            html = await http.get(f"https://107.152.37.223/?s={title}")
+            r = BeautifulSoup(html.text, "lxml")
+            res = r.find_all(class_="bx")
+            for i in res:
+                judul = i.find_all("a")[0]["title"]
+                link = i.find_all("a")[0]["href"]
+                data.append({"judul": judul, "link": link})
+            if not data:
+                await m.delete()
+                return await msg.reply("404 Result not FOUND!", True)
+            await m.delete()
+            head = f"<b>#Movieku Results For:</b> <code>{title}</code>\n\n"
+            msgs = ""
+            for c, i in enumerate(data, start=1):
+                msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+                if len(head.encode("utf-8") + msgs.encode("utf-8")) >= 4000:
+                    await msg.reply(
+                        head + msgs,
+                        True,
+                        disable_web_page_preview=True,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        text="❌ Close",
+                                        callback_data=f"close#{msg.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
+                    await asyncio.sleep(2)
+                    msgs = ""
+            if msgs != "":
+                await msg.reply(
+                    head + msgs,
+                    True,
+                    disable_web_page_preview=True,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text="❌ Close",
+                                    callback_data=f"close#{msg.from_user.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
+        except Exception as e:
+            LOGGER.error(e)
+            await m.delete()
+            await msg.reply(f"ERROR: {e}", True)
