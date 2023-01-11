@@ -32,11 +32,13 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(res)
         
+        msgs = ""
+        for c, i in enumerate(res[index], start=1):
+            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
+        
         lkResult = (
             f"**Tes of {kueri}**\n"
-            f"{res[index]['judul']}\n\n"
-            "**📌 Link**\n"
-            f"__{res[index]['link']}__"
+            f"{msgs}\n\n"
         )
         
         IGNORE_CHAR = "[]"
