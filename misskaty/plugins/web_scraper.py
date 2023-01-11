@@ -239,3 +239,28 @@ async def lk21page_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, lkres, reply_markup=keyboard)
+
+# Lk21 Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_pahe#' in query.data))
+async def pahepage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    chat_id = callback_query.message.chat.id 
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = PTL_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        lkres, PageLen = await getDataPahe(chat_id, message_id, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_pahe#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, lkres, reply_markup=keyboard)
