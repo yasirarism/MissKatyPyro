@@ -171,7 +171,7 @@ async def getDataKuso(msg, kueri, CurrentPage):
         
         kusoResult = f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            kusoResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n\n"
+            kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
         IGNORE_CHAR = "[]"
         kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
         return kusoResult, PageLen
@@ -540,7 +540,7 @@ async def kusopage_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_kusores#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{message_id}#{callback_query.from_user.id}')
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
