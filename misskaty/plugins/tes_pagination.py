@@ -81,10 +81,7 @@ async def lk21tes(client, message):
     lkres, PageLen = await getDatalk21(chat_id, pesan.id, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
-    await pesan.edit(
-        text=f"{lkres}",
-        reply_markup=keyboard
-    ) 
+    await editPesan(pesan, lkres, reply_markup=keyboard)
 
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_lk21#' in query.data))
 async def lk21page_callback(client, callback_query):
