@@ -171,10 +171,10 @@ async def getDataGomov(msg, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
         
-        gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            gomovResult += "\n" if re.search(r"Series", i["genre"]) else f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            gomovResult += "\n" if re.search(r"Series", i["genre"]) else f"<b>Extract:</b> <code>/gomov_scrap {i['link']}</code>\n\n"
         IGNORE_CHAR = "[]"
         gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
         return gomovResult, PageLen
