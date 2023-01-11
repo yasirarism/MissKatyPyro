@@ -80,7 +80,7 @@ async def lk21tes(client, message):
     lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
     
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'{message.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, 'pagination_lk21#{number}' + f'#{message.from_user.id}')
     await message.reply(
         text=f"{lkres}",
         reply_markup=keyboard
