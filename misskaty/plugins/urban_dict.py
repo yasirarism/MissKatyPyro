@@ -13,7 +13,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
     if not 'list' in UDJson:
         CNMessage = await app.send_message(
-            chat_id=chat_id,
+            chat_id==chat_id,
             reply_to_message_id=message_id,
             text=(
                 f"Word: {GetWord}\n"
@@ -79,8 +79,8 @@ async def urbanDictionary(client, message):
         reply_markup=keyboard
     ) 
 
-@StellaCli.on_callback_query(filters.create(lambda _, __, query: 'pagination_keyboard#' in query.data))
-async def ud_callback(client: StellaCli, callback_query: CallbackQuery):
+@app.on_callback_query(filters.create(lambda _, __, query: 'pagination_keyboard#' in query.data))
+async def ud_callback(client, callback_query):
     
     message_id = callback_query.message.message_id
     chat_id = callback_query.message.chat.id 
@@ -94,7 +94,7 @@ async def ud_callback(client: StellaCli, callback_query: CallbackQuery):
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'pagination_keyboard#{number}' + f'#{GetWord}')
-    await StellaCli.edit_message_text(
+    await app.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
         text=UDReasult,
