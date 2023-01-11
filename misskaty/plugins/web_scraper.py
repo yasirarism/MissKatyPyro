@@ -52,6 +52,8 @@ async def getDataTerbit21(chat_id, message_id, kueri, CurrentPage):
                 TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+        INGNORE_CHAR = "[]"
+        TerbitRes = ''.join(i for i in TerbitRes if not i in INGNORE_CHAR)
         return TerbitRes, PageLen
     except (IndexError, KeyError):
         await app.send_message(
@@ -86,6 +88,8 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
                 lkResult = "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
             lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+        INGNORE_CHAR = "[]"
+        lkResult = ''.join(i for i in lkResult if not i in INGNORE_CHAR)
         return lkResult, PageLen
     except (IndexError, KeyError):
         await app.send_message(
