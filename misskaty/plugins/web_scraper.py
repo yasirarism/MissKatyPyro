@@ -204,7 +204,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         
         sfResult = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /savefilm21 [title] to start search with title.\n\n" if kueri == "" else f"<b>#Savefilm21 Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/savefilm21_scrap {i['link']}</code>\n\n"
+            sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n<b>Extract:</b> <code>/savefilm21_scrap {i['link']}</code>\n\n"
         IGNORE_CHAR = "[]"
         sfResult = ''.join(i for i in sfResult if not i in IGNORE_CHAR)
         return sfResult, PageLen
