@@ -171,7 +171,7 @@ async def getDataKuso(msg, kueri, CurrentPage):
         
         kusoResult = f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            kusoResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+            kusoResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n\n"
         IGNORE_CHAR = "[]"
         kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
         return kusoResult, PageLen
