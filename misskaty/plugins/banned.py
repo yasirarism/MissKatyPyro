@@ -8,9 +8,7 @@ from utils import temp
 
 
 async def banned_users(_, client, message: Message):
-    return (
-        message.from_user is not None or not message.sender_chat
-    ) and message.from_user.id in temp.BANNED_USERS
+    return (message.from_user is not None or not message.sender_chat) and message.from_user.id in temp.BANNED_USERS
 
 
 banned_user = filters.create(banned_users)
@@ -26,9 +24,7 @@ disabled_group = filters.create(disabled_chat)
 @app.on_message(filters.private & banned_user & filters.incoming)
 async def ban_reply(bot, message):
     ban = await db.get_ban_status(message.from_user.id)
-    await message.reply(
-        f'Sorry Dude, You are Banned to use Me. \nBan Reason: {ban["ban_reason"]}'
-    )
+    await message.reply(f'Sorry Dude, You are Banned to use Me. \nBan Reason: {ban["ban_reason"]}')
 
 
 @app.on_message(filters.group & disabled_group & filters.incoming)

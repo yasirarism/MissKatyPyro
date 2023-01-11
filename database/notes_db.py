@@ -31,10 +31,7 @@ async def get_note(chat_id: int, name: str) -> Union[bool, dict]:
 
 
 async def get_note_names(chat_id: int) -> List[str]:
-    _notes = []
-    for note in await _get_notes(chat_id):
-        _notes.append(note)
-    return _notes
+    return list(await _get_notes(chat_id))
 
 
 async def save_note(chat_id: int, name: str, note: dict):
@@ -42,6 +39,4 @@ async def save_note(chat_id: int, name: str, note: dict):
     _notes = await _get_notes(chat_id)
     _notes[name] = note
 
-    await notesdb.update_one(
-        {"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True
-    )
+    await notesdb.update_one({"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True)
