@@ -49,7 +49,7 @@ async def getDataTerbit21(chat_id, message_id, kueri, CurrentPage):
             if kueri:
                 TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
             else:
-                TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
+                TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /terbit21 [title] to start search with title.\n\n"
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
         INGNORE_CHAR = "[]"
@@ -145,7 +145,10 @@ async def terbit21page_callback(client, callback_query):
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
-    terbitres, PageLen = await getDataTerbit21(chat_id, message_id, kueri, CurrentPage)
+    try:
+        terbitres, PageLen = await getDataTerbit21(chat_id, message_id, kueri, CurrentPage)
+    except TypeError:
+        return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_terbit21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
@@ -167,7 +170,10 @@ async def lk21page_callback(client, callback_query):
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
-    lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
+    try:
+        lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
+    except TypeError:
+        return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
