@@ -59,7 +59,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
 @app.on_message(filters.command(['ud'], COMMAND_HANDLER))
 async def urbanDictionary(client, message):
-    message_id = message.message_id 
+    message_id = message.id 
     chat_id = message.chat.id 
     GetWord = ' '.join(message.command[1:])
     if not GetWord:
@@ -82,7 +82,7 @@ async def urbanDictionary(client, message):
 @app.on_callback_query(filters.create(lambda _, __, query: 'pagination_keyboard#' in query.data))
 async def ud_callback(client, callback_query):
     
-    message_id = callback_query.message.message_id
+    message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1]) 
     GetWord = callback_query.data.split('#')[2]
