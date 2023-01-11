@@ -131,8 +131,8 @@ async def getDataMelong(msg, kueri, CurrentPage):
                 quality = dd[0].find(class_="quality").text
             except:
                 quality = "N/A"
-            data.append({"judul": title, "link": url, "quality": quality})
-        if not data:
+            melongdata.append({"judul": title, "link": url, "quality": quality})
+        if not melongdata:
             return await msg.reply("Sorry could not find any results!", quote=True)
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
@@ -173,8 +173,8 @@ async def getDataZonafilm(msg, kueri, CurrentPage):
         
         ZonafilmResult = f"<b>#Zonafilm Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Zonafilm Latest:</b>\n🌀 Use /zonafilm [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            msgs += f"<b>Extract:</b> <code>/zonafilm_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
+            ZonafilmResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            ZonafilmResult += f"<b>Extract:</b> <code>/zonafilm_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
         IGNORE_CHAR = "[]"
         ZonafilmResult = ''.join(i for i in ZonafilmResult if not i in IGNORE_CHAR)
         return ZonafilmResult, PageLen
@@ -302,7 +302,7 @@ async def melong_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("Getting data from Gomov Web..")
+    pesan = await message.reply("Getting data from Melongmovie..")
     CurrentPage = 1
     melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
