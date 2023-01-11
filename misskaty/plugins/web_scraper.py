@@ -7,6 +7,7 @@
 """
 import re
 import logging
+from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters
 from misskaty.helper.http import http
@@ -30,9 +31,9 @@ __HELP__ = """
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 LOGGER = logging.getLogger(__name__)
-PTL_DICT = {} # Dict for Pahe, Terbit21, LK21
+SCRAP_DICT = {} # Dict for Pahe, Terbit21, LK21
 
-def split_arr(arr, size):
+def split_arr(arr, size: 5):
      arrs = []
      while len(arr) > size:
         pice = arr[:size]
@@ -42,102 +43,111 @@ def split_arr(arr, size):
      return arrs
 
 # Terbit21 GetData
-async def getDataTerbit21(chat_id, message_id, kueri, CurrentPage):
-    if not PTL_DICT.get(message_id):
+async def getDataTerbit21(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
         if not kueri:
             terbitjson = (await http.get('https://yasirapi.eu.org/terbit21')).json()
         else:
             terbitjson = (await http.get(f'https://yasirapi.eu.org/terbit21?q={kueri}')).json()
         if not terbitjson.get("result"):
-            return await app.send_message(
-                chat_id=chat_id,
-                reply_to_message_id=message_id,
-                text="Sorry, could not find any results!"
-            )
-        PTL_DICT[message_id] = [split_arr(terbitjson["result"], 6), kueri]
+            return await msg.reply("Sorry, could not find any results!")
+        SCRAP_DICT[msg.id] = [split_arr(terbitjson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
-        PageLen = len(PTL_DICT[message_id][0])
+        PageLen = len(SCRAP_DICT[msg.id][0])
         
         if kueri:
             TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
         else:
             TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /terbit21 [title] to start search with title.\n\n"
-        for c, i in enumerate(PTL_DICT[message_id][0][index], start=1):
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
         IGNORE_CHAR = "[]"
         TerbitRes = ''.join(i for i in TerbitRes if not i in IGNORE_CHAR)
         return TerbitRes, PageLen
     except (IndexError, KeyError):
-        await app.send_message(
-            chat_id=chat_id,
-            reply_to_message_id=message_id,
-            text="Sorry, could not find any results!"
-        )
+        await msg.reply("Sorry, could not find any results!")
 
 # LK21 GetData
-async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
-    if not PTL_DICT.get(message_id):
+async def getDatalk21(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
         if not kueri:
             lk21json = (await http.get('https://yasirapi.eu.org/lk21')).json()
         else:
             lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
         if not lk21json.get("result"):
-            return await app.send_message(
-                chat_id=chat_id,
-                reply_to_message_id=message_id,
-                text="Sorry could not find any matching results!"
-            )
-        PTL_DICT[message_id] = [split_arr(lk21json["result"], 6), kueri]
+            return await msg.reply("Sorry could not find any matching results!")
+        SCRAP_DICT[msg.id] = [split_arr(lk21json["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
-        PageLen = len(PTL_DICT[message_id][0])
+        PageLen = len(SCRAP_DICT[msg.id][0])
         
         if kueri:
             lkResult = f"<b>#Layarkaca21 Results For:</b> <code>{kueri}</code>\n\n"
         else:
             lkResult = "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
-        for c, i in enumerate(PTL_DICT[message_id][0][index], start=1):
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
         IGNORE_CHAR = "[]"
         lkResult = ''.join(i for i in lkResult if not i in IGNORE_CHAR)
         return lkResult, PageLen
     except (IndexError, KeyError):
-        await app.send_message(
-            chat_id=chat_id,
-            reply_to_message_id=message_id,
-            text="Sorry could not find any matching results!"
-        )
+        await msg.reply("Sorry could not find any matching results!")
 
 # Pahe GetData
-async def getDataPahe(chat_id, message_id, kueri, CurrentPage):
-    if not PTL_DICT.get(message_id):
+async def getDataPahe(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
         pahejson = (await http.get(f'https://yasirapi.eu.org/pahe?q={kueri}')).json()
         if not pahejson.get("result"):
-            return await app.send_message(
-                chat_id=chat_id,
-                reply_to_message_id=message_id,
-                text="Sorry could not find any matching results!"
-            )
-        PTL_DICT[message_id] = [split_arr(pahejson["result"], 6), kueri]
+            return await msg.reply("Sorry could not find any matching results!", quote=True)
+        SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
-        PageLen = len(PTL_DICT[message_id][0])
+        PageLen = len(SCRAP_DICT[msg.id][0])
         
         paheResult = f"<b>#Pahe Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Pahe Latest:</b>\n🌀 Use /pahe [title] to start search with title.\n\n"
-        for c, i in enumerate(PTL_DICT[message_id][0][index], start=1):
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
         IGNORE_CHAR = "[]"
         paheResult = ''.join(i for i in paheResult if not i in IGNORE_CHAR)
         return paheResult, PageLen
     except (IndexError, KeyError):
-        await app.send_message(
-            chat_id=chat_id,
-            reply_to_message_id=message_id,
-            text="Sorry could not find any matching results!"
-        )
+        await msg.reply("Sorry could not find any matching results!")
+
+# GoMov GetData
+async def getDataGomov(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
+        gomovv = await http.get(f'https://185.173.38.216/?s=')
+        text = BeautifulSoup(gomovv.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            if not kueri:
+                return await msg.reply("404 Not FOUND!", quote=True)
+            else:
+                return await msg.reply(f"404 Not FOUND For: {kueri}", quote=True)
+        data = []
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            data.append({"judul": judul, "link": link, "genre": genre})
+        SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        
+        gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            gomovResult += "\n" if re.search(r"Series", i["genre"]) else f"<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+        IGNORE_CHAR = "[]"
+        gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
+        return gomovResult, PageLen
+    except (IndexError, KeyError):
+        await msg.reply("Sorry could not find any matching results!")
 
 # Terbit21 CMD
 @app.on_message(filters.command(['terbit21'], COMMAND_HANDLER))
@@ -148,7 +158,7 @@ async def terbit21_s(client, message):
         kueri = None
     pesan = await message.reply("Getting data from Terbit21..")
     CurrentPage = 1
-    terbitres, PageLen = await getDataTerbit21(chat_id, pesan.id, kueri, CurrentPage)
+    terbitres, PageLen = await getDataTerbit21(message, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_terbit21#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -165,7 +175,7 @@ async def lk21_s(client, message):
         kueri = None
     pesan = await message.reply("Getting data from LK21..")
     CurrentPage = 1
-    lkres, PageLen = await getDatalk21(chat_id, pesan.id, kueri, CurrentPage)
+    lkres, PageLen = await getDatalk21(message, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -182,7 +192,7 @@ async def pahe_s(client, message):
         kueri = ""
     pesan = await message.reply("Getting data from Pahe Web..")
     CurrentPage = 1
-    paheres, PageLen = await getDataPahe(chat_id, pesan.id, kueri, CurrentPage)
+    paheres, PageLen = await getDataPahe(message, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_pahe#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -190,7 +200,24 @@ async def pahe_s(client, message):
     )
     await editPesan(pesan, paheres, reply_markup=keyboard)
 
-# Lk21 Page Callback
+# Gomov CMD
+@app.on_message(filters.command(['gomov'], COMMAND_HANDLER))
+async def gomov_s(client, message):
+    chat_id = message.chat.id 
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("Getting data from Gomov Web..")
+    CurrentPage = 1
+    gomovres, PageLen = await getDataGomov(message, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, gomovres, reply_markup=keyboard)
+
+# Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_terbit21#' in query.data))
 async def terbit21page_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
@@ -199,7 +226,7 @@ async def terbit21page_callback(client, callback_query):
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        kueri = PTL_DICT[message_id][1]
+        kueri = SCRAP_DICT[message_id][1]
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
@@ -224,7 +251,7 @@ async def lk21page_callback(client, callback_query):
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        kueri = PTL_DICT[message_id][1]
+        kueri = SCRAP_DICT[message_id][1]
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
@@ -240,7 +267,7 @@ async def lk21page_callback(client, callback_query):
     )
     await editPesan(callback_query.message, lkres, reply_markup=keyboard)
 
-# Lk21 Page Callback
+# Pahe Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_pahe#' in query.data))
 async def pahepage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
@@ -249,7 +276,7 @@ async def pahepage_callback(client, callback_query):
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        kueri = PTL_DICT[message_id][1]
+        kueri = SCRAP_DICT[message_id][1]
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
@@ -264,3 +291,28 @@ async def pahepage_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, lkres, reply_markup=keyboard)
+
+# Gomov Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_gomov#' in query.data))
+async def pahepage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    chat_id = callback_query.message.chat.id 
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        gomovres, PageLen = await getDataGomov(chat_id, message_id, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, gomovres, reply_markup=keyboard)
