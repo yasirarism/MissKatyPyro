@@ -6,6 +6,7 @@ from misskaty.helper.http import http
 from misskaty.helper.tools import get_random_string
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
+from misskaty.core.message_utils import *
 
 LOGGER = logging.getLogger(__name__)
 LK_DICT = {}
@@ -67,7 +68,6 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
 
 @app.on_message(filters.command(['lktes'], COMMAND_HANDLER))
 async def lk21tes(client, message):
-    message_id = message.id 
     chat_id = message.chat.id 
     kueri = ' '.join(message.command[1:])
     if not kueri:
@@ -76,10 +76,9 @@ async def lk21tes(client, message):
             'Now give any word for query!'
         )
         kueri = message.text
-    
-    CurrentPage = 1
-    lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
     pesan = await message.reply("Getting data from LK21..")
+    CurrentPage = 1
+    lkres, PageLen = await getDatalk21(chat_id, pesan.id, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
     await pesan.edit(
@@ -94,11 +93,10 @@ async def lk21page_callback(client, callback_query):
     message_id = callback_query.data.split('#')[2]
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
-    LOGGER.info(LK_DICT)
     try:
         kueri = LK_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer("Invalid callback data..")
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
         lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
@@ -107,9 +105,4 @@ async def lk21page_callback(client, callback_query):
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
-    await app.edit_message_text(
-        chat_id=chat_id,
-        message_id=message_id,
-        text=lkres,
-        reply_markup=keyboard
-    )
+    await editPesan(callback_query.message, lkres, reply_markup=keyboard)
