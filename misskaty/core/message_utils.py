@@ -10,11 +10,11 @@ LOGGER = getLogger(__name__)
 
 async def kirimPesan(msg, text: str, disable_web_page_preview=True, reply_markup=None):
     try:
-        return await msg.reply(text)
+        return await msg.reply(text, disable_web_page_preview, reply_markup)
     except FloodWait as e:
         LOGGER.warning(str(e))
         await asyncio.sleep(e.value)
-        return await kirimPesan(text)
+        return await kirimPesan(msg, text, disable_web_page_preview, reply_markup)
     except ChatWriteForbidden:
         return await msg.leave()
     except Exception as e:
@@ -23,11 +23,11 @@ async def kirimPesan(msg, text: str, disable_web_page_preview=True, reply_markup
 
 async def editPesan(msg, text: str, disable_web_page_preview=True, reply_markup=None):
     try:
-        return await msg.edit(text)
+        return await msg.edit(text, disable_web_page_preview, reply_markup)
     except FloodWait as e:
         LOGGER.warning(str(e))
         await asyncio.sleep(e.value)
-        return await editPesan(msg, text)
+        return await editPesan(msg, text, disable_web_page_preview, reply_markup)
     except MessageNotModified:
         return
     except Exception as e:
