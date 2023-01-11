@@ -94,6 +94,7 @@ async def lk21page_callback(client, callback_query):
     message_id = callback_query.data.split('#')[2]
     chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
+    LOGGER.info(LK_DICT)
     try:
         kueri = LK_DICT[message_id][1]
     except KeyError:
