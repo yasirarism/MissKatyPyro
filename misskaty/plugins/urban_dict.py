@@ -73,13 +73,13 @@ async def urbanDictionary(client, message):
     UDReasult, PageLen = await getData(chat_id, message_id, GetWord, CurrentPage)
     
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_keyboard#{number}' + f'#{GetWord}')
+    keyboard.paginate(PageLen, CurrentPage, 'pagination_urban#{number}' + f'#{GetWord}')
     await message.reply(
         text=f"{UDReasult}",
         reply_markup=keyboard
     ) 
 
-@app.on_callback_query(filters.create(lambda _, __, query: 'pagination_keyboard#' in query.data))
+@app.on_callback_query(filters.create(lambda _, __, query: 'pagination_urban#' in query.data))
 async def ud_callback(client, callback_query):
     
     message_id = callback_query.message.id
@@ -93,7 +93,7 @@ async def ud_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'pagination_keyboard#{number}' + f'#{GetWord}')
+    keyboard.paginate(PageLen, CurrentPage, 'pagination_urban#{number}' + f'#{GetWord}')
     await app.edit_message_text(
         chat_id=chat_id,
         message_id=message_id,
