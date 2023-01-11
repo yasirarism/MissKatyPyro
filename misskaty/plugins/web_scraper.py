@@ -139,9 +139,9 @@ async def getDataMelong(msg, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
         
-        melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /{msg.command[0]} [title] to start search with title.\n\n"
+        melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /melongmovie [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/{msg.command[0]}_scrap {i['link']}</code>\n\n"
+            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/melongmovie_scrap {i['link']}</code>\n\n"
         IGNORE_CHAR = "[]"
         melongResult = ''.join(i for i in melongResult if not i in IGNORE_CHAR)
         return melongResult, PageLen
