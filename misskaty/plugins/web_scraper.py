@@ -182,13 +182,19 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
-        bs4 = BeautifulSoup(data.text, "lxml")
-        res = bs4.find_all(class_="entry-title")
-        for i in res:
-            pas = i.find_all("a")
-            judul = pas[0].text
-            link = pas[0]["href"]
-            sfdata.append({"judul": judul, "link": link})
+        text = BeautifulSoup(data.text, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Nothing Found" in entry[0].text:
+            if not kueri:
+                return await msg.edit("404 Not FOUND!")
+            else:
+                return await msg.edit(f"404 Not FOUND For: {kueri}")
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            sfdata.append({"judul": judul, "link": link, "genre": genre})
         if not sfdata:
             return await msg.edit("Sorry could not find any results!", quote=True)
         SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
@@ -308,7 +314,7 @@ async def terbit21_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = None
-    pesan = await message.reply("⏳ Please wait, scraping data from Terbit21..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Terbit21..", quote=True)
     CurrentPage = 1
     terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -325,7 +331,7 @@ async def lk21_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = None
-    pesan = await message.reply("⏳ Please wait, scraping data from LK21..")
+    pesan = await message.reply("⏳ Please wait, scraping data from LK21..", quote=True)
     CurrentPage = 1
     lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -342,7 +348,7 @@ async def pahe_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Pahe Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Pahe Web..", quote=True)
     CurrentPage = 1
     paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -358,7 +364,7 @@ async def gomov_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data Gomov Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data Gomov Web..", quote=True)
     CurrentPage = 1
     gomovres, PageLen = await getDataGomov(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -374,7 +380,7 @@ async def zonafilm_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Zonafilm Web..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Zonafilm Web..", quote=True)
     CurrentPage = 1
     zonafilmres, PageLen = await getDataZonafilm(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -390,7 +396,7 @@ async def melong_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Melongmovie..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Melongmovie..", quote=True)
     CurrentPage = 1
     melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -406,7 +412,7 @@ async def savefilm_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Savefilm21..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Savefilm21..", quote=True)
     CurrentPage = 1
     savefilmres, PageLen = await getDataSavefilm21(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -422,7 +428,7 @@ async def nodrakor_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Nodrakor..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Nodrakor..", quote=True)
     CurrentPage = 1
     nodrakorres, PageLen = await getDataNodrakor(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
@@ -438,7 +444,7 @@ async def movieku_s(client, message):
     kueri = ' '.join(message.command[1:])
     if not kueri:
         kueri = ""
-    pesan = await message.reply("⏳ Please wait, scraping data from Movieku..")
+    pesan = await message.reply("⏳ Please wait, scraping data from Movieku..", quote=True)
     CurrentPage = 1
     moviekures, PageLen = await getDataMovieku(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
