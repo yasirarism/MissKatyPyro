@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from pykeyboard import InlineKeyboard
+from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters
 from misskaty.helper.http import http
 from misskaty.helper.tools import get_random_string
@@ -22,7 +22,11 @@ def split_arr(arr, size):
 
 async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
     if not LK_DICT.get(message_id):
-        lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
+        if not kueri:
+            lk21json = (await http.get('https://yasirapi.eu.org/lk21')).json()
+            kueri = "Latest Post"
+        else:
+            lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
         if not lk21json.get("result"):
             return await app.send_message(
                 chat_id=chat_id,
@@ -42,7 +46,7 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
             msgs += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
         
         lkResult = (
-            f"**Hasil pencarian dg kata kunci {kueri}**\n"
+            f"**Hasil pencarian dg {kueri}**\n"
             f"{msgs}\n\n"
         )
         
@@ -72,16 +76,15 @@ async def lk21tes(client, message):
     chat_id = message.chat.id 
     kueri = ' '.join(message.command[1:])
     if not kueri:
-        message = await app.ask(
-            message.chat.id,
-            'Now give any word for query!'
-        )
-        kueri = message.text
+        kueri = None
     pesan = await message.reply("Getting data from LK21..")
     CurrentPage = 1
     lkres, PageLen = await getDatalk21(chat_id, pesan.id, kueri, CurrentPage)
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
     await editPesan(pesan, lkres, reply_markup=keyboard)
 
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_lk21#' in query.data))
@@ -103,4 +106,7 @@ async def lk21page_callback(client, callback_query):
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
     await editPesan(callback_query.message, lkres, reply_markup=keyboard)
