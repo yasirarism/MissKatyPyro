@@ -13,7 +13,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
     if not 'list' in UDJson:
         CNMessage = await app.send_message(
-            chat_id==chat_id,
+            chat_id=chat_id,
             reply_to_message_id=message_id,
             text=(
                 f"Word: {GetWord}\n"
