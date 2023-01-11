@@ -231,7 +231,7 @@ async def terbit21page_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        terbitres, PageLen = await getDataTerbit21(chat_id, message_id, kueri, CurrentPage)
+        terbitres, PageLen = await getDataTerbit21(callback_query.message, kueri, CurrentPage)
     except TypeError:
         return
 
@@ -256,7 +256,7 @@ async def lk21page_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        lkres, PageLen = await getDatalk21(chat_id, message_id, kueri, CurrentPage)
+        lkres, PageLen = await getDatalk21(callback_query.message, kueri, CurrentPage)
     except TypeError:
         return
 
@@ -281,7 +281,7 @@ async def pahepage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        lkres, PageLen = await getDataPahe(chat_id, message_id, kueri, CurrentPage)
+        lkres, PageLen = await getDataPahe(callback_query.message, kueri, CurrentPage)
     except TypeError:
         return
 
@@ -298,7 +298,6 @@ async def pahepage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split('#')[2])
-    chat_id = callback_query.message.chat.id 
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
         kueri = SCRAP_DICT[message_id][1]
@@ -306,7 +305,7 @@ async def pahepage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        gomovres, PageLen = await getDataGomov(chat_id, message_id, kueri, CurrentPage)
+        gomovres, PageLen = await getDataGomov(callback_query.message, kueri, CurrentPage)
     except TypeError:
         return
 
