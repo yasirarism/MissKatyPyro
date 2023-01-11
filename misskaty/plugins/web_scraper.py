@@ -27,6 +27,7 @@ __HELP__ = """
 /nodrakor [query <optional>] - Scrape website data from nodrakor.icu
 /zonafilm [query <optional>] - Scrape website data from zonafilm.icu
 /kusonime [query <optional>] - Scrape website data from Kusonime
+/lendrive [query <optional>] - Scrape website data from Lendrive
 /gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
@@ -238,6 +239,34 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         IGNORE_CHAR = "[]"
         sfResult = ''.join(i for i in sfResult if not i in IGNORE_CHAR)
         return sfResult, PageLen
+    except (IndexError, KeyError):
+        await msg.edit("Sorry could not find any matching results!")
+
+# Lendrive GetData
+async def getDataLendrive(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
+        data = await http.get(f'https://lendrive.web.id/?s={kueri}', headers=headers)
+        soup = BeautifulSoup(data.text, "lxml")
+        lenddata = []
+        for o in soup.find_all(class_="bsx"):
+            title = o.find("a")["href"]
+            link = o.find("a")["title"]
+            status = o.find(class_="epx").text
+            kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
+            lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
+        if not lenddata:
+            return await msg.edit("Sorry could not find any results!", quote=True)
+        SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        
+        lenddataResult = f"<b>#LenDrive Latest:</b>\n🌀 Use /lendrive [title] to start search with title.\n\n" if kueri == "" else f"<b>#LenDrive Results For:</b> <code>{kueri}</code>\n\n"
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+        IGNORE_CHAR = "[]"
+        lenddataResult = ''.join(i for i in lenddataResult if not i in IGNORE_CHAR)
+        return lenddataResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
 
@@ -484,6 +513,22 @@ async def kusonime_s(client, message):
     )
     await editPesan(pesan, kusores, reply_markup=keyboard)
 
+# Lendrive CMD
+@app.on_message(filters.command(['lendrive'], COMMAND_HANDLER))
+async def lendrive_s(client, message):
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("⏳ Please wait, scraping data from Lendrive..", quote=True)
+    CurrentPage = 1
+    lendres, PageLen = await getDataLendrive(pesan, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, lendres, reply_markup=keyboard)
+
 # Movieku CMD
 @app.on_message(filters.command(['movieku'], COMMAND_HANDLER))
 async def movieku_s(client, message):
@@ -571,6 +616,30 @@ async def nodraakorpage_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, modrakorres, reply_markup=keyboard)
+
+# Lendrive Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_lendrive#' in query.data))
+async def moviekupage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        lendres, PageLen = await getDataLendrive(callback_query.message, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_movieku#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, lendres, reply_markup=keyboard)
 
 # Movieku Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_movieku#' in query.data))
