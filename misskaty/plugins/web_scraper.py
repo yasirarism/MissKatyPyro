@@ -44,12 +44,11 @@ async def getDataTerbit21(chat_id, message_id, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(LKTERBIT_DICT[message_id][0])
         
-        TerbitRes = ""
+        if kueri:
+            TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
+        else:
+            TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /terbit21 [title] to start search with title.\n\n"
         for c, i in enumerate(LKTERBIT_DICT[message_id][0][index], start=1):
-            if kueri:
-                TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
-            else:
-                TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /terbit21 [title] to start search with title.\n\n"
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
         INGNORE_CHAR = "[]"
@@ -80,12 +79,11 @@ async def getDatalk21(chat_id, message_id, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(LKTERBIT_DICT[message_id][0])
         
-        lkResult = ""
+        if kueri:
+            lkResult = f"<b>#Layarkaca21 Results For:</b> <code>{kueri}</code>\n\n"
+        else:
+            lkResult = "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
         for c, i in enumerate(LKTERBIT_DICT[message_id][0][index], start=1):
-            if kueri:
-                lkResult += f"<b>#Layarkaca21 Results For:</b> <code>{kueri}</code>\n\n"
-            else:
-                lkResult += "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
             lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
         INGNORE_CHAR = "[]"
