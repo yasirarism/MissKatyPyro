@@ -75,7 +75,6 @@ def welcomepic(pic, user, chat, count, id):
 
 
 @app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
-@capture_err
 async def member_has_joined(c: app, member: ChatMemberUpdated):
     if not member.new_chat_member or member.new_chat_member.status in {"banned", "left", "restricted"} or member.old_chat_member:
         return
@@ -138,7 +137,6 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
 
 
 @app.on_message(filters.new_chat_members & filters.group)
-@capture_err
 async def save_group(bot, message):
     r_j_check = [u.id for u in message.new_chat_members]
     if temp.ME in r_j_check:

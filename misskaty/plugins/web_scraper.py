@@ -18,21 +18,22 @@ from misskaty.core.message_utils import *
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
-/melongmovie - Scrape website data from MelongMovie Web. If without query will give latest movie list.
+/melongmovie [query <optional>] - Scrape website data from MelongMovie Web. If without query will give latest movie list.
 /lk21 [query <optional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
 /pahe [query <optional>] - Scrape website data from Pahe.li. If without query will give latest post list.
 /terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
 /savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
 /movieku [query <optional>] - Scrape website data from Movieku.cc
-/nodrakor [query] - Scrape website data from nodrakor.icu
-/zonafilm [query] - Scrape website data from zonafilm.icu
+/nodrakor [query <optional>] - Scrape website data from nodrakor.icu
+/zonafilm [query <optional>] - Scrape website data from zonafilm.icu
+/kusonime [query <optional>] - Scrape website data from Kusonime
 /gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
 """
 
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 LOGGER = logging.getLogger(__name__)
-SCRAP_DICT = {} # Dict for Pahe, Terbit21, LK21
+SCRAP_DICT = {} # Dict
 
 def split_arr(arr, size: 5):
      arrs = []
@@ -147,6 +148,33 @@ async def getDataNodrakor(msg, kueri, CurrentPage):
         IGNORE_CHAR = "[]"
         NodrakorResult = ''.join(i for i in NodrakorResult if not i in IGNORE_CHAR)
         return NodrakorResult, PageLen
+    except (IndexError, KeyError):
+        await msg.edit("Sorry could not find any matching results!")
+
+# Kusonime GetData
+async def getDataKuso(msg, kueri, CurrentPage):
+    if not SCRAP_DICT.get(msg.id):
+        kusodata = []
+        data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers)
+        res = BeautifulSoup(data.text, "lxml").find_all("h2", {"class": "episodeye"})
+        for i in res:
+            ress = i.find_all("a")[0]
+            title = ress.text
+            link = res["href"]
+            kusodata.append({"title": title, "link": link})
+        if not kusodata:
+            return await msg.edit("Sorry could not find any results!")
+        SCRAP_DICT[msg.id] = [split_arr(kusodata, 6), kueri]
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        
+        kusoResult = f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            kusoResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+        IGNORE_CHAR = "[]"
+        kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
+        return kusoResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
 
@@ -438,6 +466,22 @@ async def nodrakor_s(client, message):
     )
     await editPesan(pesan, nodrakorres, reply_markup=keyboard)
 
+# Kusonime CMD
+@app.on_message(filters.command(['kusonime'], COMMAND_HANDLER))
+async def kusonime_s(client, message):
+    kueri = ' '.join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply("⏳ Please wait, scraping data from Kusonime..", quote=True)
+    CurrentPage = 1
+    kusores, PageLen = await getDataKuso(pesan, kueri, CurrentPage)
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{message.from_user.id}")
+    )
+    await editPesan(pesan, kusores, reply_markup=keyboard)
+
 # Movieku CMD
 @app.on_message(filters.command(['movieku'], COMMAND_HANDLER))
 async def movieku_s(client, message):
@@ -477,6 +521,30 @@ async def savefilmpage_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, savefilmres, reply_markup=keyboard)
+
+# Kuso Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: 'page_kuso#' in query.data))
+async def kusopage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split('#')[2])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        kueri = SCRAP_DICT[message_id][1]
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    try:
+        kusores, PageLen = await getDataKuso(callback_query.message, kueri, CurrentPage)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, 'page_kusores#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    await editPesan(callback_query.message, kusores, reply_markup=keyboard)
 
 # Nodrakor Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_nodrakor#' in query.data))
