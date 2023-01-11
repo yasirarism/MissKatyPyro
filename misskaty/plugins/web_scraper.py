@@ -198,7 +198,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
         
         moviekuResult = f"<b>#Movieku Latest:</b>\n🌀 Use /movieku [title] to start search with title.\n\n" if kueri == "" else f"<b>#Movieku Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/melongmovie_scrap {i['link']}</code>\n\n"
+            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> ~\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
         IGNORE_CHAR = "[]"
         moviekuResult = ''.join(i for i in moviekuResult if not i in IGNORE_CHAR)
         return moviekuResult, PageLen
@@ -306,7 +306,7 @@ async def getDataZonafilm(msg, kueri, CurrentPage):
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        gomovv = await http.get(f'https://185.173.38.216/?s=', headers=headers)
+        gomovv = await http.get(f'https://185.173.38.216/?s={kueri}', headers=headers)
         text = BeautifulSoup(gomovv.text, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
