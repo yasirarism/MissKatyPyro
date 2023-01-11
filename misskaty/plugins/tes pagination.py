@@ -88,7 +88,7 @@ async def lk21tes(client, message):
 
 @app.on_callback_query(filters.create(lambda _, __, query: 'pagination_lk21#' in query.data))
 async def lk21page_callback(client, callback_query):
-    if callback_query.from_user.id != callback_query.data.split('#')[3]:
+    if callback_query.from_user.id != callback_query.data.split('#')[2]:
         return await callback_query.answer("Not yours..", True)
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id 
