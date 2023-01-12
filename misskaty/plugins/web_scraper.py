@@ -104,7 +104,7 @@ async def getDataPahe(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
         pahejson = (await http.get(f'https://yasirapi.eu.org/pahe?q={kueri}')).json()
         if not pahejson.get("result"):
-            return await msg.edit("Sorry could not find any matching results!", quote=True)
+            return await msg.edit("Sorry could not find any matching results!")
         SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -227,7 +227,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
             link = i.find(class_="entry-title").find("a").get("href")
             sfdata.append({"judul": judul, "link": link, "genre": genre})
         if not sfdata:
-            return await msg.edit("Sorry could not find any results!", quote=True)
+            return await msg.edit("Sorry could not find any results!")
         SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -255,7 +255,7 @@ async def getDataLendrive(msg, kueri, CurrentPage):
             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
-            return await msg.edit("Sorry could not find any results!", quote=True)
+            return await msg.edit("Sorry could not find any results!")
         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -286,7 +286,7 @@ async def getDataMelong(msg, kueri, CurrentPage):
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
-            return await msg.edit("Sorry could not find any results!", quote=True)
+            return await msg.edit("Sorry could not find any results!")
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
