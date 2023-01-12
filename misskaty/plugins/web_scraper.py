@@ -539,7 +539,7 @@ async def movieku_s(client, message):
     CurrentPage = 1
     moviekures, PageLen = await getDataMovieku(pesan, kueri, CurrentPage)
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, 'page_movieku#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -635,7 +635,7 @@ async def moviekupage_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_movieku#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{message_id}#{callback_query.from_user.id}')
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -689,6 +689,7 @@ async def terbit21page_callback(client, callback_query):
     )
     await editPesan(callback_query.message, terbitres, reply_markup=keyboard)
 
+# Page Callback Melong
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_melong#' in query.data))
 async def melongpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
@@ -784,6 +785,7 @@ async def gomovpage_callback(client, callback_query):
     )
     await editPesan(callback_query.message, gomovres, reply_markup=keyboard)
 
+# Page Callback for Zonafilm
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_zonafilm#' in query.data))
 async def zonafilmpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
