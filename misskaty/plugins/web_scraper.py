@@ -228,7 +228,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
         text = BeautifulSoup(data.text, "lxml")
         entry = text.find_all(class_="entry-header")
-        if "Nothing Found" in entry[0].text:
+        if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
                 await msg.edit("404 Not FOUND!")
                 return None, None
