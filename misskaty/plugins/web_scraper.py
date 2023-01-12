@@ -128,7 +128,7 @@ async def getDataPahe(msg, kueri, CurrentPage):
 # Nodrakor GetData
 async def getDataNodrakor(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        nodrakor = await http.get(f'https://zonafilm.icu/?s={kueri}', headers=headers)
+        nodrakor = await http.get(f'http://173.212.199.27/?s={kueri}', headers=headers)
         text = BeautifulSoup(nodrakor.text, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
@@ -150,10 +150,10 @@ async def getDataNodrakor(msg, kueri, CurrentPage):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
         
-        NodrakorResult = f"<b>#Nodrakor Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Nodrakor Latest:</b>\n🌀 Use /zonafilm [title] to start search with title.\n\n"
+        NodrakorResult = f"<b>#Nodrakor Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Nodrakor Latest:</b>\n🌀 Use /nodrakor [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             NodrakorResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            NodrakorResult += f"<b>Extract:</b> <code>/zonafilm_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
+            NodrakorResult += f"<b>Extract:</b> <code>/nodrakor_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
         IGNORE_CHAR = "[]"
         NodrakorResult = ''.join(i for i in NodrakorResult if not i in IGNORE_CHAR)
         return NodrakorResult, PageLen
