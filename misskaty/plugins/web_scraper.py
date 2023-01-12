@@ -619,7 +619,7 @@ async def nodraakorpage_callback(client, callback_query):
 
 # Lendrive Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_lendrive#' in query.data))
-async def moviekupage_callback(client, callback_query):
+async def lendrivepage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split('#')[2])
