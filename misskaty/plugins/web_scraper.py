@@ -217,9 +217,11 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
-                return await msg.edit("404 Not FOUND!")
+                await msg.edit("404 Not FOUND!")
+                return
             else:
-                return await msg.edit(f"404 Not FOUND For: {kueri}")
+                await msg.edit(f"404 Not FOUND For: {kueri}")
+                return
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
             genre = f"{genre}" if genre != "" else "N/A"
