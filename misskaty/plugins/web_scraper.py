@@ -53,7 +53,8 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
         else:
             terbitjson = (await http.get(f'https://yasirapi.eu.org/terbit21?q={kueri}')).json()
         if not terbitjson.get("result"):
-            return await msg.edit("Sorry, could not find any results!")
+            await msg.edit("Sorry, could not find any results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(terbitjson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -71,6 +72,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
         return TerbitRes, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry, could not find any results!")
+        return None, None
 
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage):
@@ -80,7 +82,8 @@ async def getDatalk21(msg, kueri, CurrentPage):
         else:
             lk21json = (await http.get(f'https://yasirapi.eu.org/lk21?q={kueri}')).json()
         if not lk21json.get("result"):
-            return await msg.edit("Sorry could not find any matching results!")
+            await msg.edit("Sorry could not find any matching results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(lk21json["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -98,13 +101,15 @@ async def getDatalk21(msg, kueri, CurrentPage):
         return lkResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Pahe GetData
 async def getDataPahe(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
         pahejson = (await http.get(f'https://yasirapi.eu.org/pahe?q={kueri}')).json()
         if not pahejson.get("result"):
-            return await msg.edit("Sorry could not find any matching results!")
+            await msg.edit("Sorry could not find any matching results!", quote=True)
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -118,6 +123,7 @@ async def getDataPahe(msg, kueri, CurrentPage):
         return paheResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Nodrakor GetData
 async def getDataNodrakor(msg, kueri, CurrentPage):
@@ -127,9 +133,11 @@ async def getDataNodrakor(msg, kueri, CurrentPage):
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
             if not kueri:
-                return await msg.edit("404 Not FOUND!")
+                await msg.edit("404 Not FOUND!")
+                return None, None
             else:
-                return await msg.edit(f"404 Not FOUND For: {kueri}")
+                await msg.edit(f"404 Not FOUND For: {kueri}")
+                return None, None
         data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -151,6 +159,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage):
         return NodrakorResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Kusonime GetData
 async def getDataKuso(msg, kueri, CurrentPage):
@@ -164,7 +173,8 @@ async def getDataKuso(msg, kueri, CurrentPage):
             link = ress["href"]
             kusodata.append({"title": title, "link": link})
         if not kusodata:
-            return await msg.edit("Sorry could not find any results!")
+            await msg.edit("Sorry could not find any results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(kusodata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -178,6 +188,7 @@ async def getDataKuso(msg, kueri, CurrentPage):
         return kusoResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage):
@@ -193,7 +204,8 @@ async def getDataMovieku(msg, kueri, CurrentPage):
             typee = typ.strip() if typ.strip() != "" else "~" 
             moviekudata.append({"judul": judul, "link": link, "type": typee})
         if not moviekudata:
-            return await msg.edit("Sorry could not find any results!")
+            await msg.edit("Sorry could not find any results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(moviekudata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -207,6 +219,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
         return moviekuResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Savefilm21 GetData
 async def getDataSavefilm21(msg, kueri, CurrentPage):
@@ -215,7 +228,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
         text = BeautifulSoup(data.text, "lxml")
         entry = text.find_all(class_="entry-header")
-        if "Tidak Ditemukan" in entry[0].text:
+        if "Nothing Found" in entry[0].text:
             if not kueri:
                 await msg.edit("404 Not FOUND!")
                 return None, None
@@ -229,7 +242,8 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
             link = i.find(class_="entry-title").find("a").get("href")
             sfdata.append({"judul": judul, "link": link, "genre": genre})
         if not sfdata:
-            return await msg.edit("Sorry could not find any results!")
+            await msg.edit("Sorry could not find any results!", quote=True)
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -243,6 +257,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         return sfResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage):
@@ -257,7 +272,8 @@ async def getDataLendrive(msg, kueri, CurrentPage):
             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
-            return await msg.edit("Sorry could not find any results!")
+            await msg.edit("Sorry could not find any results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -271,6 +287,7 @@ async def getDataLendrive(msg, kueri, CurrentPage):
         return lenddataResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage):
@@ -288,7 +305,8 @@ async def getDataMelong(msg, kueri, CurrentPage):
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
-            return await msg.edit("Sorry could not find any results!")
+            await msg.edit("Sorry could not find any results!")
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -302,6 +320,7 @@ async def getDataMelong(msg, kueri, CurrentPage):
         return melongResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Zonafilm GetData
 async def getDataZonafilm(msg, kueri, CurrentPage):
@@ -311,9 +330,11 @@ async def getDataZonafilm(msg, kueri, CurrentPage):
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
             if not kueri:
-                return await msg.edit("404 Not FOUND!")
+                await msg.edit("Sorry, not found any result!")
+                return None, None
             else:
-                return await msg.edit(f"404 Not FOUND For: {kueri}")
+                await msg.edit(f"Sorry not found any result for: {kueri}")
+                return None, None
         data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -335,6 +356,7 @@ async def getDataZonafilm(msg, kueri, CurrentPage):
         return ZonafilmResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage):
@@ -344,9 +366,11 @@ async def getDataGomov(msg, kueri, CurrentPage):
         entry = text.find_all(class_="entry-header")
         if "Nothing Found" in entry[0].text:
             if not kueri:
-                return await msg.edit("404 Not FOUND!")
+                await msg.edit("404 Not FOUND!")
+                return None, None
             else:
-                return await msg.edit(f"404 Not FOUND For: {kueri}")
+                await msg.edit(f"404 Not FOUND For: {kueri}")
+                return None, None
         data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -368,6 +392,7 @@ async def getDataGomov(msg, kueri, CurrentPage):
         return gomovResult, PageLen
     except (IndexError, KeyError):
         await msg.edit("Sorry could not find any matching results!")
+        return None, None
 
 # Terbit21 CMD
 @app.on_message(filters.command(['terbit21'], COMMAND_HANDLER))
@@ -378,6 +403,7 @@ async def terbit21_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Terbit21..", quote=True)
     CurrentPage = 1
     terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage)
+    if not terbitres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_terbit21#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -395,6 +421,7 @@ async def lk21_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from LK21..", quote=True)
     CurrentPage = 1
     lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage)
+    if not lkres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lk21#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -412,6 +439,7 @@ async def pahe_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Pahe Web..", quote=True)
     CurrentPage = 1
     paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage)
+    if not paheres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_pahe#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -428,6 +456,7 @@ async def gomov_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data Gomov Web..", quote=True)
     CurrentPage = 1
     gomovres, PageLen = await getDataGomov(pesan, kueri, CurrentPage)
+    if not gomovres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -444,6 +473,7 @@ async def zonafilm_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Zonafilm Web..", quote=True)
     CurrentPage = 1
     zonafilmres, PageLen = await getDataZonafilm(pesan, kueri, CurrentPage)
+    if not zonafilmres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_zonafilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -460,6 +490,7 @@ async def melong_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Melongmovie..", quote=True)
     CurrentPage = 1
     melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
+    if not melongres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -476,6 +507,7 @@ async def savefilm_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Savefilm21..", quote=True)
     CurrentPage = 1
     savefilmres, PageLen = await getDataSavefilm21(pesan, kueri, CurrentPage)
+    if not savefilmres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -492,6 +524,7 @@ async def nodrakor_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Nodrakor..", quote=True)
     CurrentPage = 1
     nodrakorres, PageLen = await getDataNodrakor(pesan, kueri, CurrentPage)
+    if not nodrakorres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_nodrakor#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -508,6 +541,7 @@ async def kusonime_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Kusonime..", quote=True)
     CurrentPage = 1
     kusores, PageLen = await getDataKuso(pesan, kueri, CurrentPage)
+    if not kusores: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -524,6 +558,7 @@ async def lendrive_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Lendrive..", quote=True)
     CurrentPage = 1
     lendres, PageLen = await getDataLendrive(pesan, kueri, CurrentPage)
+    if not lendres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -540,6 +575,7 @@ async def movieku_s(client, message):
     pesan = await message.reply("⏳ Please wait, scraping data from Movieku..", quote=True)
     CurrentPage = 1
     moviekures, PageLen = await getDataMovieku(pesan, kueri, CurrentPage)
+    if not moviekures: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_movieku#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(
@@ -621,7 +657,7 @@ async def nodraakorpage_callback(client, callback_query):
 
 # Lendrive Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_lendrive#' in query.data))
-async def lendrivepage_callback(client, callback_query):
+async def moviekupage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split('#')[2])
