@@ -190,7 +190,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
             judul = i.find_all("a")[0]["title"]
             link = i.find_all("a")[0]["href"]
             typ = i.find(class_="overlay").text
-            typee = typ if typ != "" else "~" 
+            typee = typ.strip() if typ.strip() != "" else "~" 
             moviekudata.append({"judul": judul, "link": link, "type": typee})
         if not moviekudata:
             return await msg.edit("Sorry could not find any results!")
@@ -201,7 +201,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
         
         moviekuResult = f"<b>#Movieku Latest:</b>\n🌀 Use /movieku [title] to start search with title.\n\n" if kueri == "" else f"<b>#Movieku Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
+            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
         IGNORE_CHAR = "[]"
         moviekuResult = ''.join(i for i in moviekuResult if not i in IGNORE_CHAR)
         return moviekuResult, PageLen
