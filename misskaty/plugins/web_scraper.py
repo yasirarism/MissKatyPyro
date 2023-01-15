@@ -1002,9 +1002,9 @@ async def lendrive_dl(_, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     try:
-        html = await http.get(link, headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        j = soup.findAll("div", class_="soraurlx")
+        hmm = await http.get(link, headers=headers)
+        q = BeautifulSoup(hmm.text, "lxml")
+        j = q.findAll("div", class_="soraurlx")
         kl = "<b>#Lendrive Results Download URL:</b>\n\n"
         for i in j:
             if not i.find("a"):
