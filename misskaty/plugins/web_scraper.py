@@ -505,7 +505,7 @@ async def melong_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Melongmovie..", quote=True)
     CurrentPage = 1
-    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage)
+    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage, message.from_user.id)
     if not melongres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{pesan.id}#{message.from_user.id}')
@@ -770,7 +770,7 @@ async def melongpage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        terbitres, PageLen = await getDataMelong(callback_query.message, kueri, CurrentPage)
+        terbitres, PageLen = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
