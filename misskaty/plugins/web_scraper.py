@@ -1011,7 +1011,6 @@ async def lendrive_dl(_, callback_query):
                 continue
             kl += f"{i.find('strong')}:\n"
             kl += "".join(f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a"))
+        await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{kl}", reply_markup=keyboard)
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
-        return
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{kl}", reply_markup=keyboard)
