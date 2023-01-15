@@ -1007,6 +1007,8 @@ async def lendrive_dl(_, callback_query):
         j = q.findAll("div", class_="soraurlx")
         kl = "<b>#Lendrive Results Download URL:</b>\n\n"
         for i in j:
+            if not i.find("a"):
+                continue
             kl += f"{i.find('strong')}:\n"
             kl += "".join(f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a"))
         await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{kl}", reply_markup=keyboard)
