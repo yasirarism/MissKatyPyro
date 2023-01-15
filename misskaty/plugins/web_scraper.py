@@ -348,20 +348,18 @@ async def getDataZonafilm(msg, kueri, CurrentPage, user):
         zonafilm = await http.get(f'http://194.195.90.100//?s={kueri}', headers=headers)
         text = BeautifulSoup(zonafilm.text, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
-            if not kueri:
-                await editPesan(msg, "Sorry, not found any result!")
-                return None, 0, None
-            else:
-                await editPesan(msg, f"Sorry not found any result for: {kueri}")
-                return None, 0, None
         data = []
         for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
+            try:
+                genre = i.find(class_="gmr-movie-on").text
+            except:
+                break
             genre = f"{genre}" if genre != "" else "N/A"
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             data.append({"judul": judul, "link": link, "genre": genre})
+        if not data:
+            return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -410,11 +408,12 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
         
         gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
+            gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
             if not re.search(r"Series", i["genre"]):
                 extractbtn.append(
-                    InlineButton(c, f"zonafilmextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                    InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
                 )
+        gomovResult += "Some result will not appear in extract button because unsupported link."
         IGNORE_CHAR = "[]"
         gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
         return gomovResult, PageLen, extractbtn
@@ -597,7 +596,7 @@ async def lendrive_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Lendrive..", quote=True)
     CurrentPage = 1
-    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage)
+    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage, message.from_user.id)
     if not lendres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{pesan.id}#{message.from_user.id}')
