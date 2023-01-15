@@ -12,6 +12,7 @@ from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty.helper.http import http
+from misskaty.helper.kuso_utils import Kusonime
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.message_utils import *
@@ -162,7 +163,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage):
         return None, None
 
 # Kusonime GetData
-async def getDataKuso(msg, kueri, CurrentPage):
+async def getDataKuso(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers)
@@ -174,21 +175,25 @@ async def getDataKuso(msg, kueri, CurrentPage):
             kusodata.append({"title": title, "link": link})
         if not kusodata:
             await editPesan(msg, "Sorry could not find any results!")
-            return None, None
+            return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(kusodata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        
+        extractbtn = []
+
         kusoResult = f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
+            extractbtn.append(
+                InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+            )
         IGNORE_CHAR = "[]"
         kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
         return kusoResult, PageLen
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+        return None, 0, None
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage):
@@ -542,10 +547,12 @@ async def kusonime_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Kusonime..", quote=True)
     CurrentPage = 1
-    kusores, PageLen = await getDataKuso(pesan, kueri, CurrentPage)
+    kusores, PageLen, btn = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id)
     if not kusores: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -624,12 +631,14 @@ async def kusopage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        kusores, PageLen = await getDataKuso(callback_query.message, kueri, CurrentPage)
+        kusores, PageLen, btn = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -852,6 +861,40 @@ async def zonafilmpage_callback(client, callback_query):
     await editPesan(callback_query.message, zonafilmres, reply_markup=keyboard)
 
 ### Scrape DDL Link From Web ###
+# Kusonime DDL
+@app.on_callback_query(filters.create(lambda _, __, query: 'kusoextract#' in query.data))
+async def kusonime_scrap(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    data_kuso = {}
+    kuso = Kusonime()
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("↩️ Back", f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
+        init_url = data_kuso.get(link, None)
+        if init_url:
+            ph = init_url.get("ph_url")
+            await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard)
+        tgh = await kuso.telegraph(link, message_id)
+        if tgh["error"]:
+            await editPesan(callback_query.message, f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
+            return
+    except Exception as err:
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    data_kuso[link] = {"ph_url": tgh["url"]}
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{tgh['url']}", reply_markup=keyboard)
 
 # Savefilm21 DDL
 @app.on_callback_query(filters.create(lambda _, __, query: 'sf21extract#' in query.data))
@@ -879,7 +922,7 @@ async def savefilm21_scrap(_, callback_query):
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", reply_markup=keyboard)
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{res}", reply_markup=keyboard)
 
 # Scrape DDL Link Nodrakor
 @app.on_message(filters.command(["nodrakor_scrap"], COMMAND_HANDLER))
