@@ -854,32 +854,32 @@ async def zonafilmpage_callback(client, callback_query):
 ### Scrape DDL Link From Web ###
 
 # Savefilm21 DDL
-@app.on_message(filters.command(["savefilm21_scrap"], COMMAND_HANDLER))
-async def savefilm21_scrap(_, message):
+@app.on_callback_query(filters.create(lambda _, __, query: 'sf21extract#' in query.data))
+async def savefilm21_scrap(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        link = message.text.split(" ", maxsplit=1)[1]
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-2].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("Back", f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-        await message.reply(
-            f"<b>Hasil Scrap dari {link}</b>:\n\n{res}",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close",
-                            callback_data=f"close#{message.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
-        )
-    except IndexError:
-        return await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
-    except Exception as e:
-        await message.reply(f"ERROR: {str(e)}")
+    except Exception as err:
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    await editPesan(callback_query.message, f"<b>Hasil Scrap dari {link}</b>:\n\n{res}", reply_markup=keyboard)
 
 # Scrape DDL Link Nodrakor
 @app.on_message(filters.command(["nodrakor_scrap"], COMMAND_HANDLER))
