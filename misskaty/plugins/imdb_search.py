@@ -274,7 +274,7 @@ async def imdb_id_callback(_, query):
             f"https://yasirapi.eu.org/imdb-page?url={url}",
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
-        r_json = resp.json()
+        r_json = resp.json().get("result")
         res_str = ""
         if judul := r_json.get("title"):
             res_str += f"<b>📹 Judul:</b> {judul}\n"
