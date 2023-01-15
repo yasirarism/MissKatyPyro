@@ -19,17 +19,17 @@ from misskaty.core.message_utils import *
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
-/melongmovie [query <optional>] - Scrape website data from MelongMovie Web. If without query will give latest movie list.
-/lk21 [query <optional>] - Scrape website data from LayarKaca21. If without query will give latest movie list.
-/pahe [query <optional>] - Scrape website data from Pahe.li. If without query will give latest post list.
-/terbit21 [query <optional>] - Scrape website data from Terbit21. If without query will give latest movie list.
-/savefilm21 [query <optional>] - Scrape website data from Savefilm21. If without query will give latest movie list.
+/melongmovie [query <optional>] - Scrape website data from MelongMovie Web.
+/lk21 [query <optional>] - Scrape website data from LayarKaca21.
+/pahe [query <optional>] - Scrape website data from Pahe.li.
+/terbit21 [query <optional>] - Scrape website data from Terbit21.
+/savefilm21 [query <optional>] - Scrape website data from Savefilm21.
 /movieku [query <optional>] - Scrape website data from Movieku.cc
 /nodrakor [query <optional>] - Scrape website data from nodrakor.icu
 /zonafilm [query <optional>] - Scrape website data from zonafilm.icu
 /kusonime [query <optional>] - Scrape website data from Kusonime
 /lendrive [query <optional>] - Scrape website data from Lendrive
-/gomov [query <optional>] - Scrape website data from GoMov. If without query will give latest movie list.
+/gomov [query <optional>] - Scrape website data from GoMov.
 """
 
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
@@ -322,7 +322,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
             await editPesan(msg, "Sorry could not find any results!")
-            return None, None
+            return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
@@ -340,7 +340,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
         return melongResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+        return None, 0, None
 
 # Zonafilm GetData
 async def getDataZonafilm(msg, kueri, CurrentPage, user):
@@ -351,10 +351,10 @@ async def getDataZonafilm(msg, kueri, CurrentPage, user):
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
                 await editPesan(msg, "Sorry, not found any result!")
-                return None, None
+                return None, 0, None
             else:
                 await editPesan(msg, f"Sorry not found any result for: {kueri}")
-                return None, None
+                return None, 0, None
         data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -380,7 +380,7 @@ async def getDataZonafilm(msg, kueri, CurrentPage, user):
         return ZonafilmResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+        return None, 0, None
 
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user):
