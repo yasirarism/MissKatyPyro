@@ -375,10 +375,10 @@ async def imdb_en_callback(bot, query):
         if language := r_json.get("language"):
             res_str += f"<b>Language:</b> {language}\n"
         res_str += "\n<b>🙎 Cast Info:</b>\n"
-        if r_json.get("director"):
+        if director := r_json.get("director"):
             res_str += f"<b>Director:</b> {director}\n"
-        if director := r_json.get("creator"):
-            res_str += f"<b>Writer:</b> {director}\n"
+        if writer := r_json.get("creator"):
+            res_str += f"<b>Writer:</b> {writer}\n"
         if actors := r_json.get("actors"):
             res_str += f"<b>Stars:</b> {actors}\n\n"
         if description := r_json.get("description"):
