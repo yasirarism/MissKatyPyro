@@ -183,7 +183,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        kusoResult = f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
+        kusoResult = f"<b>#Kusonime Latest Post\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
             extractbtn.append(
