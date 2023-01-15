@@ -323,7 +323,7 @@ async def imdb_id_callback(_, query):
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
         if thumb := r_json.get("thumb"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
