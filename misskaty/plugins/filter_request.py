@@ -7,7 +7,7 @@ from pyrogram.errors import PeerIdInvalid, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from .web_scraper import SCRAP_DICT
+from .web_scraper import SCRAP_DICT, data_kuso
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.time_gap import check_time_gap
 
@@ -107,6 +107,7 @@ async def request_user(client, message):
 
 async def clear_reqdict():
     SCRAP_DICT.clear()
+    data_kuso.clear()
     REQUEST_DB.clear()
 
 

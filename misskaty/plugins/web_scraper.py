@@ -35,7 +35,8 @@ __HELP__ = """
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 LOGGER = logging.getLogger(__name__)
-SCRAP_DICT = {} # Dict
+SCRAP_DICT = {}
+data_kuso = {}
 
 def split_arr(arr, size: 5):
      arrs = []
@@ -874,7 +875,6 @@ async def kusonime_scrap(_, callback_query):
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
-    data_kuso = {}
     kuso = Kusonime()
     keyboard = InlineKeyboard()
     keyboard.row(
@@ -885,7 +885,8 @@ async def kusonime_scrap(_, callback_query):
         init_url = data_kuso.get(link, None)
         if init_url:
             ph = init_url.get("ph_url")
-            await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard)
+            await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard, disable_web_page_preview=False)
+            return
         tgh = await kuso.telegraph(link, message_id)
         if tgh["error"]:
             await editPesan(callback_query.message, f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
@@ -894,7 +895,7 @@ async def kusonime_scrap(_, callback_query):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     data_kuso[link] = {"ph_url": tgh["url"]}
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{tgh['url']}", reply_markup=keyboard)
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{tgh['url']}", reply_markup=keyboard, disable_web_page_preview=False)
 
 # Savefilm21 DDL
 @app.on_callback_query(filters.create(lambda _, __, query: 'sf21extract#' in query.data))
