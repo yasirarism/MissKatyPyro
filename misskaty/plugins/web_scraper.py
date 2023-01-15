@@ -177,7 +177,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
         if not kusodata:
             await editPesan(msg, "Sorry could not find any results!")
             return None, 0, None
-        SCRAP_DICT[msg.id] = [split_arr(kusodata, 6), kueri]
+        SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
