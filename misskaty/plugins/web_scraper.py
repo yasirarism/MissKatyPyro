@@ -506,7 +506,7 @@ async def savefilm_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Savefilm21..", quote=True)
     CurrentPage = 1
-    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user,id)
+    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user.id)
     if not savefilmres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
