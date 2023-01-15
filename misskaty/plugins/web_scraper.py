@@ -1005,7 +1005,6 @@ async def melong_scrap(_, callback_query):
         soup = BeautifulSoup(html.text, "lxml")
         rep = ""
         for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
-            res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
             hardsub = ep.findPrevious("div")
             softsub = ep.findNext("div")
             rep += f"{hardsub}\n{softsub}"
