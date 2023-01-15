@@ -222,7 +222,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
         return None, None
 
 # Savefilm21 GetData
-async def getDataSavefilm21(msg, kueri, CurrentPage):
+async def getDataSavefilm21(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
@@ -250,7 +250,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n<b>Extract:</b> <code>/savefilm21_scrap {i['link']}</code>\n\n"
             extractbtn.append(
-                InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{msg.from_user.id}#{msg.id}")
+                InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
             )
         IGNORE_CHAR = "[]"
         sfResult = ''.join(i for i in sfResult if not i in IGNORE_CHAR)
@@ -506,7 +506,7 @@ async def savefilm_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Savefilm21..", quote=True)
     CurrentPage = 1
-    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage)
+    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user,id)
     if not savefilmres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_savefilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
@@ -598,7 +598,7 @@ async def savefilmpage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        savefilmres, PageLen = await getDataSavefilm21(callback_query.message, kueri, CurrentPage)
+        savefilmres, PageLen = await getDataSavefilm21(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
