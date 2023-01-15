@@ -272,7 +272,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user):
         return None, 0, None
 
 # Lendrive GetData
-async def getDataLendrive(msg, kueri, CurrentPage):
+async def getDataLendrive(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f'https://lendrive.web.id/?s={kueri}', headers=headers)
         soup = BeautifulSoup(data.text, "lxml")
@@ -285,21 +285,25 @@ async def getDataLendrive(msg, kueri, CurrentPage):
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
             await editPesan(msg, "Sorry could not find any results!")
-            return None, None
+            return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
+        extractbtn = []
         
         lenddataResult = f"<b>#LenDrive Latest:</b>\n🌀 Use /lendrive [title] to start search with title.\n\n" if kueri == "" else f"<b>#LenDrive Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+            extractbtn.append(
+                InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
+            )
         IGNORE_CHAR = "[]"
         lenddataResult = ''.join(i for i in lenddataResult if not i in IGNORE_CHAR)
-        return lenddataResult, PageLen
+        return lenddataResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+        return None, 0, None
 
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user):
@@ -413,7 +417,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
                 )
         IGNORE_CHAR = "[]"
         gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
-        return gomovResult, PageLen
+        return gomovResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, None
@@ -593,10 +597,12 @@ async def lendrive_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Lendrive..", quote=True)
     CurrentPage = 1
-    lendres, PageLen = await getDataLendrive(pesan, kueri, CurrentPage)
+    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage)
     if not lendres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -710,12 +716,14 @@ async def moviekupage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        lendres, PageLen = await getDataLendrive(callback_query.message, kueri, CurrentPage)
+        lendres, PageLen, btn = await getDataLendrive(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_lendrive#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -1091,3 +1099,35 @@ async def zonafilm_dl(_, callback_query):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{hasil}", reply_markup=keyboard)
+
+@app.on_callback_query(filters.create(lambda _, __, query: 'lendriveextract#' in query.data))
+async def zonafilm_dl(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("↩️ Back", f"page_lendrive#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
+        html = await http.get(link, headers=headers)
+        soup = BeautifulSoup(html.text, "lxml")
+        j = soup.findAll("div", class_="soraurlx")
+        kl = "<b>#Lendrive Results Download URL:</b>\n\n"
+        for i in j:
+            if not i.find("a"):
+                continue
+            kl += f"{i.find('strong')}:\n"
+            kl += "".join(f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a"))
+    except Exception as err:
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{kl}", reply_markup=keyboard)
