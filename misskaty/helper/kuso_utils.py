@@ -16,7 +16,7 @@ if telegraph.get_access_token() == None:
     token_ph = telegraph.create_account(short_name=BOT_USERNAME)
     LOGGER.info(f"kuso_utils: Create TGH Account ..")
 
-headers = {"Accept": "*/*", "User-Agent": {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}}
+headers = {"Accept": "*/*", "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 
 async def kusonimeBypass(url: str, slug=None):
