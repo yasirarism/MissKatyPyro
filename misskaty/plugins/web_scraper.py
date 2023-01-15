@@ -391,10 +391,10 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
                 await editPesan(msg, "Sorry, i could not find anything.")
-                return None, None
+                return None, 0, None
             else:
                 await editPesan(msg, f"Sorry, i could not find query: {kueri}")
-                return None, None
+                return None, 0, None
         data = []
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -420,7 +420,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
         return gomovResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+        return None, 0, None
 
 # Terbit21 CMD
 @app.on_message(filters.command(['terbit21'], COMMAND_HANDLER))
