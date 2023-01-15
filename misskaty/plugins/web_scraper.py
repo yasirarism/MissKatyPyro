@@ -302,7 +302,7 @@ async def getDataLendrive(msg, kueri, CurrentPage):
         return None, None
 
 # MelongMovie GetData
-async def getDataMelong(msg, kueri, CurrentPage):
+async def getDataMelong(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f'http://167.99.31.48/?s={kueri}', headers=headers)
         bs4 = BeautifulSoup(data.text, "lxml")
@@ -323,13 +323,17 @@ async def getDataMelong(msg, kueri, CurrentPage):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        
+        extractbtn = []
+
         melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /melongmovie [title] to start search with title.\n\n" if kueri == "" else f"<b>#MelongMovie Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Extract:</b> <code>/melongmovie_scrap {i['link']}</code>\n\n"
+            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n\n"
+            extractbtn.append(
+                InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
+            )
         IGNORE_CHAR = "[]"
         melongResult = ''.join(i for i in melongResult if not i in IGNORE_CHAR)
-        return melongResult, PageLen
+        return melongResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, None
@@ -501,10 +505,12 @@ async def melong_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Melongmovie..", quote=True)
     CurrentPage = 1
-    melongres, PageLen = await getDataMelong(pesan, kueri, CurrentPage)
+    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage)
     if not melongres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -975,21 +981,37 @@ async def muviku_scrap(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 # Scrape DDL Link Melongmovie
-@app.on_message(filters.command(["melongmovie_scrap"], COMMAND_HANDLER))
 async def melong_scrap(_, message):
+@app.on_callback_query(filters.create(lambda _, __, query: 'melongextract#' in query.data))
+async def melong_scrap(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
 
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("↩️ Back", f"page_melong#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
+        rep = ""
         for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
+            res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
             hardsub = ep.findPrevious("div")
             softsub = ep.findNext("div")
-            rep = f"{hardsub}\n{softsub}"
-            await message.reply(rep)
-    except IndexError:
-        await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
+            rep += f"{hardsub}\n{softsub}"
+    except Exception as err:
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{rep}", reply_markup=keyboard)
 
 # Scrape DDL Link Gomov & Zonafilm
 @app.on_message(filters.command(["gomov_scrap", "zonafilm_scrap"], COMMAND_HANDLER))
