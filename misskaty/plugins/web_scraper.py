@@ -862,7 +862,7 @@ async def savefilm21_scrap(_, callback_query):
     message_id = int(callback_query.data.split('#')[4])
     CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-2].get("link")
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
