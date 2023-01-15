@@ -868,7 +868,7 @@ async def savefilm21_scrap(_, callback_query):
 
     keyboard = InlineKeyboard()
     keyboard.row(
-        InlineButton("Back", f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("↩️ Back", f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     try:
