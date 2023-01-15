@@ -345,7 +345,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
 # Zonafilm GetData
 async def getDataZonafilm(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
-        zonafilm = await http.get(f'http://194.195.90.100//?s={kueri}', headers=headers)
+        zonafilm = await http.get(f'http://194.195.90.100/?s={kueri}', headers=headers)
         text = BeautifulSoup(zonafilm.text, "lxml")
         entry = text.find_all(class_="entry-header")
         data = []
@@ -359,6 +359,7 @@ async def getDataZonafilm(msg, kueri, CurrentPage, user):
             link = i.find(class_="entry-title").find("a").get("href")
             data.append({"judul": judul, "link": link, "genre": genre})
         if not data:
+            await editPesan(msg, "Sorry could not find any matching results!")
             return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
     try:
