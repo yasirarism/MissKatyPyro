@@ -176,25 +176,31 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
             kusodata.append({"title": title, "link": link})
         if not kusodata:
             await editPesan(msg, "Sorry could not find any results!")
-            return None, 0, None
+            return None, 0, None, None
         SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
+        extractbtn1 = []
+        extractbtn2 = []
 
         kusoResult = f"<b>#Kusonime Latest Post\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
+            if c < 6:
+                extractbtn1.append(
+                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                )
+            else:
+                extractbtn2.append(
+                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                )
         IGNORE_CHAR = "[]"
         kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
-        return kusoResult, PageLen, extractbtn
+        return kusoResult, PageLen, extractbtn1, extractbtn2
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None
+        return None, 0, None, None
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage):
@@ -548,12 +554,14 @@ async def kusonime_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Kusonime..", quote=True)
     CurrentPage = 1
-    kusores, PageLen, btn = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id)
+    kusores, PageLen, btn1, btn2 = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id)
     if not kusores: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{pesan.id}#{message.from_user.id}')
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
-    keyboard.row(*btn)
+    keyboard.row(*btn1)
+    if btn2:
+        keyboard.row(*btn2)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -632,14 +640,16 @@ async def kusopage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        kusores, PageLen, btn = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        kusores, PageLen, btn1, btn2 = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_kuso#{number}' + f'#{message_id}#{callback_query.from_user.id}')
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
-    keyboard.row(*btn)
+    keyboard.row(*btn1)
+    if btn2:
+        keyboard.row(*btn2)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
