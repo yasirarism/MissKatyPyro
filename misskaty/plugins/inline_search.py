@@ -441,7 +441,7 @@ async def imdb_inl(_, query):
             type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
             if r_json.get("name"):
                 try:
-                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
                 except:
                     tahun = "N/A"
                 res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
@@ -527,7 +527,7 @@ async def imdb_inl(_, query):
                     [
                         [
                             InlineKeyboardButton(
-                                "🎬 Open IMDB",
+                                "🎬 Buka IMDB",
                                 url=f"https://www.imdb.com{r_json['url']}",
                             ),
                             InlineKeyboardButton("▶️ Trailer", url=trailer_url),

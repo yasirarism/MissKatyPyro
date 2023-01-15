@@ -280,7 +280,7 @@ async def imdb_id_callback(bot, query):
         type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
         if r_json.get("name"):
             try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
             except:
                 tahun = "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
@@ -288,8 +288,8 @@ async def imdb_id_callback(bot, query):
             res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
         else:
             res_str += "\n"
-        if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
-            durasi = durasi[0].find(class_="sc-8c396aa2-2 jwaBvf").text
+        if duration := sop.select('li[data-testid="title-techspec_runtime"]'):
+            durasi = duration[0].find(class_="sc-8c396aa2-2 jwaBvf").text
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
@@ -405,7 +405,7 @@ async def imdb_en_callback(bot, query):
         type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
         if r_json.get("name"):
             try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
             except:
                 tahun = "N/A"
             res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
