@@ -263,7 +263,7 @@ async def imdbcari_en(client, query):
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
-async def imdb_id_callback(bot, query):
+async def imdb_id_callback(_, query):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
@@ -271,107 +271,60 @@ async def imdb_id_callback(bot, query):
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(
-            url,
+            f"https://yasirapi.eu.org/imdb-page?url={url}",
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
-        sop = BeautifulSoup(resp, "lxml")
-        r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
+        r_json = resp.json()
         res_str = ""
-        type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
-        if r_json.get("name"):
-            try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
-            except:
-                tahun = "N/A"
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
-        if r_json.get("alternateName"):
-            res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
+        if judul := r_json.get("title"):
+            res_str += f"<b>📹 Judul:</b> {judul}\n"
+        if aka := r_json.get("aka"):
+            res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
             res_str += "\n"
-        if duration := sop.select('li[data-testid="title-techspec_runtime"]'):
-            durasi = duration[0].find(class_="ipc-metadata-list-item__content-container").text
+        if durasi := r_json.get("duration"):
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
-        if r_json.get("contentRating"):
-            res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
-        if r_json.get("aggregateRating"):
-            res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
-        if release := sop.select('li[data-testid="title-details-releasedate"]'):
-            rilis = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-            rilis_url = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
-            res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
-        if r_json.get("genre"):
-            genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
-            genre = genre[:-2]
+        if kategori := r_json.get("category"):
+            res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
+        if rating := r_json.get("rating"):
+            res_str += f"<b>Peringkat:</b> <code>{GoogleTranslator('auto', 'id').translate(rating)}</code>\n"
+        if release := r_json.get("release_date"):
+            res_str += f"<b>Rilis:</b> {release}\n"
+        if genre := r_json.get("genre"):
             res_str += f"<b>Genre :</b> {genre}\n"
-        if negara := sop.select('li[data-testid="title-details-origin"]'):
-            country = "".join(
-                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
-            country = country[:-2]
-            res_str += f"<b>Negara:</b> {country}\n"
-        if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(
-                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
-            language = language[:-2]
-            res_str += f"<b>Bahasa:</b> {language}\n"
+        if negara := r_json.get("country"):
+            res_str += f"<b>Negara:</b> {negara}\n"
+        if bahasa := r_json.get("language"):
+            res_str += f"<b>Bahasa:</b> {bahasa}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
-        if r_json.get("director"):
-            director = ""
-            for i in r_json["director"]:
-                name = i["name"]
-                url = i["url"]
-                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
-            director = director[:-2]
+        if director := r_json.get("director"):
             res_str += f"<b>Sutradara:</b> {director}\n"
-        if r_json.get("creator"):
-            creator = ""
-            for i in r_json["creator"]:
-                if i["@type"] == "Person":
-                    name = i["name"]
-                    url = i["url"]
-                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
-            creator = creator[:-2]
+        if creator := r_json.get("creator"):
             res_str += f"<b>Penulis:</b> {creator}\n"
-        if r_json.get("actor"):
-            actors = ""
-            for i in r_json["actor"]:
-                name = i["name"]
-                url = i["url"]
-                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
-            actors = actors[:-2]
+        if actors := r_json.get("actors"):
             res_str += f"<b>Pemeran:</b> {actors}\n\n"
-        if r_json.get("description"):
-            summary = GoogleTranslator("auto", "id").translate(r_json.get("description"))
+        if deskripsi := r_json.get("description"):
+            summary = GoogleTranslator("auto", "id").translate(deskripsi)
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
-        if r_json.get("keywords"):
-            keywords = r_json["keywords"].split(",")
-            key_ = ""
-            for i in keywords:
-                i = i.replace(" ", "_").replace("-", "_")
-                key_ += f"#{i}, "
-            key_ = key_[:-2]
+        if key_ := r_json.get("keyword"):
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
-        if award := sop.select('li[data-testid="award_information"]'):
-            awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
-            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
+        if award := r_json.get("awards"):
+            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(award)}</code>\n\n"
         else:
             res_str += "\n"
         res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
-        if r_json.get("trailer"):
-            trailer_url = r_json["trailer"]["url"]
+        if trailer := r_json.get("trailer_url"):
             markup = InlineKeyboardMarkup(
                 [
                     [
                         InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
-                        InlineKeyboardButton("▶️ Trailer", url=trailer_url),
+                        InlineKeyboardButton("▶️ Trailer", url=trailer),
                     ]
                 ]
             )
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
-        if thumb := r_json.get("image"):
+        if thumb := r_json.get("thumb"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
