@@ -282,37 +282,37 @@ async def imdb_id_callback(bot, query):
             try:
                 tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
             except:
-                tahun = "-"
+                tahun = "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
         if r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
         else:
             res_str += "\n"
-        if sop.select('li[data-testid="title-techspec_runtime"]'):
-            durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+        if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
+            durasi = durasi[0].find(class_="sc-8c396aa2-2 jwaBvf").text
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
         if r_json.get("aggregateRating"):
             res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
-        if sop.select('li[data-testid="title-details-releasedate"]'):
-            rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-            rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
+        if release := sop.select('li[data-testid="title-details-releasedate"]'):
+            rilis = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+            rilis_url = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
             genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
             genre = genre[:-2]
             res_str += f"<b>Genre :</b> {genre}\n"
-        if sop.select('li[data-testid="title-details-origin"]'):
+        if negara := sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
                 f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             country = country[:-2]
             res_str += f"<b>Negara:</b> {country}\n"
-        if sop.select('li[data-testid="title-details-languages"]'):
+        if bahasa := sop.select('li[data-testid="title-details-languages"]'):
             language = "".join(
-                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
@@ -353,8 +353,8 @@ async def imdb_id_callback(bot, query):
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
-        if sop.select('li[data-testid="award_information"]'):
-            awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+        if award := sop.select('li[data-testid="award_information"]'):
+            awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
         else:
             res_str += "\n"
@@ -407,37 +407,37 @@ async def imdb_en_callback(bot, query):
             try:
                 tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find(class_="sc-8c396aa2-2 itZqyK").text
             except:
-                tahun = "-"
+                tahun = "N/A"
             res_str += f"<b>📹 Title:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
         if r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
         else:
             res_str += "\n"
-        if sop.select('li[data-testid="title-techspec_runtime"]'):
-            durasi = sop.select('li[data-testid="title-techspec_runtime"]')[0].find(class_="ipc-metadata-list-item__content-container").text
+        if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
+            durasi = durasi[0].find(class_="ipc-metadata-list-item__content-container").text
             res_str += f"<b>Duration:</b> <code>{durasi}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>Category:</b> <code>{r_json['contentRating']}</code> \n"
         if r_json.get("aggregateRating"):
             res_str += f"<b>Rating:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ from {r_json['aggregateRating']['ratingCount']} user</code> \n"
-        if sop.select('li[data-testid="title-details-releasedate"]'):
-            rilis = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
-            rilis_url = sop.select('li[data-testid="title-details-releasedate"]')[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
+        if release := sop.select('li[data-testid="title-details-releasedate"]'):
+            rilis = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+            rilis_url = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
             res_str += f"<b>Release Data:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if r_json.get("genre"):
             genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
-        if sop.select('li[data-testid="title-details-origin"]'):
+        if negara := sop.select('li[data-testid="title-details-origin"]'):
             country = "".join(
                 f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                for country in sop.select('li[data-testid="title-details-origin"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             country = country[:-2]
             res_str += f"<b>Country:</b> {country}\n"
-        if sop.select('li[data-testid="title-details-languages"]'):
+        if bahasa := sop.select('li[data-testid="title-details-languages"]'):
             language = "".join(
-                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in sop.select('li[data-testid="title-details-languages"]')[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+                f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
             )
             language = language[:-2]
             res_str += f"<b>Language:</b> {language}\n"
@@ -477,8 +477,8 @@ async def imdb_en_callback(bot, query):
                 key_ += f"#{i}, "
             key_ = key_[:-2]
             res_str += f"<b>🔥 Keywords:</b> {key_} \n"
-        if sop.select('li[data-testid="award_information"]'):
-            awards = sop.select('li[data-testid="award_information"]')[0].find(class_="ipc-metadata-list-item__list-content-item").text
+        if award := sop.select('li[data-testid="award_information"]'):
+            awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
             res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n\n"
         else:
             res_str += "\n"
