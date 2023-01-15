@@ -770,12 +770,14 @@ async def melongpage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        terbitres, PageLen = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        terbitres, PageLen, btn = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_melong#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
