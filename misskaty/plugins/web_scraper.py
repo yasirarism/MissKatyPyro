@@ -483,7 +483,7 @@ async def gomov_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data Gomov Web..", quote=True)
     CurrentPage = 1
-    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user,id)
+    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user.id)
     if not gomovres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{pesan.id}#{message.from_user.id}')
