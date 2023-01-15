@@ -23,11 +23,11 @@ async def kirimPesan(msg, text: str, quote=True, disable_web_page_preview=True, 
 # Edit MSG Pyro
 async def editPesan(msg, text: str, disable_web_page_preview=True, reply_markup=None):
     try:
-        return await msg.edit(text=text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview, reply_markup=reply_markup)
+        return await msg.edit(text=text, disable_web_page_preview=disable_web_page_preview, reply_markup=reply_markup)
     except FloodWait as e:
         LOGGER.warning(str(e))
         await asyncio.sleep(e.value)
-        return await editPesan(msg, text=text, parse_mode=parse_mode, disable_web_page_preview=disable_web_page_preview, reply_markup=reply_markup)
+        return await editPesan(msg, text=text, disable_web_page_preview=disable_web_page_preview, reply_markup=reply_markup)
     except MessageNotModified:
         return
     except Exception as e:
