@@ -190,7 +190,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
             )
         IGNORE_CHAR = "[]"
         kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
-        return kusoResult, PageLen
+        return kusoResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, 0, None
