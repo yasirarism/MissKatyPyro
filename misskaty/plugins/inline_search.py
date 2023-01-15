@@ -452,12 +452,8 @@ async def imdb_inl(_, query):
             if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
                 durasi = durasi[0].find(class_="ipc-metadata-list-item__content-container").text
                 res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
-            if cat := sop.select('ul[data-testid="hero-title-block__metadata"]'):
-                try:
-                    cat = cat[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
-                except:
-                    cat = "N/A"
-                res_str += f"<b>Kategori:</b> <code>{cat}</code> \n"
+            if r_json.get("contentRating"):
+                res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
                 res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if release := sop.select('li[data-testid="title-details-releasedate"]'):
