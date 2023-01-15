@@ -317,7 +317,7 @@ async def imdb_id_callback(_, query):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
+                        InlineKeyboardButton("🎬 Open IMDB", url=url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer),
                     ]
                 ]
