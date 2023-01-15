@@ -339,7 +339,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
         return None, None
 
 # Zonafilm GetData
-async def getDataZonafilm(msg, kueri, CurrentPage):
+async def getDataZonafilm(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         zonafilm = await http.get(f'http://194.195.90.100//?s={kueri}', headers=headers)
         text = BeautifulSoup(zonafilm.text, "lxml")
@@ -362,20 +362,24 @@ async def getDataZonafilm(msg, kueri, CurrentPage):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
+        extractbtn = []
         
         ZonafilmResult = f"<b>#Zonafilm Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Zonafilm Latest:</b>\n🌀 Use /zonafilm [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            ZonafilmResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            ZonafilmResult += f"<b>Extract:</b> <code>/zonafilm_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
+            ZonafilmResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
+            if "/tv" not in i["link"]:
+                extractbtn.append(
+                    InlineButton(c, f"zonafilmextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                )
         IGNORE_CHAR = "[]"
         ZonafilmResult = ''.join(i for i in ZonafilmResult if not i in IGNORE_CHAR)
-        return ZonafilmResult, PageLen
+        return ZonafilmResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, None
 
 # GoMov GetData
-async def getDataGomov(msg, kueri, CurrentPage):
+async def getDataGomov(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         gomovv = await http.get(f'https://185.173.38.216/?s={kueri}', headers=headers)
         text = BeautifulSoup(gomovv.text, "lxml")
@@ -398,11 +402,15 @@ async def getDataGomov(msg, kueri, CurrentPage):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
+        extractbtn = []
         
         gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            gomovResult += "\n" if re.search(r"Series", i["genre"]) else f"<b>Extract:</b> <code>/gomov_scrap {i['link']}</code>\n\n"
+            if not re.search(r"Series", i["genre"]):
+                extractbtn.append(
+                    InlineButton(c, f"zonafilmextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                )
         IGNORE_CHAR = "[]"
         gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
         return gomovResult, PageLen
@@ -471,10 +479,12 @@ async def gomov_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data Gomov Web..", quote=True)
     CurrentPage = 1
-    gomovres, PageLen = await getDataGomov(pesan, kueri, CurrentPage)
+    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user,id)
     if not gomovres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -488,10 +498,12 @@ async def zonafilm_s(client, message):
         kueri = ""
     pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Zonafilm Web..", quote=True)
     CurrentPage = 1
-    zonafilmres, PageLen = await getDataZonafilm(pesan, kueri, CurrentPage)
+    zonafilmres, PageLen, btn = await getDataZonafilm(pesan, kueri, CurrentPage, message.from_user.id)
     if not zonafilmres: return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_zonafilm#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
@@ -844,12 +856,14 @@ async def gomovpage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        gomovres, PageLen = await getDataGomov(callback_query.message, kueri, CurrentPage)
+        gomovres, PageLen, btn = await getDataGomov(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_gomov#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -868,12 +882,14 @@ async def zonafilmpage_callback(client, callback_query):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     try:
-        zonafilmres, PageLen = await getDataZonafilm(callback_query.message, kueri, CurrentPage)
+        zonafilmres, PageLen, btn = await getDataZonafilm(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
     except TypeError:
         return
 
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, 'page_zonafilm#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
+    keyboard.row(*btn)
     keyboard.row(
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
@@ -1014,12 +1030,24 @@ async def melong_scrap(_, callback_query):
     await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{rep}", reply_markup=keyboard)
 
 # Scrape DDL Link Gomov & Zonafilm
-@app.on_message(filters.command(["gomov_scrap", "zonafilm_scrap"], COMMAND_HANDLER))
-async def gomov_zonafilm_dl(_, message):
+@app.on_callback_query(filters.create(lambda _, __, query: 'gomovextract#' in query.data))
+async def gomov_dl(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
     try:
-        link = message.text.split(" ", maxsplit=1)[1]
-        headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
 
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("↩️ Back", f"page_gomov#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
         entry = soup.find(class_="gmr-download-wrap clearfix")
@@ -1028,20 +1056,38 @@ async def gomov_zonafilm_dl(_, message):
             title = i.find("a").text
             link = i.find("a")["href"]
             hasil += f"\n{title}\n{link}\n"
-        await message.reply(
-            hasil,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close",
-                            callback_data=f"close#{message.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
-        )
-    except IndexError:
-        await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
     except Exception as err:
-        await message.reply(f"ERROR: {err}")
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{hasil}", reply_markup=keyboard)
+
+@app.on_callback_query(filters.create(lambda _, __, query: 'zonafilmextract#' in query.data))
+async def zonafilm_dl(_, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split('#')[4])
+    CurrentPage = int(callback_query.data.split('#')[1])
+    try:
+        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+    except KeyError:
+        return await callback_query.answer("Invalid callback data, please send CMD again..")
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton("↩️ Back", f"page_zonafilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+    )
+    try:
+        html = await http.get(link, headers=headers)
+        soup = BeautifulSoup(html.text, "lxml")
+        entry = soup.find(class_="gmr-download-wrap clearfix")
+        hasil = soup.find(class_="title-download").text
+        for i in entry.find(class_="list-inline gmr-download-list clearfix"):
+            title = i.find("a").text
+            link = i.find("a")["href"]
+            hasil += f"\n{title}\n{link}\n"
+    except Exception as err:
+        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        return
+    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{hasil}", reply_markup=keyboard)
