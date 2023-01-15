@@ -981,7 +981,6 @@ async def muviku_scrap(_, message):
         await message.reply(f"ERROR: {str(e)}")
 
 # Scrape DDL Link Melongmovie
-async def melong_scrap(_, message):
 @app.on_callback_query(filters.create(lambda _, __, query: 'melongextract#' in query.data))
 async def melong_scrap(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
