@@ -289,7 +289,7 @@ async def imdb_id_callback(bot, query):
         else:
             res_str += "\n"
         if duration := sop.select('li[data-testid="title-techspec_runtime"]'):
-            durasi = duration[0].find(class_="sc-8c396aa2-2 jwaBvf").text
+            durasi = duration[0].find(class_="ipc-metadata-list-item__content-container").text
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
         if r_json.get("contentRating"):
             res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
