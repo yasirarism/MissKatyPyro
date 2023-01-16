@@ -113,6 +113,8 @@ async def bypass(_, message):
                 reply_markup=markup,
                 disable_web_page_preview=True,
             )
-    else:
+    elif "we.tl" or "wetransfer.com" in url:
         data = wetransfer_bypass(url)
         await msg.edit(f"{data}\n\n{mention}")
+    else:
+        await msg.edit("Unsupported URL..")

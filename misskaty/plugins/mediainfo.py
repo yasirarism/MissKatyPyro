@@ -86,6 +86,7 @@ async def mediainfo(client, message):
                 await message.reply_document(
                     out_file,
                     caption=f"Hasil mediainfo anda..\n\n**Request by:** {message.from_user.mention}",
+                    thumb="img/thumb.jpg",
                     reply_markup=markup,
                 )
                 await process.delete()

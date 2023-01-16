@@ -54,7 +54,7 @@ async def upload(bot, message):
         await m.edit(output, reply_markup=btn)
     except Exception as e:
         await bot.send_message(message.chat.id, text=f"Something Went Wrong!\n\n{e}")
-    os.remove(sed)
+    os.remove(fileku)
 
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user(SUDO))

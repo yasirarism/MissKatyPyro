@@ -26,7 +26,7 @@ __HELP__ = """
 # Size Checker for Limit
 def humanbytes(size: int):
     """Convert Bytes To Bytes So That Human Can Read It"""
-    if not isinstance(command, int):
+    if not isinstance(size, int):
         try:
             size = size
         except ValueError:

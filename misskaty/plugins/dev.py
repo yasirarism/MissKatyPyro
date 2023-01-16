@@ -139,6 +139,7 @@ async def evaluation_cmd_t(_, m):
             document="MissKatyEval.txt",
             caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
             disable_notification=True,
+            thumb="img/thumb.jpg",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")

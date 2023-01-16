@@ -44,6 +44,7 @@ async def jsonify(_, message):
             caption=f"<code>{str(e)}</code>",
             disable_notification=True,
             reply_to_message_id=reply_to_id,
+            thumb="img/thumb.jpg",
             reply_markup=InlineKeyboardMarkup(
                 [
                     [
