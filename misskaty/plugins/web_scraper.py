@@ -852,7 +852,7 @@ async def kusonime_scrap(_, callback_query):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     data_kuso[link] = {"ph_url": tgh["url"]}
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{tgh['url']}", reply_markup=keyboard, disable_web_page_preview=False)
+    await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{tgh['url']}", reply_markup=keyboard, disable_web_page_preview=False)
 
 # Savefilm21 DDL
 @app.on_callback_query(filters.create(lambda _, __, query: 'sf21extract#' in query.data))
@@ -880,7 +880,7 @@ async def savefilm21_scrap(_, callback_query):
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{res}", reply_markup=keyboard)
+    await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{res}", reply_markup=keyboard)
 
 # Scrape DDL Link Nodrakor
 @app.on_message(filters.command(["nodrakor_scrap"], COMMAND_HANDLER))
@@ -950,7 +950,7 @@ async def melong_scrap(_, callback_query):
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{rep}", reply_markup=keyboard)
+    await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{rep}", reply_markup=keyboard)
 
 # Scrape DDL Link Gomov
 @app.on_callback_query(filters.create(lambda _, __, query: 'gomovextract#' in query.data))
@@ -982,7 +982,7 @@ async def gomov_dl(_, callback_query):
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{hasil}", reply_markup=keyboard)
+    await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{hasil}", reply_markup=keyboard)
 
 @app.on_callback_query(filters.create(lambda _, __, query: 'lendriveextract#' in query.data))
 async def lendrive_dl(_, callback_query):
@@ -1011,6 +1011,6 @@ async def lendrive_dl(_, callback_query):
                 continue
             kl += f"{i.find('strong')}:\n"
             kl += "".join(f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a"))
-        await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{kl}", reply_markup=keyboard)
+        await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{kl}", reply_markup=keyboard)
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
