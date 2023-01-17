@@ -3,6 +3,7 @@ import logging
 import re
 
 from bs4 import BeautifulSoup
+from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
@@ -18,7 +19,7 @@ from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
-from misskaty.helper.tools import get_random_string, search_jw
+from misskaty.helper.tools import get_random_string, search_jw, GENRES_EMOJI
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
@@ -271,46 +272,93 @@ async def imdb_id_callback(_, query):
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(
-            f"https://yasirapi.eu.org/imdb-page?url={url}",
+            url,
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
-        r_json = resp.json().get("result")
+        sop = BeautifulSoup(resp, "lxml")
+        r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("title"), "en_ID")
+        typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
-        if judul := r_json.get("title"):
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{r_json.get('year')}]</a>\n"
-        if aka := r_json.get("aka"):
+        if judul := r_json.get("name"):
+            try:
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
+            except:
+                tahun = "N/A"
+            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"
+        if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
             res_str += "\n"
-        if durasi := r_json.get("duration"):
+        if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
+            durasi = durasi[0].find(class_="ipc-metadata-list-item__content-container").text
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
-        if kategori := r_json.get("category"):
+        if kategori := r_json.get("contentRating"):
             res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
-        if rating := r_json.get("rating"):
-            res_str += f"<b>Peringkat:</b> <code>{GoogleTranslator('auto', 'id').translate(rating)}</code>\n"
-        if release := r_json.get("release_date"):
-            res_str += f"<b>Rilis:</b> {release}\n"
+        if rating := r_json.get("aggregateRating"):
+            res_str += f"<b>Peringkat:</b> <code>{rating['ratingValue']}⭐️ dari {rating['ratingCount']} pengguna</code>\n"
+        if release := sop.select('li[data-testid="title-details-releasedate"]'):
+            rilis = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+            rilis_url = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
+            res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if genre := r_json.get("genre"):
-            res_str += f"<b>Genre :</b> {genre}\n"
-        if negara := r_json.get("country"):
-            res_str += f"<b>Negara:</b> {negara}\n"
-        if bahasa := r_json.get("language"):
-            res_str += f"<b>Bahasa:</b> {bahasa}\n"
+            genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
+            genre = genre[:-2]
+            res_str += f"<b>Genre:</b> {genre}\n"
+        if negara := sop.select('li[data-testid="title-details-origin"]'):
+            country = "".join(
+                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
+                    for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
+            country = country[:-2]
+            res_str += f"<b>Negara:</b> {country}\n"
+        if bahasa := sop.select('li[data-testid="title-details-languages"]'):
+            language = "".join(
+                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
+                    for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
+            language = language[:-2]
+            res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
-        if director := r_json.get("director"):
+        if directors := r_json.get("director"):
+            director = ""
+            for i in directors:
+                name = i["name"]
+                url = i["url"]
+                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            director = director[:-2]
             res_str += f"<b>Sutradara:</b> {director}\n"
-        if creator := r_json.get("creator"):
+        if creators := r_json.get("creator"):
+            creator = ""
+            for i in creators:
+                if i["@type"] == "Person":
+                    name = i["name"]
+                    url = i["url"]
+                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
         if actors := r_json.get("actors"):
-            res_str += f"<b>Pemeran:</b> {actors}\n\n"
+            actor = ""
+            for i in actors:
+                name = i["name"]
+                url = i["url"]
+                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            actor = actors[:-2]
+            res_str += f"<b>Pemeran:</b> {actor}\n\n"
         if deskripsi := r_json.get("description"):
             summary = GoogleTranslator("auto", "id").translate(deskripsi)
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
-        if key_ := r_json.get("keyword"):
+        if keywd := r_json.get("keywords"):
+            keywords = keywd.split(",")
+            key_ = ""
+            for i in keywords:
+                i = i.replace(" ", "_").replace("-", "_")
+                key_ += f"#{i}, "
+            key_ = key_[:-2]
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
-        if award := r_json.get("awards"):
-            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(award)}</code>\n"
+        if award := sop.select('li[data-testid="award_information"]'):
+            awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
+            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n"
         else:
             res_str += "\n"
         if ott != "":
@@ -352,45 +400,92 @@ async def imdb_en_callback(bot, query):
     try:
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(
-            f"https://yasirapi.eu.org/imdb-page?url={url}",
+            url,
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
-        r_json = resp.json().get("result")
+        sop = BeautifulSoup(resp, "lxml")
+        r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("title"), "en_US")
+        typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
         if judul := r_json.get("title"):
-            res_str += f"<b>📹 Title:</b> <a href='{url}'>{judul} [{r_json.get('year')}]</a>\n"
-        if aka := r_json.get("aka"):
+            try:
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
+            except:
+                tahun = "N/A"
+            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"
+        if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
             res_str += "\n"
-        if durasi := r_json.get("duration"):
+        if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
+            durasi = durasi[0].find(class_="ipc-metadata-list-item__content-container").text
             res_str += f"<b>Duration:</b> <code>{durasi}</code>\n"
-        if kategori := r_json.get("category"):
+        if kategori := r_json.get("contentRating"):
             res_str += f"<b>Category:</b> <code>{kategori}</code> \n"
-        if rating := r_json.get("rating"):
-            res_str += f"<b>Rating:</b> <code>{rating}\n"
-        if release := r_json.get("release_date"):
-            res_str += f"<b>Release Data:</b> {release}\n"
+        if rating := r_json.get("aggregateRating"):
+            res_str += f"<b>Rating:</b> <code>{rating['ratingValue']}⭐️ from {rating['ratingCount']} users</code>\n"
+        if release := sop.select('li[data-testid="title-details-releasedate"]'):
+            rilis = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link").text
+            rilis_url = release[0].find(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")["href"]
+            res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
         if genre := r_json.get("genre"):
+            genre = "".join(f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, " if i in GENRES_EMOJI else f"#{i.replace('-', '_').replace(' ', '_')}, " for i in r_json["genre"])
+            genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
-        if country := r_json.get("country"):
+        if negara := sop.select('li[data-testid="title-details-origin"]'):
+            country = "".join(
+                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
+                    for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
+            country = country[:-2]
             res_str += f"<b>Country:</b> {country}\n"
-        if language := r_json.get("language"):
+        if bahasa := sop.select('li[data-testid="title-details-languages"]'):
+            language = "".join(
+                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
+                    for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
+            )
+            language = language[:-2]
             res_str += f"<b>Language:</b> {language}\n"
         res_str += "\n<b>🙎 Cast Info:</b>\n"
-        if director := r_json.get("director"):
+        if directors := r_json.get("director"):
+            director = ""
+            for i in directors:
+                name = i["name"]
+                url = i["url"]
+                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            director = director[:-2]
             res_str += f"<b>Director:</b> {director}\n"
-        if writer := r_json.get("creator"):
-            res_str += f"<b>Writer:</b> {writer}\n"
+        if creators := r_json.get("creator"):
+            creator = ""
+            for i in creators:
+                if i["@type"] == "Person":
+                    name = i["name"]
+                    url = i["url"]
+                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            creator = creator[:-2]
+            res_str += f"<b>Writer:</b> {creator}\n"
         if actors := r_json.get("actors"):
-            res_str += f"<b>Stars:</b> {actors}\n\n"
+            actor = ""
+            for i in actors:
+                name = i["name"]
+                url = i["url"]
+                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+            actor = actors[:-2]
+            res_str += f"<b>Stars:</b> {actor}\n\n"
         if description := r_json.get("description"):
             res_str += f"<b>📜 Summary: </b> <code>{description}</code>\n\n"
-        if key_ := r_json.get("keyword"):
+        if keywd := r_json.get("keywords"):
+            keywords = keywd.split(",")
+            key_ = ""
+            for i in keywords:
+                i = i.replace(" ", "_").replace("-", "_")
+                key_ += f"#{i}, "
+            key_ = key_[:-2]
             res_str += f"<b>🔥 Keywords:</b> {key_} \n"
-        if award := r_json.get("awards"):
-            res_str += f"<b>🏆 Awards:</b> <code>{award}</code>\n"
+        if award := sop.select('li[data-testid="award_information"]'):
+            awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
+            res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n"
         else:
             res_str += "\n"
         if ott != "":

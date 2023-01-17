@@ -436,16 +436,16 @@ async def imdb_inl(_, query):
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
-            ott = await search_jw(r_json["name"], "en_ID")
             r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
+            ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
-            type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
+            typee = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
             if r_json.get("name"):
                 try:
                     tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
                 except:
                     tahun = "N/A"
-                res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{type}</code>)\n"
+                res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
             else:
