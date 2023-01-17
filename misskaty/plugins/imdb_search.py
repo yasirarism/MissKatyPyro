@@ -23,7 +23,6 @@ from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
-IMDB_API = "https://imdb.yasirapi.eu.org/search"
 
 
 # IMDB Choose Language
@@ -105,8 +104,8 @@ async def imdb_search_id(kueri, message):
     buttons = InlineKeyboard(row_width=4)
     try:
         # https://yasirapi.eu.org/imdb-search?q=doraemon # Second API
-        r = await http.get(f"{IMDB_API}?query={kueri}")
-        res = json.loads(r.text).get("results")
+        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+        res = r.json().get("results")
         if not res:
             return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
         msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
@@ -150,8 +149,8 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"{IMDB_API}?query={kueri}")
-        res = json.loads(r.json()).get("results")
+        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+        res = r.json().get("results")
         if not res:
             return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
@@ -200,8 +199,8 @@ async def imdbcari_id(client, query):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"{IMDB_API}/search?query={kueri}")
-        res = json.loads(r.text).get("results")
+        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+        res = r.json().get("results")
         if not res:
             return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
         msg += f"🎬 Ditemukan ({len(res)}) hasil dari: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
@@ -239,8 +238,8 @@ async def imdbcari_en(client, query):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"{IMDB_API}/search?query={kueri}")
-        res = json.loads(r.text).get("results")
+        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+        res = r.json().get("results")
         if not res:
             return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
