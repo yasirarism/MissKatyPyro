@@ -337,7 +337,7 @@ async def imdb_id_callback(_, query):
                     creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
-        if actors := r_json.get("actors"):
+        if actors := r_json.get("actor"):
             actor = ""
             for i in actors:
                 name = i["name"]
@@ -466,7 +466,7 @@ async def imdb_en_callback(bot, query):
                     creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Writer:</b> {creator}\n"
-        if actors := r_json.get("actors"):
+        if actors := r_json.get("actor"):
             actor = ""
             for i in actors:
                 name = i["name"]
