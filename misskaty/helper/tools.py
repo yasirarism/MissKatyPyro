@@ -101,7 +101,10 @@ def get_provider(url):
 
 async def search_jw(movie_name: str, locale: str):
     m_t_ = ""
-    response = (await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")).json()
+    try:
+        response = (await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")).json()
+    except:
+        return m_t_
     if not response.get("results"):
         LOGGER.error("JustWatch API Error or got Rate Limited.")
         return m_t_
