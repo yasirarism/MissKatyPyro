@@ -338,13 +338,13 @@ async def imdb_id_callback(_, query):
             creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
         if actors := r_json.get("actor"):
-            actor = ""
+            actors = ""
             for i in actors:
                 name = i["name"]
                 url = i["url"]
                 actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
-            actor = actors[:-2]
-            res_str += f"<b>Pemeran:</b> {actor}\n\n"
+            actors = actors[:-2]
+            res_str += f"<b>Pemeran:</b> {actors}\n\n"
         if deskripsi := r_json.get("description"):
             summary = GoogleTranslator("auto", "id").translate(deskripsi)
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
@@ -467,13 +467,13 @@ async def imdb_en_callback(bot, query):
             creator = creator[:-2]
             res_str += f"<b>Writer:</b> {creator}\n"
         if actors := r_json.get("actor"):
-            actor = ""
+            actors = ""
             for i in actors:
                 name = i["name"]
                 url = i["url"]
                 actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
-            actor = actors[:-2]
-            res_str += f"<b>Stars:</b> {actor}\n\n"
+            actors = actors[:-2]
+            res_str += f"<b>Stars:</b> {actors}\n\n"
         if description := r_json.get("description"):
             res_str += f"<b>📜 Summary: </b> <code>{description}</code>\n\n"
         if keywd := r_json.get("keywords"):
