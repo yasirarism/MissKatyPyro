@@ -277,7 +277,7 @@ async def imdb_id_callback(_, query):
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
-        ott = await search_jw(r_json.get("name"), "en_ID")
+        ott = await search_jw(r_json.get("name"), "ID")
         typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
         if judul := r_json.get("name"):
@@ -406,7 +406,7 @@ async def imdb_en_callback(bot, query):
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
-        ott = await search_jw(r_json.get("name"), "en_US")
+        ott = await search_jw(r_json.get("name"), "US")
         typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
         if judul := r_json.get("name"):
