@@ -376,7 +376,7 @@ async def imdb_id_callback(_, query):
             )
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
-        if thumb := r_json.get("thumb"):
+        if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
@@ -504,7 +504,7 @@ async def imdb_en_callback(bot, query):
             )
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
-        if thumb := r_json.get("thumb"):
+        if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
