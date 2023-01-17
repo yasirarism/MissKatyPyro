@@ -518,7 +518,7 @@ async def imdb_inl(_, query):
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = award[0].find(class_="ipc-metadata-list-item__list-content-item").text
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
+                res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n"
             else:
                 res_str += "\n"
             if ott != "":

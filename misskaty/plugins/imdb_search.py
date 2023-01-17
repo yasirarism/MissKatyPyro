@@ -310,7 +310,7 @@ async def imdb_id_callback(_, query):
         if key_ := r_json.get("keyword"):
             res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
         if award := r_json.get("awards"):
-            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(award)}</code>\n\n"
+            res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(award)}</code>\n"
         else:
             res_str += "\n"
         if ott != "":
@@ -390,7 +390,7 @@ async def imdb_en_callback(bot, query):
         if key_ := r_json.get("keyword"):
             res_str += f"<b>🔥 Keywords:</b> {key_} \n"
         if award := r_json.get("awards"):
-            res_str += f"<b>🏆 Awards:</b> <code>{award}</code>\n\n"
+            res_str += f"<b>🏆 Awards:</b> <code>{award}</code>\n"
         else:
             res_str += "\n"
         if ott != "":
