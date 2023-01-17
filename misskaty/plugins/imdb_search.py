@@ -150,8 +150,8 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"{IMDB_API}/search?query={kueri}")
-        res = json.loads(r.text).get("results")
+        r = await http.get(f"{IMDB_API}?query={kueri}")
+        res = json.loads(r.json()).get("results")
         if not res:
             return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
