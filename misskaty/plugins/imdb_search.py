@@ -498,7 +498,7 @@ async def imdb_en_callback(bot, query):
                 [
                     [
                         InlineKeyboardButton("🎬 Open IMDB", url=url),
-                        InlineKeyboardButton("▶️ Trailer", url=trailer),
+                        InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
