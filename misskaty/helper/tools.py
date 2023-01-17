@@ -105,7 +105,7 @@ async def search_jw(movie_name: str, locale: str):
     soup = json.loads(response.text)
     items = soup["items"]
     for item in items:
-        if movie_name.lower() == item.get("title", "").lower():
+        if movie_name == item.get("title", ""):
             offers = item.get("offers", [])
             t_m_ = []
             for offer in offers:
