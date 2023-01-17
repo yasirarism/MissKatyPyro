@@ -369,13 +369,13 @@ async def imdb_id_callback(_, query):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=url),
+                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
@@ -497,13 +497,13 @@ async def imdb_en_callback(bot, query):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=url),
+                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
