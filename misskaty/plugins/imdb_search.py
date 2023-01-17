@@ -277,7 +277,7 @@ async def imdb_id_callback(_, query):
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
-        ott = await search_jw(r_json.get("title"), "en_ID")
+        ott = await search_jw(r_json.get("name"), "en_ID")
         typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
         if judul := r_json.get("name"):
@@ -337,9 +337,9 @@ async def imdb_id_callback(_, query):
                     creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
-        if actors := r_json.get("actor"):
+        if actor := r_json.get("actor"):
             actors = ""
-            for i in actors:
+            for i in actor:
                 name = i["name"]
                 url = i["url"]
                 actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
@@ -406,10 +406,10 @@ async def imdb_en_callback(bot, query):
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
-        ott = await search_jw(r_json.get("title"), "en_US")
+        ott = await search_jw(r_json.get("name"), "en_US")
         typee = f"<code>{r_json.get('@type', '')}</code>"
         res_str = ""
-        if judul := r_json.get("title"):
+        if judul := r_json.get("name"):
             try:
                 tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
             except:
@@ -466,9 +466,9 @@ async def imdb_en_callback(bot, query):
                     creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Writer:</b> {creator}\n"
-        if actors := r_json.get("actor"):
+        if actor := r_json.get("actor"):
             actors = ""
-            for i in actors:
+            for i in actor:
                 name = i["name"]
                 url = i["url"]
                 actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
