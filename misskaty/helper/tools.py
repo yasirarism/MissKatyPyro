@@ -3,6 +3,7 @@ import random
 import string
 import time
 import json
+import logging
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
 
@@ -12,6 +13,8 @@ from misskaty import BOT_NAME, UBOT_NAME, botStartTime
 from misskaty.helper.http import http
 from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins import ALL_MODULES
+
+LOGGER = logging.getLogger(__name__)
 
 GENRES_EMOJI = {
     "Action": "👊",
@@ -98,10 +101,11 @@ def get_provider(url):
 
 async def search_jw(movie_name: str, locale: str):
     m_t_ = ""
-    response = await http.get(f"https://justwatch.imdbot.workers.dev/?q={movie_name}&L={locale}".format(
-        q=movie_name,
-        L=locale
-    ))
+    try:
+        response = await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")
+    except Exception as err:
+        LOGGER.error("JustWatch API Error or got Rate Limited.")
+        return m_t_
     soup = json.loads(response.text)
     items = soup["items"]
     for item in items:
