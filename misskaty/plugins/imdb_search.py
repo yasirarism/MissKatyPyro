@@ -275,8 +275,8 @@ async def imdb_id_callback(_, query):
             f"https://yasirapi.eu.org/imdb-page?url={url}",
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
-        ott = await search_jw(r_json.get("title"), "en_ID")
         r_json = resp.json().get("result")
+        ott = await search_jw(r_json.get("title"), "en_ID")
         res_str = ""
         if judul := r_json.get("title"):
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{r_json.get('year')}]</a>\n"
@@ -315,7 +315,7 @@ async def imdb_id_callback(_, query):
         else:
             res_str += "\n"
         if ott != "":
-            res_str += f"\nAvailable On:\n{ott}\n"
+            res_str += f"\nTersedia di:\n{ott}\n"
         res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if trailer := r_json.get("trailer_url"):
             markup = InlineKeyboardMarkup(
