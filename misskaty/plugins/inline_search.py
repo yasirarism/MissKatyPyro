@@ -20,7 +20,7 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper.http import http
-from misskaty.helper.tools import GENRES_EMOJI
+from misskaty.helper.tools import GENRES_EMOJI, search_jw
 from misskaty.plugins.misc_tools import get_content
 from utils import demoji
 
@@ -360,7 +360,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             description = midb.get("q", "")
             stars = midb.get("s", "")
             imdb_url = f"https://imdb.com/title/{midb.get('id')}"
-            year = f"({midb.get('y')})" if midb.get("y") else ""
+            year = f"({midb.get('y', '')})"
             image_url = midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg") if midb.get("i") else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
@@ -436,6 +436,7 @@ async def imdb_inl(_, query):
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
+            ott = await search_jw(r_json["name"], "en_ID")
             r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
             res_str = ""
             type = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
@@ -520,6 +521,8 @@ async def imdb_inl(_, query):
                 res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n\n"
             else:
                 res_str += "\n"
+            if ott != "":
+                res_str += f"\nAvailable On:\n{ott}\n"
             res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]

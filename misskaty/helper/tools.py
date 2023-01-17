@@ -2,7 +2,9 @@ import os
 import random
 import string
 import time
+import json
 from http.cookies import SimpleCookie
+from urllib.parse import urlparse
 
 import psutil
 
@@ -82,3 +84,37 @@ async def rentry(teks):
         .json()
         .get("url")
     )
+
+def get_provider(url):
+
+    def pretty(names):
+        name = names[1]
+        if names[0] == "play":
+            name = "Google Play Movies"
+        return name.title()
+
+    netloc = urlparse(url).netloc
+    return pretty(netloc.split('.'))
+
+async def search_jw(movie_name: str, locale: str):
+    m_t_ = ""
+    response = await http.get(f"https://justwatch.imdbot.workers.dev/?q={movie_name}&L={locale}".format(
+        q=movie_name,
+        L=locale
+    ))
+    soup = json.loads(response.text)
+    items = soup["items"]
+    for item in items:
+        if movie_name.lower() == item.get("title", "").lower():
+            offers = item.get("offers", [])
+            t_m_ = []
+            for offer in offers:
+                url = offer.get("urls").get("standard_web")
+                if url not in t_m_:
+                    p_o = get_provider(url)
+                    m_t_ += f"<a href='{url}'>{p_o}</a> | "
+                t_m_.append(url)
+            if m_t_ != "":
+                m_t_ = m_t_[:-2].strip()
+            break
+    return m_t_

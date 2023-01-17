@@ -18,12 +18,12 @@ from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
-from misskaty.helper.tools import GENRES_EMOJI, get_random_string
+from misskaty.helper.tools import get_random_string, search_jw
 from misskaty.vars import COMMAND_HANDLER
-from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
+IMDB_API = "https://imdb.yasirapi.eu.org/search"
 
 
 # IMDB Choose Language
@@ -104,17 +104,18 @@ async def imdb_search_id(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r.text).get("result")
+        # https://yasirapi.eu.org/imdb-search?q=doraemon # Second API
+        r = await http.get(f"{IMDB_API}?query={kueri}")
+        res = json.loads(r.text).get("results")
         if not res:
             return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
         msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
-            title = movie.get("l")
-            year = f"({movie.get('y')})" if movie.get("y") else ""
-            type = movie.get("q").replace("feature", "movie").capitalize()
+            title = movie.get("title")
+            year = f"({movie.get('year', 'N/A')})"
+            typee = movie.get("type", 'N/A').capitalize()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {type}\n"
+            msg += f"{num}. {title} {year} - {typee}\n"
             BTN.append(
                 InlineKeyboardButton(
                     text=num,
@@ -149,17 +150,17 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r.text).get("result")
+        r = await http.get(f"{IMDB_API}/search?query={kueri}")
+        res = json.loads(r.text).get("results")
         if not res:
             return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
-            title = movie.get("l")
-            year = f"({movie.get('y')})" if movie.get("y") else ""
-            type = movie.get("q").replace("feature", "movie").capitalize()
+            title = movie.get("title")
+            year = f"({movie.get('year', 'N/A')})"
+            typee = movie.get("type", "N/A").capitalize()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {type}\n"
+            msg += f"{num}. {title} {year} - {typee}\n"
             BTN.append(
                 InlineKeyboardButton(
                     text=num,
@@ -199,17 +200,17 @@ async def imdbcari_id(client, query):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r.text).get("result")
+        r = await http.get(f"{IMDB_API}/search?query={kueri}")
+        res = json.loads(r.text).get("results")
         if not res:
             return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
         msg += f"🎬 Ditemukan ({len(res)}) hasil dari: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
         for num, movie in enumerate(res, start=1):
-            title = movie.get("l")
-            year = f"({movie.get('y')})" if movie.get("y") else ""
-            type = movie.get("q").replace("feature", "movie").capitalize()
+            title = movie.get("title")
+            year = f"({movie.get('year', 'N/A')})"
+            typee = movie.get("type", "N/A").capitalize()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {type}\n"
+            msg += f"{num}. {title} {year} - {typee}\n"
             BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_id#{uid}#{movieID}"))
         BTN.extend(
             (
@@ -238,17 +239,17 @@ async def imdbcari_en(client, query):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://yasirapi.eu.org/imdb-search?q={kueri}")
-        res = json.loads(r.text).get("result")
+        r = await http.get(f"{IMDB_API}/search?query={kueri}")
+        res = json.loads(r.text).get("results")
         if not res:
             return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
         for num, movie in enumerate(res, start=1):
-            title = movie.get("l")
-            year = f"({movie.get('y')})" if movie.get("y") else ""
-            type = movie.get("q").replace("feature", "movie").capitalize()
+            title = movie.get("title")
+            year = f"({movie.get('year', 'N/A')})"
+            typee = movie.get("type", "N/A").capitalize()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {type}\n"
+            msg += f"{num}. {title} {year} - {typee}\n"
             BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_en#{uid}#{movieID}"))
         BTN.extend(
             (
@@ -274,10 +275,11 @@ async def imdb_id_callback(_, query):
             f"https://yasirapi.eu.org/imdb-page?url={url}",
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
+        ott = await search_jw(r_json.get("title"), "en_ID")
         r_json = resp.json().get("result")
         res_str = ""
         if judul := r_json.get("title"):
-            res_str += f"<b>📹 Judul:</b> {judul}\n"
+            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{r_json.get('year')}]</a>\n"
         if aka := r_json.get("aka"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -312,6 +314,8 @@ async def imdb_id_callback(_, query):
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(award)}</code>\n\n"
         else:
             res_str += "\n"
+        if ott != "":
+            res_str += f"\nAvailable On:\n{ott}\n"
         res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if trailer := r_json.get("trailer_url"):
             markup = InlineKeyboardMarkup(
@@ -353,9 +357,10 @@ async def imdb_en_callback(bot, query):
             headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
         )
         r_json = resp.json().get("result")
+        ott = await search_jw(r_json.get("title"), "en_US")
         res_str = ""
         if judul := r_json.get("title"):
-            res_str += f"<b>📹 Title:</b> {judul}\n"
+            res_str += f"<b>📹 Title:</b> <a href='{url}'>{judul} [{r_json.get('year')}]</a>\n"
         if aka := r_json.get("aka"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -389,6 +394,8 @@ async def imdb_en_callback(bot, query):
             res_str += f"<b>🏆 Awards:</b> <code>{award}</code>\n\n"
         else:
             res_str += "\n"
+        if ott != "":
+            res_str += f"\nAvailable On:\n{ott}\n"
         res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
         if trailer := r_json.get("trailer_url"):
             markup = InlineKeyboardMarkup(
