@@ -101,14 +101,11 @@ def get_provider(url):
 
 async def search_jw(movie_name: str, locale: str):
     m_t_ = ""
-    try:
-        response = await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")
-    except Exception as err:
+    response = (await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")).json()
+    if not response.get("results"):
         LOGGER.error("JustWatch API Error or got Rate Limited.")
         return m_t_
-    soup = json.loads(response.text)
-    items = soup["items"]
-    for item in items:
+    for item in response.get("results")["items"]:
         if movie_name == item.get("title", ""):
             offers = item.get("offers", [])
             t_m_ = []
