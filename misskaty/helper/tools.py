@@ -94,6 +94,8 @@ def get_provider(url):
         name = names[1]
         if names[0] == "play":
             name = "Google Play Movies"
+        elif names[0] == "hbogoasia":
+            name = "HBOGo Asia"
         return name.title()
 
     netloc = urlparse(url).netloc
