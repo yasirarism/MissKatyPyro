@@ -50,7 +50,7 @@ async def imdb_choose(_, m):
     LIST_CARI[ranval] = kuery
     buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{m.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdcari#ind#{ranval}#{m.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{m.from_user.id}"),
     )
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{m.from_user.id}"))
