@@ -439,7 +439,7 @@ async def imdb_inl(_, query):
             r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
-            typee = f"<code>{r_json['@type']}</code>" if r_json.get("@type") else ""
+            typee = r_json.get('@type', '')
             if r_json.get("name"):
                 try:
                     tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text

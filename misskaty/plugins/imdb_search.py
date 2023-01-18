@@ -49,8 +49,8 @@ async def imdb_choose(_, m):
     ranval = get_random_string(4)
     LIST_CARI[ranval] = kuery
     buttons.row(
-        InlineButton("🇺🇸 English", f"imdbcari_en#{ranval}#{m.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdcari_id#{ranval}#{m.from_user.id}"),
+        InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{m.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"imdcari#ind#{ranval}#{m.from_user.id}"),
     )
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{m.from_user.id}"))
@@ -186,82 +186,78 @@ async def imdb_search_en(kueri, message):
         await k.edit_caption(f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
-@app.on_callback_query(filters.regex("^imdcari_id"))
-async def imdbcari_id(client, query):
+@app.on_callback_query(filters.regex("^imdcari"))
+async def imdbcari(client, query):
     BTN = []
-    i, msg, uid = query.data.split("#")
-    if query.from_user.id != int(uid):
-        return await query.answer("⚠️ Akses Ditolak!", True)
-    try:
-        kueri = LIST_CARI.get(msg)
-        del LIST_CARI[msg]
-    except KeyError:
-        return await query.message.edit_caption("⚠️ Callback Query Sudah Expired!")
-    await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
-    msg = ""
-    buttons = InlineKeyboard(row_width=4)
-    try:
-        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
-        res = r.json().get("results")
-        if not res:
-            return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
-        msg += f"🎬 Ditemukan ({len(res)}) hasil dari: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
-        for num, movie in enumerate(res, start=1):
-            title = movie.get("title")
-            year = f"({movie.get('year', 'N/A')})"
-            typee = movie.get("type", "N/A").capitalize()
-            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {typee}\n"
-            BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_id#{uid}#{movieID}"))
-        BTN.extend(
-            (
-                InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"),
-                InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+    i, lang, msg, uid = query.data.split("#")
+    if lang == "ind":
+        if query.from_user.id != int(uid):
+            return await query.answer("⚠️ Akses Ditolak!", True)
+        try:
+            kueri = LIST_CARI.get(msg)
+            del LIST_CARI[msg]
+        except KeyError:
+            return await query.message.edit_caption("⚠️ Callback Query Sudah Expired!")
+        await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
+        msg = ""
+        buttons = InlineKeyboard(row_width=4)
+        try:
+            r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+            res = r.json().get("results")
+            if not res:
+                return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
+            msg += f"🎬 Ditemukan ({len(res)}) hasil dari: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
+            for num, movie in enumerate(res, start=1):
+                title = movie.get("title")
+                year = f"({movie.get('year', 'N/A')})"
+                typee = movie.get("type", "N/A").capitalize()
+                movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+                msg += f"{num}. {title} {year} - {typee}\n"
+                BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_id#{uid}#{movieID}"))
+            BTN.extend(
+                (
+                    InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"),
+                    InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+                )
             )
-        )
-        buttons.add(*BTN)
-        await query.message.edit_caption(msg, reply_markup=buttons)
-    except Exception as err:
-        await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
-
-
-@app.on_callback_query(filters.regex("^imdbcari_en"))
-async def imdbcari_en(client, query):
-    BTN = []
-    i, msg, uid = query.data.split("#")
-    if query.from_user.id != int(uid):
-        return await query.answer("⚠️ Access Denied!", True)
-    try:
-        kueri = LIST_CARI.get(msg)
-        del LIST_CARI[msg]
-    except KeyError:
-        return await query.message.edit_caption("⚠️ Callback Query Expired!")
-    await query.message.edit_caption("<i>🔎 Looking in the IMDB Database..</i>")
-    msg = ""
-    buttons = InlineKeyboard(row_width=4)
-    try:
-        r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
-        res = r.json().get("results")
-        if not res:
-            return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
-        msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
-        for num, movie in enumerate(res, start=1):
-            title = movie.get("title")
-            year = f"({movie.get('year', 'N/A')})"
-            typee = movie.get("type", "N/A").capitalize()
-            movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
-            msg += f"{num}. {title} {year} - {typee}\n"
-            BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_en#{uid}#{movieID}"))
-        BTN.extend(
-            (
-                InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"),
-                InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+            buttons.add(*BTN)
+            await query.message.edit_caption(msg, reply_markup=buttons)
+        except Exception as err:
+            await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
+    else:
+        if query.from_user.id != int(uid):
+            return await query.answer("⚠️ Access Denied!", True)
+        try:
+            kueri = LIST_CARI.get(msg)
+            del LIST_CARI[msg]
+        except KeyError:
+            return await query.message.edit_caption("⚠️ Callback Query Expired!")
+        await query.message.edit_caption("<i>🔎 Looking in the IMDB Database..</i>")
+        msg = ""
+        buttons = InlineKeyboard(row_width=4)
+        try:
+            r = await http.get(f"https://imdb.yasirapi.eu.org/search?query={kueri}")
+            res = r.json().get("results")
+            if not res:
+                return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
+            msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
+            for num, movie in enumerate(res, start=1):
+                title = movie.get("title")
+                year = f"({movie.get('year', 'N/A')})"
+                typee = movie.get("type", "N/A").capitalize()
+                movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
+                msg += f"{num}. {title} {year} - {typee}\n"
+                BTN.append(InlineKeyboardButton(text=num, callback_data=f"imdbres_en#{uid}#{movieID}"))
+            BTN.extend(
+                (
+                    InlineKeyboardButton(text="🚩 Language", callback_data=f"imdbset#{uid}"),
+                    InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+                )
             )
-        )
-        buttons.add(*BTN)
-        await query.message.edit_caption(msg, reply_markup=buttons)
-    except Exception as err:
-        await query.message.edit_caption(f"Failed when requesting movies title @ IMDb\n\n<b>ERROR:</b> <code>{err}</code>")
+            buttons.add(*BTN)
+            await query.message.edit_caption(msg, reply_markup=buttons)
+        except Exception as err:
+            await query.message.edit_caption(f"Failed when requesting movies title @ IMDb\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
@@ -279,7 +275,7 @@ async def imdb_id_callback(_, query):
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "ID")
-        typee = f"<code>{r_json.get('@type', '')}</code>"
+        typee = r_json.get('@type', '')
         res_str = ""
         if judul := r_json.get("name"):
             try:
@@ -408,7 +404,7 @@ async def imdb_en_callback(bot, query):
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "US")
-        typee = f"<code>{r_json.get('@type', '')}</code>"
+        typee = r_json.get('@type', '')
         res_str = ""
         if judul := r_json.get("name"):
             try:

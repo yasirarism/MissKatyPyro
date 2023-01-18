@@ -96,6 +96,8 @@ def get_provider(url):
             name = "Google Play Movies"
         elif names[0] == "hbogoasia":
             name = "HBOGo Asia"
+        elif names[0] == "maxstream":
+            name = "MaxStream"
         return name.title()
 
     netloc = urlparse(url).netloc
