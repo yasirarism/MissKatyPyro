@@ -186,7 +186,7 @@ async def imdb_search_en(kueri, message):
         await k.edit_caption(f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
-@app.on_callback_query(filters.regex("^imdcari"))
+@app.on_callback_query(filters.regex("^imdbcari"))
 async def imdbcari(client, query):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
