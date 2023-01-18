@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters
+from pyrogram import filters, enums
 from pyrogram.errors import (
     MediaEmpty,
     MessageNotModified,
@@ -17,6 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedi
 
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from misskaty.helper.tools import get_random_string, search_jw, GENRES_EMOJI
@@ -378,14 +379,14 @@ async def imdb_id_callback(_, query):
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
         if thumb := r_json.get("image"):
             try:
-                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
+                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str), reply_markup=markup)
+                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except Exception:
-                await query.message.edit_caption(res_str, reply_markup=markup)
+                await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
-            await query.message.edit_caption(res_str, reply_markup=markup)
+            await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except MessageNotModified:
         pass
     except Exception as exc:
@@ -506,13 +507,13 @@ async def imdb_en_callback(bot, query):
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
         if thumb := r_json.get("image"):
             try:
-                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str), reply_markup=markup)
+                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str), reply_markup=markup)
+                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except Exception:
-                await query.message.edit_caption(res_str, reply_markup=markup)
+                await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
-            await query.message.edit_caption(res_str, reply_markup=markup)
+            await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except Exception as exc:
         await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")

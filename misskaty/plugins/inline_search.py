@@ -548,7 +548,7 @@ async def imdb_inl(_, query):
                         ]
                     ]
                 )
-            await query.edit_message_caption(res_str, reply_markup=markup)
+            await query.edit_message_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         except Exception:
             exc = traceback.format_exc()
             await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
