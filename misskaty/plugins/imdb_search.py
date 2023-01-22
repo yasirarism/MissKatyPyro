@@ -26,7 +26,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
-
+headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
 
 # IMDB Choose Language
 @app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
@@ -106,7 +106,7 @@ async def imdb_search_id(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json")
+        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
@@ -138,7 +138,7 @@ async def imdb_search_id(kueri, message):
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 async def imdb_search_en(kueri, message):
@@ -151,7 +151,7 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json")
+        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
@@ -183,7 +183,7 @@ async def imdb_search_en(kueri, message):
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
-        await k.edit_caption(f"Failed when requesting movies title.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbcari"))
@@ -202,7 +202,7 @@ async def imdbcari(client, query):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json")
+            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
@@ -223,7 +223,7 @@ async def imdbcari(client, query):
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
         except Exception as err:
-            await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb.\n\n<b>ERROR:</b> <code>{err}</code>")
+            await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
         if query.from_user.id != int(uid):
             return await query.answer("⚠️ Access Denied!", True)
@@ -236,7 +236,7 @@ async def imdbcari(client, query):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json")
+            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
@@ -257,7 +257,7 @@ async def imdbcari(client, query):
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
         except Exception as err:
-            await query.message.edit_caption(f"Failed when requesting movies title @ IMDb\n\n<b>ERROR:</b> <code>{err}</code>")
+            await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
@@ -270,7 +270,7 @@ async def imdb_id_callback(_, query):
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
+            headers=headers
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
@@ -399,7 +399,7 @@ async def imdb_en_callback(bot, query):
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(
             url,
-            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"},
+            headers=headers
         )
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
