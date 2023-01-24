@@ -103,7 +103,7 @@ async def nekopaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        x = await http.post("https://nekobin.com/api/documents", json={"content": data})
+        x = (await http.post("https://nekobin.com/api/documents", json={"content": data})).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:
         await msg.edit(f"ERROR: {e}")
@@ -161,7 +161,7 @@ async def spacebinn(_, message):
 
     try:
         siteurl = "https://spaceb.in/api/v1/documents/"
-        response = await http.post(siteurl, data={"content": data, "extension": 'txt'} )
+        response = await http.post(siteurl, data={"content": data, "extension": 'txt'})
         response = response.json()
         url = "https://spaceb.in/"+response['payload']['id']
     except Exception as e:
