@@ -29,7 +29,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         extractbtn = []
         pypiResult = f"<b>#Pypi Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(PYPI_DICT[msg.id][0][index], start=1):
-            pypiResult += f"<b>{c}. <a href='{i['url']} {i['version']}'>{i['name']}</a></b>\n<b>Created:</b> <code>{i['created']}</code>\n<b>Desc:</b> <code>{i['description']}</code>\n\n"
+            pypiResult += f"<b>{c}.</b> <a href='{i['url']}'>{i['name']} {i['version']}</a>\n<b>Created:</b> <code>{i['created']}</code>\n<b>Desc:</b> <code>{i['description']}</code>\n\n"
             extractbtn.append(
                 InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}")
             )
@@ -107,4 +107,4 @@ async def pypi_getdata(_, callback_query):
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, res, reply_markup=keyboard)
+    await editPesan(callback_query.message, msg, reply_markup=keyboard)
