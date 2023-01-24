@@ -87,12 +87,12 @@ async def download(client, message):
         c_time = time.time()
         while not downloader.isFinished():
             total_length = downloader.filesize or None
-            downloaded = downloader.get_dl_size()
+            downloaded = downloader.get_dl_size(human=True)
             display_message = ""
             now = time.time()
             diff = now - c_time
             percentage = downloader.get_progress() * 100
-            speed = downloader.get_speed()
+            speed = downloader.get_speed(human=True)
             round(diff) * 1000
             progress_str = "[{0}{1}]\nProgress: {2}%".format(
                 "".join(["█" for _ in range(math.floor(percentage / 5))]),
@@ -133,7 +133,7 @@ async def tiktokdl(client, message):
     try:
         r = (await http.get(f"https://api.hayo.my.id/api/tiktok/4?url={link}")).json()
         await message.reply_video(
-            r["linkori"],
+            r["linkhd"],
             caption=f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()

@@ -8,6 +8,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
 from .web_scraper import SCRAP_DICT, data_kuso
+from .pypi_search import PYPI_DICT
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.time_gap import check_time_gap
 
@@ -105,10 +106,12 @@ async def request_user(client, message):
         pass
 
 
+# To reduce cache
 async def clear_reqdict():
     SCRAP_DICT.clear()
     data_kuso.clear()
     REQUEST_DB.clear()
+    PYPI_DICT.clear()
 
 
 # @app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
