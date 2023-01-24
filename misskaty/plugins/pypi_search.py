@@ -103,7 +103,21 @@ async def pypi_getdata(_, callback_query):
     try:
         html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
         res = html.json()
-        msg = res["info"]["keywords"]
+        requirement = "".join(f"{i}, " for i in res.get("requires_dist", "Unknown"))
+        msg = ""
+        msg = f"<b>Package Name:</b> {res['info'].get('name')}\n"
+        msg = f"<b>Version:</b> {res['info'].get('version', 'Unknown')}\n"
+        msg = f"<b>License:</b> {res['info'].get('license', 'Unknown')}\n"
+        msg = f"<b>Author:</b> {res['info'].get('author', 'Unknown')}\n"
+        msg = f"<b>Author Email:</b> {res['info'].get('author_email', 'Unknown')}\n"
+        msg = f"<b>Requirements:</b> {requirement}\n"
+        msg = f"<b>Requires Python:</b> {res['info'].get('requires_python', 'Unknown')}\n"
+        msg = f"<b>HomePage:</b> {res['info'].get('home_page', 'Unknown')}\n"
+        msg = f"<b>Bug Track:</b> {res['info'].get('vulnerabilities', 'Unknown')}\n"
+        msg = f"<b>Docs Url:</b> {res['info']['project_urls'].get('Documentation', 'Unknown')}\n"
+        msg = f"<b>Description:</b> {res['info'].get('summary', 'Unknown')}\n"
+        msg = f"<b>Pip Command:</b> pip3 install {res['info'].get('name')}\n"
+        msg = f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
     except Exception as err:
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
