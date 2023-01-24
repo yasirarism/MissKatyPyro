@@ -114,7 +114,8 @@ async def pypi_getdata(_, callback_query):
         msg += f"<b>Requires Python:</b> {res['info'].get('requires_python', 'Unknown')}\n"
         msg += f"<b>HomePage:</b> {res['info'].get('home_page', 'Unknown')}\n"
         msg += f"<b>Bug Track:</b> {res['info'].get('vulnerabilities', 'Unknown')}\n"
-        msg += f"<b>Docs Url:</b> {res['info'].get('project_urls', 'Unknown').get('Documentation', 'Unknown')}\n"
+        if res['info'].get('project_urls'):
+            msg += f"<b>Docs Url:</b> {res['info']['project_urls'].get('Documentation', 'Unknown')}\n"
         msg += f"<b>Description:</b> {res['info'].get('summary', 'Unknown')}\n"
         msg += f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
