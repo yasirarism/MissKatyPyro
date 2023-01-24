@@ -103,7 +103,7 @@ async def pypi_getdata(_, callback_query):
     try:
         html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
         res = html.json()
-        requirement = "".join(f"{i}, " for i in res.get("requires_dist", "Unknown"))
+        requirement = "".join(f"{i}, " for i in res["info"].get("requires_dist")) if res["info"].get("requires_dist") else "Unknown"
         msg = ""
         msg += f"<b>Package Name:</b> {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Version:</b> {res['info'].get('version', 'Unknown')}\n"
