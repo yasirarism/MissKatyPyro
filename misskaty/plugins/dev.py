@@ -151,6 +151,20 @@ async def evaluation_cmd_t(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
 
+# Update and restart bot
+@app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
+async def update_restart(_, message):
+    try:
+        out = (await shell_exec("git pull"))[0]
+        if "Already up to date." in str(out):
+            return await message.reply_text("Its already up-to date!")
+        await message.reply_text(f"```{out}```")
+    except Exception as e:
+        return await message.reply_text(str(e))
+    await message.reply_text(
+        "**Updated with default branch, restarting now.**"
+    )
+    os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 async def aexec(code, c, m):
     exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))
