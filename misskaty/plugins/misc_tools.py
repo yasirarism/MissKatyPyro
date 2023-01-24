@@ -9,6 +9,7 @@
 import json
 import os
 import time
+import asyncio
 import traceback
 from datetime import datetime
 from logging import getLogger
@@ -304,7 +305,13 @@ async def close_callback(bot: Client, query: CallbackQuery):
     i, userid = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
+    await query.answer("Deleting this message in 5 seconds.")
+    await asyncio.sleep(5)
     await query.message.delete()
+    try:
+        await query.message.reply_to_message.delete()
+    except:
+        pass
 
 
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
