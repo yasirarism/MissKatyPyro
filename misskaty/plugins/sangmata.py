@@ -39,7 +39,7 @@ async def cek_mataa(_, m):
 )
 async def set_mataa(_, m):
     if len(m.command) == 1:
-        return m.reply(f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")
+        return await m.reply(f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")
     if m.command[1] == "on":
         cekset = await is_sangmata_on(m.chat.id)
         if cekset:
