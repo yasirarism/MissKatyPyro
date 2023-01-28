@@ -83,14 +83,15 @@ async def mediainfo(client, message):
             except Exception:
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
-            body_text = f"""
-                         <code>{output}</code>
-                         """
             if CUSTOM_VIEW and GH_TOKEN is not None:
+                body_text = f"<code style='color:#22c1c3;'>{output}</code>"
                 link = await getMediaWeb(title, body_text)
                 if not link:
                     return await message.reply("Failed to post mediainfo result.")
             else:
+                body_text = f"""
+                    <pre>{output}</pre>
+                    """
                 link = post_to_telegraph(title, body_text)
             # siteurl = "https://spaceb.in/api/v1/documents/"
             # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
