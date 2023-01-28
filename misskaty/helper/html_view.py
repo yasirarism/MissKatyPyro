@@ -29,7 +29,6 @@ hmtl_content = """
             background-color: #0D1117;
         }
         .container {
-            margin: 0vh 1vw;
             margin-bottom: 1vh;
             padding: 1vh 3vw;
             display: list-item;
