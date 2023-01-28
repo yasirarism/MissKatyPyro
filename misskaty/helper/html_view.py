@@ -1,7 +1,7 @@
 import base64, json, os
 from .tools import get_random_string
 from .http import http
-from misskaty import GH_TOKEN
+from misskaty.vars import GH_TOKEN
 
 hmtl_content = """
 <html lang="en">

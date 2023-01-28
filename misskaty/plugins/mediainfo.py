@@ -15,11 +15,11 @@ from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app, DL_TASK, CUSTOM_VIEW, GH_TOKEN
+from misskaty import app, DL_TASK
 from misskaty.helper.html_view import getMediaWeb
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
 from misskaty.helper.pyro_progress import progress_for_pyrogram
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, CUSTOM_VIEW, GH_TOKEN
 from utils import get_file_id
 
 
