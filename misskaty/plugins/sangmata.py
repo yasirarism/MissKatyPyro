@@ -9,9 +9,8 @@ from database.sangmata_db import *
 )
 async def cek_mataa(_, m):
     await m.reply("aaaa")
-    if not cek_userdata(m.from_user.id):
-        await add_userdata(m.from_user.id, m.from_user.username)
-        return
+    if not await cek_userdata(m.from_user.id):
+        return await add_userdata(m.from_user.id, m.from_user.username)
     username = await get_userdata(m.from_user.id)
     if username != m.from_user.username:
         await m.reply(f"{m.from_user.mention} mengganti username dari {username} menjadi {m.from_user.username}")
