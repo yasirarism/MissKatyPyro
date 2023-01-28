@@ -158,11 +158,11 @@ async def update_restart(_, message):
         out = (await shell_exec("git pull"))[0]
         if "Already up to date." in str(out):
             return await message.reply_text("Its already up-to date!")
-        await message.reply_text(f"```{out}```")
+        await message.reply_text(f"<code>{out}</code>")
     except Exception as e:
         return await message.reply_text(str(e))
     await message.reply_text(
-        "**Updated with default branch, restarting now.**"
+        "<b>Updated with default branch, restarting now.</b>"
     )
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 

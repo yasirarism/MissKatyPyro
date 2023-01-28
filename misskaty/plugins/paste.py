@@ -19,7 +19,8 @@ from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Paste"
 __HELP__ = """
-/paste [Text/Reply To Message] - Post text to Spacebin.
+/paste [Text/Reply To Message] - Post text to My Pastebin.
+/sbin [Text/Reply To Message] - Post text to Spacebin.
 /neko [Text/Reply To Message] - Post text to Nekobin.
 /rentry [Text/Reply To Message] - Post text to Rentry using markdown style.
 /temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
@@ -61,6 +62,71 @@ def humanbytes(size: int):
 
 # Pattern if extension supported, PR if want to add more
 pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip$")
+
+# Default Paste to Wastebin using Deta
+@app.on_message(filters.command(["paste"], COMMAND_HANDLER))
+async def wastepaste(_, message):
+    reply = message.reply_to_message
+    target = str(message.command[0]).split("@", maxsplit=1)[0]
+    if not reply and len(message.command) < 2:
+        return await message.reply_text(f"**Reply To A Message With /{target} or with command**")
+
+    msg = await message.reply_text("`Pasting to Wastebin...`")
+    data = ""
+    limit = 1024 * 1024
+    if reply and reply.document:
+        if reply.document.file_size > limit:
+            return await msg.edit(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+        if not pattern.search(reply.document.mime_type):
+            return await msg.edit("**Only text files can be pasted.**")
+        file = await reply.download()
+        try:
+            with open(file, "r") as text:
+                data = text.read()
+            remove(file)
+        except UnicodeDecodeError:
+            try:
+                remove(file)
+            except:
+                pass
+            return await msg.edit("`File Not Supported !`")
+    elif reply and (reply.text or reply.caption):
+        data = reply.text.markdown or reply.caption.markdown
+    elif not reply and len(message.command) >= 2:
+        data = message.text.split(None, 1)[1]
+
+    if message.from_user:
+        if message.from_user.username:
+            uname = f"@{message.from_user.username}"
+        else:
+            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+    else:
+        uname = message.sender_chat.title
+
+    try:
+        json_data = {
+            "content": data,
+            "highlighting_language": "auto",
+            "ephemeral": False,
+            "expire_at": 0,
+            "expire_in": 0,
+            "date_created": 0,
+        }
+        response = await http.post('https://yasirbin.deta.dev/api/new', json=json_data)
+        url = f"https://yasirbin.deta.dev/{response.json()['id']}"
+    except Exception as e:
+        await msg.edit(f"ERROR: {e}")
+        return
+
+    if not url:
+        return await msg.edit("Text Too Short Or File Problems")
+    button = [
+        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+    ]
+
+    pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 # Nekobin Paste
 @app.on_message(filters.command(["neko"], COMMAND_HANDLER))
@@ -116,11 +182,11 @@ async def nekopaste(_, message):
         [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
     ]
 
-    pasted = f"**Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
-# Default as spacebin
-@app.on_message(filters.command(["paste"], COMMAND_HANDLER))
+# Paste as spacebin
+@app.on_message(filters.command(["sbin"], COMMAND_HANDLER))
 async def spacebinn(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]

@@ -1,4 +1,5 @@
 import json
+import re
 import traceback
 from sys import platform
 from sys import version as pyver
@@ -137,6 +138,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         userr = inline_query.query.split(None, 1)[1].strip()
+        if "t.me" in userr:
+            r = re.search(r"t.me/(\w+)", userr)
+            userr = r[1]
         try:
             diaa = await app.get_users(userr)
         except Exception:  # pylint: disable=broad-except
@@ -152,7 +156,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             msg += f"<b>🌏 DC:</b> {diaa.dc_id}\n"
         msg += f"<b>✨ Premium:</b> {diaa.is_premium}\n"
         msg += f"<b>⭐️ Verified:</b> {diaa.is_verified}\n"
-        msg += f"<b>🤖 Verified:</b> {diaa.is_bot}\n"
+        msg += f"<b>🤖 Bot:</b> {diaa.is_bot}\n"
         if diaa.language_code:
             msg += f"<b>🇮🇩 Language:</b> {diaa.language_code}"
         results = [
