@@ -71,7 +71,7 @@ async def wastepaste(_, message):
     if not reply and len(message.command) < 2:
         return await message.reply_text(f"**Reply To A Message With /{target} or with command**")
 
-    msg = await message.reply_text("`Pasting to Wastebin...`")
+    msg = await message.reply_text("`Pasting to YasirBin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
@@ -125,7 +125,7 @@ async def wastepaste(_, message):
         [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
     ]
 
-    pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"**Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 # Nekobin Paste

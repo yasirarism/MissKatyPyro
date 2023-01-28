@@ -8,14 +8,14 @@
 import os
 import time
 import traceback
-from asyncio import gather, sleep
+from asyncio import gather, sleep, Lock
 from logging import getLogger
 from shutil import rmtree
 
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait
 
-from misskaty import BOT_USERNAME, app
+from misskaty import BOT_USERNAME, DL_TASK, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.ffmpeg_helper import genss_link, take_ss
 from misskaty.helper.pyro_progress import progress_for_pyrogram
@@ -41,9 +41,13 @@ async def genss(client, message):
         if media is None:
             return await message.reply("Reply to a Telegram Video or document as video to generate screenshoot!")
         process = await message.reply_text("`Processing, please wait..`")
+        if not DL_TASK.get(message.from_user.id):
+            DL_TASK[message.from_user.id] = Lock()
+
+        if DL_TASK[message.from_user.id].locked():
+            return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
         c_time = time.time()
-        the_real_download_location = await client.download_media(
-            message=message.reply_to_message,
+        the_real_download_location = await replied.download(
             progress=progress_for_pyrogram,
             progress_args=("Trying to download, please wait..", process, c_time),
         )
@@ -82,6 +86,7 @@ async def genss(client, message):
                     f"☑️ Uploaded [1] screenshoot.\n\n{message.from_user.first_name} (<code>{message.from_user.id}</code>)\n#️⃣ #ssgen #id{message.from_user.id}\n\nSS Generate by @{BOT_USERNAME}",
                     reply_to_message_id=message.id,
                 )
+                del DL_TASK[message.from_user.id]
                 await process.delete()
                 try:
                     os.remove(images)
@@ -91,6 +96,7 @@ async def genss(client, message):
             except Exception:
                 exc = traceback.format_exc()
                 await message.reply(f"Gagal generate screenshot.\n\n{exc}")
+                del DL_TASK[message.from_user.id]
                 try:
                     os.remove(images)
                     os.remove(the_real_download_location)

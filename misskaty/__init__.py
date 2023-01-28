@@ -15,6 +15,7 @@ getLogger("pyrogram").setLevel(ERROR)
 MOD_LOAD = []
 MOD_NOLOAD = []
 HELPABLE = {}
+DL_TASK = {}
 cleanmode = {}
 botStartTime = time.time()
 

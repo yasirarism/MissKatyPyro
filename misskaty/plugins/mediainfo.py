@@ -15,7 +15,7 @@ from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app
+from misskaty import app, DL_TASK
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
@@ -28,17 +28,18 @@ async def mediainfo(client, message):
         process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
-            await process.edit_text("Balas ke format media yang valid")
-            return
+            return await process.edit_text("Balas ke format media yang valid")
+        if not DL_TASK.get(message.from_user.id):
+            DL_TASK[message.from_user.id] = asyncio.Lock()
+
+        if DL_TASK[message.from_user.id].locked():
+            return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
+       
         c_time = time.time()
-        try:
-            file_path = await client.download_media(
-                message=message.reply_to_message,
-                progress=progress_for_pyrogram,
-                progress_args=("trying to download, sabar yakk..", process, c_time),
-            )
-        except Exception as err:
-            return await message.reply(f"Failed to download media. Err detail -> {err}")
+        file_path = await message.reply_to_message.download(
+            progress=progress_for_pyrogram,
+            progress_args=("trying to download, sabar yakk..", process, c_time),
+        )
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
@@ -54,9 +55,10 @@ async def mediainfo(client, message):
         link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
         try:
-            await message.reply("ℹ️ **MEDIA INFO**", reply_markup=markup, quote=True)
+            await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
         except FloodWait as f:
             await asyncio.sleep(f.value)
+        del DL_TASK[message.from_user.id]
         await process.delete()
         try:
             osremove(file_path)
