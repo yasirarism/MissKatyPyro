@@ -52,7 +52,7 @@ async def mediainfo(client, message):
     """
         title = "MissKaty Bot Mediainfo"
         text_ = file_info.message_type
-        ink = post_to_telegraph(title, body_text)
+        link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
         try:
             await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
