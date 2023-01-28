@@ -40,6 +40,8 @@ SUDO = list(
 )
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
 NIGHTMODE = environ.get("NIGHTMODE", False)
+CUSTOM_VIEW = environ.get("CUSTOM_VIEW", False)
+GH_TOKEN = environ.get("GH_TOKEN", None)
 OPENAI_API = getConfig("OPENAI_API")
 
 ## Config For AUtoForwarder

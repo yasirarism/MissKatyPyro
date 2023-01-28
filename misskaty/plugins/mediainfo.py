@@ -15,7 +15,8 @@ from pyrogram import filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app, DL_TASK
+from misskaty import app, DL_TASK, CUSTOM_VIEW, GH_TOKEN
+from misskaty.helper.html_view import getMediaWeb
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
@@ -29,12 +30,11 @@ async def mediainfo(client, message):
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             return await process.edit_text("Balas ke format media yang valid")
-        async with DL_TASK:
-            if not DL_TASK.get(message.from_user.id):
-                DL_TASK[message.from_user.id] = asyncio.Lock()
-
-            if DL_TASK.get(message.from_user.id):
-                return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
+        
+        if DL_TASK.get(message.from_user.id):
+            return await process.edit("Sorry to avoid flood and error, bot only process one task per user at a time.")
+        if not DL_TASK.get(message.from_user.id):
+            DL_TASK[message.from_user.id] = 1
         
         c_time = time.time()
         file_path = await message.reply_to_message.download(
@@ -53,7 +53,10 @@ async def mediainfo(client, message):
     """
         title = "MissKaty Bot Mediainfo"
         text_ = file_info.message_type
-        link = post_to_telegraph(title, body_text)
+        if CUSTOM_VIEW and GH_TOKEN is not None:
+            link = await getMediaWeb(title, body_text)
+        else:
+            link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
         try:
             await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
@@ -78,12 +81,15 @@ async def mediainfo(client, message):
                          <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
                          <pre>{output}</pre>
                          """
-            tgraph = post_to_telegraph(title, body_text)
+            if CUSTOM_VIEW and GH_TOKEN is not None:
+                link = await getMediaWeb(title, body_text)
+            else:
+                link = post_to_telegraph(title, body_text)
             # siteurl = "https://spaceb.in/api/v1/documents/"
             # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
             # response = response.json()
             # spacebin = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=tgraph)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=link)]])
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(

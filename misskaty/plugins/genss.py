@@ -41,11 +41,11 @@ async def genss(client, message):
         if media is None:
             return await message.reply("Reply to a Telegram Video or document as video to generate screenshoot!")
         process = await message.reply_text("`Processing, please wait..`")
-        if DL_TASK.get(message.from_user.id):
-            return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
         
+        if DL_TASK.get(message.from_user.id):
+            return await process.edit("Sorry to avoid flood and error, bot only process one task per user at a time.")
         if not DL_TASK.get(message.from_user.id):
-            DL_TASK[message.from_user.id] = 1
+            DL_TASK[message.from_user.id] = True
 
         c_time = time.time()
         the_real_download_location = await replied.download(
