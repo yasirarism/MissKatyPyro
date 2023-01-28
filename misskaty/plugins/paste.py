@@ -91,15 +91,15 @@ async def wastepaste(_, message):
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        data = reply.text.markdown or reply.caption.markdown
+        data = reply.text.html or reply.caption.html
     elif not reply and len(message.command) >= 2:
         data = message.text.split(None, 1)[1]
 
     if message.from_user:
         if message.from_user.username:
-            uname = f"@{message.from_user.username}"
+            uname = f"@{message.from_user.username} [{message.from_user.id}]"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) [{message.from_user.id}]"
     else:
         uname = message.sender_chat.title
 
@@ -156,7 +156,7 @@ async def nekopaste(_, message):
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        data = reply.text.markdown or reply.caption.markdown
+        data = reply.text.html or reply.caption.html
     elif not reply and len(message.command) >= 2:
         data = message.text.split(None, 1)[1]
 
@@ -213,7 +213,7 @@ async def spacebinn(_, message):
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        data = reply.text.markdown or reply.caption.markdown
+        data = reply.text.html or reply.caption.html
     elif not reply and len(message.command) >= 2:
         data = message.text.split(None, 1)[1]
 
