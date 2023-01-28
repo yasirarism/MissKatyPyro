@@ -139,7 +139,7 @@ async def postToWeb(file, name):
 
     data = {"message":"Added new HTML File","committer":{"name":"Yasir Aris M","email":"mail@yasir.eu.org"},"content": f"{fpath.decode('ascii')}"}
 
-    response = await http.put(f"https://api.github.com/repos/yasirarism/HTMLPaste/contents/{name}", headers=headers, data=json.dumps(data))
+    response = await http.put(f"https://api.github.com/repos/yasirarism/HTMLPaste/contents/{name}.html", headers=headers, data=json.dumps(data))
     return f"https://yasirarism.github.io/HTMLPaste/{name}"
 
 async def getMediaWeb(title, text):
@@ -153,6 +153,9 @@ async def getMediaWeb(title, text):
                               f"<div>{text}</div></span>"
     with open(f"{fname}.html", 'w', encoding='utf-8') as f:
         f.write(hmtl_content.replace('{fileName}', f"{fname}.html").replace('{msg}', mssg))
-    res = await postToWeb(f"{fname}.html", fname)
-    os.remove(f"{fname}.html")
-    return res
+    try:
+        res = await postToWeb(f"{fname}.html", fname)
+        os.remove(f"{fname}.html")
+        return res
+    except:
+        return None

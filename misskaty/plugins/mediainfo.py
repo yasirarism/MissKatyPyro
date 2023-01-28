@@ -55,6 +55,12 @@ async def mediainfo(client, message):
         text_ = file_info.message_type
         if CUSTOM_VIEW and GH_TOKEN is not None:
             link = await getMediaWeb(title, body_text)
+            if not link:
+                try:
+                    osremove(file_path)
+                except:
+                    pass
+                return await message.reply("Failed to post mediainfo result.")
         else:
             link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
@@ -83,6 +89,8 @@ async def mediainfo(client, message):
                          """
             if CUSTOM_VIEW and GH_TOKEN is not None:
                 link = await getMediaWeb(title, body_text)
+                if not link:
+                    return await message.reply("Failed to post mediainfo result.")
             else:
                 link = post_to_telegraph(title, body_text)
             # siteurl = "https://spaceb.in/api/v1/documents/"
