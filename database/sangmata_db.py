@@ -20,7 +20,7 @@ async def is_sangmata_on(chat_id: int) -> bool:
     return bool(chat)
 
 async def sangmata_on(chat_id: int) -> bool:
-    await matadb.update_one({"chat_id_toggle": chat_id})
+    await matadb.insert_one({"chat_id_toggle": chat_id})
 
 async def sangmata_off(chat_id: int):
     await matadb.delete_one({"chat_id_toggle": chat_id})
