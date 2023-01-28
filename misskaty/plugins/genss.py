@@ -8,7 +8,7 @@
 import os
 import time
 import traceback
-from asyncio import gather, sleep, Lock
+from asyncio import gather, sleep
 from logging import getLogger
 from shutil import rmtree
 
@@ -41,12 +41,11 @@ async def genss(client, message):
         if media is None:
             return await message.reply("Reply to a Telegram Video or document as video to generate screenshoot!")
         process = await message.reply_text("`Processing, please wait..`")
-        async with Lock():
-            if not DL_TASK.get(message.from_user.id):
-                DL_TASK[message.from_user.id] = Lock()
+        if not DL_TASK.get(message.from_user.id):
+            DL_TASK[message.from_user.id] = True
 
-            if DL_TASK.get(message.from_user.id).unlocked:
-                return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
+        if DL_TASK.get(message.from_user.id):
+            return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
         c_time = time.time()
         the_real_download_location = await replied.download(
             progress=progress_for_pyrogram,
