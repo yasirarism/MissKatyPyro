@@ -69,7 +69,7 @@ async def mediainfo(client, message):
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
-                output = await runcmd(f'mediainfo "{link}"')[0]
+                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
             except Exception:
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
