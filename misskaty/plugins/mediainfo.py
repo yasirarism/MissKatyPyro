@@ -85,7 +85,7 @@ async def mediainfo(client, message):
             title = "MissKaty Bot Mediainfo"
             if CUSTOM_VIEW and GH_TOKEN is not None:
                 body_text = f"""
-                    {output}
+                   <pre>{output}</pre>
                    """
                 link = await getMediaWeb(title, body_text)
                 if not link:
