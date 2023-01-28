@@ -19,7 +19,7 @@ from misskaty import app, DL_TASK
 from misskaty.helper.html_view import getMediaWeb
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
 from misskaty.helper.pyro_progress import progress_for_pyrogram
-from misskaty.vars import COMMAND_HANDLER, CUSTOM_VIEW, GH_TOKEN
+from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
 
@@ -83,18 +83,10 @@ async def mediainfo(client, message):
             except Exception:
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
-            if CUSTOM_VIEW and GH_TOKEN is not None:
-                body_text = f"""
-                   <pre>{output}</pre>
-                   """
-                link = await getMediaWeb(title, body_text)
-                if not link:
-                    return await message.reply("Failed to post mediainfo result.")
-            else:
-                body_text = f"""
+            body_text = f"""
                     <pre>{output}</pre>
                     """
-                link = post_to_telegraph(title, body_text)
+            link = post_to_telegraph(title, body_text)
             # siteurl = "https://spaceb.in/api/v1/documents/"
             # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
             # response = response.json()
