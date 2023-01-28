@@ -84,7 +84,9 @@ async def mediainfo(client, message):
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
             if CUSTOM_VIEW and GH_TOKEN is not None:
-                body_text = f"<p><code style='color:#22c1c3;'>{output}</code></p>"
+                body_text = f"""
+                    {output}
+                   """
                 link = await getMediaWeb(title, body_text)
                 if not link:
                     return await message.reply("Failed to post mediainfo result.")
