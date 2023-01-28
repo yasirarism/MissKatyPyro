@@ -45,7 +45,7 @@ async def genss(client, message):
             if not DL_TASK.get(message.from_user.id):
                 DL_TASK[message.from_user.id] = Lock()
 
-            if DL_TASK[message.from_user.id].locked():
+            if DL_TASK.get(message.from_user.id):
                 return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
         c_time = time.time()
         the_real_download_location = await replied.download(

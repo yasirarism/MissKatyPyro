@@ -29,12 +29,13 @@ async def mediainfo(client, message):
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             return await process.edit_text("Balas ke format media yang valid")
-        if not DL_TASK.get(message.from_user.id):
-            DL_TASK[message.from_user.id] = asyncio.Lock()
+        async with DL_TASK:
+            if not DL_TASK.get(message.from_user.id):
+                DL_TASK[message.from_user.id] = asyncio.Lock()
 
-        if DL_TASK[message.from_user.id].locked():
-            return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
-       
+            if DL_TASK.get(message.from_user.id):
+                return await process.edit("Sorry to avoid flood and error, bot only process one task at a time.")
+        
         c_time = time.time()
         file_path = await message.reply_to_message.download(
             progress=progress_for_pyrogram,
