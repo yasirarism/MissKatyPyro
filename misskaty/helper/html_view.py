@@ -37,6 +37,7 @@ hmtl_content = """
             border-radius: 20px;
             background-color: #161b22;
             align-items: center;
+            width: 100%;
         }
         .container.center {
             text-align: center;
