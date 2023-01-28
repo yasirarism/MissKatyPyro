@@ -143,16 +143,16 @@ async def postToWeb(file, name):
     return f"https://yasirarism.github.io/HTMLPaste/{name}"
 
 async def getMediaWeb(title, text):
-    msg = ""
+    mssg = ""
     fname = get_random_string(7)
-    msg += '<span class="container center rfontsize">' \
+    mssg += '<span class="container center rfontsize">' \
                           f'<h4>MediaInfo From {title}</h4></span>'
-    msg += '<span class="container center rfontsize">' \
+    mssg += '<span class="container center rfontsize">' \
                           f'<b>MediaInfo</b></span>'
-    msg += '<span class="container start rfontsize">' \
+    mssg += '<span class="container start rfontsize">' \
                               f"<div>{text}</div></span>"
     with open(f"{fname}.html", 'w', encoding='utf-8') as f:
-        f.write(msg)
+        f.write(hmtl_content.replace('{fileName}', f"{fname}.html").replace('{msg}', mssg))
     res = await postToWeb(f"{fname}.html", fname)
     os.remove(f"{fname}.html")
     return res
