@@ -8,6 +8,7 @@ from database.sangmata_db import *
     group=2,
 )
 async def cek_mataa(_, m):
+    await m.reply("aaaa")
     if not cek_userdata(m.from_user.id):
         await add_userdata(m.from_user.id, m.from_user.username)
         return
