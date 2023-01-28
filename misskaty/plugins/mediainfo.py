@@ -84,8 +84,7 @@ async def mediainfo(client, message):
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
             body_text = f"""
-                         <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
-                         <pre>{output}</pre>
+                         <code>{output}</code>
                          """
             if CUSTOM_VIEW and GH_TOKEN is not None:
                 link = await getMediaWeb(title, body_text)
