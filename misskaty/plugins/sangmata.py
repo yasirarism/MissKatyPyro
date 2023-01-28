@@ -5,7 +5,7 @@ from database.sangmata_db import *
 # Check user that change first_name, last_name and usernaname
 @app.on_message(
     filters.group & filters.chat(-1001580327675) & ~filters.bot & ~filters.via_bot,
-    group=2,
+    group=3,
 )
 async def cek_mataa(_, m):
     await m.reply("aaaa")
