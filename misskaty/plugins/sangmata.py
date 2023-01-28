@@ -15,7 +15,7 @@ This feature inspired from SangMata Bot. I'm created simple detection to check u
     group=3,
 )
 async def cek_mataa(_, m):
-    if not is_sangmata_on: return
+    if not await is_sangmata_on(m.chat.id): return
     if not await cek_userdata(m.from_user.id):
         return await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     username, first_name, last_name = await get_userdata(m.from_user.id)
@@ -23,15 +23,16 @@ async def cek_mataa(_, m):
     if username != m.from_user.username or first_name != m.from_user.first_name or last_name != m.from_user.last_name:
         msg += "👀 <b>Mata MissKaty</b>\n\n"
     if username != m.from_user.username:
-        msg += f"{m.from_user.mention} changed username from @{username} to @{m.from_user.username}.\n"
+        msg += f"{m.from_user.mention} [{m.from_user.id}] changed username from @{username} to @{m.from_user.username}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if first_name != m.from_user.first_name:
-        msg += f"{m.from_user.mention} changed first_name from {first_name} to {m.from_user.first_name}.\n"
+        msg += f"{m.from_user.mention} [{m.from_user.id}] changed first_name from {first_name} to {m.from_user.first_name}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if last_name != m.from_user.last_name:
-        msg += f"{m.from_user.mention} changed last_name from {last_name} to {m.from_user.last_name}."
+        msg += f"{m.from_user.mention} [{m.from_user.id}] changed last_name from {last_name} to {m.from_user.last_name}."
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
-    await m.reply(msg, quote=True)
+    if msg != "":
+        await m.reply(msg, quote=True)
 
 @app.on_message(
     filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot
