@@ -16,7 +16,6 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, DL_TASK
-from misskaty.helper.html_view import getMediaWeb
 from misskaty.helper.media_helper import post_to_telegraph, runcmd
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
@@ -70,7 +69,7 @@ async def mediainfo(client, message):
             link = message.text.split(" ", maxsplit=1)[1]
             process = await message.reply_text("`Mohon tunggu sejenak...`")
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
+                output = await runcmd(f'mediainfo "{link}"')[0]
             except Exception:
                 return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
