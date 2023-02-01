@@ -157,7 +157,7 @@ async def evaluation_cmd_t(_, m):
     else:
         await edit_or_reply(
             m,
-            final_output,
+            text=final_output,
             parse_mode=enums.ParseMode.MARKDOWN,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
