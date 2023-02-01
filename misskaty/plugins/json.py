@@ -45,15 +45,5 @@ async def jsonify(_, message):
             disable_notification=True,
             reply_to_message_id=reply_to_id,
             thumb="img/thumb.jpg",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text="❌ Close",
-                            callback_data=f"close#{message.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
         )
         os.remove("json.text")

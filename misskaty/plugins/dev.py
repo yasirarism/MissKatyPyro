@@ -3,11 +3,12 @@ import io
 import os
 import sys
 import traceback
+from inspect import getfullargspec
 
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app
+from misskaty import app, user
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
@@ -20,6 +21,11 @@ __HELP__ = """
 **For Public Use**
 /json - Send structure message Telegram in JSON using Pyrogram Style.
 """
+
+async def edit_or_reply(msg, **kwargs):
+    func = msg.edit_text if msg.from_user.is_self else msg.reply
+    spec = getfullargspec(func.__wrapped__).args
+    await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
@@ -67,10 +73,12 @@ async def neofetch(c, m):
 
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
+@user.on_message(filters.command(["shell", "sh"], ".") & filters.me)
 async def shell(_, m):
     cmd = m.text.split(" ", 1)
-    if len(cmd) == 1:
-        return await m.reply("No command to execute was given.")
+    if len(m.command) == 1:
+        return await edit_or_reply(m, text="No command to execute was given.")
+    status_message = await edit_or_reply(m, text="__Processing...__")
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open("shell_output.txt", "w") as file:
@@ -81,13 +89,14 @@ async def shell(_, m):
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
             )
+            await status_message.delete()
             try:
                 os.remove("shell_output.txt")
             except:
                 pass
     elif len(shell) != 0:
-        await m.reply(
-            shell,
+        await status_message.edit(
+            text=shell,
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
@@ -97,12 +106,12 @@ async def shell(_, m):
 
 @app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
+@user.on_message(filters.command(["ev", "run"], ".") & filters.me)
 async def evaluation_cmd_t(_, m):
-    status_message = await m.reply("__Processing eval pyrogram...__")
-    try:
-        cmd = m.text.split(" ", maxsplit=1)[1]
-    except IndexError:
-        return await status_message.edit("__No evaluate message!__")
+    cmd = m.text.split(" ", 1)
+    if len(m.command) == 1:
+        return await edit_or_reply(m, text="__No evaluate message!__")
+    status_message = await edit_or_reply(m, text="__Processing eval pyrogram...__")
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout

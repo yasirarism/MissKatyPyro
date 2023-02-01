@@ -4,15 +4,13 @@ from uuid import uuid4
 
 from iytdl import iYTDL, main
 from pyrogram import filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto)
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.pyro_cooldown import wait
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
@@ -25,11 +23,13 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
+@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel & wait(30))
 @capture_err
 async def ytsearch(_, message):
+    if message.sender_chat:
+        return await kirimPesan(message, "This feature not supported for channel.")
     if len(message.command) == 1:
-        return await message.reply("Please input a query..!")
+        return await kirimPesan(message, "Please input a query..!")
     query = message.text.split(" ", maxsplit=1)[1]
     search_key = rand_key()
     YT_DB[search_key] = query
