@@ -20,9 +20,9 @@ async def task(msg, warn = False, sec = None):
 def wait(sec):
     async def ___(flt, cli, msg):
         user_id = msg.from_user.id
-        time.mktime(msg.date.timetuple())
+        timestamp = time.mktime(msg.date.timetuple())
         if user_id in data:
-            if msg.date >= data[user_id]['timestamp'] + flt.data:
+            if timestamp >= data[user_id]['timestamp'] + flt.data:
                 data[user_id] = {'timestamp' : msg.date, 'warned' : False}
                 return True
             else:
@@ -34,6 +34,6 @@ def wait(sec):
                 asyncio.ensure_future(task(msg))
                 return False
         else:
-            data.update({user_id : {'timestamp' : msg.date, 'warned' : False}})
+            data.update({user_id : {'timestamp' : timestamp, 'warned' : False}})
             return True
     return filters.create(___, data=sec)
