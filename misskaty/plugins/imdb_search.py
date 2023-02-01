@@ -33,12 +33,12 @@ headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWe
 @capture_err
 async def imdb_choose(_, m):
     if len(m.command) == 1:
-        return await m.reply(
-            f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>",
-            quote=True,
+        return await kirimPesan(
+            m,
+            f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>"
         )
     if m.sender_chat:
-        return await m.reply("This feature not supported for channel..")
+        return await kirimPesan(m, "This feature not supported for channel..")
     kuery = m.text.split(None, 1)[1]
     is_imdb, lang = await is_imdbset(m.from_user.id)
     if is_imdb:

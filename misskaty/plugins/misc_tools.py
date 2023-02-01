@@ -24,6 +24,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.message_utils import kirimPesan
 from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
@@ -247,7 +248,7 @@ async def showid(client, message):
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     if message.sender_chat:
-        return await message.reply("Not supported channel..")
+        return await kirimPesan(message, "Not supported channel..")
     status_message = await message.reply_text("`Fetching user info...`")
     await status_message.edit("`Processing user info...`")
     from_user = None

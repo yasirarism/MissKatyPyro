@@ -10,6 +10,7 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app
+from misskaty.core.message_utils import kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Inkick"
@@ -130,7 +131,7 @@ async def dkick(client, message):
 @app.on_message(filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER))
 async def instatus(client, message):
     if message.sender_chat:
-        return await message.reply("Not supported channel.")
+        return await kirimPesan(message, "Not supported channel.")
     start_time = time.perf_counter()
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     count = await app.get_chat_members_count(message.chat.id)

@@ -16,6 +16,7 @@ from pyrogram import enums, filters
 
 from database.afk_db import is_afk, remove_afk
 from misskaty import BOT_USERNAME, app
+from misskaty.core.message_utils import *
 from misskaty.helper.human_read import get_readable_time2
 from utils import put_cleanmode
 
@@ -27,7 +28,7 @@ from utils import put_cleanmode
 )
 async def chat_watcher_func(_, message):
     if message.sender_chat:
-        return await message.reply("This feature not supported for channel.")
+        return
     userid = message.from_user.id
     user_name = message.from_user.first_name
     if message.entities:
