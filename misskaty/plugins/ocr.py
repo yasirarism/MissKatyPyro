@@ -11,6 +11,7 @@ from pyrogram import filters
 from telegraph import upload_file
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
@@ -21,15 +22,15 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
 @capture_err
-async def ocr(_, message):
-    reply = message.reply_to_message
+async def ocr(_, m):
+    reply = m.reply_to_message
     if not reply or not reply.photo and not reply.sticker:
-        return await message.reply_text(f"Reply photo with /{message.command[0]} command")
-    msg = await message.reply("Reading image...")
+        return await kirimPesan(m, f"Reply photo with /{m.command[0]} command")
+    msg = await kirimPesan(m, "Reading image...")
     try:
         file_path = await reply.download()
         if reply.sticker:
-            file_path = await reply.download(f"ocr{message.from_user.id}.jpg")
+            file_path = await reply.download(f"ocr_{m.from_user.id}.jpg")
         response = upload_file(file_path)
         url = f"https://telegra.ph{response[0]}"
         req = (
@@ -38,8 +39,8 @@ async def ocr(_, message):
                 follow_redirects=True,
             )
         ).json()
-        await msg.edit(f"Hasil OCR:\n<code>{req['text']}</code>")
+        await editPesan(msg, f"Hasil OCR:\n<code>{req['text']}</code>")
         os.remove(file_path)
     except Exception as e:
-        await msg.edit(str(e))
+        await editPesan(msg, str(e))
         os.remove(file_path)

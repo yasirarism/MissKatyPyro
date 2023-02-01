@@ -6,13 +6,12 @@ import html
 import regex
 from pyrogram import filters
 from pyrogram.errors import MessageEmpty
-from pyrogram.types import Message
 
 from misskaty import app
 
 
 @app.on_message(filters.regex(r"^s/(.+)?/(.+)?(/.+)?") & filters.reply)
-async def sed(c: app, m: Message):
+async def sed(c, m):
     exp = regex.split(r"(?<![^\\]\\)/", m.text)
     pattern = exp[1]
     replace_with = exp[2].replace(r"\/", "/")

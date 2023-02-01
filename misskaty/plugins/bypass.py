@@ -15,10 +15,9 @@ from pyrogram.errors import EntitiesTooLong, MessageTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.http import http
-from misskaty.helper.human_read import get_readable_file_size
-from misskaty.helper.tools import rentry
+from misskaty.helper import http, get_readable_file_size, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -89,15 +88,15 @@ def wetransfer_bypass(url: str) -> str:
 @capture_err
 async def bypass(_, message):
     if len(message.command) == 1:
-        return await message.reply(f"Gunakan perintah /{message.command[0]} untuk bypass url")
+        return await kirimPesan(message, f"Gunakan perintah /{message.command[0]} untuk bypass url")
     url = message.command[1]
     urllib.parse.urlparse(url).netloc
-    msg = await message.reply("Bypassing URL..", quote=True)
+    msg = await kirimPesan(message, "Bypassing URL..", quote=True)
     mention = f"**Bypasser:** {message.from_user.mention} ({message.from_user.id})"
     if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
         data = await pling_bypass(url)
         try:
-            await msg.edit(f"{data}\n\n{mention}")
+            await editPesan(msg, f"{data}\n\n{mention}")
         except (MessageTooLong, EntitiesTooLong):
             result = await rentry(data)
             markup = InlineKeyboardMarkup(
@@ -108,13 +107,14 @@ async def bypass(_, message):
                     ]
                 ]
             )
-            await msg.edit(
+            await editPesan(
+                msg,
                 f"{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}",
                 reply_markup=markup,
                 disable_web_page_preview=True,
             )
     elif "we.tl" or "wetransfer.com" in url:
         data = wetransfer_bypass(url)
-        await msg.edit(f"{data}\n\n{mention}")
+        await editPesan(msg, f"{data}\n\n{mention}")
     else:
-        await msg.edit("Unsupported URL..")
+        await editPesan(msg, "Unsupported URL..")

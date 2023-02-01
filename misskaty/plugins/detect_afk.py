@@ -27,7 +27,7 @@ from utils import put_cleanmode
 )
 async def chat_watcher_func(_, message):
     if message.sender_chat:
-        return
+        return await message.reply("This feature not supported for channel.")
     userid = message.from_user.id
     user_name = message.from_user.first_name
     if message.entities:

@@ -12,28 +12,23 @@ import time
 from os import remove as osremove
 
 from pyrogram import filters
-from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app, DL_TASK
-from misskaty.helper.media_helper import post_to_telegraph, runcmd
-from misskaty.helper.pyro_progress import progress_for_pyrogram
+from misskaty import app
+from misskaty.core.message_utils import *
+from misskaty.core.decorator.pyro_cooldown import wait
+from misskaty.helper import post_to_telegraph, runcmd, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
 
-@app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
+@app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER) & wait(30))
 async def mediainfo(client, message):
     if message.reply_to_message and message.reply_to_message.media:
-        process = await message.reply_text("`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
+        process = await kirimPesan(message, "`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
-            return await process.edit_text("Balas ke format media yang valid")
-        
-        if DL_TASK.get(message.from_user.id):
-            return await process.edit("Sorry to avoid flood and error, bot only process one task per user at a time.")
-        if not DL_TASK.get(message.from_user.id):
-            DL_TASK[message.from_user.id] = 1
+            return await editPesan(process, "Balas ke format media yang valid")
         
         c_time = time.time()
         file_path = await message.reply_to_message.download(
@@ -54,11 +49,7 @@ async def mediainfo(client, message):
         text_ = file_info.message_type
         link = post_to_telegraph(title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
-        try:
-            await message.reply("ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
-        except FloodWait as f:
-            await asyncio.sleep(f.value)
-        del DL_TASK[message.from_user.id]
+        await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
         await process.delete()
         try:
             osremove(file_path)
@@ -67,11 +58,11 @@ async def mediainfo(client, message):
     else:
         try:
             link = message.text.split(" ", maxsplit=1)[1]
-            process = await message.reply_text("`Mohon tunggu sejenak...`")
+            process = await kirimPesan(message, "`Mohon tunggu sejenak...`")
             try:
                 output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
             except Exception:
-                return await process.edit("Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
+                return await editPesan(process, "Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             title = "MissKaty Bot Mediainfo"
             body_text = f"""
                     <pre>{output}</pre>
@@ -92,4 +83,4 @@ async def mediainfo(client, message):
                 )
                 await process.delete()
         except IndexError:
-            return await message.reply_text("Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")
+            return await kirimPesan(message, "Gunakan command /mediainfo [link], atau reply telegram media dengan /mediainfo.")

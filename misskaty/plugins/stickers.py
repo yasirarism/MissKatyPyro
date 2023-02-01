@@ -5,22 +5,15 @@ import shutil
 import tempfile
 
 from PIL import Image
-from pyrogram import emoji, filters
+from pyrogram import emoji, filters, enums
 from pyrogram.errors import BadRequest, PeerIdInvalid, StickersetInvalid
 from pyrogram.file_id import FileId
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import (
-    AddStickerToSet,
-    CreateStickerSet,
-    RemoveStickerFromSet,
-)
-from pyrogram.raw.types import (
-    DocumentAttributeFilename,
-    InputDocument,
-    InputMediaUploadedDocument,
-    InputStickerSetItem,
-    InputStickerSetShortName,
-)
+from pyrogram.raw.functions.stickers import (AddStickerToSet, CreateStickerSet,
+                                             RemoveStickerFromSet)
+from pyrogram.raw.types import (DocumentAttributeFilename, InputDocument,
+                                InputMediaUploadedDocument,
+                                InputStickerSetItem, InputStickerSetShortName)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
@@ -30,7 +23,7 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 __MODULE__ = "Stickers"
 __HELP__ = """
 /kang [Reply to sticker] - Add sticker to your pack.
-/unkang [Reply to sticker] - Remove sticker from your pack.
+/unkang [Reply to sticker] - Remove sticker from your pack (Only can remove sticker that added by this bot.).
 /getsticker - Convert sticker to png.
 /stickerid - View sticker ID
 """
@@ -125,8 +118,8 @@ async def kang_sticker(c, m):
                 # mime_type: image/webp
                 resize = True
             elif reply.document.mime_type in (
-                MessageMediaType.VIDEO,
-                MessageMediaType.ANIMATION,
+                enums.MessageMediaType.VIDEO,
+                enums.MessageMediaType.ANIMATION,
             ):
                 # mime_type: application/video
                 videos = True

@@ -13,11 +13,13 @@ import time
 
 from pyrogram import filters
 
-from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
+from database.afk_db import (add_afk, cleanmode_off, cleanmode_on, is_afk,
+                             remove_afk)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.helper.human_read import get_readable_time2
+from misskaty.core.message_utils import kirimPesan
+from misskaty.helper import get_readable_time2
 from misskaty.vars import COMMAND_HANDLER
 from utils import put_cleanmode
 
@@ -33,7 +35,7 @@ Just type something in group to remove AFK Status."""
 @app.on_message(filters.command(["afk"], COMMAND_HANDLER))
 async def active_afk(_, message):
     if message.sender_chat:
-        return
+        return await kirimPesan(message, "This feature not supported for channel.")
     user_id = message.from_user.id
     verifier, reasondb = await is_afk(user_id)
     if verifier:
@@ -176,24 +178,24 @@ async def active_afk(_, message):
         }
 
     await add_afk(user_id, details)
-    send = await message.reply_text(f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!.")
+    send = await kirimPesan(message, f"{message.from_user.mention} [<code>{message.from_user.id}</code>] is now AFK!.")
     await put_cleanmode(message.chat.id, send.id)
 
 
-@app.on_message(filters.command("afkdel") & ~filters.private)
+@app.on_message(filters.command("afkdel", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_change_info")
 async def afk_state(_, message):
-    usage = "**Usage:**\n/afkdel [ENABLE|DISABLE]"
+    usage = "**Usage:**\n/afkdel [ENABLE|DISABLE] to enable or disable auto delete message."
     if len(message.command) == 1:
-        return await message.reply_text(usage)
+        return await kirimPesan(message, usage)
     chat_id = message.chat.id
     state = message.text.split(None, 1)[1].strip()
     state = state.lower()
     if state == "enable":
         await cleanmode_on(chat_id)
-        await message.reply_text("Enabled auto delete AFK message.")
+        await kirimPesan(message, "Enabled auto delete AFK message in this chat.")
     elif state == "disable":
         await cleanmode_off(chat_id)
-        await message.reply_text("Disabled auto delete AFK message.")
+        await kirimPesan(message, "Disabled auto delete AFK message.")
     else:
-        await message.reply_text(usage)
+        await kirimPesan(message, usage)

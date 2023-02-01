@@ -1,6 +1,8 @@
-from misskaty import app
 from pyrogram import filters
+
 from database.sangmata_db import *
+from misskaty import app
+from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "SangMata"
@@ -37,6 +39,7 @@ async def cek_mataa(_, m):
 @app.on_message(
     filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot
 )
+@adminsOnly("can_change_info")
 async def set_mataa(_, m):
     if len(m.command) == 1:
         return await m.reply(f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")

@@ -13,6 +13,7 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 
 
+# Filters Approve User by bot in channel @YMovieZNew
 @capture_err
 @app.on_chat_join_request(filters.chat(-1001686184174))
 async def approve_join_chat(c, m):

@@ -2,7 +2,6 @@ import os
 import random
 import string
 import time
-import json
 import logging
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse

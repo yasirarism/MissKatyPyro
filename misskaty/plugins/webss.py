@@ -7,6 +7,7 @@ from PIL import Image
 from pyrogram import filters
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
@@ -19,19 +20,19 @@ __HELP__ = """
 
 @app.on_message(filters.command(["webss"], COMMAND_HANDLER))
 @capture_err
-async def take_ss(_, message):
-    if len(message.command) == 1:
-        return await message.reply("Give A Url To Fetch Screenshot.")
-    url = message.command[1] if message.command[1].startswith("http") else f"https://{message.command[1]}"
-    filename = f"imageToSave_{message.from_user.id}.png"
-    m = await message.reply("Capturing screenshot...")
+async def take_ss(_, m):
+    if len(m.command) == 1:
+        return await kirimPesan(m, "Give A Url To Fetch Screenshot.")
+    url = m.command[1] if m.command[1].startswith("http") else f"https://{m.command[1]}"
+    filename = f"webSS_{m.from_user.id}.jpg"
+    msg = await m.reply("Capturing screenshot...")
     try:
         photo = (await http.get(f"https://yasirapi.eu.org/webss?url={url}")).json()
         img = Image.open(BytesIO(base64.decodebytes(bytes(photo["result"], "utf-8"))))
         img.save(filename)
-        m = await m.edit("Uploading...")
-        await gather(*[message.reply_document(filename), message.reply_photo(filename)])
-        await m.delete()
+        await editPesan(msg, "Uploading...")
+        await gather(*[m.reply_document(filename), m.reply_photo(filename)])
+        await hapusPesan(m)
         os.remove(filename)
     except Exception as e:
-        await m.edit(f"Failed To Take Screenshot. {str(e)}")
+        await editPesan(msg, f"Failed To Take Screenshot. {str(e)}")

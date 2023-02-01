@@ -326,7 +326,7 @@ async def kickme(_, message):
     try:
         await message.chat.ban_member(message.from_user.id)
         txt = f"Pengguna {message.from_user.mention} menendang dirinya sendiri. Mungkin dia sedang frustasi 😕"
-        txt += f"\n<b>Alasan</b>: {reason}" if reason else ""
+        txt += f"\n<b>Alasan</b>: {reason}" if reason else "-"
         await message.reply_text(txt)
         await message.chat.unban_member(message.from_user.id)
     except RPCError as ef:
