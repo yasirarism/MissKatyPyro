@@ -78,7 +78,7 @@ async def shell(_, m):
     cmd = m.text.split(" ", 1)
     if len(m.command) == 1:
         return await edit_or_reply(m, text="No command to execute was given.")
-    status_message = await edit_or_reply(m, text="__Processing...__")
+    msg = await edit_or_reply(m, text="__Processing...__")
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open("shell_output.txt", "w") as file:
@@ -89,13 +89,14 @@ async def shell(_, m):
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
             )
-            await status_message.delete()
+            await m.delete if m.from_user.is_self else await msg.delete()
             try:
                 os.remove("shell_output.txt")
             except:
                 pass
     elif len(shell) != 0:
-        await status_message.edit(
+        await edit_or_reply(
+            m,
             text=shell,
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
@@ -152,9 +153,10 @@ async def evaluation_cmd_t(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
-        await status_message.delete()
+        await m.delete if m.from_user.is_self else await status_message.delete()
     else:
-        await status_message.edit(
+        await edit_or_reply(
+            m,
             final_output,
             parse_mode=enums.ParseMode.MARKDOWN,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
