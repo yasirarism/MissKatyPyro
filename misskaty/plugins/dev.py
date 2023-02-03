@@ -89,7 +89,7 @@ async def shell(_, m):
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
             )
-            await m.delete if m.from_user.is_self else await msg.delete()
+            await m.delete() if m.from_user.is_self else await msg.delete()
             try:
                 os.remove("shell_output.txt")
             except:
@@ -147,13 +147,13 @@ async def evaluation_cmd_t(_, m):
             out_file.write(final_output)
         await m.reply_document(
             document="MissKatyEval.txt",
-            caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
+            caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
             disable_notification=True,
             thumb="img/thumb.jpg",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
-        await m.delete if m.from_user.is_self else await status_message.delete()
+        await m.delete() if m.from_user.is_self else await status_message.delete()
     else:
         await edit_or_reply(
             m,

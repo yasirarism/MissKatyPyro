@@ -157,10 +157,11 @@ async def start(_, message):
                 f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n"
                 + HELPABLE[module].__HELP__
             )
-            await message.reply(text, disable_web_page_preview=True)
+            await kirimPesan(message, text, disable_web_page_preview=True)
         elif name == "help":
             text, keyb = await help_parser(message.from_user.first_name)
-            await message.reply(
+            await kirimPesan(
+                message,
                 text,
                 reply_markup=keyb,
             )
@@ -214,14 +215,15 @@ async def help_command(_, message):
                         ],
                     ]
                 )
-                await message.reply(
+                await kirimPesan(
+                    message,
                     f"Click on the below button to get help about {name}",
                     reply_markup=key,
                 )
             else:
-                await message.reply("PM Me For More Details.", reply_markup=keyboard)
+                await kirimPesan(message, "PM Me For More Details.", reply_markup=keyboard)
         else:
-            await message.reply("Pm Me For More Details.", reply_markup=keyboard)
+            await kirimPesan(message, "Pm Me For More Details.", reply_markup=keyboard)
     else:
         if not await db.is_user_exist(message.from_user.id):
             await db.add_user(message.from_user.id, message.from_user.first_name)
@@ -237,18 +239,19 @@ async def help_command(_, message):
                     f"Here is the help for **{HELPABLE[name].__MODULE__}**:\n"
                     + HELPABLE[name].__HELP__
                 )
-                await message.reply(text, disable_web_page_preview=True)
+                await kirimPesan(message, text, disable_web_page_preview=True)
             else:
                 text, help_keyboard = await help_parser(message.from_user.first_name)
-                await message.reply(
+                await kirimPesan(
+                    message,
                     text,
                     reply_markup=help_keyboard,
                     disable_web_page_preview=True,
                 )
         else:
             text, help_keyboard = await help_parser(message.from_user.first_name)
-            await message.reply(
-                text, reply_markup=help_keyboard, disable_web_page_preview=True
+            await kirimPesan(
+                message, text, reply_markup=help_keyboard, disable_web_page_preview=True
             )
     return
 
@@ -291,7 +294,8 @@ General command are:
         module = mod_match[1].replace(" ", "_")
         text = f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n{HELPABLE[module].__HELP__}"
 
-        await query.message.edit(
+        await editPesan(
+            query.message,
             text=text,
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("back", callback_data="help_back")]]
@@ -307,7 +311,8 @@ General command are:
         await query.message.delete()
     elif prev_match:
         curr_page = int(prev_match[1])
-        await query.message.edit(
+        await editPesan(
+            query.message,
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
                 paginate_modules(curr_page - 1, HELPABLE, "help")
@@ -317,7 +322,8 @@ General command are:
 
     elif next_match:
         next_page = int(next_match[1])
-        await query.message.edit(
+        await editPesan(
+            query.message,
             text=top_text,
             reply_markup=InlineKeyboardMarkup(
                 paginate_modules(next_page + 1, HELPABLE, "help")
@@ -326,7 +332,8 @@ General command are:
         )
 
     elif back_match:
-        await query.message.edit(
+        await editPesan(
+            query.message,
             text=top_text,
             reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")),
             disable_web_page_preview=True,
@@ -334,7 +341,8 @@ General command are:
 
     elif create_match:
         text, keyboard = await help_parser(query)
-        await query.message.edit(
+        await editPesan(
+            query.message,
             text=text,
             reply_markup=keyboard,
             disable_web_page_preview=True,
