@@ -140,12 +140,12 @@ async def evaluation_cmd_t(_, m):
     else:
         evaluation = "Success"
 
-    final_output = f"**EVAL**:\n`{cmd}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
+    final_output = f"**EVAL**:\n`{cmd[1]}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
 
     if len(final_output) > 4096:
         with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:
             out_file.write(final_output)
-        await status_message.reply_document(
+        await m.reply_document(
             document="MissKatyEval.txt",
             caption=f"<code>{cmd[: 4096 // 4 - 1]}</code>",
             disable_notification=True,
