@@ -107,16 +107,16 @@ async def inline_menu(_, inline_query: InlineQuery):
                 link = parsemethod.get("href")
                 description = parsemethod.get("description")
                 fields = ""
-                for f in name.get("fields"):
+                for f in parsemethod.get("fields"):
                     method = "".join(f"{i}, " for i in f["types"])
-                returns = "".join(f"{i}, " for i in name.get("returns"))
-                msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
+                returns = "".join(f"{i}, " for i in parsemethod.get("returns"))
+                msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {name['fields']['required']}\n{name['fields']['description']}\n\n"
+                msg += f"<code>{parsemethod['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {parsemethod['fields']['required']}\n{name['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
-                        title=f"{title}",
+                        title=name,
                         input_message_content=InputTextMessageContent(
                             message_text=message_text,
                             parse_mode=enums.ParseMode.HTML,
@@ -142,16 +142,16 @@ async def inline_menu(_, inline_query: InlineQuery):
                 link = parsetypes.get("href")
                 description = parsetypes.get("description")
                 fields = ""
-                for f in name.get("fields"):
+                for f in parsetypes.get("fields"):
                     types = "".join(f"{i}, " for i in f["types"])
-                returns = "".join(f"{i}, " for i in name.get("returns"))
+                returns = "".join(f"{i}, " for i in parsetypes.get("returns"))
                 msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n{name['fields']['description']}\n\n"
+                msg += f"<code>{parsetypes['fields']['name']}<code> ({fields[:-2]})\n{parsetypes['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
-                        title=f"{title}",
+                        title=name,
                         input_message_content=InputTextMessageContent(
                             message_text=message_text,
                             parse_mode=enums.ParseMode.HTML,
