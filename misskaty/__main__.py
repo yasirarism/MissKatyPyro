@@ -121,6 +121,7 @@ keyboard = InlineKeyboardMarkup(
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
 async def start(_, message):
+    if not message.from_user: return
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
@@ -191,6 +192,7 @@ async def stats_callbacc(_, CallbackQuery):
 
 @app.on_message(filters.command("help", COMMAND_HANDLER))
 async def help_command(_, message):
+    if not message.from_user: return
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)

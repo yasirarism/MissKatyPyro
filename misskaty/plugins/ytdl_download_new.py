@@ -59,9 +59,10 @@ async def ytsearch(_, message):
     await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
-@app.on_message(filters.command(["ytdown"], COMMAND_HANDLER) & ~filters.channel)
+@app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
 @capture_err
 async def ytdownv2(_, message):
+    if not message.from_user: return
     if len(message.command) == 1:
         return await message.reply("Please input a valid YT-DLP Supported URL")
     url = message.text.split(" ", maxsplit=1)[1]

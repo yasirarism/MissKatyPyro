@@ -1,5 +1,5 @@
 import time
-import pyromod
+import pyromod.listen
 from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
 
 from pyrogram import Client
