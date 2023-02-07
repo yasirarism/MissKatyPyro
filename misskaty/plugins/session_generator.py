@@ -54,7 +54,7 @@ async def is_batal(msg):
     else:
         return False
 
-@Client.on_callback_query(filters.regex(pattern=r"^(generate|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
+@app.on_callback_query(filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
 async def callbackgenstring(bot, callback_query):
     query = callback_query.matches[0].group(1)
     if query == "genstring":
@@ -66,7 +66,7 @@ async def callbackgenstring(bot, callback_query):
                 await callback_query.answer()
                 await generate_session(bot, callback_query.message)
             elif query == "pyrogram_bot":
-                await callback_query.answer("» ᴛʜᴇ sᴇssɪᴏɴ ɢᴇɴᴇʀᴀᴛᴇᴅ ᴡɪʟʟ ʙᴇ ᴏғ ᴩʏʀᴏɢʀᴀᴍ ᴠ2.", show_alert=True)
+                await callback_query.answer("» The session generator will be of Pyrogram v2.", show_alert=True)
                 await generate_session(bot, callback_query.message, is_bot=True)
             elif query == "telethon_bot":
                 await callback_query.answer()
