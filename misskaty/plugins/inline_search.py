@@ -134,7 +134,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         for types in parsetypes:
             if kueri.lower() in types.lower():
                 link = parsetypes[types]["href"]
-                description = parsetypes[types]["description"]
+                description = parsetypes[types]["description"][0]
                 buttons = InlineKeyboard()
                 buttons.row(
                 InlineButton("Open Docs", url=link),
