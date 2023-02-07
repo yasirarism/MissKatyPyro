@@ -16,20 +16,17 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
 from misskaty import (
-    BOT_ID,
     BOT_NAME,
     BOT_USERNAME,
     HELPABLE,
-    UBOT_ID,
     UBOT_NAME,
-    UBOT_USERNAME,
     app,
     user,
 )
 from misskaty.core.message_utils import *
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.plugins import ALL_MODULES
-from misskaty.vars import LOG_CHANNEL, SUDO
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 from utils import auto_clean, temp
 
 LOGGER = getLogger(__name__)
@@ -44,7 +41,7 @@ async def start_bot():
         if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
             imported_module.__MODULE__ = imported_module.__MODULE__
             if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
-                HELPABLE[imported_module.__MODULE__.lower()] = imported_module
+                HELPABLE[str(imported_module.__MODULE__).lower()] = imported_module
     bot_modules = ""
     j = 1
     for i in ALL_MODULES:
@@ -121,7 +118,7 @@ keyboard = InlineKeyboardMarkup(
 )
 
 
-@app.on_message(filters.command("start"))
+@app.on_message(filters.command("start", COMMAND_HANDLER))
 async def start(_, message):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
@@ -191,7 +188,7 @@ async def stats_callbacc(_, CallbackQuery):
     await app.answer_callback_query(CallbackQuery.id, text, show_alert=True)
 
 
-@app.on_message(filters.command("help"))
+@app.on_message(filters.command("help", COMMAND_HANDLER))
 async def help_command(_, message):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
