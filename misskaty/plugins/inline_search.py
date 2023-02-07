@@ -3,6 +3,7 @@ import re
 import traceback
 from sys import platform
 from sys import version as pyver
+from unicodedata import name
 
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
@@ -35,7 +36,7 @@ To use this feature, just type bot username with following args below.
 ~ info [user id/username] - Check info about a user.
 """
 
-keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info"]
+keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 
@@ -87,6 +88,60 @@ async def inline_menu(_, inline_query: InlineQuery):
             ),
         ]
         await inline_query.answer(results=answerss)
+    elif inline_query.query.strip().lower().split()[0] == "botapi":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="Bot Api Docs | botapi [QUERY]",
+                switch_pm_parameter="inline",
+            )
+        kueri = inline_query.query.split(None, 1)[1].strip()
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
+        jsonapi = await http.get(f"https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json", headers=headers)
+        datajson = []
+        for b in jsonapi.json().get("methods"):
+             if b.get("name").lower() in kueri.lower():
+                name = b.get("name")
+                link = b.get("href")
+                description = b.get("description")
+                fields = ""
+                for f in name.get("fields"):
+                    types = "".join(f"{i}, " for i in f["types"])
+                returns = "".join(f"{i}, " for i in name.get("returns"))
+                msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
+                msg += f"<b>Description:</b> {description}\n\n"
+                msg += f"<b>Variables:</b>\n"
+                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {name['fields']['required']}\n{name['fields']['description']}\n\n"
+                data.append(
+                    InlineQueryResultArticle(
+                        title=f"{title}",
+                        input_message_content=InputTextMessageContent(
+                            message_text=message_text,
+                            parse_mode=enums.ParseMode.HTML,
+                            disable_web_page_preview=False,
+                        ),
+                        url=link,
+                        description=description,
+                        thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(text="Open Docs", url=link)
+                                ],
+                                [
+                                    InlineKeyboardButton("Search Again", switch_inline_query_current_chat=inline_query.query)
+                                ]
+                            ]),
+                    )
+                )
+        await inline_query.answer(
+            results=datajson,
+            is_gallery=False,
+            is_personal=False,
+            next_offset="",
+            switch_pm_text=f"Found {len(datajson)} results",
+            switch_pm_parameter="help",
+        )
     elif inline_query.query.strip().lower().split()[0] == "google":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
