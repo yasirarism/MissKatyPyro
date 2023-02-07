@@ -103,17 +103,16 @@ async def inline_menu(_, inline_query: InlineQuery):
         datajson = []
         for method in parsemethod:
             if kueri.lower() in method.lower():
-                name = parsemethod.get("name")
-                link = parsemethod.get("href")
-                description = parsemethod.get("description")
+                link = parsemethod[method]["href"]
+                description = parsemethod[method]["description"]
                 fields = ""
-                for f in parsemethod.get("fields"):
+                for f in parsemethod[method]["fields"]:
                     method = "".join(f"{i}, " for i in f["types"])
-                returns = "".join(f"{i}, " for i in parsemethod.get("returns"))
+                returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
                 msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{parsemethod['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {parsemethod['fields']['required']}\n{name['fields']['description']}\n\n"
+                msg += f"<code>{parsemethod[method]['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
                         title=name,
@@ -138,17 +137,16 @@ async def inline_menu(_, inline_query: InlineQuery):
                 )
         for types in parsetypes:
             if kueri.lower() in types.lower():
-                name = parsetypes.get("name")
-                link = parsetypes.get("href")
-                description = parsetypes.get("description")
+                link = parsetypes[types]["href"]
+                description = parsetypes[types]["description"]
                 fields = ""
-                for f in parsetypes.get("fields"):
+                for f in parsetypes[types]["fields"]:
                     types = "".join(f"{i}, " for i in f["types"])
-                returns = "".join(f"{i}, " for i in parsetypes.get("returns"))
+                returns = "".join(f"{i}, " for i in parsetypes[types]["returns"])
                 msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{parsetypes['fields']['name']}<code> ({fields[:-2]})\n{parsetypes['fields']['description']}\n\n"
+                msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
                         title=name,
