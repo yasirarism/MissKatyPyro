@@ -116,8 +116,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                for i in parsemethod[method]["fields"]:
-                    msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                if parsetypes[method].get("fields"):
+                    for i in parsemethod[method]["fields"]:
+                        msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
                         title=method,
@@ -165,7 +166,8 @@ async def inline_menu(_, inline_query: InlineQuery):
             results=datajson,
             is_gallery=False,
             is_personal=False,
-            next_offset="",
+            next_offset="30",
+            cache_time=5,
             switch_pm_text=f"Found {len(datajson)} results",
             switch_pm_parameter="help",
         )
