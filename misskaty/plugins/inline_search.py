@@ -144,9 +144,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg = f"<b>{types}</b>\n"
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                LOGGER.info(parsetypes[types])
-                for i in parsetypes[types]["fields"]:
-                    msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                if parsetypes[types].get("fields"):
+                    for i in parsetypes[types]["fields"]:
+                        msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,
