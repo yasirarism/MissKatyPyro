@@ -8,7 +8,8 @@ from unicodedata import name
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from motor import version as mongover
-from pykeyboard import InlineKeyboard
+from misskaty.core.keyboard import keyboard
+from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.types import (
@@ -105,7 +106,11 @@ async def inline_menu(_, inline_query: InlineQuery):
             if kueri.lower() in method.lower():
                 link = parsemethod[method]["href"]
                 description = parsemethod[method]["description"]
-                fields = ""
+                buttons = InlineKeyboard()
+                buttons.row(
+                    InlineButton("Open Docs", url=link),
+                    InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
+                )
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
@@ -122,21 +127,18 @@ async def inline_menu(_, inline_query: InlineQuery):
                         url=link,
                         description=description,
                         thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
-                        reply_markup=InlineKeyboardMarkup(
-                            [
-                                [
-                                    InlineKeyboardButton(text="Open Docs", url=link)
-                                ],
-                                [
-                                    InlineKeyboardButton("Search Again", switch_inline_query_current_chat=inline_query.query)
-                                ]
-                            ]),
+                        reply_markup=buttons,
                     )
                 )
         for types in parsetypes:
             if kueri.lower() in types.lower():
                 link = parsetypes[types]["href"]
                 description = parsetypes[types]["description"]
+                buttons = InlineKeyboard()
+                buttons.row(
+                    InlineButton("Open Docs", url=link),
+                    InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
+                )
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
@@ -151,17 +153,10 @@ async def inline_menu(_, inline_query: InlineQuery):
                         url=link,
                         description=description,
                         thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
-                        reply_markup=InlineKeyboardMarkup(
-                            [
-                                [
-                                    InlineKeyboardButton(text="Open Docs", url=link)
-                                ],
-                                [
-                                    InlineKeyboardButton("Search Again", switch_inline_query_current_chat=inline_query.query)
-                                ]
-                            ]),
+                        reply_markup=buttons,
                     )
                 )
+        LOGGER.info(datajson)
         await inline_query.answer(
             results=datajson,
             is_gallery=False,
