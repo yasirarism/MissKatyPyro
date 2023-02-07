@@ -9,18 +9,8 @@ This repo has many bugs and i dont have time to fix it. If you can help me, plea
 ## Demo
 You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
 
-## Features
-* AFK Feature, improved from Yuuki Repo.
-* Bypass URL, some code from PyBypass repo.
-* Improved IMDB Search with English and Indonesian Language by Me.
-* Download some video from web using YT-DLP (UnStable)
-* Extract subtitles & audio from URL.
-* Some website scraper (like melongmovie, lk21 and terbit21).
-* Mediainfo plugin.
-* Genss plugin based on vcsi.
-* Some pastebin (like rentry, tempaste)
-* Inline search plugins.
-* And some sample code to learn for you. Check more by yourself.. :)
+## Features and Give Support
+* Please open this web https://yasirpedia.eu.org/ to check some feature or give support to me.
 
 ## Variables
 
