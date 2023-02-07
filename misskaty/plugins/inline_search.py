@@ -117,7 +117,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 for i in parsemethod[method]["fields"]:
-                    msg += str(i["name"])
                     msg += f"<code>{i['name']}<code> ({i['types'][0]})\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
@@ -145,7 +144,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg = f"<b>{types}</b>\n"
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
+                for i in parsemethod[types]["fields"]:
+                    msg += f"<code>{i['name']}<code> ({i['types'][0]})\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,
