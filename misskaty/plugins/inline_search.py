@@ -1,6 +1,7 @@
 import json
 import re
 import traceback
+from logging import getLogger
 from sys import platform
 from sys import version as pyver
 from unicodedata import name
@@ -40,7 +41,7 @@ To use this feature, just type bot username with following args below.
 keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
-
+LOGGER = getLogger()
 
 @app.on_inline_query()
 async def inline_menu(_, inline_query: InlineQuery):
