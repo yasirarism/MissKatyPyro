@@ -97,7 +97,7 @@ async def inline_menu(_, inline_query: InlineQuery):
             )
         kueri = inline_query.query.split(None, 1)[1].strip()
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
-        jsonapi = await http.get(f"https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json", headers=headers)
+        jsonapi = await http.get(f"https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json", headers=headers, follow_redirects=True)
         datajson = []
         for b in jsonapi.json().get("methods"):
              if b.get("name").lower() in kueri.lower():
