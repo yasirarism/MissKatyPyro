@@ -8,6 +8,7 @@
 import asyncio
 import importlib
 import re
+import traceback
 from logging import getLogger
 
 from pyrogram import __version__, filters, idle
@@ -41,7 +42,7 @@ async def start_bot():
         if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
             imported_module.__MODULE__ = imported_module.__MODULE__
             if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
-                HELPABLE[str(imported_module.__MODULE__).lower()] = imported_module
+                HELPABLE[imported_module.__MODULE__.lower()] = imported_module
     bot_modules = ""
     j = 1
     for i in ALL_MODULES:
@@ -358,8 +359,9 @@ if __name__ == "__main__":
         loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
         pass
-    except Exception as err:
-        LOGGER.error(err.with_traceback(None))
+    except Exception:
+        err = traceback.format_exc()
+        LOGGER.error(err)
     finally:
         loop.run_until_complete(cleanup())
         loop.stop()
