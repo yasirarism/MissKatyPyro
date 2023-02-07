@@ -99,11 +99,46 @@ async def inline_menu(_, inline_query: InlineQuery):
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
         jsonapi = await http.get(f"https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json", headers=headers, follow_redirects=True)
         datajson = []
-        for b in jsonapi.json().get("methods"):
-             if b.get("name").lower() in kueri.lower():
-                name = b.get("name")
-                link = b.get("href")
-                description = b.get("description")
+        for method in jsonapi.json().get("methods"):
+            if kueri.lower() in method.lower():
+                name = method.get("name")
+                link = method.get("href")
+                description = method.get("description")
+                fields = ""
+                for f in name.get("fields"):
+                    method = "".join(f"{i}, " for i in f["types"])
+                returns = "".join(f"{i}, " for i in name.get("returns"))
+                msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
+                msg += f"<b>Description:</b> {description}\n\n"
+                msg += f"<b>Variables:</b>\n"
+                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {name['fields']['required']}\n{name['fields']['description']}\n\n"
+                data.append(
+                    InlineQueryResultArticle(
+                        title=f"{title}",
+                        input_message_content=InputTextMessageContent(
+                            message_text=message_text,
+                            parse_mode=enums.ParseMode.HTML,
+                            disable_web_page_preview=False,
+                        ),
+                        url=link,
+                        description=description,
+                        thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(text="Open Docs", url=link)
+                                ],
+                                [
+                                    InlineKeyboardButton("Search Again", switch_inline_query_current_chat=inline_query.query)
+                                ]
+                            ]),
+                    )
+                )
+        for types in jsonapi.json().get("types"):
+            if kueri.lower() in types.lower():
+                name = types.get("name")
+                link = types.get("href")
+                description = types.get("description")
                 fields = ""
                 for f in name.get("fields"):
                     types = "".join(f"{i}, " for i in f["types"])
@@ -111,7 +146,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n<b>Required:</b> {name['fields']['required']}\n{name['fields']['description']}\n\n"
+                msg += f"<code>{name['fields']['name']}<code> ({fields[:-2]})\n{name['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
                         title=f"{title}",
