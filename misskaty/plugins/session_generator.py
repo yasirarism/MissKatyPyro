@@ -1,3 +1,4 @@
+from ast import Delete
 import traceback
 from logging import getLogger
 
@@ -104,6 +105,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     else:
         try:
             api_id = int(api_id_msg.text)
+            await api_id_msg.delete()
         except ValueError:
             await api_id_msg.reply("**API_ID** must be integer, start generating your session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
             return
@@ -111,14 +113,16 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         if await is_batal(api_hash_msg):
             return
         api_hash = api_hash_msg.text
+        await api_hash_msg.delete()
     if not is_bot:
         t = "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
     else:
         t = "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
     phone_number_msg = await msg.chat.ask(t, filters=filters.text)
-    if await is_batal()(phone_number_msg):
+    if await is_batal(phone_number_msg):
         return
     phone_number = phone_number_msg.text
+    await phone_number_msg.delete()
     if not is_bot:
         await msg.reply("» Trying to send OTP at the given number...")
     else:
@@ -156,6 +160,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         return
     if not is_bot:
         phone_code = phone_code_msg.text.replace(" ", "")
+        await phone_code_msg.delete()
         try:
             if telethon:
                 await client.sign_in(phone_number, phone_code, password=None)
@@ -175,11 +180,12 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
                 return
             try:
                 password = two_step_msg.text
+                await two_step_msg.delete()
                 if telethon:
                     await client.sign_in(password=password)
                 else:
                     await client.check_password(password=password)
-                if await is_batal()(api_id_msg):
+                if await is_batal(api_id_msg):
                     return
             except (PasswordHashInvalid, PasswordHashInvalidError):
                 await two_step_msg.reply("» The password you've sent is wrong.\n\nPlease start generating session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
@@ -202,4 +208,4 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     except KeyError:
         pass
     await client.disconnect()
-    await bot.send_message(msg.chat.id, "» Successfullt generated your {} String Session.\n\nPlease check saved messages to get it ! \n\n**A String Generator bot by ** @IAmCuteCodes".format("Telethon" if telethon else "Pyrogram"))
+    await bot.send_message(msg.chat.id, "» Successfully generated your {} String Session.\n\nPlease check saved messages to get it ! \n\n**A String Generator bot by ** @IAmCuteCodes".format("Telethon" if telethon else "Pyrogram"))
