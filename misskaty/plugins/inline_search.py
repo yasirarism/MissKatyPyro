@@ -115,7 +115,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     InlineQueryResultArticle(
                         title=name,
                         input_message_content=InputTextMessageContent(
-                            message_text=message_text,
+                            message_text=msg,
                             parse_mode=enums.ParseMode.HTML,
                             disable_web_page_preview=False,
                         ),
@@ -144,7 +144,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     InlineQueryResultArticle(
                         title=types,
                         input_message_content=InputTextMessageContent(
-                            message_text=message_text,
+                            message_text=msg,
                             parse_mode=enums.ParseMode.HTML,
                             disable_web_page_preview=False,
                         ),
