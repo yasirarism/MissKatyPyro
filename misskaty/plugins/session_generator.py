@@ -25,7 +25,7 @@ from telethon.errors import (
 
 LOGGER = getLogger(__name__)
 
-__MODULE__ = "GenString"
+__MODULE__ = "Session Generator"
 __HELP__ = """
 /genstring - Generate string session using this bot. Only support Pyrogram v2 and Telethon.
 """
