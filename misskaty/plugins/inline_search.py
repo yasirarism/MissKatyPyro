@@ -117,14 +117,14 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 for i in parsemethod[method]["fields"]:
-                    msg += f"<code>{i['name']}<code> ({i['types'][0]})\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                    msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
                         title=method,
                         input_message_content=InputTextMessageContent(
                             message_text=msg,
                             parse_mode=enums.ParseMode.HTML,
-                            disable_web_page_preview=False,
+                            disable_web_page_preview=True,
                         ),
                         url=link,
                         description=description,
@@ -145,14 +145,14 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 for i in parsetypes[types]["fields"]:
-                    msg += f"<code>{i['name']}<code> ({i['types'][0]})\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                    msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,
                         input_message_content=InputTextMessageContent(
                             message_text=msg,
                             parse_mode=enums.ParseMode.HTML,
-                            disable_web_page_preview=False,
+                            disable_web_page_preview=True,
                         ),
                         url=link,
                         description=description,
