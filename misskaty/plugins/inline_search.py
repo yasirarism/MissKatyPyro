@@ -106,13 +106,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                 link = parsemethod[method]["href"]
                 description = parsemethod[method]["description"]
                 fields = ""
-                for f in parsemethod[method]["fields"]:
-                    fields += "".join(f"{i}, " for i in f["types"])
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
-                msg = f"<b>{name}</b> (<code>{returns[:-2]}</code>)\n"
+                msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{method}<code> ({fields[:-2]})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
+                # msg += f"<code>{method}<code> ({fields})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
                         title=name,
@@ -139,14 +137,9 @@ async def inline_menu(_, inline_query: InlineQuery):
             if kueri.lower() in types.lower():
                 link = parsetypes[types]["href"]
                 description = parsetypes[types]["description"]
-                fields = ""
-                for f in parsetypes[types]["fields"]:
-                    fields += "".join(f"{i}, " for i in f["types"])
-                returns = "".join(f"{i}, " for i in parsetypes[types]["returns"])
-                msg = f"<b>{types}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
-                msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
+                # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
                 data.append(
                     InlineQueryResultArticle(
                         title=types,
