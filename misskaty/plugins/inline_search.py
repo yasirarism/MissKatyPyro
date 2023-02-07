@@ -114,7 +114,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 )
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
-                msg += f"<b>Description:</b> {description}\n\n"
+                msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 # msg += f"<code>{method}<code> ({fields})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
                 datajson.append(
@@ -140,7 +140,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                 InlineButton("Open Docs", url=link),
                     InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
                 )
-                msg += f"<b>Description:</b> {description}\n\n"
+                msg = f"<b>{types}</b>\n"
+                msg += f"{description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
                 datajson.append(
