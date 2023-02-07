@@ -106,16 +106,13 @@ async def inline_menu(_, inline_query: InlineQuery):
         for method in parsemethod:
             if kueri.lower() in method.lower():
                 link = parsemethod[method]["href"]
-                LOGGER.info(link)
                 description = parsemethod[method]["description"][0]
-                LOGGER.info(description)
                 buttons = InlineKeyboard()
                 buttons.row(
                     InlineButton("Open Docs", url=link),
                     InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
                 )
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
-                LOGGER.info(returns)
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
@@ -134,32 +131,32 @@ async def inline_menu(_, inline_query: InlineQuery):
                         reply_markup=buttons,
                     )
                 )
-        # for types in parsetypes:
-        #     if kueri.lower() in types.lower():
-        #         link = parsetypes[types]["href"]
-        #         description = parsetypes[types]["description"]
-        #         buttons = InlineKeyboard()
-        #         buttons.row(
-        #             InlineButton("Open Docs", url=link),
-        #             InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
-        #         )
-        #         msg += f"<b>Description:</b> {description}\n\n"
-        #         msg += f"<b>Variables:</b>\n"
-        #         # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
-        #         datajson.append(
-        #             InlineQueryResultArticle(
-        #                 title=types,
-        #                 input_message_content=InputTextMessageContent(
-        #                     message_text=msg,
-        #                     parse_mode=enums.ParseMode.HTML,
-        #                     disable_web_page_preview=False,
-        #                 ),
-        #                 url=link,
-        #                 description=description,
-        #                 thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
-        #                 reply_markup=buttons,
-        #             )
-        #         )
+        for types in parsetypes:
+            if kueri.lower() in types.lower():
+                link = parsetypes[types]["href"]
+                description = parsetypes[types]["description"]
+                buttons = InlineKeyboard()
+                buttons.row(
+                InlineButton("Open Docs", url=link),
+                    InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
+                )
+                msg += f"<b>Description:</b> {description}\n\n"
+                msg += f"<b>Variables:</b>\n"
+                # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
+                datajson.append(
+                    InlineQueryResultArticle(
+                        title=types,
+                        input_message_content=InputTextMessageContent(
+                            message_text=msg,
+                            parse_mode=enums.ParseMode.HTML,
+                            disable_web_page_preview=False,
+                        ),
+                        url=link,
+                        description=description,
+                        thumb_url="https://img.freepik.com/premium-vector/open-folder-folder-with-documents-document-protection-concept_183665-104.jpg",
+                        reply_markup=buttons,
+                    )
+                )
         await inline_query.answer(
             results=datajson,
             is_gallery=False,
