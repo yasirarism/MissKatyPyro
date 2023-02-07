@@ -59,13 +59,14 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
 @app.on_message(filters.command(['ud'], COMMAND_HANDLER))
 async def urbanDictionary(client, message):
+    if not message.from_user: return
     message_id = message.id 
     chat_id = message.chat.id 
     GetWord = ' '.join(message.command[1:])
     if not GetWord:
-        message = await app.ask(
-            message.chat.id,
-            'Now give any word for query!'
+        message = await message.chat.ask(
+            'Now give any word for query!',
+            identifier=(message.from_user.id, message.from_user.id, None)
         )
         GetWord = message.text
     

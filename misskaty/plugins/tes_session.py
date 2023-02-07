@@ -7,6 +7,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 @app.on_message(filters.command(["session"], COMMAND_HANDLER))
 async def session(_, message):
+    if not message.from_user: return
     nama = await message.chat.ask("Ketik nama kamu:")
     umur = await message.chat.ask("Ketik umur kamu")
     alamat = await message.chat.ask("Ketik alamat kamu:")
