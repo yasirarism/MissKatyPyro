@@ -23,8 +23,7 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_USERNAME, app, user
-from misskaty.helper.http import http
-from misskaty.helper.tools import GENRES_EMOJI, search_jw
+from misskaty.helper import post_to_telegraph, http, GENRES_EMOJI, search_jw
 from misskaty.plugins.misc_tools import get_content
 from utils import demoji
 
@@ -119,6 +118,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                 if parsemethod[method].get("fields"):
                     for i in parsemethod[method]["fields"]:
                         msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                if len(msg.encode("utf-8")) > 4096:
+                    body_text = f"""
+                        <pre>{msg}</pre>
+                        """
+                    msg = post_to_telegraph(method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=method,
@@ -148,6 +152,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                 if parsetypes[types].get("fields"):
                     for i in parsetypes[types]["fields"]:
                         msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
+                if len(msg.encode("utf-8")) > 4096:
+                    body_text = f"""
+                        <pre>{msg}</pre>
+                        """
+                    msg = post_to_telegraph(method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,
