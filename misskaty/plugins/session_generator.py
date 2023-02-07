@@ -82,7 +82,7 @@ async def callbackgenstring(bot, callback_query):
                 "because this error is **not logged by bot.** !"
             await callback_query.message.reply(ERROR_MESSAGE.format(str(e)))
 
-@app.on_message(filters.private & ~filters.forwarded & filters.command(["genstring", COMMAND_HANDLER]))
+@app.on_message(filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER]))
 async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
 
