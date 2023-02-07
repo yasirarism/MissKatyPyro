@@ -95,7 +95,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         ty += " Bot"
     await msg.reply(f"» Trying to start **{ty}** session generator...")
     user_id = msg.chat.id
-    api_id_msg = await bot.ask(user_id, "Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.", filters=filters.text)
+    api_id_msg = await msg.chat.ask("Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.", filters=filters.text)
     if await is_batal(api_id_msg):
         return
     if api_id_msg.text == "/skip":
@@ -107,7 +107,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         except ValueError:
             await api_id_msg.reply("**API_ID** must be integer, start generating your session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
             return
-        api_hash_msg = await bot.ask(user_id, "» Now please send your **API_HASH** to continue.", filters=filters.text)
+        api_hash_msg = await msg.chat.ask("» Now please send your **API_HASH** to continue.", filters=filters.text)
         if await is_batal(api_hash_msg):
             return
         api_hash = api_hash_msg.text
@@ -115,7 +115,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         t = "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
     else:
         t = "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
-    phone_number_msg = await bot.ask(user_id, t, filters=filters.text)
+    phone_number_msg = await msg.chat.ask(t, filters=filters.text)
     if await is_batal()(phone_number_msg):
         return
     phone_number = phone_number_msg.text
@@ -148,7 +148,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     try:
         phone_code_msg = None
         if not is_bot:
-            phone_code_msg = await bot.ask(user_id, "» Please send the **OTP** That you've received from Telegram on your account.\nIf OTP is `12345`, **please send it as** `1 2 3 4 5`.", filters=filters.text, timeout=600)
+            phone_code_msg = await msg.chat.ask("» Please send the **OTP** That you've received from Telegram on your account.\nIf OTP is `12345`, **please send it as** `1 2 3 4 5`.", filters=filters.text, timeout=600)
             if await is_batal(phone_code_msg):
                 return
     except TimeoutError:
@@ -169,7 +169,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             return
         except (SessionPasswordNeeded, SessionPasswordNeededError):
             try:
-                two_step_msg = await bot.ask(user_id, "» Please enter your **Two Step Verification** password to continue.", filters=filters.text, timeout=300)
+                two_step_msg = await msg.chat.ask("» Please enter your **Two Step Verification** password to continue.", filters=filters.text, timeout=300)
             except TimeoutError:
                 await msg.reply("» Time limit reached of 5 minutes.\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
                 return
