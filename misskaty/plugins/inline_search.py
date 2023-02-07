@@ -111,7 +111,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 # msg += f"<code>{method}<code> ({fields})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
-                data.append(
+                datajson.append(
                     InlineQueryResultArticle(
                         title=name,
                         input_message_content=InputTextMessageContent(
@@ -140,7 +140,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 msg += f"<b>Description:</b> {description}\n\n"
                 msg += f"<b>Variables:</b>\n"
                 # msg += f"<code>{parsetypes[types]['fields']['name']}<code> ({fields[:-2]})\n{parsetypes[types]['fields']['description']}\n\n"
-                data.append(
+                datajson.append(
                     InlineQueryResultArticle(
                         title=types,
                         input_message_content=InputTextMessageContent(
