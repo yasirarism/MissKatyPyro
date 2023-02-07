@@ -163,10 +163,10 @@ async def inline_menu(_, inline_query: InlineQuery):
                     )
                 )
         await inline_query.answer(
-            results=datajson,
+            results=datajson[:50],
             is_gallery=False,
             is_personal=False,
-            next_offset="30",
+            next_offset="",
             cache_time=5,
             switch_pm_text=f"Found {len(datajson)} results",
             switch_pm_parameter="help",
