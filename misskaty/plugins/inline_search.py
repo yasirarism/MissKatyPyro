@@ -119,7 +119,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 # msg += f"<code>{method}<code> ({fields})\n<b>Required:</b> {parsemethod[method]['fields']['required']}\n{parsemethod[method]['fields']['description']}\n\n"
                 datajson.append(
                     InlineQueryResultArticle(
-                        title=name,
+                        title=method,
                         input_message_content=InputTextMessageContent(
                             message_text=msg,
                             parse_mode=enums.ParseMode.HTML,
