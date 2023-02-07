@@ -106,13 +106,16 @@ async def inline_menu(_, inline_query: InlineQuery):
         for method in parsemethod:
             if kueri.lower() in method.lower():
                 link = parsemethod[method]["href"]
+                LOGGER.info(link)
                 description = parsemethod[method]["description"]
+                LOGGER.info(description)
                 buttons = InlineKeyboard()
                 buttons.row(
                     InlineButton("Open Docs", url=link),
                     InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
                 )
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
+                LOGGER.info(returns)
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"<b>Description:</b> {description[0]}\n\n"
                 msg += f"<b>Variables:</b>\n"
@@ -157,7 +160,6 @@ async def inline_menu(_, inline_query: InlineQuery):
         #                 reply_markup=buttons,
         #             )
         #         )
-        LOGGER.info(datajson)
         await inline_query.answer(
             results=datajson,
             is_gallery=False,
