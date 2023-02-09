@@ -9,7 +9,7 @@ from utils import LOGGER
 
 async def post_to_telegraph(is_media: bool, title=None, content=None, media=None):
     telegraph = Telegraph()
-    LOGGER.info(await telegraph.create_account(short_name='MissKaty'))
+    await telegraph.create_account(short_name='MissKaty')
     if is_media:
         """Create a Telegram Post Foto/Video"""
         response = await telegraph.upload_file(media)
