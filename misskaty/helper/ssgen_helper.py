@@ -120,7 +120,7 @@ async def screenshot_flink(c, m):
         await media_msg.reply_chat_action(enums.ChatAction.UPLOAD_PHOTO)
         await media_msg.reply_media_group(screenshots, True)
         
-        await editPesan(m.message, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @moviesonlydiscussion\n\n©️ @prgofficial')
+        await editPesan(m.message, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org')
         # c.CURRENT_PROCESSES[chat_id] -= 1
         
     except:
