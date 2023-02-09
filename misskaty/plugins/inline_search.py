@@ -125,7 +125,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     body_text = f"""
                         <pre>{msg}</pre>
                         """
-                    msg = post_to_telegraph(method, body_text)
+                    msg = await post_to_telegraph(False, method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=method,
@@ -162,7 +162,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     body_text = f"""
                         <pre>{msg}</pre>
                         """
-                    msg = post_to_telegraph(method, body_text)
+                    msg = await post_to_telegraph(False, method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,

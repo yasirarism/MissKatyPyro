@@ -3,21 +3,24 @@ import os
 import shlex
 from typing import Tuple
 
-from html_telegraph_poster import TelegraphPoster
+from telegraph.aio import Telegraph
+from utils import LOGGER
 
 
-def post_to_telegraph(a_title: str, content: str) -> str:
+async def post_to_telegraph(is_media: bool, title: str, content: str, media=None):
+    telegraph = Telegraph()
+    LOGGER.info(await telegraph.create_account(short_name='MissKaty'))
+    if is_media:
+        """Create a Telegram Post Foto/Video"""
+        response = await telegraph.upload_file(media)
+        return f"https://telegra.ph{response[0]['src']}"
     """Create a Telegram Post using HTML Content"""
-    post_client = TelegraphPoster(use_api=True)
-    auth_name = "MissKaty Bot"
-    post_client.create_api_token(auth_name)
-    post_page = post_client.post(
-        title=a_title,
-        author=auth_name,
-        author_url="https://www.yasir.my.id",
-        text=content,
+    response = await telegraph.create_page(
+        title,
+        html_content=content,
+        author_url="https://t.me/MissKatyPyro"
     )
-    return post_page["url"]
+    return response['url']
 
 
 async def run_subprocess(cmd):

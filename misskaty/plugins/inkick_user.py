@@ -113,17 +113,13 @@ async def dkick(client, message):
                     await sleep(1)
                     await message.chat.unban_member(member.user.id)
                 except (ChatAdminRequired, UserAdminInvalid):
-                    await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
-                    await app.leave_chat(message.chat.id)
+                    await sent_message.edit("❗**Oh Nooo, i'm doesn't have admin permission in this group. Make sure i'm have admin permission to <b>ban users</b>.")
                     break
                 except FloodWait as e:
                     await sleep(e.value)
         if count == 0:
             return await editPesan(sent_message, "There are no deleted accounts in this chat.")
-        try:
-            await sent_message.edit(f"✔️ **Berhasil menendang {count} akun terhapus.**")
-        except ChatWriteForbidden:
-            await app.leave_chat(message.chat.id)
+        await editPesan(sent_message, f"✔️ **Berhasil menendang {count} akun terhapus.**")
     else:
         sent_message = await message.reply_text("❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**")
         await sleep(5)

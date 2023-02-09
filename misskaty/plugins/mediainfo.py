@@ -47,7 +47,7 @@ async def mediainfo(client, message):
     """
         title = "MissKaty Bot Mediainfo"
         text_ = file_info.message_type
-        link = post_to_telegraph(title, body_text)
+        link = await post_to_telegraph(False, title, body_text)
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
         await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
         await process.delete()
@@ -67,7 +67,7 @@ async def mediainfo(client, message):
             body_text = f"""
                     <pre>{output}</pre>
                     """
-            link = post_to_telegraph(title, body_text)
+            link = await post_to_telegraph(False, title, body_text)
             # siteurl = "https://spaceb.in/api/v1/documents/"
             # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
             # response = response.json()
