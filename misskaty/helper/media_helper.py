@@ -7,7 +7,7 @@ from telegraph.aio import Telegraph
 from utils import LOGGER
 
 
-async def post_to_telegraph(is_media: bool, title: str, content: str, media=None):
+async def post_to_telegraph(is_media: bool, title, content, media=None):
     telegraph = Telegraph()
     LOGGER.info(await telegraph.create_account(short_name='MissKaty'))
     if is_media:
