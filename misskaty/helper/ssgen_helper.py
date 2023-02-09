@@ -99,7 +99,7 @@ async def screenshot_flink(c, m):
             #print(sec)
             ffmpeg_cmd = f"mediaextract -hide_banner -ss {sec} -i {shlex.quote(file_link)} -vframes 1 '{thumbnail_template}'"
             output = await run_subprocess(ffmpeg_cmd)
-            await editPesan(m, f'😀 `{i+1}` of `{num_screenshots}` generated!')
+            await editPesan(m.message, f'😀 `{i+1}` of `{num_screenshots}` generated!')
             if thumbnail_template.exists():
                 screenshots.append(
                     InputMediaPhoto(

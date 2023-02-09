@@ -112,7 +112,7 @@ async def genss_link(client, m):
     btns = gen_ik_buttons()
     
     await snt.edit_text(
-        text=f"Tell me what to do bro 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)",
+        text=f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)",
         reply_markup=InlineKeyboardMarkup(btns)
     )
 
