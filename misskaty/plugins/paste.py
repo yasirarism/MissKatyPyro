@@ -86,8 +86,8 @@ async def telegraph_paste(_, message):
         ]
 
         pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
-        await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
         remove(file)
+        return await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
