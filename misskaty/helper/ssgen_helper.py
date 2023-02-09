@@ -3,6 +3,7 @@ import uuid
 import os
 import time
 import shlex
+from pathlib import Path
 import datetime
 from pyrogram import enums
 import random
@@ -64,7 +65,7 @@ async def screenshot_flink(c, m):
         return
     
     uid = str(uuid.uuid4())
-    output_folder = "GenSS/".joinpath(uid)
+    output_folder = Path("GenSS/").joinpath(uid)
     if not output_folder.exists():
         os.makedirs(output_folder)
     
