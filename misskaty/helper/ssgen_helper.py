@@ -48,11 +48,11 @@ async def get_dimentions(input_file_link):
 async def screenshot_flink(c, m):
     
     chat_id = m.from_user.id
-    if c.CURRENT_PROCESSES.get(chat_id, 0) == 1:
-        return await m.answer('You have reached the maximum parallel processes! Try again after one of them finishes.', show_alert=True)
-    if not c.CURRENT_PROCESSES.get(chat_id):
-        c.CURRENT_PROCESSES[chat_id] = 0
-    c.CURRENT_PROCESSES[chat_id] += 1
+    # if c.CURRENT_PROCESSES.get(chat_id, 0) == 1:
+    #     return await m.answer('You have reached the maximum parallel processes! Try again after one of them finishes.', show_alert=True)
+    # if not c.CURRENT_PROCESSES.get(chat_id):
+    #     c.CURRENT_PROCESSES[chat_id] = 0
+    # c.CURRENT_PROCESSES[chat_id] += 1
     
     _, num_screenshots = m.data.split('+')
     num_screenshots = int(num_screenshots)
@@ -60,7 +60,7 @@ async def screenshot_flink(c, m):
     #print(media_msg)
     if media_msg.empty:
         await editPesan(m, 'Why did you delete the file 😠, Now i cannot help you 😒.')
-        c.CURRENT_PROCESSES[chat_id] -= 1
+        # c.CURRENT_PROCESSES[chat_id] -= 1
         return
     
     uid = str(uuid.uuid4())
@@ -78,7 +78,7 @@ async def screenshot_flink(c, m):
         duration = await get_duration(file_link)
         if isinstance(duration, str):
             await editPesan(m, "Oops, What's that? Couldn't Open the file😟.")
-            c.CURRENT_PROCESSES[chat_id] -= 1
+            # c.CURRENT_PROCESSES[chat_id] -= 1
             return
 
         reduced_sec = duration - int(duration*2 / 100)
@@ -108,7 +108,7 @@ async def screenshot_flink(c, m):
         #print(screenshots)
         if not screenshots:
             await editPesan(m, '😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.')
-            c.CURRENT_PROCESSES[chat_id] -= 1
+            # c.CURRENT_PROCESSES[chat_id] -= 1
             return
         
         await editPesan(m, f'🤓 Its done , Now starting to upload!')
@@ -116,12 +116,12 @@ async def screenshot_flink(c, m):
         await media_msg.reply_media_group(screenshots, True)
         
         await editPesan(m, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @moviesonlydiscussion\n\n©️ @prgofficial')
-        c.CURRENT_PROCESSES[chat_id] -= 1
+        # c.CURRENT_PROCESSES[chat_id] -= 1
         
     except:
         aa = traceback.print_exc()
         await editPesan(m, '😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.')
-        c.CURRENT_PROCESSES[chat_id] -= 1
+        # c.CURRENT_PROCESSES[chat_id] -= 1
 
 def gen_ik_buttons():
     btns = []
