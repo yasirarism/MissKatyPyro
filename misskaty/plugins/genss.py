@@ -116,6 +116,6 @@ async def genss_link(client, m):
         reply_markup=InlineKeyboardMarkup(btns)
     )
 
-@app.on_callback_query(filters.regex(r'^scht')))
+@app.on_callback_query(filters.regex(r'^scht'))
 async def _(c, m):
     asyncio.create_task(screenshot_flink()(c, m))
