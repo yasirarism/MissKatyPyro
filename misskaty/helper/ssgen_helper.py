@@ -64,7 +64,7 @@ async def screenshot_flink(c, m):
     media_msg = m.message.reply_to_message
     #print(media_msg)
     if media_msg.empty:
-        await editPesan(m, 'Why did you delete the file 😠, Now i cannot help you 😒.')
+        await editPesan(m.message, 'Why did you delete the file 😠, Now i cannot help you 😒.')
         # c.CURRENT_PROCESSES[chat_id] -= 1
         return
     
@@ -76,13 +76,13 @@ async def screenshot_flink(c, m):
     try:
         start_time = time.time()
         
-        await editPesan(m, 'Give me some time bruh!! 😴')
+        await editPesan(m.message, 'Give me some time bruh!! 😴')
         
-        await editPesan(m, '😀 Taking Snaps!')
-        file_link = m.reply_to_message.command[1]
+        await editPesan(m.message, '😀 Taking Snaps!')
+        file_link = m.message.reply_to_message.command[1]
         duration = await get_duration(file_link)
         if isinstance(duration, str):
-            await editPesan(m, "Oops, What's that? Couldn't Open the file😟.")
+            await editPesan(m.message, "Oops, What's that? Couldn't Open the file😟.")
             # c.CURRENT_PROCESSES[chat_id] -= 1
             return
 
@@ -112,20 +112,20 @@ async def screenshot_flink(c, m):
         
         #print(screenshots)
         if not screenshots:
-            await editPesan(m, '😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.')
+            await editPesan(m.message, '😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.')
             # c.CURRENT_PROCESSES[chat_id] -= 1
             return
         
-        await editPesan(m, f'🤓 Its done , Now starting to upload!')
+        await editPesan(m.message, f'🤓 Its done , Now starting to upload!')
         await media_msg.reply_chat_action(enums.ChatAction.UPLOAD_PHOTO)
         await media_msg.reply_media_group(screenshots, True)
         
-        await editPesan(m, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @moviesonlydiscussion\n\n©️ @prgofficial')
+        await editPesan(m.message, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @moviesonlydiscussion\n\n©️ @prgofficial')
         # c.CURRENT_PROCESSES[chat_id] -= 1
         
     except:
         aa = traceback.print_exc()
-        await editPesan(m, '😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.')
+        await editPesan(m.message, '😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.')
         # c.CURRENT_PROCESSES[chat_id] -= 1
 
 def gen_ik_buttons():
