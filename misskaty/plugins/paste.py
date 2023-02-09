@@ -115,7 +115,7 @@ async def telegraph_paste(_, message):
         data = message.text.split(None, 1)[1]
 
     try:
-        url = await post_to_telegraph(False, title=title, data=data)
+        url = await post_to_telegraph(False, title, data)
     except Exception as e:
         await msg.edit(f"ERROR: {e}")
         return
