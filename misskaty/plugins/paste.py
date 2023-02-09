@@ -21,7 +21,7 @@ __HELP__ = """
 /paste [Text/Reply To Message] - Post text to My Pastebin.
 /sbin [Text/Reply To Message] - Post text to Spacebin.
 /neko [Text/Reply To Message] - Post text to Nekobin.
-/tgraph [Text/Reply To Message] - Post text to Telegra.ph.
+/tgraph [Text/Reply To Message] - Post text/media to Telegra.ph.
 /rentry [Text/Reply To Message] - Post text to Rentry using markdown style.
 /temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
 """
@@ -68,8 +68,25 @@ async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
         return await message.reply_text(f"**Reply To A Message With /{message.command[0]} or with command**")
-
+    
+    if message.from_user:
+        if message.from_user.username:
+            uname = f"@{message.from_user.username} [{message.from_user.id}]"
+        else:
+            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) [{message.from_user.id}]"
+    else:
+        uname = message.sender_chat.title
     msg = await message.reply_text("`Pasting to Telegraph...`")
+    if reply and (reply.photo or reply.animation):
+        file = await reply.download()
+        url = await post_to_telegraph(True, media=file)
+        button = [
+            [InlineKeyboardButton("Open Link", url=url)],
+            [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        ]
+
+        pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
+        await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
@@ -95,14 +112,6 @@ async def telegraph_paste(_, message):
     elif not reply and len(message.command) >= 2:
         title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]
-
-    if message.from_user:
-        if message.from_user.username:
-            uname = f"@{message.from_user.username} [{message.from_user.id}]"
-        else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id}) [{message.from_user.id}]"
-    else:
-        uname = message.sender_chat.title
 
     try:
         url = await post_to_telegraph(False, title, data)

@@ -18,7 +18,8 @@ async def post_to_telegraph(is_media: bool, title: str, content: str, media=None
     response = await telegraph.create_page(
         title,
         html_content=content,
-        author_url="https://t.me/MissKatyPyro"
+        author_url="https://t.me/MissKatyPyro",
+        author_name="MissKatyBot"
     )
     return response['url']
 
