@@ -78,6 +78,7 @@ async def telegraph_paste(_, message):
         if not pattern.search(reply.document.mime_type):
             return await msg.edit("**Only text files can be pasted.**")
         file = await reply.download()
+        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
         try:
             with open(file, "r") as text:
                 data = text.read()
@@ -89,8 +90,10 @@ async def telegraph_paste(_, message):
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
+        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
         data = reply.text.html or reply.caption.html
     elif not reply and len(message.command) >= 2:
+        title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]
 
     if message.from_user:
@@ -102,7 +105,7 @@ async def telegraph_paste(_, message):
         uname = message.sender_chat.title
 
     try:
-        url = await post_to_telegraph(False, f"MissKaty Paste", data)
+        url = await post_to_telegraph(False, title, data)
     except Exception as e:
         await msg.edit(f"ERROR: {e}")
         return
