@@ -17,6 +17,7 @@ from misskaty.core.decorator.permissions import (
     member_permissions,
 )
 from misskaty.core.keyboard import ikb
+from misskaty.core.message_utils import kirimPesan
 from misskaty.helper.functions import (
     extract_user,
     extract_user_and_reason,
@@ -495,31 +496,6 @@ async def unmute(_, message):
     await message.reply_text(f"Unmuted! {umention}")
 
 
-# Ban deleted accounts
-@app.on_message(filters.command("ban_ghosts", COMMAND_HANDLER) & filters.group)
-@adminsOnly("can_restrict_members")
-async def ban_deleted_accounts(_, message):
-    if not message.from_user: return
-    chat_id = message.chat.id
-    deleted_users = []
-    m = await message.reply("Finding ghosts...")
-
-    async for i in app.iter_chat_members(chat_id):
-        if i.user.is_deleted:
-            deleted_users.append(i.user.id)
-    if deleted_users:
-        banned_users = 0
-        for deleted_user in deleted_users:
-            try:
-                await message.chat.ban_member(deleted_user)
-            except Exception:
-                pass
-            banned_users += 1
-        await m.edit(f"Banned {banned_users} Deleted Accounts")
-    else:
-        await m.edit("There are no deleted accounts in this chat")
-
-
 @app.on_message(filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def warn_user(client, message):
@@ -663,7 +639,6 @@ async def check_warns(_, message):
 @app.on_message((filters.command("report", COMMAND_HANDLER) | filters.command(["admins", "admin"], prefixes="@")) & filters.group)
 @capture_err
 async def report_user(_, message):
-    if not message.from_user: return
     if not message.reply_to_message:
         return await message.reply_text("Reply to a message to report that user.")
     reply = message.reply_to_message
@@ -677,7 +652,6 @@ async def report_user(_, message):
     if linked_chat is None:
         if reply_id in list_of_admins or reply_id == message.chat.id:
             return await message.reply_text("Do you know that the user you are replying is an admin ?")
-
     elif reply_id in list_of_admins or reply_id == message.chat.id or reply_id == linked_chat.id:
         return await message.reply_text("Do you know that the user you are replying is an admin ?")
     user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
@@ -687,5 +661,5 @@ async def report_user(_, message):
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins
             continue
-        text += f"[\u2063](tg://user?id={admin.user.id})"
-    await message.reply_to_message.reply_text(text)
+        text += f"<a href='tg://user?id={admin.user.id}>\u2063</a>"
+    await kirimPesan(message.reply_to_message, text)

@@ -19,7 +19,7 @@ from misskaty.vars import API_HASH, API_ID, COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
 
-__MODULE__ = "Session Generator"
+__MODULE__ = "SessionGen"
 __HELP__ = """
 /genstring - Generate string session using this bot. Only support Pyrogram v2 and Telethon.
 """

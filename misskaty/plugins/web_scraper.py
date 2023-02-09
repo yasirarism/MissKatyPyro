@@ -25,7 +25,6 @@ __HELP__ = """
 /terbit21 [query <optional>] - Scrape website data from Terbit21.
 /savefilm21 [query <optional>] - Scrape website data from Savefilm21.
 /movieku [query <optional>] - Scrape website data from Movieku.cc
-/nodrakor [query <optional>] - Scrape website data from nodrakor.icu
 /kusonime [query <optional>] - Scrape website data from Kusonime
 /lendrive [query <optional>] - Scrape website data from Lendrive
 /gomov [query <optional>] - Scrape website data from GoMov.
@@ -122,42 +121,6 @@ async def getDataPahe(msg, kueri, CurrentPage):
         IGNORE_CHAR = "[]"
         paheResult = ''.join(i for i in paheResult if not i in IGNORE_CHAR)
         return paheResult, PageLen
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
-
-# Nodrakor GetData
-async def getDataNodrakor(msg, kueri, CurrentPage):
-    if not SCRAP_DICT.get(msg.id):
-        nodrakor = await http.get(f'http://173.212.199.27/?s={kueri}', headers=headers)
-        text = BeautifulSoup(nodrakor.text, "lxml")
-        entry = text.find_all(class_="entry-header")
-        if "Nothing Found" in entry[0].text:
-            if not kueri:
-                await editPesan(msg, "Sorry, could not find any result.")
-                return None, None
-            else:
-                await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
-                return None, None
-        data = []
-        for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}" if genre != "" else "N/A"
-            judul = i.find(class_="entry-title").find("a").text
-            link = i.find(class_="entry-title").find("a").get("href")
-            data.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        
-        NodrakorResult = f"<b>#Nodrakor Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Nodrakor Latest:</b>\n🌀 Use /nodrakor [title] to start search with title.\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            NodrakorResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n"
-            NodrakorResult += f"<b>Extract:</b> <code>/nodrakor_scrap {i['link']}</code>\n\n" if "/tv/" not in i["link"] else "\n"
-        IGNORE_CHAR = "[]"
-        NodrakorResult = ''.join(i for i in NodrakorResult if not i in IGNORE_CHAR)
-        return NodrakorResult, PageLen
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, None
@@ -492,23 +455,6 @@ async def savefilm_s(client, message):
     )
     await editPesan(pesan, savefilmres, reply_markup=keyboard)
 
-# Nodrakor CMD
-@app.on_message(filters.command(['nodrakor'], COMMAND_HANDLER))
-async def nodrakor_s(client, message):
-    kueri = ' '.join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await kirimPesan(message, "⏳ Please wait, scraping data from Nodrakor..", quote=True)
-    CurrentPage = 1
-    nodrakorres, PageLen = await getDataNodrakor(pesan, kueri, CurrentPage)
-    if not nodrakorres: return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_nodrakor#{number}' + f'#{pesan.id}#{message.from_user.id}')
-    keyboard.row(
-        InlineButton("❌ Close", f"close#{message.from_user.id}")
-    )
-    await editPesan(pesan, nodrakorres, reply_markup=keyboard)
-
 # Kusonime CMD
 @app.on_message(filters.command(['kusonime'], COMMAND_HANDLER))
 async def kusonime_s(client, message):
@@ -619,30 +565,6 @@ async def kusopage_callback(client, callback_query):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
     )
     await editPesan(callback_query.message, kusores, reply_markup=keyboard)
-
-# Nodrakor Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: 'page_nodrakor#' in query.data))
-async def nodraakorpage_callback(client, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
-        return await callback_query.answer("Not yours..", True)
-    message_id = int(callback_query.data.split('#')[2])
-    CurrentPage = int(callback_query.data.split('#')[1])
-    try:
-        kueri = SCRAP_DICT[message_id][1]
-    except KeyError:
-        return await callback_query.answer("Invalid callback data, please send CMD again..")
-
-    try:
-        modrakorres, PageLen = await getDataNodrakor(callback_query.message, kueri, CurrentPage)
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_nodrakor#{number}' + f'#{message_id}#{callback_query.from_user.id}')
-    keyboard.row(
-        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
-    )
-    await editPesan(callback_query.message, modrakorres, reply_markup=keyboard)
 
 # Lendrive Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: 'page_lendrive#' in query.data))
@@ -881,20 +803,6 @@ async def savefilm21_scrap(_, callback_query):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{res}", reply_markup=keyboard)
-
-# Scrape DDL Link Nodrakor
-@app.on_message(filters.command(["nodrakor_scrap"], COMMAND_HANDLER))
-async def nodrakor_scrap(_, message):
-    try:
-        link = message.text.split(" ", maxsplit=1)[1]
-        html = await http.get(link, headers=headers)
-        soup = BeautifulSoup(html.text, "lxml")
-        hasil = soup.find_all(class_="gmr-download-wrap clearfix")[0]
-        await message.reply(f"<b>Hasil Scrap dari {link}</b>:\n{hasil}")
-    except IndexError:
-        return await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
-    except Exception as e:
-        await message.reply(f"ERROR: {str(e)}")
 
 
 # Scrape Link Download Movieku.CC

@@ -111,6 +111,9 @@ async def inline_menu(_, inline_query: InlineQuery):
                     InlineButton("Open Docs", url=link),
                     InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
                 )
+                buttons.row(
+                    InlineButton("Give Coffee", url="https://yasirpedia.eu.org"),
+                )
                 returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"{description}\n\n"
@@ -143,8 +146,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                 description = parsetypes[types]["description"][0]
                 buttons = InlineKeyboard()
                 buttons.row(
-                InlineButton("Open Docs", url=link),
+                    InlineButton("Open Docs", url=link),
                     InlineButton("Search Again", switch_inline_query_current_chat=inline_query.query),
+                )
+                buttons.row(
+                    InlineButton("Give Coffee", url="https://yasirpedia.eu.org"),
                 )
                 msg = f"<b>{types}</b>\n"
                 msg += f"{description}\n\n"

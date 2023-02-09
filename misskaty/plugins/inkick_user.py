@@ -10,7 +10,7 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app
-from misskaty.core.message_utils import kirimPesan
+from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Inkick"
@@ -94,7 +94,7 @@ async def uname(_, message):
         await sent_message.delete()
 
 
-@app.on_message(filters.incoming & ~filters.private & filters.command(["dkick"], COMMAND_HANDLER))
+@app.on_message(filters.incoming & ~filters.private & filters.command(["ban_ghosts"], COMMAND_HANDLER))
 async def dkick(client, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
@@ -118,6 +118,8 @@ async def dkick(client, message):
                     break
                 except FloodWait as e:
                     await sleep(e.value)
+        if count == 0:
+            return await editPesan(sent_message, "There are no deleted accounts in this chat.")
         try:
             await sent_message.edit(f"✔️ **Berhasil menendang {count} akun terhapus.**")
         except ChatWriteForbidden:
@@ -178,7 +180,7 @@ async def instatus(client, message):
         end_time = time.perf_counter()
         timelog = "{:.2f}".format(end_time - start_time)
         await sent_message.edit(
-            "<b>💠 {}\n👥 {} Anggota\n——————\n👁‍🗨 Informasi Status Anggota\n——————\n</b>🕒 <code>recently</code>: {}\n🕒 <code>last_week</code>: {}\n🕒 <code>last_month</code>: {}\n🕒 <code>long_ago</code>: {}\n🉑 Tanpa Username: {}\n🤐 Dibatasi: {}\n🚫 Diblokir: {}\n👻 Deleted Account (<code>/dkick</code>): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(
+            "<b>💠 {}\n👥 {} Anggota\n——————\n👁‍🗨 Informasi Status Anggota\n——————\n</b>🕒 <code>recently</code>: {}\n🕒 <code>last_week</code>: {}\n🕒 <code>last_month</code>: {}\n🕒 <code>long_ago</code>: {}\n🉑 Tanpa Username: {}\n🤐 Dibatasi: {}\n🚫 Diblokir: {}\n👻 Deleted Account (<code>/ban_ghosts</code>): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(
                 message.chat.title,
                 count,
                 recently,
