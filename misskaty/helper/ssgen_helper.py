@@ -1,14 +1,18 @@
-from misskaty.core.message_utils import *
-import uuid
-import os
-import time
-import shlex
-from pathlib import Path
 import datetime
-from pyrogram import enums
+import os
 import random
+import shlex
+import time
 import traceback
-from pyrogram.types import InputMediaPhoto, InlineKeyboardButton, InlineKeyboardMarkup
+import uuid
+from pathlib import Path
+
+from pyrogram import enums
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InputMediaPhoto)
+
+from misskaty.core.message_utils import *
+
 
 async def run_subprocess(cmd):
     process = await asyncio.create_subprocess_shell(
@@ -75,7 +79,7 @@ async def screenshot_flink(c, m):
         await editPesan(m, 'Give me some time bruh!! 😴')
         
         await editPesan(m, '😀 Taking Snaps!')
-        file_link = m.command[1]
+        file_link = m.reply_to_message.command[1]
         duration = await get_duration(file_link)
         if isinstance(duration, str):
             await editPesan(m, "Oops, What's that? Couldn't Open the file😟.")
