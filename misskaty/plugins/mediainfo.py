@@ -39,10 +39,10 @@ async def mediainfo(client, message):
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
     <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
-    <h2>JSON</h2>
+    <b>JSON</b>
     <pre>{file_info}.type</pre>
     <br>
-    <h2>DETAILS</h2>
+    <b>DETAILS</b>
     <pre>{out or 'Not Supported'}</pre>
     """
         title = "MissKaty Bot Mediainfo"
