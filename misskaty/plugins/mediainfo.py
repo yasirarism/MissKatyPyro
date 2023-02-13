@@ -58,11 +58,18 @@ async def mediainfo(client, message):
             }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
         except Exception as e:
             markup = None
-        await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
-        await process.delete()
+        with io.BytesIO(str.encode(output)) as out_file:
+            out_file.name = "MissKaty_Mediainfo.txt"
+            await message.reply_document(
+                out_file,
+                caption=f"ℹ️ <b>MEDIA INFO</b>\n\n**Request by:** {message.from_user.mention}",
+                thumb="img/thumb.jpg",
+                reply_markup=markup,
+            )
+            await process.delete()
         try:
             osremove(file_path)
         except Exception:
@@ -76,9 +83,9 @@ async def mediainfo(client, message):
             except Exception:
                 return await editPesan(process, "Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
             body_text = f"""
-                    MissKatyBot MediaInfo
-                    {output}
-                    """
+            MissKatyBot MediaInfo
+            {output}
+            """
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 json_data = {
