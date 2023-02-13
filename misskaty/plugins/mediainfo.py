@@ -57,7 +57,7 @@ async def mediainfo(client, message):
                 "expire_in": 0,
             }
             response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
-            link = f"https://yasirbin.deta.dev/{response.json()['id']}"
+            link = f"https://paste.yasir.eu.org/{response.json()['id']}"
         except:
             link = None
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
@@ -89,7 +89,7 @@ async def mediainfo(client, message):
                     "expire_in": 0,
                 }
                 response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
-                link = f"https://yasirbin.deta.dev/{response.json()['id']}"
+                link = f"https://paste.yasir.eu.org/{response.json()['id']}"
             except:
                 link = None
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])

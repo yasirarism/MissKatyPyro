@@ -183,7 +183,7 @@ async def wastepaste(_, message):
             "expire_in": 0,
         }
         response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
-        url = f"https://yasirbin.deta.dev/{response.json()['id']}"
+        url = f"https://paste.yasir.eu.org/{response.json()['id']}"
     except Exception as e:
         return await editPesan(msg, f"ERROR: {e}")
 
