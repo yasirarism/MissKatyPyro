@@ -102,6 +102,8 @@ async def shell(_, m):
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
+        if not await m.from_user.is_self:
+           await msg.delete()
     else:
         await m.reply("No Reply")
 
@@ -162,6 +164,8 @@ async def evaluation_cmd_t(_, m):
             parse_mode=enums.ParseMode.MARKDOWN,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
+        if not await m.from_user.is_self:
+           await status_message.delete()
 
 # Update and restart bot
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
