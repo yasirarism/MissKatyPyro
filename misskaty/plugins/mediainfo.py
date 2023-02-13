@@ -17,7 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.pyro_cooldown import wait
-from misskaty.helper import post_to_telegraph, runcmd, progress_for_pyrogram
+from misskaty.helper import post_to_telegraph, runcmd, progress_for_pyrogram, http
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
@@ -39,17 +39,28 @@ async def mediainfo(client, message):
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
-    <img src='https://telegra.ph/file/72c99bbc89bbe4e178cc9.jpg' />
-    <b>JSON</b>
-    <pre>{file_info}.type</pre>
-    <br>
-    <b>DETAILS</b>
-    <pre>{out or 'Not Supported'}</pre>
+    MissKatyBot MediaInfo
+    JSON
+    {file_info}.type
+    
+    DETAILS
+    {out or 'Not Supported'}
     """
-        title = "MissKaty Bot Mediainfo"
         text_ = file_info.message_type
-        link = await post_to_telegraph(False, title, body_text)
-        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=text_, url=link)]])
+        # link = await post_to_telegraph(False, title, body_text)
+        try:
+            json_data = {
+                "content": body_text,
+                "highlighting_language": "auto",
+                "ephemeral": False,
+                "expire_at": 0,
+                "expire_in": 0,
+            }
+            response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
+            link = f"https://yasirbin.deta.dev/{response.json()['id']}"
+        except:
+            link = None
+        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
         await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
         await process.delete()
         try:
@@ -64,16 +75,24 @@ async def mediainfo(client, message):
                 output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
             except Exception:
                 return await editPesan(process, "Sepertinya link yang kamu kirim tidak valid, pastikan direct link dan bisa di download.")
-            title = "MissKaty Bot Mediainfo"
             body_text = f"""
-                    <pre>{output}</pre>
+                    MissKatyBot MediaInfo
+                    {output}
                     """
-            link = await post_to_telegraph(False, title, body_text)
-            # siteurl = "https://spaceb.in/api/v1/documents/"
-            # response = await http.post(siteurl, data={"content": output, "extension": 'txt'} )
-            # response = response.json()
-            # spacebin = "https://spaceb.in/"+response['payload']['id']
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 Telegraph", url=link)]])
+            # link = await post_to_telegraph(False, title, body_text)
+            try:
+                json_data = {
+                    "content": body_text,
+                    "highlighting_language": "auto",
+                    "ephemeral": False,
+                    "expire_at": 0,
+                    "expire_in": 0,
+                }
+                response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
+                link = f"https://yasirbin.deta.dev/{response.json()['id']}"
+            except:
+                link = None
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(
