@@ -9,6 +9,7 @@ session = ClientSession()
 # HTTPx Async Client
 http = httpx.AsyncClient(
     http2=True,
+    verify=False,
     timeout=httpx.Timeout(40),
 )
 

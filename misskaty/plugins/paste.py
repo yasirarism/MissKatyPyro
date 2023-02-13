@@ -114,7 +114,7 @@ async def telegraph_paste(_, message):
             return await editPesan(msg, "`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
         title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
-        data = reply.text.html or reply.caption.html
+        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace("\n", "<br>")
     elif not reply and len(message.command) >= 2:
         title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]

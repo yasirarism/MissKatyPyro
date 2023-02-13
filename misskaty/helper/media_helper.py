@@ -3,13 +3,13 @@ import os
 import shlex
 from typing import Tuple
 
+from misskaty import BOT_USERNAME
 from telegraph.aio import Telegraph
 from utils import LOGGER
 
 
 async def post_to_telegraph(is_media: bool, title=None, content=None, media=None):
     telegraph = Telegraph()
-    await telegraph.create_account(short_name='MissKaty')
     if is_media:
         """Create a Telegram Post Foto/Video"""
         response = await telegraph.upload_file(media)
@@ -18,8 +18,8 @@ async def post_to_telegraph(is_media: bool, title=None, content=None, media=None
     response = await telegraph.create_page(
         title,
         html_content=content,
-        author_url="https://t.me/MissKatyPyro",
-        author_name="MissKatyBot"
+        author_url=f"https://t.me/{BOT_USERNAME}",
+        author_name=BOT_USERNAME
     )
     return response['url']
 

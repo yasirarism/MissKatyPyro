@@ -378,7 +378,7 @@ async def lk21_s(client, message):
     keyboard.row(
         InlineButton("❌ Close", f"close#{message.from_user.id}")
     )
-    await editPesan(pesan, lkres, reply_markup=keyboard)
+    await editPesan(pesan, lkres, disable_web_page_preview=True, reply_markup=keyboard)
 
 # Pahe CMD
 @app.on_message(filters.command(['pahe'], COMMAND_HANDLER))
