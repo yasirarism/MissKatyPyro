@@ -11,7 +11,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
     UDJson = (await http.get(
             f'https://api.urbandictionary.com/v0/define?term={GetWord}')).json()
 
-    if not 'list' in UDJson:
+    if 'list' not in UDJson:
         CNMessage = await app.send_message(
             chat_id=chat_id,
             reply_to_message_id=message_id,
@@ -26,17 +26,16 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(UDJson['list'])
-        
+
         UDReasult = (
             f"**Definition of {GetWord}**\n"
             f"{UDJson['list'][index]['definition']}\n\n"
             "**📌 Examples**\n"
             f"__{UDJson['list'][index]['example']}__"
         )
-        
-        INGNORE_CHAR = "[]"
-        UDFReasult = ''.join(i for i in UDReasult if not i in INGNORE_CHAR)
-        
+
+        UDFReasult = ''.join(i for i in UDReasult if i not in "[]")
+
         return (
         UDFReasult,
         PageLen

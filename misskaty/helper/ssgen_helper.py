@@ -29,13 +29,10 @@ async def get_duration(input_file_link):
     ffmpeg_dur_cmd = f"ffprobe -v error -show_entries format=duration -of csv=p=0:s=x -select_streams v:0 {shlex.quote(input_file_link)}"
     #print(ffmpeg_dur_cmd)
     out, err = await run_subprocess(ffmpeg_dur_cmd)
-    out = out.decode().strip()
-    if not out:
+    if out := out.decode().strip():
+        return duration if (duration := round(float(out))) else 'No duration!'
+    else:
         return err.decode()
-    duration = round(float(out))
-    if duration:
-        return duration
-    return 'No duration!'
 
 def is_url(text):
     return text.startswith('http')
@@ -58,7 +55,7 @@ async def screenshot_flink(c, m):
     # if not c.CURRENT_PROCESSES.get(chat_id):
     #     c.CURRENT_PROCESSES[chat_id] = 0
     # c.CURRENT_PROCESSES[chat_id] += 1
-    
+
     _, num_screenshots = m.data.split('+')
     num_screenshots = int(num_screenshots)
     media_msg = m.message.reply_to_message
@@ -67,17 +64,17 @@ async def screenshot_flink(c, m):
         await editPesan(m.message, 'Why did you delete the file 😠, Now i cannot help you 😒.')
         # c.CURRENT_PROCESSES[chat_id] -= 1
         return
-    
+
     uid = str(uuid.uuid4())
     output_folder = Path("GenSS/").joinpath(uid)
     if not output_folder.exists():
         os.makedirs(output_folder)
-    
+
     try:
         start_time = time.time()
-        
+
         await editPesan(m.message, 'Give me some time bruh!! 😴')
-        
+
         await editPesan(m.message, '😀 Taking Snaps!')
         file_link = m.message.reply_to_message.command[1]
         duration = await get_duration(file_link)
@@ -90,10 +87,13 @@ async def screenshot_flink(c, m):
         print(f"Total seconds: {duration}, Reduced seconds: {reduced_sec}")
         screenshots = []
         ffmpeg_errors = ''
-        
-        screenshot_secs = [get_random_start_at(reduced_sec) for i in range(1, 1+num_screenshots)]
+
+        screenshot_secs = [
+            get_random_start_at(reduced_sec)
+            for _ in range(1, 1 + num_screenshots)
+        ]
         width, height = await get_dimentions(file_link)
-        
+
         for i, sec in enumerate(screenshot_secs):
             thumbnail_template = output_folder.joinpath(f'{i+1}.png')
             #print(sec)
@@ -109,20 +109,20 @@ async def screenshot_flink(c, m):
                 )
                 continue
             ffmpeg_errors += output[1].decode() + '\n\n'
-        
+
         #print(screenshots)
         if not screenshots:
             await editPesan(m.message, '😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.')
             # c.CURRENT_PROCESSES[chat_id] -= 1
             return
-        
-        await editPesan(m.message, f'🤓 Its done , Now starting to upload!')
+
+        await editPesan(m.message, '🤓 Its done , Now starting to upload!')
         await media_msg.reply_chat_action(enums.ChatAction.UPLOAD_PHOTO)
         await media_msg.reply_media_group(screenshots, True)
-        
+
         await editPesan(m.message, f'Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org')
-        # c.CURRENT_PROCESSES[chat_id] -= 1
-        
+            # c.CURRENT_PROCESSES[chat_id] -= 1
+
     except:
         aa = traceback.print_exc()
         await editPesan(m.message, '😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.')

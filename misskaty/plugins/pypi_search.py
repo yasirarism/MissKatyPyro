@@ -33,8 +33,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
             extractbtn.append(
                 InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}")
             )
-        IGNORE_CHAR = "[]"
-        pypiResult = ''.join(i for i in pypiResult if not i in IGNORE_CHAR)
+        pypiResult = ''.join(i for i in pypiResult if i not in "[]")
         return pypiResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")

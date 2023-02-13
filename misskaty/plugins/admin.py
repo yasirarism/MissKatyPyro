@@ -86,8 +86,7 @@ async def purge(_, message):
         cmd = message.command
         if len(cmd) > 1 and cmd[1].isdigit():
             purge_to = repliedmsg.id + int(cmd[1])
-            if purge_to > message.id:
-                purge_to = message.id
+            purge_to = min(purge_to, message.id)
         else:
             purge_to = message.id
 

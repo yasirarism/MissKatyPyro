@@ -105,245 +105,236 @@ async def getDatalk21(msg, kueri, CurrentPage):
 
 # Pahe GetData
 async def getDataPahe(msg, kueri, CurrentPage):
-    if not SCRAP_DICT.get(msg.id):
-        pahejson = (await http.get(f'https://yasirapi.eu.org/pahe?q={kueri}')).json()
-        if not pahejson.get("result"):
-            await editPesan(msg, "Sorry could not find any matching results!")
-            return None, None
-        SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        
-        paheResult = f"<b>#Pahe Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Pahe Latest:</b>\n🌀 Use /pahe [title] to start search with title.\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
-        IGNORE_CHAR = "[]"
-        paheResult = ''.join(i for i in paheResult if not i in IGNORE_CHAR)
-        return paheResult, PageLen
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+     if not SCRAP_DICT.get(msg.id):
+         pahejson = (await http.get(f'https://yasirapi.eu.org/pahe?q={kueri}')).json()
+         if not pahejson.get("result"):
+             await editPesan(msg, "Sorry could not find any matching results!")
+             return None, None
+         SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+
+          paheResult = f"<b>#Pahe Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Pahe Latest:</b>\n🌀 Use /pahe [title] to start search with title.\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+          paheResult = ''.join(i for i in paheResult if i not in "[]")
+          return paheResult, PageLen
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, None
 
 # Kusonime GetData
 async def getDataKuso(msg, kueri, CurrentPage, user):
-    if not SCRAP_DICT.get(msg.id):
-        kusodata = []
-        data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers)
-        res = BeautifulSoup(data.text, "lxml").find_all("h2", {"class": "episodeye"})
-        for i in res:
-            ress = i.find_all("a")[0]
-            title = ress.text
-            link = ress["href"]
-            kusodata.append({"title": title, "link": link})
-        if not kusodata:
-            await editPesan(msg, "Sorry could not find any results!")
-            return None, 0, None, None
-        SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn1 = []
-        extractbtn2 = []
+     if not SCRAP_DICT.get(msg.id):
+         kusodata = []
+         data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers)
+         res = BeautifulSoup(data.text, "lxml").find_all("h2", {"class": "episodeye"})
+         for i in res:
+             ress = i.find_all("a")[0]
+             title = ress.text
+             link = ress["href"]
+             kusodata.append({"title": title, "link": link})
+         if not kusodata:
+             await editPesan(msg, "Sorry could not find any results!")
+             return None, 0, None, None
+         SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+          extractbtn1 = []
+          extractbtn2 = []
 
-        kusoResult = f"<b>#Kusonime Latest Post\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
-            if c < 6:
-                extractbtn1.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
-            else:
-                extractbtn2.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
-        IGNORE_CHAR = "[]"
-        kusoResult = ''.join(i for i in kusoResult if not i in IGNORE_CHAR)
-        return kusoResult, PageLen, extractbtn1, extractbtn2
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None, None
+          kusoResult = f"<b>#Kusonime Latest Post\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
+              if c < 6:
+                  extractbtn1.append(
+                      InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                  )
+              else:
+                  extractbtn2.append(
+                      InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                  )
+          kusoResult = ''.join(i for i in kusoResult if i not in "[]")
+          return kusoResult, PageLen, extractbtn1, extractbtn2
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, 0, None, None
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage):
-    if not SCRAP_DICT.get(msg.id):
-        moviekudata = []
-        data = await http.get(f'https://107.152.37.223/?s={kueri}', headers=headers)
-        r = BeautifulSoup(data.text, "lxml")
-        res = r.find_all(class_="bx")
-        for i in res:
-            judul = i.find_all("a")[0]["title"]
-            link = i.find_all("a")[0]["href"]
-            typ = i.find(class_="overlay").text
-            typee = typ.strip() if typ.strip() != "" else "~" 
-            moviekudata.append({"judul": judul, "link": link, "type": typee})
-        if not moviekudata:
-            await editPesan(msg, "Sorry could not find any results!")
-            return None, None
-        SCRAP_DICT[msg.id] = [split_arr(moviekudata, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        
-        moviekuResult = f"<b>#Movieku Latest:</b>\n🌀 Use /movieku [title] to start search with title.\n\n" if kueri == "" else f"<b>#Movieku Results For:</b> <code>{kueri}</code>\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
-        IGNORE_CHAR = "[]"
-        moviekuResult = ''.join(i for i in moviekuResult if not i in IGNORE_CHAR)
-        return moviekuResult, PageLen
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, None
+     if not SCRAP_DICT.get(msg.id):
+         moviekudata = []
+         data = await http.get(f'https://107.152.37.223/?s={kueri}', headers=headers)
+         r = BeautifulSoup(data.text, "lxml")
+         res = r.find_all(class_="bx")
+         for i in res:
+             judul = i.find_all("a")[0]["title"]
+             link = i.find_all("a")[0]["href"]
+             typ = i.find(class_="overlay").text
+             typee = typ.strip() if typ.strip() != "" else "~" 
+             moviekudata.append({"judul": judul, "link": link, "type": typee})
+         if not moviekudata:
+             await editPesan(msg, "Sorry could not find any results!")
+             return None, None
+         SCRAP_DICT[msg.id] = [split_arr(moviekudata, 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+
+          moviekuResult = f"<b>#Movieku Latest:</b>\n🌀 Use /movieku [title] to start search with title.\n\n" if kueri == "" else f"<b>#Movieku Results For:</b> <code>{kueri}</code>\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
+          moviekuResult = ''.join(i for i in moviekuResult if i not in "[]")
+          return moviekuResult, PageLen
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, None
 
 # Savefilm21 GetData
 async def getDataSavefilm21(msg, kueri, CurrentPage, user):
-    if not SCRAP_DICT.get(msg.id):
-        sfdata = []
-        data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
-        text = BeautifulSoup(data.text, "lxml")
-        entry = text.find_all(class_="entry-header")
-        if "Tidak Ditemukan" in entry[0].text:
-            if not kueri:
-                await editPesan(msg, "Sorry, could not find any result")
-                return None, 0, None
-            else:
-                await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
-                return None, 0, None
-        for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}" if genre != "" else "N/A"
-            judul = i.find(class_="entry-title").find("a").text
-            link = i.find(class_="entry-title").find("a").get("href")
-            sfdata.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
-        sfResult = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /savefilm21 [title] to start search with title.\n\n" if kueri == "" else f"<b>#Savefilm21 Results For:</b> <code>{kueri}</code>\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
-        IGNORE_CHAR = "[]"
-        sfResult = ''.join(i for i in sfResult if not i in IGNORE_CHAR)
-        return sfResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None
+     if not SCRAP_DICT.get(msg.id):
+          sfdata = []
+          data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
+          text = BeautifulSoup(data.text, "lxml")
+          entry = text.find_all(class_="entry-header")
+          if "Tidak Ditemukan" in entry[0].text:
+               if not kueri:
+                    await editPesan(msg, "Sorry, could not find any result")
+               else:
+                    await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
+               return None, 0, None
+          for i in entry:
+              genre = i.find(class_="gmr-movie-on").text
+              genre = f"{genre}" if genre != "" else "N/A"
+              judul = i.find(class_="entry-title").find("a").text
+              link = i.find(class_="entry-title").find("a").get("href")
+              sfdata.append({"judul": judul, "link": link, "genre": genre})
+          SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+          extractbtn = []
+          sfResult = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /savefilm21 [title] to start search with title.\n\n" if kueri == "" else f"<b>#Savefilm21 Results For:</b> <code>{kueri}</code>\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+              extractbtn.append(
+                  InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
+              )
+          sfResult = ''.join(i for i in sfResult if i not in "[]")
+          return sfResult, PageLen, extractbtn
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, 0, None
 
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user):
-    if not SCRAP_DICT.get(msg.id):
-        data = await http.get(f'https://lendrive.web.id/?s={kueri}', headers=headers)
-        soup = BeautifulSoup(data.text, "lxml")
-        lenddata = []
-        for o in soup.find_all(class_="bsx"):
-            title = o.find("a")["title"]
-            link = o.find("a")["href"]
-            status = o.find(class_="epx").text
-            kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
-            lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
-        if not lenddata:
-            await editPesan(msg, "Sorry could not find any results!")
-            return None, 0, None
-        SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
-        
-        lenddataResult = f"<b>#LenDrive Latest:</b>\n🌀 Use /lendrive [title] to start search with title.\n\n" if kueri == "" else f"<b>#LenDrive Results For:</b> <code>{kueri}</code>\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
-        IGNORE_CHAR = "[]"
-        lenddataResult = ''.join(i for i in lenddataResult if not i in IGNORE_CHAR)
-        return lenddataResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None
+     if not SCRAP_DICT.get(msg.id):
+         data = await http.get(f'https://lendrive.web.id/?s={kueri}', headers=headers)
+         soup = BeautifulSoup(data.text, "lxml")
+         lenddata = []
+         for o in soup.find_all(class_="bsx"):
+             title = o.find("a")["title"]
+             link = o.find("a")["href"]
+             status = o.find(class_="epx").text
+             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
+             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
+         if not lenddata:
+             await editPesan(msg, "Sorry could not find any results!")
+             return None, 0, None
+         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+          extractbtn = []
+
+          lenddataResult = f"<b>#LenDrive Latest:</b>\n🌀 Use /lendrive [title] to start search with title.\n\n" if kueri == "" else f"<b>#LenDrive Results For:</b> <code>{kueri}</code>\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+              extractbtn.append(
+                  InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
+              )
+          lenddataResult = ''.join(i for i in lenddataResult if i not in "[]")
+          return lenddataResult, PageLen, extractbtn
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, 0, None
 
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user):
-    if not SCRAP_DICT.get(msg.id):
-        data = await http.get(f'http://167.99.31.48/?s={kueri}', headers=headers)
-        bs4 = BeautifulSoup(data.text, "lxml")
-        melongdata = []
-        for res in bs4.select(".box"):
-            dd = res.select("a")
-            url = dd[0]["href"]
-            title = dd[0]["title"]
-            try:
-                quality = dd[0].find(class_="quality").text
-            except:
-                quality = "N/A"
-            melongdata.append({"judul": title, "link": url, "quality": quality})
-        if not melongdata:
-            await editPesan(msg, "Sorry could not find any results!")
-            return None, 0, None
-        SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
+     if not SCRAP_DICT.get(msg.id):
+         data = await http.get(f'http://167.99.31.48/?s={kueri}', headers=headers)
+         bs4 = BeautifulSoup(data.text, "lxml")
+         melongdata = []
+         for res in bs4.select(".box"):
+             dd = res.select("a")
+             url = dd[0]["href"]
+             title = dd[0]["title"]
+             try:
+                 quality = dd[0].find(class_="quality").text
+             except:
+                 quality = "N/A"
+             melongdata.append({"judul": title, "link": url, "quality": quality})
+         if not melongdata:
+             await editPesan(msg, "Sorry could not find any results!")
+             return None, 0, None
+         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+          extractbtn = []
 
-        melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /melongmovie [title] to start search with title.\n\n" if kueri == "" else f"<b>#MelongMovie Results For:</b> <code>{kueri}</code>\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
-        IGNORE_CHAR = "[]"
-        melongResult = ''.join(i for i in melongResult if not i in IGNORE_CHAR)
-        return melongResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None
+          melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /melongmovie [title] to start search with title.\n\n" if kueri == "" else f"<b>#MelongMovie Results For:</b> <code>{kueri}</code>\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n\n"
+              extractbtn.append(
+                  InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
+              )
+          melongResult = ''.join(i for i in melongResult if i not in "[]")
+          return melongResult, PageLen, extractbtn
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, 0, None
 
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user):
-    if not SCRAP_DICT.get(msg.id):
-        gomovv = await http.get(f'https://185.173.38.216/?s={kueri}', headers=headers)
-        text = BeautifulSoup(gomovv.text, "lxml")
-        entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
-            if not kueri:
-                await editPesan(msg, "Sorry, i could not find anything.")
-                return None, 0, None
-            else:
-                await editPesan(msg, f"Sorry, i could not find query: {kueri}")
-                return None, 0, None
-        data = []
-        for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}" if genre != "" else "N/A"
-            judul = i.find(class_="entry-title").find("a").text
-            link = i.find(class_="entry-title").find("a").get("href")
-            data.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
-        
-        gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
-            if not re.search(r"Series", i["genre"]):
-                extractbtn.append(
-                    InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
-        gomovResult += "Some result will not appear in extract button because unsupported link."
-        IGNORE_CHAR = "[]"
-        gomovResult = ''.join(i for i in gomovResult if not i in IGNORE_CHAR)
-        return gomovResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
-        return None, 0, None
+     if not SCRAP_DICT.get(msg.id):
+          gomovv = await http.get(f'https://185.173.38.216/?s={kueri}', headers=headers)
+          text = BeautifulSoup(gomovv.text, "lxml")
+          entry = text.find_all(class_="entry-header")
+          if entry[0].text.strip() == "Nothing Found":
+               if not kueri:
+                    await editPesan(msg, "Sorry, i could not find anything.")
+               else:
+                    await editPesan(msg, f"Sorry, i could not find query: {kueri}")
+               return None, 0, None
+          data = []
+          for i in entry:
+              genre = i.find(class_="gmr-movie-on").text
+              genre = f"{genre}" if genre != "" else "N/A"
+              judul = i.find(class_="entry-title").find("a").text
+              link = i.find(class_="entry-title").find("a").get("href")
+              data.append({"judul": judul, "link": link, "genre": genre})
+          SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
+     try:
+          index = int(CurrentPage - 1)
+          PageLen = len(SCRAP_DICT[msg.id][0])
+          extractbtn = []
+
+          gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
+          for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+              gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
+              if not re.search(r"Series", i["genre"]):
+                  extractbtn.append(
+                      InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                  )
+          gomovResult += "Some result will not appear in extract button because unsupported link."
+          gomovResult = ''.join(i for i in gomovResult if i not in "[]")
+          return gomovResult, PageLen, extractbtn
+     except (IndexError, KeyError):
+         await editPesan(msg, "Sorry could not find any matching results!")
+         return None, 0, None
 
 # Terbit21 CMD
 @app.on_message(filters.command(['terbit21'], COMMAND_HANDLER))
@@ -744,37 +735,36 @@ async def gomovpage_callback(client, callback_query):
 # Kusonime DDL
 @app.on_callback_query(filters.create(lambda _, __, query: 'kusoextract#' in query.data))
 async def kusonime_scrap(_, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
-        return await callback_query.answer("Not yours..", True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split('#')[4])
-    CurrentPage = int(callback_query.data.split('#')[1])
-    try:
-        link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
-    except KeyError:
-        return await callback_query.answer("Invalid callback data, please send CMD again..")
+     if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+         return await callback_query.answer("Not yours..", True)
+     idlink = int(callback_query.data.split("#")[2])
+     message_id = int(callback_query.data.split('#')[4])
+     CurrentPage = int(callback_query.data.split('#')[1])
+     try:
+         link = SCRAP_DICT[message_id][0][CurrentPage-1][idlink-1].get("link")
+     except KeyError:
+         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
-    kuso = Kusonime()
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton("↩️ Back", f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
-        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
-    )
-    try:
-        init_url = data_kuso.get(link, None)
-        if init_url:
-            ph = init_url.get("ph_url")
-            await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard, disable_web_page_preview=False)
-            return
-        tgh = await kuso.telegraph(link, message_id)
-        if tgh["error"]:
-            await editPesan(callback_query.message, f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
-            return
-    except Exception as err:
-        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
-        return
-    data_kuso[link] = {"ph_url": tgh["url"]}
-    await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{tgh['url']}", reply_markup=keyboard, disable_web_page_preview=False)
+     kuso = Kusonime()
+     keyboard = InlineKeyboard()
+     keyboard.row(
+         InlineButton("↩️ Back", f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
+         InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
+     )
+     try:
+          if init_url := data_kuso.get(link, None):
+               ph = init_url.get("ph_url")
+               await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard, disable_web_page_preview=False)
+               return
+          tgh = await kuso.telegraph(link, message_id)
+          if tgh["error"]:
+              await editPesan(callback_query.message, f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
+              return
+     except Exception as err:
+         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+         return
+     data_kuso[link] = {"ph_url": tgh["url"]}
+     await editPesan(callback_query.message, f"<b>Scrape result from</b> <code>{link}</code>:\n\n{tgh['url']}", reply_markup=keyboard, disable_web_page_preview=False)
 
 # Savefilm21 DDL
 @app.on_callback_query(filters.create(lambda _, __, query: 'sf21extract#' in query.data))

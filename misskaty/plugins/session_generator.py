@@ -88,10 +88,7 @@ async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
 
 async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
-    if telethon:
-        ty = "Telethon"
-    else:
-        ty = "Pyrogram"
+    ty = "Telethon" if telethon else "Pyrogram"
     if is_bot:
         ty += " Bot"
     await msg.reply(f"» Trying to start **{ty}** session generator...")
@@ -114,10 +111,11 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             return
         api_hash = api_hash_msg.text
         await api_hash_msg.delete()
-    if not is_bot:
-        t = "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
-    else:
-        t = "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
+    t = (
+        "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
+        if is_bot
+        else "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
+    )
     phone_number_msg = await msg.chat.ask(t, filters=filters.text)
     if await is_batal(phone_number_msg):
         return
@@ -127,9 +125,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         await msg.reply("» Trying to send OTP at the given number...")
     else:
         await msg.reply("» Trying to login using Bot Token...")
-    if telethon and is_bot:
-        client = TelegramClient(StringSession(), api_id, api_hash)
-    elif telethon:
+    if telethon and is_bot or telethon:
         client = TelegramClient(StringSession(), api_id, api_hash)
     elif is_bot:
         client = Client(name="bot", api_id=api_id, api_hash=api_hash, bot_token=phone_number, in_memory=True)
@@ -190,11 +186,10 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             except (PasswordHashInvalid, PasswordHashInvalidError):
                 await two_step_msg.reply("» The password you've sent is wrong.\n\nPlease start generating session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
                 return
+    elif telethon:
+        await client.start(bot_token=phone_number)
     else:
-        if telethon:
-            await client.start(bot_token=phone_number)
-        else:
-            await client.sign_in_bot(phone_number)
+        await client.sign_in_bot(phone_number)
     if telethon:
         string_session = client.session.save()
     else:
@@ -208,4 +203,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     except KeyError:
         pass
     await client.disconnect()
-    await bot.send_message(msg.chat.id, "» Successfully generated your {} String Session.\n\nPlease check saved messages to get it ! \n\n**A String Generator bot by ** @IAmCuteCodes".format("Telethon" if telethon else "Pyrogram"))
+    await bot.send_message(
+        msg.chat.id,
+        f'» Successfully generated your {"Telethon" if telethon else "Pyrogram"} String Session.\n\nPlease check saved messages to get it ! \n\n**A String Generator bot by ** @IAmCuteCodes',
+    )
