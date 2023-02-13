@@ -9,6 +9,7 @@ from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user
+from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
@@ -78,7 +79,7 @@ async def shell(_, m):
     cmd = m.text.split(" ", 1)
     if len(m.command) == 1:
         return await edit_or_reply(m, text="No command to execute was given.")
-    msg = await edit_or_reply(m, text="__Processing...__")
+    msg = await editPesan(m, "<i>Processing exec pyrogram...</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing exec pyrogram...</i>")
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open("shell_output.txt", "w") as file:
@@ -89,7 +90,7 @@ async def shell(_, m):
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
             )
-            await m.delete() if m.from_user.is_self else await msg.delete()
+            await msg.delete()
             try:
                 os.remove("shell_output.txt")
             except:
@@ -112,7 +113,7 @@ async def evaluation_cmd_t(_, m):
     cmd = m.text.split(" ", 1)
     if len(m.command) == 1:
         return await edit_or_reply(m, text="__No evaluate message!__")
-    status_message = await edit_or_reply(m, text="__Processing eval pyrogram...__")
+    status_message = await editPesan(m, "<i>Processing eval pyrogram..</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing eval pyrogram..</i>")
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout
@@ -153,10 +154,7 @@ async def evaluation_cmd_t(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
-        if not m.from_user.is_self:
-            await m.delete()
-        else:
-            await status_message.delete()
+        await status_message.delete()
     else:
         await edit_or_reply(
             m,
