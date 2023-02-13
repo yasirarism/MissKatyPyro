@@ -61,7 +61,7 @@ async def mediainfo(client, message):
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
         except Exception as e:
             markup = None
-        with io.BytesIO(str.encode(output)) as out_file:
+        with io.BytesIO(str.encode(body_text)) as out_file:
             out_file.name = "MissKaty_Mediainfo.txt"
             await message.reply_document(
                 out_file,
