@@ -102,12 +102,15 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             pic = await app.download_media(user.photo.big_file_id, file_name=f"pp{user.id}.png")
         except AttributeError:
             pic = "img/profilepic.png"
-        welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, count, user.id)
-        temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
-            member.chat.id,
-            photo=welcomeimg,
-            caption=f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
-        )
+        try:
+            welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, count, user.id)
+            temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
+                member.chat.id,
+                photo=welcomeimg,
+                caption=f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
+            )
+        except:
+            pass
         userspammer = ""
         # Spamwatch Detection
         try:
@@ -181,13 +184,13 @@ async def save_group(bot, message):
                 pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
             except AttributeError:
                 pic = "img/profilepic.png"
-            welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, count, u.id)
             if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
                 try:
                     await (temp.MELCOW[f"welcome-{message.chat.id}"]).delete()
                 except:
                     pass
             try:
+                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, count, u.id)
                 temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
                     message.chat.id,
                     photo=welcomeimg,

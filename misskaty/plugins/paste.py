@@ -92,7 +92,7 @@ async def telegraph_paste(_, message):
 
         pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
         remove(file)
-        return await editPesan(msg, pasted, reply_markup=InlineKeyboardMarkup(button))
+        return await editPesan(msg, pasted, disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(button))
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
@@ -181,7 +181,6 @@ async def wastepaste(_, message):
             "ephemeral": False,
             "expire_at": 0,
             "expire_in": 0,
-            "date_created": 0,
         }
         response = await http.post('https://yasirbin.deta.dev/api/new', json=json_data)
         url = f"https://yasirbin.deta.dev/{response.json()['id']}"
