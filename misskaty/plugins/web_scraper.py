@@ -129,7 +129,7 @@ async def getDataPahe(msg, kueri, CurrentPage):
 async def getDataKuso(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
-        data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers)
+        data = await http.get(f'https://kusonime.com/?s={kueri}', headers=headers, verify=False)
         res = BeautifulSoup(data.text, "lxml").find_all("h2", {"class": "episodeye"})
         for i in res:
             ress = i.find_all("a")[0]
@@ -168,7 +168,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
 async def getDataMovieku(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
-        data = await http.get(f'https://107.152.37.223/?s={kueri}', headers=headers)
+        data = await http.get(f'https://107.152.37.223/?s={kueri}', headers=headers, verify=False)
         r = BeautifulSoup(data.text, "lxml")
         res = r.find_all(class_="bx")
         for i in res:
@@ -199,7 +199,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
 async def getDataSavefilm21(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
-        data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers)
+        data = await http.get(f'https://185.99.135.215/?s={kueri}', headers=headers, verify=False)
         text = BeautifulSoup(data.text, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:

@@ -24,6 +24,7 @@ from utils import get_file_id
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER) & wait(30))
 async def mediainfo(client, message):
+    if not m.from_user: return
     if message.reply_to_message and message.reply_to_message.media:
         process = await kirimPesan(message, "`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
         file_info = get_file_id(message.reply_to_message)

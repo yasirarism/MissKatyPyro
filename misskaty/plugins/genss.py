@@ -29,8 +29,7 @@ LOGGER = getLogger(__name__)
 
 __MODULE__ = "MediaTool"
 __HELP__ = """"
-/genss [reply to video] - Generate Screenshot From Video.
-/genss_link [link] - Generate Screenshot Video From URL. (Unstable)
+/genss [reply to video] - Generate Screenshot From Video. (Support TG Media and Direct URL)
 /mediainfo [link/reply to TG Video] - Get Mediainfo From File.
 """
 
@@ -38,6 +37,7 @@ __HELP__ = """"
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER) & wait(30))
 @capture_err
 async def genss(client, m):
+    if not m.from_user: return
     replied = m.reply_to_message
     if len(m.command) == 2 and is_url(m.command[1]):
         snt = await kirimPesan(m, "Give me some time to process your request!! 😴", quote=True)
@@ -55,8 +55,8 @@ async def genss(client, m):
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
         if media is None:
-            return await kirimPesan(m, "Reply to a Telegram Video or document as video to generate screenshoot!")
-        process = await kirimPesan(m, "`Processing, please wait..`")
+            return await kirimPesan(m, "Reply to a Telegram Video or document as video to generate screenshoot!", quote=True)
+        process = await kirimPesan(m, "<code>Processing, please wait..</code>", quote=True)
 
         c_time = time.time()
         the_real_download_location = await replied.download(
@@ -106,27 +106,6 @@ async def genss(client, m):
                     pass
     else:
         await kirimPesan(m, "Reply to a Telegram media to get screenshots from media..")
-
-
-@app.on_message(filters.command(["genss_link"], COMMAND_HANDLER))
-@capture_err
-async def genss_link(client, m):
-    if len(m.command) == 1:
-        return await kirimPesan(m, f"Use <code>/{m.command[0]} link</code> to generate screenshot from URL.")
-    if not is_url(m.command[1]):
-        return await kirimPesan(m, "Please use valid URL.")
-    snt = await m.reply_text("Give me some time to process your request!! 😴", quote=True)
-
-    duration = await get_duration(m.command[1])
-    if isinstance(duration, str):
-        return await snt.edit_text("😟 Sorry! (╥﹏╥) I cannot open the file.")
-
-    btns = gen_ik_buttons()
-    
-    await snt.edit_text(
-        text=f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)",
-        reply_markup=InlineKeyboardMarkup(btns)
-    )
 
 @app.on_callback_query(filters.regex(r'^scht'))
 async def _(c, m):

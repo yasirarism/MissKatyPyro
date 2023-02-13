@@ -153,7 +153,10 @@ async def evaluation_cmd_t(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
-        await m.delete() if m.from_user.is_self else await status_message.delete()
+        if m.from_user.is_self:
+            await m.delete()
+        else:
+            await status_message.delete()
     else:
         await edit_or_reply(
             m,

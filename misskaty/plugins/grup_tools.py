@@ -11,7 +11,7 @@ from pyrogram.errors import (
     ChatSendMediaForbidden,
     MessageTooLong,
     RPCError,
-    SlowmodeWait,
+    TopicClosed,
 )
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -194,8 +194,28 @@ async def save_group(bot, message):
                     photo=welcomeimg,
                     caption=f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
                 )
-            except (ChatSendMediaForbidden, SlowmodeWait):
-                await app.leave_chat(message.chat.id)
+                userspammer = ""
+                # Spamwatch Detection
+                try:
+                    headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
+                    apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{u.id}", headers=headers)).json()
+                    if not apispamwatch.get("error"):
+                        await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
+                        userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {u.mention} [<code>{u.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
+                except Exception as err:
+                    LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
+                # Combot API Detection
+                try:
+                    apicombot = (await http.get(f"https://api.cas.chat/check?user_id={u.id}")).json()
+                    if apicombot.get("ok") == "true":
+                        await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
+                        userspammer += f"<b>#CAS Federation Ban</b>\nUser {u.mention} [<code>{u.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={u.id}'>Combot AntiSpam.</a>"
+                except Exception as err:
+                    LOGGER.error(f"ERROR in Combot API Detection. {err}")
+                if userspammer != "":
+                    await bot.send_message(message.chat.id, userspammer)
+            except:
+                pass
             try:
                 os.remove(f"downloads/welcome#{u.id}.png")
                 os.remove(f"downloads/pp{u.id}.png")

@@ -48,7 +48,7 @@ __HELP__ = """/notes To Get All The Notes In The Chat.
 async def save_notee(_, message):
     if len(message.command) < 2 or not message.reply_to_message:
         await message.reply(
-            text="**Usage:**\nReply to a text or sticker with /save [NOTE_NAME] to save it.",
+            text="**Usage:**\nReply to a text or sticker with /addnote [NOTE_NAME] to save it.",
         )
 
     elif not message.reply_to_message.text and not message.reply_to_message.sticker:
@@ -113,10 +113,10 @@ async def get_one_note(_, message):
 @adminsOnly("can_change_info")
 async def del_note(_, message):
     if len(message.command) == 1:
-        return await message.reply("**Usage**\n__/delete [NOTE_NAME]__")
+        return await message.reply("**Usage**\n__/delnote [NOTE_NAME]__")
     name = message.text.split(None, 1)[1].strip()
     if not name:
-        return await message.reply("**Usage**\n__/delete [NOTE_NAME]__")
+        return await message.reply("**Usage**\n__/delnote [NOTE_NAME]__")
 
     message.text.split()[0][0]
     chat_id = message.chat.id

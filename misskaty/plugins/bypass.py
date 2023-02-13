@@ -72,16 +72,18 @@ def wetransfer_bypass(url: str) -> str:
 
     if recipient_id:
         j["recipient_id"] = recipient_id
+    try:
+        s = requests.Session()
+        r = s.get("https://wetransfer.com/")
+        m = re.search('name="csrf-token" content="([^"]+)"', r.text)
+        s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
+        r = s.post(f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j)
+        j = r.json()
+        dl_url = j["direct_link"]
 
-    s = requests.Session()
-    r = s.get("https://wetransfer.com/")
-    m = re.search('name="csrf-token" content="([^"]+)"', r.text)
-    s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
-    r = s.post(f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j)
-    j = r.json()
-    dl_url = j["direct_link"]
-
-    return f"\n**Source Link** :\n`{url}`\n**Direct Link :**\n{dl_url}"
+        return f"\n**Source Link** :\n`{url}`\n**Direct Link :**\n{dl_url}"
+    except Exception as er:
+        return er
 
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))

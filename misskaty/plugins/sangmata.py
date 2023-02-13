@@ -3,6 +3,7 @@ from pyrogram import filters
 from database.sangmata_db import *
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.message_utils import kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "SangMata"
@@ -25,16 +26,16 @@ async def cek_mataa(_, m):
     if username != m.from_user.username or first_name != m.from_user.first_name or last_name != m.from_user.last_name:
         msg += "👀 <b>Mata MissKaty</b>\n\n"
     if username != m.from_user.username:
-        msg += f"{m.from_user.mention} [{m.from_user.id}] changed username from @{username} to @{m.from_user.username}.\n"
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed username from @{username} to @{m.from_user.username}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if first_name != m.from_user.first_name:
-        msg += f"{m.from_user.mention} [{m.from_user.id}] changed first_name from {first_name} to {m.from_user.first_name}.\n"
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed first_name from {first_name} to {m.from_user.first_name}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if last_name != m.from_user.last_name:
-        msg += f"{m.from_user.mention} [{m.from_user.id}] changed last_name from {last_name} to {m.from_user.last_name}."
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed last_name from {last_name} to {m.from_user.last_name}."
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if msg != "":
-        await m.reply(msg, quote=True)
+        await kirimPesan(m, msg, quote=True)
 
 @app.on_message(
     filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot
@@ -42,20 +43,20 @@ async def cek_mataa(_, m):
 @adminsOnly("can_change_info")
 async def set_mataa(_, m):
     if len(m.command) == 1:
-        return await m.reply(f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")
+        return await kirimPesan(m, f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")
     if m.command[1] == "on":
         cekset = await is_sangmata_on(m.chat.id)
         if cekset:
-            await m.reply("SangMata already enabled in your groups.")
+            await kirimPesan(m, "SangMata already enabled in your groups.")
         else:
             await sangmata_on(m.chat.id)
-            await m.reply("Sangmata enabled in your groups.")
+            await kirimPesan(m, "Sangmata enabled in your groups.")
     elif m.command[1] == "off":
         cekset = await is_sangmata_on(m.chat.id)
         if cekset:
-            await m.reply("SangMata already enabled in your groups.")
+            await kirimPesan(m, "SangMata already enabled in your groups.")
         else:
             await sangmata_off(m.chat.id)
-            await m.reply("Sangmata enabled in your groups.")
+            await kirimPesan(m, "Sangmata enabled in your groups.")
     else:
-        await m.reply("Unknown parameter, use only on/off parameter.")
+        await kirimPesan(m, "Unknown parameter, use only on/off parameter.")

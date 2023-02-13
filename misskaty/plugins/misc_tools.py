@@ -24,7 +24,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.message_utils import kirimPesan
+from misskaty.core.message_utils import hapusPesan, kirimPesan
 from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
@@ -308,11 +308,8 @@ async def close_callback(bot: Client, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     await query.answer("Deleting this message in 5 seconds.")
     await asyncio.sleep(5)
-    await query.message.delete()
-    try:
-        await query.message.reply_to_message.delete()
-    except:
-        pass
+    await hapusPesan(query.message)
+    await hapusPesan(query.message.reply_to_message)
 
 
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}

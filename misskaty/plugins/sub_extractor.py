@@ -17,6 +17,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
@@ -64,10 +65,10 @@ def get_subname(lang, url, format):
 async def ceksub(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await m.reply(f"Gunakan command /{m.command[0]} [link] untuk mengecek subtitle dan audio didalam video.")
+        return await kirimPesan(m, f"Please use command /{m.command[0]} [link] to check subtitles or audio in video file.", quote=True)
     link = cmd[1]
     start_time = perf_counter()
-    pesan = await m.reply("Sedang memproses perintah..", quote=True)
+    pesan = await kirimPesan(m, "Processing your request..", quote=True)
     try:
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
@@ -96,13 +97,13 @@ async def ceksub(_, m):
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         buttons.append([InlineKeyboardButton("❌ Cancel", f"close#{m.from_user.id}")])
-        await pesan.edit(
+        await editPesan(
+            pesan,
             f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}",
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-    except Exception:
-        traceback.format_exc()
-        await pesan.edit("Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot.")
+    except:
+        await editPesan(pesan, "Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot.")
 
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
@@ -110,8 +111,8 @@ async def ceksub(_, m):
 async def convertsrt(c, m):
     reply = m.reply_to_message
     if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
-        return await m.reply(f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt.")
-    msg = await m.reply("⏳ Converting...")
+        return await kirimPesan(m, f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt.")
+    msg = await kirimPesan(m, "⏳ Converting...", quote=True)
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
     LOGGER.info(f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]")
@@ -124,7 +125,7 @@ async def convertsrt(c, m):
         progress=progress_for_pyrogram,
         progress_args=("Uploading files..", msg, c_time),
     )
-    await msg.delete()
+    await hapusPesan(msg)
     try:
         os.remove(dl)
         os.remove(f"{filename}.srt")
@@ -143,7 +144,7 @@ async def stream_extract(bot, update):
         link = update.message.reply_to_message.command[1]
     except:
         return await update.answer("⚠️ DONT DELETE YOUR MESSAGE!", True)
-    await update.message.edit("⏳ Processing...")
+    await editPesan(update.message, "⏳ Processing...")
     try:
         if codec == "aac":
             format = "aac"
@@ -168,10 +169,10 @@ async def stream_extract(bot, update):
             progress=progress_for_pyrogram,
             progress_args=("Uploading files..", update.message, c_time),
         )
-        await update.message.delete()
+        await hapusPesan(update.message)
         try:
             os.remove(namafile)
         except:
             pass
     except Exception as e:
-        await update.message.edit(f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")
+        await editPesan(update.message, f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")
