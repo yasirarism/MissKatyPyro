@@ -58,10 +58,9 @@ async def mediainfo(client, message):
             }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
         except Exception as e:
-            LOGGER.error(e)
-            link = None
-        markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
+            markup = None
         await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
         await process.delete()
         try:
@@ -91,9 +90,9 @@ async def mediainfo(client, message):
                 }
                 response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
                 link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
             except:
-                link = None
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
+                markup = None
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(
