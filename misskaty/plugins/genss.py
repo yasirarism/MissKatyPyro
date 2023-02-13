@@ -39,7 +39,19 @@ __HELP__ = """"
 @capture_err
 async def genss(client, m):
     replied = m.reply_to_message
-    if replied is not None:
+    if len(m.command) == 2 and is_url(m.command[1]):
+        snt = await kirimPesan(m, "Give me some time to process your request!! 😴", quote=True)
+
+        duration = await get_duration(m.command[1])
+        if isinstance(duration, str):
+            return await editPesan(snt, "😟 Sorry! I cannot open the file.")
+        btns = gen_ik_buttons()
+        await editPesan(
+            snt,
+            f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)",
+            reply_markup=InlineKeyboardMarkup(btns)
+        )
+    elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
         if media is None:
