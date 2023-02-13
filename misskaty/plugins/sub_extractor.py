@@ -6,7 +6,6 @@
 """
 import json
 import os
-import traceback
 from logging import getLogger
 from re import I
 from re import split as ngesplit
@@ -157,7 +156,7 @@ async def stream_extract(bot, update):
         start_time = perf_counter()
         namafile = get_subname(lang, link, format)
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        extract = (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
+        (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + " second"
         c_time = time()

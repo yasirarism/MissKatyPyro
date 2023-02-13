@@ -75,7 +75,8 @@ async def admin_cache_func(_, cmu):
 @app.on_message(filters.command("purge", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_delete_messages")
 async def purge(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     try:
         repliedmsg = message.reply_to_message
         await message.delete()
@@ -86,8 +87,7 @@ async def purge(_, message):
         cmd = message.command
         if len(cmd) > 1 and cmd[1].isdigit():
             purge_to = repliedmsg.id + int(cmd[1])
-            if purge_to > message.id:
-                purge_to = message.id
+            purge_to = min(purge_to, message.id)
         else:
             purge_to = message.id
 
@@ -129,7 +129,8 @@ async def purge(_, message):
 @app.on_message(filters.command(["kick", "dkick"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def kickFunc(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id, reason = await extract_user_and_reason(message)
     if not user_id:
         return await message.reply_text("I can't find that user.")
@@ -159,7 +160,8 @@ async def kickFunc(client, message):
 @app.on_message(filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def banFunc(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id, reason = await extract_user_and_reason(message, sender_chat=True)
 
     if not user_id:
@@ -210,7 +212,8 @@ async def banFunc(client, message):
 @app.on_message(filters.command("unban", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def unban_func(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     # we don't need reasons for unban, also, we
     # don't need to get "text_mention" entity, because
     # normal users won't get text_mention if the user
@@ -234,7 +237,8 @@ async def unban_func(_, message):
 # Ban users listed in a message
 @app.on_message(filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group)
 async def list_ban_(c, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     userid, msglink_reason = await extract_user_and_reason(message)
     if not userid or not msglink_reason:
         return await message.reply_text("Provide a userid/username along with message link and reason to list-ban")
@@ -284,7 +288,8 @@ async def list_ban_(c, message):
 # Unban users listed in a message
 @app.on_message(filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group)
 async def list_unban_(c, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     userid, msglink = await extract_user_and_reason(message)
     if not userid or not msglink:
         return await message.reply_text("Provide a userid/username along with message link to list-unban")
@@ -327,7 +332,8 @@ async def list_unban_(c, message):
 @app.on_message(filters.command("del", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_delete_messages")
 async def deleteFunc(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if not message.reply_to_message:
         return await message.reply_text("Reply To A Message To Delete It")
     try:
@@ -341,7 +347,8 @@ async def deleteFunc(_, message):
 @app.on_message(filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_promote_members")
 async def promoteFunc(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     try:
         user_id = await extract_user(message)
         umention = (await app.get_users(user_id)).mention
@@ -386,7 +393,8 @@ async def promoteFunc(client, message):
 @app.on_message(filters.command("demote", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_promote_members")
 async def demote(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text("I can't find that user.")
@@ -413,7 +421,8 @@ async def demote(client, message):
 @app.on_message(filters.command(["pin", "unpin"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_pin_messages")
 async def pin(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if not message.reply_to_message:
         return await message.reply_text("Reply to a message to pin/unpin it.")
     r = message.reply_to_message
@@ -440,7 +449,8 @@ async def pin(_, message):
 @app.on_message(filters.command(["mute", "tmute"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def mute(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     try:
         user_id, reason = await extract_user_and_reason(message)
     except Exception as err:
@@ -487,7 +497,8 @@ async def mute(client, message):
 @app.on_message(filters.command("unmute", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def unmute(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text("I can't find that user.")
@@ -499,7 +510,8 @@ async def unmute(_, message):
 @app.on_message(filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def warn_user(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id, reason = await extract_user_and_reason(message)
     chat_id = message.chat.id
     if not user_id:
@@ -602,7 +614,8 @@ async def unban_user(_, cq):
 @app.on_message(filters.command("rmwarn", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 async def remove_warnings(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if not message.reply_to_message:
         return await message.reply_text("Reply to a message to remove a user's warnings.")
     user_id = message.reply_to_message.from_user.id
@@ -622,7 +635,8 @@ async def remove_warnings(_, message):
 @app.on_message(filters.command("warns", COMMAND_HANDLER) & filters.group)
 @capture_err
 async def check_warns(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text("I can't find that user.")

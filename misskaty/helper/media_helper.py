@@ -10,21 +10,16 @@ from utils import LOGGER
 
 async def post_to_telegraph(is_media: bool, title=None, content=None, media=None):
     telegraph = Telegraph()
-    if telegraph.get_access_token() == None:
+    if telegraph.get_access_token() is None:
         await telegraph.create_account(short_name=BOT_USERNAME)
-        LOGGER.info(f"Create TGH Account ..")
+        LOGGER.info("Create TGH Account ..")
     if is_media:
         """Create a Telegram Post Foto/Video"""
         response = await telegraph.upload_file(media)
         return f"https://telegra.ph{response[0]['src']}"
     """Create a Telegram Post using HTML Content"""
-    response = await telegraph.create_page(
-        title,
-        html_content=content,
-        author_url=f"https://t.me/{BOT_USERNAME}",
-        author_name=BOT_USERNAME
-    )
-    return response['url']
+    response = await telegraph.create_page(title, html_content=content, author_url=f"https://t.me/{BOT_USERNAME}", author_name=BOT_USERNAME)
+    return response["url"]
 
 
 async def run_subprocess(cmd):

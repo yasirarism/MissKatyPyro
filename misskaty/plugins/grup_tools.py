@@ -6,12 +6,7 @@ from logging import getLogger
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
-from pyrogram.errors import (
-    ChatAdminRequired,
-    ChatSendMediaForbidden,
-    MessageTooLong,
-    RPCError
-)
+from pyrogram.errors import ChatAdminRequired, MessageTooLong, RPCError
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
@@ -89,7 +84,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
     else:
         if (temp.MELCOW).get(f"welcome-{member.chat.id}") is not None:
             try:
-                await (temp.MELCOW[f"welcome-{member.chat.id}"]).delete()
+                await temp.MELCOW[f"welcome-{member.chat.id}"].delete()
             except:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
@@ -186,7 +181,7 @@ async def save_group(bot, message):
                 pic = "img/profilepic.png"
             if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
                 try:
-                    await (temp.MELCOW[f"welcome-{message.chat.id}"]).delete()
+                    await temp.MELCOW[f"welcome-{message.chat.id}"].delete()
                 except:
                     pass
             try:

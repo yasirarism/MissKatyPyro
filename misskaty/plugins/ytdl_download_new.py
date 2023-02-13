@@ -4,8 +4,7 @@ from uuid import uuid4
 
 from iytdl import iYTDL, main
 from pyrogram import filters
-from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
-                            InlineKeyboardMarkup, InputMediaPhoto)
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 
 from misskaty import app
 from misskaty.core.message_utils import *
@@ -62,7 +61,8 @@ async def ytsearch(_, message):
 @app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
 @capture_err
 async def ytdownv2(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if len(message.command) == 1:
         return await message.reply("Please input a valid YT-DLP Supported URL")
     url = message.text.split(" ", maxsplit=1)[1]

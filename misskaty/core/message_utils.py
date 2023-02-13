@@ -23,6 +23,7 @@ async def kirimPesan(msg, text, **kwargs):
         LOGGER.error(str(e))
         return
 
+
 # Edit MSG Pyro
 async def editPesan(msg, text, **kwargs):
     try:

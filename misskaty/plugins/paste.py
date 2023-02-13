@@ -27,6 +27,7 @@ __HELP__ = """
 /temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
 """
 
+
 # Size Checker for Limit
 def humanbytes(size: int):
     """Convert Bytes To Bytes So That Human Can Read It"""
@@ -64,12 +65,13 @@ def humanbytes(size: int):
 # Pattern if extension supported, PR if want to add more
 pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip$")
 
+
 @app.on_message(filters.command(["tgraph"], COMMAND_HANDLER))
 async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
         return await kirimPesan(message, f"**Reply To A Message With /{message.command[0]} or with command**")
-    
+
     if message.from_user:
         if message.from_user.username:
             uname = f"@{message.from_user.username} [{message.from_user.id}]"
@@ -134,6 +136,7 @@ async def telegraph_paste(_, message):
     pasted = f"**Successfully pasted your data to Telegraph<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await editPesan(msg, pasted, reply_markup=InlineKeyboardMarkup(button))
 
+
 # Default Paste to Wastebin using Deta
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
 async def wastepaste(_, message):
@@ -182,7 +185,7 @@ async def wastepaste(_, message):
             "expire_at": 0,
             "expire_in": 0,
         }
-        response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
+        response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
         url = f"https://paste.yasir.eu.org/{response.json()['id']}"
     except Exception as e:
         return await editPesan(msg, f"ERROR: {e}")
@@ -196,6 +199,7 @@ async def wastepaste(_, message):
 
     pasted = f"**Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await editPesan(msg, pasted, reply_markup=InlineKeyboardMarkup(button))
+
 
 # Nekobin Paste
 @app.on_message(filters.command(["neko"], COMMAND_HANDLER))
@@ -253,6 +257,7 @@ async def nekopaste(_, message):
     pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await editPesan(msg, pasted, reply_markup=InlineKeyboardMarkup(button))
 
+
 # Paste as spacebin
 @app.on_message(filters.command(["sbin"], COMMAND_HANDLER))
 async def spacebinn(_, message):
@@ -295,9 +300,9 @@ async def spacebinn(_, message):
 
     try:
         siteurl = "https://spaceb.in/api/v1/documents/"
-        response = await http.post(siteurl, data={"content": data, "extension": 'txt'})
+        response = await http.post(siteurl, data={"content": data, "extension": "txt"})
         response = response.json()
-        url = "https://spaceb.in/"+response['payload']['id']
+        url = "https://spaceb.in/" + response["payload"]["id"]
     except Exception as e:
         return await editPesan(msg, f"ERROR: {e}")
 
@@ -310,6 +315,7 @@ async def spacebinn(_, message):
 
     pasted = f"**Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await editPesan(msg, pasted, reply_markup=InlineKeyboardMarkup(button))
+
 
 # Rentry paste
 @app.on_message(filters.command(["rentry"], COMMAND_HANDLER))

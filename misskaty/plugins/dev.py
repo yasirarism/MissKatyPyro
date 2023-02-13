@@ -23,6 +23,7 @@ __HELP__ = """
 /json - Send structure message Telegram in JSON using Pyrogram Style.
 """
 
+
 async def edit_or_reply(msg, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
@@ -103,7 +104,7 @@ async def shell(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:
-           await msg.delete()
+            await msg.delete()
     else:
         await m.reply("No Reply")
 
@@ -165,7 +166,8 @@ async def evaluation_cmd_t(_, m):
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:
-           await status_message.delete()
+            await status_message.delete()
+
 
 # Update and restart bot
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
@@ -177,10 +179,9 @@ async def update_restart(_, message):
         await message.reply_text(f"<code>{out}</code>")
     except Exception as e:
         return await message.reply_text(str(e))
-    await message.reply_text(
-        "<b>Updated with default branch, restarting now.</b>"
-    )
+    await message.reply_text("<b>Updated with default branch, restarting now.</b>")
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
+
 
 async def aexec(code, c, m):
     exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))

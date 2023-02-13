@@ -1,6 +1,4 @@
 import re
-import subprocess
-import sys
 
 import chevron
 import telegraph
@@ -12,9 +10,9 @@ from bs4 import BeautifulSoup as bs4
 LOGGER = logging.getLogger(__name__)
 
 telegraph = telegraph.Telegraph()
-if telegraph.get_access_token() == None:
+if telegraph.get_access_token() is None:
     token_ph = telegraph.create_account(short_name=BOT_USERNAME)
-    LOGGER.info(f"kuso_utils: Create TGH Account ..")
+    LOGGER.info("kuso_utils: Create TGH Account ..")
 
 headers = {"Accept": "*/*", "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
@@ -33,16 +31,15 @@ async def kusonimeBypass(url: str, slug=None):
         thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
         data = []
         # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
-        title = soup.find("h1", {"class": "jdlz"}).text # fix title njing haha
-        num = 1
+        title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
         genre = []
         for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
         status_anime = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)")[0].text.split(":").pop().strip()
-        for smokedl in soup.find("div", {"class": "dlbod"}).find_all("div", {"class": "smokeddl"}):
+        for num, smokedl in enumerate(soup.find("div", {"class": "dlbod"}).find_all("div", {"class": "smokeddl"}), start=1):
             titl = soup.select(f"#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.dlbod > div:nth-child({num}) > div.smokettl")[0].text
-            titl = re.sub(f"Download", "", titl).strip()
+            titl = re.sub("Download", "", titl).strip()
             mendata = {"name": titl, "links": []}
             for smokeurl in smokedl.find_all("div", {"class": "smokeurl"}):
                 quality = smokeurl.find("strong").text
@@ -53,10 +50,17 @@ async def kusonimeBypass(url: str, slug=None):
                     links.append({"client": client, "url": url})
                 mendata["links"].append(dict(quality=quality, link_download=links))
             data.append(mendata)
-            num += 1
-        hasil.update({"error": False, "title": title, "thumb": thumb, "genre": genre, "genre_string": ", ".join(genre), "status_anim": status_anime, "data": data})
+        hasil |= {
+            "error": False,
+            "title": title,
+            "thumb": thumb,
+            "genre": genre,
+            "genre_string": ", ".join(genre),
+            "status_anim": status_anime,
+            "data": data,
+        }
     except:
-        hasil.update({"error": True, "error_message": "kuso bypass error"})
+        hasil |= {"error": True, "error_message": "kuso bypass error"}
     finally:
         await request.close()
         return hasil
@@ -65,7 +69,8 @@ async def kusonimeBypass(url: str, slug=None):
 async def byPassPh(url: str, msg_id: int):
     kusonime = await kusonimeBypass(url)
     results = {"error": True, "error_message": "Post to or create TGH error"}
-    template = """
+    if not kusonime["error"]:
+        template = """
 <img src={{{thumb}}}>
 <p><b>Title</b> : <code>{{title}}</code></p>
 <p><b>Genre</b> : <code>{{genre_string}}</code></p>
@@ -82,10 +87,9 @@ async def byPassPh(url: str, msg_id: int):
     <br>
 {{/data}}
 """.strip()
-    if not kusonime["error"]:
         html = chevron.render(template, kusonime)
         page = telegraph.create_page(f"{kusonime.get('title')}-{msg_id}", html_content=html)
-        results.update({"error": False, "url": "https://telegra.ph/{}".format(page["path"])})
+        results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results
 

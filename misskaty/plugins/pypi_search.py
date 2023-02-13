@@ -16,9 +16,10 @@ from misskaty.vars import COMMAND_HANDLER
 
 PYPI_DICT = {}
 
+
 async def getDataPypi(msg, kueri, CurrentPage, user):
     if not PYPI_DICT.get(msg.id):
-        pypijson = (await http.get(f'https://yasirapi.eu.org/pypi?q={kueri}')).json()
+        pypijson = (await http.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
         if not pypijson.get("result"):
             await editPesan(msg, "Sorry could not find any matching results!")
             return None, 0, None
@@ -30,40 +31,38 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         pypiResult = f"<b>#Pypi Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(PYPI_DICT[msg.id][0][index], start=1):
             pypiResult += f"<b>{c}.</b> <a href='{i['url']}'>{i['name']} {i['version']}</a>\n<b>Created:</b> <code>{i['created']}</code>\n<b>Desc:</b> <code>{i['description']}</code>\n\n"
-            extractbtn.append(
-                InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
-        IGNORE_CHAR = "[]"
-        pypiResult = ''.join(i for i in pypiResult if not i in IGNORE_CHAR)
+            extractbtn.append(InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}"))
+        pypiResult = "".join(i for i in pypiResult if i not in "[]")
         return pypiResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, 0, None
-    
-@app.on_message(filters.command(['pypi'], COMMAND_HANDLER))
+
+
+@app.on_message(filters.command(["pypi"], COMMAND_HANDLER))
 async def pypi_s(client, message):
-    kueri = ' '.join(message.command[1:])
+    kueri = " ".join(message.command[1:])
     if not kueri:
         return await kirimPesan(message, "Please add query after command. Ex: <code>/pypi pyrogram</code>")
     pesan = await kirimPesan(message, "⏳ Please wait, getting data from pypi..", quote=True)
     CurrentPage = 1
     pypires, PageLen, btn = await getDataPypi(pesan, kueri, CurrentPage, message.from_user.id)
-    if not pypires: return
+    if not pypires:
+        return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_pypi#{number}' + f'#{pesan.id}#{message.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{pesan.id}#{message.from_user.id}")
     keyboard.row(InlineButton("👇 Get Info ", "Hmmm"))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton("❌ Close", f"close#{message.from_user.id}")
-    )
+    keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
     await editPesan(pesan, pypires, reply_markup=keyboard)
 
-@app.on_callback_query(filters.create(lambda _, __, query: 'page_pypi#' in query.data))
+
+@app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
 async def pypipage_callback(client, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
-    message_id = int(callback_query.data.split('#')[2])
-    CurrentPage = int(callback_query.data.split('#')[1])
+    message_id = int(callback_query.data.split("#")[2])
+    CurrentPage = int(callback_query.data.split("#")[1])
     try:
         kueri = PYPI_DICT[message_id][1]
     except KeyError:
@@ -75,31 +74,27 @@ async def pypipage_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, 'page_pypi#{number}' + f'#{message_id}#{callback_query.from_user.id}')
+    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
-    )
+    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await editPesan(callback_query.message, pypires, reply_markup=keyboard)
 
-@app.on_callback_query(filters.create(lambda _, __, query: 'pypidata#' in query.data))
+
+@app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
 async def pypi_getdata(_, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split('#')[3]):
+    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split('#')[4])
-    CurrentPage = int(callback_query.data.split('#')[1])
+    message_id = int(callback_query.data.split("#")[4])
+    CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        pkgname = PYPI_DICT[message_id][0][CurrentPage-1][idlink-1].get("name")
+        pkgname = PYPI_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("name")
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton("↩️ Back", f"page_pypi#{CurrentPage}#{message_id}#{callback_query.from_user.id}"),
-        InlineButton("❌ Close", f"close#{callback_query.from_user.id}")
-    )
+    keyboard.row(InlineButton("↩️ Back", f"page_pypi#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     try:
         html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
         res = html.json()
@@ -114,7 +109,7 @@ async def pypi_getdata(_, callback_query):
         msg += f"<b>Requires Python:</b> {res['info'].get('requires_python', 'Unknown')}\n"
         msg += f"<b>HomePage:</b> {res['info'].get('home_page', 'Unknown')}\n"
         msg += f"<b>Bug Track:</b> {res['info'].get('vulnerabilities', 'Unknown')}\n"
-        if res['info'].get('project_urls'):
+        if res["info"].get("project_urls"):
             msg += f"<b>Docs Url:</b> {res['info']['project_urls'].get('Documentation', 'Unknown')}\n"
         msg += f"<b>Description:</b> {res['info'].get('summary', 'Unknown')}\n"
         msg += f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"

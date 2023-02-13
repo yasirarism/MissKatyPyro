@@ -4,12 +4,10 @@ import traceback
 from logging import getLogger
 from sys import platform
 from sys import version as pyver
-from unicodedata import name
 
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from motor import version as mongover
-from misskaty.core.keyboard import keyboard
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
@@ -41,6 +39,7 @@ keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 LOGGER = getLogger()
+
 
 @app.on_inline_query()
 async def inline_menu(_, inline_query: InlineQuery):
@@ -98,7 +97,11 @@ async def inline_menu(_, inline_query: InlineQuery):
             )
         kueri = inline_query.query.split(None, 1)[1].strip()
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
-        jsonapi = await http.get(f"https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json", headers=headers, follow_redirects=True)
+        jsonapi = await http.get(
+            "https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json",
+            headers=headers,
+            follow_redirects=True,
+        )
         parsemethod = jsonapi.json().get("methods")
         parsetypes = jsonapi.json().get("types")
         datajson = []
@@ -542,7 +545,7 @@ async def imdb_inl(_, query):
             r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
-            typee = r_json.get('@type', '')
+            typee = r_json.get("@type", "")
             if r_json.get("name"):
                 try:
                     tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
@@ -569,17 +572,11 @@ async def imdb_inl(_, query):
                 genre = genre[:-2]
                 res_str += f"<b>Genre:</b> {genre}\n"
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(
-                    f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                    for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-                )
+                country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, " for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 country = country[:-2]
                 res_str += f"<b>Negara:</b> {country}\n"
             if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(
-                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
-                    for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-                )
+                language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
                 language = language[:-2]
                 res_str += f"<b>Bahasa:</b> {language}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
