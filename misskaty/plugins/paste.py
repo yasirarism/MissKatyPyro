@@ -165,7 +165,7 @@ async def wastepaste(_, message):
                 pass
             return await editPesan(msg, "`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        data = reply.text.html or reply.caption.html
+        data = reply.text or reply.caption
     elif not reply and len(message.command) >= 2:
         data = message.text.split(None, 1)[1]
 

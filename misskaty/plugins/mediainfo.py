@@ -58,7 +58,8 @@ async def mediainfo(client, message):
             }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
-        except:
+        except Exception as e:
+            LOGGER.error(e)
             link = None
         markup = InlineKeyboardMarkup([[InlineKeyboardButton(text_, link)]])
         await kirimPesan(message, "ℹ️ <b>MEDIA INFO</b>", reply_markup=markup, quote=True)
