@@ -10,8 +10,7 @@ from pyrogram.errors import (
     ChatAdminRequired,
     ChatSendMediaForbidden,
     MessageTooLong,
-    RPCError,
-    TopicClosed,
+    RPCError
 )
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
