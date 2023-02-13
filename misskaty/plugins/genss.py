@@ -11,18 +11,16 @@ import time
 import traceback
 from asyncio import gather, sleep
 from logging import getLogger
-from shutil import rmtree
 
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.pyro_cooldown import wait
 from misskaty.core.message_utils import *
-from misskaty.helper import (gen_ik_buttons, get_duration, is_url,
-                             progress_for_pyrogram, screenshot_flink, take_ss)
+from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
@@ -37,7 +35,8 @@ __HELP__ = """"
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER) & wait(30))
 @capture_err
 async def genss(client, m):
-    if not m.from_user: return
+    if not m.from_user:
+        return
     replied = m.reply_to_message
     if len(m.command) == 2 and is_url(m.command[1]):
         snt = await kirimPesan(m, "Give me some time to process your request!! 😴", quote=True)
@@ -46,11 +45,7 @@ async def genss(client, m):
         if isinstance(duration, str):
             return await editPesan(snt, "😟 Sorry! I cannot open the file.")
         btns = gen_ik_buttons()
-        await editPesan(
-            snt,
-            f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)",
-            reply_markup=InlineKeyboardMarkup(btns)
-        )
+        await editPesan(snt, f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)", reply_markup=InlineKeyboardMarkup(btns))
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
@@ -87,7 +82,8 @@ async def genss(client, m):
                         ]
                     )
                 await kirimPesan(
-                    m, f"☑️ Uploaded [1] screenshoot.\n\n{m.from_user.first_name} (<code>{m.from_user.id}</code>)\n#️⃣ #ssgen #id{m.from_user.id}\n\nSS Generate by @{BOT_USERNAME}",
+                    m,
+                    f"☑️ Uploaded [1] screenshoot.\n\n{m.from_user.first_name} (<code>{m.from_user.id}</code>)\n#️⃣ #ssgen #id{m.from_user.id}\n\nSS Generate by @{BOT_USERNAME}",
                     reply_to_message_id=m.id,
                 )
                 await process.delete()
@@ -107,6 +103,7 @@ async def genss(client, m):
     else:
         await kirimPesan(m, "Reply to a Telegram media to get screenshots from media..")
 
-@app.on_callback_query(filters.regex(r'^scht'))
+
+@app.on_callback_query(filters.regex(r"^scht"))
 async def _(c, m):
     asyncio.create_task(screenshot_flink(c, m))

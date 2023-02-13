@@ -5,7 +5,6 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-import asyncio
 import io
 import subprocess
 import time
@@ -17,20 +16,21 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.pyro_cooldown import wait
-from misskaty.helper import post_to_telegraph, runcmd, progress_for_pyrogram, http
+from misskaty.helper import http, progress_for_pyrogram, runcmd
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER) & wait(30))
 async def mediainfo(client, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if message.reply_to_message and message.reply_to_message.media:
         process = await kirimPesan(message, "`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             return await editPesan(process, "Balas ke format media yang valid")
-        
+
         c_time = time.time()
         file_path = await message.reply_to_message.download(
             progress=progress_for_pyrogram,
@@ -56,7 +56,7 @@ async def mediainfo(client, message):
                 "expire_at": 0,
                 "expire_in": 0,
             }
-            response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
+            response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
         except:
             link = None
@@ -88,7 +88,7 @@ async def mediainfo(client, message):
                     "expire_at": 0,
                     "expire_in": 0,
                 }
-                response = await http.post('https://paste.yasir.eu.org/api/new', json=json_data)
+                response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
                 link = f"https://paste.yasir.eu.org/{response.json()['id']}"
             except:
                 link = None

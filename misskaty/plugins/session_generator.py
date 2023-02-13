@@ -1,17 +1,11 @@
-from ast import Delete
 import traceback
 from logging import getLogger
 
 from pyrogram import Client, filters
-from pyrogram.errors import (ApiIdInvalid, PasswordHashInvalid,
-                             PhoneCodeExpired, PhoneCodeInvalid,
-                             PhoneNumberInvalid, SessionPasswordNeeded)
+from pyrogram.errors import ApiIdInvalid, PasswordHashInvalid, PhoneCodeExpired, PhoneCodeInvalid, PhoneNumberInvalid, SessionPasswordNeeded
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telethon import TelegramClient
-from telethon.errors import (ApiIdInvalidError, PasswordHashInvalidError,
-                             PhoneCodeExpiredError, PhoneCodeInvalidError,
-                             PhoneNumberInvalidError,
-                             SessionPasswordNeededError)
+from telethon.errors import ApiIdInvalidError, PasswordHashInvalidError, PhoneCodeExpiredError, PhoneCodeInvalidError, PhoneNumberInvalidError, SessionPasswordNeededError
 from telethon.sessions import StringSession
 
 from misskaty import app
@@ -37,11 +31,8 @@ buttons_ques = [
     ],
 ]
 
-gen_button = [
-    [
-        InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")
-    ]
-]
+gen_button = [[InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]]
+
 
 async def is_batal(msg):
     if msg.text == "/cancel":
@@ -54,6 +45,7 @@ async def is_batal(msg):
         return True
     else:
         return False
+
 
 @app.on_callback_query(filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
 async def callbackgenstring(bot, callback_query):
@@ -77,22 +69,21 @@ async def callbackgenstring(bot, callback_query):
                 await generate_session(bot, callback_query.message, telethon=True)
         except Exception as e:
             LOGGER.error(traceback.format_exc())
-            ERROR_MESSAGE = "Something went wrong. \n\n**ERROR** : {} " \
-                "\n\n**Please forward this message to my Owner**, if this message " \
-                "doesn't contain any sensitive data " \
-                "because this error is **not logged by bot.** !"
+            ERROR_MESSAGE = "Something went wrong. \n\n**ERROR** : {} " "\n\n**Please forward this message to my Owner**, if this message " "doesn't contain any sensitive data " "because this error is **not logged by bot.** !"
             await callback_query.message.reply(ERROR_MESSAGE.format(str(e)))
+
 
 @app.on_message(filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER))
 async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
+
 
 async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     ty = "Telethon" if telethon else "Pyrogram"
     if is_bot:
         ty += " Bot"
     await msg.reply(f"» Trying to start **{ty}** session generator...")
-    user_id = msg.chat.id
+    msg.chat.id
     api_id_msg = await msg.chat.ask("Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.", filters=filters.text)
     if await is_batal(api_id_msg):
         return
@@ -111,11 +102,7 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             return
         api_hash = api_hash_msg.text
         await api_hash_msg.delete()
-    t = (
-        "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
-        if is_bot
-        else "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
-    )
+    t = "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'" if is_bot else "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
     phone_number_msg = await msg.chat.ask(t, filters=filters.text)
     if await is_batal(phone_number_msg):
         return

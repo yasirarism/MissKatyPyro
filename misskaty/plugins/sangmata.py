@@ -12,13 +12,15 @@ This feature inspired from SangMata Bot. I'm created simple detection to check u
 /sangmata_set [on/off] - Enable/disable sangmata in groups.
 """
 
+
 # Check user that change first_name, last_name and usernaname
 @app.on_message(
     filters.group & ~filters.bot & ~filters.via_bot,
     group=3,
 )
 async def cek_mataa(_, m):
-    if not await is_sangmata_on(m.chat.id): return
+    if not await is_sangmata_on(m.chat.id):
+        return
     if not await cek_userdata(m.from_user.id):
         return await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     username, first_name, last_name = await get_userdata(m.from_user.id)
@@ -37,9 +39,8 @@ async def cek_mataa(_, m):
     if msg != "":
         await kirimPesan(m, msg, quote=True)
 
-@app.on_message(
-    filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot
-)
+
+@app.on_message(filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot)
 @adminsOnly("can_change_info")
 async def set_mataa(_, m):
     if len(m.command) == 1:

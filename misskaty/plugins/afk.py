@@ -13,8 +13,7 @@ import time
 
 from pyrogram import filters
 
-from database.afk_db import (add_afk, cleanmode_off, cleanmode_on, is_afk,
-                             remove_afk)
+from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
@@ -185,7 +184,8 @@ async def active_afk(_, message):
 @app.on_message(filters.command("afkdel", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_change_info")
 async def afk_state(_, message):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     usage = "**Usage:**\n/afkdel [ENABLE|DISABLE] to enable or disable auto delete message."
     if len(message.command) == 1:
         return await kirimPesan(message, usage)

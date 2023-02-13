@@ -87,8 +87,8 @@ async def rentry(teks):
         .get("url")
     )
 
-def get_provider(url):
 
+def get_provider(url):
     def pretty(names):
         name = names[1]
         if names[0] == "play":
@@ -102,7 +102,8 @@ def get_provider(url):
         return name.title()
 
     netloc = urlparse(url).netloc
-    return pretty(netloc.split('.'))
+    return pretty(netloc.split("."))
+
 
 async def search_jw(movie_name: str, locale: str):
     m_t_ = ""

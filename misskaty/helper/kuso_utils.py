@@ -1,6 +1,4 @@
 import re
-import subprocess
-import sys
 
 import chevron
 import telegraph
@@ -33,7 +31,7 @@ async def kusonimeBypass(url: str, slug=None):
         thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
         data = []
         # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
-        title = soup.find("h1", {"class": "jdlz"}).text # fix title njing haha
+        title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
         genre = []
         for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
             gen = _genre.text.split(":").pop().strip().split(", ")

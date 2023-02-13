@@ -51,7 +51,6 @@ async def pling_bypass(url):
 
 
 def wetransfer_bypass(url: str) -> str:
-
     if url.startswith("https://we.tl/"):
         r = requests.head(url, allow_redirects=True)
         url = r.url

@@ -28,15 +28,13 @@ LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
 
+
 # IMDB Choose Language
 @app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
 @capture_err
 async def imdb_choose(_, m):
     if len(m.command) == 1:
-        return await kirimPesan(
-            m,
-            f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>"
-        )
+        return await kirimPesan(m, f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>")
     if m.sender_chat:
         return await kirimPesan(m, "This feature not supported for channel..")
     kuery = m.text.split(None, 1)[1]
@@ -268,14 +266,11 @@ async def imdb_id_callback(_, query):
     try:
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(
-            url,
-            headers=headers
-        )
+        resp = await http.get(url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "ID")
-        typee = r_json.get('@type', '')
+        typee = r_json.get("@type", "")
         res_str = ""
         if judul := r_json.get("name"):
             try:
@@ -303,17 +298,11 @@ async def imdb_id_callback(_, query):
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
         if negara := sop.select('li[data-testid="title-details-origin"]'):
-            country = "".join(
-                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                    for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
+            country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, " for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             country = country[:-2]
             res_str += f"<b>Negara:</b> {country}\n"
         if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(
-                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
-                    for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
+            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
@@ -397,14 +386,11 @@ async def imdb_en_callback(bot, query):
     await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
     try:
         url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(
-            url,
-            headers=headers
-        )
+        resp = await http.get(url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "US")
-        typee = r_json.get('@type', '')
+        typee = r_json.get("@type", "")
         res_str = ""
         if judul := r_json.get("name"):
             try:
@@ -432,17 +418,11 @@ async def imdb_en_callback(bot, query):
             genre = genre[:-2]
             res_str += f"<b>Genre:</b> {genre}\n"
         if negara := sop.select('li[data-testid="title-details-origin"]'):
-            country = "".join(
-                f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
-                    for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
+            country = "".join(f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, " for country in negara[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             country = country[:-2]
             res_str += f"<b>Country:</b> {country}\n"
         if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-            language = "".join(
-                    f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
-                    for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link")
-            )
+            language = "".join(f"#{lang.text.replace(' ', '_').replace('-', '_')}, " for lang in bahasa[0].findAll(class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"))
             language = language[:-2]
             res_str += f"<b>Language:</b> {language}\n"
         res_str += "\n<b>🙎 Cast Info:</b>\n"

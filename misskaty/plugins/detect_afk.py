@@ -16,7 +16,6 @@ from pyrogram import enums, filters
 
 from database.afk_db import is_afk, remove_afk
 from misskaty import BOT_USERNAME, app
-from misskaty.core.message_utils import *
 from misskaty.helper.human_read import get_readable_time2
 from utils import put_cleanmode
 
