@@ -64,7 +64,7 @@ async def readqr(c, m):
     os.remove(foto)
     if res := r.json()[0]['symbol'][0]['data'] is None:
         return await kirimPesan(m, res)
-    await kirimPesan(m, r.json()[0]['symbol'][0]['data'])
+    await kirimPesan(m, f"<b>QR Code Reader by @{c.me.username}:</b> <code>{r.json()[0]['symbol'][0]['data']}</code>", quote=True)
 
 
 @app.on_message(filters.command("createqr", COMMAND_HANDLER))
@@ -73,7 +73,7 @@ async def makeqr(c, m):
         return await m.reply("Please add text after command to convert text -> QR Code.")
     teks = m.text.split(None, 1)[1]
     url = f"https://api.qrserver.com/v1/create-qr-code/?data={quote(teks)}&size=300x300"
-    await m.reply_photo(url)
+    await m.reply_photo(url, caption=f"<b>QR Code Maker by @{c.me.username}</b>", quote=True)
 
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
