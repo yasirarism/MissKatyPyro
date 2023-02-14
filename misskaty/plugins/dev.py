@@ -2,6 +2,7 @@ import asyncio
 import io
 import os
 import sys
+import pickle
 import traceback
 from inspect import getfullargspec
 
@@ -199,7 +200,9 @@ async def update_restart(_, message):
         await message.reply_text(f"<code>{out}</code>")
     except Exception as e:
         return await message.reply_text(str(e))
-    await message.reply_text("<b>Updated with default branch, restarting now.</b>")
+    msg = await message.reply_text("<b>Updated with default branch, restarting now.</b>")
+    with open('restart.pickle', 'wb') as status:
+        pickle.dump([message.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 
