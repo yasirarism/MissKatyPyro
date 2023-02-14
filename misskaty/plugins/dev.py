@@ -61,7 +61,7 @@ async def log_file(bot, message):
                     ],
                     [
                         InlineKeyboardButton(
-                            text="❌ Close",
+                            "❌ Close",
                             f"close#{message.from_user.id}",
                         )
                     ]
