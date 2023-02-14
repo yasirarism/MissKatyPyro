@@ -180,8 +180,7 @@ async def commands_callbacc(_, CallbackQuery):
         text=text,
         reply_markup=keyboard,
     )
-
-    await CallbackQuery.message.delete()
+    await hapusPesan(CallbackQuery.message)
 
 
 @app.on_callback_query(filters.regex("stats_callback"))
@@ -308,7 +307,7 @@ General command are:
             text=home_text_pm,
             reply_markup=home_keyboard_pm,
         )
-        await query.message.delete()
+        await hapusPesan(query.message)
     elif prev_match:
         curr_page = int(prev_match[1])
         await editPesan(
@@ -351,9 +350,6 @@ General command are:
     return await client.answer_callback_query(query.id)
 
 
-async def cleanup():
-    await app.stop()
-    await user.stop()
 
 
 if __name__ == "__main__":
@@ -365,6 +361,5 @@ if __name__ == "__main__":
         err = traceback.format_exc()
         LOGGER.error(err)
     finally:
-        loop.run_until_complete(cleanup())
         loop.stop()
         print("------------------------ Stopped Services ------------------------")

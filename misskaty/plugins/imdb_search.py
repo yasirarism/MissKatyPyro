@@ -116,7 +116,7 @@ async def imdb_search_id(kueri, message):
             elif year := movie.get("y"):
                 year = f"({year})"
             else:
-                year = "N/A"
+                year = "(N/A)"
             typee = movie.get("q", "N/A").replace("feature", "movie").title()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
             msg += f"{num}. {title} {year} - {typee}\n"
@@ -166,7 +166,7 @@ async def imdb_search_en(kueri, message):
             elif year := movie.get("y"):
                 year = f"({year})"
             else:
-                year = "N/A"
+                year = "(N/A)"
             typee = movie.get("q", "N/A").replace("feature", "movie").title()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
             msg += f"{num}. {title} {year} - {typee}\n"
@@ -222,7 +222,7 @@ async def imdbcari(client, query):
                 elif year := movie.get("y"):
                     year = f"({year})"
                 else:
-                    year = "N/A"
+                    year = "(N/A)"
                 typee = movie.get("q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"
@@ -261,7 +261,7 @@ async def imdbcari(client, query):
                 elif year := movie.get("y"):
                     year = f"({year})"
                 else:
-                    year = "N/A"
+                    year = "(N/A)"
                 typee = movie.get("q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"

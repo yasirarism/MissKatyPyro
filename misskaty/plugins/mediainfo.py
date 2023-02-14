@@ -16,7 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.pyro_cooldown import wait
-from misskaty.helper import http, progress_for_pyrogram, runcmd
+from misskaty.helper import http, progress_for_pyrogram, runcmd, post_to_telegraph
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
@@ -47,7 +47,6 @@ async def mediainfo(client, message):
     {out or 'Not Supported'}
     """
         text_ = file_info.message_type
-        # link = await post_to_telegraph(False, title, body_text)
         try:
             json_data = {
                 "content": body_text,
@@ -59,8 +58,11 @@ async def mediainfo(client, message):
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
-        except Exception as e:
-            markup = None
+        except:
+            try:
+                link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
+            except:
+                markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
             out_file.name = "MissKaty_Mediainfo.txt"
             await message.reply_document(
@@ -99,7 +101,10 @@ async def mediainfo(client, message):
                 link = f"https://paste.yasir.eu.org/{response.json()['id']}"
                 markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
             except:
-                markup = None
+                try:
+                    link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
+                except:
+                    markup = None
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(

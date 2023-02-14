@@ -8,6 +8,7 @@
 
 import json
 import os
+from select import KQ_FILTER_TIMER
 import time
 import asyncio
 import traceback
@@ -39,6 +40,8 @@ __HELP__ = """
 (/tr, /trans, /translate) [lang code] - Translate text using Google Translate.
 /tts - Convert Text to Voice.
 /imdb [query] - Find Movie Details From IMDB.com (Available in English and Indonesia version).
+/readqr [reply to photo] - Read QR Code From Photo.
+/makeqr [text] - Convert Text to QR Code.
 """
 
 
@@ -48,6 +51,29 @@ def remove_html_tags(text):
 
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
+
+
+@app.on_message(filter.command("readqr", COMMAND_HANDLER))
+async def readqr(c, m):
+    if not m.reply and not m.reply.media and not m.reply.photo:
+        return await m.reply("Please reply photo that contain valid QR Code.")
+    foto = await m.reply_to_message.download()
+    myfile = {'file': (foto, open(foto, 'rb'),'application/octet-stream')}
+    url = 'http://api.qrserver.com/v1/read-qr-code/'
+    r = await http.post(url, files=myfile)
+    os.remove(foto)
+    if res := r.json()[0]['symbol'][0]['data'] is None:
+        return await kirimPesan(m, res)
+    await kirimPesan(m, r.json()[0]['symbol'][0]['data'])
+
+
+@app.on_message(filter.command("makeqr", COMMAND_HANDLER))
+async def makeqr(c, m):
+    if len(m.command) == 1:
+        return await m.reply("Please add text after command to convert text -> QR Code.")
+    teks = m.text.split(None, 1)[1]
+    url = f"https://api.qrserver.com/v1/create-qr-code/?data={teks}&size=300x300"
+    await m.reply_photo(url)
 
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
@@ -356,7 +382,6 @@ async def mdlsearch(client, message):
 
 
 @app.on_callback_query(filters.regex("^mdls"))
-@capture_err
 async def mdl_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, slug = query.data.split("#")
     if user == f"{query.from_user.id}":

@@ -86,9 +86,7 @@ async def byPassPh(url: str, msg_id: int):
         telegraph = Telegraph()
         if telegraph.get_access_token() is None:
             await telegraph.create_account(short_name=BOT_USERNAME)
-            LOGGER.info("Create TGH Account ..")
         page = await telegraph.create_page(f"{kusonime.get('title')}-{msg_id}", html_content=html)
-        LOGGER.info(page)
         results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results
