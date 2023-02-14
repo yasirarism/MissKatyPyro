@@ -37,8 +37,10 @@ async def log_file(bot, message):
     """Send log file"""
     try:
         try:
+            text_file = open("MissKatyLogs.txt", "r")
+            data = text_file.read()
             json_data = {
-                "content": open("MissKatyLogs.txt"),
+                "content": data,
                 "highlighting_language": "auto",
                 "ephemeral": False,
                 "expire_at": 0,
@@ -46,6 +48,7 @@ async def log_file(bot, message):
                 }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+            text_file.close()
         except:
             link = None
         await message.reply_document(
