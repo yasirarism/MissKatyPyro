@@ -13,6 +13,7 @@ import asyncio
 import traceback
 from datetime import datetime
 from logging import getLogger
+from urllib.parse import quote
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -71,7 +72,7 @@ async def makeqr(c, m):
     if len(m.command) == 1:
         return await m.reply("Please add text after command to convert text -> QR Code.")
     teks = m.text.split(None, 1)[1]
-    url = f"https://api.qrserver.com/v1/create-qr-code/?data={teks}&size=300x300"
+    url = f"https://api.qrserver.com/v1/create-qr-code/?data={quote(teks)}&size=300x300"
     await m.reply_photo(url)
 
 
