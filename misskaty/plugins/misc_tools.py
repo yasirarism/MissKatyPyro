@@ -52,7 +52,7 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
-@app.on_message(filter.command("readqr", COMMAND_HANDLER))
+@app.on_message(filters.command("readqr", COMMAND_HANDLER))
 async def readqr(c, m):
     if not m.reply and not m.reply.media and not m.reply.photo:
         return await m.reply("Please reply photo that contain valid QR Code.")
@@ -66,7 +66,7 @@ async def readqr(c, m):
     await kirimPesan(m, r.json()[0]['symbol'][0]['data'])
 
 
-@app.on_message(filter.command("makeqr", COMMAND_HANDLER))
+@app.on_message(filters.command("makeqr", COMMAND_HANDLER))
 async def makeqr(c, m):
     if len(m.command) == 1:
         return await m.reply("Please add text after command to convert text -> QR Code.")
