@@ -40,7 +40,7 @@ __HELP__ = """
 /tts - Convert Text to Voice.
 /imdb [query] - Find Movie Details From IMDB.com (Available in English and Indonesia version).
 /readqr [reply to photo] - Read QR Code From Photo.
-/makeqr [text] - Convert Text to QR Code.
+/createqr [text] - Convert Text to QR Code.
 """
 
 
@@ -66,7 +66,7 @@ async def readqr(c, m):
     await kirimPesan(m, r.json()[0]['symbol'][0]['data'])
 
 
-@app.on_message(filters.command("makeqr", COMMAND_HANDLER))
+@app.on_message(filters.command("createqr", COMMAND_HANDLER))
 async def makeqr(c, m):
     if len(m.command) == 1:
         return await m.reply("Please add text after command to convert text -> QR Code.")
