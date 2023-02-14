@@ -13,6 +13,7 @@ from misskaty import app, user
 from misskaty.helper import http
 from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
+from utils import LOGGER
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -48,6 +49,7 @@ async def log_file(bot, message):
                 }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+            LOGGER.info(link)
             text_file.close()
         except:
             link = None
