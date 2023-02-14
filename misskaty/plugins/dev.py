@@ -55,14 +55,14 @@ async def log_file(bot, message):
                 [
                     [
                         InlineKeyboardButton(
-                            text="🌀 Open in Web",
-                            callback_data=f"close#{message.from_user.id}",
+                            "🌀 Open in Web",
+                            markup,
                         )
                     ],
                     [
                         InlineKeyboardButton(
                             text="❌ Close",
-                            callback_data=f"close#{message.from_user.id}",
+                            f"close#{message.from_user.id}",
                         )
                     ]
                 ]
