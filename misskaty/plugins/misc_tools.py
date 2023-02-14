@@ -69,9 +69,9 @@ async def readqr(c, m):
 
 @app.on_message(filters.command("createqr", COMMAND_HANDLER))
 async def makeqr(c, m):
-    if len(m.command) == 1 and not m.reply_to_message.text:
+    if len(m.command) == 1 or (not m.reply_to_message and not m.reply_to_message.text):
         return await m.reply("Please add text after command to convert text -> QR Code.")
-    teks = m.text.split(None, 1)[1] or m.reply_to_message.text
+    teks = m.text.split(None, 1)[1] if m.reply_to_message else m.reply_to_message.text
     url = f"https://api.qrserver.com/v1/create-qr-code/?data={quote(teks)}&size=300x300"
     await m.reply_photo(url, caption=f"<b>QR Code Maker by @{c.me.username}</b>", quote=True)
 
