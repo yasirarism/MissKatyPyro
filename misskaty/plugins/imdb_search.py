@@ -111,7 +111,12 @@ async def imdb_search_id(kueri, message):
         msg += f"🎬 Ditemukan ({len(res)}) hasil untuk kueri: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
             title = movie.get("l")
-            year = f"({movie.get('y', 'N/A')})"
+            if year := movie.get("yr"):
+                year = f"({year})"
+            elif year := movie.get("y"):
+                year = f"({year})"
+            else:
+                year = "N/A"
             typee = movie.get("q", "N/A").replace("feature", "movie").title()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
             msg += f"{num}. {title} {year} - {typee}\n"
@@ -156,7 +161,12 @@ async def imdb_search_en(kueri, message):
         msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code>\n\n"
         for num, movie in enumerate(res, start=1):
             title = movie.get("l")
-            year = f"({movie.get('y', 'N/A')})"
+            if year := movie.get("yr"):
+                year = f"({year})"
+            elif year := movie.get("y"):
+                year = f"({year})"
+            else:
+                year = "N/A"
             typee = movie.get("q", "N/A").replace("feature", "movie").title()
             movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
             msg += f"{num}. {title} {year} - {typee}\n"
@@ -207,7 +217,12 @@ async def imdbcari(client, query):
             msg += f"🎬 Ditemukan ({len(res)}) hasil dari: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
             for num, movie in enumerate(res, start=1):
                 title = movie.get("l")
-                year = f"({movie.get('y', 'N/A')})"
+                if year := movie.get("yr"):
+                    year = f"({year})"
+                elif year := movie.get("y"):
+                    year = f"({year})"
+                else:
+                    year = "N/A"
                 typee = movie.get("q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"
@@ -241,7 +256,12 @@ async def imdbcari(client, query):
             msg += f"🎬 Found ({len(res)}) result for keywords: <code>{kueri}</code> ~ {query.from_user.mention}\n\n"
             for num, movie in enumerate(res, start=1):
                 title = movie.get("l")
-                year = f"({movie.get('y', 'N/A')})"
+                if year := movie.get("yr"):
+                    year = f"({year})"
+                elif year := movie.get("y"):
+                    year = f"({year})"
+                else:
+                    year = "N/A"
                 typee = movie.get("q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"
