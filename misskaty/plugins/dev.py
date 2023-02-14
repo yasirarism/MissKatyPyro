@@ -71,8 +71,9 @@ async def log_file(bot, message):
                 ]
             ),
         )
-    except Exception as e:
-        await message.reply(str(e))
+    except:
+        err = traceback.format_exc()
+        await message.reply(str(err))
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
