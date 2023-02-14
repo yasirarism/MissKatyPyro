@@ -1,18 +1,13 @@
 import re
 
 import chevron
-import telegraph
+from telegraph.aio import Telegraph
 import logging
 from aiohttp import ClientSession
 from misskaty import BOT_USERNAME
 from bs4 import BeautifulSoup as bs4
 
 LOGGER = logging.getLogger(__name__)
-
-telegraph = telegraph.Telegraph()
-if telegraph.get_access_token() is None:
-    token_ph = telegraph.create_account(short_name=BOT_USERNAME)
-    LOGGER.info("kuso_utils: Create TGH Account ..")
 
 headers = {"Accept": "*/*", "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
@@ -88,7 +83,12 @@ async def byPassPh(url: str, msg_id: int):
 {{/data}}
 """.strip()
         html = chevron.render(template, kusonime)
-        page = telegraph.create_page(f"{kusonime.get('title')}-{msg_id}", html_content=html)
+        telegraph = Telegraph()
+        if telegraph.get_access_token() is None:
+            await telegraph.create_account(short_name=BOT_USERNAME)
+            LOGGER.info("Create TGH Account ..")
+        page = await telegraph.create_page(f"{kusonime.get('title')}-{msg_id}", html_content=html)
+        LOGGER.info(page)
         results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results

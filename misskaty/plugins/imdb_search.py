@@ -274,7 +274,7 @@ async def imdb_id_callback(_, query):
         res_str = ""
         if judul := r_json.get("name"):
             try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span").text
             except:
                 tahun = "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"
@@ -394,7 +394,7 @@ async def imdb_en_callback(bot, query):
         res_str = ""
         if judul := r_json.get("name"):
             try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
+                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span").text
             except:
                 tahun = "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"

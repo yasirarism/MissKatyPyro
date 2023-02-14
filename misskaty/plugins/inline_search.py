@@ -548,7 +548,7 @@ async def imdb_inl(_, query):
             typee = r_json.get("@type", "")
             if r_json.get("name"):
                 try:
-                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span", class_="sc-8c396aa2-2 jwaBvf").text
+                    tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span").text
                 except:
                     tahun = "N/A"
                 res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
