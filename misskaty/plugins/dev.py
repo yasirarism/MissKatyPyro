@@ -46,9 +46,8 @@ async def log_file(bot, message):
                 }
             response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
             link = f"https://paste.yasir.eu.org/{response.json()['id']}"
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
         except:
-            markup = None
+            link = None
         await message.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
@@ -57,7 +56,7 @@ async def log_file(bot, message):
                     [
                         InlineKeyboardButton(
                             "🌀 Open in Web",
-                            markup,
+                            link,
                         )
                     ],
                     [
