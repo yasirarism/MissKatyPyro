@@ -8,7 +8,6 @@
 
 import json
 import os
-from select import KQ_FILTER_TIMER
 import time
 import asyncio
 import traceback

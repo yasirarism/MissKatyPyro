@@ -9,6 +9,7 @@ from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user
+from misskaty.helper import http
 from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
@@ -34,11 +35,30 @@ async def edit_or_reply(msg, **kwargs):
 async def log_file(bot, message):
     """Send log file"""
     try:
+        try:
+            json_data = {
+                "content": open("MissKatyLogs.txt"),
+                "highlighting_language": "auto",
+                "ephemeral": False,
+                "expire_at": 0,
+                "expire_in": 0,
+                }
+            response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
+            link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
+        except:
+            markup = None
         await message.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
             reply_markup=InlineKeyboardMarkup(
                 [
+                    [
+                        InlineKeyboardButton(
+                            text="🌀 Open in Web",
+                            callback_data=f"close#{message.from_user.id}",
+                        )
+                    ],
                     [
                         InlineKeyboardButton(
                             text="❌ Close",
