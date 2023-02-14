@@ -37,33 +37,11 @@ async def edit_or_reply(msg, **kwargs):
 async def log_file(bot, message):
     """Send log file"""
     try:
-        try:
-            text_file = open("MissKatyLogs.txt", "r")
-            data = text_file.read()
-            json_data = {
-                "content": data,
-                "highlighting_language": "auto",
-                "ephemeral": False,
-                "expire_at": 0,
-                "expire_in": 0,
-                }
-            response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
-            link = f"https://paste.yasir.eu.org/{response.json()['id']}"
-            LOGGER.info(link)
-            text_file.close()
-        except:
-            link = None
         await message.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
             reply_markup=InlineKeyboardMarkup(
                 [
-                    [
-                        InlineKeyboardButton(
-                            "🌀 Open in Web",
-                            link,
-                        )
-                    ],
                     [
                         InlineKeyboardButton(
                             "❌ Close",
