@@ -26,7 +26,7 @@ async def ddl_mediainfo(_, message, url):
         out = output_[0] if len(output_) != 0 else None
         content = f"""
 <b>MissKatyBot MediaInfo</b>
-    
+<br>
 <b>DETAILS</b>
 <pre>{out or 'Not Supported'}</pre>
     """
@@ -91,7 +91,7 @@ async def telegram_mediainfo(client, message):
 <b>MissKatyBot MediaInfo</b>
 <b>JSON</b>
 <pre>{file_info}.type</pre>
-    
+<br>
 <b>DETAILS</b>
 <pre>{out or 'Not Supported'}</pre>
     """

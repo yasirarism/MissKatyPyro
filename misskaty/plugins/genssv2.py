@@ -208,7 +208,7 @@ async def telegram_screenshot(client, message, frame_count):
     mime = media.mime_type
     size = media.file_size
 
-    if message.media.value == "document" and "video" not in mime:
+    if replymsg.media.value == "document" and "video" not in mime:
         return await kirimPesan(message, "Can only generate screenshots from video file....", quote=True)
 
     # Downloading partial file.
