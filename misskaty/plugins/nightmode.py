@@ -13,6 +13,7 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_USERNAME, app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import LOG_CHANNEL, NIGHTMODE
 
 
@@ -190,6 +191,7 @@ async def job_open_ymoviez():
 
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
+@ratelimiter
 async def callbackanightmd(c: Client, q: CallbackQuery):
     await q.answer(
         f"🔖 Hai, Aku {BOT_USERNAME} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",

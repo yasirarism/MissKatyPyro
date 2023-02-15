@@ -28,6 +28,7 @@ from pyrogram import filters
 from database.filters_db import delete_filter, get_filter, get_filters_names, save_filter
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.keyboard import ikb
 from misskaty.core.message_utils import *
@@ -44,14 +45,15 @@ You can use markdown or html to save text too.
 
 @app.on_message(filters.command("addfilter") & ~filters.private)
 @adminsOnly("can_change_info")
+@ratelimiter
 async def save_filters(_, m):
     if len(m.command) == 1 or not m.reply_to_message:
-        return await kirimPesan(m, "**Usage:**\nReply to a text or sticker with /filter [FILTER_NAME] to save it.")
+        return await kirimPesan(m, "**Usage:**\nReply to a text or sticker with /addfilter [FILTER_NAME] to save it.")
     if not m.reply_to_message.text and not m.reply_to_message.sticker:
         return await kirimPesan(m, "__**You can only save text or stickers in filters for now.**__")
     name = m.text.split(None, 1)[1].strip()
     if not name:
-        return await kirimPesan(m, "**Usage:**\n__/filter [FILTER_NAME]__")
+        return await kirimPesan(m, "**Usage:**\n__/addfilter [FILTER_NAME]__")
     chat_id = m.chat.id
     _type = "text" if m.reply_to_message.text else "sticker"
     _filter = {
@@ -64,6 +66,7 @@ async def save_filters(_, m):
 
 @app.on_message(filters.command("filters") & ~filters.private)
 @capture_err
+@ratelimiter
 async def get_filterss(_, m):
     _filters = await get_filters_names(m.chat.id)
     if not _filters:
@@ -77,12 +80,13 @@ async def get_filterss(_, m):
 
 @app.on_message(filters.command("stopfilter") & ~filters.private)
 @adminsOnly("can_change_info")
+@ratelimiter
 async def del_filter(_, m):
     if len(m.command) < 2:
-        return await kirimPesan(m, "**Usage:**\n__/stop [FILTER_NAME]__")
+        return await kirimPesan(m, "**Usage:**\n__/stopfilter [FILTER_NAME]__")
     name = m.text.split(None, 1)[1].strip()
     if not name:
-        return await kirimPesan(m, "**Usage:**\n__/stop [FILTER_NAME]__")
+        return await kirimPesan(m, "**Usage:**\n__/stopfilter [FILTER_NAME]__")
     chat_id = m.chat.id
     deleted = await delete_filter(chat_id, name)
     if deleted:
@@ -95,7 +99,6 @@ async def del_filter(_, m):
     filters.text & ~filters.private & ~filters.via_bot & ~filters.forwarded,
     group=2,
 )
-@capture_err
 async def filters_re(_, message):
     text = message.text.lower().strip()
     if not text:

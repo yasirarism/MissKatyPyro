@@ -1,7 +1,6 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
+ * @author        Yasir Aris M <yasiramunandar@gmail.com>
+ * @created       2022-12-01 09:12:27
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -13,6 +12,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
 from misskaty.helper import http, rentry, post_to_telegraph
 from misskaty.vars import COMMAND_HANDLER
@@ -67,6 +67,7 @@ pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip
 
 
 @app.on_message(filters.command(["tgraph"], COMMAND_HANDLER))
+@ratelimiter
 async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
@@ -139,6 +140,7 @@ async def telegraph_paste(_, message):
 
 # Default Paste to Wastebin using Deta
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
+@ratelimiter
 async def wastepaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -203,6 +205,7 @@ async def wastepaste(_, message):
 
 # Nekobin Paste
 @app.on_message(filters.command(["neko"], COMMAND_HANDLER))
+@ratelimiter
 async def nekopaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -260,6 +263,7 @@ async def nekopaste(_, message):
 
 # Paste as spacebin
 @app.on_message(filters.command(["sbin"], COMMAND_HANDLER))
+@ratelimiter
 async def spacebinn(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -319,6 +323,7 @@ async def spacebinn(_, message):
 
 # Rentry paste
 @app.on_message(filters.command(["rentry"], COMMAND_HANDLER))
+@ratelimiter
 async def rentrypaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -375,6 +380,7 @@ async def rentrypaste(_, message):
 
 # Tempaste pastebin
 @app.on_message(filters.command(["temp_paste"], COMMAND_HANDLER))
+@ratelimiter
 async def tempaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]

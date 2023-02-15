@@ -25,6 +25,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import hapusPesan, kirimPesan
 from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
@@ -54,6 +55,7 @@ def remove_html_tags(text):
 
 
 @app.on_message(filters.command("readqr", COMMAND_HANDLER))
+@ratelimiter
 async def readqr(c, m):
     if not m.reply and not m.reply.media and not m.reply.photo:
         return await m.reply("Please reply photo that contain valid QR Code.")
@@ -68,6 +70,7 @@ async def readqr(c, m):
 
 
 @app.on_message(filters.command("createqr", COMMAND_HANDLER))
+@ratelimiter
 async def makeqr(c, m):
     if m.reply_to_message and m.reply_to_message.text:
         teks = m.reply_to_message.text
@@ -103,6 +106,7 @@ async def stackoverflow(client, message):
 
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def gsearch(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
@@ -150,6 +154,7 @@ async def gsearch(client, message):
 
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def translate(client, message):
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
@@ -175,6 +180,7 @@ async def translate(client, message):
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def tts(_, message):
     if message.reply_to_message and (message.reply_to_message.text or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
@@ -207,6 +213,7 @@ async def tts(_, message):
 
 @app.on_message(filters.command(["tosticker"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
@@ -223,6 +230,7 @@ async def tostick(client, message):
 
 @app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def topho(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.sticker:
@@ -241,6 +249,7 @@ async def topho(client, message):
 
 
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
+@ratelimiter
 async def showid(client, message):
     chat_type = message.chat.type
     if chat_type == "private":
@@ -274,6 +283,7 @@ async def showid(client, message):
 
 
 @app.on_message(filters.command(["info"], COMMAND_HANDLER))
+@ratelimiter
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     if message.sender_chat:
@@ -295,11 +305,11 @@ async def who_is(client, message):
     message_out_str += f"<b>➲Last Name:</b> {last_name}\n"
     message_out_str += f"<b>➲Telegram ID:</b> <code>{from_user.id}</code>\n"
     username = from_user.username or "<b>None</b>"
-    dc_id = from_user.dc_id or "[User Doesnt Have A Valid DP]"
+    dc_id = from_user.dc_id or "[User Doesn't Have Profile Pic]"
     message_out_str += f"<b>➲Data Centre:</b> <code>{dc_id}</code>\n"
     message_out_str += f"<b>➲User Name:</b> @{username}\n"
-    message_out_str += f"<b>➲User 𝖫𝗂𝗇𝗄:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
-    if message.chat.type in (("supergroup", "channel")):
+    message_out_str += f"<b>➲User Link:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
+    if message.chat.type.value in (("supergroup", "channel")):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
             joined_date = datetime.fromtimestamp(chat_member_p.joined_date or time.time()).strftime("%Y.%m.%d %H:%M:%S")
@@ -331,6 +341,7 @@ async def who_is(client, message):
 
 
 @app.on_callback_query(filters.regex("^close"))
+@ratelimiter
 async def close_callback(bot: Client, query: CallbackQuery):
     i, userid = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -359,6 +370,7 @@ async def mdlapi(title):
 
 @app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def mdlsearch(client, message):
     if " " in message.text:
         r, title = message.text.split(None, 1)
@@ -385,6 +397,7 @@ async def mdlsearch(client, message):
 
 
 @app.on_callback_query(filters.regex("^mdls"))
+@ratelimiter
 async def mdl_callback(bot: Client, query: CallbackQuery):
     i, user, msg_id, slug = query.data.split("#")
     if user == f"{query.from_user.id}":

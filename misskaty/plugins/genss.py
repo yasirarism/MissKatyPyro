@@ -18,7 +18,7 @@ from pyrogram.types import InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.pyro_cooldown import wait
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
 from misskaty.vars import COMMAND_HANDLER
@@ -32,8 +32,9 @@ __HELP__ = """"
 """
 
 
-@app.on_message(filters.command(["genss"], COMMAND_HANDLER) & wait(30))
+@app.on_message(filters.command(["genss"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def genss(client, m):
     if not m.from_user:
         return
@@ -105,5 +106,6 @@ async def genss(client, m):
 
 
 @app.on_callback_query(filters.regex(r"^scht"))
+@ratelimiter
 async def _(c, m):
     asyncio.create_task(screenshot_flink(c, m))

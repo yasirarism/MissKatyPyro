@@ -9,6 +9,7 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
 from misskaty.helper.http import http
 from misskaty.plugins.web_scraper import split_arr, headers
@@ -40,6 +41,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
 
 
 @app.on_message(filters.command(["pypi"], COMMAND_HANDLER))
+@ratelimiter
 async def pypi_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -58,6 +60,7 @@ async def pypi_s(client, message):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
+@ratelimiter
 async def pypipage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -82,6 +85,7 @@ async def pypipage_callback(client, callback_query):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
+@ratelimiter
 async def pypi_getdata(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)

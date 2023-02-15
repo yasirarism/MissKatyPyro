@@ -21,6 +21,7 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_USERNAME, app, user
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import post_to_telegraph, http, GENRES_EMOJI, search_jw
 from misskaty.plugins.misc_tools import get_content
 from utils import demoji
@@ -98,7 +99,7 @@ async def inline_menu(_, inline_query: InlineQuery):
         kueri = inline_query.query.split(None, 1)[1].strip()
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
         jsonapi = await http.get(
-            "https://github.com/yasirarism/telegram-bot-api-spec/raw/main/api.json",
+            "https://github.com/PaulSonOfLars/telegram-bot-api-spec/raw/main/api.json",
             headers=headers,
             follow_redirects=True,
         )
@@ -500,6 +501,7 @@ async def inline_menu(_, inline_query: InlineQuery):
 
 
 @app.on_callback_query(filters.regex(r"prvtmsg\((.+)\)"))
+@ratelimiter
 async def prvt_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
@@ -516,6 +518,7 @@ async def prvt_msg(_, c_q):
 
 
 @app.on_callback_query(filters.regex(r"destroy\((.+)\)"))
+@ratelimiter
 async def destroy_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
@@ -534,6 +537,7 @@ async def destroy_msg(_, c_q):
 
 
 @app.on_callback_query(filters.regex("^imdbinl#"))
+@ratelimiter
 async def imdb_inl(_, query):
     i, user, movie = query.data.split("#")
     if user == f"{query.from_user.id}":

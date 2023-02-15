@@ -8,9 +8,11 @@ from pyrogram import filters
 from pyrogram.errors import MessageEmpty
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 
 
 @app.on_message(filters.regex(r"^s/(.+)?/(.+)?(/.+)?") & filters.reply)
+@ratelimiter
 async def sed(c, m):
     exp = regex.split(r"(?<![^\\]\\)/", m.text)
     pattern = exp[1]

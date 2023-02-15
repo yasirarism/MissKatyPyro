@@ -14,6 +14,7 @@ from pyrogram.raw.types import DocumentAttributeFilename, InputDocument, InputMe
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
@@ -41,6 +42,7 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
 @app.on_message(filters.command(["getsticker"], COMMAND_HANDLER))
+@ratelimiter
 async def getsticker_(c, m):
     if sticker := m.reply_to_message.sticker:
         if sticker.is_animated:
@@ -62,12 +64,14 @@ async def getsticker_(c, m):
 
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)
+@ratelimiter
 async def getstickerid(c, m):
     if m.reply_to_message.sticker:
         await m.reply_text("The ID of this sticker is: <code>{stickerid}</code>".format(stickerid=m.reply_to_message.sticker.file_id))
 
 
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
+@ratelimiter
 async def getstickerid(c, m):
     if m.reply_to_message.sticker:
         pp = await m.reply_text("Trying to remove from pack..")
@@ -87,6 +91,7 @@ async def getstickerid(c, m):
 
 
 @app.on_message(filters.command(["curi", "kang"], COMMAND_HANDLER))
+@ratelimiter
 async def kang_sticker(c, m):
     if not m.from_user:
         return await m.reply_text("You are anon admin, kang stickers in my pm.")

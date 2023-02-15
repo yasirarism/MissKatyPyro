@@ -10,17 +10,19 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Inkick"
 __HELP__ = """"
 /instatus - View member status in group.
-/dkick - Remove deleted account from group.
+/ban_ghosts - Remove deleted account from group.
 """
 
 
 @app.on_message(filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER))
+@ratelimiter
 async def inkick(_, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
@@ -60,6 +62,7 @@ async def inkick(_, message):
 
 # Kick User Without Username
 @app.on_message(filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER))
+@ratelimiter
 async def uname(_, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
@@ -95,7 +98,8 @@ async def uname(_, message):
 
 
 @app.on_message(filters.incoming & ~filters.private & filters.command(["ban_ghosts"], COMMAND_HANDLER))
-async def dkick(client, message):
+@ratelimiter
+async def rm_delacc(client, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
@@ -127,6 +131,7 @@ async def dkick(client, message):
 
 
 @app.on_message(filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER))
+@ratelimiter
 async def instatus(client, message):
     if message.sender_chat:
         return await kirimPesan(message, "Not supported channel.")

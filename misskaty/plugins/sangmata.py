@@ -3,6 +3,7 @@ from pyrogram import filters
 from database.sangmata_db import *
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
@@ -42,6 +43,7 @@ async def cek_mataa(_, m):
 
 @app.on_message(filters.group & filters.command("sangmata_set", COMMAND_HANDLER) & ~filters.bot & ~filters.via_bot)
 @adminsOnly("can_change_info")
+@ratelimiter
 async def set_mataa(_, m):
     if len(m.command) == 1:
         return await kirimPesan(m, f"Use <code>/{m.command[0]} on</code>, to enable sangmata. If you want disable, you can use off parameter.")

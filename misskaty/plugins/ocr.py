@@ -8,10 +8,11 @@
 import os
 
 from pyrogram import filters
-from telegraph import upload_file
+from telegraph.aio import Telegraph
 
 from misskaty import app
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
@@ -22,6 +23,7 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def ocr(_, m):
     reply = m.reply_to_message
     if not reply or not reply.photo and not reply.sticker:
@@ -31,8 +33,8 @@ async def ocr(_, m):
         file_path = await reply.download()
         if reply.sticker:
             file_path = await reply.download(f"ocr_{m.from_user.id}.jpg")
-        response = upload_file(file_path)
-        url = f"https://telegra.ph{response[0]}"
+        response = await Telegraph().upload_file(file_path)
+        url = f"https://telegra.ph{response[0]['src']}"
         req = (
             await http.get(
                 f"https://script.google.com/macros/s/AKfycbwURISN0wjazeJTMHTPAtxkrZTWTpsWIef5kxqVGoXqnrzdLdIQIfLO7jsR5OQ5GO16/exec?url={url}",

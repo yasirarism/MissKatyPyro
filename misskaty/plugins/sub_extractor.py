@@ -1,6 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
+ * @created          2022-12-01 09:12:27
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -17,6 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
@@ -61,6 +62,7 @@ def get_subname(lang, url, format):
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
+@ratelimiter
 async def ceksub(_, m):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
@@ -107,6 +109,7 @@ async def ceksub(_, m):
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def convertsrt(c, m):
     reply = m.reply_to_message
     if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
@@ -133,6 +136,7 @@ async def convertsrt(c, m):
 
 
 @app.on_callback_query(filters.regex(r"^streamextract#"))
+@ratelimiter
 async def stream_extract(bot, update):
     cb_data = update.data
     usr = update.message.reply_to_message

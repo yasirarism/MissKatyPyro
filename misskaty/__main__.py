@@ -27,6 +27,7 @@ from misskaty import (
     user,
 )
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.plugins import ALL_MODULES
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
@@ -127,6 +128,7 @@ keyboard = InlineKeyboardMarkup(
 
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
+@ratelimiter
 async def start(_, message):
     if not message.from_user: return
     if message.chat.type.value != "private":
@@ -180,6 +182,7 @@ async def start(_, message):
 
 
 @app.on_callback_query(filters.regex("bot_commands"))
+@ratelimiter
 async def commands_callbacc(_, CallbackQuery):
     text, keyboard = await help_parser(CallbackQuery.from_user.mention)
     await app.send_message(
@@ -191,12 +194,14 @@ async def commands_callbacc(_, CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("stats_callback"))
+@ratelimiter
 async def stats_callbacc(_, CallbackQuery):
     text = await bot_sys_stats()
     await app.answer_callback_query(CallbackQuery.id, text, show_alert=True)
 
 
 @app.on_message(filters.command("help", COMMAND_HANDLER))
+@ratelimiter
 async def help_command(_, message):
     if not message.from_user: return
     if message.chat.type.value != "private":
@@ -280,6 +285,7 @@ If you want give coffee to my owner you can send /donate command for more info.
 
 
 @app.on_callback_query(filters.regex(r"help_(.*?)"))
+@ratelimiter
 async def help_button(client, query):
     home_match = re.match(r"help_home\((.+?)\)", query.data)
     mod_match = re.match(r"help_module\((.+?)\)", query.data)

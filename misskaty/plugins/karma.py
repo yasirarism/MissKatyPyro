@@ -13,6 +13,7 @@ from database.karma_db import (
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.functions import alpha_to_int, int_to_alpha
 
 __MODULE__ = "Karma"
@@ -116,6 +117,7 @@ async def downvote(_, message):
 
 @app.on_message(filters.command("karma") & filters.group)
 @capture_err
+@ratelimiter
 async def command_karma(_, message):
     chat_id = message.chat.id
     if not message.reply_to_message:
@@ -162,6 +164,7 @@ async def command_karma(_, message):
 
 @app.on_message(filters.command("karma_toggle") & ~filters.private)
 @adminsOnly
+@ratelimiter
 async def captcha_state(_, message):
     usage = "**Usage:**\n/karma_toggle [ENABLE|DISABLE]"
     if len(message.command) != 2:

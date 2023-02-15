@@ -11,6 +11,7 @@ from pySmartDL import SmartDL
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER, SUDO
@@ -30,6 +31,7 @@ __HELP__ = """
 
 
 @app.on_message(filters.command(["anon"], COMMAND_HANDLER))
+@ratelimiter
 async def upload(bot, message):
     if not message.reply_to_message:
         return await message.reply("Please reply to media file.")
@@ -103,7 +105,7 @@ async def download(client, message):
 
             estimated_total_time = downloader.get_eta(human=True)
             try:
-                current_message = "trying to download...\n"
+                current_message = "Trying to download...\n"
                 current_message += f"URL: <code>{url}</code>\n"
                 current_message += f"File Name: <code>{custom_file_name}</code>\n"
                 current_message += f"Speed: {speed}\n"
@@ -126,6 +128,7 @@ async def download(client, message):
 
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def tiktokdl(client, message):
     if len(message.command) == 1:
         return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
@@ -162,6 +165,7 @@ async def fbdl(client, message):
         await message.reply_video(
             path,
             caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            thumb="img/thumb.jpg"
         )
         await msg.delete()
         try:

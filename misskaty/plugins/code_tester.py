@@ -4,6 +4,7 @@ from pyrogram.errors import MessageTooLong
 
 from misskaty import app
 from misskaty.helper.tools import rentry
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "CodeTester"
@@ -72,6 +73,7 @@ async def glot(lang, langcode, code):
 
 
 @app.on_message(filters.command(["codelist"], COMMAND_HANDLER))
+@ratelimiter
 async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
@@ -80,6 +82,7 @@ async def list_lang(client, message):
 
 @app.on_message(filters.command(["assembly"], "!"))
 @app.on_edited_message(filters.command(["assembly"], "!"))
+@ratelimiter
 async def assembly(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -97,6 +100,7 @@ async def assembly(client, message):
 
 @app.on_message(filters.command(["ats"], "!"))
 @app.on_edited_message(filters.command(["ats"], "!"))
+@ratelimiter
 async def ats(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -114,6 +118,7 @@ async def ats(client, message):
 
 @app.on_message(filters.command(["bash"], "!"))
 @app.on_edited_message(filters.command(["bash"], "!"))
+@ratelimiter
 async def bash(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -131,6 +136,7 @@ async def bash(client, message):
 
 @app.on_message(filters.command(["c"], "!"))
 @app.on_edited_message(filters.command(["c"], "!"))
+@ratelimiter
 async def c(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -148,6 +154,7 @@ async def c(client, message):
 
 @app.on_message(filters.command(["clojure"], "!"))
 @app.on_edited_message(filters.command(["clojure"], "!"))
+@ratelimiter
 async def clojure(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -165,6 +172,7 @@ async def clojure(client, message):
 
 @app.on_message(filters.command(["cobol"], "!"))
 @app.on_edited_message(filters.command(["cobol"], "!"))
+@ratelimiter
 async def cobol(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -182,6 +190,7 @@ async def cobol(client, message):
 
 @app.on_message(filters.command(["coffeescript"], "!"))
 @app.on_edited_message(filters.command(["coffeescript"], "!"))
+@ratelimiter
 async def coffeescript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -199,6 +208,7 @@ async def coffeescript(client, message):
 
 @app.on_message(filters.command(["cpp"], "!"))
 @app.on_edited_message(filters.command(["cpp"], "!"))
+@ratelimiter
 async def cpp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -216,6 +226,7 @@ async def cpp(client, message):
 
 @app.on_message(filters.command(["crystal"], "!"))
 @app.on_edited_message(filters.command(["crystal"], "!"))
+@ratelimiter
 async def crystal(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -233,6 +244,7 @@ async def crystal(client, message):
 
 @app.on_message(filters.command(["csharp"], "!"))
 @app.on_edited_message(filters.command(["csharp"], "!"))
+@ratelimiter
 async def csharp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -250,6 +262,7 @@ async def csharp(client, message):
 
 @app.on_message(filters.command(["d"], "!"))
 @app.on_edited_message(filters.command(["d"], "!"))
+@ratelimiter
 async def d(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -267,6 +280,7 @@ async def d(client, message):
 
 @app.on_message(filters.command(["elixir"], "!"))
 @app.on_edited_message(filters.command(["elixir"], "!"))
+@ratelimiter
 async def elixir(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -301,6 +315,7 @@ async def elm(client, message):
 
 @app.on_message(filters.command(["erlang"], "!"))
 @app.on_edited_message(filters.command(["erlang"], "!"))
+@ratelimiter
 async def erlang(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -318,6 +333,7 @@ async def erlang(client, message):
 
 @app.on_message(filters.command(["fsharp"], "!"))
 @app.on_edited_message(filters.command(["fsharp"], "!"))
+@ratelimiter
 async def fsharp(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -335,6 +351,7 @@ async def fsharp(client, message):
 
 @app.on_message(filters.command(["go"], "!"))
 @app.on_edited_message(filters.command(["go"], "!"))
+@ratelimiter
 async def go(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -352,6 +369,7 @@ async def go(client, message):
 
 @app.on_message(filters.command(["groovy"], "!"))
 @app.on_edited_message(filters.command(["groovy"], "!"))
+@ratelimiter
 async def groovy(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -369,6 +387,7 @@ async def groovy(client, message):
 
 @app.on_message(filters.command(["haskell"], "!"))
 @app.on_edited_message(filters.command(["haskell"], "!"))
+@ratelimiter
 async def haskell(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -386,6 +405,7 @@ async def haskell(client, message):
 
 @app.on_message(filters.command(["idris"], "!"))
 @app.on_edited_message(filters.command(["idris"], "!"))
+@ratelimiter
 async def idris(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -403,6 +423,7 @@ async def idris(client, message):
 
 @app.on_message(filters.command(["java"], "!"))
 @app.on_edited_message(filters.command(["java"], "!"))
+@ratelimiter
 async def java(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -420,6 +441,7 @@ async def java(client, message):
 
 @app.on_message(filters.command(["javascript"], "!"))
 @app.on_edited_message(filters.command(["javascript"], "!"))
+@ratelimiter
 async def javascript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -437,6 +459,7 @@ async def javascript(client, message):
 
 @app.on_message(filters.command(["julia"], "!"))
 @app.on_edited_message(filters.command(["julia"], "!"))
+@ratelimiter
 async def julia(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -454,6 +477,7 @@ async def julia(client, message):
 
 @app.on_message(filters.command(["kotlin"], "!"))
 @app.on_edited_message(filters.command(["kotlin"], "!"))
+@ratelimiter
 async def kotlin(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -471,6 +495,7 @@ async def kotlin(client, message):
 
 @app.on_message(filters.command(["lua"], "!"))
 @app.on_edited_message(filters.command(["lua"], "!"))
+@ratelimiter
 async def lua(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -488,6 +513,7 @@ async def lua(client, message):
 
 @app.on_message(filters.command(["mercury"], "!"))
 @app.on_edited_message(filters.command(["mercury"], "!"))
+@ratelimiter
 async def mercury(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -505,6 +531,7 @@ async def mercury(client, message):
 
 @app.on_message(filters.command(["nim"], "!"))
 @app.on_edited_message(filters.command(["nim"], "!"))
+@ratelimiter
 async def nim(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -522,6 +549,7 @@ async def nim(client, message):
 
 @app.on_message(filters.command(["nix"], "!"))
 @app.on_edited_message(filters.command(["nix"], "!"))
+@ratelimiter
 async def nix(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -539,6 +567,7 @@ async def nix(client, message):
 
 @app.on_message(filters.command(["ocaml"], "!"))
 @app.on_edited_message(filters.command(["ocaml"], "!"))
+@ratelimiter
 async def ocaml(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -556,6 +585,7 @@ async def ocaml(client, message):
 
 @app.on_message(filters.command(["perl"], "!"))
 @app.on_edited_message(filters.command(["perl"], "!"))
+@ratelimiter
 async def perl(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -590,6 +620,7 @@ async def php(client, message):
 
 @app.on_message(filters.command(["python"], "!"))
 @app.on_edited_message(filters.command(["python"], "!"))
+@ratelimiter
 async def python(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -607,6 +638,7 @@ async def python(client, message):
 
 @app.on_message(filters.command(["raku"], "!"))
 @app.on_edited_message(filters.command(["raku"], "!"))
+@ratelimiter
 async def raku(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -624,6 +656,7 @@ async def raku(client, message):
 
 @app.on_message(filters.command(["ruby"], "!"))
 @app.on_edited_message(filters.command(["ruby"], "!"))
+@ratelimiter
 async def ruby(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -641,6 +674,7 @@ async def ruby(client, message):
 
 @app.on_message(filters.command(["rust"], "!"))
 @app.on_edited_message(filters.command(["rust"], "!"))
+@ratelimiter
 async def rust(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -658,6 +692,7 @@ async def rust(client, message):
 
 @app.on_message(filters.command(["scala"], "!"))
 @app.on_edited_message(filters.command(["scala"], "!"))
+@ratelimiter
 async def scala(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
@@ -692,6 +727,7 @@ async def swift(client, message):
 
 @app.on_message(filters.command(["typescript"], "!"))
 @app.on_edited_message(filters.command(["typescript"], "!"))
+@ratelimiter
 async def typescript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")

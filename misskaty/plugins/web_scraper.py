@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @lastModified  2023-01-11 12:23:31
+ * @created       2022-12-01 09:12:27
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -10,6 +9,7 @@ import logging
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.kuso_utils import Kusonime
 from misskaty import app
@@ -336,6 +336,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
 
 # Terbit21 CMD
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
+@ratelimiter
 async def terbit21_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -353,6 +354,7 @@ async def terbit21_s(client, message):
 
 # LK21 CMD
 @app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
+@ratelimiter
 async def lk21_s(client, message):
     message.chat.id
     kueri = " ".join(message.command[1:])
@@ -371,6 +373,7 @@ async def lk21_s(client, message):
 
 # Pahe CMD
 @app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
+@ratelimiter
 async def pahe_s(client, message):
     message.chat.id
     kueri = " ".join(message.command[1:])
@@ -389,6 +392,7 @@ async def pahe_s(client, message):
 
 # Gomov CMD
 @app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
+@ratelimiter
 async def gomov_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -408,6 +412,7 @@ async def gomov_s(client, message):
 
 # MelongMovie CMD
 @app.on_message(filters.command(["melongmovie"], COMMAND_HANDLER))
+@ratelimiter
 async def melong_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -427,6 +432,7 @@ async def melong_s(client, message):
 
 # Savefilm21 CMD
 @app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
+@ratelimiter
 async def savefilm_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -446,6 +452,7 @@ async def savefilm_s(client, message):
 
 # Kusonime CMD
 @app.on_message(filters.command(["kusonime"], COMMAND_HANDLER))
+@ratelimiter
 async def kusonime_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -467,6 +474,7 @@ async def kusonime_s(client, message):
 
 # Lendrive CMD
 @app.on_message(filters.command(["lendrive"], COMMAND_HANDLER))
+@ratelimiter
 async def lendrive_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -486,6 +494,7 @@ async def lendrive_s(client, message):
 
 # Movieku CMD
 @app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
+@ratelimiter
 async def movieku_s(client, message):
     kueri = " ".join(message.command[1:])
     if not kueri:
@@ -503,6 +512,7 @@ async def movieku_s(client, message):
 
 # Savefillm21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_savefilm#" in query.data))
+@ratelimiter
 async def savefilmpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -528,6 +538,7 @@ async def savefilmpage_callback(client, callback_query):
 
 # Kuso Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_kuso#" in query.data))
+@ratelimiter
 async def kusopage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -555,6 +566,7 @@ async def kusopage_callback(client, callback_query):
 
 # Lendrive Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_lendrive#" in query.data))
+@ratelimiter
 async def moviekupage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -580,6 +592,7 @@ async def moviekupage_callback(client, callback_query):
 
 # Movieku Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_movieku#" in query.data))
+@ratelimiter
 async def moviekupage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -603,6 +616,7 @@ async def moviekupage_callback(client, callback_query):
 
 # Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_terbit21#" in query.data))
+@ratelimiter
 async def terbit21page_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -626,6 +640,7 @@ async def terbit21page_callback(client, callback_query):
 
 # Page Callback Melong
 @app.on_callback_query(filters.create(lambda _, __, query: "page_melong#" in query.data))
+@ratelimiter
 async def melongpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -651,6 +666,7 @@ async def melongpage_callback(client, callback_query):
 
 # Lk21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_lk21#" in query.data))
+@ratelimiter
 async def lk21page_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -674,6 +690,7 @@ async def lk21page_callback(client, callback_query):
 
 # Pahe Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pahe#" in query.data))
+@ratelimiter
 async def pahepage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -697,6 +714,7 @@ async def pahepage_callback(client, callback_query):
 
 # Gomov Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_gomov#" in query.data))
+@ratelimiter
 async def gomovpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -723,6 +741,7 @@ async def gomovpage_callback(client, callback_query):
 ### Scrape DDL Link From Web ###
 # Kusonime DDL
 @app.on_callback_query(filters.create(lambda _, __, query: "kusoextract#" in query.data))
+@ratelimiter
 async def kusonime_scrap(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -755,6 +774,7 @@ async def kusonime_scrap(_, callback_query):
 
 # Savefilm21 DDL
 @app.on_callback_query(filters.create(lambda _, __, query: "sf21extract#" in query.data))
+@ratelimiter
 async def savefilm21_scrap(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -781,6 +801,7 @@ async def savefilm21_scrap(_, callback_query):
 
 # Scrape Link Download Movieku.CC
 @app.on_message(filters.command(["movieku_scrap"], COMMAND_HANDLER))
+@ratelimiter
 async def muviku_scrap(_, message):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
@@ -806,6 +827,7 @@ async def muviku_scrap(_, message):
 
 # Scrape DDL Link Melongmovie
 @app.on_callback_query(filters.create(lambda _, __, query: "melongextract#" in query.data))
+@ratelimiter
 async def melong_scrap(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -835,6 +857,7 @@ async def melong_scrap(_, callback_query):
 
 # Scrape DDL Link Gomov
 @app.on_callback_query(filters.create(lambda _, __, query: "gomovextract#" in query.data))
+@ratelimiter
 async def gomov_dl(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -864,6 +887,7 @@ async def gomov_dl(_, callback_query):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "lendriveextract#" in query.data))
+@ratelimiter
 async def lendrive_dl(_, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)

@@ -17,6 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_readable_file_size, rentry
 from misskaty.vars import COMMAND_HANDLER
 
@@ -87,6 +88,7 @@ def wetransfer_bypass(url: str) -> str:
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def bypass(_, message):
     if len(message.command) == 1:
         return await kirimPesan(message, f"Gunakan perintah /{message.command[0]} untuk bypass url")
@@ -114,6 +116,8 @@ async def bypass(_, message):
                 reply_markup=markup,
                 disable_web_page_preview=True,
             )
-    else:
+    elif "we.tl" or "wetransfer.com" in message.command[1]:
         data = wetransfer_bypass(url)
         await editPesan(msg, f"{data}\n\n{mention}")
+    else:
+        await kirimPesan(message, "Unsupported url..")

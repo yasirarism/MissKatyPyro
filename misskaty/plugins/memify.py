@@ -5,6 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.vars import COMMAND_HANDLER
 
@@ -134,6 +135,7 @@ async def draw_meme_text(image_path, text):
 
 @app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def memify(client, message):
     if message.reply_to_message and (message.reply_to_message.sticker or message.reply_to_message.photo):
         try:

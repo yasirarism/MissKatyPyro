@@ -4,10 +4,12 @@ from pyrogram.errors import MessageNotModified
 from misskaty import app
 from misskaty.helper.http import http
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API
 
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER))
+@ratelimiter
 async def chatbot(c, m):
     if len(m.command) == 1:
         return await kirimPesan(m, f"Gunakan perintah <code>/{m.command[0]} [pertanyaan]</code> untuk menanyakan pertanyaan menggunakan AI.")

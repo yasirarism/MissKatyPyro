@@ -10,6 +10,7 @@ from pyrogram.errors import UserAlreadyParticipant, UserIsBlocked
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 
 
@@ -37,6 +38,7 @@ async def approve_join_chat(c, m):
 
 
 @app.on_callback_query(filters.regex(r"^approve"))
+@ratelimiter
 async def approve_chat(c, q):
     i, chat = q.data.split("_")
     try:
@@ -49,6 +51,7 @@ async def approve_chat(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^declined"))
+@ratelimiter
 async def decline_chat(c, q):
     i, chat = q.data.split("_")
     try:

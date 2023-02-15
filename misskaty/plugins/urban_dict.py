@@ -2,6 +2,7 @@ import asyncio
 
 from pykeyboard import InlineKeyboard
 from pyrogram import filters
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
@@ -32,6 +33,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
 
 @app.on_message(filters.command(["ud"], COMMAND_HANDLER))
+@ratelimiter
 async def urbanDictionary(client, message):
     if not message.from_user:
         return
@@ -51,6 +53,7 @@ async def urbanDictionary(client, message):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "pagination_urban#" in query.data))
+@ratelimiter
 async def ud_callback(client, callback_query):
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id

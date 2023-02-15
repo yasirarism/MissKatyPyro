@@ -9,6 +9,7 @@ from telethon.errors import ApiIdInvalidError, PasswordHashInvalidError, PhoneCo
 from telethon.sessions import StringSession
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import API_HASH, API_ID, COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
@@ -48,6 +49,7 @@ async def is_batal(msg):
 
 
 @app.on_callback_query(filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
+@ratelimiter
 async def callbackgenstring(bot, callback_query):
     query = callback_query.matches[0].group(1)
     if query == "genstring":
@@ -74,6 +76,7 @@ async def callbackgenstring(bot, callback_query):
 
 
 @app.on_message(filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER))
+@ratelimiter
 async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
 

@@ -17,6 +17,7 @@ from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import kirimPesan
 from misskaty.helper import get_readable_time2
 from misskaty.vars import COMMAND_HANDLER
@@ -32,6 +33,7 @@ Just type something in group to remove AFK Status."""
 # Handle set AFK Command
 @capture_err
 @app.on_message(filters.command(["afk"], COMMAND_HANDLER))
+@ratelimiter
 async def active_afk(_, message):
     if message.sender_chat:
         return await kirimPesan(message, "This feature not supported for channel.")
@@ -182,6 +184,7 @@ async def active_afk(_, message):
 
 
 @app.on_message(filters.command("afkdel", COMMAND_HANDLER) & filters.group)
+@ratelimiter
 @adminsOnly("can_change_info")
 async def afk_state(_, message):
     if not message.from_user:

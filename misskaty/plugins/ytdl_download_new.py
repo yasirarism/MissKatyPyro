@@ -9,7 +9,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.pyro_cooldown import wait
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
@@ -22,8 +22,9 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel & wait(30))
+@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
 @capture_err
+@ratelimiter
 async def ytsearch(_, message):
     if message.sender_chat:
         return await kirimPesan(message, "This feature not supported for channel.")
@@ -60,6 +61,7 @@ async def ytsearch(_, message):
 
 @app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def ytdownv2(_, message):
     if not message.from_user:
         return
@@ -77,6 +79,7 @@ async def ytdownv2(_, message):
 
 
 @app.on_callback_query(filters.regex(r"^yt_listall"))
+@ratelimiter
 async def ytdl_listall_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
@@ -87,6 +90,7 @@ async def ytdl_listall_callback(_, cq: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
+@ratelimiter
 async def ytdl_extractinfo_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
@@ -112,6 +116,7 @@ async def ytdl_extractinfo_callback(_, cq: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
+@ratelimiter
 async def ytdl_gendl_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)
@@ -155,6 +160,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
+@ratelimiter
 async def ytdl_scroll_callback(_, cq: CallbackQuery):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer("Not your task", True)

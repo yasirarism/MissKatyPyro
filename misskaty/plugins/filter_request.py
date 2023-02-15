@@ -9,6 +9,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from .web_scraper import SCRAP_DICT, data_kuso
 from .pypi_search import PYPI_DICT
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.time_gap import check_time_gap
 
@@ -131,7 +132,8 @@ async def start(_, message):
 
 
 @app.on_callback_query(filters.regex(r"^donereq"))
-async def _callbackreq(c, q):
+@ratelimiter
+async def callbackreq(c, q):
     try:
         user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
@@ -169,7 +171,8 @@ async def _callbackreq(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^dahada"))
-async def _callbackreqada(c, q):
+@ratelimiter
+async def callbackreqada(c, q):
     try:
         user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
@@ -225,7 +228,8 @@ async def _callbackreqada(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^rejectreq"))
-async def _callbackreject(c, q):
+@ratelimiter
+async def callbackreject(c, q):
     try:
         user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
@@ -263,7 +267,8 @@ async def _callbackreject(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^unavailablereq"))
-async def _callbackunav(c, q):
+@ratelimiter
+async def callbackunav(c, q):
     try:
         user = await c.get_chat_member(-1001201566570, q.from_user.id)
         if user.status in [
@@ -323,7 +328,8 @@ async def _callbackunav(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
-async def _callbackaft_done(c, q):
+@ratelimiter
+async def callbackaft_done(c, q):
     await q.answer(
         "Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..",
         show_alert=True,
@@ -332,7 +338,8 @@ async def _callbackaft_done(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^reqreject$"))
-async def _callbackaft_rej(c, q):
+@ratelimiter
+async def callbackaft_rej(c, q):
     await q.answer(
         "Request ini ditolak 💔, silahkan cek rules grup yaa.",
         show_alert=True,
@@ -341,7 +348,8 @@ async def _callbackaft_rej(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^requnav$"))
-async def _callbackaft_unav(c, q):
+@ratelimiter
+async def callbackaft_unav(c, q):
     await q.answer(
         "Request ini tidak tersedia ☹️, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
         show_alert=True,
@@ -350,7 +358,8 @@ async def _callbackaft_unav(c, q):
 
 
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
-async def _callbackaft_dahada(c, q):
+@ratelimiter
+async def callbackaft_dahada(c, q):
     await q.answer("Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True)
 
 

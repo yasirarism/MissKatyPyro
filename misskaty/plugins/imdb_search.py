@@ -20,8 +20,8 @@ from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.http import http
-from misskaty.helper.tools import get_random_string, search_jw, GENRES_EMOJI
+from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWe
 # IMDB Choose Language
 @app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
 @capture_err
+@ratelimiter
 async def imdb_choose(_, m):
     if len(m.command) == 1:
         return await kirimPesan(m, f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>")
@@ -62,6 +63,7 @@ async def imdb_choose(_, m):
 
 
 @app.on_callback_query(filters.regex("^imdbset"))
+@ratelimiter
 async def imdbsetlang(client, query):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -79,6 +81,7 @@ async def imdbsetlang(client, query):
 
 
 @app.on_callback_query(filters.regex("^setimdb"))
+@ratelimiter
 async def imdbsetlang(client, query):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -195,6 +198,7 @@ async def imdb_search_en(kueri, message):
 
 
 @app.on_callback_query(filters.regex("^imdbcari"))
+@ratelimiter
 async def imdbcari(client, query):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
@@ -279,6 +283,7 @@ async def imdbcari(client, query):
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
+@ratelimiter
 async def imdb_id_callback(_, query):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -399,6 +404,7 @@ async def imdb_id_callback(_, query):
 
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
+@ratelimiter
 async def imdb_en_callback(bot, query):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):

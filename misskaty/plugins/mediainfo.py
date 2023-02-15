@@ -15,36 +15,37 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
 from misskaty.core.message_utils import *
-from misskaty.core.decorator.pyro_cooldown import wait
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, progress_for_pyrogram, runcmd, post_to_telegraph
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
 
-@app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER) & wait(30))
+@app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
+@ratelimiter
 async def mediainfo(client, message):
     if not message.from_user:
         return
     if message.reply_to_message and message.reply_to_message.media:
-        process = await kirimPesan(message, "`Sedang memproses, lama waktu tergantung ukuran file kamu...`", quote=True)
+        process = await kirimPesan(message, "`Processing, total time is based size of your files...`", quote=True)
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
-            return await editPesan(process, "Balas ke format media yang valid")
+            return await editPesan(process, "Please reply to valid media.")
 
         c_time = time.time()
         file_path = await message.reply_to_message.download(
             progress=progress_for_pyrogram,
-            progress_args=("trying to download, sabar yakk..", process, c_time),
+            progress_args=("Trying to download..", process, c_time),
         )
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
-    MissKatyBot MediaInfo
-    JSON
-    {file_info}.type
+MissKatyBot MediaInfo
+JSON
+{file_info}.type
     
-    DETAILS
-    {out or 'Not Supported'}
+DETAILS
+{out or 'Not Supported'}
     """
         text_ = file_info.message_type
         try:
