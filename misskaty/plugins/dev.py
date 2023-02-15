@@ -16,7 +16,8 @@ from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user, botStartTime, BOT_NAME
-from misskaty.helper import http, get_readable_file_size, get_readable_time
+from misskaty.helper import http
+from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 from utils import LOGGER
