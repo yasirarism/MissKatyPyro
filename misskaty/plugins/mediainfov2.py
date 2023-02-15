@@ -54,22 +54,22 @@ async def telegram_mediainfo(client, message):
     Generates Mediainfo from a Telegram File.
     """
 
-    message = message.reply_to_message
+    replymsg = message.reply_to_message
 
-    if message.text:
+    if replymsg.text:
         return await kirimPesan(message, "Reply to a proper media file for generating Mediainfo.**", quote=True)
 
-    elif message.media.value == 'video':
-        media = message.video
+    elif replymsg.media.value == 'video':
+        media = replymsg.video
 
-    elif message.media.value == 'audio':
-        media = message.audio
+    elif replymsg.media.value == 'audio':
+        media = replymsg.audio
 
-    elif message.media.value == 'document':
-        media = message.document
+    elif replymsg.media.value == 'document':
+        media = replymsg.document
 
-    elif message.media.value == 'voice':
-        media = message.voice
+    elif replymsg.media.value == 'voice':
+        media = replymsg.voice
 
     else:
         return await kirimPesan(message, "This type of media is not supported for generating Mediainfo.**", quote=True)
