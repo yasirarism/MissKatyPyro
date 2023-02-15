@@ -17,6 +17,7 @@ from requests_toolbelt import MultipartEncoder
 
 from misskaty import app
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import SUPPORTED_URL_REGEX, progress_for_pyrogram, get_random_string
 from misskaty.vars import COMMAND_HANDLER
 
@@ -82,7 +83,7 @@ async def generate_ss_from_file(
     await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
     rand_str = get_random_string(7)
-    os.mkdir()(f"screenshot_{rand_str}")
+    os.mkdir(f"screenshot_{rand_str}")
 
     loop_count = frame_count
     while loop_count != 0:
@@ -190,32 +191,32 @@ async def telegram_screenshot(client, message, frame_count):
     Generates Screenshots from Telegram Video Files.
     """
 
-    message = message.reply_to_message
-    if message.text:
-        return await message.reply_text("Reply to a proper video file to Generate Screenshots. **", quote=True)
+    replymsg = message.reply_to_message
+    if replymsg.text:
+        return await kirimPesan(message, "Reply to a proper video file to Generate Screenshots. **", quote=True)
 
-    elif message.media.value == "video":
-        media = message.video
+    elif replymsg.media.value == "video":
+        media = replymsg.video
 
-    elif message.media.value == "document":
-        media = message.document
+    elif replymsg.media.value == "document":
+        media = replymsg.document
 
     else:
-        return await message.reply_text("can only generate screenshots from video file....", quote=True)
+        return await kirimPesan(message, "can only generate screenshots from video file....", quote=True)
 
     file_name = str(media.file_name)
     mime = media.mime_type
     size = media.file_size
 
     if message.media.value == "document" and "video" not in mime:
-        return await message.reply_text("can only generate screenshots from video file....", quote=True)
+        return await kirimPesan(message, "Can only generate screenshots from video file....", quote=True)
 
     # Downloading partial file.
-    replymsg = await message.reply_text(f"Downloading partial video file....", quote=True)
+    replymsg = await kirimPesan(message, f"Downloading partial video file....", quote=True)
 
     if int(size) <= 200000000:
         c_time = time.time()
-        await message.download(
+        await replymsg.download(
             os.path.join(os.getcwd(), file_name),
             progress=progress_for_pyrogram,
             progress_args=("Trying to download..", replymsg, c_time)
@@ -224,7 +225,7 @@ async def telegram_screenshot(client, message, frame_count):
 
     else:
         limit = ((25 * size) / 100) / 1000000
-        async for chunk in client.stream_media(message, limit=int(limit)):
+        async for chunk in client.stream_media(replymsg, limit=int(limit)):
             with open(file_name, "ab") as file:
                 file.write(chunk)
 
@@ -250,6 +251,7 @@ async def telegram_screenshot(client, message, frame_count):
 
 
 @app.on_message(filters.command("genss2", COMMAND_HANDLER))
+@ratelimiter
 async def genscreenshotv2(client, message):
     replied_message = message.reply_to_message
     if replied_message:

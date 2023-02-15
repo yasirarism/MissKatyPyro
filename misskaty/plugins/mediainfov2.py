@@ -1,12 +1,9 @@
-from importlib.resources import contents
-import json
 import os
 import re
 import subprocess
 import time
 from urllib.parse import unquote
 
-import requests
 from pyrogram import filters
 
 from misskaty import app
@@ -28,10 +25,10 @@ async def ddl_mediainfo(_, message, url):
         output_ = await runcmd(f'mediainfo "{url}"')
         out = output_[0] if len(output_) != 0 else None
         content = f"""
-MissKatyBot MediaInfo
+<b>MissKatyBot MediaInfo</b>
     
-DETAILS
-{out or 'Not Supported'}
+<b>DETAILS</b>
+<pre>{out or 'Not Supported'}</pre>
     """
         output = await post_to_telegraph(False, "MissKaty MediaInfo", content)
 
@@ -91,12 +88,12 @@ async def telegram_mediainfo(client, message):
         out = output_[0] if len(output_) != 0 else None
         file_info = get_file_id(replymsg)
         content = f"""
-MissKatyBot MediaInfo
-JSON
-{file_info}.type
+<b>MissKatyBot MediaInfo</b>
+<b>JSON</b>
+<pre>{file_info}.type</pre>
     
-DETAILS
-{out or 'Not Supported'}
+<b>DETAILS</b>
+<pre>{out or 'Not Supported'}</pre>
     """
         output = await post_to_telegraph(False, "MissKaty MediaInfo", content)
 
