@@ -44,9 +44,9 @@ DETAILS
         await editPesan(reply_msg, f"**File Name :** `{unquote(filename)}`\n\n**Mediainfo :** {output}", disable_web_page_preview=True)
         os.remove(filename)
 
-    except:
+    except Exception as err:
         await hapusPesan(reply_msg)
-        await kirimPesan(message, f"Something went wrong while generating Mediainfo from the given url.", quote=True)
+        await kirimPesan(message, f"Something went wrong while generating Mediainfo from the given url.\n\nERR: {err}", quote=True)
 
 
 async def telegram_mediainfo(client, message):
@@ -110,9 +110,9 @@ DETAILS
         await editPesan(reply_msg, f"**File Name :** `{filename}`\n\n**Mediainfo :** {output}", disable_web_page_preview=True)
         os.remove(filename)
 
-    except:
+    except Exception as err:
         await hapusPesan(reply_msg)
-        await kirimPesan(message, f"Something went wrong while generating Mediainfo of replied Telegram file.", quote=True)
+        await kirimPesan(message, f"Something went wrong while generating Mediainfo of replied Telegram file.\n\nERR: {err}", quote=True)
 
 
 @ratelimiter

@@ -17,7 +17,7 @@ from requests_toolbelt import MultipartEncoder
 
 from misskaty import app
 from misskaty.core.message_utils import *
-from misskaty.helper import SUPPORTED_URL_REGEX, progress_for_pyrogram
+from misskaty.helper import SUPPORTED_URL_REGEX, progress_for_pyrogram, get_random_string
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -81,7 +81,7 @@ async def generate_ss_from_file(
 
     await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
-    rand_str = os.randstr()
+    rand_str = get_random_string()(7)
     os.makedir(f"screenshot_{rand_str}")
 
     loop_count = frame_count
@@ -126,7 +126,7 @@ async def generate_ss_from_link(
 
     await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
-    rand_str = os.randstr()
+    rand_str = get_random_string(7)
     os.makedir(f"screenshot_{rand_str}")
 
     loop_count = frame_count
