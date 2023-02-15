@@ -82,21 +82,21 @@ async def telegram_mediainfo(client, message):
 
     if int(size) <= 50000000:
         c_time = time.time()
-        await message.download(
+        await replymsg.download(
             os.path.join(os.getcwd(), filename),
             progress=progress_for_pyrogram,
             progress_args=("Trying to download..", reply_msg, c_time)
         )
 
     else:
-        async for chunk in client.stream_media(message, limit=5):
+        async for chunk in client.stream_media(replymsg, limit=5):
             with open(filename, 'ab') as f:
                 f.write(chunk)
 
     try:
         output_ = await runcmd(f'mediainfo "{filename}"')
         out = output_[0] if len(output_) != 0 else None
-        file_info = get_file_id(message.reply_to_message)
+        file_info = get_file_id(replymsg)
         content = f"""
 MissKatyBot MediaInfo
 JSON
