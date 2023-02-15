@@ -24,14 +24,8 @@ async def ddl_mediainfo(_, message, url):
     """
 
     try:
-        filename = re.search(".+/(.+)", url).group(1)
         reply_msg = await kirimPesan(message, "Generating Mediainfo, Please wait..", quote=True)
-
-        with requests.get(url, stream=True) as r:
-            with open(filename, 'wb') as f:
-                for chunk in r.iter_content(50000000): f.write(chunk); break
-
-        output_ = await runcmd(f'mediainfo "{filename}"')
+        output_ = await runcmd(f'mediainfo "{url}"')
         out = output_[0] if len(output_) != 0 else None
         content = f"""
 MissKatyBot MediaInfo
@@ -41,8 +35,7 @@ DETAILS
     """
         output = await post_to_telegraph(False, "MissKaty MediaInfo", content)
 
-        await editPesan(reply_msg, f"**File Name :** `{unquote(filename)}`\n\n**Mediainfo :** {output}", disable_web_page_preview=True)
-        os.remove(filename)
+        await editPesan(reply_msg, f"**Link :** `{url}`\n\n**Mediainfo :** {output}", disable_web_page_preview=True)
 
     except Exception as err:
         await hapusPesan(reply_msg)
