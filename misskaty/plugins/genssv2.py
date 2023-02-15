@@ -16,6 +16,7 @@ from pyrogram.errors import MessageNotModified
 from requests_toolbelt import MultipartEncoder
 
 from misskaty import app
+from misskaty.core.message_utils import *
 from misskaty.helper import SUPPORTED_URL_REGEX, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
 
@@ -25,7 +26,7 @@ async def slowpics_collection(message, file_name, path):
     Uploads image(s) to https://slow.pics/ from a specified directory.
     """
 
-    msg = await message.reply_text("uploading generated screenshots to slow.pics.", quote=True)
+    msg = await kirimPesan(message, "uploading generated screenshots to slow.pics.", quote=True)
 
     img_list = os.listdir(path)
     data = {
@@ -78,7 +79,7 @@ async def generate_ss_from_file(
     Generates screenshots from partially/fully downloaded files using ffmpeg.
     """
 
-    await replymsg.edit(f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
+    await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
     rand_str = os.randstr()
     os.makedir(f"screenshot_{rand_str}")
@@ -103,7 +104,7 @@ async def generate_ss_from_file(
             loop_count += 1
         loop_count -= 1
 
-    await replymsg.delete()
+    await hapusPesan(replymsg)
     await slowpics_collection(message, file_name, path=f"{os.getcwd()}/screenshot_{rand_str}")
 
     shutil.rmtree(f"screenshot_{rand_str}")
@@ -123,7 +124,7 @@ async def generate_ss_from_link(
     Generates screenshots from direct download links using ffmpeg.
     """
 
-    await replymsg.edit(f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
+    await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
     rand_str = os.randstr()
     os.makedir(f"screenshot_{rand_str}")
@@ -142,11 +143,10 @@ async def generate_ss_from_link(
 
         _, __ = await shell.communicate()
         loop_count -= 1
-        time.sleep(3)
+        await asyncio.sleep(3)
 
-    await replymsg.delete()
+    await hapusPesan(replymsg)
     await slowpics_collection(message, file_name, path=f"{os.getcwd()}/screenshot_{rand_str}")
-
     shutil.rmtree(f"screenshot_{rand_str}")
 
 
@@ -250,7 +250,7 @@ async def telegram_screenshot(client, message, frame_count):
 
 
 @app.on_message(filters.command("genss2", COMMAND_HANDLER))
-async def screenshot(client, message):
+async def genscreenshotv2(client, message):
     replied_message = message.reply_to_message
     if replied_message:
         try:
@@ -265,7 +265,7 @@ async def screenshot(client, message):
 
     if len(message.command) < 2:
         mediainfo_usage = "Generates video frame screenshot from Telegram files or direct download links."
-        return await message.reply_text(mediainfo_usage, quote=True)
+        return await kirimPesan(message, mediainfo_usage, quote=True)
 
     user_input = message.text.split(None, 1)[1]
     if "|" in user_input:
@@ -288,4 +288,4 @@ async def screenshot(client, message):
         if bool(re.search(Rf"{key}", url)):
             if value == "ddl":
                 return await ddl_screenshot(message, frame_count, url)
-    return await message.reply_text("This type of link is not supported.", quote=True)
+    return await kirimPesan(message, "This type of link is not supported.", quote=True)
