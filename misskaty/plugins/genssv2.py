@@ -16,7 +16,7 @@ from pyrogram.errors import MessageNotModified
 from requests_toolbelt import MultipartEncoder
 
 from misskaty import app
-from misskaty.helper import SUPPORTED_URL_REGEX
+from misskaty.helper import SUPPORTED_URL_REGEX, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -214,7 +214,12 @@ async def telegram_screenshot(client, message, frame_count):
     replymsg = await message.reply_text(f"Downloading partial video file....", quote=True)
 
     if int(size) <= 200000000:
-        await message.download(os.path.join(os.getcwd(), file_name))
+        c_time = time.time()
+        await message.download(
+            os.path.join(os.getcwd(), file_name),
+            progress=progress_for_pyrogram,
+            progress_args=("Trying to download..", replymsg, c_time)
+        )
         downloaded_percentage = 100  # (100% download)
 
     else:

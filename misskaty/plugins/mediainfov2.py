@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import time
 import subprocess
 from urllib.parse import unquote
 
@@ -10,7 +11,7 @@ from pyrogram import filters
 from misskaty import app
 from misskaty.helper import (SUPPORTED_URL_REGEX, get_readable_bitrate,
                              get_readable_file_size, post_to_telegraph,
-                             remove_N)
+                             progress_for_pyrogram, remove_N)
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -98,7 +99,12 @@ async def telegram_mediainfo(client, message):
     reply_msg = await message.reply_text("Generating Mediainfo, Please wait..", quote=True)
 
     if int(size) <= 50000000:
-        await message.download(os.path.join(os.getcwd(), filename))
+        c_time = time.time()
+        await message.download(
+            os.path.join(os.getcwd(), filename),
+            progress=progress_for_pyrogram,
+            progress_args=("Trying to download..", reply_msg, c_time)
+        )
 
     else:
         async for chunk in client.stream_media(message, limit=5):
@@ -107,7 +113,7 @@ async def telegram_mediainfo(client, message):
 
     mediainfo = subprocess.check_output(['mediainfo', filename]).decode("utf-8")
     mediainfo_json = json.loads(subprocess.check_output(['mediainfo', filename, '--Output=JSON']).decode("utf-8"))
-    readable_size = get_readable_file_size()(size)
+    readable_size = get_readable_file_size(size)
 
     try:
         lines = mediainfo.splitlines()
