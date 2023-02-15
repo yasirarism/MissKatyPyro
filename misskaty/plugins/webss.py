@@ -27,7 +27,7 @@ async def take_ss(_, m):
     msg = await m.reply("Capturing screenshot...")
     try:
         url = f"https://webss.yasirapi.eu.org/api?url={url}&width=1280&height=720"
-        await gather(*[m.reply_document(url, file_name=filename), m.reply_photo(url, file_name=filename)])
+        await gather(*[m.reply_document(url, file_name=filename), m.reply_photo(url)])
         await hapusPesan(m)
         os.remove(filename)
     except Exception as e:

@@ -4,13 +4,19 @@ import os
 import sys
 import pickle
 import traceback
+from shutil import disk_usage
+from time import time
 from inspect import getfullargspec
+
+from psutil import cpu_percent
+from psutil import disk_usage as disk_usage_percent
+from psutil import virtual_memory
 
 from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import app, user
-from misskaty.helper import http
+from misskaty import app, user, botStartTime, BOT_NAME
+from misskaty.helper import http, get_readable_file_size, get_readable_time
 from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 from utils import LOGGER
@@ -71,9 +77,28 @@ async def balas(c, m):
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
 
 
-@app.on_message(filters.command(["neofetch"], COMMAND_HANDLER) & filters.user(SUDO))
-async def neofetch(c, m):
+@app.on_message(filters.command(["stats"], COMMAND_HANDLER) & filters.user(SUDO))
+async def server_stats(c, m):
+    """
+    Give system stats of the server.
+    """
+    currentTime = get_readable_time(time() - botStartTime)
+    total, used, free = disk_usage(".")
+    total = get_readable_file_size(total)
+    used = get_readable_file_size(used)
+    free = get_readable_file_size(free)
     neofetch = (await shell_exec("neofetch --stdout"))[0]
+    caption = f"""
+**{BOT_NAME} is Up and Running successfully.**
+Bot Uptime: `{currentTime}`
+Total Disk Space: `{total}`
+Used: `{used}({disk_usage_percent("/").percent}%)`
+Free: `{free}`
+CPU Usage: `{cpu_percent()}%`
+RAM Usage: `{virtual_memory().percent}%`
+
+`{neofetch}`
+"""
     await m.reply(f"<code>{neofetch}</code>")
 
 
