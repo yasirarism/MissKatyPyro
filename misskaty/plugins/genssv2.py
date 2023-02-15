@@ -212,14 +212,14 @@ async def telegram_screenshot(client, message, frame_count):
         return await kirimPesan(message, "Can only generate screenshots from video file....", quote=True)
 
     # Downloading partial file.
-    replymsg = await kirimPesan(message, f"Downloading partial video file....", quote=True)
+    msg = await kirimPesan(message, f"Downloading partial video file....", quote=True)
 
     if int(size) <= 200000000:
         c_time = time.time()
         await replymsg.download(
             os.path.join(os.getcwd(), file_name),
             progress=progress_for_pyrogram,
-            progress_args=("Trying to download..", replymsg, c_time)
+            progress_args=("Trying to download..", msg, c_time)
         )
         downloaded_percentage = 100  # (100% download)
 
@@ -231,7 +231,7 @@ async def telegram_screenshot(client, message, frame_count):
 
         downloaded_percentage = 25
 
-    await replymsg.edit("Partial file downloaded....")
+    await msg.edit("Partial file downloaded....")
     # Partial file downloaded
 
     mediainfo_json = json.loads(subprocess.check_output(["mediainfo", file_name, "--Output=JSON"]).decode("utf-8"))
@@ -244,7 +244,7 @@ async def telegram_screenshot(client, message, frame_count):
 
     await generate_ss_from_file(
         message,
-        replymsg,
+        msg,
         file_name,
         frame_count,
         file_duration=partial_file_duration)

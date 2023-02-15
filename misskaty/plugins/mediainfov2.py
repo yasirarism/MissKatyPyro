@@ -79,7 +79,7 @@ async def telegram_mediainfo(client, message):
         )
 
     else:
-        async for chunk in client.stream_media(replymsg, limit=5):
+        async for chunk in client.stream_media(replymsg, limit=10):
             with open(filename, 'ab') as f:
                 f.write(chunk)
 
