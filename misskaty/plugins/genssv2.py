@@ -82,7 +82,7 @@ async def generate_ss_from_file(
     await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
     rand_str = get_random_string(7)
-    os.makedir(f"screenshot_{rand_str}")
+    os.mkdir()(f"screenshot_{rand_str}")
 
     loop_count = frame_count
     while loop_count != 0:
@@ -127,7 +127,7 @@ async def generate_ss_from_link(
     await editPesan(replymsg, f"Generating **{frame_count}** screnshots from `{unquote(file_name)}`, please wait...")
 
     rand_str = get_random_string(7)
-    os.makedir(f"screenshot_{rand_str}")
+    os.mkdir(f"screenshot_{rand_str}")
 
     loop_count = frame_count
     while loop_count != 0:
