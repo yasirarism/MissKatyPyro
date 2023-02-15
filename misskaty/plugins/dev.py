@@ -100,7 +100,7 @@ RAM Usage: `{virtual_memory().percent}%`
 
 `{neofetch}`
 """
-    await m.reply(f"<code>{neofetch}</code>")
+    await kirimPesan(m, caption)
 
 
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
