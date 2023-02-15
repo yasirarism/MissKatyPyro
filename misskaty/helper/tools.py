@@ -60,6 +60,16 @@ TOTAL PLUGINS: {len(ALL_MODULES)}
 """
 
 
+def remove_N(seq):
+    i = 1
+    while i < len(seq):
+        if seq[i] == seq[i - 1]:
+            del seq[i]
+            i -= 1
+        else:
+            i += 1
+
+
 def get_random_string(length: int = 5):
     text_str = "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(length))
     return text_str.upper()
@@ -128,3 +138,8 @@ async def search_jw(movie_name: str, locale: str):
                 m_t_ = m_t_[:-2].strip()
             break
     return m_t_
+
+
+SUPPORTED_URL_REGEX = {
+    r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])": "ddl"
+}

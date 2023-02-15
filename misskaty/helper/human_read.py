@@ -33,6 +33,15 @@ def get_readable_time(seconds: int) -> str:
     return result
 
 
+def get_readable_bitrate(bitrate_kbps):
+    if bitrate_kbps > 10000:
+        bitrate = str(round(bitrate_kbps / 1000, 2)) + ' ' + 'Mb/s'
+    else:
+        bitrate = str(round(bitrate_kbps, 2)) + ' ' + 'kb/s'
+
+    return bitrate
+
+
 def get_readable_time2(seconds: int) -> str:
     count = 0
     ping_time = ""
