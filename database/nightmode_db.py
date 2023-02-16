@@ -1,4 +1,3 @@
-from . import mongo, dbname
 import os
 from misskaty.vars import DATABASE_URI
 from apscheduler.schedulers.asyncio import AsyncIOScheduler

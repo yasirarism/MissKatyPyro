@@ -128,7 +128,7 @@ async def nightmode_handler(c, msg):
         return await kirimPesan(msg, "Nightmode isn't enabled in this chat.")
 
     starttime = re.findall(r"-s=(\d+:\d+)", msg.text)
-    start = starttime if starttime else "00:00"
+    start = starttime[0] if starttime else "00:00"
     now = datetime.now(TIME_ZONE)
 
     try:
@@ -139,7 +139,7 @@ async def nightmode_handler(c, msg):
     except ValueError:
         return await kirimPesan(msg, "Invalid time format. Use HH:MM format.")
     lockdur = re.findall(r"-e=(\w+)", msg.text)
-    lockdur = lockdur if lockdur else "6h"
+    lockdur = lockdur[0] if lockdur else "6h"
     lock_dur = extract_time(lockdur.lower())
 
     if not lock_dur:
