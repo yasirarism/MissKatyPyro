@@ -9,7 +9,7 @@ TZ = os.environ.get("TIME_ZONE", "Asia/Jakarta")
 jobstores = {
     'default': MongoDBJobStore(
         client=mongo,
-        database=dbname,
+        database="MissKatyDB",
         collection='nightmode')}
 
 scheduler = AsyncIOScheduler(
