@@ -4,14 +4,15 @@ from datetime import datetime, timedelta
 
 import pytz
 from apscheduler.jobstores.base import ConflictingIdError
-from pyrogram import filters
+from pyrogram import filters, __version__
 from pyrogram.errors import (ChannelInvalid, ChannelPrivate, ChatAdminRequired,
                              ChatNotModified)
-from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.nightmode_db import TZ, scheduler
-from misskaty import BOT_NAME, app
+from misskaty import BOT_NAME, BOT_USERNAME, app
 from misskaty.core.message_utils import *
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
@@ -29,6 +30,43 @@ __HELP__ = """<b>Enable or disable nightmode (locks the chat at specified interv
 """
 
 TIME_ZONE = pytz.timezone(TZ)
+reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
+
+# Check calculate how long it will take to Ramadhan
+def puasa():
+    now = datetime.now(pytz.timezone("Asia/Jakarta"))
+    tahun = now.strftime("%Y")
+    bulan = now.strftime("%m")
+    tgl = now.strftime("%d")
+    jam = now.strftime("%H")
+    menit = now.strftime("%M")
+    detik = now.strftime("%S")
+    x = datetime(int(tahun), int(bulan), int(tgl), int(jam), int(menit), int(detik))
+    y = datetime(2022, 4, 2, 0, 0, 0)
+    return y - x
+
+def tglsekarang():
+    now = datetime.now(pytz.timezone("Asia/Jakarta"))
+    days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+    month = [
+        "Unknown",
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember",
+    ]
+    tgl = now.strftime("%d")
+    tahun = now.strftime("%Y")
+    jam = now.strftime("%H:%M")
+    return f"{days[now.weekday()]}, {tgl} {month[now.month]} {tahun}"
 
 def extract_time(time_val: str):
     if any(time_val.endswith(unit) for unit in ('m', 'h')):
@@ -51,14 +89,14 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to turn off nightmode at `{chat_id}`,"
+            f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`,"
             f"since {BOT_NAME} is not an admin in chat `{chat_id}`")
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to turn off nightmode at `{chat_id}`,"
+            f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`,"
             f"since {BOT_NAME} is not present in chat `{chat_id}`"
             " Removed group from list.")
     except ChatNotModified:
@@ -66,18 +104,16 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     except Exception as e:
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to turn off nightmode at `{chat_id}`\n"
+            f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`\n"
             f"ERROR: `{e}`")
     else:
         job = scheduler.get_job(f"enable_nightmode_{chat_id}")
         close_at = job.next_run_time
         await app.send_message(
             chat_id,
-            f"#AUTOMATED_HANDLER\nGroup is Opening.\nWill be closed at {close_at}")
-        await app.send_message(
-            LOG_CHANNEL,
-            f"#NIGHT_MODE_SUCCESS\nSuccessfully turned off nightmode at `{chat_id}`,")
-
+            f"#NIGHTMODE_HANDLER\n📆 {tglsekarang()}\n\n☀️ Group is Opening.\nWill be closed at {close_at}",
+            reply_markup=reply_markup
+        )
 
 async def mute_chat(chat_id: int):
     try:
@@ -85,14 +121,14 @@ async def mute_chat(chat_id: int):
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to enable nightmode at `{chat_id}`,"
+            f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`,"
             f"since {BOT_NAME} is not an admin in chat `{chat_id}`")
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to enable nightmode at `{chat_id}`,"
+            f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`,"
             f"since {BOT_NAME} is not present in chat `{chat_id}`"
             " Removed group from list.")
     except ChatNotModified:
@@ -100,17 +136,16 @@ async def mute_chat(chat_id: int):
     except Exception as e:
         await app.send_message(
             LOG_CHANNEL,
-            f"#NIGHT_MODE_FAIL\nFailed to enable nightmode at `{chat_id}`\n"
+            f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`\n"
             f"ERROR: `{e}`")
     else:
         job = scheduler.get_job(f"disable_nightmode_{chat_id}")
         open_at = job.next_run_time
         await app.send_message(
             chat_id,
-            f"#AUTOMATED_HANDLER\nGroup is closing.\nWill be opened at {open_at}")
-        await app.send_message(
-            LOG_CHANNEL,
-            f"#NIGHT_MODE_SUCCESS\nSuccessfully turned on nightmode at `{chat_id}`,")
+            f"#NIGHTMODE_HANDLER\n📆 {tglsekarang()}\n\n🌗 Group is closing.\nWill be opened at {open_at}",
+            reply_markup=reply_markup
+        )
 
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_change_info")
@@ -185,6 +220,14 @@ async def nightmode_handler(c, msg):
         f' and will be opened after {lockdur} everyday.')
     if not bool(scheduler.state):
         scheduler.start()
+
+@app.on_callback_query(filters.regex(r"^nightmd$"))
+@ratelimiter
+async def callbackanightmd(c, q):
+    await q.answer(
+        f"🔖 Hai, Aku {BOT_USERNAME} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+        show_alert=True
+    )
 
 if bool(scheduler.get_jobs()):
     scheduler.start()
