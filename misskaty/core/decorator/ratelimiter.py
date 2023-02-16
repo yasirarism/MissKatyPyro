@@ -18,7 +18,7 @@ def ratelimiter(func: Callable) -> Callable:
 
     @wraps(func)
     async def decorator(client: Client, update: Union[Message, CallbackQuery]):
-        userid = update.from_user.id or update.sender_chat.id
+        userid = update.from_user.id if update.from_user else update.sender_chat.id
         is_limited = await ratelimit.acquire(userid)
 
         if is_limited and userid not in warned_users:
