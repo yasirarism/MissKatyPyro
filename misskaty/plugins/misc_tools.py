@@ -11,6 +11,7 @@ import os
 import time
 import asyncio
 import traceback
+from PIL import Image
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import quote
@@ -237,12 +238,13 @@ async def topho(client, message):
             return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
         if message.reply_to_message.sticker.is_animated:
             return await message.reply_text("Ini sticker animasi, command ini hanya untuk sticker biasa.")
-        photo = await client.download_media(
-            message.reply_to_message.sticker.file_id,
-            f"tostick_{message.from_user.id}.jpg",
-        )
-        await asyncio.gather(*[message.reply_document(photo), message.reply_photo(photo, caption=f"Sticker -> Image\n@{client.me.username}")])
+        photo = await message.reply_to_message.download()
+        im = Image.open(photo).convert("RGB")
+        filename = f"toimg_{message.from_user.id}.png"
+        im.save(filename, "png")
+        await asyncio.gather(*[message.reply_document(filename), message.reply_photo(filename, caption=f"Sticker -> Image\n@{client.me.username}")])
         os.remove(photo)
+        os.remove(filename)
     except Exception as e:
         await message.reply_text(str(e))
 
