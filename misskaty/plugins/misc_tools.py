@@ -241,8 +241,7 @@ async def topho(client, message):
             message.reply_to_message.sticker.file_id,
             f"tostick_{message.from_user.id}.jpg",
         )
-        await message.reply_photo(photo=photo, caption=f"Sticker -> Image\n@{client.me.username}")
-
+        await asyncio.gather(*[message.reply_document(photo), message.reply_photo(photo, caption=f"Sticker -> Image\n@{client.me.username}")])
         os.remove(photo)
     except Exception as e:
         await message.reply_text(str(e))
