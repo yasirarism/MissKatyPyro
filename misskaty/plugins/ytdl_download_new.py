@@ -156,6 +156,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
                 True,
                 3,
             )
+            LOGGER.info(upload_key)
             await ytdl.upload(app, upload_key, format_, cq, True)
 
 
