@@ -69,13 +69,16 @@ async def ytdownv2(_, message):
         return await message.reply("Please input a valid YT-DLP Supported URL")
     url = message.text.split(" ", maxsplit=1)[1]
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
-        x = await ytdl.parse(url)
-        if x is None:
-            return await message.reply("Failed parse URL, check logs..")
-        img = await get_ytthumb(x.key)
-        caption = x.caption
-        markup = x.buttons
-        await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+        try:
+            x = await ytdl.parse(url)
+            if x is None:
+                return await message.reply("Failed parse URL, check logs..")
+            img = await get_ytthumb(x.key)
+            caption = x.caption
+            markup = x.buttons
+            await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+        except Exception as err:
+            await kirimPesan(message, str(err))
 
 
 @app.on_callback_query(filters.regex(r"^yt_listall"))

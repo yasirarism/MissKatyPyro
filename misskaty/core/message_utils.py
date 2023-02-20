@@ -1,7 +1,7 @@
 import asyncio
 from logging import getLogger
 
-from pyrogram.errors import ChatWriteForbidden, FloodWait, MessageNotModified, ChatAdminRequired, MessageDeleteForbidden, MessageIdInvalid
+from pyrogram.errors import ChatWriteForbidden, FloodWait, MessageNotModified, ChatAdminRequired, MessageDeleteForbidden, MessageIdInvalid, MessageEmpty
 
 LOGGER = getLogger(__name__)
 
@@ -32,7 +32,7 @@ async def editPesan(msg, text, **kwargs):
         LOGGER.warning(str(e))
         await asyncio.sleep(e.value)
         return await editPesan(msg, text, **kwargs)
-    except (MessageNotModified, MessageIdInvalid):
+    except (MessageNotModified, MessageIdInvalid, MessageEmpty):
         return
     except Exception as e:
         LOGGER.error(str(e))

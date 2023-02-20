@@ -127,7 +127,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                         msg += f"<code>{i['name']}</code> (<b>{i['types'][0]}</b>)\n<b>Required:</b> <code>{i['required']}</code>\n{i['description']}\n\n"
                 if len(msg.encode("utf-8")) > 4096:
                     body_text = f"""
-                        <pre>{msg}</pre>
+                        <pre>{msg.replace("<user_id>", "(user_id)")}</pre>
                         """
                     msg = await post_to_telegraph(False, method, body_text)
                 datajson.append(
