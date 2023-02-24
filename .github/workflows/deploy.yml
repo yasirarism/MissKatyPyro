@@ -3,7 +3,7 @@ name: Deploying to heroku
 on: workflow_dispatch
 
 env:
-  IMAGE_NAME: web
+  IMAGE_NAME: worker
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   CONFIG_FILE_URL: ${{ secrets.CONFIG_FILE_URL }}
 
