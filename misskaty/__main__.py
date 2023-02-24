@@ -72,8 +72,7 @@ async def start_bot():
             )
     except Exception as e:
         LOGGER.error(str(e))
-    if bool(scheduler.get_jobs()):
-        scheduler.start()
+    scheduler.start()
     if os.path.exists("restart.pickle"):
         with open('restart.pickle', 'rb') as status:
             chat_id, message_id = pickle.load(status)
