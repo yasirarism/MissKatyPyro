@@ -1,4 +1,4 @@
-import sys
+import sys, requests
 from logging import getLogger
 from os import environ
 from dotenv import load_dotenv
@@ -8,14 +8,14 @@ LOGGER = getLogger(__name__)
 CONFIG_FILE_URL = environ.get("CONFIG_FILE_URL", "")
 if len(CONFIG_FILE_URL) != 0:
     try:
-        res = get(CONFIG_FILE_URL)
+        res = requests.get(CONFIG_FILE_URL)
         if res.status_code == 200:
             with open("config.env", "wb+") as f:
                 f.write(res.content)
         else:
-            logging.error(f"Failed to download config.env {res.status_code}")
+            LOGGER.error(f"Failed to download config.env {res.status_code}")
     except Exception as e:
-        logging.error(f"CONFIG_FILE_URL: {e}")
+        LOGGER.error(f"CONFIG_FILE_URL: {e}")
 
 load_dotenv("config.env", override=True)
 
