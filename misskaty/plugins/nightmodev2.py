@@ -227,6 +227,3 @@ async def callbackanightmd(c, q):
         f"🔖 Hai, Aku {BOT_USERNAME} dibuat menggunakan Framework Pyrogram v{__version__} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
         show_alert=True
     )
-
-if bool(scheduler.get_jobs()):
-    scheduler.start()
