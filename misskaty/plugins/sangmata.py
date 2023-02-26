@@ -56,10 +56,10 @@ async def set_mataa(_, m):
             await kirimPesan(m, "Sangmata enabled in your groups.")
     elif m.command[1] == "off":
         cekset = await is_sangmata_on(m.chat.id)
-        if cekset:
-            await kirimPesan(m, "SangMata already enabled in your groups.")
+        if not cekset:
+            await kirimPesan(m, "SangMata already disabled in your groups.")
         else:
             await sangmata_off(m.chat.id)
-            await kirimPesan(m, "Sangmata enabled in your groups.")
+            await kirimPesan(m, "Sangmata has been disabled in your groups.")
     else:
         await kirimPesan(m, "Unknown parameter, use only on/off parameter.")
