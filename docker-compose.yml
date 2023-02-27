@@ -5,5 +5,5 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python3 -m misskaty
+    command: bash start.sh
     restart: on-failure

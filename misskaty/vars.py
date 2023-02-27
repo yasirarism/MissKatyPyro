@@ -5,26 +5,11 @@ from dotenv import load_dotenv
 
 LOGGER = getLogger(__name__)
 
-CONFIG_FILE_URL = environ.get("CONFIG_FILE_URL", "")
-if len(CONFIG_FILE_URL) != 0:
-    try:
-        res = requests.get(CONFIG_FILE_URL)
-        if res.status_code == 200:
-            with open("config.env", "wb+") as f:
-                f.write(res.content)
-        else:
-            LOGGER.error(f"Failed to download config.env {res.status_code}")
-    except Exception as e:
-        LOGGER.error(f"CONFIG_FILE_URL: {e}")
-
-load_dotenv("config.env", override=True)
-
 def getConfig(name: str):
     try:
         return environ[name]
     except:
         return ""
-
 
 # Required ENV
 try:
@@ -39,6 +24,7 @@ try:
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
     sys.exit(1)
+TZ = environ.get("TIME_ZONE", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
     {

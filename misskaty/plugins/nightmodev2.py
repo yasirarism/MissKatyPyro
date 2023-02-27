@@ -8,11 +8,11 @@ from pyrogram.errors import (ChannelInvalid, ChannelPrivate, ChatAdminRequired,
                              ChatNotModified)
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import BOT_NAME, BOT_USERNAME, TZ, app, scheduler 
+from misskaty import BOT_NAME, BOT_USERNAME, app, scheduler
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, TZ
 
 __MODULE__ = "NightMode"
 __HELP__ = """<b>Enable or disable nightmode (locks the chat at specified intervals everyday)</b>
