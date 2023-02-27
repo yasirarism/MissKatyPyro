@@ -22,7 +22,7 @@ except:
 
 dotenv.load_dotenv("config.env", override=True)
 
-UPSTREAM_REPO = os.environ.get('UPSTREAM_REPO', '')
+UPSTREAM_REPO = os.environ.get("UPSTREAM_REPO", "")
 if len(UPSTREAM_REPO) == 0:
    UPSTREAM_REPO = None
 
