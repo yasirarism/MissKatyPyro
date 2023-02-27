@@ -18,6 +18,7 @@ from pyrogram.raw.all import layer
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
+from database.nightmode_db import scheduler
 from misskaty import (
     BOT_NAME,
     BOT_USERNAME,
@@ -76,6 +77,8 @@ async def start_bot():
             chat_id, message_id = pickle.load(status)
         os.remove("restart.pickle")
         await app.edit_message_text(chat_id=chat_id, message_id=message_id, text="<b>Bot restarted successfully!</b>")
+    if bool(scheduler.get_jobs()):
+        scheduler.start()
     asyncio.create_task(auto_clean())
     await idle()
 
