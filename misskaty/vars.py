@@ -43,6 +43,7 @@ except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
     sys.exit(1)
     
+TZ = environ.get("TZ", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
     {
