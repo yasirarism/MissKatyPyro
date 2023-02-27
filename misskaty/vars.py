@@ -5,6 +5,24 @@ from dotenv import load_dotenv
 
 LOGGER = getLogger(__name__)
 
+CONFIG_FILE_URL = environ.get("CONFIG_FILE_URL", "")
+try:
+    if len(CONFIG_FILE_URL) == 0:
+        raise TypeError
+    try:
+        res = requests.get(CONFIG_FILE_URL)
+        if res.status_code == 200:
+            with open("config.env", "wb+") as f:
+                f.write(res.content)
+        else:
+            LOGGER.error(f"config.env err: {res.status_code}")
+    except Exception as e:
+        LOGGER.error(f"ENV_URL: {e}")
+except:
+    pass
+
+load_dotenv("config.env", override=True)
+
 def getConfig(name: str):
     try:
         return environ[name]
