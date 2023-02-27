@@ -8,8 +8,7 @@ from pyrogram.errors import (ChannelInvalid, ChannelPrivate, ChatAdminRequired,
                              ChatNotModified)
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
-from database.nightmode_db import TZ, scheduler
-from misskaty import BOT_NAME, BOT_USERNAME, app
+from misskaty import BOT_NAME, BOT_USERNAME, TZ, app, scheduler 
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly

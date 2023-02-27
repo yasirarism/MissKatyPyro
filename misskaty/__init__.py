@@ -1,10 +1,14 @@
+import os
 import time
-import pyromod.listen
 from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
 
+import pyromod.listen
+from apscheduler.jobstores.mongodb import MongoDBJobStore
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from pymongo import MongoClient
 from pyrogram import Client
 
-from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, USER_SESSION
+from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION
 
 basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -32,6 +36,19 @@ user = Client(
     "YasirUBot",
     session_string=USER_SESSION,
 )
+
+TZ = os.environ.get("TIME_ZONE", "Asia/Jakarta")
+pymonclient = MongoClient(DATABASE_URI)
+
+jobstores = {
+    'default': MongoDBJobStore(
+        client=pymonclient,
+        database="MissKatyDB",
+        collection='nightmode')}
+
+scheduler = AsyncIOScheduler(
+    jobstores=jobstores,
+    timezone=TZ)
 
 app.start()
 user.start()

@@ -18,14 +18,13 @@ from pyrogram.raw.all import layer
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
-from database.nightmode_db import scheduler
 from misskaty import (
     BOT_NAME,
     BOT_USERNAME,
     HELPABLE,
     UBOT_NAME,
     app,
-    user,
+    scheduler,
 )
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
