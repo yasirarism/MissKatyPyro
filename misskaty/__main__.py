@@ -18,7 +18,6 @@ from pyrogram.raw.all import layer
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
-from database.nightmode_db import scheduler
 from misskaty import (
     BOT_NAME,
     BOT_USERNAME,
@@ -72,8 +71,6 @@ async def start_bot():
             )
     except Exception as e:
         LOGGER.error(str(e))
-    if bool(scheduler.get_jobs()):
-        scheduler.start()
     if os.path.exists("restart.pickle"):
         with open('restart.pickle', 'rb') as status:
             chat_id, message_id = pickle.load(status)

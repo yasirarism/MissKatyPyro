@@ -1,5 +1,6 @@
 import time
 import pyromod.listen
+from database.nightmode_db import scheduler
 from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
 
 from pyrogram import Client
@@ -35,6 +36,8 @@ user = Client(
 
 app.start()
 user.start()
+if bool(scheduler.get_jobs()):
+    scheduler.start()
 bot = app.get_me()
 ubot = user.get_me()
 BOT_ID = bot.id
