@@ -1,5 +1,6 @@
 import os
 import time
+import logging 
 from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
 
 import pyromod.listen
@@ -50,6 +51,9 @@ scheduler = AsyncIOScheduler(
     jobstores=jobstores,
     timezone=TZ)
 
+logging.info(scheduler.get_jobs())
+if bool(scheduler.get_jobs()):
+    scheduler.start()
 app.start()
 user.start()
 bot = app.get_me()

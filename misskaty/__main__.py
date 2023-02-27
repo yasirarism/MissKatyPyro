@@ -24,7 +24,6 @@ from misskaty import (
     HELPABLE,
     UBOT_NAME,
     app,
-    scheduler,
 )
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -76,9 +75,6 @@ async def start_bot():
             chat_id, message_id = pickle.load(status)
         os.remove("restart.pickle")
         await app.edit_message_text(chat_id=chat_id, message_id=message_id, text="<b>Bot restarted successfully!</b>")
-    LOGGER.info(scheduler.get_jobs())
-    if bool(scheduler.get_jobs()):
-        scheduler.start()
     asyncio.create_task(auto_clean())
     await idle()
 
