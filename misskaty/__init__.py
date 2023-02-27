@@ -5,7 +5,6 @@ from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLog
 
 import pyromod.listen
 from apscheduler.jobstores.mongodb import MongoDBJobStore
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pymongo import MongoClient
 from pyrogram import Client
 
@@ -47,13 +46,6 @@ jobstores = {
         database="MissKatyDB",
         collection='nightmode')}
 
-scheduler = AsyncIOScheduler(
-    jobstores=jobstores,
-    timezone=TZ)
-
-logging.info(scheduler.get_jobs())
-if bool(scheduler.get_jobs()):
-    scheduler.start()
 app.start()
 user.start()
 bot = app.get_me()

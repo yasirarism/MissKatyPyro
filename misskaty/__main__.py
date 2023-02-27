@@ -18,12 +18,15 @@ from pyrogram.raw.all import layer
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from misskaty import (
     BOT_NAME,
     BOT_USERNAME,
     HELPABLE,
     UBOT_NAME,
+    TZ,
     app,
+    jobstores
 )
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -70,6 +73,12 @@ async def start_bot():
             )
     except Exception as e:
         LOGGER.error(str(e))
+    scheduler = AsyncIOScheduler(
+        jobstores=jobstores,
+        timezone=TZ)
+    LOGGER.info(scheduler.get_jobs())
+    if bool(scheduler.get_jobs()):
+        scheduler.start()
     if os.path.exists("restart.pickle"):
         with open('restart.pickle', 'rb') as status:
             chat_id, message_id = pickle.load(status)
