@@ -198,7 +198,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
 async def getDataSavefilm21(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
-        data = await http.get(f"https://185.99.135.215/?s={kueri}", headers=headers)
+        data = await http.get(f"https://45.136.197.138/?s={kueri}", headers=headers)
         text = BeautifulSoup(data.text, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
