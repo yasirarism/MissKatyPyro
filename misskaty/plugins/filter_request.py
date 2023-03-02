@@ -1,5 +1,6 @@
 import random
 import re
+import os
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import enums, filters
@@ -113,6 +114,10 @@ async def clear_reqdict():
     data_kuso.clear()
     REQUEST_DB.clear()
     PYPI_DICT.clear()
+    try:
+        os.rmdir("downloads")
+    except:
+        pass
 
 
 # @app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))

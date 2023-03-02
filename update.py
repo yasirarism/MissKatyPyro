@@ -3,15 +3,15 @@ import logging, os
 
 LOGGER = logging.getLogger(__name__)
 
-UPSTREAM_REPO = os.environ.get("UPSTREAM_REPO", "")
-if len(UPSTREAM_REPO) == 0:
-   UPSTREAM_REPO = None
+UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL", "")
+if len(UPSTREAM_REPO_URL) == 0:
+   UPSTREAM_REPO_URL = None
 
-UPSTREAM_BRANCH = os.environ.get("UPSTREAM_BRANCH", "")
-if len(UPSTREAM_BRANCH) == 0:
-    UPSTREAM_BRANCH = "master"
+UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH", "")
+if len(UPSTREAM_REPO_BRANCH) == 0:
+    UPSTREAM_REPO_BRANCH = "master"
 
-if UPSTREAM_REPO is not None:
+if UPSTREAM_REPO_URL is not None:
     if os.path.exists('.git'):
         srun(["rm", "-rf", ".git"])
 
@@ -20,9 +20,9 @@ if UPSTREAM_REPO is not None:
                      && git config --global user.name yasirarism \
                      && git add . \
                      && git commit -sm update -q \
-                     && git remote add origin {UPSTREAM_REPO} \
+                     && git remote add origin {UPSTREAM_REPO_URL} \
                      && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
+                     && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"], shell=True)
 
     if update.returncode == 0:
         LOGGER.error('Successfully updated with latest commit from UPSTREAM_REPO')
