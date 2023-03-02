@@ -8,9 +8,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from pymongo import MongoClient
 from pyrogram import Client
-from dotenv import load_dotenv
-
-load_dotenv("config.env")
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
