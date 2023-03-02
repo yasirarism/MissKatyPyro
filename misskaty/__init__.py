@@ -8,6 +8,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from pymongo import MongoClient
 from pyrogram import Client
+from dotenv import load_dotenv
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
@@ -17,6 +18,8 @@ basicConfig(
     level=INFO,
 )
 getLogger("pyrogram").setLevel(ERROR)
+
+load_dotenv("config.env")
 
 MOD_LOAD = []
 MOD_NOLOAD = []
