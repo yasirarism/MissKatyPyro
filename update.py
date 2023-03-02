@@ -20,7 +20,7 @@ try:
 except:
     pass
 
-load_dotenv("config.env")
+load_dotenv("config.env", override=True)
 
 UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL", "")
 if len(UPSTREAM_REPO_URL) == 0:
