@@ -1,8 +1,11 @@
-import sys, requests
+import sys
+from dotenv import load_dotenv
 from logging import getLogger
 from os import environ
 
 LOGGER = getLogger(__name__)
+
+load_dotenv("config.env", override=True)
 
 def getConfig(name: str):
     try:
