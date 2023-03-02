@@ -1,4 +1,4 @@
-"""
+."""
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
  * @lastModified  2022-12-01 09:32:31
@@ -17,7 +17,6 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
-from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
@@ -33,7 +32,6 @@ __HELP__ = """"
 
 
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))
-@capture_err
 @ratelimiter
 async def genss(client, m):
     if not m.from_user:
@@ -93,8 +91,7 @@ async def genss(client, m):
                     os.remove(the_real_download_location)
                 except:
                     pass
-            except Exception:
-                exc = traceback.format_exc()
+            except Exception as exc:
                 await kirimPesan(m, f"Gagal generate screenshot.\n\n{exc}")
                 try:
                     os.remove(images)
