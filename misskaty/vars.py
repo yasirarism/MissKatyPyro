@@ -21,7 +21,7 @@ try:
     # MongoDB information
     DATABASE_URI = getConfig("DATABASE_URI")
     DATABASE_NAME = getConfig("DATABASE_NAME")
-    LOG_CHANNEL = int(getConfig("LOG_CHANNEL"))
+    LOG_CHANNEL = int(environ.get("LOG_CHANNEL", 0))
     USER_SESSION = getConfig("USER_SESSION")
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
