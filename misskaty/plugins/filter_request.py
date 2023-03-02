@@ -116,6 +116,7 @@ async def clear_reqdict():
     PYPI_DICT.clear()
     try:
         os.rmdir("downloads")
+        os.remove("MissKatyLogs.txt")
     except:
         pass
 
@@ -369,5 +370,5 @@ async def callbackaft_dahada(c, q):
 
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
-scheduler.add_job(clear_reqdict, trigger="cron", hour=7, minute=0)
+scheduler.add_job(clear_reqdict, trigger="cron", hour=2, minute=0)
 scheduler.start()
