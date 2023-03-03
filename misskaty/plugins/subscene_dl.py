@@ -41,7 +41,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         extractbtn = []
         subResult = f"<b>#Subscene Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SUB_TITLE_DICT[msg.id][0][index], start=1):
-            subResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+            subResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n\n"
             extractbtn.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{user}#{msg.id}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
