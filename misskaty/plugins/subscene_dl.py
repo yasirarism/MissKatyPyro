@@ -2,7 +2,7 @@ from misskaty.core.message_utils import *
 from misskaty.vars import COMMAND_HANDLER
 from pyrogram import filters
 import cloudscraper, logging
-from bot import app
+from misskaty import app
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
 from misskaty.helper import http
