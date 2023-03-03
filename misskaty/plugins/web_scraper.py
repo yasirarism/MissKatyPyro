@@ -387,7 +387,7 @@ async def pahe_s(client, message):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_pahe#{number}" + f"#{pesan.id}#{message.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, paheres, reply_markup=keyboard)
+    await editPesan(pesan, paheres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Gomov CMD
@@ -407,7 +407,7 @@ async def gomov_s(client, message):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, gomovres, reply_markup=keyboard)
+    await editPesan(pesan, gomovres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # MelongMovie CMD
@@ -427,7 +427,7 @@ async def melong_s(client, message):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, melongres, reply_markup=keyboard)
+    await editPesan(pesan, melongres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Savefilm21 CMD
@@ -447,7 +447,7 @@ async def savefilm_s(client, message):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, savefilmres, reply_markup=keyboard)
+    await editPesan(pesan, savefilmres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Kusonime CMD
@@ -469,7 +469,7 @@ async def kusonime_s(client, message):
     if btn2:
         keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, kusores, reply_markup=keyboard)
+    await editPesan(pesan, kusores, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Lendrive CMD
@@ -489,7 +489,7 @@ async def lendrive_s(client, message):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, lendres, reply_markup=keyboard)
+    await editPesan(pesan, lendres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Movieku CMD
@@ -507,7 +507,7 @@ async def movieku_s(client, message):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_movieku#{number}" + f"#{pesan.id}#{message.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, moviekures, reply_markup=keyboard)
+    await editPesan(pesan, moviekures, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Savefillm21 Page Callback
@@ -533,7 +533,7 @@ async def savefilmpage_callback(client, callback_query):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, savefilmres, reply_markup=keyboard)
+    await editPesan(callback_query.message, savefilmres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Kuso Page Callback
@@ -561,7 +561,7 @@ async def kusopage_callback(client, callback_query):
     if btn2:
         keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, kusores, reply_markup=keyboard)
+    await editPesan(callback_query.message, kusores, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Lendrive Page Callback
@@ -587,7 +587,7 @@ async def moviekupage_callback(client, callback_query):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, lendres, reply_markup=keyboard)
+    await editPesan(callback_query.message, lendres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Movieku Page Callback
@@ -611,7 +611,7 @@ async def moviekupage_callback(client, callback_query):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_movieku#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, moviekures, reply_markup=keyboard)
+    await editPesan(callback_query.message, moviekures, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Terbit21 Page Callback
@@ -635,7 +635,7 @@ async def terbit21page_callback(client, callback_query):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_terbit21#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, terbitres, reply_markup=keyboard)
+    await editPesan(callback_query.message, terbitres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Page Callback Melong
@@ -661,7 +661,7 @@ async def melongpage_callback(client, callback_query):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, terbitres, reply_markup=keyboard)
+    await editPesan(callback_query.message, terbitres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Lk21 Page Callback
@@ -685,7 +685,7 @@ async def lk21page_callback(client, callback_query):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_lk21#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, lkres, reply_markup=keyboard)
+    await editPesan(callback_query.message, lkres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Pahe Page Callback
@@ -709,7 +709,7 @@ async def pahepage_callback(client, callback_query):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_pahe#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, lkres, reply_markup=keyboard)
+    await editPesan(callback_query.message, lkres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Gomov Page Callback
@@ -735,7 +735,7 @@ async def gomovpage_callback(client, callback_query):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, gomovres, reply_markup=keyboard)
+    await editPesan(callback_query.message, gomovres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 ### Scrape DDL Link From Web ###
