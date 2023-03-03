@@ -5,7 +5,6 @@ import re
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 
-import soupsieve
 from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
