@@ -117,6 +117,7 @@ async def clear_reqdict():
     try:
         os.rmdir("downloads")
         os.remove("MissKatyLogs.txt")
+        open("MissKatyLogs.txt", "w")
     except:
         pass
 

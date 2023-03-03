@@ -4,6 +4,8 @@ import re
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
+
+import soupsieve
 from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
@@ -297,12 +299,8 @@ async def imdb_id_callback(_, query):
         ott = await search_jw(r_json.get("name"), "ID")
         typee = r_json.get("@type", "")
         res_str = ""
-        if judul := r_json.get("name"):
-            try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span").text
-            except:
-                tahun = "N/A"
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"
+        tahun = re.findall("\d{4}", sop.title.text) if re.findall("\d{4}", sop.title.text) else "N/A"
+        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -418,12 +416,8 @@ async def imdb_en_callback(bot, query):
         ott = await search_jw(r_json.get("name"), "US")
         typee = r_json.get("@type", "")
         res_str = ""
-        if judul := r_json.get("name"):
-            try:
-                tahun = sop.select('ul[data-testid="hero-title-block__metadata"]')[0].find("span").text
-            except:
-                tahun = "N/A"
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{judul} [{tahun}]</a> (<code>{typee}</code>)\n"
+        tahun = re.findall("\d{4}", sop.title.text) if re.findall("\d{4}", sop.title.text) else "N/A"
+        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:

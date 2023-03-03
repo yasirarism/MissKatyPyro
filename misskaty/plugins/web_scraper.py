@@ -133,7 +133,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         data = await http.get(f"https://kusonime.com/?s={kueri}", headers=headers)
-        res = BeautifulSoup(data.text, "lxml").find_all("h2", {"class": "episodeye"})
+        res = BeautifulSoup(data, "lxml").find_all("h2", {"class": "episodeye"})
         for i in res:
             ress = i.find_all("a")[0]
             title = ress.text
@@ -168,7 +168,7 @@ async def getDataMovieku(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
         data = await http.get(f"https://107.152.37.223/?s={kueri}", headers=headers)
-        r = BeautifulSoup(data.text, "lxml")
+        r = BeautifulSoup(data, "lxml")
         res = r.find_all(class_="bx")
         for i in res:
             judul = i.find_all("a")[0]["title"]
@@ -199,7 +199,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         data = await http.get(f"https://45.136.197.138/?s={kueri}", headers=headers)
-        text = BeautifulSoup(data.text, "lxml")
+        text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
@@ -233,7 +233,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user):
 async def getDataLendrive(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f"https://lendrive.web.id/?s={kueri}", headers=headers)
-        soup = BeautifulSoup(data.text, "lxml")
+        soup = BeautifulSoup(data, "lxml")
         lenddata = []
         for o in soup.find_all(class_="bsx"):
             title = o.find("a")["title"]
@@ -265,7 +265,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user):
 async def getDataMelong(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f"http://167.99.31.48/?s={kueri}", headers=headers)
-        bs4 = BeautifulSoup(data.text, "lxml")
+        bs4 = BeautifulSoup(data, "lxml")
         melongdata = []
         for res in bs4.select(".box"):
             dd = res.select("a")
@@ -300,7 +300,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
 async def getDataGomov(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
         gomovv = await http.get(f"https://185.173.38.216/?s={kueri}", headers=headers)
-        text = BeautifulSoup(gomovv.text, "lxml")
+        text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
