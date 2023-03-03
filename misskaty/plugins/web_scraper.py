@@ -299,7 +299,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user):
     if not SCRAP_DICT.get(msg.id):
-        gomovv = await http.get(f"https://185.173.38.216/?s={kueri}", headers=headers)
+        gomovv = await http.get(f"https://gomov.ink/?s={kueri}", headers=headers)
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
