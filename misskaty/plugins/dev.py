@@ -78,7 +78,7 @@ async def balas(c, m):
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
 
 
-@app.on_message(filters.command(["stats"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["stats"], COMMAND_HANDLER))
 async def server_stats(c, m):
     """
     Give system stats of the server.
