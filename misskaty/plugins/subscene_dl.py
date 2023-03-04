@@ -50,28 +50,32 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         return None, 0, None
 
 # Get list all subtitles from title
-async def getListSub(msg, kueri, CurrentPage, user):
+async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
         scraper = cloudscraper.create_scraper()
-        param = {"query": kueri}
-        r  = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
+        r = scraper.get(link).text
         soup = BeautifulSoup(r,"lxml")
-        lists = soup.find("div", {"class": "search-result"})
-        entry = lists.find_all("div", {"class":"title"})
-        for sub in entry:
-            title = sub.find('a').text
-            link = f"https://subscene.com{sub.find('a').get('href')}"
-            sdata.append({"title": title, "link": link})
-        SUB_DL_DICT[msg.id] = [split_arr(sdata, 10), kueri]
+        for i in soup.findAll(class_="a1"):
+            lang = i.find("a").findAll("span")[0].text.strip()
+            title = i.find("a").findAll("span")[1].text.strip()
+            if i.find(class_="l r neutral-icon"):
+                rate = "Netral"
+            elif i.find(class_="l r positive-icon"):
+                rate = "Positif"
+            else:
+                rate = "Negative"
+            dllink = f"https://subscene.com{i.find('a').get('href')}"
+            sdata.append({"title": title, "lang": lang, "rate": rate, "link": dllink})
+        SUB_DL_DICT[msg.id] = [split_arr(sdata, 10), link]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SUB_DL_DICT[msg.id][0])
         extractbtn = []
-        subResult = f"<b>#Subscene Results For:</b> <code>{kueri}</code>\n\n"
+        subResult = f"<b>#Subscene Results For:</b> <code>{link}</code>\n\n"
         for c, i in enumerate(SUB_DL_DICT[msg.id][0][index], start=1):
-            subResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
-            extractbtn.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{user}#{msg.id}"))
+            subResult += f"<b>{c}. {i['judul']}</b> [{i['rate']}]\n\n"
+            extractbtn.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{user}#{msg.id}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -100,7 +104,7 @@ async def subsceneCMD(client, message):
 # Callback list title
 @app.on_callback_query(filters.create(lambda _, __, query: "subscenepage#" in query.data))
 @ratelimiter
-async def savefilmpage_callback(client, callback_query):
+async def subpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split("#")[2])
@@ -120,6 +124,33 @@ async def savefilmpage_callback(client, callback_query):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "subscenepage#{number}" + f"#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("👇 Get Subtitle List", "Hmmm"))
+    keyboard.row(*btn)
+    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    await editPesan(callback_query.message, subres, disable_web_page_preview=True, reply_markup=keyboard)
+
+# Callback list title
+@app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
+@ratelimiter
+async def subdlpage_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+        return await callback_query.answer("Not yours..", True)
+    message_id = int(callback_query.data.split("#")[2])
+    CurrentPage = int(callback_query.data.split("#")[1])
+    try:
+        link = SUB_TITLE_DICT[message_id][1]
+    except KeyError:
+        await callback_query.answer("Invalid callback data, please send CMD again..")
+        await asyncio.sleep(3)
+        return await callback_query.delete()
+
+    try:
+        subres, PageLen, btn = await getListSub(callback_query.message, link, CurrentPage, callback_query.from_user.id)
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, CurrentPage, "sublist#{number}" + f"#{message_id}#{callback_query.from_user.id}")
+    keyboard.row(InlineButton("👇 Download Subtitle", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await editPesan(callback_query.message, subres, disable_web_page_preview=True, reply_markup=keyboard)
