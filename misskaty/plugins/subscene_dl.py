@@ -134,10 +134,11 @@ async def subpage_callback(client, callback_query):
 async def subdlpage_callback(client, callback_query):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
-    message_id = int(callback_query.data.split("#")[2])
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split("#")[4])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        link = SUB_TITLE_DICT[message_id][1]
+        link = SUB_TITLE_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
