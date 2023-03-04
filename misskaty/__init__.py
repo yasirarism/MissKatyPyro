@@ -2,6 +2,7 @@ import os
 import time
 import logging 
 from logging import ERROR, getLogger
+from logging.handlers import TimedRotatingFileHandler
 
 import pyromod.listen
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -15,7 +16,7 @@ logger = getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # CONFIGURATION TO ROTATE LOGS EVERYDAY
-rotate = logging.handlers.TimedRotatingFileHandler("MissKatyLogs.txt", when='D', interval=1, backupCount=0, encoding=None, delay=False, utc=False)
+rotate = TimedRotatingFileHandler("MissKatyLogs.txt", when='D', interval=1, backupCount=0, encoding=None, delay=False, utc=False)
 logger.addHandler(rotate)
 formater = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 rotate.setFormatter(formater)
