@@ -42,7 +42,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         subResult = f"<b>#Subscene Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SUB_TITLE_DICT[msg.id][0][index], start=1):
             subResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n"
-            extractbtn.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{user}#{msg.id}"))
+            extractbtn.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{msg.id}#{user}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -75,7 +75,7 @@ async def getListSub(msg, link, CurrentPage, user):
         subResult = f"<b>#Subscene Results For:</b> <code>{link}</code>\n\n"
         for c, i in enumerate(SUB_DL_DICT[msg.id][0][index], start=1):
             subResult += f"<b>{c}. {i['title']}</b> [{i['rate']}]\n\n"
-            extractbtn.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{user}#{msg.id}"))
+            extractbtn.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
     except (IndexError, KeyError):
