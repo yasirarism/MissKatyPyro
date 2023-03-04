@@ -186,7 +186,7 @@ async def dlsub_callback(client, callback_query):
         await asyncio.sleep(3)
         return await callback_query.message.delete()
     scraper = cloudscraper.create_scraper()
-    req = scraper.get("https://subscene.com/subtitles/the-big-bang-theory-first-season/english/136037").text
+    req = scraper.get(link).text
     soup = BeautifulSoup(req,"lxml")
     judul = soup.find("div", {"class": "bread"}).find("a").get("href").split("/")[4]
     downloadlink = soup.find("div", {"class": "download"}).find('a')
