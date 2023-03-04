@@ -1,7 +1,7 @@
 import os
 import time
 import logging 
-from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
+from logging import ERROR, getLogger
 
 import pyromod.listen
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -11,11 +11,15 @@ from pyrogram import Client
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
-basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
-    level=INFO,
-)
+logger = getLogger(__name__)    
+logger.setLevel(logging.INFO)
+
+# CONFIGURATION TO ROTATE LOGS EVERYDAY
+rotate = logging.handlers.TimedRotatingFileHandler("MissKatyLogs.txt", when='D', interval=1, backupCount=0, encoding=None, delay=False, utc=False)
+logger.addHandler(rotate)
+formater = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+rotate.setFormatter(formater)
+
 getLogger("pyrogram").setLevel(ERROR)
 
 MOD_LOAD = []
