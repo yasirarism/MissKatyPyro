@@ -132,10 +132,10 @@ async def subpage_callback(client, callback_query):
 @app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
 @ratelimiter
 async def subdlpage_callback(client, callback_query):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+    if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
+    message_id = int(callback_query.data.split("#")[3])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
         link = SUB_TITLE_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
