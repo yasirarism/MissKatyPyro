@@ -34,11 +34,11 @@ async def mediainfo(client, message):
 
         c_time = time.time()
         dl = await message.reply_to_message.download(
-            file_name="/downloads",
+            file_name="/downloads/",
             progress=progress_for_pyrogram,
             progress_args=("Trying to download..", process, c_time),
         )
-        file_path = path.join("/downloads", path.basename(dl))
+        file_path = path.join("/downloads/", path.basename(dl))
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
