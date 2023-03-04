@@ -74,7 +74,7 @@ async def getListSub(msg, link, CurrentPage, user):
         extractbtn = []
         subResult = f"<b>#Subscene Results For:</b> <code>{link}</code>\n\n"
         for c, i in enumerate(SUB_DL_DICT[msg.id][0][index], start=1):
-            subResult += f"<b>{c}. {i['judul']}</b> [{i['rate']}]\n\n"
+            subResult += f"<b>{c}. {i['title']}</b> [{i['rate']}]\n\n"
             extractbtn.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{user}#{msg.id}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
