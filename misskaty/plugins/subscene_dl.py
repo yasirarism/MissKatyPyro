@@ -99,13 +99,15 @@ async def subsceneCMD(client, message):
         return await kirimPesan(message, f"ℹ️ Please add query after CMD!\nEx: <code>/{message.command[0]} Jurassic World</code>")
     pesan = await kirimPesan(message, "⏳ Please wait, getting data from subscene..", quote=True)
     CurrentPage = 1
-    subres, PageLen, btn = await getTitleSub(pesan, kueri, CurrentPage, message.from_user.id)
+    subres, PageLen, btn1, btn2 = await getTitleSub(pesan, kueri, CurrentPage, message.from_user.id)
     if not subres:
         return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "subscenepage#{number}" + f"#{pesan.id}#{message.from_user.id}")
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
-    keyboard.row(*btn)
+    keyboard.row(*btn1)
+    if btn2:
+        keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
     await editPesan(pesan, subres, disable_web_page_preview=True, reply_markup=keyboard)
 
