@@ -41,7 +41,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         extractbtn = []
         subResult = f"<b>#Subscene Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(SUB_TITLE_DICT[msg.id][0][index], start=1):
-            subResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n\n"
+            subResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n"
             extractbtn.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{user}#{msg.id}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
@@ -150,7 +150,7 @@ async def subdlpage_callback(client, callback_query):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "sublist#{number}" + f"#{message_id}#{callback_query.from_user.id}")
+    keyboard.paginate(PageLen, CurrentPage, "sublist#{number}" + f"#{idlink}#{message_id}#{callback_query.from_user.id}")
     keyboard.row(InlineButton("👇 Download Subtitle", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
