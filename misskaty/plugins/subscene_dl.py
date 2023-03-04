@@ -1,4 +1,4 @@
-import logging
+import logging, os
 
 import cloudscraper
 from bs4 import BeautifulSoup
@@ -185,4 +185,13 @@ async def dlsub_callback(client, callback_query):
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete()
-    await editPesan(callback_query.message, link, disable_web_page_preview=True)
+    scraper = cloudscraper.create_scraper()
+    req = scraper.get("https://subscene.com/subtitles/the-big-bang-theory-first-season/english/136037").text
+    soup = BeautifulSoup(req,"lxml")
+    judul = soup.find("div", {"class": "bread"}).find("a").get("href").split("/")[4]
+    downloadlink = soup.find("div", {"class": "download"}).find('a')
+    download = 'https://subscene.com'+downloadlink['href']
+    dl = scraper.get(download)
+    open(f"{judul}.zip", "wb").write(dl.content)
+    await callback_query.message.reply_document(f"{judul}.zip")
+    os.remove(f"{judul}.zip")
