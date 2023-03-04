@@ -53,10 +53,12 @@ async def genss(client, m):
         process = await kirimPesan(m, "<code>Processing, please wait..</code>", quote=True)
 
         c_time = time.time()
-        the_real_download_location = await replied.download(
+        dl = await replied.download(
+            file_name="/downloads",
             progress=progress_for_pyrogram,
             progress_args=("Trying to download, please wait..", process, c_time),
         )
+        the_real_download_location = os.path.join("/downloads", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
                 await editPesan(process, f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.")

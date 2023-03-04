@@ -8,7 +8,7 @@
 import io
 import subprocess
 import time
-from os import remove as osremove
+from os import remove as osremove, path
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -33,10 +33,12 @@ async def mediainfo(client, message):
             return await editPesan(process, "Please reply to valid media.")
 
         c_time = time.time()
-        file_path = await message.reply_to_message.download(
+        dl = await message.reply_to_message.download(
+            file_name="/downloads",
             progress=progress_for_pyrogram,
             progress_args=("Trying to download..", process, c_time),
         )
+        file_path = path.join("/downloads", path.basename(dl))
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None
         body_text = f"""
