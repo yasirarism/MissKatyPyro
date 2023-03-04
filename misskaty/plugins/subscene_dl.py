@@ -60,11 +60,11 @@ async def getListSub(msg, link, CurrentPage, user):
             lang = i.find("a").findAll("span")[0].text.strip()
             title = i.find("a").findAll("span")[1].text.strip()
             if i.find(class_="l r neutral-icon"):
-                rate = "Netral"
+                rate = "😐"
             elif i.find(class_="l r positive-icon"):
-                rate = "Positif"
+                rate = "🥰"
             else:
-                rate = "Negative"
+                rate = "☹️"
             dllink = f"https://subscene.com{i.find('a').get('href')}"
             sdata.append({"title": title, "lang": lang, "rate": rate, "link": dllink})
         SUB_DL_DICT[msg.id] = [split_arr(sdata, 10), link]
@@ -74,7 +74,7 @@ async def getListSub(msg, link, CurrentPage, user):
         extractbtn = []
         subResult = f"<b>#Subscene Results For:</b> <code>{link}</code>\n\n"
         for c, i in enumerate(SUB_DL_DICT[msg.id][0][index], start=1):
-            subResult += f"<b>{c}. {i['title']}</b> [{i['rate']}]\n\n"
+            subResult += f"<b>{c}. {i['title']}</b> [{i['rate']}]\n{i['lang']}\n"
             extractbtn.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn
@@ -114,7 +114,7 @@ async def subpage_callback(client, callback_query):
     except KeyError:
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
-        return await callback_query.delete()
+        return await callback_query.message.delete()
 
     try:
         subres, PageLen, btn = await getTitleSub(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
@@ -142,7 +142,7 @@ async def subdlpage_callback(client, callback_query):
     except KeyError:
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
-        return await callback_query.delete()
+        return await callback_query.message.delete()
 
     try:
         subres, PageLen, btn = await getListSub(callback_query.message, link, CurrentPage, callback_query.from_user.id)
@@ -155,3 +155,20 @@ async def subdlpage_callback(client, callback_query):
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await editPesan(callback_query.message, subres, disable_web_page_preview=True, reply_markup=keyboard)
+
+# Callback dl subtitle
+@app.on_callback_query(filters.create(lambda _, __, query: "extractsubs#" in query.data))
+@ratelimiter
+async def dlsub_callback(client, callback_query):
+    if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
+        return await callback_query.answer("Not yours..", True)
+    idlink = int(callback_query.data.split("#")[2])
+    message_id = int(callback_query.data.split("#")[3])
+    CurrentPage = int(callback_query.data.split("#")[1])
+    try:
+        link = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except KeyError:
+        await callback_query.answer("Invalid callback data, please send CMD again..")
+        await asyncio.sleep(3)
+        return await callback_query.message.delete()
+    await editPesan(callback_query.message, link, disable_web_page_preview=True)
