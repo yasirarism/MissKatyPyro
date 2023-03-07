@@ -550,7 +550,7 @@ async def imdb_inl(_, query):
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
             typee = r_json.get("@type", "")
-            tahun = re.findall("\d{4}", sop.title.text)[0] if re.findall("\d{4}", sop.title.text) else "N/A"
+            tahun = re.findall("\((\d{4})\)", sop.title.text)[0] if re.findall("\((\d{4})\)", sop.title.text) else "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"

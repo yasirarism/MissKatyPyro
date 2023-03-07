@@ -20,16 +20,19 @@ async def chatbot(c, m):
     }
 
     json_data = {
-        "model": "text-davinci-003",
-        "prompt": pertanyaan,
-        "max_tokens": 200,
-        "temperature": 0,
+        "model": "gpt-3.5-turbo",
+        "messages": [
+            {
+                "role": "user",
+                "content": pertanyaan,
+            },
+        ],
     }
     msg = await kirimPesan(m, "Wait a moment looking for your answer..")
     try:
-        response = (await http.post("https://api.openai.com/v1/completions", headers=headers, json=json_data)).json()
-        await editPesan(msg, response["choices"][0]["text"])
+        response = (await http.post("https://api.openai.com/v1/chat/completions", headers=headers, json=json_data)).json()
+        await editPesan(msg, response["choices"][0]["message"]["content"])
     except MessageNotModified:
         pass
-    except Exception:
-        await editPesan(msg, "Yahh, sorry i can't get your answer.")
+    except Exception as err:
+        await editPesan(msg, f"Oppss. ERROR: {err}")
