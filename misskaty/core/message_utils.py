@@ -18,7 +18,7 @@ async def kirimPesan(msg, text, **kwargs):
         return await kirimPesan(msg, text, **kwargs)
     except (ChatWriteForbidden, ChatAdminRequired):
         LOGGER.info(f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission.")
-        return await msg.leave()
+        return await msg.chat.leave()
     except Exception as e:
         LOGGER.error(str(e))
         return
@@ -34,6 +34,9 @@ async def editPesan(msg, text, **kwargs):
         return await editPesan(msg, text, **kwargs)
     except (MessageNotModified, MessageIdInvalid, MessageEmpty):
         return
+    except (ChatWriteForbidden, ChatAdminRequired):
+        LOGGER.info(f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission.")
+        return await msg.chat.leave()
     except Exception as e:
         LOGGER.error(str(e))
         return
