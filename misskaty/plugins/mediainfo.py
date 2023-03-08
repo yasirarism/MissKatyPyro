@@ -17,6 +17,7 @@ from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, progress_for_pyrogram, runcmd, post_to_telegraph
+from misskaty.helper.mediainfo_paste import mediainfo_paste
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
@@ -51,15 +52,7 @@ DETAILS
     """
         text_ = file_info.message_type
         try:
-            json_data = {
-                "content": body_text,
-                "highlighting_language": "auto",
-                "ephemeral": False,
-                "expire_at": 0,
-                "expire_in": 0,
-            }
-            response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
-            link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+            link = await mediainfo_paste(out, "MissKaty Mediainfo")
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
         except:
             try:
@@ -93,15 +86,7 @@ DETAILS
             """
             # link = await post_to_telegraph(False, title, body_text)
             try:
-                json_data = {
-                    "content": body_text,
-                    "highlighting_language": "auto",
-                    "ephemeral": False,
-                    "expire_at": 0,
-                    "expire_in": 0,
-                }
-                response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
-                link = f"https://paste.yasir.eu.org/{response.json()['id']}"
+                link = await mediainfo_paste(out, "MissKaty Mediainfo")
                 markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
             except:
                 try:
