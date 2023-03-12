@@ -47,14 +47,14 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 
 
 @asyncify
-def welcomepic(pic, user, chat, count, id):
+def welcomepic(pic, user, chat, id):
     background = Image.open("img/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
     pfp = pfp.resize((265, 265))  # Resizes the Profilepicture so it fits perfectly in the circle
     font = ImageFont.truetype("Calistoga-Regular.ttf", 37)  # <- Text Font of the Member Count. Change the text size for your preference
-    member_text = f"User#{count}, Selamat Datang {user}"  # <- Text under the Profilepicture with the Membercount
+    member_text = f"Selamat Datang {user} [{id}]"  # <- Text under the Profilepicture with the Membercount
     draw_multiple_line_text(background, member_text, font, 395)
     draw_multiple_line_text(background, chat, font, 47)
     ImageDraw.Draw(background).text(
@@ -93,13 +93,12 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         first_name = f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
         id = user.id
         dc = user.dc_id or "Member tanpa PP"
-        count = await app.get_chat_members_count(member.chat.id)
         try:
             pic = await app.download_media(user.photo.big_file_id, file_name=f"pp{user.id}.png")
         except AttributeError:
             pic = "img/profilepic.png"
         try:
-            welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, count, user.id)
+            welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, user.id)
             temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
                 member.chat.id,
                 photo=welcomeimg,
@@ -175,7 +174,6 @@ async def save_group(bot, message):
         )
     else:
         for u in message.new_chat_members:
-            count = await app.get_chat_members_count(message.chat.id)
             try:
                 pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
             except AttributeError:
@@ -186,7 +184,7 @@ async def save_group(bot, message):
                 except:
                     pass
             try:
-                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, count, u.id)
+                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, u.id)
                 temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
                     message.chat.id,
                     photo=welcomeimg,

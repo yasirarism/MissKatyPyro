@@ -32,7 +32,8 @@ async def mediainfo(client, message):
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             return await editPesan(process, "Please reply to valid media.")
-
+        if (message.reply_to_message.video and message.reply_to_message.video.file_size > 2097152000) or (message.reply_to_message.document and message.reply_to_message.document.file_size > 2097152000):
+            return await editPesan(process, "Sorry, download limited to 2GB to reduce flood. You can convert your files to link.")
         c_time = time.time()
         dl = await message.reply_to_message.download(
             file_name="/downloads/",

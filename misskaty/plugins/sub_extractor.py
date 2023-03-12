@@ -148,17 +148,17 @@ async def stream_extract(bot, update):
     except:
         return await update.answer("⚠️ DONT DELETE YOUR MESSAGE!", True)
     await editPesan(update.message, "⏳ Processing...")
+    if codec == "aac":
+        format = "aac"
+    elif codec == "mp3":
+        format = "mp3"
+    elif codec == "eac3":
+        format = "eac3"
+    else:
+        format = "srt"
+    start_time = perf_counter()
+    namafile = get_subname(lang, link, format)
     try:
-        if codec == "aac":
-            format = "aac"
-        elif codec == "mp3":
-            format = "mp3"
-        elif codec == "eac3":
-            format = "eac3"
-        else:
-            format = "srt"
-        start_time = perf_counter()
-        namafile = get_subname(lang, link, format)
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
         end_time = perf_counter()
@@ -173,9 +173,7 @@ async def stream_extract(bot, update):
             progress_args=("Uploading files..", update.message, c_time),
         )
         await hapusPesan(update.message)
-        try:
-            os.remove(namafile)
-        except:
-            pass
+        os.remove(namafile)
     except Exception as e:
+        os.remove(namafile)
         await editPesan(update.message, f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")

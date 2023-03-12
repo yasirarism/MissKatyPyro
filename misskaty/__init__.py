@@ -19,7 +19,7 @@ basicConfig(
 getLogger("pyrogram").setLevel(ERROR)
 
 MOD_LOAD = []
-MOD_NOLOAD = []
+MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()

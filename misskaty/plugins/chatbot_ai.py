@@ -12,7 +12,7 @@ from misskaty.vars import COMMAND_HANDLER, OPENAI_API
 @ratelimiter
 async def chatbot(c, m):
     if len(m.command) == 1:
-        return await kirimPesan(m, f"Gunakan perintah <code>/{m.command[0]} [pertanyaan]</code> untuk menanyakan pertanyaan menggunakan AI.")
+        return await kirimPesan(m, f"Please use command <code>/{m.command[0]} [question]</code> to ask your question.")
     pertanyaan = m.text.split(" ", maxsplit=1)[1]
     headers = {
         "Content-Type": "application/json",

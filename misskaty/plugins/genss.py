@@ -51,7 +51,8 @@ async def genss(client, m):
         if media is None:
             return await kirimPesan(m, "Reply to a Telegram Video or document as video to generate screenshoot!", quote=True)
         process = await kirimPesan(m, "<code>Processing, please wait..</code>", quote=True)
-
+        if media.file_size > 2097152000:
+            return await kirimPesan(m, "Sorry, download limited to 2GB to reduce flood. You can convert your files to link.")
         c_time = time.time()
         dl = await replied.download(
             file_name="/downloads/",

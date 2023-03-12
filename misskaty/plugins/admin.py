@@ -5,7 +5,7 @@ from time import time
 
 from pyrogram import enums, filters
 from pyrogram.errors import ChatAdminRequired, FloodWait
-from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions, ChatPrivileges
 
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
@@ -143,9 +143,9 @@ async def kickFunc(client, message):
         return await message.reply_text("Wow, you wanna kick my owner?")
     if user_id in (await list_admins(message.chat.id)):
         return await message.reply_text("Lol, it's crazy if i can kick an admin.")
-    mention = (await app.get_users(user_id)).mention
+    user = await app.get_users(user_id)
     msg = f"""
-**Kicked User:** {mention}
+**Kicked User:** {user.mention} [{user.id}]
 **Kicked By:** {message.from_user.mention if message.from_user else 'Anon'}
 **Reason:** {reason or '-'}"""
     if message.command[0][0] == "d":
@@ -372,35 +372,39 @@ async def promoteFunc(client, message):
         return await message.reply_text("I don't have enough permissions")
     if message.command[0][0] == "f":
         await message.chat.promote_member(
-            user_id=user_id,
-            can_change_info=bot.can_change_info,
-            can_invite_users=bot.can_invite_users,
-            can_delete_messages=bot.can_delete_messages,
-            can_restrict_members=bot.can_restrict_members,
-            can_pin_messages=bot.can_pin_messages,
-            can_promote_members=bot.can_promote_members,
-            can_manage_chat=bot.can_manage_chat,
-            can_manage_voice_chats=bot.can_manage_voice_chats,
+            user_id,
+            ChatPrivileges(
+                can_change_info=bot.can_change_info,
+                can_invite_users=bot.can_invite_users,
+                can_delete_messages=bot.can_delete_messages,
+                can_restrict_members=bot.can_restrict_members,
+                can_pin_messages=bot.can_pin_messages,
+                can_promote_members=bot.can_promote_members,
+                can_manage_chat=bot.can_manage_chat,
+                can_manage_voice_chats=bot.can_manage_voice_chats
+            )
         )
         return await message.reply_text(f"Fully Promoted! {umention}")
 
     await message.chat.promote_member(
-        user_id=user_id,
-        can_change_info=False,
-        can_invite_users=bot.can_invite_users,
-        can_delete_messages=bot.can_delete_messages,
-        can_restrict_members=False,
-        can_pin_messages=False,
-        can_promote_members=False,
-        can_manage_chat=bot.can_manage_chat,
-        can_manage_voice_chats=bot.can_manage_voice_chats,
+        user_id,
+        ChatPrivileges(
+            can_change_info=False,
+            can_invite_users=bot.can_invite_users,
+            can_delete_messages=bot.can_delete_messages,
+            can_restrict_members=False,
+            can_pin_messages=False,
+            can_promote_members=False,
+            can_manage_chat=bot.can_manage_chat,
+            can_manage_voice_chats=bot.can_manage_voice_chats
+        )
     )
     await message.reply_text(f"Promoted! {umention}")
 
 
 # Demote Member
 @app.on_message(filters.command("demote", COMMAND_HANDLER) & filters.group)
-@adminsOnly("can_promote_members")
+@adminsOnly("can_restrict_members")
 @ratelimiter
 async def demote(client, message):
     if not message.from_user:
@@ -412,16 +416,8 @@ async def demote(client, message):
         return await message.reply_text("I can't demote myself.")
     if user_id in SUDO:
         return await message.reply_text("You wanna demote the elevated one?")
-    await message.chat.promote_member(
-        user_id=user_id,
-        can_change_info=False,
-        can_invite_users=False,
-        can_delete_messages=False,
-        can_restrict_members=False,
-        can_pin_messages=False,
-        can_promote_members=False,
-        can_manage_chat=False,
-        can_manage_voice_chats=False,
+    await message.chat.demote_member(
+        user_id=user_id
     )
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")
