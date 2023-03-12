@@ -58,7 +58,9 @@ def remove_html_tags(text):
 @app.on_message(filters.command("readqr", COMMAND_HANDLER))
 @ratelimiter
 async def readqr(c, m):
-    if not m.reply and (not m.reply.media and not m.reply.photo):
+    if not m.reply_to_message:
+        return await m.reply("Please reply photo that contain valid QR Code.")
+    if not m.reply_to_message.photo:
         return await m.reply("Please reply photo that contain valid QR Code.")
     foto = await m.reply_to_message.download()
     myfile = {'file': (foto, open(foto, 'rb'),'application/octet-stream')}

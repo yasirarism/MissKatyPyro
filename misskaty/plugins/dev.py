@@ -143,7 +143,7 @@ async def shell(_, m):
 @app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run"], ".") & filters.me)
 async def evaluation_cmd_t(_, m):
-    if len(m.command) == 1 and m.command:
+    if m.command and len(m.command) == 1:
         return await edit_or_reply(m, text="__No evaluate message!__")
     cmd = m.text.split(" ", 1)[1] if m.command else m.text.split("app.run()")[0]
     status_message = await editPesan(m, "<i>Processing eval pyrogram..</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing eval pyrogram..</i>")
