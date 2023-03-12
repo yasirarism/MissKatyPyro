@@ -69,7 +69,7 @@ def welcomepic(pic, user, chat, count, id):
     return f"downloads/welcome#{id}.png"
 
 
-@app.on_chat_member_updated(filters.group & filters.chat(-1001128045651))
+@app.on_chat_member_updated(filters.group & filters.chat([-1001128045651, -1001777794636]))
 async def member_has_joined(c: app, member: ChatMemberUpdated):
     if not member.new_chat_member or member.new_chat_member.status in {"banned", "left", "restricted"} or member.old_chat_member:
         return
@@ -105,8 +105,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
                 photo=welcomeimg,
                 caption=f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
             )
-        except:
-            pass
+        except Exception as e:
+            LOGGER.info(e)
         userspammer = ""
         # Spamwatch Detection
         try:

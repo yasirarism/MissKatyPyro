@@ -57,6 +57,7 @@ DETAILS
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="💬 View in Web", url=link)]])
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:

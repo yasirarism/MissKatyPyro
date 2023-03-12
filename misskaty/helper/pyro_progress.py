@@ -6,7 +6,7 @@ import asyncio
 import math
 import time
 
-from pyrogram.errors import FloodWait, MessageNotModified
+from pyrogram.errors import FloodWait, MessageNotModified, MessageIdInvalid
 
 
 async def progress_for_pyrogram(current, total, ud_type, message, start):
@@ -43,7 +43,7 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
         except FloodWait as e:
             await asyncio.sleep(e.value)
             await message.edit(f"{ud_type}\n {tmp}")
-        except MessageNotModified:
+        except (MessageNotModified, MessageIdInvalid):
             pass
 
 

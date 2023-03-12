@@ -27,7 +27,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import hapusPesan, kirimPesan
+from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
@@ -58,7 +58,7 @@ def remove_html_tags(text):
 @app.on_message(filters.command("readqr", COMMAND_HANDLER))
 @ratelimiter
 async def readqr(c, m):
-    if not m.reply and not m.reply.media and not m.reply.photo:
+    if not m.reply and (not m.reply.media and not m.reply.photo):
         return await m.reply("Please reply photo that contain valid QR Code.")
     foto = await m.reply_to_message.download()
     myfile = {'file': (foto, open(foto, 'rb'),'application/octet-stream')}
@@ -171,12 +171,12 @@ async def translate(client, message):
     try:
         my_translator = GoogleTranslator(source="auto", target=target_lang)
         result = my_translator.translate(text=text)
-        await msg.edit(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
+        await editPesan(msg, f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
         url = await rentry(result)
-        await msg.edit(f"Your translated text pasted to rentry because has long text:\n{url}")
+        await editPesan(msg, f"Your translated text pasted to rentry because has long text:\n{url}")
     except Exception as err:
-        await msg.edit(f"Error: <code>{str(err)}</code>")
+        await editPesan(msg, f"Oppss, Error: <code>{str(err)}</code>")
 
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))

@@ -5,14 +5,12 @@ from typing import Tuple
 
 from misskaty import BOT_USERNAME
 from telegraph.aio import Telegraph
-from utils import LOGGER
 
 
 async def post_to_telegraph(is_media: bool, title=None, content=None, media=None):
     telegraph = Telegraph()
     if telegraph.get_access_token() is None:
         await telegraph.create_account(short_name=BOT_USERNAME)
-        LOGGER.info("Create TGH Account ..")
     if is_media:
         """Create a Telegram Post Foto/Video"""
         response = await telegraph.upload_file(media)

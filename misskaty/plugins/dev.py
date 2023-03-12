@@ -139,13 +139,13 @@ async def shell(_, m):
         await m.reply("No Reply")
 
 
-@app.on_message(filters.command(["ev", "run"], COMMAND_HANDLER) & filters.user(SUDO))
-@app.on_edited_message(filters.command(["ev", "run"]) & filters.user(SUDO))
+@app.on_message((filters.command(["ev", "run"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run"], ".") & filters.me)
 async def evaluation_cmd_t(_, m):
-    cmd = m.text.split(" ", 1)
-    if len(m.command) == 1:
+    if len(m.command) == 1 and m.command:
         return await edit_or_reply(m, text="__No evaluate message!__")
+    cmd = m.text.split(" ", 1)[1] if m.command else m.text.split("app.run()")[0]
     status_message = await editPesan(m, "<i>Processing eval pyrogram..</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing eval pyrogram..</i>")
 
     old_stderr = sys.stderr
@@ -155,7 +155,7 @@ async def evaluation_cmd_t(_, m):
     stdout, stderr, exc = None, None, None
 
     try:
-        await aexec(cmd[1], _, m)
+        await aexec(cmd, _, m)
     except Exception:
         exc = traceback.format_exc()
 
@@ -174,7 +174,7 @@ async def evaluation_cmd_t(_, m):
     else:
         evaluation = "Success"
 
-    final_output = f"**EVAL**:\n`{cmd[1]}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
+    final_output = f"**EVAL**:\n`{cmd}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
 
     if len(final_output) > 4096:
         with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:

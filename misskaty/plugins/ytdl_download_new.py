@@ -78,7 +78,7 @@ async def ytdownv2(_, message):
             markup = x.buttons
             await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
         except Exception as err:
-            await kirimPesan(message, str(err))
+            await kirimPesan(message, f"Opps, ERROR: {str(err)}")
 
 
 @app.on_callback_query(filters.regex(r"^yt_listall"))
@@ -139,8 +139,11 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
                 ffmpeg_location="/usr/bin/mediaextract",
                 delete_media=True,
             ) as ytdl:
-                upload_key = await ytdl.download(cq.message.reply_to_message.command[1], uid, format_, cq, True, 3)
-                await ytdl.upload(app, upload_key[0], format_, cq, True)
+                try:
+                    upload_key = await ytdl.download(cq.message.reply_to_message.command[1], uid, format_, cq, True, 3)
+                    await ytdl.upload(app, upload_key[0], format_, cq, True)
+                except Exception as err:
+                    await cq.edit_message_caption(err)
     else:
         uid = callback[2]
         type_ = callback[3]
@@ -151,15 +154,18 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery):
             ffmpeg_location="/usr/bin/mediaextract",
             delete_media=True,
         ) as ytdl:
-            upload_key = await ytdl.download(
-                f"https://www.youtube.com/watch?v={key}",
-                uid,
-                format_,
-                cq,
-                True,
-                3,
-            )
-            await ytdl.upload(app, upload_key[0], format_, cq, True)
+            try:
+                upload_key = await ytdl.download(
+                    f"https://www.youtube.com/watch?v={key}",
+                    uid,
+                    format_,
+                    cq,
+                    True,
+                    3,
+                )
+                await ytdl.upload(app, upload_key[0], format_, cq, True)
+            except Exception as err:
+                await cq.edit_message_caption(err)
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
