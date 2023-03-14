@@ -122,9 +122,9 @@ async def purge(_, message):
                 revoke=True,
             )
             del_total += len(message_ids)
-        await message.reply(f"Successfully deleted {del_total} messages..")
+        await kirimPesan(message, f"Successfully deleted {del_total} messages..")
     except Exception as err:
-        await message.reply(f"ERR: {err}")
+        await kirimPesan(message, f"ERR: {err}")
 
 
 # Kick members
@@ -136,13 +136,13 @@ async def kickFunc(client, message):
         return
     user_id, reason = await extract_user_and_reason(message)
     if not user_id:
-        return await message.reply_text("I can't find that user.")
+        return await kirimPesan(message, "I can't find that user.")
     if user_id == client.me.id:
-        return await message.reply_text("I can't kick myself, i can leave if you want.")
+        return await kirimPesan(message, "I can't kick myself, i can leave if you want.")
     if user_id in SUDO:
-        return await message.reply_text("Wow, you wanna kick my owner?")
+        return await kirimPesan(message, "Wow, you wanna kick my owner?")
     if user_id in (await list_admins(message.chat.id)):
-        return await message.reply_text("Lol, it's crazy if i can kick an admin.")
+        return await kirimPesan(message, "Lol, it's crazy if i can kick an admin.")
     user = await app.get_users(user_id)
     msg = f"""
 **Kicked User:** {user.mention} [{user.id}]
@@ -152,11 +152,11 @@ async def kickFunc(client, message):
         await message.reply_to_message.delete()
     try:
         await message.chat.ban_member(user_id)
-        await message.reply_text(msg)
+        await kirimPesan(message, msg)
         await asyncio.sleep(1)
         await message.chat.unban_member(user_id)
     except ChatAdminRequired:
-        await message.reply("Please give me ban permission to ban user in this group.")
+        await kirimPesan(message, "Please give me ban permission to ban user in this group.")
 
 
 # Ban/DBan/TBan User
