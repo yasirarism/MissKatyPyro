@@ -369,13 +369,13 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         query = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://api.hayo.my.id/api/pypi?package={query}")
-        srch_results = json.loads(search_results.text)
+        search_results = await http.get(f"https://yasirapi.eu.org/pypi?q={query}")
+        srch_results = search_results.json()
         data = []
-        for sraeo in srch_results:
-            title = sraeo.get("title")
-            link = sraeo.get("link")
-            deskripsi = sraeo.get("desc")
+        for sraeo in srch_results["result"]:
+            title = sraeo.get("name")
+            link = sraeo.get("url")
+            deskripsi = sraeo.get("description")
             version = sraeo.get("version")
             message_text = f"<a href='{link}'>{title} {version}</a>\n"
             message_text += f"Description: {deskripsi}\n"
@@ -506,7 +506,7 @@ async def prvt_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
     if msg_id not in PRVT_MSGS:
-        await c_q.answer("message now outdated !", show_alert=True)
+        await c_q.answer("Message now outdated !", show_alert=True)
         return
 
     user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
@@ -514,7 +514,7 @@ async def prvt_msg(_, c_q):
     if c_q.from_user.id in (user_id, sender_id):
         await c_q.answer(msg, show_alert=True)
     else:
-        await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
+        await c_q.answer(f"Only {flname} can see this Private Msg!", show_alert=True)
 
 
 @app.on_callback_query(filters.regex(r"destroy\((.+)\)"))
@@ -550,7 +550,7 @@ async def imdb_inl(_, query):
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
             typee = r_json.get("@type", "")
-            tahun = re.findall("\((\d{4})\)", sop.title.text)[0] if re.findall("\((\d{4})\)", sop.title.text) else "N/A"
+            tahun = re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text) else "N/A"
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"

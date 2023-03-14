@@ -298,7 +298,7 @@ async def imdb_id_callback(_, query):
         ott = await search_jw(r_json.get("name"), "ID")
         typee = r_json.get("@type", "")
         res_str = ""
-        tahun = re.findall("\((\d{4})\)", sop.title.text)[0] if re.findall("\((\d{4})\)", sop.title.text) else "N/A"
+        tahun = re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text) else "N/A"
         res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
@@ -415,7 +415,7 @@ async def imdb_en_callback(bot, query):
         ott = await search_jw(r_json.get("name"), "US")
         typee = r_json.get("@type", "")
         res_str = ""
-        tahun = re.findall("\((\d{4})\)", sop.title.text)[0] if re.findall("\((\d{4})\)", sop.title.text) else "N/A"
+        tahun = re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}\W", sop.title.text) else "N/A"
         res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"

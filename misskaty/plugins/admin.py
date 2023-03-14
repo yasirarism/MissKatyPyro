@@ -416,7 +416,7 @@ async def demote(client, message):
         return await message.reply_text("I can't demote myself.")
     if user_id in SUDO:
         return await message.reply_text("You wanna demote the elevated one?")
-    await message.chat.demote_member(
+    await message.chat.promote_member(
         user_id=user_id
     )
     umention = (await app.get_users(user_id)).mention
