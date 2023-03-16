@@ -1,6 +1,6 @@
 import logging, os
 
-import cloudscraper
+import cfscrape
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
@@ -21,7 +21,7 @@ SUB_DL_DICT = {}
 async def getTitleSub(msg, kueri, CurrentPage, user):
     if not SUB_TITLE_DICT.get(msg.id):
         sdata = []
-        scraper = cloudscraper.create_scraper()
+        scraper = cfscrape.create_scraper()
         param = {"query": kueri}
         r  = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
         soup = BeautifulSoup(r,"lxml")
@@ -57,7 +57,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
 async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
-        scraper = cloudscraper.create_scraper()
+        scraper = cfscrape.create_scraper()
         r = scraper.get(link).text
         soup = BeautifulSoup(r,"lxml")
         for i in soup.findAll(class_="a1"):
@@ -185,7 +185,7 @@ async def dlsub_callback(client, callback_query):
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete()
-    scraper = cloudscraper.create_scraper()
+    scraper = cfscrape.create_scraper()
     req = scraper.get(link).text
     soup = BeautifulSoup(req,"lxml")
     judul = soup.find("div", {"class": "bread"}).find("a").get("href").split("/")[4]
