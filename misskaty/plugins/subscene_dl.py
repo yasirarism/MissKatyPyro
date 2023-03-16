@@ -183,14 +183,14 @@ async def dlsub_callback(client, callback_query):
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
         link = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+        title = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("title")
     except KeyError:
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete()
     scraper = cfscrape.create_scraper()
     res = await down_page(link)
-    judul = res.get("title")
     dl = scraper.get(res.get("download_url"))
-    f = open(f"{judul}.zip", mode='wb').write(dl.content)
-    await callback_query.message.reply_document(f"{judul}.zip", caption=f"Title: {judul}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}")
-    os.remove(f"{judul}.zip")
+    f = open(f"{title}.zip", mode='wb').write(dl.content)
+    await callback_query.message.reply_document(f"{title}.zip", caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ")
+    os.remove(f"{title}.zip")
