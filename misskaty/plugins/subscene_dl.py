@@ -58,7 +58,8 @@ async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
         scraper = cfscrape.create_scraper()
-        r = scraper.get(link).text
+        kuki = {'LanguageFilter': "13,44,50"} # Only filter language English, Malay, Indonesian
+        r = scraper.get(link, cookies=kuki).text
         soup = BeautifulSoup(r,"lxml")
         for i in soup.findAll(class_="a1"):
             lang = i.find("a").findAll("span")[0].text.strip()
