@@ -1,7 +1,8 @@
 import logging, os
 
-import cfscrape
+import cfscrape, aiofiles
 from bs4 import BeautifulSoup
+from misskaty.helper.subscene_helper import down_page
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 
@@ -187,12 +188,11 @@ async def dlsub_callback(client, callback_query):
         await asyncio.sleep(3)
         return await callback_query.message.delete()
     scraper = cfscrape.create_scraper()
-    req = scraper.get(link).text
-    soup = BeautifulSoup(req,"lxml")
-    judul = soup.find("div", {"class": "bread"}).find("a").get("href").split("/")[4]
-    downloadlink = soup.find("div", {"class": "download"}).find('a')
-    download = 'https://subscene.com'+downloadlink['href']
-    dl = scraper.get(download)
-    open(f"{judul}.zip", "wb").write(dl.content)
-    await callback_query.message.reply_document(f"{judul}.zip")
+    res = await down_page(link)
+    judul = res.get("title")
+    dl = scraper.get(res.get("download_url"))
+    f = await aiofiles.open({judul}.zip, mode='wb')
+    await f.write(dl.content)
+    await f.close()
+    await callback_query.message.reply_document(f"{judul}.zip", caption=f"Title: {judul}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}")
     os.remove(f"{judul}.zip")

@@ -12,3 +12,4 @@ from .time_gap import *
 from .ssgen_helper import *
 from .tools import *
 from .ytdl_helper import *
+from .subscene_helper import *
