@@ -191,7 +191,7 @@ async def dlsub_callback(client, callback_query):
     res = await down_page(link)
     judul = res.get("title")
     dl = scraper.get(res.get("download_url"))
-    f = open({judul}.zip, mode='wb').write(dl.content)
+    f = open(f"{judul}.zip", mode='wb').write(dl.content)
     f.close()
     await callback_query.message.reply_document(f"{judul}.zip", caption=f"Title: {judul}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}")
     os.remove(f"{judul}.zip")
