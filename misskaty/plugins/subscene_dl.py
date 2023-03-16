@@ -1,6 +1,6 @@
 import logging, os
 
-import cfscrape, aiofiles
+import cfscrape
 from bs4 import BeautifulSoup
 from misskaty.helper.subscene_helper import down_page
 from pykeyboard import InlineButton, InlineKeyboard
