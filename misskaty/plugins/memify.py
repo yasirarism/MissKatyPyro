@@ -128,7 +128,9 @@ async def draw_meme_text(image_path, text):
             )
             current_h += u_height + pad
 
-    webp_file = "memify.webp"
+    webp_file = "memifymycatty.webp"
+    new_size = (512, 512)
+    img.resize(new_size)
     img.save(webp_file, "WebP")
     return webp_file
 
