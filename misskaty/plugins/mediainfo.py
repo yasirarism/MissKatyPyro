@@ -66,7 +66,7 @@ DETAILS
             await message.reply_document(
                 out_file,
                 caption=f"ℹ️ <b>MEDIA INFO</b>\n\n**Request by:** {message.from_user.mention}",
-                thumb="img/thumb.jpg",
+                thumb="assets/thumb.jpg",
                 reply_markup=markup,
             )
             await process.delete()
@@ -101,7 +101,7 @@ DETAILS
                 await message.reply_document(
                     out_file,
                     caption=f"Hasil mediainfo anda..\n\n**Request by:** {message.from_user.mention}",
-                    thumb="img/thumb.jpg",
+                    thumb="assets/thumb.jpg",
                     reply_markup=markup,
                 )
                 await process.delete()

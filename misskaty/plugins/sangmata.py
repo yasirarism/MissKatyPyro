@@ -20,7 +20,7 @@ This feature inspired from SangMata Bot. I'm created simple detection to check u
     group=3,
 )
 async def cek_mataa(_, m):
-    if not await is_sangmata_on(m.chat.id):
+    if m.sender_chat or not await is_sangmata_on(m.chat.id):
         return
     if not await cek_userdata(m.from_user.id):
         return await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)

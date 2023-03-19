@@ -165,7 +165,7 @@ async def fbdl(client, message):
         await message.reply_video(
             path,
             caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-            thumb="img/thumb.jpg"
+            thumb="assets/thumb.jpg"
         )
         await msg.delete()
         try:

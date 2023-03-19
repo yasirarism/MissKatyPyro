@@ -1,4 +1,5 @@
 import textwrap
+from asyncio import gather
 from os import remove as hapus
 
 from PIL import Image, ImageDraw, ImageFont
@@ -14,7 +15,7 @@ async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
     hapus(image_path)
     i_width, i_height = img.size
-    m_font = ImageFont.truetype("Calistoga-Regular.ttf", int((70 / 640) * i_width))
+    m_font = ImageFont.truetype("assets/MutantAcademyStyle.ttf", int((70 / 640) * i_width))
     if ";" in text:
         upper_text, lower_text = text.split(";")
     else:
@@ -146,8 +147,7 @@ async def memify(client, message):
         try:
             file = await message.reply_to_message.download()
             webp, png = await draw_meme_text(file, message.text.split(None, 1)[1].strip())
-            await message.reply_sticker(webp)
-            await message.reply_document(png)
+            await gather(*[message.reply_document(png), message.reply_sticker(webp)])
             try:
                 hapus(webp)
                 hapus(png)

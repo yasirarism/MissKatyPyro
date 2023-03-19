@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import traceback
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
@@ -22,8 +23,8 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI, post_to_telegraph
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
@@ -394,10 +395,12 @@ async def imdb_id_callback(_, query):
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
-    except MessageNotModified:
+    except (MessageNotModified, MessageIdInvalid):
         pass
     except Exception as exc:
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+        err = traceback.format_exc(limit=20)
+        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nSilahkan lapor ke owner detail errornya dengan lengkap, atau laporan error akan diabaikan.")
+        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Indonesia:\n<code>{str(err)}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
@@ -510,5 +513,9 @@ async def imdb_en_callback(bot, query):
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
+    except (MessageNotModified, MessageIdInvalid):
+        pass
     except Exception as exc:
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+        err = traceback.format_exc(limit=20)
+        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nPlease report to owner with detail of error, or your report will be ignored.")
+        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Eng:\n<code>{str(err)}</code>")

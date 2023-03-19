@@ -18,7 +18,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app, user, botStartTime, BOT_NAME
 from misskaty.helper import http
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
-from misskaty.core.message_utils import editPesan, kirimPesan
+from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 from utils import LOGGER
 
@@ -74,7 +74,7 @@ async def donate(_, message):
 @app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply)
 async def balas(c, m):
     pesan = m.text.split(" ", 1)
-    await m.delete()
+    await hapusPesan(m)
     await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
 
 
@@ -183,7 +183,7 @@ async def evaluation_cmd_t(_, m):
             document="MissKatyEval.txt",
             caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
             disable_notification=True,
-            thumb="img/thumb.jpg",
+            thumb="assets/thumb.jpg",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
