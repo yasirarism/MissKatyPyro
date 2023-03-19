@@ -1,7 +1,6 @@
 import os
 import time
-import logging 
-from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger
+from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger, handlers
 
 import pyromod.listen
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -11,11 +10,13 @@ from pyrogram import Client
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
-basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[FileHandler("MissKatyLogs.txt"), StreamHandler()],
-    level=INFO,
-)
+basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=INFO)
+
+logger = getLogger()
+# handler logging dengan batasan 100 baris
+handler = handlers.RotatingFileHandler("MissKatyLogs.txt", maxBytes=1024*1024)
+handler.setLevel(INFO)
+logger.addHandler(handler)
 getLogger("pyrogram").setLevel(ERROR)
 
 MOD_LOAD = []
