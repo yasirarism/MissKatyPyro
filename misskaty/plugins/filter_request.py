@@ -118,9 +118,7 @@ async def clear_reqdict():
     admins_in_chat.clear()
     try:
         os.rmdir("downloads")
-        os.remove("MissKatyLogs.txt")
         os.rmdir("GenSS")
-        open("MissKatyLogs.txt", "w").close()
     except:
         pass
 
