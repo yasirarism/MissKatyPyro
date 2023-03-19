@@ -29,13 +29,18 @@ async def cek_mataa(_, m):
     if username != m.from_user.username or first_name != m.from_user.first_name or last_name != m.from_user.last_name:
         msg += "👀 <b>Mata MissKaty</b>\n\n"
     if username != m.from_user.username:
-        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed username from @{username} to @{m.from_user.username}.\n"
+        username = "No Username" if not username else username
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed username.\n"
+        msg += f"From {username} ➡️ @{m.from_user.username}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if first_name != m.from_user.first_name:
-        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed first_name from {first_name} to {m.from_user.first_name}.\n"
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed first_name.\n"
+        msg += f"From {first_name} ➡️ {m.from_user.first_name}.\n"
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if last_name != m.from_user.last_name:
-        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed last_name from {last_name} to {m.from_user.last_name}."
+        username = "No Lastname" if not username else username
+        msg += f"{m.from_user.mention} [<code>{m.from_user.id}</code>] changed last_name.\n"
+        msg += f"From {last_name} ➡️ {m.from_user.last_name}."
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if msg != "":
         await kirimPesan(m, msg, quote=True)
