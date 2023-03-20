@@ -14,7 +14,7 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss{str(time.time())}.png"
-    cmd = f"ssmedia '{video_file}' -t -w 1340 -g 4x4 --ffmpeg-name mediaextract --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o {out_put_file_name}"
+    cmd = f"ssmedia '{video_file}' -t -w 1340 -g 4x4 --ffmpeg-name mediaextract --template misskaty/helper/ssgen_template.html --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o {out_put_file_name}"
     await shell_exec(cmd)
     return out_put_file_name if os.path.lexists(out_put_file_name) else None
 
