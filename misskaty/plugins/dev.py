@@ -1,6 +1,7 @@
 import asyncio
 import io
 import os
+import re
 import sys
 import pickle
 import traceback
@@ -156,12 +157,38 @@ async def evaluation_cmd_t(_, m):
 
     try:
         await aexec(cmd, _, m)
-    except Exception:
-        # exc = traceback.format_exc(limit=4)
-        exc_type, exc_value, exc_tb = sys.exc_info() 
-        tb = traceback.TracebackException(exc_type, exc_value, exc_tb)
-        exc = f"{exc_type} {exc_value} {exc_tb}\n\n{tb}"
-        # print(''.join(tb.format_exception_only())) 
+    except NameError as e:
+      trace_output = "<b>❌ MISSING VARIABEL:</b>\n"
+      trace_output += f"<code>{e}</code>"
+      exc = trace_output
+    except AttributeError as e:
+      trace_output = "<b>❌ MISSING ATTRIBUTE:</b>\n"
+      trace_output += f"<code>{e}</code>"
+      exc = trace_output
+    except SyntaxError as e:
+      trace = traceback.format_exc()
+      splitted = str(trace).split("\n")
+      end_split = len(splitted)
+      row_1 = splitted[end_split - 4]
+      row_2 = splitted[end_split - 3]
+      row_3 = splitted[end_split - 2]
+      compiles = row_1 + "\n" + row_2 + "\n" + row_3
+      trace_output = "<b>⚙️ SYNTAX ERROR:</b>\n"
+      trace_output += f"<code>{compiles}</code>"
+      exc = trace_output
+    except ValueError as e:
+      trace_output = "<b>🧮 VALUE ERROR:</b>\n"
+      trace_output += f"<code>{e}</code>"
+      exc = trace_output
+    except Exception as e:
+      #trace = traceback.format_exc()
+      """ Periksa apakah error regexnya tertangkap"""
+      match = re.search(r"Telegram says: .+", str(e))
+      trace_output = "<b>⚠️ COMMON ERROR:</b>\n"
+      trace_output += f"<code>{e}</code>"
+      if match:
+        trace_output = f"<code>👀 {match[0]}</code>"
+      exc = trace_output
 
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
