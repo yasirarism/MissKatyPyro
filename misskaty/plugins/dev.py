@@ -158,12 +158,12 @@ async def evaluation_cmd_t(_, m):
     try:
         await aexec(cmd, _, m)
     except NameError as e:
-      trace_output = "<b>❌ MISSING VARIABEL:</b>\n"
-      trace_output += f"<code>{e}</code>"
+      trace_output = "❌ MISSING VARIABEL:\n"
+      trace_output += f"{e}"
       exc = trace_output
     except AttributeError as e:
-      trace_output = "<b>❌ MISSING ATTRIBUTE:</b>\n"
-      trace_output += f"<code>{e}</code>"
+      trace_output = "❌ MISSING ATTRIBUTE:\n"
+      trace_output += f"{e}"
       exc = trace_output
     except SyntaxError as e:
       trace = traceback.format_exc()
@@ -173,21 +173,21 @@ async def evaluation_cmd_t(_, m):
       row_2 = splitted[end_split - 3]
       row_3 = splitted[end_split - 2]
       compiles = row_1 + "\n" + row_2 + "\n" + row_3
-      trace_output = "<b>⚙️ SYNTAX ERROR:</b>\n"
-      trace_output += f"<code>{compiles}</code>"
+      trace_output = "⚙️ SYNTAX ERROR:\n"
+      trace_output += f"{compiles}"
       exc = trace_output
     except ValueError as e:
-      trace_output = "<b>🧮 VALUE ERROR:</b>\n"
-      trace_output += f"<code>{e}</code>"
+      trace_output = "🧮 VALUE ERROR:\n"
+      trace_output += f"{e}"
       exc = trace_output
     except Exception as e:
       #trace = traceback.format_exc()
       """ Periksa apakah error regexnya tertangkap"""
       match = re.search(r"Telegram says: .+", str(e))
-      trace_output = "<b>⚠️ COMMON ERROR:</b>\n"
-      trace_output += f"<code>{e}</code>"
+      trace_output = "⚠️ COMMON ERROR:\n"
+      trace_output += f"{e}"
       if match:
-        trace_output = f"<code>👀 {match[0]}</code>"
+        trace_output = f"👀 {match[0]}"
       exc = trace_output
 
     stdout = redirected_output.getvalue()
