@@ -157,7 +157,7 @@ async def evaluation_cmd_t(_, m):
     try:
         await aexec(cmd, _, m)
     except Exception:
-        exc = traceback.format_exc()
+        exc = traceback.format_exc(limit=4)
 
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
