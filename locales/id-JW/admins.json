@@ -1,1 +1,5 @@
-{}
+{
+    "no_admin_error": "Sampeyan kudu dadi administrator kanggo nggunakake perintah iki.",
+    "no_permission_error": "Ora, nanging sampeyan ora duwe idin sing dibutuhake kanggo nindakake perintah iki. Izin sing ilang: {idin}",
+    "private_not_allowed": "Perintah iki ora bisa digunakake ing obrolan pribadi, Yen sampeyan butuh bantuan, mohon nggunakake perintah <code>/help</code>."
+}
