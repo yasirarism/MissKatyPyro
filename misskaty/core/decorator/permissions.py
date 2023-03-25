@@ -189,7 +189,7 @@ def require_admin(
             if msg.chat.type == enums.ChatType.CHANNEL:
                 return await func(client, message, *args, *kwargs)
             has_perms = await check_perms(
-                msg.chat.id, msg.from_user.id
+                message, permissions, complain_missing_perms, strings
             )
             if has_perms:
                 return await func(client, message, *args, *kwargs)
