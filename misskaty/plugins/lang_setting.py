@@ -50,7 +50,7 @@ def gen_langs_kb():
 
 @app.on_callback_query(filters.regex("^chlang$"))
 @app.on_message(
-    filters.command(["setchatlang", "setlang"], COMMAND_HANDLER) & filters.group
+    filters.command(["setchatlang", "setlang"], COMMAND_HANDLER)
 )
 @require_admin(allow_in_private=True)
 @use_chat_lang()
