@@ -91,9 +91,9 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
 
     strings = partial(
         get_locale_string,
-        langdict[lang].get("langs", langdict[default_language]["langs"]),
+        langdict[lang].get("lang_setting", langdict[default_language]["langs"]),
         lang,
-        "langs",
+        "lang_setting",
     )
 
     if m.message.chat.type == ChatType.PRIVATE:
