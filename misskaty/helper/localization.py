@@ -11,31 +11,32 @@ from pyrogram.types import CallbackQuery, InlineQuery, Message
 from database.locale_db import get_db_lang
 
 enabled_locales: List[str] = [
-    "en-GB",  # English (United Kingdom)
+    # "en-GB",  # English (United Kingdom)
     "en-US",  # English (United States)
-    "pt-BR",  # Portuguese (Brazil)
-    "es-ES",  # Spanish
-    "fr-FR",  # French
-    "de-DE",  # German
-    "it-IT",  # Italian
-    "nl-NL",  # Dutch
-    "ar-SA",  # Arabic
-    "ckb-IR",  # Sorani (Kurdish)
-    "fi-FI",  # Finnish
-    "he-IL",  # Hebrew
+    # "pt-BR",  # Portuguese (Brazil)
+    # "es-ES",  # Spanish
+    # "fr-FR",  # French
+    # "de-DE",  # German
+    # "it-IT",  # Italian
+    # "nl-NL",  # Dutch
+    # "ar-SA",  # Arabic
+    # "ckb-IR",  # Sorani (Kurdish)
+    # "fi-FI",  # Finnish
+    # "he-IL",  # Hebrew
     "id-ID",  # Indonesian
-    "ja-JP",  # Japanese
-    "no-NO",  # Norwegian
-    "pl-PL",  # Polish
-    "pt-BRe",  # Portuguese (Brazil, extended version)
-    "pt-BR2",  # Portuguese (Brazil, informal version)
-    "ro-RO",  # Romanian
-    "ru-RU",  # Russian
-    "sv-SE",  # Swedish
-    "tr-TR",  # Turkish
-    "uk-UA",  # Ukranian
-    "zh-CN",  # Chinese (Simplified)
-    "zh-TW",  # Chinese (Traditional)
+    "id-JW", # Javanese
+    # "ja-JP",  # Japanese
+    # "no-NO",  # Norwegian
+    # "pl-PL",  # Polish
+    # "pt-BRe",  # Portuguese (Brazil, extended version)
+    # "pt-BR2",  # Portuguese (Brazil, informal version)
+    # "ro-RO",  # Romanian
+    # "ru-RU",  # Russian
+    # "sv-SE",  # Swedish
+    # "tr-TR",  # Turkish
+    # "uk-UA",  # Ukranian
+    # "zh-CN",  # Chinese (Simplified)
+    # "zh-TW",  # Chinese (Traditional)
 ]
 
 default_language: str = "en-US"
