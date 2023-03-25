@@ -1,5 +1,5 @@
 {
-    "language_changed_successfully": "Basa wis kasil diganti.",
-    "language_changer_chat": "Ing kene sampeyan bisa ngganti basa sing digunakake kanggo bot sajrone obrolan.\nYen basa sampeyan ora ana ing kene lan sampeyan pengin nyumbang, sampeyan bisa mbukak masalah ing githubku. .",
-    "language_changer_private": "Ing kene sampeyan bisa ngganti basa sing digunakake kanggo bot ing obrolan pribadi iki.\n\nYen sampeyan pengin ngganti basa grup sampeyan, bukak printah <code>/setchatlang</code>. \nYen basa sampeyan ora ana ing kene lan sampeyan pengin nyumbang, bukak repo misskaty."
-  }
+  "language_changed_successfully": "Bahasa telah berhasil diubah.",
+  "language_changer_chat": "Di sini Anda dapat mengubah bahasa yang digunakan bot selama obrolan.\nJika bahasa Anda tidak ada di sini dan Anda ingin berkontribusi, Anda dapat membuka masalah di github saya. .",
+  "language_changer_private": "Di sini Anda dapat mengubah bahasa yang digunakan oleh bot dalam obrolan pribadi ini.\n\nJika Anda ingin mengubah bahasa grup Anda, buka perintah <code>/setchatlang</code>. \nJika bahasa Anda tidak ada di sini dan Anda ingin berkontribusi, kunjungi repo misskaty."
+}
