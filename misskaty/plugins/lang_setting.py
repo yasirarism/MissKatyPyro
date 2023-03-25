@@ -91,7 +91,7 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
 
     strings = partial(
         get_locale_string,
-        langdict[lang].get("lang_setting", langdict[default_language]["langs"]),
+        langdict[lang].get("lang_setting", langdict[default_language]["lang_setting"]),
         lang,
         "lang_setting",
     )
