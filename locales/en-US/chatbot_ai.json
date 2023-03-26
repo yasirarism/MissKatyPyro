@@ -1,0 +1,5 @@
+{
+    "no_question": "Please use command <code>/{cmd} [question]</code> to ask your question.",
+    "find_answers_str": "Wait a moment looking for your answer..",
+    "answers_too_long": "Question for your answer has exceeded TG text limit, check this link to view.\n\n{answerlink}"
+}

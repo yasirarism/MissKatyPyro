@@ -1,0 +1,5 @@
+{
+    "no_url": "Berikan url untuk mengambil tangkapan layar.",
+    "wait_str": "Mengambil tangkapan layar...",
+    "ss_failed_str": "Gagal Mengambil Tangkapan Layar. ERROR: {err}"
+}

@@ -14,6 +14,7 @@ from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
 
@@ -24,11 +25,12 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def ocr(_, m):
+@use_chat_lang()
+async def ocr(_, m, strings):
     reply = m.reply_to_message
     if not reply or not reply.photo and not reply.sticker:
-        return await kirimPesan(m, f"Reply photo with /{m.command[0]} command")
-    msg = await kirimPesan(m, "Reading image...")
+        return await kirimPesan(m, strings("no_photo").format(cmd=m.command[0]), quote=True)
+    msg = await kirimPesan(m, strings("read_ocr"), quote=True)
     try:
         file_path = await reply.download()
         if reply.sticker:
@@ -41,7 +43,7 @@ async def ocr(_, m):
                 follow_redirects=True,
             )
         ).json()
-        await editPesan(msg, f"Hasil OCR:\n<code>{req['text']}</code>")
+        await editPesan(msg, strings("result_ocr").format(result=req['text']))
         os.remove(file_path)
     except Exception as e:
         await editPesan(msg, str(e))
