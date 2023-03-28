@@ -19,7 +19,7 @@ from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "OCR"
-__HELP__ = f"/ocr {HELP_MSG}[reply to photo] - Read Text From Image"
+__HELP__ = f"/ocr [reply to photo] - Read Text From Image"
 
 
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
@@ -27,8 +27,6 @@ __HELP__ = f"/ocr {HELP_MSG}[reply to photo] - Read Text From Image"
 @ratelimiter
 @use_chat_lang()
 async def ocr(_, m, strings):
-    global HELP_MSG
-    HELP_MSG = strings("ocr_helper")
     reply = m.reply_to_message
     if not reply or not reply.photo and not reply.sticker:
         return await kirimPesan(m, strings("no_photo").format(cmd=m.command[0]), quote=True)
