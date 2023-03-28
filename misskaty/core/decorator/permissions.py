@@ -160,9 +160,9 @@ def require_admin(
             lang = await get_lang(message)
             strings = partial(
                 get_locale_string,
-                langdict[lang].get("admins", langdict[default_language]["admins"]),
+                langdict[lang].get("admin", langdict[default_language]["admin"]),
                 lang,
-                "admins",
+                "admin",
             )
 
             if isinstance(message, CallbackQuery):
