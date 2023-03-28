@@ -10,7 +10,7 @@ from pyrogram import Client
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
-basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=INFO)
+basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s.%(funcName)s - %(levelname)s - %(message)s", level=INFO)
 
 logger = getLogger()
 # handler logging dengan batasan 100 baris
