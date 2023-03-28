@@ -31,14 +31,8 @@ async def cek_mataa(_, m, strings):
     if usernamebefore != m.from_user.username or first_name != m.from_user.first_name or lastname_before != m.from_user.last_name:
         msg += f"👀 <b>Mata MissKaty</b>\n\n🌞 User: {m.from_user.mention} [<code>{m.from_user.id}</code>]\n"
     if usernamebefore != m.from_user.username:
-        usernamebefore = (
-            f"@{usernamebefore}" if usernamebefore else strings("no_uname")
-        )
-        usernameafter = (
-            f"@{m.from_user.username}"
-            if m.from_user.username
-            else strings("no_uname")
-        )
+        usernamebefore = f"@{usernamebefore}" if usernamebefore else strings("no_uname")
+        usernameafter = f"@{m.from_user.username}" if m.from_user.username else strings("no_uname")
         msg += strings("uname_change_msg").format(bef=usernamebefore, aft=usernameafter)
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if first_name != m.from_user.first_name:

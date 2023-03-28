@@ -49,13 +49,7 @@ def split_arr(arr, size: 5):
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        terbitjson = (
-            (
-                await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")
-            ).json()
-            if kueri
-            else (await http.get("https://yasirapi.eu.org/terbit21")).json()
-        )
+        terbitjson = (await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/terbit21")).json()
         if not terbitjson.get("result"):
             await editPesan(msg, "Sorry, could not find any results!")
             return None, None
@@ -81,11 +75,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        lk21json = (
-            (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json()
-            if kueri
-            else (await http.get("https://yasirapi.eu.org/lk21")).json()
-        )
+        lk21json = (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/lk21")).json()
         if not lk21json.get("result"):
             await editPesan(msg, "Sorry could not find any matching results!")
             return None, None
