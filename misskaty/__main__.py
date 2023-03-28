@@ -148,7 +148,7 @@ async def start(_, message):
         )
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption=f"Hi {nama}, Pm Me For More Info About Me.",
+            caption=f"Hi {nama}, PM me to know about all my features. You can change bot language in bot using <code>/setlang</code> command but it's in beta stage.",
             reply_markup=keyboard,
         )
     if not await db.is_user_exist(message.from_user.id):
