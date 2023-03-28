@@ -116,8 +116,6 @@ async def bypass(_, message):
                 reply_markup=markup,
                 disable_web_page_preview=True,
             )
-    elif "we.tl" or "wetransfer.com" in message.command[1]:
+    else:
         data = wetransfer_bypass(url)
         await editPesan(msg, f"{data}\n\n{mention}")
-    else:
-        await kirimPesan(message, "Unsupported url..")
