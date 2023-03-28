@@ -1,4 +1,3 @@
-import os
 from asyncio import gather
 
 from pyrogram import filters
@@ -7,7 +6,6 @@ from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 

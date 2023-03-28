@@ -16,7 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, progress_for_pyrogram, runcmd, post_to_telegraph
+from misskaty.helper import progress_for_pyrogram, runcmd, post_to_telegraph
 from misskaty.helper.mediainfo_paste import mediainfo_paste
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -53,7 +53,7 @@ JSON
 DETAILS
 {out or 'Not Supported'}
     """
-        text_ = file_info.message_type
+        file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("vweb"), url=link)]])

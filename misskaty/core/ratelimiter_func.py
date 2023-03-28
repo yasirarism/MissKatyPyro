@@ -1,7 +1,6 @@
 from typing import Union
 
-from pyrate_limiter import (BucketFullException, Duration, Limiter,
-                            MemoryListBucket, RequestRate)
+from pyrate_limiter import BucketFullException, Duration, Limiter, MemoryListBucket, RequestRate
 
 
 class RateLimiter:
@@ -12,7 +11,6 @@ class RateLimiter:
     """
 
     def __init__(self) -> None:
-
         # 2 requests per seconds
         self.second_rate = RequestRate(2, Duration.SECOND)
 

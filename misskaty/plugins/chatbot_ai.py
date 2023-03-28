@@ -1,5 +1,5 @@
 from pyrogram import filters
-from pyrogram.errors import MessageNotModified, MessageTooLong
+from pyrogram.errors import MessageTooLong
 
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang

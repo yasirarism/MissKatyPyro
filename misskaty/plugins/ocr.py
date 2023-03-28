@@ -43,7 +43,7 @@ async def ocr(_, m, strings):
                 follow_redirects=True,
             )
         ).json()
-        await editPesan(msg, strings("result_ocr").format(result=req['text']))
+        await editPesan(msg, strings("result_ocr").format(result=req["text"]))
         os.remove(file_path)
     except Exception as e:
         await editPesan(msg, str(e))

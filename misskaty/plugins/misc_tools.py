@@ -8,11 +8,9 @@
 
 import json
 import os
-import time
 import asyncio
 import traceback
 from PIL import Image
-from datetime import datetime
 from logging import getLogger
 from urllib.parse import quote
 
@@ -63,11 +61,11 @@ async def readqr(c, m):
     if not m.reply_to_message.photo:
         return await m.reply("Please reply photo that contain valid QR Code.")
     foto = await m.reply_to_message.download()
-    myfile = {'file': (foto, open(foto, 'rb'),'application/octet-stream')}
-    url = 'http://api.qrserver.com/v1/read-qr-code/'
+    myfile = {"file": (foto, open(foto, "rb"), "application/octet-stream")}
+    url = "http://api.qrserver.com/v1/read-qr-code/"
     r = await http.post(url, files=myfile)
     os.remove(foto)
-    if res := r.json()[0]['symbol'][0]['data'] is None:
+    if res := r.json()[0]["symbol"][0]["data"] is None:
         return await kirimPesan(m, res)
     await kirimPesan(m, f"<b>QR Code Reader by @{c.me.username}:</b> <code>{r.json()[0]['symbol'][0]['data']}</code>", quote=True)
 
