@@ -56,6 +56,7 @@ sudo docker stop id
  - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For WilliamButcher Code.
  - Thanks To [Team Yukki](https://github.com/TeamYukki) For AFK Bot Code.
  - Thanks To [Wrench](https://github.com/EverythingSuckz) For Some Code.
+ - Thanks To [AmanoTeam](https://github.com/AmanoTeam) For MultiLanguage Template.
  - And All People Who Help Me In My Life...
  If your code used in this repo and want to give credit please open issue..
 
