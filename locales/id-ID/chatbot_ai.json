@@ -1,0 +1,5 @@
+{
+    "no_question": "Harap gunakan perintah <code>/{cmd} [question]</code> untuk mengajukan pertanyaan Anda.",
+    "find_answers_str": "Tunggu sebentar untuk mencari jawaban Anda..",
+    "answers_too_long": "Pertanyaan untuk jawaban Anda telah melampaui batas teks TG, periksa tautan ini untuk melihatnya.\n\n{answerlink}"
+}

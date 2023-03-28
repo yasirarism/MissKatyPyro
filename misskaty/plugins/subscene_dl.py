@@ -9,7 +9,6 @@ from pyrogram import filters
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
-from misskaty.helper import http
 from misskaty.vars import COMMAND_HANDLER
 
 from .web_scraper import split_arr
@@ -18,21 +17,22 @@ LOGGER = logging.getLogger(__name__)
 SUB_TITLE_DICT = {}
 SUB_DL_DICT = {}
 
+
 # Get list title based on query
 async def getTitleSub(msg, kueri, CurrentPage, user):
     if not SUB_TITLE_DICT.get(msg.id):
         sdata = []
         scraper = cfscrape.create_scraper()
         param = {"query": kueri}
-        r  = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
-        soup = BeautifulSoup(r,"lxml")
+        r = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
+        soup = BeautifulSoup(r, "lxml")
         lists = soup.find("div", {"class": "search-result"})
-        entry = lists.find_all("div", {"class":"title"})
+        entry = lists.find_all("div", {"class": "title"})
         # if "Tidak Ditemukan" in entry[0].text:
         #     await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
         #     return None, 0, None
         for sub in entry:
-            title = sub.find('a').text
+            title = sub.find("a").text
             link = f"https://subscene.com{sub.find('a').get('href')}"
             sdata.append({"title": title, "link": link})
         SUB_TITLE_DICT[msg.id] = [split_arr(sdata, 10), kueri]
@@ -54,14 +54,15 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, 0, None
 
+
 # Get list all subtitles from title
 async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
         scraper = cfscrape.create_scraper()
-        kuki = {'LanguageFilter': "13,44,50"} # Only filter language English, Malay, Indonesian
+        kuki = {"LanguageFilter": "13,44,50"}  # Only filter language English, Malay, Indonesian
         r = scraper.get(link, cookies=kuki).text
-        soup = BeautifulSoup(r,"lxml")
+        soup = BeautifulSoup(r, "lxml")
         for i in soup.findAll(class_="a1"):
             lang = i.find("a").findAll("span")[0].text.strip()
             title = i.find("a").findAll("span")[1].text.strip()
@@ -92,6 +93,7 @@ async def getListSub(msg, link, CurrentPage, user):
         await editPesan(msg, "Sorry could not find any matching results!")
         return None, 0, None
 
+
 # Subscene CMD
 @app.on_message(filters.command(["subscene"], COMMAND_HANDLER))
 @ratelimiter
@@ -112,6 +114,7 @@ async def subsceneCMD(client, message):
         keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
     await editPesan(pesan, subres, disable_web_page_preview=True, reply_markup=keyboard)
+
 
 # Callback list title
 @app.on_callback_query(filters.create(lambda _, __, query: "subscenepage#" in query.data))
@@ -141,6 +144,7 @@ async def subpage_callback(client, callback_query):
         keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await editPesan(callback_query.message, subres, disable_web_page_preview=True, reply_markup=keyboard)
+
 
 # Callback list title
 @app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
@@ -172,6 +176,7 @@ async def subdlpage_callback(client, callback_query):
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await editPesan(callback_query.message, subres, disable_web_page_preview=True, reply_markup=keyboard)
 
+
 # Callback dl subtitle
 @app.on_callback_query(filters.create(lambda _, __, query: "extractsubs#" in query.data))
 @ratelimiter
@@ -191,6 +196,6 @@ async def dlsub_callback(client, callback_query):
     scraper = cfscrape.create_scraper()
     res = await down_page(link)
     dl = scraper.get(res.get("download_url"))
-    f = open(f"{title}.zip", mode='wb').write(dl.content)
+    f = open(f"{title}.zip", mode="wb").write(dl.content)
     await callback_query.message.reply_document(f"{title}.zip", caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ")
     os.remove(f"{title}.zip")

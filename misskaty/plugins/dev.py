@@ -17,11 +17,9 @@ from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user, botStartTime, BOT_NAME
-from misskaty.helper import http
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
-from utils import LOGGER
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -67,8 +65,8 @@ async def log_file(bot, message):
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, message):
     await message.reply_photo(
-        "AgACAgQAAxkBAAECsVNjbMvjxbN4gRafvNBH-Kv-Zqml8wACzq4xG95tbVPDeZ_UusonbAAIAQADAgADeQAHHgQ",
-        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas untuk kebutuhan server dan lainnya. Terimakasih..",
+        "https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
+        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas yaa. Terimakasih..",
     )
 
 
@@ -158,37 +156,37 @@ async def evaluation_cmd_t(_, m):
     try:
         await aexec(cmd, _, m)
     except NameError as e:
-      trace_output = "❌ MISSING VARIABEL:\n"
-      trace_output += f"{e}"
-      exc = trace_output
+        trace_output = "❌ MISSING VARIABEL:\n"
+        trace_output += f"{e}"
+        exc = trace_output
     except AttributeError as e:
-      trace_output = "❌ MISSING ATTRIBUTE:\n"
-      trace_output += f"{e}"
-      exc = trace_output
-    except SyntaxError as e:
-      trace = traceback.format_exc()
-      splitted = str(trace).split("\n")
-      end_split = len(splitted)
-      row_1 = splitted[end_split - 4]
-      row_2 = splitted[end_split - 3]
-      row_3 = splitted[end_split - 2]
-      compiles = row_1 + "\n" + row_2 + "\n" + row_3
-      trace_output = "⚙️ SYNTAX ERROR:\n"
-      trace_output += f"{compiles}"
-      exc = trace_output
+        trace_output = "❌ MISSING ATTRIBUTE:\n"
+        trace_output += f"{e}"
+        exc = trace_output
+    except SyntaxError:
+        trace = traceback.format_exc()
+        splitted = str(trace).split("\n")
+        end_split = len(splitted)
+        row_1 = splitted[end_split - 4]
+        row_2 = splitted[end_split - 3]
+        row_3 = splitted[end_split - 2]
+        compiles = row_1 + "\n" + row_2 + "\n" + row_3
+        trace_output = "⚙️ SYNTAX ERROR:\n"
+        trace_output += f"{compiles}"
+        exc = trace_output
     except ValueError as e:
-      trace_output = "🧮 VALUE ERROR:\n"
-      trace_output += f"{e}"
-      exc = trace_output
+        trace_output = "🧮 VALUE ERROR:\n"
+        trace_output += f"{e}"
+        exc = trace_output
     except Exception as e:
-      #trace = traceback.format_exc()
-      """ Periksa apakah error regexnya tertangkap"""
-      match = re.search(r"Telegram says: .+", str(e))
-      trace_output = "⚠️ COMMON ERROR:\n"
-      trace_output += f"{e}"
-      if match:
-        trace_output = f"👀 {match[0]}"
-      exc = trace_output
+        # trace = traceback.format_exc()
+        """Periksa apakah error regexnya tertangkap"""
+        match = re.search(r"Telegram says: .+", str(e))
+        trace_output = "⚠️ COMMON ERROR:\n"
+        trace_output += f"{e}"
+        if match:
+            trace_output = f"👀 {match[0]}"
+        exc = trace_output
 
     stdout = redirected_output.getvalue()
     stderr = redirected_error.getvalue()
@@ -241,7 +239,7 @@ async def update_restart(_, message):
     except Exception as e:
         return await message.reply_text(str(e))
     msg = await message.reply_text("<b>Updated with default branch, restarting now.</b>")
-    with open('restart.pickle', 'wb') as status:
+    with open("restart.pickle", "wb") as status:
         pickle.dump([message.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 

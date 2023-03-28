@@ -148,7 +148,7 @@ async def start(_, message):
         )
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption=f"Hi {nama}, Pm Me For More Info About Me.",
+            caption=f"Hi {nama}, PM me to know about all my features. You can change bot language in bot using <code>/setlang</code> command but it's in beta stage.",
             reply_markup=keyboard,
         )
     if not await db.is_user_exist(message.from_user.id):
@@ -273,7 +273,7 @@ async def help_parser(name, keyboard=None):
         keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
-I'm a bot with some useful features.
+I'm a bot with some useful features. You can change language bot using <code>/setlang</code> command, but it's in beta stage.
 You can choose an option below, by clicking a button.
 
 If you want give coffee to my owner you can send /donate command for more info.
@@ -302,6 +302,7 @@ You can choose an option below, by clicking a button below.
 General command are:
  - /start: Start the bot
  - /help: Give this message
+ - /setlang: Change bot language [BETA]
  """
     if mod_match:
         module = mod_match[1].replace(" ", "_")

@@ -23,7 +23,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI, post_to_telegraph
+from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 LOGGER = logging.getLogger(__name__)

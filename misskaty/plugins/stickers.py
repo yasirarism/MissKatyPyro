@@ -16,6 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"
@@ -43,10 +44,11 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 @app.on_message(filters.command(["getsticker"], COMMAND_HANDLER))
 @ratelimiter
-async def getsticker_(c, m):
+@use_chat_lang()
+async def getsticker_(c, m, strings):
     if sticker := m.reply_to_message.sticker:
         if sticker.is_animated:
-            await m.reply_text("Animated sticker is not supported!")
+            await m.reply_text(strings("no_anim_stick"))
         else:
             with tempfile.TemporaryDirectory() as tempdir:
                 path = os.path.join(tempdir, "getsticker")
@@ -56,11 +58,11 @@ async def getsticker_(c, m):
             )
             await m.reply_to_message.reply_document(
                 document=sticker_file,
-                caption=(f"<b>Emoji:</b> {sticker.emoji}\n" f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n" f"<b>Send by:</b> @{BOT_USERNAME}"),
+                caption=f"<b>Emoji:</b> {sticker.emoji}\n" f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n" f"<b>Send by:</b> @{BOT_USERNAME}",
             )
             shutil.rmtree(tempdir, ignore_errors=True)
     else:
-        await m.reply_text("This is not a sticker!")
+        await m.reply_text(strings("not_sticker"))
 
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)
@@ -72,9 +74,10 @@ async def getstickerid(c, m):
 
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
 @ratelimiter
-async def getstickerid(c, m):
+@use_chat_lang()
+async def getstickerid(c, m, strings):
     if m.reply_to_message.sticker:
-        pp = await m.reply_text("Trying to remove from pack..")
+        pp = await m.reply_text(strings("unkang_msg"))
         try:
             decoded = FileId.decode(m.reply_to_message.sticker.file_id)
             sticker = InputDocument(
@@ -83,19 +86,20 @@ async def getstickerid(c, m):
                 file_reference=decoded.file_reference,
             )
             await app.invoke(RemoveStickerFromSet(sticker=sticker))
-            await pp.edit("Sticker has been removed from your pack")
+            await pp.edit(strings("unkang_success"))
         except Exception as e:
-            await pp.edit(f"Failed remove sticker from your pack.\n\nERR: {e}")
+            await pp.edit(strings("unkang_error").format(e=e))
     else:
-        await m.reply_text(f"Please reply sticker that created by {c.me.username} to remove sticker from your pack.")
+        await m.reply_text(strings("unkang_help").format(c=c.me.username))
 
 
 @app.on_message(filters.command(["curi", "kang"], COMMAND_HANDLER))
 @ratelimiter
-async def kang_sticker(c, m):
+@use_chat_lang()
+async def kang_sticker(c, m, strings):
     if not m.from_user:
-        return await m.reply_text("You are anon admin, kang stickers in my pm.")
-    prog_msg = await m.reply_text("Trying to steal your sticker...")
+        return await m.reply_text(strings("anon_warn"))
+    prog_msg = await m.reply_text(strings("kang_msg"))
     sticker_emoji = "🤔"
     packnum = 0
     packname_found = False
@@ -131,7 +135,7 @@ async def kang_sticker(c, m):
                 animated = True
         elif reply.sticker:
             if not reply.sticker.file_name:
-                return await prog_msg.edit_text("The sticker has no name.")
+                return await prog_msg.edit_text(strings("stick_no_name"))
             if reply.sticker.emoji:
                 sticker_emoji = reply.sticker.emoji
             animated = reply.sticker.is_animated
@@ -186,7 +190,7 @@ async def kang_sticker(c, m):
                 sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(m.command[2:])))) or sticker_emoji
             resize = True
     else:
-        return await prog_msg.edit_text("Want me to guess the sticker?  Please tag a sticker.")
+        return await prog_msg.edit_text(strings("kang_help"))
     try:
         if resize:
             filename = resize_image(filename)
@@ -226,7 +230,7 @@ async def kang_sticker(c, m):
         msg_ = media.updates[-1].message
         stkr_file = msg_.media.document
         if packname_found:
-            await prog_msg.edit_text("<code>Using existing sticker pack...</code>")
+            await prog_msg.edit_text(strings("exist_pack"))
             await c.invoke(
                 AddStickerToSet(
                     stickerset=InputStickerSetShortName(short_name=packname),
@@ -241,7 +245,7 @@ async def kang_sticker(c, m):
                 )
             )
         else:
-            await prog_msg.edit_text("<b>Creating a new sticker pack...</b>")
+            await prog_msg.edit_text(strings("new_packs"))
             stkr_title = f"{m.from_user.first_name}'s"
             if animated:
                 stkr_title += "AnimPack"
@@ -271,12 +275,12 @@ async def kang_sticker(c, m):
                 )
             except PeerIdInvalid:
                 return await prog_msg.edit_text(
-                    "It looks like you've never interacted with me in private chat, you need to do that first..",
+                    strings("please_start_msg"),
                     reply_markup=InlineKeyboardMarkup(
                         [
                             [
                                 InlineKeyboardButton(
-                                    "Click Me",
+                                    strings("click_me"),
                                     url=f"https://t.me/{c.me.username}?start",
                                 )
                             ]
@@ -285,7 +289,7 @@ async def kang_sticker(c, m):
                 )
 
     except BadRequest:
-        return await prog_msg.edit_text("Your Sticker Pack is full if your pack is not in v1 Type /kang 1, if it is not in v2 Type /kang 2 and so on.")
+        return await prog_msg.edit_text(strings("pack_full"))
     except Exception as all_e:
         await prog_msg.edit_text(f"{all_e.__class__.__name__} : {all_e}")
     else:
@@ -293,14 +297,14 @@ async def kang_sticker(c, m):
             [
                 [
                     InlineKeyboardButton(
-                        text="👀 View Your Pack",
+                        text=strings("viewpack"),
                         url=f"https://t.me/addstickers/{packname}",
                     )
                 ]
             ]
         )
         await prog_msg.edit_text(
-            f"<b>Sticker successfully stolen!</b>\n<b>Emoji:</b> {sticker_emoji}",
+            strings("kang_success").format(emot=sticker_emoji),
             reply_markup=markup,
         )
         # Cleanup

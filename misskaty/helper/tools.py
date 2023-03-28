@@ -140,6 +140,4 @@ async def search_jw(movie_name: str, locale: str):
     return m_t_
 
 
-SUPPORTED_URL_REGEX = {
-    r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])": "ddl"
-}
+SUPPORTED_URL_REGEX = {r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])": "ddl"}

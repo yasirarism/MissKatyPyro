@@ -10,11 +10,11 @@ from pyrogram import Client
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
-basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=INFO)
+basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s.%(funcName)s - %(levelname)s - %(message)s", level=INFO)
 
 logger = getLogger()
 # handler logging dengan batasan 100 baris
-handler = handlers.RotatingFileHandler("MissKatyLogs.txt", maxBytes=1024*1024)
+handler = handlers.RotatingFileHandler("MissKatyLogs.txt", maxBytes=1024 * 1024)
 handler.setLevel(INFO)
 logger.addHandler(handler)
 getLogger("pyrogram").setLevel(ERROR)
@@ -41,15 +41,9 @@ user = Client(
 
 pymonclient = MongoClient(DATABASE_URI)
 
-jobstores = {
-    'default': MongoDBJobStore(
-        client=pymonclient,
-        database="MissKatyDB",
-        collection='nightmode')}
+jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB", collection="nightmode")}
 
-scheduler = AsyncIOScheduler(
-    jobstores=jobstores,
-    timezone=TZ)
+scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()
 user.start()
