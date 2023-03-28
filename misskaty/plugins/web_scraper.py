@@ -49,10 +49,13 @@ def split_arr(arr, size: 5):
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        if not kueri:
-            terbitjson = (await http.get("https://yasirapi.eu.org/terbit21")).json()
-        else:
-            terbitjson = (await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")).json()
+        terbitjson = (
+            (
+                await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")
+            ).json()
+            if kueri
+            else (await http.get("https://yasirapi.eu.org/terbit21")).json()
+        )
         if not terbitjson.get("result"):
             await editPesan(msg, "Sorry, could not find any results!")
             return None, None
@@ -68,8 +71,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-        IGNORE_CHAR = "[]"
-        TerbitRes = "".join(i for i in TerbitRes if not i in IGNORE_CHAR)
+        TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
         return TerbitRes, PageLen
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry, could not find any results!")
@@ -79,10 +81,11 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage):
     if not SCRAP_DICT.get(msg.id):
-        if not kueri:
-            lk21json = (await http.get("https://yasirapi.eu.org/lk21")).json()
-        else:
-            lk21json = (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json()
+        lk21json = (
+            (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json()
+            if kueri
+            else (await http.get("https://yasirapi.eu.org/lk21")).json()
+        )
         if not lk21json.get("result"):
             await editPesan(msg, "Sorry could not find any matching results!")
             return None, None
@@ -98,8 +101,7 @@ async def getDatalk21(msg, kueri, CurrentPage):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
             lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
-        IGNORE_CHAR = "[]"
-        lkResult = "".join(i for i in lkResult if not i in IGNORE_CHAR)
+        lkResult = "".join(i for i in lkResult if i not in "[]")
         return lkResult, PageLen
     except (IndexError, KeyError):
         await editPesan(msg, "Sorry could not find any matching results!")
