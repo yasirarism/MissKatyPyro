@@ -273,7 +273,7 @@ async def help_parser(name, keyboard=None):
         keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
-I'm a bot with some useful features.
+I'm a bot with some useful features. You can change language bot using <code>/setlang</code> command, but it's in beta stage.
 You can choose an option below, by clicking a button.
 
 If you want give coffee to my owner you can send /donate command for more info.
@@ -302,6 +302,7 @@ You can choose an option below, by clicking a button below.
 General command are:
  - /start: Start the bot
  - /help: Give this message
+ - /setlang: Change bot language [BETA]
  """
     if mod_match:
         module = mod_match[1].replace(" ", "_")

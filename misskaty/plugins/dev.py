@@ -67,8 +67,8 @@ async def log_file(bot, message):
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, message):
     await message.reply_photo(
-        "AgACAgQAAxkBAAECsVNjbMvjxbN4gRafvNBH-Kv-Zqml8wACzq4xG95tbVPDeZ_UusonbAAIAQADAgADeQAHHgQ",
-        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas untuk kebutuhan server dan lainnya. Terimakasih..",
+        "https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
+        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas yaa. Terimakasih..",
     )
 
 
