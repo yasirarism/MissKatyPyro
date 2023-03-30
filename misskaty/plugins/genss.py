@@ -15,10 +15,11 @@ from pyrogram import enums, filters
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup
 
-from misskaty import BOT_USERNAME, app
+from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
@@ -32,40 +33,41 @@ __HELP__ = """"
 
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))
 @ratelimiter
-async def genss(client, m):
+@use_chat_lang()
+async def genss(c, m, strings):
     if not m.from_user:
         return
     replied = m.reply_to_message
     if len(m.command) == 2 and is_url(m.command[1]):
-        snt = await kirimPesan(m, "Give me some time to process your request!! 😴", quote=True)
+        snt = await kirimPesan(m, strings("wait_msg"), quote=True)
 
         duration = await get_duration(m.command[1])
         if isinstance(duration, str):
-            return await editPesan(snt, "😟 Sorry! I cannot open the file.")
+            return await editPesan(snt, strings("fail_open"))
         btns = gen_ik_buttons()
-        await editPesan(snt, f"Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{datetime.timedelta(seconds=duration)}` (`{duration}s`)", reply_markup=InlineKeyboardMarkup(btns))
+        await editPesan(snt, strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
         if media is None:
-            return await kirimPesan(m, "Reply to a Telegram Video or document as video to generate screenshoot!", quote=True)
-        process = await kirimPesan(m, "<code>Processing, please wait..</code>", quote=True)
+            return await kirimPesan(m, strings("no_reply"), quote=True)
+        process = await kirimPesan(m, strings("wait_dl"), quote=True)
         if media.file_size > 2097152000:
-            return await editPesan(process, "Sorry, download limited to 2GB to reduce flood. You can convert your files to link.")
+            return await editPesan(process, strings("limit_dl"))
         c_time = time.time()
         dl = await replied.download(
             file_name="/downloads/",
             progress=progress_for_pyrogram,
-            progress_args=("Trying to download, please wait..", process, c_time),
+            progress_args=(strings("dl_progress"), process, c_time),
         )
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await editPesan(process, f"File video berhasil didownload dengan path <code>{the_real_download_location}</code>.")
+                await editPesan(process, strings("sucess_dl_msg"))
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
-                await editPesan(process, "Mencoba mengupload, hasil generate screenshot..")
-                await client.send_chat_action(chat_id=m.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await editPesan(process, strings("up_progress"))
+                await c.send_chat_action(chat_id=m.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
 
                 try:
                     await gather(
@@ -84,7 +86,7 @@ async def genss(client, m):
                     )
                 await kirimPesan(
                     m,
-                    f"☑️ Uploaded [1] screenshoot.\n\n{m.from_user.first_name} (<code>{m.from_user.id}</code>)\n#️⃣ #ssgen #id{m.from_user.id}\n\nSS Generate by @{BOT_USERNAME}",
+                    strings("up_msg").format(namma=m.from_user.mention, id=m.from_user.id, bot_uname=c.me.username),
                     reply_to_message_id=m.id,
                 )
                 await process.delete()
@@ -94,14 +96,14 @@ async def genss(client, m):
                 except:
                     pass
             except Exception as exc:
-                await kirimPesan(m, f"Gagal generate screenshot.\n\n{exc}")
+                await kirimPesan(m, strings("err_ssgen").format(exc=exc))
                 try:
                     os.remove(images)
                     os.remove(the_real_download_location)
                 except:
                     pass
     else:
-        await kirimPesan(m, "Reply to a Telegram media to get screenshots from media..")
+        await kirimPesan(m, strings("no_reply"))
 
 
 @app.on_callback_query(filters.regex(r"^scht"))

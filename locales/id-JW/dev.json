@@ -1,0 +1,11 @@
+{
+    "already_up": "Wis up-to-date!",
+    "up_and_rest": "<b>Dianyari nganggo branch standar, diwiwiti maneh saiki.</b>",
+    "cl_btn": "❌ Tutup",
+    "no_eval": "__Ora ana pesen eval!__",
+    "run_eval": "<i>Ngolah pyrogram eval..</i>",
+    "run_exec": "<i>Ngolah pyrogram exec..</i>",
+    "no_cmd": "Ora ana prentah kanggo nglakokaké.",
+    "success": "Sukses",
+    "no_reply": "Ora Wangsulan"
+}

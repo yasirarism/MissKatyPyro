@@ -1,11 +1,11 @@
 {
     "processing_text": "`Pengolahan, wektu total adhedhasar ukuran berkas panjenengan...`",
-    "wait_msg": "`Mohon tunggu sejenak...`",
+    "wait_msg": "`Tulung enteni sedhela...`",
     "err_link": "Kayak'e pranala sing dikirim ora valid, priksa link langsung lan bisa diundhuh.",
     "media_invalid": "Mangga mbales media sing bener.",
     "dl_limit_exceeded": "Nuwun sewu, download diwatesi 2GB kanggo nyuda banjir. Sampeyan bisa ngowahi file dadi link.",
     "dl_args_text": "Nyoba ngundhuh..",
     "mediainfo_help": "Gunakake printah /{cmd} [link], utawa bales media telegram nganggo /{cmd}.",
-    "capt_media": "ℹ️ Hasil mediainfo anda..\n\n**Panjalukan Oleh:** {ment}",
+    "capt_media": "ℹ️ Hasil mediainfo sampeyan..\n\n**Panjalukan Saka:** {ment}",
     "viweb": "💬 Bukak Web"
 }

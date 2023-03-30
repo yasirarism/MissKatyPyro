@@ -1,1 +1,10 @@
-{}
+{
+    "no_result": "Sorry, i couldn't find any results!",
+    "get_data": "⏳ Please wait, getting data from web..",
+    "cl_btn": "❌ Close",
+    "back_btn": "↩️ Back",
+    "ex_data": "👇 Extract Data ",
+    "unauth": "This button is not for you..",
+    "invalid_cb": "Invalid callback data, please send command again..",
+    "res_scrape": "<b>Scrape result from</b> <code>{link}</code>:\n\n{kl}"
+}

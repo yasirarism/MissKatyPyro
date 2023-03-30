@@ -1,1 +1,10 @@
-{}
+{
+    "no_result": "Nuwun sewu, kula mboten nemu kasil!",
+    "get_data": "⏳ Enteni, njupuk data saka web..",
+    "cl_btn": "❌ Tutup",
+    "back_btn": "↩️ Mbalik",
+    "ex_data": "👇 Ekstrak Data ",
+    "unauth": "Tombol iki dudu kanggo sampeyan..",
+    "invalid_cb": "Data callback ora valid, kirim printah maneh..",
+    "res_scrape": "<b>Asil scrape saka</b> <kode>{link}</code>:\n\n{kl}"
+}

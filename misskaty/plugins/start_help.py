@@ -14,6 +14,7 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import bot_sys_stats, paginate_modules
+from misskaty.helper.localization import use_chat_lang
 
 
 home_keyboard_pm = InlineKeyboardMarkup(
@@ -64,13 +65,14 @@ keyboard = InlineKeyboardMarkup(
 
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
-async def start(_, message):
+@use_chat_lang()
+async def start(_, message, strings):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
             await app.send_message(
                 LOG_CHANNEL,
-                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - Unknown",
+                strings("newgroup_log").format(jdl=message.chat.title, id=message.chat.id, c=total),
             )
 
             await db.add_chat(message.chat.id, message.chat.title)
@@ -81,14 +83,14 @@ async def start(_, message):
         )
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption=f"Hi {nama}, PM me to know about all my features. You can change bot language in bot using <code>/setlang</code> command but it's in beta stage.",
+            caption=strings("start_msg").format(kamuh=nama),
             reply_markup=keyboard,
         )
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await app.send_message(
             LOG_CHANNEL,
-            f"#NewUser\nID - <code>{message.from_user.id}</code>\nName - {message.from_user.mention}",
+            strings("newuser_log").format(id=message.from_user.id, nm=message.from_user.mention),
         )
 
     if len(message.text.split()) > 1:
@@ -96,7 +98,7 @@ async def start(_, message):
         if "_" in name:
             module = name.split("_", 1)[1]
             text = (
-                f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n"
+                strings("help_name").format(mod=HELPABLE[module].__MODULE__)
                 + HELPABLE[module].__HELP__
             )
             await kirimPesan(message, text, disable_web_page_preview=True)
@@ -136,14 +138,15 @@ async def stats_callbacc(_, CallbackQuery):
 
 @app.on_message(filters.command("help", COMMAND_HANDLER))
 @ratelimiter
-async def help_command(_, message):
+@use_chat_lang()
+async def help_command(_, message, strings):
     if not message.from_user: return
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
             await app.send_message(
                 LOG_CHANNEL,
-                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - Unknown",
+                strings("newgroup_log").format(jdl=message.chat.title, id=message.chat.id, c=total),
             )
 
             await db.add_chat(message.chat.id, message.chat.title)
@@ -154,7 +157,7 @@ async def help_command(_, message):
                     [
                         [
                             InlineKeyboardButton(
-                                text="Click here",
+                                text=strings("click_me"),
                                 url=f"t.me/{BOT_USERNAME}?start=help_{name}",
                             )
                         ],
@@ -162,26 +165,26 @@ async def help_command(_, message):
                 )
                 await kirimPesan(
                     message,
-                    f"Click on the below button to get help about {name}",
+                    strings("click_btn"),
                     reply_markup=key,
                 )
             else:
-                await kirimPesan(message, "PM Me For More Details.", reply_markup=keyboard)
+                await kirimPesan(message, strings("pm_detail"), reply_markup=keyboard)
         else:
-            await kirimPesan(message, "Pm Me For More Details.", reply_markup=keyboard)
+            await kirimPesan(message, strings("pm_detail"), reply_markup=keyboard)
     else:
         if not await db.is_user_exist(message.from_user.id):
             await db.add_user(message.from_user.id, message.from_user.first_name)
             await app.send_message(
                 LOG_CHANNEL,
-                f"#NewUser\nID - <code>{message.from_user.id}</code>\nName - {message.from_user.mention}",
+                strings("newuser_log").format(id=message.from_user.id, nm=message.from_user.mention),
             )
 
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
                 text = (
-                    f"Here is the help for **{HELPABLE[name].__MODULE__}**:\n"
+                    strings("help_name").format(mod=HELPABLE[name].__MODULE__)
                     + HELPABLE[name].__HELP__
                 )
                 await kirimPesan(message, text, disable_web_page_preview=True)
@@ -205,7 +208,7 @@ async def help_parser(name, keyboard=None):
         keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
-I'm a bot with some useful features. You can change language bot using <code>/setlang</code> command, but it's in beta stage.
+I'm a bot with some useful features. You can change language bot using /setlang command, but it's still in beta stage.
 You can choose an option below, by clicking a button.
 
 If you want give coffee to my owner you can send /donate command for more info.
@@ -219,32 +222,24 @@ If you want give coffee to my owner you can send /donate command for more info.
 
 @app.on_callback_query(filters.regex(r"help_(.*?)"))
 @ratelimiter
-async def help_button(client, query):
+@use_chat_lang()
+async def help_button(client, query, strings):
     home_match = re.match(r"help_home\((.+?)\)", query.data)
     mod_match = re.match(r"help_module\((.+?)\)", query.data)
     prev_match = re.match(r"help_prev\((.+?)\)", query.data)
     next_match = re.match(r"help_next\((.+?)\)", query.data)
     back_match = re.match(r"help_back", query.data)
     create_match = re.match(r"help_create", query.data)
-    top_text = f"""
-Hello {query.from_user.first_name}, My name is MissKaty.
-I'm a bot with some usefule features.
-You can choose an option below, by clicking a button below.
-
-General command are:
- - /start: Start the bot
- - /help: Give this message
- - /setlang: Change bot language [BETA]
- """
+    top_text = strings("help_txt").format(kamuh=query.from_user.first_name, bot=client.me.first_name)
     if mod_match:
         module = mod_match[1].replace(" ", "_")
-        text = f"Here is the help for **{HELPABLE[module].__MODULE__}**:\n{HELPABLE[module].__HELP__}"
+        text = strings("help_name").format(mod=HELPABLE[module].__MODULE__) + HELPABLE[module].__HELP__
 
         await editPesan(
             query.message,
             text=text,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("back", callback_data="help_back")]]
+                [[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]
             ),
             disable_web_page_preview=True,
         )

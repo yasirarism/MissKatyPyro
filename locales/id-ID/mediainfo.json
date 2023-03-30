@@ -6,6 +6,6 @@
     "dl_limit_exceeded": "Maaf, unduh dibatasi hingga 2GB untuk mengurangi banjir. Anda dapat mengonversi berkas Anda menjadi tautan.",
     "dl_args_text": "Mencoba mengunduh..",
     "mediainfo_help": "Gunakan perintah /{cmd} [tautan], atau balas telegram media dengan /{cmd}.",
-    "capt_media": "ℹ️ Hasil mediainfo anda..\n\n**Request Oleh:** {ment}",
-    "viewweb": "💬 Buka di Web"
+    "capt_media": "ℹ️ Hasil mediainfo anda..\n\n**Diminta Oleh:** {ment}",
+    "viweb": "💬 Buka di Web"
 }

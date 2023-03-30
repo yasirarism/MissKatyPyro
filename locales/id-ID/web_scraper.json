@@ -1,1 +1,10 @@
-{}
+{
+    "no_result": "Maaf, saya tidak dapat menemukan hasil apa pun!",
+    "get_data": "⏳ Mohon tunggu, mengambil data dari web..",
+    "cl_btn": "❌ Tutup",
+    "back_btn": "↩️ Kembali",
+    "ex_data": "👇 Ekstrak Data",
+    "unauth": "Tombol ini bukan untuk Anda..",
+    "invalid_cb": "Data callback tidak valid, silakan kirim perintah lagi..",
+    "res_scrape": "<b>Hasil Scrape dari</b> <code>{link}</code>:\n\n{kl}"
+}

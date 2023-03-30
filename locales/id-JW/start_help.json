@@ -1,0 +1,11 @@
+{
+    "newgroup_log": "#NewGroup\nGroup = {jdl}(<code>{id}</code>)\nJumlah Anggota = <code>{c}</code>",
+    "newuser_log": "#NewUser\nID - <code>{id}</code>\nJeneng - {nm}",
+    "help_name": "Iki bantuan kanggo **{mod}**:\n",
+    "help_txt": "Halo {kamuh}, jenengku {bot}.\nAku bot pyrogram sing dikembangake dening pemilik apik karo sawetara fitur migunani.\nSampeyan bisa ndeleng kanthi ngeklik tombol ing ngisor iki.\n\nPrentah umum yaiku :\n - /start: Miwiti bot\n - /help: Wenehi pesen iki\n - /setlang: Ganti basa bot [BETA]",
+    "click_me": "Klik Aku",
+    "back_btn": "Mbalik",
+    "click_btn": "Klik tombol ing ngisor iki kanggo njaluk bantuan babagan {nm}",
+    "pm_detail": "PM Aku Kanggo Rincian Liyane.",
+    "start_msg": "Halo {kamuh}, PM aku kanggo ngerti kabeh fiturku. Sampeyan bisa ngganti basa bot ing bot nggunakake perintah /setlang nanging isih ing tahap beta."
+}
