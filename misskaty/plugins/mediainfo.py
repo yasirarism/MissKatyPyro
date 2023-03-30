@@ -56,11 +56,11 @@ DETAILS
         file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("vweb"), url=link)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("vweb"), url=link)]])
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
@@ -91,11 +91,11 @@ DETAILS
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 link = await mediainfo_paste(out, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("vweb"), url=link)]])
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 try:
                     link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("vweb"), url=link)]])
+                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
                 except:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
