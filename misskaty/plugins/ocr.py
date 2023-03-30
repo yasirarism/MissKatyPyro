@@ -5,6 +5,7 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
+
 import os
 
 from pyrogram import filters
@@ -43,7 +44,11 @@ async def ocr(_, m, strings):
                 follow_redirects=True,
             )
         ).json()
+<<<<<<< HEAD
         await editPesan(msg, strings("result_ocr").format(result=req['text']))
+=======
+        await editPesan(msg, strings("result_ocr").format(result=req["text"]))
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
         os.remove(file_path)
     except Exception as e:
         await editPesan(msg, str(e))

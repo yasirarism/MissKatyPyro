@@ -31,16 +31,26 @@ async def cek_mataa(_, m, strings):
     if usernamebefore != m.from_user.username or first_name != m.from_user.first_name or lastname_before != m.from_user.last_name:
         msg += f"👀 <b>Mata MissKaty</b>\n\n🌞 User: {m.from_user.mention} [<code>{m.from_user.id}</code>]\n"
     if usernamebefore != m.from_user.username:
+<<<<<<< HEAD
         usernamebefore = strings("no_uname") if not usernamebefore else f"@{usernamebefore}"
         usernameafter = strings("no_uname") if not m.from_user.username else f"@{m.from_user.username}"
+=======
+        usernamebefore = f"@{usernamebefore}" if usernamebefore else strings("no_uname")
+        usernameafter = f"@{m.from_user.username}" if m.from_user.username else strings("no_uname")
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
         msg += strings("uname_change_msg").format(bef=usernamebefore, aft=usernameafter)
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if first_name != m.from_user.first_name:
         msg += strings("firstname_change_msg").format(bef=first_name, aft=m.from_user.first_name)
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if lastname_before != m.from_user.last_name:
+<<<<<<< HEAD
         lastname_before = strings("no_last_name") if not lastname_before else lastname_before
         lastname_after = strings("no_last_name") if not m.from_user.last_name else m.from_user.last_name
+=======
+        lastname_before = lastname_before or strings("no_last_name")
+        lastname_after = m.from_user.last_name or strings("no_last_name")
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
         msg += strings("lastname_change_msg").format(bef=lastname_before, aft=lastname_after)
         await add_userdata(m.from_user.id, m.from_user.username, m.from_user.first_name, m.from_user.last_name)
     if msg != "":

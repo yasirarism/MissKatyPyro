@@ -10,6 +10,7 @@ ratelimit = RateLimiter()
 warned_users = TTLCache(maxsize=128, ttl=60)
 warning_message = "Spam detected! ignoring your all requests for few minutes."
 
+
 def ratelimiter(func: Callable) -> Callable:
     """
     Restricts user's from spamming commands or pressing buttons multiple times
@@ -22,7 +23,6 @@ def ratelimiter(func: Callable) -> Callable:
         is_limited = await ratelimit.acquire(userid)
 
         if is_limited and userid not in warned_users:
-
             if isinstance(update, Message):
                 await update.reply_text(warning_message)
                 warned_users[userid] = 1

@@ -8,7 +8,6 @@
 import datetime
 import os
 import time
-import traceback
 from asyncio import gather, sleep
 from logging import getLogger
 

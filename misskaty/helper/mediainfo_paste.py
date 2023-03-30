@@ -168,37 +168,25 @@ def html_builder(title: str, text: str) -> str:
             if "Text #" in line:
                 if bool(re.search("Text #1$", line)):
                     subtitle_count = len(re.findall("Text #", text))
-                    html_msg += icon.format(
-                        icon_url="https://te.legra.ph/file/9d4a676445544d0f2d6db.png"
-                    )
-                    html_msg += subheading.format(
-                        content=f"Subtitles ({subtitle_count} subtitle)"
-                    )
+                    html_msg += icon.format(icon_url="https://te.legra.ph/file/9d4a676445544d0f2d6db.png")
+                    html_msg += subheading.format(content=f"Subtitles ({subtitle_count} subtitle)")
                     html_msg += "<span  style='padding: 10px 0vw;'  class='subtitle'>"
 
             elif "General" in line:
-                html_msg += icon.format(
-                    icon_url="https://te.legra.ph/file/638fb0416f2600e7c5aa3.png"
-                )
+                html_msg += icon.format(icon_url="https://te.legra.ph/file/638fb0416f2600e7c5aa3.png")
                 html_msg += subheading.format(content="General")
 
             elif "Video" in line:
-                html_msg += icon.format(
-                    icon_url="https://te.legra.ph/file/fbc30d71cf71c9a54e59d.png"
-                )
+                html_msg += icon.format(icon_url="https://te.legra.ph/file/fbc30d71cf71c9a54e59d.png")
                 html_msg += subheading.format(content="Video")
 
             elif "Audio" in line:
-                html_msg += icon.format(
-                    icon_url="https://te.legra.ph/file/a3c431be457fedbae2286.png"
-                )
+                html_msg += icon.format(icon_url="https://te.legra.ph/file/a3c431be457fedbae2286.png")
                 html_msg += subheading.format(content=f"{line.strip()}")
 
             elif "Menu" in line:
                 html_msg += "</span>"
-                html_msg += icon.format(
-                    icon_url="https://te.legra.ph/file/3023b0c2bc202ec9d6d0d.png"
-                )
+                html_msg += icon.format(icon_url="https://te.legra.ph/file/3023b0c2bc202ec9d6d0d.png")
                 html_msg += subheading.format(content="Chapters")
 
             else:

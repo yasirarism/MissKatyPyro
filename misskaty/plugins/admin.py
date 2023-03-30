@@ -148,7 +148,11 @@ async def kickFunc(client, message, strings):
     if user_id in (await list_admins(message.chat.id)):
         return await kirimPesan(message, strings("kick_admin_err"))
     user = await app.get_users(user_id)
+<<<<<<< HEAD
     msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=message.from_user.mention if message.from_user else 'Anon Admin', reasonmsg=reason or '-')
+=======
+    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=message.from_user.mention if message.from_user else "Anon Admin", reasonmsg=reason or "-")
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     try:
@@ -374,8 +378,8 @@ async def promoteFunc(client, message, strings):
                 can_pin_messages=bot.can_pin_messages,
                 can_promote_members=bot.can_promote_members,
                 can_manage_chat=bot.can_manage_chat,
-                can_manage_voice_chats=bot.can_manage_voice_chats
-            )
+                can_manage_voice_chats=bot.can_manage_voice_chats,
+            ),
         )
         return await message.reply_text(strings("full_promote").format(umention=umention))
 
@@ -389,8 +393,8 @@ async def promoteFunc(client, message, strings):
             can_pin_messages=False,
             can_promote_members=False,
             can_manage_chat=bot.can_manage_chat,
-            can_manage_voice_chats=bot.can_manage_voice_chats
-        )
+            can_manage_voice_chats=bot.can_manage_voice_chats,
+        ),
     )
     await message.reply_text(strings("normal_promote").format(umention=umention))
 
@@ -410,9 +414,13 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("demote_self_err"))
     if user_id in SUDO:
         return await message.reply_text(strings("demote_sudo_err"))
+<<<<<<< HEAD
     await message.chat.promote_member(
         user_id=user_id
     )
+=======
+    await message.chat.promote_member(user_id=user_id)
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")
 
@@ -509,7 +517,11 @@ async def unmute(_, message, strings):
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
     await message.chat.unban_member(user_id)
+<<<<<<< HEAD
     umention = (await app.get_users(user_id)).mention
+=======
+    (await app.get_users(user_id)).mention
+>>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     await message.reply_text(strings("unmute_msg"))
 
 

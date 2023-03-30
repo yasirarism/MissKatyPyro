@@ -162,11 +162,7 @@ async def fbdl(client, message):
         obj = SmartDL(url, progress_bar=False)
         obj.start()
         path = obj.get_dest()
-        await message.reply_video(
-            path,
-            caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-            thumb="assets/thumb.jpg"
-        )
+        await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]", thumb="assets/thumb.jpg")
         await msg.delete()
         try:
             os.remove(path)
