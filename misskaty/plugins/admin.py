@@ -148,11 +148,7 @@ async def kickFunc(client, message, strings):
     if user_id in (await list_admins(message.chat.id)):
         return await kirimPesan(message, strings("kick_admin_err"))
     user = await app.get_users(user_id)
-<<<<<<< HEAD
-    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=message.from_user.mention if message.from_user else 'Anon Admin', reasonmsg=reason or '-')
-=======
     msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=message.from_user.mention if message.from_user else "Anon Admin", reasonmsg=reason or "-")
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     try:
@@ -414,13 +410,7 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("demote_self_err"))
     if user_id in SUDO:
         return await message.reply_text(strings("demote_sudo_err"))
-<<<<<<< HEAD
-    await message.chat.promote_member(
-        user_id=user_id
-    )
-=======
     await message.chat.promote_member(user_id=user_id)
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")
 
@@ -517,12 +507,8 @@ async def unmute(_, message, strings):
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
     await message.chat.unban_member(user_id)
-<<<<<<< HEAD
     umention = (await app.get_users(user_id)).mention
-=======
-    (await app.get_users(user_id)).mention
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
-    await message.reply_text(strings("unmute_msg"))
+    await message.reply_text(strings("unmute_msg").format(umention=umention))
 
 
 @app.on_message(filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)

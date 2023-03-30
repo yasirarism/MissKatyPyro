@@ -24,11 +24,7 @@ enabled_locales: List[str] = [
     # "fi-FI",  # Finnish
     # "he-IL",  # Hebrew
     "id-ID",  # Indonesian
-<<<<<<< HEAD
-    "id-JW", # Javanese
-=======
     "id-JW",  # Javanese
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     # "ja-JP",  # Japanese
     # "no-NO",  # Norwegian
     # "pl-PL",  # Polish
@@ -65,23 +61,11 @@ for locale in enabled_locales:
 langdict = cache_localizations(jsons)
 
 
-<<<<<<< HEAD
-def get_locale_string(
-    dic: dict, language: str, default_context: str, key: str, context: str = None
-) -> str:
-    if context:
-        default_context = context
-        dic = langdict[language].get(context, langdict[default_language][context])
-    res: str = (
-        dic.get(key) or langdict[default_language][default_context].get(key) or key
-    )
-=======
 def get_locale_string(dic: dict, language: str, default_context: str, key: str, context: str = None) -> str:
     if context:
         default_context = context
         dic = langdict[language].get(context, langdict[default_language][context])
     res: str = dic.get(key) or langdict[default_language][default_context].get(key) or key
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
     return res
 
 
@@ -137,8 +121,4 @@ def use_chat_lang(context: str = None):
 
         return wrapper
 
-<<<<<<< HEAD
     return decorator
-=======
-    return decorator
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42

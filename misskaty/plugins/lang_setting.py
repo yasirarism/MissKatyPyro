@@ -49,28 +49,14 @@ def gen_langs_kb():
 
 
 @app.on_callback_query(filters.regex("^chlang$"))
-<<<<<<< HEAD
-@app.on_message(
-    filters.command(["setchatlang", "setlang"], COMMAND_HANDLER)
-)
-=======
 @app.on_message(filters.command(["setchatlang", "setlang"], COMMAND_HANDLER))
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
 @require_admin(allow_in_private=True)
 @use_chat_lang()
 async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             *gen_langs_kb(),
-<<<<<<< HEAD
-            [
-                InlineKeyboardButton(
-                    strings("back_btn", context="general"), callback_data="start_back"
-                )
-            ],
-=======
             [InlineKeyboardButton(strings("back_btn", context="general"), callback_data="start_back")],
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
         ]
     )
 
@@ -81,15 +67,7 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
         msg = m
         sender = msg.reply_text
 
-<<<<<<< HEAD
-    res = (
-        strings("language_changer_private")
-        if msg.chat.type == ChatType.PRIVATE
-        else strings("language_changer_chat")
-    )
-=======
     res = strings("language_changer_private") if msg.chat.type == ChatType.PRIVATE else strings("language_changer_chat")
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
 
     await sender(res, reply_markup=keyboard)
 
@@ -121,10 +99,4 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
         )
     else:
         keyboard = None
-<<<<<<< HEAD
-    await m.message.edit_text(
-        strings("language_changed_successfully"), reply_markup=keyboard
-    )
-=======
     await m.message.edit_text(strings("language_changed_successfully"), reply_markup=keyboard)
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42

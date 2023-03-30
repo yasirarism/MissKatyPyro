@@ -189,10 +189,6 @@ def adminsOnly(permission):
 
     return subFunc
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
 def require_admin(
     permissions: Union[list, str] = None,
     allow_in_private: bool = False,
@@ -200,17 +196,6 @@ def require_admin(
 ):
     def decorator(func):
         @wraps(func)
-<<<<<<< HEAD
-        async def wrapper(
-            client: Client, message: Union[CallbackQuery, Message], *args, **kwargs
-        ):
-            lang = await get_lang(message)
-            strings = partial(
-                get_locale_string,
-                langdict[lang].get("admins", langdict[default_language]["admins"]),
-                lang,
-                "admins",
-=======
         async def wrapper(client: Client, message: Union[CallbackQuery, Message], *args, **kwargs):
             lang = await get_lang(message)
             strings = partial(
@@ -218,7 +203,6 @@ def require_admin(
                 langdict[lang].get("admin", langdict[default_language]["admin"]),
                 lang,
                 "admin",
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
             )
 
             if isinstance(message, CallbackQuery):
@@ -228,13 +212,7 @@ def require_admin(
                 sender = message.reply_text
                 msg = message
             else:
-<<<<<<< HEAD
-                raise NotImplementedError(
-                    f"require_admin can't process updates with the type '{message.__name__}' yet."
-                )
-=======
                 raise NotImplementedError(f"require_admin can't process updates with the type '{message.__name__}' yet.")
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
 
             # We don't actually check private and channel chats.
             if msg.chat.type == enums.ChatType.PRIVATE:
@@ -243,20 +221,10 @@ def require_admin(
                 return await sender(strings("private_not_allowed"))
             if msg.chat.type == enums.ChatType.CHANNEL:
                 return await func(client, message, *args, *kwargs)
-<<<<<<< HEAD
-            has_perms = await check_perms(
-                message, permissions, complain_missing_perms, strings
-            )
-=======
             has_perms = await check_perms(message, permissions, complain_missing_perms, strings)
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
             if has_perms:
                 return await func(client, message, *args, *kwargs)
 
         return wrapper
 
-<<<<<<< HEAD
     return decorator
-=======
-    return decorator
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
