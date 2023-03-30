@@ -6,10 +6,6 @@ from misskaty import app
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-<<<<<<< HEAD
-from misskaty.helper.http import http
-=======
->>>>>>> b1bc0fbd3d02800e1d019ff9aa76596581d43b42
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
