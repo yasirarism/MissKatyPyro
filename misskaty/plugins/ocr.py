@@ -6,6 +6,7 @@
  * Copyright @YasirPedia All rights reserved
 """
 
+
 import os
 
 from pyrogram import filters
@@ -20,7 +21,7 @@ from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "OCR"
-__HELP__ = f"/ocr [reply to photo] - Read Text From Image"
+__HELP__ = "/ocr [reply to photo] - Read Text From Image"
 
 
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
