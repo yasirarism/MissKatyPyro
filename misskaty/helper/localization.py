@@ -79,7 +79,7 @@ async def get_lang(message) -> str:
     else:
         raise TypeError(f"Update type '{message.__name__}' is not supported.")
 
-    lang = await get_db_lang(chat.id, chat.type)
+    lang = await get_db_lang(chat.id)
 
     if chat.type == ChatType.PRIVATE:
         lang = lang or message.from_user.language_code or default_language

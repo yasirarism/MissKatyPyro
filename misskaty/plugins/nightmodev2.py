@@ -7,11 +7,12 @@ from pyrogram import filters, __version__
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, ChatAdminRequired, ChatNotModified
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty import BOT_NAME, BOT_USERNAME, app, scheduler
+from database.locale_db import get_db_lang
+from misskaty import BOT_NAME, app, scheduler
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import require_admin
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.localization import use_chat_lang, langdict
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, TZ
 
 __MODULE__ = "NightMode"
@@ -86,41 +87,43 @@ def extract_time(time_val: str):
 
 
 async def un_mute_chat(chat_id: int, perm: ChatPermissions):
+    getlang = await get_db_lang(chat_id)
     try:
         await app.set_chat_permissions(chat_id, perm)
     except ChatAdminRequired:
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`," f"since {BOT_NAME} is not an admin in chat `{chat_id}`")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_off_not_admin"].format(chat_id=chat_id, bname=BOT_NAME))
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`," f"since {BOT_NAME} is not present in chat `{chat_id}`" " Removed group from list.")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_off_not_present"].format(chat_id=chat_id, bname=BOT_NAME))
     except ChatNotModified:
         pass
     except Exception as e:
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`\n" f"ERROR: `{e}`")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_off_err"].format(chat_id=chat_id, e=e))
     else:
         job = scheduler.get_job(f"enable_nightmode_{chat_id}")
         close_at = job.next_run_time
-        await app.send_message(chat_id, f"#NIGHTMODE_HANDLER\n📆 {tglsekarang()}\n\n☀️ Group is Opening.\nWill be closed at {close_at}", reply_markup=reply_markup)
+        await app.send_message(chat_id, langdict[getlang]["nightmodev2"]["nmd_off_success"].format(dt=tglsekarang(), close_at=close_at), reply_markup=reply_markup)
 
 
 async def mute_chat(chat_id: int):
+    getlang = await get_db_lang(chat_id)
     try:
         await app.set_chat_permissions(chat_id, ChatPermissions())
     except ChatAdminRequired:
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`," f"since {BOT_NAME} is not an admin in chat `{chat_id}`")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_on_not_admin"].format(chat_id=chat_id, bname=BOT_NAME))
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`," f"since {BOT_NAME} is not present in chat `{chat_id}`" " Removed group from list.")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_on_not_present"].format(chat_id=chat_id, bname=BOT_NAME))
     except ChatNotModified:
         pass
     except Exception as e:
-        await app.send_message(LOG_CHANNEL, f"#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`\n" f"ERROR: `{e}`")
+        await app.send_message(LOG_CHANNEL, langdict[getlang]["nightmodev2"]["nmd_on_err"].format(chat_id=chat_id, e=e))
     else:
         job = scheduler.get_job(f"disable_nightmode_{chat_id}")
         open_at = job.next_run_time
-        await app.send_message(chat_id, f"#NIGHTMODE_HANDLER\n📆 {tglsekarang()}\n\n🌗 Group is closing.\nWill be opened at {open_at}", reply_markup=reply_markup)
+        await app.send_message(chat_id, langdict[getlang]["nightmodev2"]["nmd_on_success"].format(dt=tglsekarang(), open_at=open_at), reply_markup=reply_markup)
 
 
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
