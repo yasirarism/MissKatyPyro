@@ -76,11 +76,7 @@ async def start(_, message, strings):
             )
 
             await db.add_chat(message.chat.id, message.chat.title)
-        nama = (
-            message.from_user.mention
-            if message.from_user
-            else message.sender_chat.title
-        )
+        nama = message.from_user.mention if message.from_user else message.sender_chat.title
         return await message.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
             caption=strings("start_msg").format(kamuh=nama),
@@ -97,10 +93,7 @@ async def start(_, message, strings):
         name = (message.text.split(None, 1)[1]).lower()
         if "_" in name:
             module = name.split("_", 1)[1]
-            text = (
-                strings("help_name").format(mod=HELPABLE[module].__MODULE__)
-                + HELPABLE[module].__HELP__
-            )
+            text = strings("help_name").format(mod=HELPABLE[module].__MODULE__) + HELPABLE[module].__HELP__
             await kirimPesan(message, text, disable_web_page_preview=True)
         elif name == "help":
             text, keyb = await help_parser(message.from_user.first_name)
@@ -140,7 +133,8 @@ async def stats_callbacc(_, CallbackQuery):
 @ratelimiter
 @use_chat_lang()
 async def help_command(_, message, strings):
-    if not message.from_user: return
+    if not message.from_user:
+        return
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
@@ -183,10 +177,7 @@ async def help_command(_, message, strings):
         if len(message.command) >= 2:
             name = (message.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
-                text = (
-                    strings("help_name").format(mod=HELPABLE[name].__MODULE__)
-                    + HELPABLE[name].__HELP__
-                )
+                text = strings("help_name").format(mod=HELPABLE[name].__MODULE__) + HELPABLE[name].__HELP__
                 await kirimPesan(message, text, disable_web_page_preview=True)
             else:
                 text, help_keyboard = await help_parser(message.from_user.first_name)
@@ -198,9 +189,7 @@ async def help_command(_, message, strings):
                 )
         else:
             text, help_keyboard = await help_parser(message.from_user.first_name)
-            await kirimPesan(
-                message, text, reply_markup=help_keyboard, disable_web_page_preview=True
-            )
+            await kirimPesan(message, text, reply_markup=help_keyboard, disable_web_page_preview=True)
 
 
 async def help_parser(name, keyboard=None):
@@ -238,9 +227,7 @@ async def help_button(client, query, strings):
         await editPesan(
             query.message,
             text=text,
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]
-            ),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]),
             disable_web_page_preview=True,
         )
     elif home_match:
@@ -255,9 +242,7 @@ async def help_button(client, query, strings):
         await editPesan(
             query.message,
             text=top_text,
-            reply_markup=InlineKeyboardMarkup(
-                paginate_modules(curr_page - 1, HELPABLE, "help")
-            ),
+            reply_markup=InlineKeyboardMarkup(paginate_modules(curr_page - 1, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 
@@ -266,9 +251,7 @@ async def help_button(client, query, strings):
         await editPesan(
             query.message,
             text=top_text,
-            reply_markup=InlineKeyboardMarkup(
-                paginate_modules(next_page + 1, HELPABLE, "help")
-            ),
+            reply_markup=InlineKeyboardMarkup(paginate_modules(next_page + 1, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 

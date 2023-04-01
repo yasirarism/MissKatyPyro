@@ -5,7 +5,7 @@ from time import time
 
 from pyrogram import enums, filters
 from pyrogram.errors import ChatAdminRequired, FloodWait
-from pyrogram.types import ChatPermissions, ChatPrivileges
+from pyrogram.types import ChatPermissions
 
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app

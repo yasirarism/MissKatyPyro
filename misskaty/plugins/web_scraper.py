@@ -781,7 +781,7 @@ async def kusonime_scrap(_, callback_query, strings):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     data_kuso[link] = {"ph_url": tgh["url"]}
-    await editPesan(callback_query.message, strings("res_scrape").format(link=link, kl=tgh['url']), reply_markup=keyboard, disable_web_page_preview=False)
+    await editPesan(callback_query.message, strings("res_scrape").format(link=link, kl=tgh["url"]), reply_markup=keyboard, disable_web_page_preview=False)
 
 
 # Savefilm21 DDL
