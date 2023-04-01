@@ -17,6 +17,7 @@ from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user, botStartTime, BOT_NAME
+from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
@@ -40,7 +41,8 @@ async def edit_or_reply(msg, **kwargs):
 
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
-async def log_file(bot, message):
+@use_chat_lang()
+async def log_file(bot, message, strings):
     """Send log file"""
     try:
         await message.reply_document(
@@ -50,7 +52,7 @@ async def log_file(bot, message):
                 [
                     [
                         InlineKeyboardButton(
-                            "❌ Close",
+                            strings("cl_btn"),
                             f"close#{message.from_user.id}",
                         )
                     ]
@@ -105,11 +107,12 @@ RAM Usage: `{virtual_memory().percent}%`
 @app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
 @user.on_message(filters.command(["shell", "sh"], ".") & filters.me)
-async def shell(_, m):
+@use_chat_lang()
+async def shell(_, m, strings):
     cmd = m.text.split(" ", 1)
     if len(m.command) == 1:
-        return await edit_or_reply(m, text="No command to execute was given.")
-    msg = await editPesan(m, "<i>Processing exec pyrogram...</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing exec pyrogram...</i>")
+        return await edit_or_reply(m, text=strings("no_cmd"))
+    msg = await editPesan(m, strings("run_exec")) if m.from_user.is_self else await kirimPesan(m, strings("run_exec"))
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
         with open("shell_output.txt", "w") as file:
@@ -118,7 +121,7 @@ async def shell(_, m):
             await m.reply_document(
                 document=doc,
                 file_name=doc.name,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
             )
             await msg.delete()
             try:
@@ -130,22 +133,23 @@ async def shell(_, m):
             m,
             text=shell,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:
             await msg.delete()
     else:
-        await m.reply("No Reply")
+        await m.reply(strings("no_reply"))
 
 
 @app.on_message((filters.command(["ev", "run"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run"], ".") & filters.me)
-async def evaluation_cmd_t(_, m):
+@use_chat_lang()
+async def evaluation_cmd_t(_, m, strings):
     if (m.command and len(m.command) == 1) or m.text == "app.run()":
-        return await edit_or_reply(m, text="__No evaluate message!__")
+        return await edit_or_reply(m, text=strings("no_eval"))
     cmd = m.text.split(" ", 1)[1] if m.command else m.text.split("\napp.run()")[0]
-    status_message = await editPesan(m, "<i>Processing eval pyrogram..</i>") if m.from_user.is_self else await kirimPesan(m, "<i>Processing eval pyrogram..</i>", quote=True)
+    status_message = await editPesan(m, strings("run_eval")) if m.from_user.is_self else await kirimPesan(m, strings("run_eval"), quote=True)
 
     old_stderr = sys.stderr
     old_stdout = sys.stdout
@@ -201,7 +205,7 @@ async def evaluation_cmd_t(_, m):
     elif stdout:
         evaluation = stdout
     else:
-        evaluation = "Success"
+        evaluation = strings("success")
 
     final_output = f"**EVAL**:\n`{cmd}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
 
@@ -213,7 +217,7 @@ async def evaluation_cmd_t(_, m):
             caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
             disable_notification=True,
             thumb="assets/thumb.jpg",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
         os.remove("MissKatyEval.txt")
         await status_message.delete()
@@ -222,7 +226,7 @@ async def evaluation_cmd_t(_, m):
             m,
             text=final_output,
             parse_mode=enums.ParseMode.MARKDOWN,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="❌ Close", callback_data=f"close#{m.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:
             await status_message.delete()
@@ -230,15 +234,16 @@ async def evaluation_cmd_t(_, m):
 
 # Update and restart bot
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
-async def update_restart(_, message):
+@use_chat_lang()
+async def update_restart(_, message, strings):
     try:
         out = (await shell_exec("git pull"))[0]
         if "Already up to date." in str(out):
-            return await message.reply_text("Its already up-to date!")
+            return await message.reply_text(strings("already_up"))
         await message.reply_text(f"<code>{out}</code>")
     except Exception as e:
         return await message.reply_text(str(e))
-    msg = await message.reply_text("<b>Updated with default branch, restarting now.</b>")
+    msg = await message.reply_text(strings("up_and_rest"))
     with open("restart.pickle", "wb") as status:
         pickle.dump([message.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])

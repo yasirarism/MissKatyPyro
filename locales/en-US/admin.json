@@ -1,7 +1,7 @@
 {
     "no_admin_error": "You must be an administrator to use this command.",
     "no_permission_error": "I'm sorry but you don't have the required permissions to run this command. Missing permissions: {permissions}",
-    "private_not_allowed": "This command can't be used in a private chat. If you need any help, please use the <code>/help</code> command.",
+    "private_not_allowed": "This command can't be used in a private chat. If you need any help, please use the /help command.",
     "purge_no_reply": "Reply to a message to purge from.",
     "delete_no_reply": "Reply To A Message To Delete It",
     "pin_no_reply": "Reply to a message to pin/unpin it.",
