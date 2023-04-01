@@ -7,7 +7,7 @@
     "fail_open": "😟 Nuwun sewu! Aku ora bisa mbukak file.",
     "limit_dl": "Nuwun sewu, download dibatesi nganti 2GB kanggo nyuda flood. Sampeyan bisa ngowahi file dadi link.",
     "err_ssgen": "Gagal nggawe screenshoot.\n\n{exc}",
-    "up_msg": "☑️ Screenshot generasi kasil.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Generate by @{bot_uname} ",
-    "no_reply": "Bales menyang video utawa dokumen Telegram utawa gunakake link langsung sawise printah kanggo ngasilake screenshoot saka media!",
-    "choose_no_ss": "Saiki pilih pira asil kanggo screenshoot? 🥳.\n\nTotal durasi: `{td}` (`{dur} second`)"
+    "up_msg": "☑️ Screenshot generasi kasil.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Digawe kalo @{bot_uname} ",
+    "no_reply": "Bales menyang video utawa dokumen Telegram utawa gunakake link langsung sawise printah kanggo ngasilake screenshot saka media!",
+    "choose_no_ss": "Saiki pilih pira asil kanggo screenshot? 🥳.\n\nTotal durasi: `{td}` (`{dur} second`)"
 }

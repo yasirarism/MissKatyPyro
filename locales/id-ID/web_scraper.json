@@ -9,10 +9,10 @@
     "kualitas": "Kualitas",
     "ex_data": "👇 Ekstrak Data",
     "unauth": "Tombol ini bukan untuk Anda..",
-    "invalid_cb": "Data callback tidak sah, silakan kirim perintah lagi..",
+    "invalid_cb": "Data callback tidak valid, silakan kirim perintah lagi..",
     "res_scrape": "<b>Hasil Scrape dari</b> <code>{link}</code>:\n\n{kl}",
     "header_with_query": "<b>Hasil Pencarian #{web} Untuk:</b> <code>{kueri}</code>\n\n",
     "header_no_query": "<b>#{web} Terbaru:</b>\n🌀 Gunakan /{cmd} [judul] untuk memulai pencarian dengan judul.\n\n",
-    "invalid_cmd_scrape": "Gunakan perintah /{cmd} <b>[tautan]</b> untuk mengambil link download",
+    "invalid_cmd_scrape": "Gunakan perintah /{cmd} <b>[tautan]</b> untuk mengambil link unduhan.",
     "unsupport_dl_btn": "Beberapa hasil tidak akan muncul di tombol ekstrak karena tautan tidak didukung."
 }

@@ -1,11 +1,11 @@
 {
     "no_result": "Nuwun sewu, kula mboten nemu kasil!",
     "no_result_w_query": "Nuwun sewu, kula mboten saged manggihaken pitakon: {kueri}",
-    "get_data": "⏳ Enteni, njupuk data saka web..",
+    "get_data": "⏳ Mangga dienteni, lagi njupuk data saka web..",
     "cl_btn": "❌ Tutup",
     "back_btn": "↩️ Mbalik",
     "dl_text": "⬇️ Unduh",
-    "cat_text": "Kategori",
+    "cat_text": "💠 Kategori",
     "kualitas": "Kualitas",
     "ex_data": "👇 Ekstrak Data ",
     "unauth": "Tombol iki dudu kanggo sampeyan..",

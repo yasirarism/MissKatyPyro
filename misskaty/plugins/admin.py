@@ -365,32 +365,28 @@ async def promoteFunc(client, message, strings):
         return await message.reply_text(strings("no_promote_perm"))
     if message.command[0][0] == "f":
         await message.chat.promote_member(
-            user_id,
-            ChatPrivileges(
-                can_change_info=bot.can_change_info,
-                can_invite_users=bot.can_invite_users,
-                can_delete_messages=bot.can_delete_messages,
-                can_restrict_members=bot.can_restrict_members,
-                can_pin_messages=bot.can_pin_messages,
-                can_promote_members=bot.can_promote_members,
-                can_manage_chat=bot.can_manage_chat,
-                can_manage_voice_chats=bot.can_manage_voice_chats,
-            ),
+            user_id=user_id,
+            can_change_info=bot.can_change_info,
+            can_invite_users=bot.can_invite_users,
+            can_delete_messages=bot.can_delete_messages,
+            can_restrict_members=bot.can_restrict_members,
+            can_pin_messages=bot.can_pin_messages,
+            can_promote_members=bot.can_promote_members,
+            can_manage_chat=bot.can_manage_chat,
+            can_manage_video_chats=bot.can_manage_video_chats,
         )
         return await message.reply_text(strings("full_promote").format(umention=umention))
 
     await message.chat.promote_member(
-        user_id,
-        ChatPrivileges(
-            can_change_info=False,
-            can_invite_users=bot.can_invite_users,
-            can_delete_messages=bot.can_delete_messages,
-            can_restrict_members=False,
-            can_pin_messages=False,
-            can_promote_members=False,
-            can_manage_chat=bot.can_manage_chat,
-            can_manage_voice_chats=bot.can_manage_voice_chats,
-        ),
+        user_id=user_id,
+        can_change_info=False,
+        can_invite_users=bot.can_invite_users,
+        can_delete_messages=bot.can_delete_messages,
+        can_restrict_members=False,
+        can_pin_messages=False,
+        can_promote_members=False,
+        can_manage_chat=bot.can_manage_chat,
+        can_manage_video_chats=bot.can_manage_video_chats,
     )
     await message.reply_text(strings("normal_promote").format(umention=umention))
 
@@ -410,7 +406,17 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("demote_self_err"))
     if user_id in SUDO:
         return await message.reply_text(strings("demote_sudo_err"))
-    await message.chat.promote_member(user_id=user_id)
+    await message.chat.promote_member(
+        user_id=user_id,
+        can_change_info=False,
+        can_invite_users=False,
+        can_delete_messages=False,
+        can_restrict_members=False,
+        can_pin_messages=False,
+        can_promote_members=False,
+        can_manage_chat=False,
+        can_manage_video_chats=False,
+    )
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")
 
