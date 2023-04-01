@@ -48,11 +48,11 @@ def split_arr(arr, size: 5):
 
 
 # Terbit21 GetData
-async def getDataTerbit21(msg, kueri, CurrentPage):
+async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         terbitjson = (await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/terbit21")).json()
         if not terbitjson.get("result"):
-            await editPesan(msg, "Sorry, could not find any results!")
+            await editPesan(msg, strings("no_result"))
             return None, None
         SCRAP_DICT[msg.id] = [split_arr(terbitjson["result"], 6), kueri]
     try:
@@ -60,25 +60,25 @@ async def getDataTerbit21(msg, kueri, CurrentPage):
         PageLen = len(SCRAP_DICT[msg.id][0])
 
         if kueri:
-            TerbitRes = f"<b>#Terbit21 Results For:</b> <code>{kueri}</code>\n\n"
+            TerbitRes = strings("header_with_query").format(web="Terbit21", kueri=kueri)
         else:
-            TerbitRes = "<b>#Terbit21 Latest:</b>\n🌀 Use /terbit21 [title] to start search with title.\n\n"
+            TerbitRes = strings("header_no_query").format(web="Terbit21", cmd="terbit21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
-            TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+            TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+            TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
         return TerbitRes, PageLen
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry, could not find any results!")
+        await editPesan(msg, strings("no_result"))
         return None, None
 
 
 # LK21 GetData
-async def getDatalk21(msg, kueri, CurrentPage):
+async def getDatalk21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         lk21json = (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/lk21")).json()
         if not lk21json.get("result"):
-            await editPesan(msg, "Sorry could not find any matching results!")
+            await editPesan(msg, strings("no_result"))
             return None, None
         SCRAP_DICT[msg.id] = [split_arr(lk21json["result"], 6), kueri]
     try:
@@ -86,43 +86,43 @@ async def getDatalk21(msg, kueri, CurrentPage):
         PageLen = len(SCRAP_DICT[msg.id][0])
 
         if kueri:
-            lkResult = f"<b>#Layarkaca21 Results For:</b> <code>{kueri}</code>\n\n"
+            lkResult = strings("header_with_query").format(web="Layarkaca21", kueri=kueri)
         else:
-            lkResult = "<b>#Layarkaca21 Latest:</b>\n🌀 Use /lk21 [title] to start search with title.\n\n"
+            lkResult = strings("header_no_query").format(web="Layarkaca21", cmd="lk21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Category:</b> <code>{i['kategori']}</code>\n"
-            lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>Download</a></b>\n\n"
+            lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+            lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"💠 <b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         lkResult = "".join(i for i in lkResult if i not in "[]")
         return lkResult, PageLen
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, None
 
 
 # Pahe GetData
-async def getDataPahe(msg, kueri, CurrentPage):
+async def getDataPahe(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         pahejson = (await http.get(f"https://yasirapi.eu.org/pahe?q={kueri}")).json()
         if not pahejson.get("result"):
-            await editPesan(msg, "Sorry could not find any matching results!")
+            await editPesan(msg, strings("no_result"))
             return None, None
         SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
 
-        paheResult = f"<b>#Pahe Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Pahe Latest:</b>\n🌀 Use /pahe [title] to start search with title.\n\n"
+        paheResult = strings("header_with_query").format(web="Pahe", kueri=kueri) if kueri else strings("header_no_query").format(web="Pahe", cmd="pahe")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
         paheResult = "".join(i for i in paheResult if i not in "[]")
         return paheResult, PageLen
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, None
 
 
 # Kusonime GetData
-async def getDataKuso(msg, kueri, CurrentPage, user):
+async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         data = await http.get(f"https://kusonime.com/?s={kueri}", headers=headers, follow_redirects=True)
@@ -133,7 +133,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
             link = ress["href"]
             kusodata.append({"title": title, "link": link})
         if not kusodata:
-            await editPesan(msg, "Sorry could not find any results!")
+            await editPesan(msg, strings("no_result"))
             return None, 0, None, None
         SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
     try:
@@ -142,7 +142,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
         extractbtn1 = []
         extractbtn2 = []
 
-        kusoResult = f"<b>#Kusonime Latest Post\n\n" if kueri == "" else f"<b>#Kusonime Results For:</b> <code>{kueri}</code>\n\n"
+        kusoResult = strings("header_no_query").format(web="Kusonime", cmd="kusonime") if kueri == "" else strings("header_with_query").format(web="Kusonime", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
             if c < 6:
@@ -152,12 +152,12 @@ async def getDataKuso(msg, kueri, CurrentPage, user):
         kusoResult = "".join(i for i in kusoResult if i not in "[]")
         return kusoResult, PageLen, extractbtn1, extractbtn2
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, 0, None, None
 
 
 # Movieku GetData
-async def getDataMovieku(msg, kueri, CurrentPage):
+async def getDataMovieku(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
         data = await http.get(f"https://107.152.37.223/?s={kueri}", headers=headers, follow_redirects=True)
@@ -170,25 +170,25 @@ async def getDataMovieku(msg, kueri, CurrentPage):
             typee = typ.strip() if typ.strip() != "" else "~"
             moviekudata.append({"judul": judul, "link": link, "type": typee})
         if not moviekudata:
-            await editPesan(msg, "Sorry could not find any results!")
+            await editPesan(msg, strings("no_result"))
             return None, None
         SCRAP_DICT[msg.id] = [split_arr(moviekudata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
 
-        moviekuResult = f"<b>#Movieku Latest:</b>\n🌀 Use /movieku [title] to start search with title.\n\n" if kueri == "" else f"<b>#Movieku Results For:</b> <code>{kueri}</code>\n\n"
+        moviekuResult = strings("header_no_query").format(web="Movieku", cmd="movieku") if kueri == "" else strings("header_with_query").format(web="Movieku", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
+            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
         moviekuResult = "".join(i for i in moviekuResult if i not in "[]")
         return moviekuResult, PageLen
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, None
 
 
 # Savefilm21 GetData
-async def getDataSavefilm21(msg, kueri, CurrentPage, user):
+async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         data = await http.get(f"https://savefilm21.pro/?s={kueri}", headers=headers, follow_redirects=True)
@@ -196,9 +196,9 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user):
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
-                await editPesan(msg, "Sorry, could not find any result")
+                await editPesan(msg, strings("no_result"))
             else:
-                await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
+                await editPesan(msg, strings("no_result_w_query").format(kueri=kueri))
             return None, 0, None
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -211,19 +211,19 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
-        sfResult = f"<b>#SaveFilm21 Latest:</b>\n🌀 Use /savefilm21 [title] to start search with title.\n\n" if kueri == "" else f"<b>#Savefilm21 Results For:</b> <code>{kueri}</code>\n\n"
+        sfResult = strings("header_no_query").format(web="Savefilm21", cmd="savefilm21") if kueri == "" else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
             extractbtn.append(InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}"))
         sfResult = "".join(i for i in sfResult if i not in "[]")
         return sfResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, 0, None
 
 
 # Lendrive GetData
-async def getDataLendrive(msg, kueri, CurrentPage, user):
+async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f"https://lendrive.web.id/?s={kueri}", headers=headers, follow_redirects=True)
         soup = BeautifulSoup(data, "lxml")
@@ -235,7 +235,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user):
             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
-            await editPesan(msg, "Sorry could not find any results!")
+            await editPesan(msg, strings("no_result"))
             return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
@@ -243,19 +243,19 @@ async def getDataLendrive(msg, kueri, CurrentPage, user):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        lenddataResult = f"<b>#LenDrive Latest:</b>\n🌀 Use /lendrive [title] to start search with title.\n\n" if kueri == "" else f"<b>#LenDrive Results For:</b> <code>{kueri}</code>\n\n"
+        lenddataResult = strings("header_no_query").format(web="Lendrive", cmd="lendrive") if kueri == "" else strings("header_with_query").format(web="Lendrive", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+            lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
             extractbtn.append(InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
         return lenddataResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, 0, None
 
 
 # MelongMovie GetData
-async def getDataMelong(msg, kueri, CurrentPage, user):
+async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         data = await http.get(f"https://melongmovie.info/?s={kueri}", headers=headers, follow_redirects=True)
         bs4 = BeautifulSoup(data, "lxml")
@@ -270,7 +270,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
-            await editPesan(msg, "Sorry could not find any results!")
+            await editPesan(msg, strings("no_result"))
             return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
@@ -278,28 +278,28 @@ async def getDataMelong(msg, kueri, CurrentPage, user):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        melongResult = f"<b>#MelongMovie Latest:</b>\n🌀 Use /melongmovie [title] to start search with title.\n\n" if kueri == "" else f"<b>#MelongMovie Results For:</b> <code>{kueri}</code>\n\n"
+        melongResult = strings("header_no_query").format(web="Melongmovie", cmd="melongmovie") if kueri == "" else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Quality:</b> {i['quality']}\n\n"
+            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
             extractbtn.append(InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         melongResult = "".join(i for i in melongResult if i not in "[]")
         return melongResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, 0, None
 
 
 # GoMov GetData
-async def getDataGomov(msg, kueri, CurrentPage, user):
+async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         gomovv = await http.get(f"https://gomov.cfd/?s={kueri}", headers=headers, follow_redirects=True)
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
-                await editPesan(msg, "Sorry, i could not find anything.")
+                await editPesan(msg, strings("no_result"))
             else:
-                await editPesan(msg, f"Sorry, i could not find query: {kueri}")
+                await editPesan(msg, strings("no_result_w_query"))
             return None, 0, None
         data = []
         for i in entry:
@@ -314,16 +314,16 @@ async def getDataGomov(msg, kueri, CurrentPage, user):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        gomovResult = f"<b>#Gomov Results For:</b> <code>{kueri}</code>\n\n" if kueri else f"<b>#Gomov Latest:</b>\n🌀 Use /gomov [title] to start search with title.\n\n"
+        gomovResult = strings("header_with_query").format(web="GoMov", kueri=kueri) if kueri else strings("header_no_query").format(web="GoMov", cmd="gomov")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
             if not re.search(r"Series", i["genre"]):
                 extractbtn.append(InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"))
-        gomovResult += "Some result will not appear in extract button because unsupported link."
+        gomovResult += strings("unsupport_dl_btn")
         gomovResult = "".join(i for i in gomovResult if i not in "[]")
         return gomovResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await editPesan(msg, strings("no_result"))
         return None, 0, None
 
 
@@ -337,7 +337,7 @@ async def terbit21_s(client, message, strings):
         kueri = None
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage)
+    terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage, strings)
     if not terbitres:
         return
     keyboard = InlineKeyboard()
@@ -357,7 +357,7 @@ async def lk21_s(client, message, strings):
         kueri = None
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage)
+    lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage, strings)
     if not lkres:
         return
     keyboard = InlineKeyboard()
@@ -377,7 +377,7 @@ async def pahe_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage)
+    paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage, strings)
     if not paheres:
         return
     keyboard = InlineKeyboard()
@@ -396,7 +396,7 @@ async def gomov_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user.id)
+    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not gomovres:
         return
     keyboard = InlineKeyboard()
@@ -417,7 +417,7 @@ async def melong_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage, message.from_user.id)
+    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not melongres:
         return
     keyboard = InlineKeyboard()
@@ -438,7 +438,7 @@ async def savefilm_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user.id)
+    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not savefilmres:
         return
     keyboard = InlineKeyboard()
@@ -459,7 +459,7 @@ async def kusonime_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    kusores, PageLen, btn1, btn2 = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id)
+    kusores, PageLen, btn1, btn2 = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not kusores:
         return
     keyboard = InlineKeyboard()
@@ -482,7 +482,7 @@ async def lendrive_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage, message.from_user.id)
+    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not lendres:
         return
     keyboard = InlineKeyboard()
@@ -503,7 +503,7 @@ async def movieku_s(client, message, strings):
         kueri = ""
     pesan = await kirimPesan(message, strings("get_data"), quote=True)
     CurrentPage = 1
-    moviekures, PageLen = await getDataMovieku(pesan, kueri, CurrentPage)
+    moviekures, PageLen = await getDataMovieku(pesan, kueri, CurrentPage, strings)
     if not moviekures:
         return
     keyboard = InlineKeyboard()
@@ -527,7 +527,7 @@ async def savefilmpage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        savefilmres, PageLen, btn = await getDataSavefilm21(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        savefilmres, PageLen, btn = await getDataSavefilm21(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
     except TypeError:
         return
 
@@ -554,7 +554,7 @@ async def kusopage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        kusores, PageLen, btn1, btn2 = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        kusores, PageLen, btn1, btn2 = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
     except TypeError:
         return
 
@@ -583,7 +583,7 @@ async def moviekupage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        lendres, PageLen, btn = await getDataLendrive(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        lendres, PageLen, btn = await getDataLendrive(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
     except TypeError:
         return
 
@@ -610,7 +610,7 @@ async def moviekupage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        moviekures, PageLen = await getDataMovieku(callback_query.message, kueri, CurrentPage)
+        moviekures, PageLen = await getDataMovieku(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -635,7 +635,7 @@ async def terbit21page_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        terbitres, PageLen = await getDataTerbit21(callback_query.message, kueri, CurrentPage)
+        terbitres, PageLen = await getDataTerbit21(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -660,7 +660,7 @@ async def melongpage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        terbitres, PageLen, btn = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        terbitres, PageLen, btn = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
     except TypeError:
         return
 
@@ -687,7 +687,7 @@ async def lk21page_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        lkres, PageLen = await getDatalk21(callback_query.message, kueri, CurrentPage)
+        lkres, PageLen = await getDatalk21(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -712,7 +712,7 @@ async def pahepage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        lkres, PageLen = await getDataPahe(callback_query.message, kueri, CurrentPage)
+        lkres, PageLen = await getDataPahe(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -737,7 +737,7 @@ async def gomovpage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        gomovres, PageLen, btn = await getDataGomov(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        gomovres, PageLen, btn = await getDataGomov(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
     except TypeError:
         return
 
@@ -767,11 +767,11 @@ async def kusonime_scrap(_, callback_query, strings):
 
     kuso = Kusonime()
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton(strings("back_btn"), f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(strings("back_btn"), f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         if init_url := data_kuso.get(link, None):
             ph = init_url.get("ph_url")
-            await editPesan(callback_query.message, f"<b>Scrape result from {link}</b>:\n\n{ph}", reply_markup=keyboard, disable_web_page_preview=False)
+            await editPesan(callback_query.message, strings("res_scrape").format(link=link, kl=ph), reply_markup=keyboard, disable_web_page_preview=False)
             return
         tgh = await kuso.telegraph(link, message_id)
         if tgh["error"]:
@@ -800,7 +800,7 @@ async def savefilm21_scrap(_, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton(strings("back_btn"), f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(strings("back_btn"), f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
@@ -834,7 +834,7 @@ async def muviku_scrap(_, message, strings):
         res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
         await message.reply(res)
     except IndexError:
-        return await message.reply(f"Gunakan command /{message.command[0]} <b>[link]</b> untuk scrap link download")
+        return await message.reply(strings("invalid_cmd_scrape").format(cmd=message.command[0]))
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
@@ -855,7 +855,7 @@ async def melong_scrap(_, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton(strings("back_btn"), f"page_melong#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(strings("back_btn"), f"page_melong#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
@@ -886,7 +886,7 @@ async def gomov_dl(_, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton(strings("back_btn"), f"page_gomov#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(strings("back_btn"), f"page_gomov#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         html = await http.get(link, headers=headers)
         soup = BeautifulSoup(html.text, "lxml")
@@ -917,12 +917,12 @@ async def lendrive_dl(_, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton(strings("back_btn"), f"page_lendrive#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(strings("back_btn"), f"page_lendrive#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         hmm = await http.get(link, headers=headers)
         q = BeautifulSoup(hmm.text, "lxml")
         j = q.findAll("div", class_="soraurlx")
-        kl = "<b>#Lendrive Results Download URL:</b>\n\n"
+        kl = ""
         for i in j:
             if not i.find("a"):
                 continue
