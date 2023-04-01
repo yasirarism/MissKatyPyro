@@ -1,0 +1,9 @@
+{
+    "nmd_disabled": "Mode wengi dipateni.",
+    "nmd_not_enabled": "Mode wengi ora diaktifake ing obrolan iki.",
+    "invalid_time_format": "Format wektu ora valid. Gunakake format HH:MM.",
+    "invalid_lockdur": "Suwene wektu ora bener. Gunakake format sing bener.\nConto: 6h (kango 6 jam), 10m kanggo 10 menit.",
+    "schedule_already_on": "Wis ana jadwal ing obrolan iki. Pateni nganggo gendéra `-d`.",
+    "nmd_enable_success": "Kasil ngaktifake mode wengi ing obrolan iki.\nGrup bakal dikunci ing {st} lan bakal dibukak sawise {lockdur} saben dina.",
+    "nmd_cb": "🔖 Hai, Aku {bname} digawe nganggo Framework Pyrogram v{ver} lan Python 3.10.\n\nMau gawe bot kaya iki? Yuuk belajar di @botindonesia\nOwner: @YasirArisM"
+}

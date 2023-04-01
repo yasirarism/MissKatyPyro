@@ -1,0 +1,9 @@
+{
+    "nmd_disabled": "Mode malam dinonaktifkan.",
+    "nmd_not_enabled": "Mode malam tidak diaktifkan di obrolan ini.",
+    "invalid_time_format": "Format waktu tidak sah. Gunakan format HH:MM.",
+    "invalid_lockdur": "Durasi waktu tidak valid. Gunakan format yang tepat.\nContoh: 6h (selama 6 jam), 10m selama 10 menit.",
+    "schedule_already_on": "Sudah ada jadwal yang berjalan di obrolan ini. Nonaktifkan menggunakan tanda `-d`.",
+    "nmd_enable_success": "Berhasil mengaktifkan mode malam dalam obrolan ini.\nGrup akan dikunci pada {st} dan akan dibuka setelah {lockdur} setiap hari.",
+    "nmd_cb": "🔖 Hai, Saya {bname} dibuat menggunakan Framework Pyrogram v{ver} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM"
+}
