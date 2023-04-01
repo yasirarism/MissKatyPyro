@@ -1,0 +1,9 @@
+{
+    "nmd_disabled": "Nightmode disabled.",
+    "nmd_not_enabled": "Nightmode isn't enabled in this chat.",
+    "invalid_time_format": "Invalid time format. Use HH:MM format.",
+    "invalid_lockdur": "Invalid time duration. Use proper format.\nExample: 6h (for 6 hours), 10m for 10 minutes.",
+    "schedule_already_on": "Already a schedule is running in this chat. Disable it using `-d` flag.",
+    "nmd_enable_success": "Successfully enabled nightmode in this chat.\nGroup will be locked at {st} and will be opened after {lockdur} everyday.",
+    "nmd_cb": "🔖 Hai, Aku {bname} dibuat menggunakan Framework Pyrogram v{ver} dan Python 3.10.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM"
+}
