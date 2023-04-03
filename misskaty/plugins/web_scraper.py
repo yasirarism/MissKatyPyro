@@ -257,7 +257,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        data = await http.get(f"https://melongmovie.info/?s={kueri}", headers=headers, follow_redirects=True)
+        data = await http.get(f"http://146.190.193.128/?s={kueri}", headers=headers, follow_redirects=True)
         bs4 = BeautifulSoup(data, "lxml")
         melongdata = []
         for res in bs4.select(".box"):
