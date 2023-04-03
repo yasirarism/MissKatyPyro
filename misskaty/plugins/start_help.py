@@ -270,4 +270,4 @@ async def help_button(client, query, strings):
             disable_web_page_preview=True,
         )
 
-    return await client.answer_callback_query(query.id)r
+    return await client.answer_callback_query(query.id)
