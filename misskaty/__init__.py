@@ -48,11 +48,9 @@ scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()
 user.start()
-bot = app.get_me()
-ubot = user.get_me()
-BOT_ID = bot.id
-BOT_NAME = bot.first_name
-BOT_USERNAME = bot.username
-UBOT_ID = ubot.id
-UBOT_NAME = ubot.first_name
-UBOT_USERNAME = ubot.username
+BOT_ID = app.id
+BOT_NAME = app.first_name
+BOT_USERNAME = app.username
+UBOT_ID = user.id
+UBOT_NAME = user.first_name
+UBOT_USERNAME = user.username
