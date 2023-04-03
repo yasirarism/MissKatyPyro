@@ -40,7 +40,7 @@ async def ytsearch(_, message, strings):
         return await message.reply(strings("no_res").format(kweri=query))
     i = search["result"][0]
     out = f"<b><a href={i['link']}>{i['title']}</a></b>\n"
-    out = strings("yts_msg").format(pub=i['publishedTime'], dur=i['duration'], vi=i['viewCount']['short'], clink=i['channel']['link'], cname=i['channel']['name'])
+    out = strings("yts_msg").format(pub=i["publishedTime"], dur=i["duration"], vi=i["viewCount"]["short"], clink=i["channel"]["link"], cname=i["channel"]["name"])
     btn = InlineKeyboardMarkup(
         [
             [
@@ -184,7 +184,7 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
     search = await main.VideosSearch(query).next()
     i = search["result"][page]
     out = f"<b><a href={i['link']}>{i['title']}</a></b>"
-    out = strings("yts_msg").format(pub=i['publishedTime'], dur=i['duration'], vi=i['viewCount']['short'], clink=i['channel']['link'], cname=i['channel']['name'])
+    out = strings("yts_msg").format(pub=i["publishedTime"], dur=i["duration"], vi=i["viewCount"]["short"], clink=i["channel"]["link"], cname=i["channel"]["name"])
     scroll_btn = [
         [
             InlineKeyboardButton(strings("back"), callback_data=f"ytdl_scroll|{search_key}|{page-1}"),

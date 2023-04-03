@@ -13,7 +13,6 @@ from database.karma_db import (
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.functions import alpha_to_int, int_to_alpha
 
 __MODULE__ = "Karma"
@@ -37,6 +36,7 @@ bold = lambda x: f"**{x}:** "
 bold_ul = lambda x: f"**--{x}:**-- "
 mono = lambda x: f"`{x}`{n}"
 
+
 def section(
     title: str,
     body: dict,
@@ -46,32 +46,18 @@ def section(
     text = (bold_ul(title) + n) if underline else bold(title) + n
 
     for key, value in body.items():
-        text += (
-            indent * w
-            + bold(key)
-            + ((value[0] + n) if isinstance(value, list) else mono(value))
-        )
+        text += indent * w + bold(key) + ((value[0] + n) if isinstance(value, list) else mono(value))
     return text
+
 
 async def get_user_id_and_usernames(client) -> dict:
     with client.storage.lock, client.storage.conn:
-        users = client.storage.conn.execute(
-            'SELECT * FROM peers WHERE type in ("user", "bot") AND username NOT null'
-        ).fetchall()
-    users_ = {}
-    for user in users:
-        users_[user[0]] = user[3]
-    return users_
+        users = client.storage.conn.execute('SELECT * FROM peers WHERE type in ("user", "bot") AND username NOT null').fetchall()
+    return {user[0]: user[3] for user in users}
 
 
 @app.on_message(
-    filters.text
-    & filters.group
-    & filters.incoming
-    & filters.reply
-    & filters.regex(regex_upvote, re.IGNORECASE)
-    & ~filters.via_bot
-    & ~filters.bot,
+    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_upvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
     group=karma_positive_group,
 )
 @capture_err
@@ -91,25 +77,15 @@ async def upvote(_, message):
     if current_karma:
         current_karma = current_karma["karma"]
         karma = current_karma + 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
     else:
         karma = 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(
-        f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
-    )
+    new_karma = {"karma": karma}
+    await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
+    await message.reply_text(f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}")
 
 
 @app.on_message(
-    filters.text
-    & filters.group
-    & filters.incoming
-    & filters.reply
-    & filters.regex(regex_downvote, re.IGNORECASE)
-    & ~filters.via_bot
-    & ~filters.bot,
+    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_downvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
     group=karma_negative_group,
 )
 @capture_err
@@ -129,28 +105,21 @@ async def downvote(_, message):
     if current_karma:
         current_karma = current_karma["karma"]
         karma = current_karma - 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
     else:
         karma = 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-
+    new_karma = {"karma": karma}
+    await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
     user_id = message.reply_to_message.from_user.id
     user_mention = message.reply_to_message.from_user.mention
     current_karma = await get_karma(chat_id, await int_to_alpha(user_id))
     if current_karma:
         current_karma = current_karma["karma"]
         karma = current_karma - 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
     else:
         karma = 1
-        new_karma = {"karma": karma}
-        await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(
-        f"Decremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
-    )
+    new_karma = {"karma": karma}
+    await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
+    await message.reply_text(f"Decremented Karma of {user_mention} By 1 \nTotal Points: {karma}")
 
 
 @app.on_message(filters.command("karma") & filters.group)
@@ -186,7 +155,7 @@ async def command_karma(_, message):
             if int(user_idd) not in list(userdb.keys()):
                 continue
             username = userdb[int(user_idd)]
-            karma["@" + username] = ["**" + str(karma_count) + "**"]
+            karma[f"@{username}"] = [f"**{str(karma_count)}**"]
             limit += 1
         await m.edit(section(msg, karma))
     else:
@@ -195,12 +164,8 @@ async def command_karma(_, message):
 
         user_id = message.reply_to_message.from_user.id
         karma = await get_karma(chat_id, await int_to_alpha(user_id))
-        if karma:
-            karma = karma["karma"]
-            await message.reply_text(f"**Total Points**: __{karma}__")
-        else:
-            karma = 0
-            await message.reply_text(f"**Total Points**: __{karma}__")
+        karma = karma["karma"] if karma else 0
+        await message.reply_text(f"**Total Points**: __{karma}__")
 
 
 @app.on_message(filters.command("karma_toggle") & ~filters.private)

@@ -63,7 +63,7 @@ async def genss(c, m, strings):
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await editPesan(process, strings("success_dl_msg"))
+                await editPesan(process, strings("success_dl_msg").format(path=the_real_download_location))
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
                 await editPesan(process, strings("up_progress"))

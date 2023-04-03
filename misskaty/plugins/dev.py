@@ -207,7 +207,7 @@ async def evaluation_cmd_t(_, m, strings):
     else:
         evaluation = strings("success")
 
-    final_output = f"**EVAL**:\n`{cmd}`\n\n**OUTPUT**:\n`{evaluation.strip()}`\n"
+    final_output = f"<b>EVAL</b>:\n<pre language='python'>{cmd}</pre>\n\n<b>OUTPUT</b>:\n<pre language='python'>{evaluation.strip()}</pre>\n"
 
     if len(final_output) > 4096:
         with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:
@@ -225,7 +225,7 @@ async def evaluation_cmd_t(_, m, strings):
         await edit_or_reply(
             m,
             text=final_output,
-            parse_mode=enums.ParseMode.MARKDOWN,
+            parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:

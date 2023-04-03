@@ -257,7 +257,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        data = await http.get(f"https://melongmovie.info/?s={kueri}", headers=headers, follow_redirects=True)
+        data = await http.get(f"http://146.190.193.128/?s={kueri}", headers=headers, follow_redirects=True)
         bs4 = BeautifulSoup(data, "lxml")
         melongdata = []
         for res in bs4.select(".box"):
@@ -781,7 +781,7 @@ async def kusonime_scrap(_, callback_query, strings):
         await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
         return
     data_kuso[link] = {"ph_url": tgh["url"]}
-    await editPesan(callback_query.message, strings("res_scrape").format(link=link, kl=tgh['url']), reply_markup=keyboard, disable_web_page_preview=False)
+    await editPesan(callback_query.message, strings("res_scrape").format(link=link, kl=tgh["url"]), reply_markup=keyboard, disable_web_page_preview=False)
 
 
 # Savefilm21 DDL

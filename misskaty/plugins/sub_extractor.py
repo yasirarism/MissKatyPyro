@@ -1,6 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
- * @created          2022-12-01 09:12:27
+ * @created       2022-12-01 09:12:27
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -21,6 +21,7 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
+from misskaty.helper.localization import use_chat_lang
 from misskaty.plugins.dev import shell_exec
 from misskaty.vars import COMMAND_HANDLER
 
@@ -63,13 +64,14 @@ def get_subname(lang, url, format):
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @ratelimiter
-async def ceksub(_, m):
+@use_chat_lang()
+async def ceksub(_, m, strings):
     cmd = m.text.split(" ", 1)
     if len(cmd) == 1:
-        return await kirimPesan(m, f"Please use command /{m.command[0]} [link] to check subtitles or audio in video file.", quote=True)
+        return await kirimPesan(m, strings("sub_extr_help").format(cmd=m.command[0]), quote=True)
     link = cmd[1]
     start_time = perf_counter()
-    pesan = await kirimPesan(m, "Processing your request..", quote=True)
+    pesan = await kirimPesan(m, strings("progress_str"), quote=True)
     try:
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
@@ -96,25 +98,26 @@ async def ceksub(_, m):
                 ]
             )
         end_time = perf_counter()
-        timelog = "{:.2f}".format(end_time - start_time) + " second"
-        buttons.append([InlineKeyboardButton("❌ Cancel", f"close#{m.from_user.id}")])
+        timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{m.from_user.id}")])
         await editPesan(
             pesan,
-            f"Press the button below to extract subtitles/audio. Only support direct link at this time.\nProcessed in {timelog}",
+            strings("press_btn_msg").format(timelog=timelog),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
     except:
-        await editPesan(pesan, "Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot.")
+        await editPesan(pesan, strings("fail_extr_media"))
 
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def convertsrt(c, m):
+@use_chat_lang()
+async def convertsrt(c, m, strings):
     reply = m.reply_to_message
     if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
-        return await kirimPesan(m, f"Use command /{m.command[0]} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt.")
-    msg = await kirimPesan(m, "⏳ Converting...", quote=True)
+        return await kirimPesan(m, strings("conv_sub_help").format(cmd=m.command[0]))
+    msg = await kirimPesan(m, strings("convert_str"), quote=True)
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
     LOGGER.info(f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]")
@@ -122,10 +125,10 @@ async def convertsrt(c, m):
     c_time = time()
     await m.reply_document(
         f"{filename}.srt",
-        caption=f"<code>{filename}.srt</code>\n\nConverted by @{c.me.username}",
+        caption=strings("capt_conv_sub").format(nf=filename, bot=c.me.username),
         thumb="assets/thumb.jpg",
         progress=progress_for_pyrogram,
-        progress_args=("Uploading files..", msg, c_time),
+        progress_args=(strings("up_str"), msg, c_time),
     )
     await hapusPesan(msg)
     try:
@@ -137,17 +140,18 @@ async def convertsrt(c, m):
 
 @app.on_callback_query(filters.regex(r"^streamextract#"))
 @ratelimiter
-async def stream_extract(bot, update):
+@use_chat_lang()
+async def stream_extract(bot, update, strings):
     cb_data = update.data
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
-        return await update.answer("⚠️ Access Denied!", True)
+        return await update.answer(strings("unauth_cb"), True)
     _, lang, map, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
     except:
-        return await update.answer("⚠️ DONT DELETE YOUR MESSAGE!", True)
-    await editPesan(update.message, "⏳ Processing...")
+        return await update.answer(strings("invalid_cb"), True)
+    await editPesan(update.message, strings("progress_str"))
     if codec == "aac":
         format = "aac"
     elif codec == "mp3":
@@ -162,18 +166,18 @@ async def stream_extract(bot, update):
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
         end_time = perf_counter()
-        timelog = "{:.2f}".format(end_time - start_time) + " second"
+        timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=f"<b>Filename:</b> <code>{namafile}</code>\n\nExtracted by @{bot.me.username} in {timelog}",
+            caption=strings("capt_extr_sub").format(nf=namafile, bot=bot.me.username, timelog=timelog),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
-            progress_args=("Uploading files..", update.message, c_time),
+            progress_args=(strings("up_str"), update.message, c_time),
         )
         await hapusPesan(update.message)
         os.remove(namafile)
     except Exception as e:
         os.remove(namafile)
-        await editPesan(update.message, f"Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}")
+        await editPesan(update.message, strings("fail_extr_sub").format(link=link, e=e))
