@@ -39,7 +39,6 @@ Credit: <a href='https://github.com/sanjit-sinha/PyBypass'>PyBypass</a>
 
 # Stopped development for this plugin since always changed time by time.
 
-
 async def pling_bypass(url):
     try:
         id_url = re.search(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url)[2]

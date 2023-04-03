@@ -133,8 +133,6 @@ async def stats_callbacc(_, CallbackQuery):
 @ratelimiter
 @use_chat_lang()
 async def help_command(_, message, strings):
-    if not message.from_user:
-        return
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
             total = await app.get_chat_members_count(message.chat.id)
@@ -272,4 +270,4 @@ async def help_button(client, query, strings):
             disable_web_page_preview=True,
         )
 
-    return await client.answer_callback_query(query.id)
+    return await client.answer_callback_query(query.id)r

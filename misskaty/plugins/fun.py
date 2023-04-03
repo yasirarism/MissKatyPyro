@@ -159,7 +159,6 @@ async def memify(client, message):
     else:
         await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
 
-
 @app.on_message(filters.command(["dice"], COMMAND_HANDLER))
 @use_chat_lang()
 async def dice(c, m, strings):
