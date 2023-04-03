@@ -114,6 +114,43 @@ async def check_perms(
     return False
 
 
+async def check_perms(
+    message: Union[CallbackQuery, Message],
+    permissions: Optional[Union[list, str]],
+    complain_missing_perms: bool,
+    strings,
+) -> bool:
+    if isinstance(message, CallbackQuery):
+        sender = partial(message.answer, show_alert=True)
+        chat = message.message.chat
+    else:
+        sender = message.reply_text
+        chat = message.chat
+    # TODO: Cache all admin permissions in db.
+    user = await chat.get_member(message.from_user.id)
+    if user.status == enums.ChatMemberStatus.OWNER:
+        return True
+
+    # No permissions specified, accept being an admin.
+    if not permissions and user.status == enums.ChatMemberStatus.ADMINISTRATOR:
+        return True
+    if user.status != enums.ChatMemberStatus.ADMINISTRATOR:
+        if complain_missing_perms:
+            await sender(strings("no_admin_error"))
+        return False
+
+    if isinstance(permissions, str):
+        permissions = [permissions]
+
+    missing_perms = [permission for permission in permissions if not getattr(user.privileges, permission)]
+
+    if not missing_perms:
+        return True
+    if complain_missing_perms:
+        await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
+    return False
+
+
 admins_in_chat = {}
 
 
