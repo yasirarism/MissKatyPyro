@@ -5,12 +5,13 @@ from pyrogram.errors import MessageTooLong
 
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.helper import http, post_to_telegraph, check_time_gap
+from misskaty.helper import post_to_telegraph, check_time_gap
 from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
+
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER))
 @ratelimiter
@@ -27,19 +28,12 @@ async def chatbot(c, m, strings):
     num = 0
     answer = ""
     try:
-        response = await openai.ChatCompletion.acreate(
-            model='gpt-3.5-turbo',
-            messages=[
-                {"role": "user", "content": pertanyaan}
-            ],
-            temperature=0.2,
-            stream=True
-        )
+        response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo", messages=[{"role": "user", "content": pertanyaan}], temperature=0.2, stream=True)
         async for chunk in response:
             if not chunk.choices[0].delta or chunk.choices[0].delta.get("role"):
                 continue
             num += 1
-            answer +=  chunk.choices[0].delta.content
+            answer += chunk.choices[0].delta.content
             if num == 30:
                 await editPesan(msg, answer)
                 await asyncio.sleep(1.5)

@@ -39,6 +39,7 @@ async def member_permissions(chat_id: int, user_id: int):
         perms.append("can_manage_video_chats")
     return perms
 
+
 async def check_perms(
     message: Union[CallbackQuery, Message],
     permissions: Optional[Union[list, str]],
@@ -67,19 +68,14 @@ async def check_perms(
     if isinstance(permissions, str):
         permissions = [permissions]
 
-    missing_perms = [
-        permission
-        for permission in permissions
-        if not getattr(user.privileges, permission)
-    ]
+    missing_perms = [permission for permission in permissions if not getattr(user.privileges, permission)]
 
     if not missing_perms:
         return True
     if complain_missing_perms:
-        await sender(
-            strings("no_permission_error").format(permissions=", ".join(missing_perms))
-        )
+        await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
     return False
+
 
 async def check_perms(
     message: Union[CallbackQuery, Message],
@@ -225,6 +221,7 @@ def adminsOnly(permission):
         return subFunc2
 
     return subFunc
+
 
 def require_admin(
     permissions: Union[list, str] = None,

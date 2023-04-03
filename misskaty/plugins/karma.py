@@ -36,6 +36,7 @@ bold = lambda x: f"**{x}:** "
 bold_ul = lambda x: f"**--{x}:**-- "
 mono = lambda x: f"`{x}`{n}"
 
+
 def section(
     title: str,
     body: dict,
@@ -45,12 +46,9 @@ def section(
     text = (bold_ul(title) + n) if underline else bold(title) + n
 
     for key, value in body.items():
-        text += (
-            indent * w
-            + bold(key)
-            + ((value[0] + n) if isinstance(value, list) else mono(value))
-        )
+        text += indent * w + bold(key) + ((value[0] + n) if isinstance(value, list) else mono(value))
     return text
+
 
 async def get_user_id_and_usernames(client) -> dict:
     with client.storage.lock, client.storage.conn:
@@ -59,13 +57,7 @@ async def get_user_id_and_usernames(client) -> dict:
 
 
 @app.on_message(
-    filters.text
-    & filters.group
-    & filters.incoming
-    & filters.reply
-    & filters.regex(regex_upvote, re.IGNORECASE)
-    & ~filters.via_bot
-    & ~filters.bot,
+    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_upvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
     group=karma_positive_group,
 )
 @capture_err
@@ -93,13 +85,7 @@ async def upvote(_, message):
 
 
 @app.on_message(
-    filters.text
-    & filters.group
-    & filters.incoming
-    & filters.reply
-    & filters.regex(regex_downvote, re.IGNORECASE)
-    & ~filters.via_bot
-    & ~filters.bot,
+    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_downvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
     group=karma_negative_group,
 )
 @capture_err

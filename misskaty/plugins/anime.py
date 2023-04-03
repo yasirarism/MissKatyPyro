@@ -6,7 +6,6 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from misskaty.helper.http import http
 from misskaty.helper.human_read import get_readable_time
 from misskaty.vars import COMMAND_HANDLER
 
@@ -156,6 +155,7 @@ def shorten(description, info="anilist.co"):
     else:
         ms_g += f"\n<strong>Description:</strong> <em>{description}</em>"
     return ms_g.replace("<br>", "").replace("</br>", "").replace("<i>", "").replace("</i>", "")
+
 
 @app.on_message(filters.command("anime", COMMAND_HANDLER))
 async def anime_search(_, mesg):
