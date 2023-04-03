@@ -225,7 +225,7 @@ async def evaluation_cmd_t(_, m, strings):
         await edit_or_reply(
             m,
             text=final_output,
-            parse_mode=enums.ParseMode.MARKDOWN,
+            parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
         if not m.from_user.is_self:
