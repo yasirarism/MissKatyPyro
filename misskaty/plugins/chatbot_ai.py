@@ -42,7 +42,7 @@ async def chatbot(c, m, strings):
             answer +=  chunk.choices[0].delta.content
             if num == 30:
                 await editPesan(msg, answer)
-                await asyncio.sleep(1)
+                await asyncio.sleep(1.5)
                 num = 0
         await openai.aiosession.get().close()
     except MessageTooLong:

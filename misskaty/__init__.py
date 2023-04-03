@@ -18,6 +18,7 @@ handler = handlers.RotatingFileHandler("MissKatyLogs.txt", maxBytes=1024 * 1024)
 handler.setLevel(INFO)
 logger.addHandler(handler)
 getLogger("pyrogram").setLevel(ERROR)
+getLogger("openai").setLevel(ERROR)
 
 MOD_LOAD = []
 MOD_NOLOAD = ["subscene_dl"]

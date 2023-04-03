@@ -42,6 +42,7 @@ __HELP__ = """
 /imdb [query] - Find Movie Details From IMDB.com (Available in English and Indonesia version).
 /readqr [reply to photo] - Read QR Code From Photo.
 /createqr [text] - Convert Text to QR Code.
+/animes [query] - Search title in myanimelist.
 """
 
 
