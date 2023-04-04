@@ -299,7 +299,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
             if not kueri:
                 await editPesan(msg, strings("no_result"))
             else:
-                await editPesan(msg, strings("no_result_w_query"))
+                await editPesan(msg, strings("no_result_w_query").format(kueri=kueri))
             return None, 0, None
         data = []
         for i in entry:

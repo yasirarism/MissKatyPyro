@@ -88,6 +88,7 @@ def extract_time(time_val: str):
 
 async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     getlang = await get_db_lang(chat_id)
+    getlang = getlang or "en-US"
     try:
         await app.set_chat_permissions(chat_id, perm)
     except ChatAdminRequired:
@@ -108,6 +109,7 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
 
 async def mute_chat(chat_id: int):
     getlang = await get_db_lang(chat_id)
+    getlang = getlang or "en-US"
     try:
         await app.set_chat_permissions(chat_id, ChatPermissions())
     except ChatAdminRequired:
