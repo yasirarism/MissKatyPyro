@@ -38,6 +38,7 @@ async def chatbot(c, m, strings):
                 await editPesan(msg, answer)
                 await asyncio.sleep(1.5)
                 num = 0
+        await editPesan(msg, answer)
         await openai.aiosession.get().close()
     except MessageTooLong:
         answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", answer)
