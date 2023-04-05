@@ -121,9 +121,8 @@ async def shell(_, m, strings):
     msg = await editPesan(m, strings("run_exec")) if m.from_user.is_self else await kirimPesan(m, strings("run_exec"))
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
-        with open("shell_output.txt", "w") as file:
-            file.write(shell)
-        with open("shell_output.txt", "rb") as doc:
+        with io.BytesIO(str.encode(shell)) as doc:
+            doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
                 file_name=doc.name,
@@ -218,19 +217,19 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     # Strip only ONE final newline to compensate for our message formatting
     if out.endswith("\n"):
         out = out[:-1]
-    final_output = f"{prefix}<b>Input:</b>\n<pre language='python'>{code}</pre>\n<b>Output:</b>\n<pre language='python'>{out}</pre>\nExecuted Time: {el_str}"
+    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{code}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{out}</pre>\nExecuted Time: {el_str}"
     if len(final_output) > 4096:
-        with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:
-            out_file.write(final_output)
-        await message.reply_document(
-            document="MissKatyEval.txt",
-            caption="Your Snippet Has Been Added to File.",
-            disable_notification=True,
-            thumb="assets/thumb.jpg",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
-        )
-        os.remove("MissKatyEval.txt")
-        await status_message.delete()
+        with io.BytesIO(str.encode(out)) as out_file:
+            out_file.name = "MissKatyEval.txt"
+            await message.reply_document(
+                document="MissKatyEval.txt",
+                caption=code[: 4096 // 4 - 1],
+                disable_notification=True,
+                thumb="assets/thumb.jpg",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
+            )
+            os.remove("MissKatyEval.txt")
+            await status_message.delete()
     else:
         await edit_or_reply(
             message,
