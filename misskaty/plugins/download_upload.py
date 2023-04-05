@@ -138,7 +138,7 @@ async def tiktokdl(client, message):
         r = (await http.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")).json()
         await message.reply_video(
             r["hasil"]["download_mp4_hd"],
-            caption=f"<b>Title:</b> <code>{r['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['username']}'>{r['name']}</a>\n👍: {r['video_title']} 🔁: {r['video_title']} 💬: {r['video_title']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            caption=f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()
     except Exception as e:
