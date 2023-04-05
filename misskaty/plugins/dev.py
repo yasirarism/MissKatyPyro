@@ -188,7 +188,6 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "traceback": traceback,
             "http": http,
             "replied": message.reply_to_message,
-            "p": print,
         }
         try:
             return "", await meval(code, globals(), **eval_vars)
@@ -206,9 +205,9 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             formatted_tb = format_exception(e, tb=stripped_tb)
             return "⚠️ Error while executing snippet\n\n", formatted_tb
     
-    before = time.time()
+    before = time()
     prefix, result = await _eval()
-    after = time.time()
+    after = time()
     # Always write result if no output has been collected thus far
     if not out_buf.getvalue() or result is not None:
         print(result, file=out_buf)
