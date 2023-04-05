@@ -42,9 +42,7 @@ async def meval(code, globs, **kwargs):
 
     if not any(isinstance(node, ast.Return) for node in code):
         for i in range(len(code)):
-            if isinstance(code[i], ast.Expr) and (
-                i == len(code) - 1 or not isinstance(code[i].value, ast.Call)
-            ):
+            if isinstance(code[i], ast.Expr) and (i == len(code) - 1 or not isinstance(code[i].value, ast.Call)):
                 code[i] = ast.copy_location(ast.Expr(ast.Call(func=ast.Attribute(value=ast.Name(id=ret_name, ctx=ast.Load()), attr="append", ctx=ast.Load()), args=[code[i].value], keywords=[])), code[-1])
     else:
         for node in code:
