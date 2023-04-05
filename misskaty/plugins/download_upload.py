@@ -135,10 +135,10 @@ async def tiktokdl(client, message):
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        r = (await http.get(f"https://api.hayo.my.id/api/tiktok/4?url={link}")).json()
+        r = (await http.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")).json()
         await message.reply_video(
-            r["linkhd"],
-            caption=f"<b>Title:</b> <code>{r['name']}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            r["hasil"]["download_mp4_hd"],
+            caption=f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()
     except Exception as e:

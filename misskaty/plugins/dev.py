@@ -4,19 +4,25 @@ import os
 import re
 import sys
 import pickle
+import json
 import traceback
+import cfscrape
+import aiohttp
 from shutil import disk_usage
 from time import time
 from inspect import getfullargspec
+from typing import Any, Optional, Tuple
 
 from psutil import cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory
 
-from pyrogram import enums, filters
+from pyrogram import enums, filters, types
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app, user, botStartTime, BOT_NAME
+from misskaty.helper.http import http
+from misskaty.helper.eval_helper import meval, format_exception
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
@@ -115,19 +121,24 @@ async def shell(_, m, strings):
     msg = await editPesan(m, strings("run_exec")) if m.from_user.is_self else await kirimPesan(m, strings("run_exec"))
     shell = (await shell_exec(cmd[1]))[0]
     if len(shell) > 3000:
-        with open("shell_output.txt", "w") as file:
-            file.write(shell)
-        with open("shell_output.txt", "rb") as doc:
+        with io.BytesIO(str.encode(shell)) as doc:
+            doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
+                caption="<code>cmd[1][: 4096 // 4 - 1]</code>",
                 file_name=doc.name,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text=strings("cl_btn"),
+                                callback_data=f"close#{m.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
             )
             await msg.delete()
-            try:
-                os.remove("shell_output.txt")
-            except:
-                pass
     elif len(shell) != 0:
         await edit_or_reply(
             m,
@@ -145,90 +156,102 @@ async def shell(_, m, strings):
 @app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run"], ".") & filters.me)
 @use_chat_lang()
-async def evaluation_cmd_t(_, m, strings):
-    if (m.command and len(m.command) == 1) or m.text == "app.run()":
-        return await edit_or_reply(m, text=strings("no_eval"))
-    cmd = m.text.split(" ", 1)[1] if m.command else m.text.split("\napp.run()")[0]
-    status_message = await editPesan(m, strings("run_eval")) if m.from_user.is_self else await kirimPesan(m, strings("run_eval"), quote=True)
+async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
+    if (message.command and len(message.command) == 1) or message.text == "app.run()":
+        return await edit_or_reply(message, text=strings("no_eval"))
+    status_message = await editPesan(message, strings("run_eval")) if message.from_user.is_self else await kirimPesan(message, strings("run_eval"), quote=True)
+    code = message.text.split(" ", 1)[1] if message.command else message.text.split("\napp.run()")[0]
+    out_buf = io.StringIO()
+    out = ""
+    humantime = get_readable_time
 
-    old_stderr = sys.stderr
-    old_stdout = sys.stdout
-    redirected_output = sys.stdout = io.StringIO()
-    redirected_error = sys.stderr = io.StringIO()
-    stdout, stderr, exc = None, None, None
+    async def _eval() -> Tuple[str, Optional[str]]:
+        # Message sending helper for convenience
+        async def send(*args: Any, **kwargs: Any) -> types.Message:
+            return await message.reply(*args, **kwargs)
 
-    try:
-        await aexec(cmd, _, m)
-    except NameError as e:
-        trace_output = "❌ MISSING VARIABEL:\n"
-        trace_output += f"{e}"
-        exc = trace_output
-    except AttributeError as e:
-        trace_output = "❌ MISSING ATTRIBUTE:\n"
-        trace_output += f"{e}"
-        exc = trace_output
-    except SyntaxError:
-        trace = traceback.format_exc()
-        splitted = str(trace).split("\n")
-        end_split = len(splitted)
-        row_1 = splitted[end_split - 4]
-        row_2 = splitted[end_split - 3]
-        row_3 = splitted[end_split - 2]
-        compiles = row_1 + "\n" + row_2 + "\n" + row_3
-        trace_output = "⚙️ SYNTAX ERROR:\n"
-        trace_output += f"{compiles}"
-        exc = trace_output
-    except ValueError as e:
-        trace_output = "🧮 VALUE ERROR:\n"
-        trace_output += f"{e}"
-        exc = trace_output
-    except Exception as e:
-        # trace = traceback.format_exc()
-        """Periksa apakah error regexnya tertangkap"""
-        match = re.search(r"Telegram says: .+", str(e))
-        trace_output = "⚠️ COMMON ERROR:\n"
-        trace_output += f"{e}"
-        if match:
-            trace_output = f"👀 {match[0]}"
-        exc = trace_output
+        # Print wrapper to capture output
+        # We don't override sys.stdout to avoid interfering with other output
+        def _print(*args: Any, **kwargs: Any) -> None:
+            if "file" not in kwargs:
+                kwargs["file"] = out_buf
+            return print(*args, **kwargs)
 
-    stdout = redirected_output.getvalue()
-    stderr = redirected_error.getvalue()
-    sys.stdout = old_stdout
-    sys.stderr = old_stderr
+        eval_vars = {
+            "self": self,
+            "humantime": humantime,
+            "m": message,
+            "re": re,
+            "os": os,
+            "asyncio": asyncio,
+            "cfscrape": cfscrape,
+            "json": json,
+            "aiohttp": aiohttp,
+            "print": _print,
+            "send": send,
+            "stdout": out_buf,
+            "traceback": traceback,
+            "http": http,
+            "replied": message.reply_to_message,
+        }
+        try:
+            return "", await meval(code, globals(), **eval_vars)
+        except Exception as e:  # skipcq: PYL-W0703
+            # Find first traceback frame involving the snippet
+            first_snip_idx = -1
+            tb = traceback.extract_tb(e.__traceback__)
+            for i, frame in enumerate(tb):
+                if frame.filename == "<string>" or frame.filename.endswith("ast.py"):
+                    first_snip_idx = i
+                    break
+            # Re-raise exception if it wasn't caused by the snippet
+            # Return formatted stripped traceback
+            stripped_tb = tb[first_snip_idx:]
+            formatted_tb = format_exception(e, tb=stripped_tb)
+            return "⚠️ Error while executing snippet\n\n", formatted_tb
 
-    evaluation = ""
-    if exc:
-        evaluation = exc
-    elif stderr:
-        evaluation = stderr
-    elif stdout:
-        evaluation = stdout
-    else:
-        evaluation = strings("success")
+    before = time()
+    prefix, result = await _eval()
+    after = time()
+    # Always write result if no output has been collected thus far
+    if not out_buf.getvalue() or result is not None:
+        print(result, file=out_buf)
+    el_us = after - before
+    el_str = get_readable_time(el_us)
 
-    final_output = f"<b>EVAL</b>:\n<pre language='python'>{cmd}</pre>\n\n<b>OUTPUT</b>:\n<pre language='python'>{evaluation.strip()}</pre>\n"
-
+    out = out_buf.getvalue()
+    # Strip only ONE final newline to compensate for our message formatting
+    if out.endswith("\n"):
+        out = out[:-1]
+    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{code}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{out}</pre>\nExecuted Time: {el_str}"
     if len(final_output) > 4096:
-        with open("MissKatyEval.txt", "w+", encoding="utf8") as out_file:
-            out_file.write(final_output)
-        await m.reply_document(
-            document="MissKatyEval.txt",
-            caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
-            disable_notification=True,
-            thumb="assets/thumb.jpg",
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
-        )
-        os.remove("MissKatyEval.txt")
-        await status_message.delete()
+        with io.BytesIO(str.encode(out)) as out_file:
+            out_file.name = "MissKatyEval.txt"
+            await message.reply_document(
+                document=out_file,
+                caption="<code>code[: 4096 // 4 - 1]</code>",
+                disable_notification=True,
+                thumb="assets/thumb.jpg",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text=strings("cl_btn"),
+                                callback_data=f"close#{message.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
+            )
+            await status_message.delete()
     else:
         await edit_or_reply(
-            m,
+            message,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
         )
-        if not m.from_user.is_self:
+        if not message.from_user.is_self:
             await status_message.delete()
 
 
