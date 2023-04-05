@@ -153,27 +153,27 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     status_message = await editPesan(message, strings("run_eval")) if message.from_user.is_self else await kirimPesan(message, strings("run_eval"), quote=True)
     code = message.text.split(" ", 1)[1] if message.command else message.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
-    out = ''
+    out = ""
     humantime = get_readable_time
-    
+
     async def _eval() -> Tuple[str, Optional[str]]:
         # Message sending helper for convenience
         async def send(*args: Any, **kwargs: Any) -> types.Message:
             return await message.reply(*args, **kwargs)
-        
+
         # Print wrapper to capture output
         # We don't override sys.stdout to avoid interfering with other output
         def _print(*args: Any, **kwargs: Any) -> None:
             if "file" not in kwargs:
                 kwargs["file"] = out_buf
             return print(*args, **kwargs)
-        
+
         eval_vars = {
             "self": self,
             "humantime": humantime,
             "m": message,
             "re": re,
-            "os": os, 
+            "os": os,
             "asyncio": asyncio,
             "cfscrape": cfscrape,
             "json": json,
@@ -188,19 +188,19 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         try:
             return "", await meval(code, globals(), **eval_vars)
         except Exception as e:  # skipcq: PYL-W0703
-            # Find first traceback frame involving the snippet 
+            # Find first traceback frame involving the snippet
             first_snip_idx = -1
             tb = traceback.extract_tb(e.__traceback__)
             for i, frame in enumerate(tb):
                 if frame.filename == "<string>" or frame.filename.endswith("ast.py"):
-                    first_snip_idx = i 
+                    first_snip_idx = i
                     break
             # Re-raise exception if it wasn't caused by the snippet
-            # Return formatted stripped traceback 
-            stripped_tb = tb[first_snip_idx:] 
+            # Return formatted stripped traceback
+            stripped_tb = tb[first_snip_idx:]
             formatted_tb = format_exception(e, tb=stripped_tb)
             return "⚠️ Error while executing snippet\n\n", formatted_tb
-    
+
     before = time()
     prefix, result = await _eval()
     after = time()
@@ -209,7 +209,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         print(result, file=out_buf)
     el_us = after - before
     el_str = get_readable_time(el_us)
-    
+
     out = out_buf.getvalue()
     # Strip only ONE final newline to compensate for our message formatting
     if out.endswith("\n"):
@@ -219,7 +219,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
             await message.reply_document(
-                document= out_file,
+                document=out_file,
                 caption=f"<code>code[: 4096 // 4 - 1]</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
