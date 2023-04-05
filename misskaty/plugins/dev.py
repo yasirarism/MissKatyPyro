@@ -125,12 +125,11 @@ async def shell(_, m, strings):
             doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
-                caption=cmd[1][: 4096 // 4 - 1],
+                caption=f"<code>cmd[1][: 4096 // 4 - 1]</code>",
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
             )
             await msg.delete()
-            os.remove("shell_output.txt")
     elif len(shell) != 0:
         await edit_or_reply(
             m,
@@ -221,12 +220,11 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             out_file.name = "MissKatyEval.txt"
             await message.reply_document(
                 document= out_file,
-                caption=code[: 4096 // 4 - 1],
+                caption=f"<code>code[: 4096 // 4 - 1]</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
             )
-            os.remove("MissKatyEval.txt")
             await status_message.delete()
     else:
         await edit_or_reply(
