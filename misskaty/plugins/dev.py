@@ -136,9 +136,18 @@ async def shell(_, m, strings):
             doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
-                caption=f"<code>cmd[1][: 4096 // 4 - 1]</code>",
+                caption="<code>cmd[1][: 4096 // 4 - 1]</code>",
                 file_name=doc.name,
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text=strings("cl_btn"),
+                                callback_data=f"close#{m.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
             )
             await msg.delete()
     elif len(shell) != 0:
@@ -164,27 +173,27 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     status_message = await editPesan(message, strings("run_eval")) if message.from_user.is_self else await kirimPesan(message, strings("run_eval"), quote=True)
     code = message.text.split(" ", 1)[1] if message.command else message.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
-    out = ''
+    out = ""
     humantime = get_readable_time
-    
+
     async def _eval() -> Tuple[str, Optional[str]]:
         # Message sending helper for convenience
         async def send(*args: Any, **kwargs: Any) -> types.Message:
             return await message.reply(*args, **kwargs)
-        
+
         # Print wrapper to capture output
         # We don't override sys.stdout to avoid interfering with other output
         def _print(*args: Any, **kwargs: Any) -> None:
             if "file" not in kwargs:
                 kwargs["file"] = out_buf
             return print(*args, **kwargs)
-        
+
         eval_vars = {
             "self": self,
             "humantime": humantime,
             "m": message,
             "re": re,
-            "os": os, 
+            "os": os,
             "asyncio": asyncio,
             "cfscrape": cfscrape,
             "json": json,
@@ -199,19 +208,19 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         try:
             return "", await meval(code, globals(), **eval_vars)
         except Exception as e:  # skipcq: PYL-W0703
-            # Find first traceback frame involving the snippet 
+            # Find first traceback frame involving the snippet
             first_snip_idx = -1
             tb = traceback.extract_tb(e.__traceback__)
             for i, frame in enumerate(tb):
                 if frame.filename == "<string>" or frame.filename.endswith("ast.py"):
-                    first_snip_idx = i 
+                    first_snip_idx = i
                     break
             # Re-raise exception if it wasn't caused by the snippet
-            # Return formatted stripped traceback 
-            stripped_tb = tb[first_snip_idx:] 
+            # Return formatted stripped traceback
+            stripped_tb = tb[first_snip_idx:]
             formatted_tb = format_exception(e, tb=stripped_tb)
             return "⚠️ Error while executing snippet\n\n", formatted_tb
-    
+
     before = time()
     prefix, result = await _eval()
     after = time()
@@ -235,11 +244,20 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
             await message.reply_document(
-                document= out_file,
-                caption=f"<code>code[: 4096 // 4 - 1]</code>",
+                document=out_file,
+                caption="<code>code[: 4096 // 4 - 1]</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text=strings("cl_btn"),
+                                callback_data=f"close#{message.from_user.id}",
+                            )
+                        ]
+                    ]
+                ),
             )
             await status_message.delete()
     else:
