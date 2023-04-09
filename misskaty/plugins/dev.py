@@ -3,6 +3,7 @@ import io
 import os
 import re
 import sys
+import html
 import pickle
 import json
 import traceback
@@ -90,6 +91,15 @@ async def server_stats(c, m):
     """
     Give system stats of the server.
     """
+    if os.path.exists(".git"):
+        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
+    else:
+        botVersion = "v2.49"
+    try:
+        serverinfo = await http.get("https://ipinfo.io/json")
+        org = serverinfo.json()["org"]
+    except:
+        org = "N/A"
     currentTime = get_readable_time(time() - botStartTime)
     total, used, free = disk_usage(".")
     total = get_readable_file_size(total)
@@ -97,8 +107,9 @@ async def server_stats(c, m):
     free = get_readable_file_size(free)
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     caption = f"""
-**{BOT_NAME} is Up and Running successfully.**
+**{BOT_NAME} v{botVersion} is Up and Running successfully.**
 Bot Uptime: `{currentTime}`
+Server: {org}
 Total Disk Space: `{total}`
 Used: `{used}({disk_usage_percent("/").percent}%)`
 Free: `{free}`
@@ -133,7 +144,7 @@ async def shell(_, m, strings):
     elif len(shell) != 0:
         await edit_or_reply(
             m,
-            text=shell,
+            text=html.escape(shell),
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
@@ -208,13 +219,18 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if not out_buf.getvalue() or result is not None:
         print(result, file=out_buf)
     el_us = after - before
-    el_str = get_readable_time(el_us)
+    try:
+        el_str = get_readable_time(el_us)
+    except:
+        el_str = "1s"
+    if el_str == "" or el_str is None:
+        el_str = "0.1s"
     
     out = out_buf.getvalue()
     # Strip only ONE final newline to compensate for our message formatting
     if out.endswith("\n"):
         out = out[:-1]
-    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{code}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{out}</pre>\nExecuted Time: {el_str}"
+    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{html.escape(code)}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{html.escape(out)}</pre>\nExecuted Time: {el_str}"
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
