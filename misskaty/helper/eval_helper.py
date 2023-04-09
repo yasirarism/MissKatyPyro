@@ -1,4 +1,7 @@
 import ast
+import os
+import traceback
+from typing import List, Optional
 
 
 # We dont modify locals VVVV ; this lets us keep the message available to the user-provided function
@@ -7,7 +10,7 @@ async def meval(code, globs, **kwargs):
     # Note to self: please don't set globals here as they will be lost.
     # Don't clutter locals
     locs = {}
-    # Restore globals later
+    # Restore globals latertypes
     globs = globs.copy()
     # This code saves __name__ and __package into a kwarg passed to the function.
     # It is set before the users code runs to make sure relative imports work
@@ -96,11 +99,6 @@ async def meval(code, globs, **kwargs):
     elif not r:
         r = None
     return r
-
-
-import os
-import traceback
-from typing import List, Optional
 
 
 def format_exception(exp: BaseException, tb: Optional[List[traceback.FrameSummary]] = None) -> str:
