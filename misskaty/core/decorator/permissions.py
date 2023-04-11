@@ -127,6 +127,11 @@ async def check_perms(
         sender = message.reply_text
         chat = message.chat
     # TODO: Cache all admin permissions in db.
+    if not message.from_user:
+        # For anonymous admins
+        if message.sender_chat and message.sender_chat.id == message.chat.id:
+            return True
+        return False
     user = await chat.get_member(message.from_user.id)
     if user.status == enums.ChatMemberStatus.OWNER:
         return True
