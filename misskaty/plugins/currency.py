@@ -50,8 +50,8 @@ async def currency(c: Client, m: Message):
             await kirimPesan(
                 m,
                 "**CURRENCY EXCHANGE RATE RESULT:**\n\n"
-                f"`{amount}` **{target_code}** = `{round(conversion_result)}` **{base_code}**\n"
-                f"<b>Rate Today</b> = `{round(conversion_rate)}`\n"
+                f"`{amount}` **{target_code}** = `{conversion_result}` **{base_code}**\n"
+                f"<b>Rate Today</b> = `{conversion_rate}`\n"
                 f"<b>Last Update:</b> {last_update}")
         except:
             await kirimPesan(m, "Failed convert currency, maybe you give wrong currency format or api down.")
