@@ -40,7 +40,6 @@ async def currency(c: Client, m: Message):
                 last_update = data["time_last_update_utc"]
             except KeyError:
                 return await kirimPesan(m, "<code>Invalid response from api !</i>")
-
             await kirimPesan(m, "**CURRENCY EXCHANGE RATE RESULT:**\n\n" f"`{amount}` **{base_code}** = `{round(conversion_result)}` **{target_code}**\n" f"<b>Rate Today</b> = `{round(conversion_rate)}`\n" f"<b>Last Update:</b> {last_update}")
         except:
             await kirimPesan(m, "Failed convert currency, maybe you give wrong currency format or api down.")
