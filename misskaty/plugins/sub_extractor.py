@@ -177,7 +177,13 @@ async def stream_extract(bot, update, strings):
             progress_args=(strings("up_str"), update.message, c_time),
         )
         await hapusPesan(update.message)
-        os.remove(namafile)
+        try:
+            os.remove(namafile)
+        except:
+            pass
     except Exception as e:
-        os.remove(namafile)
+        try:
+            os.remove(namafile)
+        except:
+            pass
         await editPesan(update.message, strings("fail_extr_sub").format(link=link, e=e))

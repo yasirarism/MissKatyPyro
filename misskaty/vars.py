@@ -84,3 +84,4 @@ BLOCKED_EXTENSIONS = list(
     )
 )
 MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE", None)
+CURRENCY_API = environ.get("CURRENCY_API", None)

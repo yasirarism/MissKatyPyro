@@ -3,6 +3,7 @@ import io
 import os
 import re
 import sys
+import html
 import pickle
 import json
 import traceback
@@ -90,6 +91,15 @@ async def server_stats(c, m):
     """
     Give system stats of the server.
     """
+    if os.path.exists(".git"):
+        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
+    else:
+        botVersion = "v2.49"
+    try:
+        serverinfo = await http.get("https://ipinfo.io/json")
+        org = serverinfo.json()["org"]
+    except:
+        org = "N/A"
     currentTime = get_readable_time(time() - botStartTime)
     total, used, free = disk_usage(".")
     total = get_readable_file_size(total)
@@ -97,22 +107,23 @@ async def server_stats(c, m):
     free = get_readable_file_size(free)
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     caption = f"""
-**{BOT_NAME} is Up and Running successfully.**
-Bot Uptime: `{currentTime}`
-Total Disk Space: `{total}`
-Used: `{used}({disk_usage_percent("/").percent}%)`
-Free: `{free}`
-CPU Usage: `{cpu_percent()}%`
-RAM Usage: `{virtual_memory().percent}%`
+**{BOT_NAME} {botVersion} is Up and Running successfully.**
+<b>Bot Uptime:</b> `{currentTime}`
+<b>Server:</b> <code>{org}</code>
+<b>Total Disk Space:</b> `{total}`
+<b>Used:</b> `{used}({disk_usage_percent("/").percent}%)`
+<b>Free:</b> `{free}`
+<b>CPU Usage:</b> `{cpu_percent()}%`
+<b>RAM Usage:</b> `{virtual_memory().percent}%`
 
 `{neofetch}`
 """
     await kirimPesan(m, caption)
 
 
-@app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@user.on_message(filters.command(["shell", "sh"], ".") & filters.me)
+@app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_edited_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
+@user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
 async def shell(_, m, strings):
     cmd = m.text.split(" ", 1)
@@ -125,7 +136,7 @@ async def shell(_, m, strings):
             doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
-                caption="<code>cmd[1][: 4096 // 4 - 1]</code>",
+                caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -142,7 +153,7 @@ async def shell(_, m, strings):
     elif len(shell) != 0:
         await edit_or_reply(
             m,
-            text=shell,
+            text=html.escape(shell),
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
         )
@@ -152,9 +163,9 @@ async def shell(_, m, strings):
         await m.reply(strings("no_reply"))
 
 
-@app.on_message((filters.command(["ev", "run"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
-@app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
-@user.on_message(filters.command(["ev", "run"], ".") & filters.me)
+@app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@app.on_edited_message((filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
 async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if (message.command and len(message.command) == 1) or message.text == "app.run()":
@@ -217,19 +228,24 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if not out_buf.getvalue() or result is not None:
         print(result, file=out_buf)
     el_us = after - before
-    el_str = get_readable_time(el_us)
+    try:
+        el_str = get_readable_time(el_us)
+    except:
+        el_str = "1s"
+    if el_str == "" or el_str is None:
+        el_str = "0.1s"
 
     out = out_buf.getvalue()
     # Strip only ONE final newline to compensate for our message formatting
     if out.endswith("\n"):
         out = out[:-1]
-    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{code}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{out}</pre>\nExecuted Time: {el_str}"
+    final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{html.escape(code)}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{html.escape(out)}</pre>\nExecuted Time: {el_str}"
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
             await message.reply_document(
                 document=out_file,
-                caption="<code>code[: 4096 // 4 - 1]</code>",
+                caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
                 reply_markup=InlineKeyboardMarkup(

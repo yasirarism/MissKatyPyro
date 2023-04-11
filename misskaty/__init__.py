@@ -1,6 +1,7 @@
 import os
 import time
-from logging import ERROR, INFO, FileHandler, StreamHandler, basicConfig, getLogger, handlers
+import uvloop
+from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 import pyromod.listen
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -10,13 +11,15 @@ from pyrogram import Client
 
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
 
-basicConfig(filename="MissKatyLogs.txt", format="%(asctime)s - %(name)s.%(funcName)s - %(levelname)s - %(message)s", level=INFO)
-
-logger = getLogger()
-# handler logging dengan batasan 100 baris
-handler = handlers.RotatingFileHandler("MissKatyLogs.txt", maxBytes=1024 * 1024)
-handler.setLevel(INFO)
-logger.addHandler(handler)
+basicConfig(
+    level=INFO,
+    format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+    handlers=[
+        handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),
+        StreamHandler(),
+    ],
+)
 getLogger("pyrogram").setLevel(ERROR)
 getLogger("openai").setLevel(ERROR)
 
@@ -25,6 +28,8 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
+
+uvloop.install()
 
 # Pyrogram Bot Client
 app = Client(

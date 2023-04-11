@@ -6,6 +6,7 @@
  * Copyright @YasirPedia All rights reserved
 """
 import time
+import os
 from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
@@ -15,19 +16,30 @@ from pyrogram import filters
 from misskaty import app, botStartTime
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.human_read import get_readable_time
+from misskaty.helper.http import http
+from .dev import shell_exec
 from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 @ratelimiter
 async def ping(_, message):
+    if os.path.exists(".git"):
+        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
+    else:
+        botVersion = "v2.49"
+    try:
+        serverinfo = await http.get("https://ipinfo.io/json")
+        org = serverinfo.json()["org"]
+    except:
+        org = "N/A"
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
     rm = await message.reply_text("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
     try:
-        await rm.edit(f"<b>🐈 MissKatyBot online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>")
+        await rm.edit(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
     except Exception:
         pass
 

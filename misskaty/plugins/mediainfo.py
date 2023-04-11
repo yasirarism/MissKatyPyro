@@ -108,4 +108,4 @@ DETAILS
                 )
                 await process.delete()
         except IndexError:
-            return await kirimPesan(message, strings("mediainfo_help").format(help=message.command[0]))
+            return await kirimPesan(message, strings("mediainfo_help").format(cmd=message.command[0]))
