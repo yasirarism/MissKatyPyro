@@ -14,15 +14,11 @@ __HELP__ = """
 
 LOGGER = logging.getLogger(__name__)
 
+
 @app.on_message(filters.command(["currency"], COMMAND_HANDLER))
 async def currency(c: Client, m: Message):
     if CURRENCY_API is None:
-        return await kirimPesan(
-            m,
-            f"<code>Oops!!get the API from</code> "
-            "<a href='https://app.exchangerate-api.com/sign-up'>HERE</a> "
-            "<code>& add it to config vars</code> (<code>CURRENCY_API</code>)",
-            disable_web_page_preview=True)
+        return await kirimPesan(m, f"<code>Oops!!get the API from</code> " "<a href='https://app.exchangerate-api.com/sign-up'>HERE</a> " "<code>& add it to config vars</code> (<code>CURRENCY_API</code>)", disable_web_page_preview=True)
     if len(m.text.split()) == 4:
         teks = m.text.split()
         amount = teks[1]
@@ -32,8 +28,7 @@ async def currency(c: Client, m: Message):
         return await kirimPesan(m, f"Use format /{m.command[0]} [amount] [currency_from] [currency_to] to convert currency.")
 
     if amount.isdigit():
-        url = (f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/"
-               f"pair/{currency_from}/{currency_to}/{amount}")
+        url = f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/" f"pair/{currency_from}/{currency_to}/{amount}"
         try:
             res = await http.get(url)
             data = res.json()
@@ -46,15 +41,8 @@ async def currency(c: Client, m: Message):
             except KeyError:
                 return await kirimPesan(m, "<code>Invalid response from api !</i>")
 
-            await kirimPesan(
-                m,
-                "**CURRENCY EXCHANGE RATE RESULT:**\n\n"
-                f"`{amount}` **{target_code}** = `{round(conversion_result)}` **{base_code}**\n"
-                f"<b>Rate Today</b> = `{round(conversion_rate)}`\n"
-                f"<b>Last Update:</b> {last_update}")
+            await kirimPesan(m, "**CURRENCY EXCHANGE RATE RESULT:**\n\n" f"`{amount}` **{target_code}** = `{round(conversion_result)}` **{base_code}**\n" f"<b>Rate Today</b> = `{round(conversion_rate)}`\n" f"<b>Last Update:</b> {last_update}")
         except:
             await kirimPesan(m, "Failed convert currency, maybe you give wrong currency format or api down.")
     else:
-        await kirimPesan(
-            m,
-            r"<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")
+        await kirimPesan(m, r"<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")

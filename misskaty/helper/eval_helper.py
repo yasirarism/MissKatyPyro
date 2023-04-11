@@ -100,6 +100,7 @@ async def meval(code, globs, **kwargs):
         r = None
     return r
 
+
 def format_exception(exp: BaseException, tb: Optional[List[traceback.FrameSummary]] = None) -> str:
     """Formats an exception traceback as a string, similar to the Python interpreter."""
 
