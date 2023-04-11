@@ -39,7 +39,7 @@ async def ping(_, message):
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
     try:
-        await rm.edit(f"<b>🐈 MissKatyBot v{botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by {org}")
+        await rm.edit(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
     except Exception:
         pass
 

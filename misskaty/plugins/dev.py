@@ -107,23 +107,23 @@ async def server_stats(c, m):
     free = get_readable_file_size(free)
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     caption = f"""
-**{BOT_NAME} v{botVersion} is Up and Running successfully.**
-Bot Uptime: `{currentTime}`
-Server: {org}
-Total Disk Space: `{total}`
-Used: `{used}({disk_usage_percent("/").percent}%)`
-Free: `{free}`
-CPU Usage: `{cpu_percent()}%`
-RAM Usage: `{virtual_memory().percent}%`
+**{BOT_NAME} {botVersion} is Up and Running successfully.**
+<b>Bot Uptime:</b> `{currentTime}`
+<b>Server:</b> <code>{org}</code>
+<b>Total Disk Space:</b> `{total}`
+<b>Used:</b> `{used}({disk_usage_percent("/").percent}%)`
+<b>Free:</b> `{free}`
+<b>CPU Usage:</b> `{cpu_percent()}%`
+<b>RAM Usage:</b> `{virtual_memory().percent}%`
 
 `{neofetch}`
 """
     await kirimPesan(m, caption)
 
 
-@app.on_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@app.on_edited_message(filters.command(["shell", "sh"], COMMAND_HANDLER) & filters.user(SUDO))
-@user.on_message(filters.command(["shell", "sh"], ".") & filters.me)
+@app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_edited_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
+@user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
 async def shell(_, m, strings):
     cmd = m.text.split(" ", 1)
@@ -163,9 +163,9 @@ async def shell(_, m, strings):
         await m.reply(strings("no_reply"))
 
 
-@app.on_message((filters.command(["ev", "run"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
-@app.on_edited_message((filters.command(["ev", "run"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
-@user.on_message(filters.command(["ev", "run"], ".") & filters.me)
+@app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@app.on_edited_message((filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
 async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if (message.command and len(message.command) == 1) or message.text == "app.run()":

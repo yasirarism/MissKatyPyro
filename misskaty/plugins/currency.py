@@ -26,8 +26,8 @@ async def currency(c: Client, m: Message):
     if len(m.text.split()) == 4:
         teks = m.text.split()
         amount = teks[1]
-        currency_to = teks[2]
-        currency_from = teks[3]
+        currency_from = teks[2]
+        currency_to = teks[3]
     else:
         return await kirimPesan(m, f"Use format /{m.command[0]} [amount] [currency_from] [currency_to] to convert currency.")
 
