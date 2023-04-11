@@ -20,7 +20,7 @@ async def currency(c: Client, m: Message):
             "<a href='https://app.exchangerate-api.com/sign-up'>HERE</a> "
             "<code>& add it to config vars</code> (<code>CURRENCY_API</code>)",
             disable_web_page_preview=True)
-    if len(m.text.split() == 4):
+    if len(m.text.split()) == 4:
         teks = m.text.split()
         amount = teks[1]
         currency_to = teks[2]
