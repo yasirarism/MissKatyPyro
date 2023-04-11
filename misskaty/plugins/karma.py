@@ -68,6 +68,8 @@ async def upvote(_, message):
         return
     if not message.from_user:
         return
+    if message.reply_to_message.from_user.is_bot:
+        return
     if message.reply_to_message.from_user.id == message.from_user.id:
         return
     chat_id = message.chat.id
