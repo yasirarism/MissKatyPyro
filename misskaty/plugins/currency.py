@@ -16,17 +16,20 @@ async def currency(c: Client, m: Message):
     if CURRENCY_API is None:
         return await kirimPesan(
             m,
-            "<code>Oops!!get the API from</code> "
+            f"<code>Oops!!get the API from</code> "
             "<a href='https://app.exchangerate-api.com/sign-up'>HERE</a> "
             "<code>& add it to config vars</code> (<code>CURRENCY_API</code>)",
             disable_web_page_preview=True)
-    if len(m.command) == 3:
-        cmd, amount, currency_to, currency_from = m.text.split()
+    if len(m.text.split() == 4):
+        teks = m.text.split()
+        amount = teks[1]
+        currency_to = teks[2]
+        currency_from = teks[3]
     else:
-        return await kirimPesan(m, "Use format /{m.command[0]} [amount] [currency_from] [currency_to] to convert currency.")
+        return await kirimPesan(m, f"Use format /{m.command[0]} [amount] [currency_from] [currency_to] to convert currency.")
 
     if amount.isdigit():
-        url = ("https://v6.exchangerate-api.com/v6/{831e8214d53d862bf1dbd721}/"
+        url = (f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/"
                f"pair/{currency_from}/{currency_to}/{amount}")
         try:
             res = await http.get(url)
