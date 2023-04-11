@@ -34,6 +34,7 @@ async def currency(c: Client, m: Message):
         try:
             res = await http.get(url)
             data = res.json()
+            print(data)
             try:
                 conversion_rate = round(data["conversion_rate"])
                 conversion_result = round(data["conversion_result"])
