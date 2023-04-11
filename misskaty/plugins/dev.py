@@ -232,7 +232,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         el_str = get_readable_time(el_us)
     except:
         el_str = "1s"
-    if el_str == "" or el_str is None:
+    if not el_str or el_str is None:
         el_str = "0.1s"
 
     out = out_buf.getvalue()
