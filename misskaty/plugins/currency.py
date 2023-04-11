@@ -37,6 +37,7 @@ async def currency(c: Client, m: Message):
         try:
             res = await http.get(url)
             data = res.json()
+            LOGGER.info(data)
             try:
                 conversion_rate = data["conversion_rate"]
                 conversion_result = data["conversion_result"]
