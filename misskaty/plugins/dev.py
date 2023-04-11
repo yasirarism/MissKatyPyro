@@ -234,7 +234,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         el_str = "1s"
     if el_str == "" or el_str is None:
         el_str = "0.1s"
-    
+
     out = out_buf.getvalue()
     # Strip only ONE final newline to compensate for our message formatting
     if out.endswith("\n"):
