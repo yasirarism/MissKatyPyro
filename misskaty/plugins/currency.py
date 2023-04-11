@@ -1,6 +1,7 @@
 from pyrogram import filters, Client
 from pyrogram.types import Message
 from misskaty import app
+import logging
 from misskaty.helper.http import http
 from misskaty.core.message_utils import kirimPesan
 from misskaty.vars import COMMAND_HANDLER, CURRENCY_API
@@ -10,6 +11,8 @@ __MODULE__ = "Currency"
 __HELP__ = """
 /currency - Send structure message Telegram in JSON using Pyrogram Style.
 """
+
+LOGGER = logging.getLogger(__name__)
 
 @app.on_message(filters.command(["currency"], COMMAND_HANDLER))
 async def currency(c: Client, m: Message):
@@ -34,18 +37,21 @@ async def currency(c: Client, m: Message):
         try:
             res = await http.get(url)
             data = res.json()
-            print(data)
             try:
-                conversion_rate = round(data["conversion_rate"])
-                conversion_result = round(data["conversion_result"])
+                conversion_rate = data["conversion_rate"]
+                conversion_result = data["conversion_result"]
+                target_code = data["target_code"]
+                base_code = data["base_code"]
+                last_update = data["time_last_update_utc"]
             except KeyError:
                 return await kirimPesan(m, "<code>Invalid response from api !</i>")
 
             await kirimPesan(
                 m,
                 "**CURRENCY EXCHANGE RATE RESULT:**\n\n"
-                f"`{amount}` **{currency_to.upper()}** = `{conversion_result}` **{currency_from.upper()}**\n"
-                f"<b>Rate Today</b> = {conversion_rate}")
+                f"`{amount}` **{target_code}** = `{round(conversion_result)}` **{base_code}**\n"
+                f"<b>Rate Today</b> = `{round(conversion_rate)}`\n"
+                f"<b>Last Update:</b> {last_update}")
         except:
             await kirimPesan(m, "Failed convert currency, maybe you give wrong currency format or api down.")
     else:
