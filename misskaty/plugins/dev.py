@@ -136,7 +136,7 @@ async def shell(_, m, strings):
             doc.name = "shell_output.txt"
             await m.reply_document(
                 document=doc,
-                caption="<code>cmd[1][: 4096 // 4 - 1]</code>",
+                caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup(
                     [
@@ -245,7 +245,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             out_file.name = "MissKatyEval.txt"
             await message.reply_document(
                 document=out_file,
-                caption="<code>code[: 4096 // 4 - 1]</code>",
+                caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
                 reply_markup=InlineKeyboardMarkup(
