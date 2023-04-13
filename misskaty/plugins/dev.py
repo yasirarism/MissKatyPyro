@@ -40,6 +40,8 @@ __HELP__ = """
 /json - Send structure message Telegram in JSON using Pyrogram Style.
 """
 
+var = {}
+teskode = {}
 
 async def edit_or_reply(msg, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
@@ -51,7 +53,8 @@ async def edit_or_reply(msg, **kwargs):
 @use_chat_lang()
 async def log_file(bot, message, strings):
     """Send log file"""
-    try:
+    msg = await kirimPesan(message, "<b>Reading bot logs ...</b>")
+    if len(message.command) == 1:
         await message.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
@@ -66,9 +69,11 @@ async def log_file(bot, message, strings):
                 ]
             ),
         )
-    except:
-        err = traceback.format_exc()
-        await message.reply(str(err))
+        await hapusPesan(msg)
+    elif len(message.command) == 2:
+        val = message.text.split()
+        tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
+        await editPesan(msg, f"<pre language='bash'>{html.escape(tail[0])}</pre>")
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
@@ -192,6 +197,9 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "self": self,
             "humantime": humantime,
             "m": message,
+            "var": var,
+            "app": app,
+            "teskode": teskode,
             "re": re,
             "os": os,
             "asyncio": asyncio,
@@ -205,6 +213,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "http": http,
             "replied": message.reply_to_message,
         }
+        eval_vars.update(var)
         try:
             return "", await meval(code, globals(), **eval_vars)
         except Exception as e:  # skipcq: PYL-W0703

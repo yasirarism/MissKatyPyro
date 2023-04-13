@@ -9,6 +9,7 @@ import re
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.users_chats_db import db
 from pyrogram import filters
+from pyrogram.errors import ChannelPrivate
 from misskaty import app, BOT_USERNAME, HELPABLE, BOT_NAME
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 from misskaty.core.message_utils import *
@@ -69,7 +70,10 @@ keyboard = InlineKeyboardMarkup(
 async def start(_, message, strings):
     if message.chat.type.value != "private":
         if not await db.get_chat(message.chat.id):
-            total = await app.get_chat_members_count(message.chat.id)
+            try:
+                total = await app.get_chat_members_count(message.chat.id)
+            except ChannelPrivate:
+                return await message.chat.leave()
             await app.send_message(
                 LOG_CHANNEL,
                 strings("newgroup_log").format(jdl=message.chat.title, id=message.chat.id, c=total),

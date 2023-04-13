@@ -5,13 +5,12 @@ from time import time
 
 from pyrogram import enums, filters
 from pyrogram.errors import ChatAdminRequired, FloodWait
-from pyrogram.types import ChatPermissions
+from pyrogram.types import ChatPermissions, ChatPrivileges
 
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import (
-    admins_in_chat,
     adminsOnly,
     require_admin,
     list_admins,
@@ -58,21 +57,6 @@ __HELP__ = """
 /ban_ghosts - Ban Deleted Accounts
 /report | @admins | @admin - Report A Message To Admins.
 """
-
-
-# Admin cache reload
-@app.on_chat_member_updated()
-async def admin_cache_func(_, cmu):
-    if cmu.old_chat_member and cmu.old_chat_member.promoted_by:
-        try:
-            admins_in_chat[cmu.chat.id] = {
-                "last_updated_at": time(),
-                "data": [member.user.id async for member in app.get_chat_members(cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
-            }
-            LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
-        except:
-            pass
-
 
 # Purge CMD
 @app.on_message(filters.command("purge", COMMAND_HANDLER) & filters.group)
@@ -366,27 +350,31 @@ async def promoteFunc(client, message, strings):
     if message.command[0][0] == "f":
         await message.chat.promote_member(
             user_id=user_id,
-            can_change_info=bot.privileges.can_change_info,
-            can_invite_users=bot.privileges.can_invite_users,
-            can_delete_messages=bot.privileges.can_delete_messages,
-            can_restrict_members=bot.privileges.can_restrict_members,
-            can_pin_messages=bot.privileges.can_pin_messages,
-            can_promote_members=bot.privileges.can_promote_members,
-            can_manage_chat=bot.privileges.can_manage_chat,
-            can_manage_video_chats=bot.privileges.can_manage_video_chats,
+            privileges=ChatPrivileges(
+                can_change_info=bot.privileges.can_change_info,
+                can_invite_users=bot.privileges.can_invite_users,
+                can_delete_messages=bot.privileges.can_delete_messages,
+                can_restrict_members=bot.privileges.can_restrict_members,
+                can_pin_messages=bot.privileges.can_pin_messages,
+                can_promote_members=bot.privileges.can_promote_members,
+                can_manage_chat=bot.privileges.can_manage_chat,
+                can_manage_video_chats=bot.privileges.can_manage_video_chats
+            )
         )
         return await message.reply_text(strings("full_promote").format(umention=umention))
 
     await message.chat.promote_member(
         user_id=user_id,
-        can_change_info=False,
-        can_invite_users=bot.privileges.can_invite_users,
-        can_delete_messages=bot.privileges.can_delete_messages,
-        can_restrict_members=bot.privileges.can_restrict_members,
-        can_pin_messages=bot.privileges.can_pin_messages,
-        can_promote_members=False,
-        can_manage_chat=bot.privileges.can_manage_chat,
-        can_manage_video_chats=bot.privileges.can_manage_video_chats,
+        privileges=ChatPrivileges(
+            can_change_info=False,
+            can_invite_users=bot.privileges.can_invite_users,
+            can_delete_messages=bot.privileges.can_delete_messages,
+            can_restrict_members=bot.privileges.can_restrict_members,
+            can_pin_messages=bot.privileges.can_pin_messages,
+            can_promote_members=False,
+            can_manage_chat=bot.privileges.can_manage_chat,
+            can_manage_video_chats=bot.privileges.can_manage_video_chats
+        )
     )
     await message.reply_text(strings("normal_promote").format(umention=umention))
 
@@ -408,14 +396,16 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("demote_sudo_err"))
     await message.chat.promote_member(
         user_id=user_id,
-        can_change_info=False,
-        can_invite_users=False,
-        can_delete_messages=False,
-        can_restrict_members=False,
-        can_pin_messages=False,
-        can_promote_members=False,
-        can_manage_chat=False,
-        can_manage_video_chats=False,
+        privileges=ChatPrivileges(
+            can_change_info=False,
+            can_invite_users=False,
+            can_delete_messages=False,
+            can_restrict_members=False,
+            can_pin_messages=False,
+            can_promote_members=False,
+            can_manage_chat=False,
+            can_manage_video_chats=False,
+        )
     )
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")

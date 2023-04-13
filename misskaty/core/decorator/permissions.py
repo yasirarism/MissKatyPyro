@@ -17,27 +17,27 @@ async def member_permissions(chat_id: int, user_id: int):
     perms = []
     try:
         member = (await app.get_chat_member(chat_id, user_id)).privileges
-    except Exception:
+        if member.can_post_messages:
+            perms.append("can_post_messages")
+        if member.can_edit_messages:
+            perms.append("can_edit_messages")
+        if member.can_delete_messages:
+            perms.append("can_delete_messages")
+        if member.can_restrict_members:
+            perms.append("can_restrict_members")
+        if member.can_promote_members:
+            perms.append("can_promote_members")
+        if member.can_change_info:
+            perms.append("can_change_info")
+        if member.can_invite_users:
+            perms.append("can_invite_users")
+        if member.can_pin_messages:
+            perms.append("can_pin_messages")
+        if member.can_manage_video_chats:
+            perms.append("can_manage_video_chats")
+        return perms
+    except:
         return []
-    if member.can_post_messages:
-        perms.append("can_post_messages")
-    if member.can_edit_messages:
-        perms.append("can_edit_messages")
-    if member.can_delete_messages:
-        perms.append("can_delete_messages")
-    if member.can_restrict_members:
-        perms.append("can_restrict_members")
-    if member.can_promote_members:
-        perms.append("can_promote_members")
-    if member.can_change_info:
-        perms.append("can_change_info")
-    if member.can_invite_users:
-        perms.append("can_invite_users")
-    if member.can_pin_messages:
-        perms.append("can_pin_messages")
-    if member.can_manage_video_chats:
-        perms.append("can_manage_video_chats")
-    return perms
 
 
 async def check_perms(
@@ -154,23 +154,6 @@ async def check_perms(
     if complain_missing_perms:
         await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
     return False
-
-
-admins_in_chat = {}
-
-
-async def list_admins(chat_id: int):
-    global admins_in_chat
-    if chat_id in admins_in_chat:
-        interval = time() - admins_in_chat[chat_id]["last_updated_at"]
-        if interval < 3600:
-            return admins_in_chat[chat_id]["data"]
-
-    admins_in_chat[chat_id] = {
-        "last_updated_at": time(),
-        "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
-    }
-    return admins_in_chat[chat_id]["data"]
 
 
 async def authorised(func, subFunc2, client, message, *args, **kwargs):
