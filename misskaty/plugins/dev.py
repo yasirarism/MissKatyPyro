@@ -214,6 +214,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "replied": message.reply_to_message,
         }
         eval_vars.update(var)
+        eval_vars.update(teskode)
         try:
             return "", await meval(code, globals(), **eval_vars)
         except Exception as e:  # skipcq: PYL-W0703
