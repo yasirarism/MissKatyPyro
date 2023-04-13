@@ -44,7 +44,6 @@ sudo docker run misskaty
 sudo docker ps
 ```
 sudo docker stop <pid>
-```
 
 #### Build And Run The Docker Image Using docker-compose
 
@@ -63,6 +62,7 @@ sudo docker-compose up --build
 - To stop the running image:
 ```
 sudo docker ps
+```
 ```
 sudo docker-compose stop <pid>
 ```
