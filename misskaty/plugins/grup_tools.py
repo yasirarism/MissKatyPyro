@@ -55,7 +55,7 @@ def welcomepic(pic, user, chat, id, strings):
     pfp = circle(pfp)
     pfp = pfp.resize((265, 265))  # Resizes the Profilepicture so it fits perfectly in the circle
     font = ImageFont.truetype("assets/Calistoga-Regular.ttf", 37)  # <- Text Font of the Member Count. Change the text size for your preference
-    member_text = strings("welcpic_msg")  # <- Text under the Profilepicture with the Membercount
+    member_text = strings("welcpic_msg").format(userr=user, id=id)  # <- Text under the Profilepicture with the Membercount
     draw_multiple_line_text(background, member_text, font, 395)
     draw_multiple_line_text(background, chat, font, 47)
     ImageDraw.Draw(background).text(
