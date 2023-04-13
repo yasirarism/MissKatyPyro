@@ -1,9 +1,9 @@
 {
     "no_uname": "<code>Ora Jeneng Panganggo</code>",
     "no_last_name": "<kode>Ora Ana Jeneng mburi</code>",
-    "uname_change_msg": "✨ Jeneng pangguna diganti saka {bef} ➡️ <code>{aft}</code>.\n",
-    "lastname_change_msg": "✨ Ganti jeneng mburi saka {bef} ➡️ <code>{aft}</code>.\n",
-    "firstname_change_msg": "✨ Ganti jeneng ngarep saka {bef} ➡️ <code>{aft}</code>.\n",
+    "uname_change_msg": "✨ Jeneng pangguna diganti saka {bef} ➡️ {aft}.\n",
+    "lastname_change_msg": "✨ Ganti jeneng mburi saka {bef} ➡️ {aft}.\n",
+    "firstname_change_msg": "✨ Ganti jeneng ngarep saka {bef} ➡️ {aft}.\n",
     "set_sangmata_help": "Gunakake <code>/{cmd} on</code>, kanggo ngaktifake sangmata. Yen sampeyan pengin mateni, sampeyan bisa nggunakake parameter mati.",
     "sangmata_already_on": "SangMata wis diaktifake ing grup sampeyan.",
     "sangmata_enabled": "Sangmata diaktifake ing grup sampeyan.",
