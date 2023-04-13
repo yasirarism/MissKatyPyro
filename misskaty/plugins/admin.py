@@ -374,8 +374,8 @@ async def promoteFunc(client, message, strings):
                 can_pin_messages=bot.privileges.can_pin_messages,
                 can_promote_members=bot.privileges.can_promote_members,
                 can_manage_chat=bot.privileges.can_manage_chat,
-                can_manage_video_chats=bot.privileges.can_manage_video_chats
-            )
+                can_manage_video_chats=bot.privileges.can_manage_video_chats,
+            ),
         )
         return await message.reply_text(strings("full_promote").format(umention=umention))
 
@@ -389,8 +389,8 @@ async def promoteFunc(client, message, strings):
             can_pin_messages=bot.privileges.can_pin_messages,
             can_promote_members=False,
             can_manage_chat=bot.privileges.can_manage_chat,
-            can_manage_video_chats=bot.privileges.can_manage_video_chats
-        )
+            can_manage_video_chats=bot.privileges.can_manage_video_chats,
+        ),
     )
     await message.reply_text(strings("normal_promote").format(umention=umention))
 
@@ -421,7 +421,7 @@ async def demote(client, message, strings):
             can_promote_members=False,
             can_manage_chat=False,
             can_manage_video_chats=False,
-        )
+        ),
     )
     umention = (await app.get_users(user_id)).mention
     await message.reply_text(f"Demoted! {umention}")

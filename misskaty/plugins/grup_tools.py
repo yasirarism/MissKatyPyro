@@ -115,7 +115,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
             apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{user.id}", headers=headers)).json()
             if not apispamwatch.get("error"):
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
-                userspammer += strings("spamwatch_msg").format(umention=user.mention, uid=user.id, reas=apispamwatch.get('reason'))
+                userspammer += strings("spamwatch_msg").format(umention=user.mention, uid=user.id, reas=apispamwatch.get("reason"))
         except Exception as err:
             LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
         # Combot API Detection
@@ -200,7 +200,7 @@ async def save_group(bot, message, strings):
                     apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{u.id}", headers=headers)).json()
                     if not apispamwatch.get("error"):
                         await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
-                        userspammer += strings("spamwatch_msg").format(umention=u.mention, uid=u.id, reas=apispamwatch.get('reason'))
+                        userspammer += strings("spamwatch_msg").format(umention=u.mention, uid=u.id, reas=apispamwatch.get("reason"))
                 except Exception as err:
                     LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
                 # Combot API Detection

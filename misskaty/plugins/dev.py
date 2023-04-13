@@ -43,6 +43,7 @@ __HELP__ = """
 var = {}
 teskode = {}
 
+
 async def edit_or_reply(msg, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
