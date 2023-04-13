@@ -10,6 +10,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from .web_scraper import SCRAP_DICT, data_kuso
 from .pypi_search import PYPI_DICT
+from misskaty.core.decorator.permissions import admins_in_chat
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.time_gap import check_time_gap
@@ -114,6 +115,7 @@ async def clear_reqdict():
     data_kuso.clear()
     REQUEST_DB.clear()
     PYPI_DICT.clear()
+    admins_in_chat.clear()
     try:
         os.rmdir("downloads")
         os.rmdir("GenSS")

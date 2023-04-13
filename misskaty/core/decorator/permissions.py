@@ -156,6 +156,23 @@ async def check_perms(
     return False
 
 
+admins_in_chat = {}
+
+
+async def list_admins(chat_id: int):
+    global admins_in_chat
+    if chat_id in admins_in_chat:
+        interval = time() - admins_in_chat[chat_id]["last_updated_at"]
+        if interval < 3600:
+            return admins_in_chat[chat_id]["data"]
+
+    admins_in_chat[chat_id] = {
+        "last_updated_at": time(),
+        "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+    }
+    return admins_in_chat[chat_id]["data"]
+
+
 async def authorised(func, subFunc2, client, message, *args, **kwargs):
     chatID = message.chat.id
     try:

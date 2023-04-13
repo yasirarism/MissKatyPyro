@@ -11,6 +11,7 @@ from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import (
+    admins_in_chat,
     adminsOnly,
     require_admin,
     list_admins,
@@ -57,6 +58,21 @@ __HELP__ = """
 /ban_ghosts - Ban Deleted Accounts
 /report | @admins | @admin - Report A Message To Admins.
 """
+
+
+# Admin cache reload
+@app.on_chat_member_updated()
+async def admin_cache_func(_, cmu):
+    if cmu.old_chat_member and cmu.old_chat_member.promoted_by:
+        try:
+            admins_in_chat[cmu.chat.id] = {
+                "last_updated_at": time(),
+                "data": [member.user.id async for member in app.get_chat_members(cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+            }
+            LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
+        except:
+            pass
+
 
 # Purge CMD
 @app.on_message(filters.command("purge", COMMAND_HANDLER) & filters.group)
