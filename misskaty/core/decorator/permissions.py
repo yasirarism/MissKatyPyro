@@ -17,27 +17,27 @@ async def member_permissions(chat_id: int, user_id: int):
     perms = []
     try:
         member = (await app.get_chat_member(chat_id, user_id)).privileges
-    except Exception:
+        if member.can_post_messages:
+            perms.append("can_post_messages")
+        if member.can_edit_messages:
+            perms.append("can_edit_messages")
+        if member.can_delete_messages:
+            perms.append("can_delete_messages")
+        if member.can_restrict_members:
+            perms.append("can_restrict_members")
+        if member.can_promote_members:
+            perms.append("can_promote_members")
+        if member.can_change_info:
+            perms.append("can_change_info")
+        if member.can_invite_users:
+            perms.append("can_invite_users")
+        if member.can_pin_messages:
+            perms.append("can_pin_messages")
+        if member.can_manage_video_chats:
+            perms.append("can_manage_video_chats")
+        return perms
+    except:
         return []
-    if member.can_post_messages:
-        perms.append("can_post_messages")
-    if member.can_edit_messages:
-        perms.append("can_edit_messages")
-    if member.can_delete_messages:
-        perms.append("can_delete_messages")
-    if member.can_restrict_members:
-        perms.append("can_restrict_members")
-    if member.can_promote_members:
-        perms.append("can_promote_members")
-    if member.can_change_info:
-        perms.append("can_change_info")
-    if member.can_invite_users:
-        perms.append("can_invite_users")
-    if member.can_pin_messages:
-        perms.append("can_pin_messages")
-    if member.can_manage_video_chats:
-        perms.append("can_manage_video_chats")
-    return perms
 
 
 async def check_perms(
@@ -126,12 +126,8 @@ async def check_perms(
     else:
         sender = message.reply_text
         chat = message.chat
-    # TODO: Cache all admin permissions in db.
     if not message.from_user:
-        # For anonymous admins
-        if message.sender_chat and message.sender_chat.id == message.chat.id:
-            return True
-        return False
+        return bool(message.sender_chat and message.sender_chat.id == message.chat.id)
     user = await chat.get_member(message.from_user.id)
     if user.status == enums.ChatMemberStatus.OWNER:
         return True

@@ -4,13 +4,13 @@
 </h1>
 
 ## NOTES
-This repo has many bugs and i dont have time to fix it. If you can help me, please open pull request (PR).
+This repo has some small bugs and i dont have time to fix it. If you can help me, please open pull request (PR).
 
 ## Demo
 You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
 
 ## Features and Give Support
-* Please open this web https://yasirpedia.eu.org/ to check some feature or give support to me.
+* Please open this web https://yasirpedia.eu.org/ to know about me or support me.
 
 ## Variables
 
@@ -23,9 +23,9 @@ You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoB
 * `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
 * `USER_SESSION` : Session string for Userbot.
 ### Optional Variables
-Check by yourself for optional vars.
+Check by yourself in config files.
 
-## Deploy (Must Use Docker to Run This Bot)
+## Deploy (Must Use Docker to Run This Bot, since i had make it built in all requirements)
 
 - Start Docker daemon (Skip if already running):
 ```
@@ -43,8 +43,28 @@ sudo docker run misskaty
 ```
 sudo docker ps
 ```
+sudo docker stop <pid>
+
+#### Build And Run The Docker Image Using docker-compose
+
+- Install docker-compose
 ```
-sudo docker stop id
+sudo apt install docker-compose
+```
+- Build and run Docker image or to view current running image:
+```
+sudo docker-compose up
+```
+- After editing files with nano for example (nano start.sh):
+```
+sudo docker-compose up --build
+```
+- To stop the running image:
+```
+sudo docker ps
+```
+```
+sudo docker-compose stop <pid>
 ```
 
 ----

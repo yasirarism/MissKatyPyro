@@ -14,6 +14,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import asyncify, capture_err
 from misskaty.helper.http import http
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 from utils import temp
 
@@ -47,14 +48,14 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 
 
 @asyncify
-def welcomepic(pic, user, chat, id):
+def welcomepic(pic, user, chat, id, strings):
     background = Image.open("assets/bg.png")  # <- Background Image (Should be PNG)
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
     pfp = pfp.resize((265, 265))  # Resizes the Profilepicture so it fits perfectly in the circle
     font = ImageFont.truetype("assets/Calistoga-Regular.ttf", 37)  # <- Text Font of the Member Count. Change the text size for your preference
-    member_text = f"Selamat Datang {user} [{id}]"  # <- Text under the Profilepicture with the Membercount
+    member_text = strings("welcpic_msg").format(userr=user, id=id)  # <- Text under the Profilepicture with the Membercount
     draw_multiple_line_text(background, member_text, font, 395)
     draw_multiple_line_text(background, chat, font, 47)
     ImageDraw.Draw(background).text(
@@ -70,14 +71,15 @@ def welcomepic(pic, user, chat, id):
 
 
 @app.on_chat_member_updated(filters.group & filters.chat([-1001128045651, -1001777794636]))
-async def member_has_joined(c: app, member: ChatMemberUpdated):
+@use_chat_lang()
+async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
     if not member.new_chat_member or member.new_chat_member.status in {"banned", "left", "restricted"} or member.old_chat_member:
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
     if user.id in SUDO:
         await c.send_message(
             member.chat.id,
-            "Waw, owner ku yang keren baru saja bergabung ke grup!",
+            strings("sudo_join_msg"),
         )
         return
     elif user.is_bot:
@@ -98,7 +100,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
         except AttributeError:
             pic = "assets/profilepic.png"
         try:
-            welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, user.id)
+            welcomeimg = await welcomepic(pic, user.first_name, member.chat.title, user.id, strings)
             temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
                 member.chat.id,
                 photo=welcomeimg,
@@ -113,7 +115,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{user.id}", headers=headers)).json()
             if not apispamwatch.get("error"):
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
-                userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
+                userspammer += strings("spamwatch_msg").format(umention=user.mention, uid=user.id, reas=apispamwatch.get("reason"))
         except Exception as err:
             LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
         # Combot API Detection
@@ -121,7 +123,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
             apicombot = (await http.get(f"https://api.cas.chat/check?user_id={user.id}")).json()
             if apicombot.get("ok") == "true":
                 await app.ban_chat_member(member.chat.id, user.id, datetime.now() + timedelta(seconds=30))
-                userspammer += f"<b>#CAS Federation Ban</b>\nUser {mention} [<code>{user.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={user.id}'>Combot AntiSpam.</a>"
+                userspammer += strings("combot_msg").format(umention=user.mention, uid=user.id)
         except Exception as err:
             LOGGER.error(f"ERROR in Combot API Detection. {err}")
         if userspammer != "":
@@ -134,7 +136,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated):
 
 
 @app.on_message(filters.new_chat_members & filters.group)
-async def save_group(bot, message):
+@use_chat_lang()
+async def save_group(bot, message, strings):
     r_j_check = [u.id for u in message.new_chat_members]
     if temp.ME in r_j_check:
         if not await db.get_chat(message.chat.id):
@@ -142,16 +145,16 @@ async def save_group(bot, message):
             r_j = message.from_user.mention if message.from_user else "Anonymous"
             await bot.send_message(
                 LOG_CHANNEL,
-                f"#NewGroup\nGroup = {message.chat.title}(<code>{message.chat.id}</code>)\nMembers Count = <code>{total}</code>\nAdded by - {r_j}",
+                strings("log_bot_added").format(ttl=message.chat.title, cid=message.chat.id, tot=total, r_j=r_j),
             )
 
             await db.add_chat(message.chat.id, message.chat.title)
         if message.chat.id in temp.BANNED_CHATS:
             # Inspired from a boat of a banana tree
-            buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+            buttons = [[InlineKeyboardButton(strings("support_btn"), url=f"https://t.me/{SUPPORT_CHAT}")]]
             reply_markup = InlineKeyboardMarkup(buttons)
             k = await message.reply(
-                text="<b>CHAT NOT ALLOWED 🐞\n\nMy admins has restricted me from working here ! If you want to know more about it contact support..</b>",
+                text=strings("chat_not_allowed"),
                 reply_markup=reply_markup,
             )
 
@@ -163,13 +166,13 @@ async def save_group(bot, message):
             return
         buttons = [
             [
-                InlineKeyboardButton("ℹ️ Help", url=f"https://t.me/{temp.U_NAME}?start=help"),
-                InlineKeyboardButton("📢 Updates", url="https://t.me/YasirPediaChannel"),
+                InlineKeyboardButton(strings("help_btn"), url=f"https://t.me/{temp.U_NAME}?start=help"),
+                InlineKeyboardButton(strings("update_btn"), url="https://t.me/YasirPediaChannel"),
             ]
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
-            text=f"<b>Terimakasih sudah menambahkan saya di {message.chat.title} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
+            text=strings("welcome_thanks").format(ttl=message.chat.title),
             reply_markup=reply_markup,
         )
     else:
@@ -184,11 +187,11 @@ async def save_group(bot, message):
                 except:
                     pass
             try:
-                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, u.id)
+                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, u.id, strings)
                 temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
                     message.chat.id,
                     photo=welcomeimg,
-                    caption=f"Hai {u.mention}, Selamat datang digrup {message.chat.title}.",
+                    caption=strings("capt_welc").format(umention=u.mention, uid=u.id, ttl=message.chat.title),
                 )
                 userspammer = ""
                 # Spamwatch Detection
@@ -197,7 +200,7 @@ async def save_group(bot, message):
                     apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{u.id}", headers=headers)).json()
                     if not apispamwatch.get("error"):
                         await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
-                        userspammer += f"<b>#SpamWatch Federation Ban</b>\nUser {u.mention} [<code>{u.id}</code>] has been kicked because <code>{apispamwatch.get('reason')}</code>.\n"
+                        userspammer += strings("spamwatch_msg").format(umention=u.mention, uid=u.id, reas=apispamwatch.get("reason"))
                 except Exception as err:
                     LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
                 # Combot API Detection
@@ -205,7 +208,7 @@ async def save_group(bot, message):
                     apicombot = (await http.get(f"https://api.cas.chat/check?user_id={u.id}")).json()
                     if apicombot.get("ok") == "true":
                         await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
-                        userspammer += f"<b>#CAS Federation Ban</b>\nUser {u.mention} [<code>{u.id}</code>] detected as spambot and has been kicked. Powered by <a href='https://api.cas.chat/check?user_id={u.id}'>Combot AntiSpam.</a>"
+                        userspammer += strings("combot_msg").format(umention=u.mention, uid=u.id)
                 except Exception as err:
                     LOGGER.error(f"ERROR in Combot API Detection. {err}")
                 if userspammer != "":

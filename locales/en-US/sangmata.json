@@ -1,9 +1,9 @@
 {
     "no_uname": "<code>No Username</code>",
     "no_last_name": "<code>No Last Name</code>",
-    "uname_change_msg": "✨ Changed username from {bef} ➡️ <code>{aft}</code>.\n",
-    "lastname_change_msg": "✨ Changed last name from {bef} ➡️ <code>{aft}</code>.\n",
-    "firstname_change_msg": "✨ Changed first name from {bef} ➡️ <code>{aft}</code>.\n",
+    "uname_change_msg": "✨ Changed username from {bef} ➡️ {aft}.\n",
+    "lastname_change_msg": "✨ Changed last name from {bef} ➡️ {aft}.\n",
+    "firstname_change_msg": "✨ Changed first name from {bef} ➡️ {aft}.\n",
     "set_sangmata_help": "Use <code>/{cmd} on</code>, to enable sangmata. If you want disable, you can use off parameter.",
     "sangmata_already_on": "SangMata already enabled in your groups.",
     "sangmata_enabled": "Sangmata enabled in your groups.",
