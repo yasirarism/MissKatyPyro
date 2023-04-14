@@ -5,8 +5,6 @@ from pyrogram import enums
 from datetime import datetime
 from asyncio import sleep as asleep, get_event_loop
 from typing import Union, Optional
-from misskaty import app, user
-from ..types.send_as_file import send_as_file
 
 async def input_str(self) -> str:
     input_ = self.text
