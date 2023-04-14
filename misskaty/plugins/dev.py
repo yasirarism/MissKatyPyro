@@ -43,6 +43,7 @@ __HELP__ = """
 var = {}
 teskode = {}
 
+
 async def edit_or_reply(msg, **kwargs):
     func = msg.edit_text if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
@@ -242,7 +243,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         el_str = get_readable_time(el_us)
     except:
         el_str = "1s"
-    if el_str == "" or el_str is None:
+    if not el_str or el_str is None:
         el_str = "0.1s"
 
     out = out_buf.getvalue()
