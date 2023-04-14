@@ -115,5 +115,5 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
                                         reply_to_message_id=reply_to_id)
 
 Message.input = input_str
-Message.reply_text = reply
+# Message.reply_text = reply
 Message.reply_as_file = reply_as_file
