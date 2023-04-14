@@ -263,7 +263,7 @@ async def cmd_eval(self, ctx: Message, strings) -> Optional[str]:
                         [
                             InlineKeyboardButton(
                                 text=strings("cl_btn"),
-                                callback_data=f"close#{message.from_user.id}",
+                                callback_data=f"close#{ctx.from_user.id}",
                             )
                         ]
                     ]
@@ -275,7 +275,7 @@ async def cmd_eval(self, ctx: Message, strings) -> Optional[str]:
             ctx,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{ctx.from_user.id}")]]),
         )
         if not ctx.from_user.is_self:
             await status_message.delete()
