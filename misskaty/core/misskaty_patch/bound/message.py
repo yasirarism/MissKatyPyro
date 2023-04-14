@@ -1,15 +1,21 @@
 import io
 from pyrogram.types import Message, InlineKeyboardMarkup
 from pyrogram import enums
+from pyrogram.sync import async_to_sync
 from datetime import datetime
 from asyncio import sleep as asleep, get_event_loop
 from typing import Union, Optional
 
-async def input_str(self) -> str:
-    input_ = self.text
-    if ' ' in input_ or '\n' in input_:
-        return str(input_.split(maxsplit=1)[1].strip())
-    return ''
+Message.input = property(
+    lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1:] 
+    if len(m.command) > 1 else None
+)
+
+
+async def del_in(self: Message, seconds: int, revoke: bool=True):
+    """Delete message in x Seconds"""
+    await asleep(seconds)
+    return await self.delete(revoke=revoke)
 
 
 async def reply(self: Message,
@@ -114,6 +120,8 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
                                         disable_notification=True,
                                         reply_to_message_id=reply_to_id)
 
-Message.input = input_str
+Message.input = input
 # Message.reply_text = reply
+Message.delete_in = del_in
 Message.reply_as_file = reply_as_file
+async_to_sync(Message, 'delete_in')
