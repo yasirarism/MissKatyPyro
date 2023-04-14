@@ -120,7 +120,6 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
                                         disable_notification=True,
                                         reply_to_message_id=reply_to_id)
 
-Message.input = input
 # Message.reply_text = reply
 Message.delete_in = del_in
 Message.reply_as_file = reply_as_file
