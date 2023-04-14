@@ -13,7 +13,7 @@ class Message(RawMessage):
                 **kwargs: Union[str, bool]) -> None:
         self._filtered = False
         self._filtered_input_str = ''
-
+        self._client = client
         self._kwargs = kwargs
         super().__init__(client=client)
 
