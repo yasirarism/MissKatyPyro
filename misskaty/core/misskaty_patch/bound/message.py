@@ -13,11 +13,6 @@ async def input_str(self) -> str:
     return ''
 
 
-async def del_in(self: Message, seconds: int, revoke: bool=True):
-    """Delete message in x Seconds"""
-    await asleep(seconds)
-    return await self.delete(revoke=revoke)
-
 async def reply(self: Message,
                 text: str,
                 del_in: int = -1,
@@ -80,15 +75,20 @@ async def reply(self: Message,
         """
         if reply_to_message_id is None:
             reply_to_message_id = self.id
-        return await self.reply_text(text=text,
-                                    del_in=del_in,
+        
+        msg = await self.reply_text(text=text,
+                                    quote=quote,
                                     parse_mode=parse_mode,
-                                               disable_web_page_preview=disable_web_page_preview,
-                                               disable_notification=disable_notification,
-                                               reply_to_message_id=reply_to_message_id,
-                                               schedule_date=schedule_date,
-                                               protect_content=protect_content,
-                                               reply_markup=reply_markup)
+                                    disable_web_page_preview=disable_web_page_preview,
+                                    disable_notification=disable_notification,
+                                    reply_to_message_id=reply_to_message_id,
+                                    schedule_date=schedule_date,
+                                    protect_content=protect_content,
+                                    reply_markup=reply_markup)
+        del_in = del_in or 7
+        if del_in > 0:
+            await asleep(del_in)
+            return bool(await msg.delete())
 
 
 async def reply_as_file(self, text: str, filename: str = "output.txt", caption: str = '', delete_message: bool = True):
@@ -121,5 +121,4 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
 Message.input = input_str
 Message.reply_text = reply
 Message.reply_as_file = reply_as_file
-Message.delete_in = del_in
 async_to_sync(Message, 'delete_in')
