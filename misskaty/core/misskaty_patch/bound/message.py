@@ -73,9 +73,6 @@ async def reply(self: Message,
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        if reply_to_message_id is None:
-            reply_to_message_id = self.id
-        
         msg = await self.reply_text(text=text,
                                     quote=quote,
                                     parse_mode=parse_mode,
