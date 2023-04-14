@@ -3,15 +3,13 @@ from typing import Union, Optional
 from pyrogram.types import Message
 from pyrogram import Client
 
-class SendAsFile(Client):  # pylint: disable=missing-class-docstring
-    async def send_as_file(self,
-                           chat_id: Union[int, str],
-                           text: str,
-                           as_raw: bool = False,
-                           filename: str = "output.txt",
-                           caption: str = '',
-                           log: Union[bool, str] = False,
-                           reply_to_message_id: Optional[int] = None) -> 'Message':
+async def send_as_file(self,
+                       chat_id: Union[int, str],
+                       text: str,
+                       filename: str = "output.txt",
+                       caption: str = '',
+                       log: Union[bool, str] = False,
+                       reply_to_message_id: Optional[int] = None) -> 'Message':
         """\nYou can send large outputs as file
         Example:
                 @userge.send_as_file(chat_id=12345, text="hello")
@@ -45,6 +43,8 @@ class SendAsFile(Client):  # pylint: disable=missing-class-docstring
                                        caption=caption[:1024],
                                        disable_notification=True,
                                        reply_to_message_id=reply_to_message_id)
+
+Client.send_as_file = send_as_file
 
 # async def send_as_file(self,
 #                        chat_id: Union[int, str],
