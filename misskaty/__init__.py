@@ -30,7 +30,6 @@ HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
 
-uvloop.install()
 
 # Pyrogram Bot Client
 app = Client(
