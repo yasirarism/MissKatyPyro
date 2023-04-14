@@ -66,4 +66,4 @@ async def edit_message_text(self,
             await asyncio.sleep(del_in)
             return bool(await msg.delete())
         
-Client.edit_message_text = edit_message_text
+# Client.edit_message_text = edit_message_text

@@ -84,4 +84,4 @@ async def send_message(self,
             await asyncio.sleep(del_in)
             return bool(await msg.delete())
         
-Client.send_message = send_message
+# Client.send_message = send_message
