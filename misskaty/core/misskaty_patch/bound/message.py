@@ -1,6 +1,5 @@
 import io
 from pyrogram.types import Message, InlineKeyboardMarkup
-from pyrogram.sync import async_to_sync
 from pyrogram import enums
 from datetime import datetime
 from asyncio import sleep as asleep, get_event_loop
@@ -118,4 +117,3 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
 Message.input = input_str
 Message.reply_text = reply
 Message.reply_as_file = reply_as_file
-async_to_sync(Message, 'delete_in')
