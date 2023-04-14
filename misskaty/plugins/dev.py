@@ -18,8 +18,8 @@ from psutil import cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory
 
-from pyrogram import enums, filters, types
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import enums, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app, user, botStartTime, BOT_NAME
 from misskaty.helper.http import http
@@ -173,19 +173,19 @@ async def shell(_, m, strings):
 @app.on_edited_message((filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
-async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
-    if (message.command and len(message.command) == 1) or message.text == "app.run()":
-        return await edit_or_reply(message, text=strings("no_eval"))
-    status_message = await editPesan(message, strings("run_eval")) if message.from_user.is_self else await kirimPesan(message, strings("run_eval"), quote=True)
-    code = message.text.split(" ", 1)[1] if message.command else message.text.split("\napp.run()")[0]
+async def cmd_eval(self, ctx: Message, strings) -> Optional[str]:
+    if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
+        return await edit_or_reply(ctx, text=strings("no_eval"))
+    status_message = await editPesan(ctx, strings("run_eval")) if ctx.from_user.is_self else await kirimPesan(ctx, strings("run_eval"), quote=True)
+    code = ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
     out = ""
     humantime = get_readable_time
 
     async def _eval() -> Tuple[str, Optional[str]]:
         # Message sending helper for convenience
-        async def send(*args: Any, **kwargs: Any) -> types.Message:
-            return await message.reply(*args, **kwargs)
+        async def send(*args: Any, **kwargs: Any) -> Message:
+            return await ctx.reply(*args, **kwargs)
 
         # Print wrapper to capture output
         # We don't override sys.stdout to avoid interfering with other output
@@ -197,9 +197,8 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         eval_vars = {
             "self": self,
             "humantime": humantime,
-            "m": message,
+            "ctx": ctx,
             "var": var,
-            "app": app,
             "teskode": teskode,
             "re": re,
             "os": os,
@@ -212,7 +211,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "stdout": out_buf,
             "traceback": traceback,
             "http": http,
-            "replied": message.reply_to_message,
+            "replied": ctx.reply_to_message,
         }
         eval_vars.update(var)
         eval_vars.update(teskode)
@@ -254,7 +253,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
-            await message.reply_document(
+            await ctx.reply_document(
                 document=out_file,
                 caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
@@ -273,12 +272,12 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             await status_message.delete()
     else:
         await edit_or_reply(
-            message,
+            ctx,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
         )
-        if not message.from_user.is_self:
+        if not ctx.from_user.is_self:
             await status_message.delete()
 
 
