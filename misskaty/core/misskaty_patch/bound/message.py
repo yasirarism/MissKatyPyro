@@ -78,13 +78,11 @@ async def reply(self: Message,
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        if quote is None:
-            quote = self.chat.type != enums.ChatType.PRIVATE
-        if reply_to_message_id is None and quote:
+        if reply_to_message_id is None:
             reply_to_message_id = self.id
         return await self.reply_text(text=text,
-                                               del_in=del_in,
-                                               parse_mode=parse_mode,
+                                    del_in=del_in,
+                                    parse_mode=parse_mode,
                                                disable_web_page_preview=disable_web_page_preview,
                                                disable_notification=disable_notification,
                                                reply_to_message_id=reply_to_message_id,
