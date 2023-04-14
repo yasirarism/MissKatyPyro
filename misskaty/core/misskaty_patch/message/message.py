@@ -24,5 +24,5 @@ async def reply_as_file(self: Message, text: str, filename: str = "output.txt", 
                                     caption=caption[:1024],
                                     disable_notification=True,
                                     reply_to_message_id=reply_to_id)
-
+Message.reply_as_file = reply_as_file
 async_to_sync(Message, 'delete_in')
