@@ -75,6 +75,19 @@ class Client():
         if del_in > 0:
             await asyncio.sleep(del_in)
             return bool(await request.delete())
+        
+    @patchable
+    async def reply_as_file(self, msg, chat_id, text: str, filename: str = "output.txt", caption: str = '', delete_message: bool = True):
+        reply_to_id = msg.reply_to_message.id if msg.reply_to_message else msg.id
+        if delete_message:
+            loop.create_task(msg.delete())
+        doc = io.BytesIO(text.encode())
+        doc.name = filename
+        return await msg.send_document(chat_id=chat_id,
+                                        document=doc,
+                                        caption=caption[:1024],
+                                        disable_notification=True,
+                                        reply_to_message_id=reply_to_id)
 
     @patchable
     def clear_listener(self, chat_id, future):
@@ -135,17 +148,8 @@ class Chat(pyrogram.types.Chat):
 @patch(pyrogram.types.messages_and_media.Message)
 class Message(pyrogram.types.Message):
     @patchable
-    def reply_as_file(self, text: str, filename: str = "output.txt", caption: str = '', delete_message: bool = True):
-        return self._client.reply("halo")
-        reply_to_id = self.reply_to_message.id if self.reply_to_message else self.id
-        if delete_message:
-            loop.create_task(self.delete())
-        doc = io.BytesIO(text.encode())
-        doc.name = filename
-        return await self.reply_document(document=doc,
-                                        caption=caption[:1024],
-                                        disable_notification=True,
-                                        reply_to_message_id=reply_to_id)
+    def reply_as_file(self, *args, **kwargs):
+        return self._client.reply_as_file(self, self.chat.id, *args, **kwargs)
 
 @patch(pyrogram.types.user_and_chats.user.User)
 class User(pyrogram.types.User):
