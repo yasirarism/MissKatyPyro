@@ -116,7 +116,7 @@ async def edit_text(self,
             RPCError: In case of a Telegram RPC error.
         """
         try:
-            msg = await self.edit_text(text, *args, **kwargs)
+            msg = await self.edit_message_text(text, *args, **kwargs)
             if del_in == 0:
                 return True
             await asleep(del_in)
