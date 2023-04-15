@@ -60,6 +60,10 @@ class Client():
         response = await self.listen(chat_id, filters, timeout)
         response.request = request
         return response
+    
+    @patchable
+    async def input(self, msg):
+        return msg.text[msg.text.find(msg.command[0]) + len(msg.command[0]) + 1:] if len(msg.command) > 1 else None
    
     @patchable
     def clear_listener(self, chat_id, future):
