@@ -117,7 +117,7 @@ class Chat(pyrogram.types.Chat):
     def cancel_listener(self):
         return self._client.cancel_listener(self.id)
 
-@patch(pyrogram.types.Message)
+@patch(pyrogram.types.messages_and_media.Message)
 class Message(pyrogram.types.Message):
     @patchable
     def input(self):
