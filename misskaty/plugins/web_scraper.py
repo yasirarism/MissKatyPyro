@@ -197,9 +197,9 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
-                await msg.edit(strings("no_result"), del_in=5)
+                await msg.edit_msg(strings("no_result"), del_in=5)
             else:
-                await msg.edit(strings("no_result_w_query").format(kueri=kueri), del_in=5)
+                await msg.edit_msg(strings("no_result_w_query").format(kueri=kueri), del_in=5)
             return None, 0, None
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -219,7 +219,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         sfResult = "".join(i for i in sfResult if i not in "[]")
         return sfResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await msg.edit(strings("no_result"), del_in=5)
+        await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
 
 
@@ -236,7 +236,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
             kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
             lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
-            await msg.edit(strings("no_result"), del_in=5)
+            await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
@@ -251,7 +251,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
         return lenddataResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await msg.edit(strings("no_result"), del_in=5)
+        await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
 
 
@@ -271,7 +271,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
-            await msg.edit(strings("no_result"), del_in=5)
+            await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
         SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
     try:
@@ -286,7 +286,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
         melongResult = "".join(i for i in melongResult if i not in "[]")
         return melongResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await msg.edit(strings("no_result"), del_in=5)
+        await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
 
 
@@ -298,9 +298,9 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
-                await msg.edit(strings("no_result"), del_in=5)
+                await msg.edit_msg(strings("no_result"), del_in=5)
             else:
-                await msg.edit(strings("no_result_w_query").format(kueri=kueri), del_in=5)
+                await msg.edit_msg(strings("no_result_w_query").format(kueri=kueri), del_in=5)
             return None, 0, None
         data = []
         for i in entry:
@@ -324,7 +324,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
         gomovResult = "".join(i for i in gomovResult if i not in "[]")
         return gomovResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await msg.edit(strings("no_result"), del_in=5)
+        await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
 
 
