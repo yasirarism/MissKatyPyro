@@ -62,6 +62,13 @@ class Client():
         return response
    
     @patchable
+    async def reply(self, chat_id, text, del_in=0, *args, **kwargs):
+        request = await self.send_message(chat_id, text, *args, **kwargs)
+        if del_in > 0:
+            await asyncio.sleep(del_in)
+            return bool(await request.delete())
+
+    @patchable
     def clear_listener(self, chat_id, future):
         if future == self.listening[chat_id]["future"]:
             self.listening.pop(chat_id, None)
