@@ -7,13 +7,9 @@ async def edit_message_text(self,
                             chat_id: Union[int, str],
                             message_id: int,
                             text: str,
-                            del_in: int = -1,
-                            log: Union[bool, str] = False,
-                            parse_mode: Optional[enums.ParseMode] = None,
-                            entities: List[MessageEntity] = None,
-                            disable_web_page_preview: Optional[bool] = None,
-                            reply_markup: InlineKeyboardMarkup = None
-                            ) -> Union['Message', bool]:
+                            del_in: int = 0,
+                            *args,
+                            **kwargs) -> Union['Message', bool]:
         """\nExample:
                 message.edit_text("hello")
         Parameters:
@@ -29,10 +25,6 @@ async def edit_message_text(self,
                 New text of the message.
             del_in (``int``):
                 Time in Seconds for delete that message.
-            log (``bool`` | ``str``, *optional*):
-                If ``True``, the message will be forwarded
-                to the log channel.
-                If ``str``, the logger name will be updated.
             parse_mode (:obj:`enums.ParseMode`, *optional*):
                 By default, texts are parsed using
                 both Markdown and HTML styles.
@@ -55,15 +47,13 @@ async def edit_message_text(self,
             RPCError: In case of a Telegram RPC error.
         """
         msg = await self.edit_message_text(chat_id=chat_id,
-                                              message_id=message_id,
-                                              text=text,
-                                              parse_mode=parse_mode,
-                                              entities=entities,
-                                              disable_web_page_preview=disable_web_page_preview,
-                                              reply_markup=reply_markup)
-        del_in = del_in or 7
-        if del_in > 0:
-            await asyncio.sleep(del_in)
-            return bool(await msg.delete())
+                                           message_id=message_id,
+                                           text=text,
+                                           *args,
+                                           **kwargs)
+        if del_in == 0:
+            return True
+        await asyncio.sleep(del_in)
+        return bool(await msg.delete())
         
-# Client.edit_message_text = edit_message_text
+Client.edit_msg_text = edit_message_text

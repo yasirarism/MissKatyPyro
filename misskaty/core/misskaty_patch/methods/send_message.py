@@ -10,20 +10,9 @@ import asyncio
 async def send_message(self,
                        chat_id: Union[int, str],
                        text: str,
-                       del_in: int = -1,
-                       log: Union[bool, str] = False,
-                       parse_mode: Optional[enums.ParseMode] = None,
-                       entities: List[MessageEntity] = None,
-                       disable_web_page_preview: Optional[bool] = None,
-                       disable_notification: Optional[bool] = None,
-                       reply_to_message_id: Optional[int] = None,
-                       schedule_date: Optional[datetime] = None,
-                       protect_content: Optional[bool] = None,
-                       reply_markup: Union[InlineKeyboardMarkup,
-                                               ReplyKeyboardMarkup,
-                                               ReplyKeyboardRemove,
-                                               ForceReply] = None
-                        ) -> Union['Message', bool]:
+                       del_in: int = 0,
+                       *args,
+                       **kwargs) -> Union['Message', bool]:
         """\nSend text messages.
         Example:
                 @userge.send_message(chat_id=12345, text='test')
@@ -70,18 +59,13 @@ async def send_message(self,
             :obj:`Message`: On success, the sent text message or True is returned.
         """
         msg = await self.send_message(chat_id=chat_id,
-                                         text=text,
-                                         parse_mode=parse_mode,
-                                         entities=entities,
-                                         disable_web_page_preview=disable_web_page_preview,
-                                         disable_notification=disable_notification,
-                                         reply_to_message_id=reply_to_message_id,
-                                         schedule_date=schedule_date,
-                                         protect_content=protect_content,
-                                         reply_markup=reply_markup)
-        del_in = del_in or 7
+                                      text=text,
+                                      *args,
+                                      **kwargs)
+        if del_in == 0:
+            return True
         if del_in > 0:
             await asyncio.sleep(del_in)
             return bool(await msg.delete())
         
-# Client.send_message = send_message
+Client.send_msg = send_message

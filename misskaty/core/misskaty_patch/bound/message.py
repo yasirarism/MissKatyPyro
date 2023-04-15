@@ -6,29 +6,16 @@ from datetime import datetime
 from asyncio import sleep as asleep, get_event_loop
 from typing import Union, Optional
 
-# Message.input = property(
-#     lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1:] 
-#     if len(m.command) > 1 else None
-# )
+Message.input = property(
+    lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1:] 
+    if len(m.command) > 1 else None
+)
 
-
-async def del_in(self: Message, seconds: int, revoke: bool=True):
-    """Delete message in x Seconds"""
-    await asleep(seconds)
-    return await self.delete(revoke=revoke)
-
-
-async def reply(self: Message,
+async def reply_text(self: Message,
                 text: str,
                 del_in: int = -1,
-                quote: Optional[bool] = None,
-                parse_mode: Optional[enums.ParseMode] = None,
-                disable_web_page_preview: Optional[bool] = None,
-                disable_notification: Optional[bool] = None,
-                reply_to_message_id: Optional[int] = None,
-                schedule_date: Optional[datetime] = None,
-                protect_content: Optional[bool] = None,
-                reply_markup: InlineKeyboardMarkup = None) -> Union['Message', bool]:
+                *args,
+                **kwargs) -> Union['Message', bool]:
         """\nExample:
                 message.reply("hello")
         Parameters:
@@ -36,10 +23,6 @@ async def reply(self: Message,
                 Text of the message to be sent.
             del_in (``int``):
                 Time in Seconds for delete that message.
-            log (``bool`` | ``str``, *optional*):
-                If ``True``, the message will be forwarded
-                to the log channel.
-                If ``str``, the logger name will be updated.
             quote (``bool``, *optional*):
                 If ``True``, the message will be sent as
                 a reply to this message.
@@ -79,18 +62,12 @@ async def reply(self: Message,
             RPCError: In case of a Telegram RPC error.
         """
         msg = await self.reply_text(text=text,
-                                    quote=quote,
-                                    parse_mode=parse_mode,
-                                    disable_web_page_preview=disable_web_page_preview,
-                                    disable_notification=disable_notification,
-                                    reply_to_message_id=reply_to_message_id,
-                                    schedule_date=schedule_date,
-                                    protect_content=protect_content,
-                                    reply_markup=reply_markup)
-        del_in = del_in or 7
-        if del_in > 0:
-            await asleep(del_in)
-            return bool(await msg.delete())
+                                    *args,
+                                    **kwargs)
+        if del_in == 0:
+            return True
+        await asleep(del_in)
+        return bool(await msg.delete())
 
 
 async def reply_as_file(self, text: str, filename: str = "output.txt", caption: str = '', delete_message: bool = True):
@@ -120,7 +97,5 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
                                         disable_notification=True,
                                         reply_to_message_id=reply_to_id)
 
-# Message.reply_text = reply
-Message.delete_in = del_in
+Message.reply_msg = reply_text
 Message.reply_as_file = reply_as_file
-async_to_sync(Message, 'delete_in')
