@@ -60,10 +60,6 @@ class Client():
         response = await self.listen(chat_id, filters, timeout)
         response.request = request
         return response
-    
-    @patchable
-    async def input(self, msg):
-        return msg.text[msg.text.find(msg.command[0]) + len(msg.command[0]) + 1:] if len(msg.command) > 1 else None
    
     @patchable
     def clear_listener(self, chat_id, future):
@@ -125,6 +121,7 @@ class Chat(pyrogram.types.Chat):
 class Message(pyrogram.types.Message):
     @patchable
     def input(self):
+        return self
         return self.text[self.text.find(self.command[0]) + len(self.command[0]) + 1:] if len(self.command) > 1 else None
 
 @patch(pyrogram.types.user_and_chats.user.User)
