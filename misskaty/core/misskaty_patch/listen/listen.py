@@ -20,6 +20,7 @@ along with pyromod.  If not, see <https://www.gnu.org/licenses/>.
 
 import asyncio
 import functools
+import io
 import pyrogram
 
 from ..utils import patch, patchable
@@ -62,8 +63,15 @@ class Client():
         return response
    
     @patchable
-    async def send_message(self, chat_id, text, del_in=0, *args, **kwargs):
+    async def send_msg(self, chat_id, text, del_in=0, *args, **kwargs):
         request = await self.send_message(chat_id, text, *args, **kwargs)
+        if del_in > 0:
+            await asyncio.sleep(del_in)
+            return bool(await request.delete())
+        
+    @patchable
+    async def edit_msg(self, chat_id, message_id, text, del_in=0, *args, **kwargs):
+        request = await self.edit_message_text(chat_id, message_id, text, *args, **kwargs)
         if del_in > 0:
             await asyncio.sleep(del_in)
             return bool(await request.delete())
@@ -127,13 +135,17 @@ class Chat(pyrogram.types.Chat):
 @patch(pyrogram.types.messages_and_media.Message)
 class Message(pyrogram.types.Message):
     @patchable
-    def input(self) -> str:
-        """ Returns the input string without command """
-        input_ = self.text
-        if ' ' in input_ or '\n' in input_:
-            return str(input_.split(maxsplit=1)[1].strip())
-        return ''
-        return property(self.text[self.text.find(self.command[0]) + len(self.command[0]) + 1:] if len(self.command) > 1 else None)
+    def reply_as_file(self, text: str, filename: str = "output.txt", caption: str = '', delete_message: bool = True):
+        return self._client.reply("halo")
+        reply_to_id = self.reply_to_message.id if self.reply_to_message else self.id
+        if delete_message:
+            loop.create_task(self.delete())
+        doc = io.BytesIO(text.encode())
+        doc.name = filename
+        return await self.reply_document(document=doc,
+                                        caption=caption[:1024],
+                                        disable_notification=True,
+                                        reply_to_message_id=reply_to_id)
 
 @patch(pyrogram.types.user_and_chats.user.User)
 class User(pyrogram.types.User):
