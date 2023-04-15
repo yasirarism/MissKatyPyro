@@ -74,7 +74,7 @@ async def reply_text(self: Message,
                                             *args,
                                             **kwargs)
             if del_in == 0:
-                return True
+                return msg
             await asleep(del_in)
             return bool(await msg.delete())
         except FloodWait as e:
@@ -116,9 +116,9 @@ async def edit_text(self,
             RPCError: In case of a Telegram RPC error.
         """
         try:
-            msg = await self.edit_message_text(text, *args, **kwargs)
+            msg = await self.edit_text(text, *args, **kwargs)
             if del_in == 0:
-                return True
+                return msg
             await asleep(del_in)
             return bool(await msg.delete())
         except FloodWait as e:
@@ -187,7 +187,7 @@ async def edit_or_send_as_file(self,
         try:
             msg = await edit_text(self, text=text, *args, **kwargs)
             if del_in == 0:
-                return True
+                return msg
             await asleep(del_in)
             return bool(await msg.delete())
         except (MessageTooLong, OSError):
