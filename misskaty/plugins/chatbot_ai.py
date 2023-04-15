@@ -36,7 +36,7 @@ async def chatbot(self: Client, ctx: Message, strings):
             num += 1
             answer += chunk.choices[0].delta.content
             if num == 30:
-                await ctx.edit_msg(answer)
+                await msg.edit_msg(answer)
                 await asyncio.sleep(1.5)
                 num = 0
         await msg.edit_msg(answer)
