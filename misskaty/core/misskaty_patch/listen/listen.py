@@ -121,8 +121,7 @@ class Chat(pyrogram.types.Chat):
 class Message(pyrogram.types.Message):
     @patchable
     def input(self):
-        return property(self.text[self.text.find(self.command[0]) + len(self.command[0]) + 1:] 
-                        if len(self.command) > 1 else None)
+        return self.text[self.text.find(self.command[0]) + len(self.command[0]) + 1:] if len(self.command) > 1 else None
 
 @patch(pyrogram.types.user_and_chats.user.User)
 class User(pyrogram.types.User):
