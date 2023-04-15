@@ -3,9 +3,9 @@ import re
 from logging import getLogger
 from time import time
 
-from pyrogram import enums, filters
+from pyrogram import enums, filters, Client
 from pyrogram.errors import ChatAdminRequired, FloodWait
-from pyrogram.types import ChatPermissions, ChatPrivileges
+from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
@@ -19,7 +19,6 @@ from misskaty.core.decorator.permissions import (
 )
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
-from misskaty.core.message_utils import kirimPesan
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.functions import (
     extract_user,
@@ -79,24 +78,24 @@ async def admin_cache_func(_, cmu):
 @require_admin(permissions=["can_delete_messages"], allow_in_private=True)
 @ratelimiter
 @use_chat_lang()
-async def purge(_, message, strings):
-    if not message.from_user:
+async def purge(self: Client, ctx: Message, strings) -> 'Message':
+    if not ctx.from_user:
         return
     try:
-        repliedmsg = message.reply_to_message
-        await message.delete()
+        repliedmsg = ctx.reply_to_message
+        await ctx.delete_msg()
 
         if not repliedmsg:
-            return await message.reply_text(strings("purge_no_reply"))
+            return await ctx.reply_msg(strings("purge_no_reply"))
 
-        cmd = message.command
+        cmd = ctx.command
         if len(cmd) > 1 and cmd[1].isdigit():
             purge_to = repliedmsg.id + int(cmd[1])
-            purge_to = min(purge_to, message.id)
+            purge_to = min(purge_to, ctx.id)
         else:
-            purge_to = message.id
+            purge_to = ctx.id
 
-        chat_id = message.chat.id
+        chat_id = ctx.chat.id
         message_ids = []
         del_total = 0
 
@@ -125,9 +124,9 @@ async def purge(_, message, strings):
                 revoke=True,
             )
             del_total += len(message_ids)
-        await kirimPesan(message, strings("purge_success").format(del_total=del_total))
+        await ctx.reply_msg(strings("purge_success").format(del_total=del_total))
     except Exception as err:
-        await kirimPesan(message, f"ERROR: {err}")
+        await ctx.reply_msg(f"ERROR: {err}")
 
 
 # Kick members
@@ -135,29 +134,29 @@ async def purge(_, message, strings):
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def kickFunc(client, message, strings):
-    if not message.from_user:
+async def kickFunc(client: Client, ctx: Message, strings) -> 'Message':
+    if not ctx.from_user:
         return
-    user_id, reason = await extract_user_and_reason(message)
+    user_id, reason = await extract_user_and_reason(ctx)
     if not user_id:
-        return await kirimPesan(message, strings("user_not_found"))
+        return await ctx.reply_msg(strings("user_not_found"))
     if user_id == client.me.id:
-        return await kirimPesan(message, strings("kick_self_err"))
+        return await ctx.reply_msg(strings("kick_self_err"))
     if user_id in SUDO:
-        return await kirimPesan(message, strings("kick_sudo_err"))
-    if user_id in (await list_admins(message.chat.id)):
-        return await kirimPesan(message, strings("kick_admin_err"))
+        return await ctx.reply_msg(strings("kick_sudo_err"))
+    if user_id in (await list_admins(ctx.chat.id)):
+        return await ctx.reply_msg(strings("kick_admin_err"))
     user = await app.get_users(user_id)
-    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=message.from_user.mention if message.from_user else "Anon Admin", reasonmsg=reason or "-")
-    if message.command[0][0] == "d":
-        await message.reply_to_message.delete()
+    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=ctx.from_user.mention if ctx.from_user else "Anon Admin", reasonmsg=reason or "-")
+    if ctx.command[0][0] == "d":
+        await ctx.reply_to_message.delete_msg()
     try:
-        await message.chat.ban_member(user_id)
-        await kirimPesan(message, msg)
+        await ctx.chat.ban_member(user_id)
+        await ctx.reply_msg(msg)
         await asyncio.sleep(1)
-        await message.chat.unban_member(user_id)
+        await ctx.chat.unban_member(user_id)
     except ChatAdminRequired:
-        await kirimPesan(message, strings("no_ban_permission"))
+        await ctx.reply_msg(strings("no_ban_permission"))
 
 
 # Ban/DBan/TBan User
@@ -677,28 +676,28 @@ async def check_warns(_, message, strings):
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def report_user(_, message, strings):
-    if not message.reply_to_message:
-        return await message.reply_text(strings("report_no_reply"))
-    reply = message.reply_to_message
+async def report_user(self: Client, ctx: Message, strings) -> 'Message':
+    if not ctx.reply_to_message:
+        return await ctx.reply_text(strings("report_no_reply"))
+    reply = ctx.reply_to_message
     reply_id = reply.from_user.id if reply.from_user else reply.sender_chat.id
-    user_id = message.from_user.id if message.from_user else message.sender_chat.id
+    user_id = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     if reply_id == user_id:
-        return await message.reply_text(strings("report_self_err"))
+        return await ctx.reply_text(strings("report_self_err"))
 
-    list_of_admins = await list_admins(message.chat.id)
-    linked_chat = (await app.get_chat(message.chat.id)).linked_chat
+    list_of_admins = await list_admins(ctx.chat.id)
+    linked_chat = (await app.get_chat(ctx.chat.id)).linked_chat
     if linked_chat is None:
-        if reply_id in list_of_admins or reply_id == message.chat.id:
-            return await message.reply_text(strings("reported_is_admin"))
-    elif reply_id in list_of_admins or reply_id == message.chat.id or reply_id == linked_chat.id:
-        return await message.reply_text(strings("reported_is_admin"))
+        if reply_id in list_of_admins or reply_id == ctx.chat.id:
+            return await ctx.reply_text(strings("reported_is_admin"))
+    elif reply_id in list_of_admins or reply_id == ctx.chat.id or reply_id == linked_chat.id:
+        return await ctx.reply_text(strings("reported_is_admin"))
     user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     text = strings("report_msg").format(user_mention=user_mention)
-    admin_data = [m async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]
+    admin_data = [m async for m in app.get_chat_members(ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]
     for admin in admin_data:
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins
             continue
         text += f"<a href='tg://user?id={admin.user.id}>\u2063</a>"
-    await kirimPesan(message.reply_to_message, text)
+    await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)

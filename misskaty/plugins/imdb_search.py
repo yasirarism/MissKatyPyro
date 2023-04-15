@@ -9,18 +9,18 @@ from urllib.parse import quote_plus
 from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters, enums
+from pyrogram import filters, enums, Client
 from pyrogram.errors import (
     MediaEmpty,
     MessageNotModified,
     PhotoInvalidDimensions,
     WebpageMediaEmpty,
+    MessageIdInvalid
 )
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message, CallbackQuery
 
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
@@ -35,30 +35,30 @@ headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWe
 @app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def imdb_choose(_, m):
-    if len(m.command) == 1:
-        return await kirimPesan(m, f"ℹ️ Please add query after CMD!\nEx: <code>/{m.command[0]} Jurassic World</code>")
-    if m.sender_chat:
-        return await kirimPesan(m, "This feature not supported for channel..")
-    kuery = m.text.split(None, 1)[1]
-    is_imdb, lang = await is_imdbset(m.from_user.id)
+async def imdb_choose(self: Client, ctx: Message):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>", del_in=5)
+    if ctx.sender_chat:
+        return await ctx.reply_msg("This feature not supported for channel..", del_in=5)
+    kuery = ctx.input
+    is_imdb, lang = await is_imdbset(ctx.from_user.id)
     if is_imdb:
         if lang == "eng":
-            return await imdb_search_en(kuery, m)
+            return await imdb_search_en(kuery, ctx)
         else:
-            return await imdb_search_id(kuery, m)
+            return await imdb_search_id(kuery, ctx)
     buttons = InlineKeyboard()
     ranval = get_random_string(4)
     LIST_CARI[ranval] = kuery
     buttons.row(
-        InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{m.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{m.from_user.id}"),
+        InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),
     )
-    buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{m.from_user.id}"))
-    buttons.row(InlineButton("❌ Close", f"close#{m.from_user.id}"))
-    await m.reply_photo(
+    buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
+    buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
+    await ctx.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
-        caption=f"Hi {m.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
+        caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
         reply_markup=buttons,
         quote=True,
     )
@@ -66,7 +66,7 @@ async def imdb_choose(_, m):
 
 @app.on_callback_query(filters.regex("^imdbset"))
 @ratelimiter
-async def imdbsetlang(client, query):
+async def imdbsetlang(self: Client, query: CallbackQuery):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -84,7 +84,7 @@ async def imdbsetlang(client, query):
 
 @app.on_callback_query(filters.regex("^setimdb"))
 @ratelimiter
-async def imdbsetlang(client, query):
+async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -201,7 +201,7 @@ async def imdb_search_en(kueri, message):
 
 @app.on_callback_query(filters.regex("^imdbcari"))
 @ratelimiter
-async def imdbcari(client, query):
+async def imdbcari(self: Client, query: CallbackQuery):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
     if lang == "ind":
@@ -286,7 +286,7 @@ async def imdbcari(client, query):
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
 @ratelimiter
-async def imdb_id_callback(_, query):
+async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Akses Ditolak!", True)
@@ -405,7 +405,7 @@ async def imdb_id_callback(_, query):
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
 @ratelimiter
-async def imdb_en_callback(bot, query):
+async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
