@@ -62,7 +62,7 @@ class Client():
         return response
    
     @patchable
-    async def reply(self, chat_id, text, del_in=0, *args, **kwargs):
+    async def send_message(self, chat_id, text, del_in=0, *args, **kwargs):
         request = await self.send_message(chat_id, text, *args, **kwargs)
         if del_in > 0:
             await asyncio.sleep(del_in)
