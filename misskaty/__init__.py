@@ -3,7 +3,6 @@ import time
 import uvloop
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
-import pyromod.listen
 from misskaty.core import misskaty_patch
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.jobstores.mongodb import MongoDBJobStore
