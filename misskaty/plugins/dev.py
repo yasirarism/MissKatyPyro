@@ -45,7 +45,7 @@ teskode = {}
 
 
 async def edit_or_reply(msg, **kwargs):
-    func = msg.edit_msg if msg.from_user.is_self else msg.reply_msg
+    func = msg.edit if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
@@ -133,7 +133,7 @@ async def server_stats(self: Client, ctx: Message) -> 'Message':
 @use_chat_lang()
 async def shell(self: Client, ctx: Message, strings) -> 'Message':
     if len(ctx.command) == 1:
-        return await edit_or_reply(ctx, text=strings("no_cmd"), del_in=5)
+        return await edit_or_reply(ctx, text=strings("no_cmd"))
     msg = await ctx.edit_msg(strings("run_exec")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_exec"))
     shell = (await shell_exec(ctx.input))[0]
     if len(shell) > 3000:
@@ -174,8 +174,8 @@ async def shell(self: Client, ctx: Message, strings) -> 'Message':
 @use_chat_lang()
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
-        return await edit_or_reply(ctx, text=strings("no_eval"), del_in=5)
-    status_message = await editPesan(ctx, strings("run_eval")) if ctx.from_user.is_self else await kirimPesan(ctx, strings("run_eval"), quote=True)
+        return await edit_or_reply(ctx, text=strings("no_eval"))
+    status_message = await ctx.edit_msg(strings("run_eval")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_eval"), quote=True)
     code = ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
     out = ""
@@ -184,7 +184,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     async def _eval() -> Tuple[str, Optional[str]]:
         # Message sending helper for convenience
         async def send(*args: Any, **kwargs: Any) -> Message:
-            return await ctx.reply(*args, **kwargs)
+            return await ctx.reply_msg(*args, **kwargs)
 
         # Print wrapper to capture output
         # We don't override sys.stdout to avoid interfering with other output
