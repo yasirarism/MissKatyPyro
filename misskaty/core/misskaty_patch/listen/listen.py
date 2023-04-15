@@ -60,10 +60,6 @@ class Client():
         response = await self.listen(chat_id, filters, timeout)
         response.request = request
         return response
-    
-    @patchable
-    def input(self, msg):
-        return msg.text
    
     @patchable
     def clear_listener(self, chat_id, future):
@@ -124,8 +120,12 @@ class Chat(pyrogram.types.Chat):
 @patch(pyrogram.types.messages_and_media.Message)
 class Message(pyrogram.types.Message):
     @patchable
-    def input(self):
-        return self._client.input(self)
+    def input(self) -> str:
+        """ Returns the input string without command """
+        input_ = self.text
+        if ' ' in input_ or '\n' in input_:
+            return str(input_.split(maxsplit=1)[1].strip())
+        return ''
         return property(self.text[self.text.find(self.command[0]) + len(self.command[0]) + 1:] if len(self.command) > 1 else None)
 
 @patch(pyrogram.types.user_and_chats.user.User)
