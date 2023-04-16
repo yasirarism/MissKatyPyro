@@ -71,18 +71,12 @@ def get_subname(lang, url, format):
 @use_chat_lang()
 async def ceksub(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(
-            strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5
-        )
+        return await ctx.reply_msg(strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5)
     link = ctx.command[1]
     start_time = perf_counter()
     pesan = await ctx.reply_msg(strings("progress_str"), quote=True)
     try:
-        res = (
-            await shell_exec(
-                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
-            )
-        )[0]
+        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -108,9 +102,7 @@ async def ceksub(self: Client, ctx: Message, strings):
             )
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
-        buttons.append(
-            [InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")]
-        )
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
         await pesan.edit_msg(
             strings("press_btn_msg").format(timelog=timelog),
             reply_markup=InlineKeyboardMarkup(buttons),
@@ -125,23 +117,12 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if (
-        not reply
-        and reply.document
-        and (
-            reply.document.file_name.endswith(".vtt")
-            or reply.document.file_name.endswith(".ass")
-        )
-    ):
-        return await ctx.reply_msg(
-            strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=5
-        )
+    if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
+        return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=5)
     msg = await ctx.reply_msg(strings("convert_str"), quote=True)
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
-    LOGGER.info(
-        f"ConvertSub: {filename} by {ctx.from_user.first_name} [{ctx.from_user.id}]"
-    )
+    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name} [{ctx.from_user.id}]")
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}.srt'"))[0]
     c_time = time()
     await ctx.reply_document(
@@ -184,18 +165,14 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     start_time = perf_counter()
     namafile = get_subname(lang, link, format)
     try:
-        LOGGER.info(
-            f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
-        )
+        LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=strings("capt_extr_sub").format(
-                nf=namafile, bot=self.me.username, timelog=timelog
-            ),
+            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=timelog),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
