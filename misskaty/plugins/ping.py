@@ -5,28 +5,33 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-import time
 import os
+import time
 from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app, botStartTime
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.http import http
-from .dev import shell_exec
+from misskaty.helper.human_read import get_readable_time
 from misskaty.vars import COMMAND_HANDLER
+
+from .dev import shell_exec
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 @ratelimiter
 async def ping(self: Client, ctx: Message):
     if os.path.exists(".git"):
-        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
+        botVersion = (
+            await shell_exec(
+                "git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"
+            )
+        )[0]
     else:
         botVersion = "v2.49"
     try:
@@ -39,7 +44,9 @@ async def ping(self: Client, ctx: Message):
     rm = await ctx.reply_msg("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
-    await rm.edit_msg(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
+    await rm.edit_msg(
+        f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>"
+    )
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))
@@ -64,7 +71,9 @@ async def ping_handler(self: Client, ctx: Message):
                     check=True,
                     capture_output=True,
                 )
-                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace(
+                    "time=", ""
+                )
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:

@@ -8,11 +8,12 @@
 # All rights reserved.
 #
 
-# Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
-import time
 import re
 
-from pyrogram import filters, enums
+# Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
+import time
+
+from pyrogram import enums, filters
 
 from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
@@ -54,34 +55,58 @@ async def active_afk(_, message, strings):
                 send = (
                     await message.reply_animation(
                         data,
-                        caption=strings("on_afk_msg_no_r").format(usr=message.from_user.mention, id=message.from_user.id, tm=seenago),
+                        caption=strings("on_afk_msg_no_r").format(
+                            usr=message.from_user.mention,
+                            id=message.from_user.id,
+                            tm=seenago,
+                        ),
                     )
                     if str(reasonafk) == "None"
                     else await message.reply_animation(
                         data,
-                        caption=strings("on_afk_msg_with_r").format(usr=message.from_user.mention, id=message.from_user.id, tm=seenago, reas=reasonafk),
+                        caption=strings("on_afk_msg_with_r").format(
+                            usr=message.from_user.mention,
+                            id=message.from_user.id,
+                            tm=seenago,
+                            reas=reasonafk,
+                        ),
                     )
                 )
             elif afktype == "photo":
                 send = (
                     await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=strings("on_afk_msg_no_r").format(usr=message.from_user.mention, id=message.from_user.id, tm=seenago),
+                        caption=strings("on_afk_msg_no_r").format(
+                            usr=message.from_user.mention,
+                            id=message.from_user.id,
+                            tm=seenago,
+                        ),
                     )
                     if str(reasonafk) == "None"
                     else await message.reply_photo(
                         photo=f"downloads/{user_id}.jpg",
-                        caption=strings("on_afk_msg_with_r").format(usr=message.from_user.first_name, tm=seenago, reas=reasonafk),
+                        caption=strings("on_afk_msg_with_r").format(
+                            usr=message.from_user.first_name, tm=seenago, reas=reasonafk
+                        ),
                     )
                 )
             elif afktype == "text":
                 send = await message.reply_text(
-                    caption=strings("on_afk_msg_no_r").format(usr=message.from_user.mention, id=message.from_user.id, tm=seenago),
+                    caption=strings("on_afk_msg_no_r").format(
+                        usr=message.from_user.mention,
+                        id=message.from_user.id,
+                        tm=seenago,
+                    ),
                     disable_web_page_preview=True,
                 )
             elif afktype == "text_reason":
                 send = await message.reply_text(
-                    caption=strings("on_afk_msg_with_r").format(usr=message.from_user.mention, id=message.from_user.id, tm=seenago, reas=reasonafk),
+                    caption=strings("on_afk_msg_with_r").format(
+                        usr=message.from_user.mention,
+                        id=message.from_user.id,
+                        tm=seenago,
+                        reas=reasonafk,
+                    ),
                     disable_web_page_preview=True,
                 )
         except Exception:
@@ -149,7 +174,9 @@ async def active_afk(_, message, strings):
                 "reason": None,
             }
         else:
-            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+            await app.download_media(
+                message.reply_to_message, file_name=f"{user_id}.jpg"
+            )
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -166,7 +193,9 @@ async def active_afk(_, message, strings):
                 "reason": _reason,
             }
         else:
-            await app.download_media(message.reply_to_message, file_name=f"{user_id}.jpg")
+            await app.download_media(
+                message.reply_to_message, file_name=f"{user_id}.jpg"
+            )
             details = {
                 "type": "photo",
                 "time": time.time(),
@@ -182,7 +211,12 @@ async def active_afk(_, message, strings):
         }
 
     await add_afk(user_id, details)
-    send = await kirimPesan(message, strings("now_afk").format(usr=message.from_user.mention, id=message.from_user.id))
+    send = await kirimPesan(
+        message,
+        strings("now_afk").format(
+            usr=message.from_user.mention, id=message.from_user.id
+        ),
+    )
     await put_cleanmode(message.chat.id, send.id)
 
 
@@ -194,7 +228,9 @@ async def afk_state(_, message, strings):
     if not message.from_user:
         return
     if len(message.command) == 1:
-        return await kirimPesan(message, strings("afkdel_help").format(cmd=message.command[0]))
+        return await kirimPesan(
+            message, strings("afkdel_help").format(cmd=message.command[0])
+        )
     chat_id = message.chat.id
     state = message.text.split(None, 1)[1].strip()
     state = state.lower()
@@ -241,30 +277,42 @@ async def chat_watcher_func(client, message, strings):
             reasonafk = reasondb["reason"]
             seenago = get_readable_time2((int(time.time() - timeafk)))
             if afktype == "text":
-                msg += strings("on_afk_msg_no_r").format(usr=user_name, id=userid, tm=seenago)
+                msg += strings("on_afk_msg_no_r").format(
+                    usr=user_name, id=userid, tm=seenago
+                )
             if afktype == "text_reason":
-                msg += strings("on_afk_msg_with_r").format(usr=user_name, id=userid, tm=seenago, reas=reasonafk)
+                msg += strings("on_afk_msg_with_r").format(
+                    usr=user_name, id=userid, tm=seenago, reas=reasonafk
+                )
             if afktype == "animation":
                 if str(reasonafk) == "None":
                     send = await message.reply_animation(
                         data,
-                        caption=strings("on_afk_msg_no_r").format(usr=user_name, id=userid, tm=seenago),
+                        caption=strings("on_afk_msg_no_r").format(
+                            usr=user_name, id=userid, tm=seenago
+                        ),
                     )
                 else:
                     send = await message.reply_animation(
                         data,
-                        caption=strings("on_afk_msg_with_r").format(usr=user_name, id=userid, tm=seenago, reas=reasonafk),
+                        caption=strings("on_afk_msg_with_r").format(
+                            usr=user_name, id=userid, tm=seenago, reas=reasonafk
+                        ),
                     )
             if afktype == "photo":
                 if str(reasonafk) == "None":
                     send = await message.reply_photo(
                         photo=f"downloads/{userid}.jpg",
-                        caption=strings("on_afk_msg_no_r").format(usr=user_name, id=userid, tm=seenago),
+                        caption=strings("on_afk_msg_no_r").format(
+                            usr=user_name, id=userid, tm=seenago
+                        ),
                     )
                 else:
                     send = await message.reply_photo(
                         photo=f"downloads/{userid}.jpg",
-                        caption=strings("on_afk_msg_with_r").format(usr=user_name, id=userid, tm=seenago, reas=reasonafk),
+                        caption=strings("on_afk_msg_with_r").format(
+                            usr=user_name, id=userid, tm=seenago, reas=reasonafk
+                        ),
                     )
         except:
             msg += strings("is_online").format(usr=user_name, id=userid)
@@ -283,33 +331,60 @@ async def chat_watcher_func(client, message, strings):
                     reasonafk = reasondb["reason"]
                     seenago = get_readable_time2((int(time.time() - timeafk)))
                     if afktype == "text":
-                        msg += strings("is_afk_msg_no_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago)
+                        msg += strings("is_afk_msg_no_r").format(
+                            usr=replied_first_name, id=replied_user_id, tm=seenago
+                        )
                     if afktype == "text_reason":
-                        msg += strings("is_afk_msg_with_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago, reas=reasonafk)
+                        msg += strings("is_afk_msg_with_r").format(
+                            usr=replied_first_name,
+                            id=replied_user_id,
+                            tm=seenago,
+                            reas=reasonafk,
+                        )
                     if afktype == "animation":
                         if str(reasonafk) == "None":
                             send = await message.reply_animation(
                                 data,
-                                caption=strings("is_afk_msg_no_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago),
+                                caption=strings("is_afk_msg_no_r").format(
+                                    usr=replied_first_name,
+                                    id=replied_user_id,
+                                    tm=seenago,
+                                ),
                             )
                         else:
                             send = await message.reply_animation(
                                 data,
-                                caption=strings("is_afk_msg_with_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago, reas=reasonafk),
+                                caption=strings("is_afk_msg_with_r").format(
+                                    usr=replied_first_name,
+                                    id=replied_user_id,
+                                    tm=seenago,
+                                    reas=reasonafk,
+                                ),
                             )
                     if afktype == "photo":
                         if str(reasonafk) == "None":
                             send = await message.reply_photo(
                                 photo=f"downloads/{replied_user_id}.jpg",
-                                caption=strings("is_afk_msg_no_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago),
+                                caption=strings("is_afk_msg_no_r").format(
+                                    usr=replied_first_name,
+                                    id=replied_user_id,
+                                    tm=seenago,
+                                ),
                             )
                         else:
                             send = await message.reply_photo(
                                 photo=f"downloads/{replied_user_id}.jpg",
-                                caption=strings("is_afk_msg_with_r").format(usr=replied_first_name, id=replied_user_id, tm=seenago, reas=reasonafk),
+                                caption=strings("is_afk_msg_with_r").format(
+                                    usr=replied_first_name,
+                                    id=replied_user_id,
+                                    tm=seenago,
+                                    reas=reasonafk,
+                                ),
                             )
                 except Exception:
-                    msg += strings("is_afk").format(usr=replied_first_name, id=replied_user_id)
+                    msg += strings("is_afk").format(
+                        usr=replied_first_name, id=replied_user_id
+                    )
         except:
             pass
 
@@ -338,33 +413,56 @@ async def chat_watcher_func(client, message, strings):
                         reasonafk = reasondb["reason"]
                         seenago = get_readable_time2((int(time.time() - timeafk)))
                         if afktype == "text":
-                            msg += strings("is_afk_msg_no_r").format(usr=user.first_name[:25], id=user.id, tm=seenago)
+                            msg += strings("is_afk_msg_no_r").format(
+                                usr=user.first_name[:25], id=user.id, tm=seenago
+                            )
                         if afktype == "text_reason":
-                            msg += strings("is_afk_msg_with_r").format(usr=user.first_name[:25], id=user.id, tm=seenago, reas=reasonafk)
+                            msg += strings("is_afk_msg_with_r").format(
+                                usr=user.first_name[:25],
+                                id=user.id,
+                                tm=seenago,
+                                reas=reasonafk,
+                            )
                         if afktype == "animation":
                             if str(reasonafk) == "None":
                                 send = await message.reply_animation(
                                     data,
-                                    caption=strings("is_afk_msg_no_r").format(usr=user.first_name[:25], id=user.id, tm=seenago),
+                                    caption=strings("is_afk_msg_no_r").format(
+                                        usr=user.first_name[:25], id=user.id, tm=seenago
+                                    ),
                                 )
                             else:
                                 send = await message.reply_animation(
                                     data,
-                                    caption=strings("is_afk_msg_with_r").format(usr=user.first_name[:25], id=user.id, tm=seenago, reas=reasonafk),
+                                    caption=strings("is_afk_msg_with_r").format(
+                                        usr=user.first_name[:25],
+                                        id=user.id,
+                                        tm=seenago,
+                                        reas=reasonafk,
+                                    ),
                                 )
                         if afktype == "photo":
                             if str(reasonafk) == "None":
                                 send = await message.reply_photo(
                                     photo=f"downloads/{user.id}.jpg",
-                                    caption=strings("is_afk_msg_no_r").format(usr=user.first_name[:25], id=user.id, tm=seenago),
+                                    caption=strings("is_afk_msg_no_r").format(
+                                        usr=user.first_name[:25], id=user.id, tm=seenago
+                                    ),
                                 )
                             else:
                                 send = await message.reply_photo(
                                     photo=f"downloads/{user.id}.jpg",
-                                    caption=strings("is_afk_msg_with_r").format(usr=user.first_name[:25], id=user.id, tm=seenago, reas=reasonafk),
+                                    caption=strings("is_afk_msg_with_r").format(
+                                        usr=user.first_name[:25],
+                                        id=user.id,
+                                        tm=seenago,
+                                        reas=reasonafk,
+                                    ),
                                 )
                     except:
-                        msg += strings("is_afk").format(usr=user.first_name[:25], id=user.id)
+                        msg += strings("is_afk").format(
+                            usr=user.first_name[:25], id=user.id
+                        )
             elif (entity[j].type) == enums.MessageEntityType.TEXT_MENTION:
                 try:
                     user_id = entity[j].user.id
@@ -384,30 +482,51 @@ async def chat_watcher_func(client, message, strings):
                         reasonafk = reasondb["reason"]
                         seenago = get_readable_time2((int(time.time() - timeafk)))
                         if afktype == "text":
-                            msg += strings("is_afk_msg_no_r").format(usr=first_name[:25], id=user_id, tm=seenago)
+                            msg += strings("is_afk_msg_no_r").format(
+                                usr=first_name[:25], id=user_id, tm=seenago
+                            )
                         if afktype == "text_reason":
-                            msg += strings("is_afk_msg_with_r").format(usr=first_name[:25], id=user_id, tm=seenago, reas=reasonafk)
+                            msg += strings("is_afk_msg_with_r").format(
+                                usr=first_name[:25],
+                                id=user_id,
+                                tm=seenago,
+                                reas=reasonafk,
+                            )
                         if afktype == "animation":
                             if str(reasonafk) == "None":
                                 send = await message.reply_animation(
                                     data,
-                                    caption=strings("is_afk_msg_no_r").format(usr=first_name[:25], id=user_id, tm=seenago),
+                                    caption=strings("is_afk_msg_no_r").format(
+                                        usr=first_name[:25], id=user_id, tm=seenago
+                                    ),
                                 )
                             else:
                                 send = await message.reply_animation(
                                     data,
-                                    caption=strings("is_afk_msg_with_r").format(usr=first_name[:25], id=user_id, tm=seenago, reas=reasonafk),
+                                    caption=strings("is_afk_msg_with_r").format(
+                                        usr=first_name[:25],
+                                        id=user_id,
+                                        tm=seenago,
+                                        reas=reasonafk,
+                                    ),
                                 )
                         if afktype == "photo":
                             if str(reasonafk) == "None":
                                 send = await message.reply_photo(
                                     photo=f"downloads/{user_id}.jpg",
-                                    caption=strings("is_afk_msg_no_r").format(usr=first_name[:25], id=user_id, tm=seenago),
+                                    caption=strings("is_afk_msg_no_r").format(
+                                        usr=first_name[:25], id=user_id, tm=seenago
+                                    ),
                                 )
                             else:
                                 send = await message.reply_photo(
                                     photo=f"downloads/{user_id}.jpg",
-                                    caption=strings("is_afk_msg_with_r").format(usr=first_name[:25], id=user_id, tm=seenago, reas=reasonafk),
+                                    caption=strings("is_afk_msg_with_r").format(
+                                        usr=first_name[:25],
+                                        id=user_id,
+                                        tm=seenago,
+                                        reas=reasonafk,
+                                    ),
                                 )
                     except:
                         msg += strings("is_afk").format(usr=first_name[:25], id=user_id)

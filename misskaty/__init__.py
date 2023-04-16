@@ -1,15 +1,15 @@
 import os
 import time
-import uvloop
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
-from misskaty.core import misskaty_patch
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import uvloop
 from apscheduler.jobstores.mongodb import MongoDBJobStore
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pymongo import MongoClient
 from pyrogram import Client
 
-from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, USER_SESSION, TZ
+from misskaty.core import misskaty_patch
+from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION
 
 basicConfig(
     level=INFO,
@@ -46,7 +46,11 @@ user = Client(
 
 pymonclient = MongoClient(DATABASE_URI)
 
-jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB", collection="nightmode")}
+jobstores = {
+    "default": MongoDBJobStore(
+        client=pymonclient, database="MissKatyDB", collection="nightmode"
+    )
+}
 
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 

@@ -1,6 +1,12 @@
 from typing import Union
 
-from pyrate_limiter import BucketFullException, Duration, Limiter, MemoryListBucket, RequestRate
+from pyrate_limiter import (
+    BucketFullException,
+    Duration,
+    Limiter,
+    MemoryListBucket,
+    RequestRate,
+)
 
 
 class RateLimiter:

@@ -28,8 +28,8 @@ from pyrogram import filters
 from database.notes_db import delete_note, get_note, get_note_names, save_note
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb
 
@@ -62,7 +62,9 @@ async def save_notee(_, message):
         _type = "text" if message.reply_to_message.text else "sticker"
         note = {
             "type": _type,
-            "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
+            "data": message.reply_to_message.text.markdown
+            if _type == "text"
+            else message.reply_to_message.sticker.file_id,
         }
         message.text.split()[0][0]
         chat_id = message.chat.id

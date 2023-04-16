@@ -1,9 +1,11 @@
-from cachetools import TTLCache
 from functools import wraps
-from ..ratelimiter_func import RateLimiter
 from typing import Callable, Union
+
+from cachetools import TTLCache
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, Message
+
+from ..ratelimiter_func import RateLimiter
 
 ratelimit = RateLimiter()
 # storing spammy user in cache for 1minute before allowing them to use commands again.

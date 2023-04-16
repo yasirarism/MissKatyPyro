@@ -8,16 +8,23 @@
 import datetime
 import os
 import time
-from asyncio import gather, sleep, create_task
+from asyncio import create_task, gather, sleep
 from logging import getLogger
 
-from pyrogram import enums, filters, Client
+from pyrogram import Client, enums, filters
 from pyrogram.errors import FloodWait
-from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
+from misskaty.helper import (
+    gen_ik_buttons,
+    get_duration,
+    is_url,
+    progress_for_pyrogram,
+    screenshot_flink,
+    take_ss,
+)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
@@ -44,7 +51,12 @@ async def genss(self: Client, ctx: Message, strings):
         if isinstance(duration, str):
             return await snt.edit_msg(strings("fail_open"))
         btns = gen_ik_buttons()
-        await snt.edit_msg(strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
+        await snt.edit_msg(
+            strings("choose_no_ss").format(
+                td=datetime.timedelta(seconds=duration), dur=duration
+            ),
+            reply_markup=InlineKeyboardMarkup(btns),
+        )
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
@@ -62,11 +74,15 @@ async def genss(self: Client, ctx: Message, strings):
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await process.edit_msg(strings("success_dl_msg").format(path=the_real_download_location))
+                await process.edit_msg(
+                    strings("success_dl_msg").format(path=the_real_download_location)
+                )
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
                 await process.edit_msg(strings("up_progress"))
-                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await self.send_chat_action(
+                    chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO
+                )
 
                 try:
                     await gather(
@@ -84,7 +100,11 @@ async def genss(self: Client, ctx: Message, strings):
                         ]
                     )
                 await ctx.reply_msg(
-                    strings("up_msg").format(namma=ctx.from_user.mention, id=ctx.from_user.id, bot_uname=self.me.username),
+                    strings("up_msg").format(
+                        namma=ctx.from_user.mention,
+                        id=ctx.from_user.id,
+                        bot_uname=self.me.username,
+                    ),
                     reply_to_message_id=ctx.id,
                 )
                 await process.delete()

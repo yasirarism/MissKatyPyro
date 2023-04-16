@@ -25,7 +25,10 @@ disabled_group = filters.create(disabled_chat)
 @app.on_message(filters.private & banned_user & filters.incoming)
 async def ban_reply(bot, message):
     ban = await db.get_ban_status(message.from_user.id)
-    await kirimPesan(message, f'Sorry Dude, You are Banned to use Me. \nBan Reason: {ban["ban_reason"]}')
+    await kirimPesan(
+        message,
+        f'Sorry Dude, You are Banned to use Me. \nBan Reason: {ban["ban_reason"]}',
+    )
 
 
 @app.on_message(filters.group & disabled_group & filters.incoming)

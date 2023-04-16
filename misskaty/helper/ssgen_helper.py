@@ -14,7 +14,9 @@ from misskaty.core.message_utils import *
 
 
 async def run_subprocess(cmd):
-    process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    process = await asyncio.create_subprocess_shell(
+        cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+    )
     return await process.communicate()
 
 
@@ -60,7 +62,9 @@ async def screenshot_flink(c, m):
     media_msg = m.message.reply_to_message
     # print(media_msg)
     if media_msg.empty:
-        await editPesan(m.message, "Why did you delete the file 😠, Now i cannot help you 😒.")
+        await editPesan(
+            m.message, "Why did you delete the file 😠, Now i cannot help you 😒."
+        )
         # c.CURRENT_PROCESSES[chat_id] -= 1
         return
 
@@ -87,7 +91,9 @@ async def screenshot_flink(c, m):
         screenshots = []
         ffmpeg_errors = ""
 
-        screenshot_secs = [get_random_start_at(reduced_sec) for _ in range(1, 1 + num_screenshots)]
+        screenshot_secs = [
+            get_random_start_at(reduced_sec) for _ in range(1, 1 + num_screenshots)
+        ]
         width, height = await get_dimentions(file_link)
 
         for i, sec in enumerate(screenshot_secs):
@@ -97,13 +103,21 @@ async def screenshot_flink(c, m):
             output = await run_subprocess(ffmpeg_cmd)
             await editPesan(m.message, f"😀 `{i+1}` of `{num_screenshots}` generated!")
             if thumbnail_template.exists():
-                screenshots.append(InputMediaPhoto(str(thumbnail_template), caption=f"ScreenShot at {datetime.timedelta(seconds=sec)}"))
+                screenshots.append(
+                    InputMediaPhoto(
+                        str(thumbnail_template),
+                        caption=f"ScreenShot at {datetime.timedelta(seconds=sec)}",
+                    )
+                )
                 continue
             ffmpeg_errors += output[1].decode() + "\n\n"
 
         # print(screenshots)
         if not screenshots:
-            await editPesan(m.message, "😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.")
+            await editPesan(
+                m.message,
+                "😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.",
+            )
             # c.CURRENT_PROCESSES[chat_id] -= 1
             return
 
@@ -111,12 +125,17 @@ async def screenshot_flink(c, m):
         await media_msg.reply_chat_action(enums.ChatAction.UPLOAD_PHOTO)
         await media_msg.reply_media_group(screenshots, True)
 
-        await editPesan(m.message, f"Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org")
+        await editPesan(
+            m.message,
+            f"Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org",
+        )
         # c.CURRENT_PROCESSES[chat_id] -= 1
 
     except:
         traceback.print_exc()
-        await editPesan(m.message, "😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.")
+        await editPesan(
+            m.message, "😟 Sorry! Screenshot generation failed, ERR: {aa} 😥."
+        )
         # c.CURRENT_PROCESSES[chat_id] -= 1
 
 

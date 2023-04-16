@@ -2,10 +2,24 @@ import traceback
 from logging import getLogger
 
 from pyrogram import Client, filters
-from pyrogram.errors import ApiIdInvalid, PasswordHashInvalid, PhoneCodeExpired, PhoneCodeInvalid, PhoneNumberInvalid, SessionPasswordNeeded
+from pyrogram.errors import (
+    ApiIdInvalid,
+    PasswordHashInvalid,
+    PhoneCodeExpired,
+    PhoneCodeInvalid,
+    PhoneNumberInvalid,
+    SessionPasswordNeeded,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telethon import TelegramClient
-from telethon.errors import ApiIdInvalidError, PasswordHashInvalidError, PhoneCodeExpiredError, PhoneCodeInvalidError, PhoneNumberInvalidError, SessionPasswordNeededError
+from telethon.errors import (
+    ApiIdInvalidError,
+    PasswordHashInvalidError,
+    PhoneCodeExpiredError,
+    PhoneCodeInvalidError,
+    PhoneNumberInvalidError,
+    SessionPasswordNeededError,
+)
 from telethon.sessions import StringSession
 
 from misskaty import app
@@ -32,50 +46,74 @@ buttons_ques = [
     ],
 ]
 
-gen_button = [[InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]]
+gen_button = [
+    [InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]
+]
 
 
 async def is_batal(msg):
     if msg.text == "/cancel":
-        await msg.reply("**» Cancelled the ongoing string session generation process !**", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
+        await msg.reply(
+            "**» Cancelled the ongoing string session generation process !**",
+            quote=True,
+            reply_markup=InlineKeyboardMarkup(gen_button),
+        )
         return True
     elif msg.text == "/skip":
         return False
     elif msg.text.startswith("/"):  # Bot Commands
-        await msg.reply("**» Cancelled the ongoing string session generation process !**", quote=True)
+        await msg.reply(
+            "**» Cancelled the ongoing string session generation process !**",
+            quote=True,
+        )
         return True
     else:
         return False
 
 
-@app.on_callback_query(filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
+@app.on_callback_query(
+    filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$")
+)
 @ratelimiter
 async def callbackgenstring(bot, callback_query):
     query = callback_query.matches[0].group(1)
     if query == "genstring":
         await callback_query.answer()
-        await callback_query.message.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
+        await callback_query.message.reply(
+            ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques)
+        )
     elif query.startswith("pyrogram") or query.startswith("telethon"):
         try:
             if query == "pyrogram":
                 await callback_query.answer()
                 await generate_session(bot, callback_query.message)
             elif query == "pyrogram_bot":
-                await callback_query.answer("» The session generator will be of Pyrogram v2.", show_alert=True)
+                await callback_query.answer(
+                    "» The session generator will be of Pyrogram v2.", show_alert=True
+                )
                 await generate_session(bot, callback_query.message, is_bot=True)
             elif query == "telethon_bot":
                 await callback_query.answer()
-                await generate_session(bot, callback_query.message, telethon=True, is_bot=True)
+                await generate_session(
+                    bot, callback_query.message, telethon=True, is_bot=True
+                )
             elif query == "telethon":
                 await callback_query.answer()
                 await generate_session(bot, callback_query.message, telethon=True)
         except Exception as e:
             LOGGER.error(traceback.format_exc())
-            ERROR_MESSAGE = "Something went wrong. \n\n**ERROR** : {} " "\n\n**Please forward this message to my Owner**, if this message " "doesn't contain any sensitive data " "because this error is **not logged by bot.** !"
+            ERROR_MESSAGE = (
+                "Something went wrong. \n\n**ERROR** : {} "
+                "\n\n**Please forward this message to my Owner**, if this message "
+                "doesn't contain any sensitive data "
+                "because this error is **not logged by bot.** !"
+            )
             await callback_query.message.reply(ERROR_MESSAGE.format(str(e)))
 
 
-@app.on_message(filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER))
+@app.on_message(
+    filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER)
+)
 @ratelimiter
 async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
@@ -87,7 +125,10 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
         ty += " Bot"
     await msg.reply(f"» Trying to start **{ty}** session generator...")
     msg.chat.id
-    api_id_msg = await msg.chat.ask("Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.", filters=filters.text)
+    api_id_msg = await msg.chat.ask(
+        "Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.",
+        filters=filters.text,
+    )
     if await is_batal(api_id_msg):
         return
     if api_id_msg.text == "/skip":
@@ -98,14 +139,24 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             api_id = int(api_id_msg.text)
             await api_id_msg.delete()
         except ValueError:
-            await api_id_msg.reply("**API_ID** must be integer, start generating your session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
+            await api_id_msg.reply(
+                "**API_ID** must be integer, start generating your session again.",
+                quote=True,
+                reply_markup=InlineKeyboardMarkup(gen_button),
+            )
             return
-        api_hash_msg = await msg.chat.ask("» Now please send your **API_HASH** to continue.", filters=filters.text)
+        api_hash_msg = await msg.chat.ask(
+            "» Now please send your **API_HASH** to continue.", filters=filters.text
+        )
         if await is_batal(api_hash_msg):
             return
         api_hash = api_hash_msg.text
         await api_hash_msg.delete()
-    t = "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'" if is_bot else "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
+    t = (
+        "Please send your **BOT_TOKEN** to continue.\nExample : `5432198765:abcdanonymousterabaaplol`'"
+        if is_bot
+        else "» Please send your **PHONE_NUMBER** with country code for which you want generate session. \nᴇxᴀᴍᴩʟᴇ : `+6286356837789`'"
+    )
     phone_number_msg = await msg.chat.ask(t, filters=filters.text)
     if await is_batal(phone_number_msg):
         return
@@ -118,7 +169,13 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     if telethon and is_bot or telethon:
         client = TelegramClient(StringSession(), api_id, api_hash)
     elif is_bot:
-        client = Client(name="bot", api_id=api_id, api_hash=api_hash, bot_token=phone_number, in_memory=True)
+        client = Client(
+            name="bot",
+            api_id=api_id,
+            api_hash=api_hash,
+            bot_token=phone_number,
+            in_memory=True,
+        )
     else:
         client = Client(name="user", api_id=api_id, api_hash=api_hash, in_memory=True)
     await client.connect()
@@ -130,19 +187,32 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             else:
                 code = await client.send_code(phone_number)
     except (ApiIdInvalid, ApiIdInvalidError):
-        await msg.reply("» Your **API_ID** and **API_HASH** combination doesn't match. \n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+        await msg.reply(
+            "» Your **API_ID** and **API_HASH** combination doesn't match. \n\nPlease start generating your session again.",
+            reply_markup=InlineKeyboardMarkup(gen_button),
+        )
         return
     except (PhoneNumberInvalid, PhoneNumberInvalidError):
-        await msg.reply("» The **PHONE_NUMBER** you've doesn't belong to any account in Telegram.\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+        await msg.reply(
+            "» The **PHONE_NUMBER** you've doesn't belong to any account in Telegram.\n\nPlease start generating your session again.",
+            reply_markup=InlineKeyboardMarkup(gen_button),
+        )
         return
     try:
         phone_code_msg = None
         if not is_bot:
-            phone_code_msg = await msg.chat.ask("» Please send the **OTP** That you've received from Telegram on your account.\nIf OTP is `12345`, **please send it as** `1 2 3 4 5`.", filters=filters.text, timeout=600)
+            phone_code_msg = await msg.chat.ask(
+                "» Please send the **OTP** That you've received from Telegram on your account.\nIf OTP is `12345`, **please send it as** `1 2 3 4 5`.",
+                filters=filters.text,
+                timeout=600,
+            )
             if await is_batal(phone_code_msg):
                 return
     except TimeoutError:
-        await msg.reply("» Time limit reached of 10 minutes.\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+        await msg.reply(
+            "» Time limit reached of 10 minutes.\n\nPlease start generating your session again.",
+            reply_markup=InlineKeyboardMarkup(gen_button),
+        )
         return
     if not is_bot:
         phone_code = phone_code_msg.text.replace(" ", "")
@@ -153,16 +223,29 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             else:
                 await client.sign_in(phone_number, code.phone_code_hash, phone_code)
         except (PhoneCodeInvalid, PhoneCodeInvalidError):
-            await msg.reply("» The OTP you've sent is **wrong.**\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+            await msg.reply(
+                "» The OTP you've sent is **wrong.**\n\nPlease start generating your session again.",
+                reply_markup=InlineKeyboardMarkup(gen_button),
+            )
             return
         except (PhoneCodeExpired, PhoneCodeExpiredError):
-            await msg.reply("» The OTP you've sent is **expired.**\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+            await msg.reply(
+                "» The OTP you've sent is **expired.**\n\nPlease start generating your session again.",
+                reply_markup=InlineKeyboardMarkup(gen_button),
+            )
             return
         except (SessionPasswordNeeded, SessionPasswordNeededError):
             try:
-                two_step_msg = await msg.chat.ask("» Please enter your **Two Step Verification** password to continue.", filters=filters.text, timeout=300)
+                two_step_msg = await msg.chat.ask(
+                    "» Please enter your **Two Step Verification** password to continue.",
+                    filters=filters.text,
+                    timeout=300,
+                )
             except TimeoutError:
-                await msg.reply("» Time limit reached of 5 minutes.\n\nPlease start generating your session again.", reply_markup=InlineKeyboardMarkup(gen_button))
+                await msg.reply(
+                    "» Time limit reached of 5 minutes.\n\nPlease start generating your session again.",
+                    reply_markup=InlineKeyboardMarkup(gen_button),
+                )
                 return
             try:
                 password = two_step_msg.text
@@ -174,7 +257,11 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
                 if await is_batal(api_id_msg):
                     return
             except (PasswordHashInvalid, PasswordHashInvalidError):
-                await two_step_msg.reply("» The password you've sent is wrong.\n\nPlease start generating session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
+                await two_step_msg.reply(
+                    "» The password you've sent is wrong.\n\nPlease start generating session again.",
+                    quote=True,
+                    reply_markup=InlineKeyboardMarkup(gen_button),
+                )
                 return
     elif telethon:
         await client.start(bot_token=phone_number)

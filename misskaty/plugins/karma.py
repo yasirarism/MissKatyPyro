@@ -46,18 +46,30 @@ def section(
     text = (bold_ul(title) + n) if underline else bold(title) + n
 
     for key, value in body.items():
-        text += indent * w + bold(key) + ((value[0] + n) if isinstance(value, list) else mono(value))
+        text += (
+            indent * w
+            + bold(key)
+            + ((value[0] + n) if isinstance(value, list) else mono(value))
+        )
     return text
 
 
 async def get_user_id_and_usernames(client) -> dict:
     with client.storage.lock, client.storage.conn:
-        users = client.storage.conn.execute('SELECT * FROM peers WHERE type in ("user", "bot") AND username NOT null').fetchall()
+        users = client.storage.conn.execute(
+            'SELECT * FROM peers WHERE type in ("user", "bot") AND username NOT null'
+        ).fetchall()
     return {user[0]: user[3] for user in users}
 
 
 @app.on_message(
-    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_upvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
+    filters.text
+    & filters.group
+    & filters.incoming
+    & filters.reply
+    & filters.regex(regex_upvote, re.IGNORECASE)
+    & ~filters.via_bot
+    & ~filters.bot,
     group=karma_positive_group,
 )
 @capture_err
@@ -83,11 +95,19 @@ async def upvote(_, message):
         karma = 1
     new_karma = {"karma": karma}
     await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}")
+    await message.reply_text(
+        f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
+    )
 
 
 @app.on_message(
-    filters.text & filters.group & filters.incoming & filters.reply & filters.regex(regex_downvote, re.IGNORECASE) & ~filters.via_bot & ~filters.bot,
+    filters.text
+    & filters.group
+    & filters.incoming
+    & filters.reply
+    & filters.regex(regex_downvote, re.IGNORECASE)
+    & ~filters.via_bot
+    & ~filters.bot,
     group=karma_negative_group,
 )
 @capture_err
@@ -123,7 +143,9 @@ async def downvote(_, message):
         karma = 1
     new_karma = {"karma": karma}
     await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(f"Decremented Karma of {user_mention} By 1 \nTotal Points: {karma}")
+    await message.reply_text(
+        f"Decremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
+    )
 
 
 @app.on_message(filters.command("karma") & filters.group)

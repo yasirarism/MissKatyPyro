@@ -14,7 +14,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.message_utils import *
-from misskaty.helper import http, rentry, post_to_telegraph
+from misskaty.helper import http, post_to_telegraph, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Paste"
@@ -71,7 +71,10 @@ pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip
 async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
-        return await kirimPesan(message, f"**Reply To A Message With /{message.command[0]} or with command**")
+        return await kirimPesan(
+            message,
+            f"**Reply To A Message With /{message.command[0]} or with command**",
+        )
 
     if message.from_user:
         if message.from_user.username:
@@ -90,21 +93,36 @@ async def telegraph_paste(_, message):
             return editPesan(msg, f"Failed to upload. ERR: {err}")
         button = [
             [InlineKeyboardButton("Open Link", url=url)],
-            [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+            [
+                InlineKeyboardButton(
+                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                )
+            ],
         ]
 
         pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
         remove(file)
-        return await editPesan(msg, pasted, disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(button))
+        return await editPesan(
+            msg,
+            pasted,
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup(button),
+        )
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(msg, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                msg, f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(msg, "**Only text files can be pasted.**")
         file = await reply.download()
-        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
+        title = (
+            message.text.split(None, 1)[1]
+            if len(message.command) > 1
+            else "MissKaty Paste"
+        )
         try:
             with open(file, "r") as text:
                 data = text.read()
@@ -116,8 +134,14 @@ async def telegraph_paste(_, message):
                 pass
             return await editPesan(msg, "`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
-        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace("\n", "<br>")
+        title = (
+            message.text.split(None, 1)[1]
+            if len(message.command) > 1
+            else "MissKaty Paste"
+        )
+        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace(
+            "\n", "<br>"
+        )
     elif not reply and len(message.command) >= 2:
         title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]
@@ -131,7 +155,11 @@ async def telegraph_paste(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Telegraph<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -145,14 +173,18 @@ async def wastepaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await kirimPesan(message, f"**Reply To A Message With /{target} or with command**")
+        return await kirimPesan(
+            message, f"**Reply To A Message With /{target} or with command**"
+        )
 
     msg = await kirimPesan(message, "`Pasting to YasirBin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(msg, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                msg, f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(msg, "**Only text files can be pasted.**")
         file = await reply.download()
@@ -196,7 +228,11 @@ async def wastepaste(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -210,14 +246,19 @@ async def nekopaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await kirimPesan(message, f"**Reply To A Message With /{target} or with command**")
+        return await kirimPesan(
+            message, f"**Reply To A Message With /{target} or with command**"
+        )
 
     msg = await kirimPesan(message, "`Pasting to Nekobin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(message, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                message,
+                f"**You can only paste files smaller than {humanbytes(limit)}.**",
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(message, "**Only text files can be pasted.**")
         file = await reply.download()
@@ -240,12 +281,16 @@ async def nekopaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
     try:
-        x = (await http.post("https://nekobin.com/api/documents", json={"content": data})).json()
+        x = (
+            await http.post("https://nekobin.com/api/documents", json={"content": data})
+        ).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:
         return await editPesan(msg, f"ERROR: {e}")
@@ -254,7 +299,11 @@ async def nekopaste(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -268,14 +317,18 @@ async def spacebinn(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await kirimPesan(message, f"**Reply To A Message With /{target} or with command**")
+        return await kirimPesan(
+            message, f"**Reply To A Message With /{target} or with command**"
+        )
 
     msg = await kirimPesan(message, "`Pasting to Spacebin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(msg, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                msg, f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(msg, "**Only text files can be pasted.**")
         file = await reply.download()
@@ -298,7 +351,9 @@ async def spacebinn(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -314,7 +369,11 @@ async def spacebinn(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -328,14 +387,18 @@ async def rentrypaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await kirimPesan(message, f"**Reply To A Message With /{target} or with command**")
+        return await kirimPesan(
+            message, f"**Reply To A Message With /{target} or with command**"
+        )
 
     msg = await kirimPesan(message, "`Pasting to Rentry...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(msg, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                msg, f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(msg, "**Only text files can be pasted.**")
         file = await reply.download()
@@ -358,7 +421,9 @@ async def rentrypaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -371,7 +436,11 @@ async def rentrypaste(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -385,14 +454,18 @@ async def tempaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await editPesan(message, f"**Reply To A Message With /{target} or with command**")
+        return await editPesan(
+            message, f"**Reply To A Message With /{target} or with command**"
+        )
 
     msg = await kirimPesan(message, "`Pasting to TempPaste...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await editPesan(msg, f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await editPesan(
+                msg, f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await editPesan(msg, "**Only text files can be pasted.**")
         file = await reply.download()
@@ -415,7 +488,9 @@ async def tempaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -439,7 +514,11 @@ async def tempaste(_, message):
         return await editPesan(msg, "Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"

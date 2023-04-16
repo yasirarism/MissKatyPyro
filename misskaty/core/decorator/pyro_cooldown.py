@@ -1,6 +1,8 @@
-from pyrogram import filters
-from misskaty.core.message_utils import *
 import asyncio
+
+from pyrogram import filters
+
+from misskaty.core.message_utils import *
 
 data = {}
 
@@ -12,9 +14,15 @@ async def task(msg, warn=False, sec=None):
         pass
     if warn:
         user = msg.from_user
-        ids = await kirimPesan(msg, f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again..")
+        ids = await kirimPesan(
+            msg,
+            f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again..",
+        )
         await asyncio.sleep(sec)
-        await editPesan(ids, f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.")
+        await editPesan(
+            ids,
+            f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.",
+        )
         await asyncio.sleep(2)
         await hapusPesan(ids)
 
@@ -29,7 +37,9 @@ def wait(sec):
             else:
                 if not data[user_id]["warned"]:
                     data[user_id]["warned"] = True
-                    asyncio.ensure_future(task(msg, True, flt.data))  # for super accuracy use (future - time.time())
+                    asyncio.ensure_future(
+                        task(msg, True, flt.data)
+                    )  # for super accuracy use (future - time.time())
                     return False  # cause we dont need delete again
 
                 asyncio.ensure_future(task(msg))

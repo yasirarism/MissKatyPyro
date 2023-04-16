@@ -3,7 +3,7 @@ import re
 from logging import getLogger
 from time import time
 
-from pyrogram import enums, filters, Client
+from pyrogram import Client, enums, filters
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 
@@ -13,19 +13,19 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import (
     admins_in_chat,
     adminsOnly,
-    require_admin,
     list_admins,
     member_permissions,
+    require_admin,
 )
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
-from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.functions import (
     extract_user,
     extract_user_and_reason,
     int_to_alpha,
     time_converter,
 )
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 LOGGER = getLogger(__name__)
@@ -66,7 +66,12 @@ async def admin_cache_func(_, cmu):
         try:
             admins_in_chat[cmu.chat.id] = {
                 "last_updated_at": time(),
-                "data": [member.user.id async for member in app.get_chat_members(cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+                "data": [
+                    member.user.id
+                    async for member in app.get_chat_members(
+                        cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                    )
+                ],
             }
             LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
         except:
@@ -78,7 +83,7 @@ async def admin_cache_func(_, cmu):
 @require_admin(permissions=["can_delete_messages"], allow_in_private=True)
 @ratelimiter
 @use_chat_lang()
-async def purge(self: Client, ctx: Message, strings) -> 'Message':
+async def purge(self: Client, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     try:
@@ -134,7 +139,7 @@ async def purge(self: Client, ctx: Message, strings) -> 'Message':
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def kickFunc(client: Client, ctx: Message, strings) -> 'Message':
+async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     user_id, reason = await extract_user_and_reason(ctx)
@@ -147,7 +152,12 @@ async def kickFunc(client: Client, ctx: Message, strings) -> 'Message':
     if user_id in (await list_admins(ctx.chat.id)):
         return await ctx.reply_msg(strings("kick_admin_err"))
     user = await app.get_users(user_id)
-    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=ctx.from_user.mention if ctx.from_user else "Anon Admin", reasonmsg=reason or "-")
+    msg = strings("kick_msg").format(
+        mention=user.mention,
+        id=user.id,
+        kicker=ctx.from_user.mention if ctx.from_user else "Anon Admin",
+        reasonmsg=reason or "-",
+    )
     if ctx.command[0][0] == "d":
         await ctx.reply_to_message.delete_msg()
     try:
@@ -160,7 +170,9 @@ async def kickFunc(client: Client, ctx: Message, strings) -> 'Message':
 
 
 # Ban/DBan/TBan User
-@app.on_message(filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group
+)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -181,9 +193,17 @@ async def banFunc(client, message, strings):
     try:
         mention = (await app.get_users(user_id)).mention
     except IndexError:
-        mention = message.reply_to_message.sender_chat.title if message.reply_to_message else "Anon"
+        mention = (
+            message.reply_to_message.sender_chat.title
+            if message.reply_to_message
+            else "Anon"
+        )
 
-    msg = strings("ban_msg").format(mention=mention, id=user_id, banner=message.from_user.mention if message.from_user else "Anon")
+    msg = strings("ban_msg").format(
+        mention=mention,
+        id=user_id,
+        banner=message.from_user.mention if message.from_user else "Anon",
+    )
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     if message.command[0] == "tban":
@@ -242,7 +262,9 @@ async def unban_func(_, message, strings):
 
 
 # Ban users listed in a message
-@app.on_message(filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group
+)
 @ratelimiter
 @use_chat_lang()
 async def list_ban_(c, message, strings):
@@ -257,7 +279,9 @@ async def list_ban_(c, message, strings):
     lreason = msglink_reason.split()
     messagelink, reason = lreason[0], " ".join(lreason[1:])
 
-    if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+", messagelink):  # validate link
+    if not re.search(
+        r"(https?://)?t(elegram)?\.me/\w+/\d+", messagelink
+    ):  # validate link
         return await message.reply_text(strings("invalid_tg_link"))
 
     if userid == c.me.id:
@@ -284,12 +308,20 @@ async def list_ban_(c, message, strings):
         count += 1
     mention = (await app.get_users(userid)).mention
 
-    msg = strings("listban_msg").format(mention=mention, uid=userid, frus=message.from_user.mention, ct=count, reas=reason)
+    msg = strings("listban_msg").format(
+        mention=mention,
+        uid=userid,
+        frus=message.from_user.mention,
+        ct=count,
+        reas=reason,
+    )
     await m.edit_text(msg)
 
 
 # Unban users listed in a message
-@app.on_message(filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group
+)
 @ratelimiter
 @use_chat_lang()
 async def list_unban_(c, message, strings):
@@ -321,7 +353,9 @@ async def list_unban_(c, message, strings):
             continue
         count += 1
     mention = (await app.get_users(userid)).mention
-    msg = strings("listunban_msg").format(mention=mention, uid=userid, frus=message.from_user.mention, ct=count)
+    msg = strings("listunban_msg").format(
+        mention=mention, uid=userid, frus=message.from_user.mention, ct=count
+    )
     await m.edit_text(msg)
 
 
@@ -343,7 +377,9 @@ async def deleteFunc(_, message, strings):
 
 
 # Promote Members
-@app.on_message(filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group
+)
 @adminsOnly("can_promote_members")
 @ratelimiter
 @use_chat_lang()
@@ -376,7 +412,9 @@ async def promoteFunc(client, message, strings):
                 can_manage_video_chats=bot.privileges.can_manage_video_chats,
             ),
         )
-        return await message.reply_text(strings("full_promote").format(umention=umention))
+        return await message.reply_text(
+            strings("full_promote").format(umention=umention)
+        )
 
     await message.chat.promote_member(
         user_id=user_id,
@@ -478,7 +516,10 @@ async def mute(client, message, strings):
         return await message.reply_text(strings("mute_admin_err"))
     mention = (await app.get_users(user_id)).mention
     keyboard = ikb({"🚨 Unmute 🚨": f"unmute_{user_id}"})
-    msg = strings("muted_msg").format(mention=mention, muter=message.from_user.mention if message.from_user else "Anon")
+    msg = strings("muted_msg").format(
+        mention=mention,
+        muter=message.from_user.mention if message.from_user else "Anon",
+    )
     if message.command[0] == "tmute":
         split = reason.split(None, 1)
         time_value = split[0]
@@ -554,7 +595,12 @@ async def warn_user(client, message, strings):
         await remove_warns(chat_id, await int_to_alpha(user_id))
     else:
         warn = {"warns": warns + 1}
-        msg = strings("warn_msg").format(mention=mention, warner=message.from_user.mention if message.from_user else "Anon", reas=reason or "No Reason Provided.", twarn=warns + 1)
+        msg = strings("warn_msg").format(
+            mention=mention,
+            warner=message.from_user.mention if message.from_user else "Anon",
+            reas=reason or "No Reason Provided.",
+            twarn=warns + 1,
+        )
         await message.reply_text(msg, reply_markup=keyboard)
         await add_warn(chat_id, await int_to_alpha(user_id), warn)
 
@@ -577,7 +623,11 @@ async def remove_warning(_, cq, strings):
     if warns:
         warns = warns["warns"]
     if not warns or warns == 0:
-        return await cq.answer(strings("user_no_warn").format(mention=cq.message.reply_to_message.from_user.id))
+        return await cq.answer(
+            strings("user_no_warn").format(
+                mention=cq.message.reply_to_message.from_user.id
+            )
+        )
     warn = {"warns": warns - 1}
     await add_warn(chat_id, await int_to_alpha(user_id), warn)
     text = cq.message.text.markdown
@@ -668,15 +718,23 @@ async def check_warns(_, message, strings):
         warns = warns["warns"]
     else:
         return await message.reply_text(strings("user_no_warn").format(mention=mention))
-    return await message.reply_text(strings("ch_warn_msg").format(mention=mention, warns=warns))
+    return await message.reply_text(
+        strings("ch_warn_msg").format(mention=mention, warns=warns)
+    )
 
 
 # Report User in Group
-@app.on_message((filters.command("report", COMMAND_HANDLER) | filters.command(["admins", "admin"], prefixes="@")) & filters.group)
+@app.on_message(
+    (
+        filters.command("report", COMMAND_HANDLER)
+        | filters.command(["admins", "admin"], prefixes="@")
+    )
+    & filters.group
+)
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def report_user(self: Client, ctx: Message, strings) -> 'Message':
+async def report_user(self: Client, ctx: Message, strings) -> "Message":
     if not ctx.reply_to_message:
         return await ctx.reply_text(strings("report_no_reply"))
     reply = ctx.reply_to_message
@@ -690,11 +748,22 @@ async def report_user(self: Client, ctx: Message, strings) -> 'Message':
     if linked_chat is None:
         if reply_id in list_of_admins or reply_id == ctx.chat.id:
             return await ctx.reply_text(strings("reported_is_admin"))
-    elif reply_id in list_of_admins or reply_id == ctx.chat.id or reply_id == linked_chat.id:
+    elif (
+        reply_id in list_of_admins
+        or reply_id == ctx.chat.id
+        or reply_id == linked_chat.id
+    ):
         return await ctx.reply_text(strings("reported_is_admin"))
-    user_mention = reply.from_user.mention if reply.from_user else reply.sender_chat.title
+    user_mention = (
+        reply.from_user.mention if reply.from_user else reply.sender_chat.title
+    )
     text = strings("report_msg").format(user_mention=user_mention)
-    admin_data = [m async for m in app.get_chat_members(ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)]
+    admin_data = [
+        m
+        async for m in app.get_chat_members(
+            ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+        )
+    ]
     for admin in admin_data:
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins

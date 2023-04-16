@@ -6,9 +6,9 @@ from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
 
 from misskaty import app
-from misskaty.helper.localization import use_chat_lang
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -16,7 +16,9 @@ async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
     hapus(image_path)
     i_width, i_height = img.size
-    m_font = ImageFont.truetype("assets/MutantAcademyStyle.ttf", int((70 / 640) * i_width))
+    m_font = ImageFont.truetype(
+        "assets/MutantAcademyStyle.ttf", int((70 / 640) * i_width)
+    )
     if ";" in text:
         upper_text, lower_text = text.split(";")
     else:
@@ -144,10 +146,14 @@ async def draw_meme_text(image_path, text):
 @capture_err
 @ratelimiter
 async def memify(client, message):
-    if message.reply_to_message and (message.reply_to_message.sticker or message.reply_to_message.photo):
+    if message.reply_to_message and (
+        message.reply_to_message.sticker or message.reply_to_message.photo
+    ):
         try:
             file = await message.reply_to_message.download()
-            webp, png = await draw_meme_text(file, message.text.split(None, 1)[1].strip())
+            webp, png = await draw_meme_text(
+                file, message.text.split(None, 1)[1].strip()
+            )
             await gather(*[message.reply_document(png), message.reply_sticker(webp)])
             try:
                 hapus(webp)
@@ -155,13 +161,19 @@ async def memify(client, message):
             except:
                 pass
         except:
-            await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
+            await message.reply(
+                "Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah."
+            )
     else:
-        await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
+        await message.reply(
+            "Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah."
+        )
 
 
 @app.on_message(filters.command(["dice"], COMMAND_HANDLER))
 @use_chat_lang()
 async def dice(c, m, strings):
     dices = await c.send_dice(m.chat.id, reply_to_message_id=m.id)
-    await dices.reply_text(strings("result").format(number=dices.dice.value), quote=True)
+    await dices.reply_text(
+        strings("result").format(number=dices.dice.value), quote=True
+    )
