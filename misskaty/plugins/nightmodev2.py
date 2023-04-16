@@ -34,9 +34,7 @@ __HELP__ = """<b>Enable or disable nightmode (locks the chat at specified interv
 """
 
 TIME_ZONE = pytz.timezone(TZ)
-reply_markup = InlineKeyboardMarkup(
-    [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
-)
+reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="❤️", callback_data="nightmd")]])
 
 
 # Check calculate how long it will take to Ramadhan
@@ -101,36 +99,28 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
-            langdict[getlang]["nightmodev2"]["nmd_off_not_admin"].format(
-                chat_id=chat_id, bname=BOT_NAME
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_off_not_admin"].format(chat_id=chat_id, bname=BOT_NAME),
         )
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
             LOG_CHANNEL,
-            langdict[getlang]["nightmodev2"]["nmd_off_not_present"].format(
-                chat_id=chat_id, bname=BOT_NAME
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_off_not_present"].format(chat_id=chat_id, bname=BOT_NAME),
         )
     except ChatNotModified:
         pass
     except Exception as e:
         await app.send_message(
             LOG_CHANNEL,
-            langdict[getlang]["nightmodev2"]["nmd_off_err"].format(
-                chat_id=chat_id, e=e
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_off_err"].format(chat_id=chat_id, e=e),
         )
     else:
         job = scheduler.get_job(f"enable_nightmode_{chat_id}")
         close_at = job.next_run_time
         await app.send_message(
             chat_id,
-            langdict[getlang]["nightmodev2"]["nmd_off_success"].format(
-                dt=tglsekarang(), close_at=close_at
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_off_success"].format(dt=tglsekarang(), close_at=close_at),
             reply_markup=reply_markup,
         )
 
@@ -143,18 +133,14 @@ async def mute_chat(chat_id: int):
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
-            langdict[getlang]["nightmodev2"]["nmd_on_not_admin"].format(
-                chat_id=chat_id, bname=BOT_NAME
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_on_not_admin"].format(chat_id=chat_id, bname=BOT_NAME),
         )
     except (ChannelInvalid, ChannelPrivate):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
             LOG_CHANNEL,
-            langdict[getlang]["nightmodev2"]["nmd_on_not_present"].format(
-                chat_id=chat_id, bname=BOT_NAME
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_on_not_present"].format(chat_id=chat_id, bname=BOT_NAME),
         )
     except ChatNotModified:
         pass
@@ -168,9 +154,7 @@ async def mute_chat(chat_id: int):
         open_at = job.next_run_time
         await app.send_message(
             chat_id,
-            langdict[getlang]["nightmodev2"]["nmd_on_success"].format(
-                dt=tglsekarang(), open_at=open_at
-            ),
+            langdict[getlang]["nightmodev2"]["nmd_on_success"].format(dt=tglsekarang(), open_at=open_at),
             reply_markup=reply_markup,
         )
 
@@ -195,9 +179,7 @@ async def nightmode_handler(c, msg, strings):
     now = datetime.now(TIME_ZONE)
 
     try:
-        start_timestamp = TIME_ZONE.localize(
-            datetime.strptime((now.strftime("%m:%d:%Y - ") + start), "%m:%d:%Y - %H:%M")
-        )
+        start_timestamp = TIME_ZONE.localize(datetime.strptime((now.strftime("%m:%d:%Y - ") + start), "%m:%d:%Y - %H:%M"))
     except ValueError:
         return await kirimPesan(msg, strings("invalid_time_format"))
     lockdur = re.findall(r"-e=(\w+)", msg.text)
@@ -238,9 +220,7 @@ async def nightmode_handler(c, msg, strings):
         return await kirimPesan(msg, strings("schedule_already_on"))
     await kirimPesan(
         msg,
-        strings("nmd_enable_success").format(
-            st=start_timestamp.strftime("%H:%M:%S"), lockdur=lockdur
-        ),
+        strings("nmd_enable_success").format(st=start_timestamp.strftime("%H:%M:%S"), lockdur=lockdur),
     )
     if not bool(scheduler.state):
         scheduler.start()

@@ -32,9 +32,7 @@ __HELP__ = """
 /gomov [query <optional>] - Scrape website data from GoMov.
 """
 
-headers = {
-    "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-}
+headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 LOGGER = logging.getLogger(__name__)
 SCRAP_DICT = {}
@@ -54,11 +52,7 @@ def split_arr(arr, size: 5):
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
-        terbitjson = (
-            (await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")).json()
-            if kueri
-            else (await http.get("https://yasirapi.eu.org/terbit21")).json()
-        )
+        terbitjson = (await http.get(f"https://yasirapi.eu.org/terbit21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/terbit21")).json()
         if not terbitjson.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
@@ -70,16 +64,10 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
         if kueri:
             TerbitRes = strings("header_with_query").format(web="Terbit21", kueri=kueri)
         else:
-            TerbitRes = strings("header_no_query").format(
-                web="Terbit21", cmd="terbit21"
-            )
+            TerbitRes = strings("header_no_query").format(web="Terbit21", cmd="terbit21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
-            TerbitRes += (
-                "\n"
-                if re.search(r"Complete|Ongoing", i["kategori"])
-                else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
-            )
+            TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
         return TerbitRes, PageLen
     except (IndexError, KeyError):
@@ -90,11 +78,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
-        lk21json = (
-            (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json()
-            if kueri
-            else (await http.get("https://yasirapi.eu.org/lk21")).json()
-        )
+        lk21json = (await http.get(f"https://yasirapi.eu.org/lk21?q={kueri}")).json() if kueri else (await http.get("https://yasirapi.eu.org/lk21")).json()
         if not lk21json.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
@@ -104,18 +88,12 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         PageLen = len(SCRAP_DICT[msg.id][0])
 
         if kueri:
-            lkResult = strings("header_with_query").format(
-                web="Layarkaca21", kueri=kueri
-            )
+            lkResult = strings("header_with_query").format(web="Layarkaca21", kueri=kueri)
         else:
             lkResult = strings("header_no_query").format(web="Layarkaca21", cmd="lk21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
-            lkResult += (
-                "\n"
-                if re.search(r"Complete|Ongoing", i["kategori"])
-                else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
-            )
+            lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         lkResult = "".join(i for i in lkResult if i not in "[]")
         return lkResult, PageLen
     except (IndexError, KeyError):
@@ -135,11 +113,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
 
-        paheResult = (
-            strings("header_with_query").format(web="Pahe", kueri=kueri)
-            if kueri
-            else strings("header_no_query").format(web="Pahe", cmd="pahe")
-        )
+        paheResult = strings("header_with_query").format(web="Pahe", kueri=kueri) if kueri else strings("header_no_query").format(web="Pahe", cmd="pahe")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
         paheResult = "".join(i for i in paheResult if i not in "[]")
@@ -153,9 +127,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
-        data = await http.get(
-            f"https://kusonime.com/?s={kueri}", headers=headers, follow_redirects=True
-        )
+        data = await http.get(f"https://kusonime.com/?s={kueri}", headers=headers, follow_redirects=True)
         res = BeautifulSoup(data, "lxml").find_all("h2", {"class": "episodeye"})
         for i in res:
             ress = i.find_all("a")[0]
@@ -172,21 +144,13 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
         extractbtn1 = []
         extractbtn2 = []
 
-        kusoResult = (
-            strings("header_no_query").format(web="Kusonime", cmd="kusonime")
-            if kueri == ""
-            else strings("header_with_query").format(web="Kusonime", kueri=kueri)
-        )
+        kusoResult = strings("header_no_query").format(web="Kusonime", cmd="kusonime") if kueri == "" else strings("header_with_query").format(web="Kusonime", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
             if c < 6:
-                extractbtn1.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
+                extractbtn1.append(InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"))
             else:
-                extractbtn2.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
+                extractbtn2.append(InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         kusoResult = "".join(i for i in kusoResult if i not in "[]")
         return kusoResult, PageLen, extractbtn1, extractbtn2
     except (IndexError, KeyError):
@@ -198,9 +162,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 async def getDataMovieku(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
-        data = await http.get(
-            f"https://107.152.37.223/?s={kueri}", headers=headers, follow_redirects=True
-        )
+        data = await http.get(f"https://107.152.37.223/?s={kueri}", headers=headers, follow_redirects=True)
         r = BeautifulSoup(data, "lxml")
         res = r.find_all(class_="bx")
         for i in res:
@@ -217,11 +179,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
 
-        moviekuResult = (
-            strings("header_no_query").format(web="Movieku", cmd="movieku")
-            if kueri == ""
-            else strings("header_with_query").format(web="Movieku", kueri=kueri)
-        )
+        moviekuResult = strings("header_no_query").format(web="Movieku", cmd="movieku") if kueri == "" else strings("header_with_query").format(web="Movieku", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
         moviekuResult = "".join(i for i in moviekuResult if i not in "[]")
@@ -235,18 +193,14 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
 async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
-        data = await http.get(
-            f"https://savefilm21.pro/?s={kueri}", headers=headers, follow_redirects=True
-        )
+        data = await http.get(f"https://savefilm21.pro/?s={kueri}", headers=headers, follow_redirects=True)
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
             if not kueri:
                 await msg.edit_msg(strings("no_result"), del_in=5)
             else:
-                await msg.edit_msg(
-                    strings("no_result_w_query").format(kueri=kueri), del_in=5
-                )
+                await msg.edit_msg(strings("no_result_w_query").format(kueri=kueri), del_in=5)
             return None, 0, None
         for i in entry:
             genre = i.find(class_="gmr-movie-on").text
@@ -259,16 +213,10 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
-        sfResult = (
-            strings("header_no_query").format(web="Savefilm21", cmd="savefilm21")
-            if kueri == ""
-            else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
-        )
+        sfResult = strings("header_no_query").format(web="Savefilm21", cmd="savefilm21") if kueri == "" else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
+            extractbtn.append(InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}"))
         sfResult = "".join(i for i in sfResult if i not in "[]")
         return sfResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -290,14 +238,8 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
             title = o.find("a")["title"]
             link = o.find("a")["href"]
             status = o.find(class_="epx").text
-            kualitas = (
-                o.find(class_="typez TV").text
-                if o.find(class_="typez TV")
-                else o.find(class_="typez BD")
-            )
-            lenddata.append(
-                {"judul": title, "link": link, "quality": kualitas, "status": status}
-            )
+            kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
+            lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
@@ -307,16 +249,10 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        lenddataResult = (
-            strings("header_no_query").format(web="Lendrive", cmd="lendrive")
-            if kueri == ""
-            else strings("header_with_query").format(web="Lendrive", kueri=kueri)
-        )
+        lenddataResult = strings("header_no_query").format(web="Lendrive", cmd="lendrive") if kueri == "" else strings("header_with_query").format(web="Lendrive", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
+            extractbtn.append(InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
         return lenddataResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -352,16 +288,10 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        melongResult = (
-            strings("header_no_query").format(web="Melongmovie", cmd="melongmovie")
-            if kueri == ""
-            else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
-        )
+        melongResult = strings("header_no_query").format(web="Melongmovie", cmd="melongmovie") if kueri == "" else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
-            extractbtn.append(
-                InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
-            )
+            extractbtn.append(InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         melongResult = "".join(i for i in melongResult if i not in "[]")
         return melongResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -372,18 +302,14 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        gomovv = await http.get(
-            f"https://gomov.cfd/?s={kueri}", headers=headers, follow_redirects=True
-        )
+        gomovv = await http.get(f"https://gomov.cfd/?s={kueri}", headers=headers, follow_redirects=True)
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
                 await msg.edit_msg(strings("no_result"), del_in=5)
             else:
-                await msg.edit_msg(
-                    strings("no_result_w_query").format(kueri=kueri), del_in=5
-                )
+                await msg.edit_msg(strings("no_result_w_query").format(kueri=kueri), del_in=5)
             return None, 0, None
         data = []
         for i in entry:
@@ -398,17 +324,11 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
         PageLen = len(SCRAP_DICT[msg.id][0])
         extractbtn = []
 
-        gomovResult = (
-            strings("header_with_query").format(web="GoMov", kueri=kueri)
-            if kueri
-            else strings("header_no_query").format(web="GoMov", cmd="gomov")
-        )
+        gomovResult = strings("header_with_query").format(web="GoMov", kueri=kueri) if kueri else strings("header_no_query").format(web="GoMov", cmd="gomov")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
             if not re.search(r"Series", i["genre"]):
-                extractbtn.append(
-                    InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
-                )
+                extractbtn.append(InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         gomovResult += strings("unsupport_dl_btn")
         gomovResult = "".join(i for i in gomovResult if i not in "[]")
         return gomovResult, PageLen, extractbtn
@@ -498,9 +418,7 @@ async def gomov_s(client, message, strings):
         kueri = ""
     pesan = await message.reply_msg(strings("get_data"), quote=True)
     CurrentPage = 1
-    gomovres, PageLen, btn = await getDataGomov(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
+    gomovres, PageLen, btn = await getDataGomov(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not gomovres:
         return
     keyboard = InlineKeyboard()
@@ -525,9 +443,7 @@ async def melong_s(client, message, strings):
         kueri = ""
     pesan = await message.reply_msg(strings("get_data"), quote=True)
     CurrentPage = 1
-    melongres, PageLen, btn = await getDataMelong(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
+    melongres, PageLen, btn = await getDataMelong(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not melongres:
         return
     keyboard = InlineKeyboard()
@@ -539,9 +455,7 @@ async def melong_s(client, message, strings):
     keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit_msg(
-        melongres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    await pesan.edit_msg(melongres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Savefilm21 CMD
@@ -554,9 +468,7 @@ async def savefilm_s(client, message, strings):
         kueri = ""
     pesan = await message.reply_msg(strings("get_data"), quote=True)
     CurrentPage = 1
-    savefilmres, PageLen, btn = await getDataSavefilm21(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
+    savefilmres, PageLen, btn = await getDataSavefilm21(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not savefilmres:
         return
     keyboard = InlineKeyboard()
@@ -568,9 +480,7 @@ async def savefilm_s(client, message, strings):
     keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit_msg(
-        savefilmres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    await pesan.edit_msg(savefilmres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Kusonime CMD
@@ -583,9 +493,7 @@ async def kusonime_s(client, message, strings):
         kueri = ""
     pesan = await message.reply_msg(strings("get_data"), quote=True)
     CurrentPage = 1
-    kusores, PageLen, btn1, btn2 = await getDataKuso(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
+    kusores, PageLen, btn1, btn2 = await getDataKuso(pesan, kueri, CurrentPage, message.from_user.id, strings)
     if not kusores:
         return
     keyboard = InlineKeyboard()
@@ -612,9 +520,7 @@ async def lendrive_s(self: Client, ctx: Message, strings):
         kueri = ""
     pesan = await ctx.edit_msg(strings("get_data"), quote=True)
     CurrentPage = 1
-    lendres, PageLen, btn = await getDataLendrive(
-        pesan, kueri, CurrentPage, ctx.from_user.id, strings
-    )
+    lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage, ctx.from_user.id, strings)
     if not lendres:
         return
     keyboard = InlineKeyboard()
@@ -649,15 +555,11 @@ async def movieku_s(self: Client, ctx: Message, strings):
         "page_movieku#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
     )
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
-    await pesan.edit_msg(
-        moviekures, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    await pesan.edit_msg(moviekures, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Savefillm21 Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_savefilm#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "page_savefilm#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def savefilmpage_callback(client, callback_query, strings):
@@ -689,12 +591,8 @@ async def savefilmpage_callback(client, callback_query, strings):
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        savefilmres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(savefilmres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Kuso Page Callback
@@ -732,18 +630,12 @@ async def kusopage_callback(client, callback_query, strings):
     keyboard.row(*btn1)
     if btn2:
         keyboard.row(*btn2)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        kusores, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(kusores, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Lendrive Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_lendrive#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "page_lendrive#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def moviekupage_callback(client, callback_query, strings):
@@ -775,18 +667,12 @@ async def moviekupage_callback(client, callback_query, strings):
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        lendres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(lendres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Movieku Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_movieku#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "page_movieku#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def moviekupage_callback(client, callback_query, strings):
@@ -800,9 +686,7 @@ async def moviekupage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        moviekures, PageLen = await getDataMovieku(
-            callback_query.message, kueri, CurrentPage, strings
-        )
+        moviekures, PageLen = await getDataMovieku(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -812,18 +696,12 @@ async def moviekupage_callback(client, callback_query, strings):
         CurrentPage,
         "page_movieku#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        moviekures, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(moviekures, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Terbit21 Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_terbit21#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "page_terbit21#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def terbit21page_callback(client, callback_query, strings):
@@ -837,9 +715,7 @@ async def terbit21page_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        terbitres, PageLen = await getDataTerbit21(
-            callback_query.message, kueri, CurrentPage, strings
-        )
+        terbitres, PageLen = await getDataTerbit21(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -849,18 +725,12 @@ async def terbit21page_callback(client, callback_query, strings):
         CurrentPage,
         "page_terbit21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        terbitres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(terbitres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Page Callback Melong
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_melong#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "page_melong#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def melongpage_callback(client, callback_query, strings):
@@ -892,12 +762,8 @@ async def melongpage_callback(client, callback_query, strings):
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        terbitres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(terbitres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Lk21 Page Callback
@@ -915,9 +781,7 @@ async def lk21page_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        lkres, PageLen = await getDatalk21(
-            callback_query.message, kueri, CurrentPage, strings
-        )
+        lkres, PageLen = await getDatalk21(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -927,12 +791,8 @@ async def lk21page_callback(client, callback_query, strings):
         CurrentPage,
         "page_lk21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        lkres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(lkres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Pahe Page Callback
@@ -950,9 +810,7 @@ async def pahepage_callback(client, callback_query, strings):
         return await callback_query.answer(strings("invalid_cb"))
 
     try:
-        lkres, PageLen = await getDataPahe(
-            callback_query.message, kueri, CurrentPage, strings
-        )
+        lkres, PageLen = await getDataPahe(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -962,12 +820,8 @@ async def pahepage_callback(client, callback_query, strings):
         CurrentPage,
         "page_pahe#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        lkres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(lkres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Gomov Page Callback
@@ -1003,19 +857,13 @@ async def gomovpage_callback(client, callback_query, strings):
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit_msg(
-        gomovres, disable_web_page_preview=True, reply_markup=keyboard
-    )
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(gomovres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 ### Scrape DDL Link From Web ###
 # Kusonime DDL
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "kusoextract#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "kusoextract#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def kusonime_scrap(_, callback_query, strings):
@@ -1049,9 +897,7 @@ async def kusonime_scrap(_, callback_query, strings):
             return
         tgh = await kuso.telegraph(link, message_id)
         if tgh["error"]:
-            await callback_query.message.edit_msg(
-                f"ERROR: {tgh['error_message']}", reply_markup=keyboard
-            )
+            await callback_query.message.edit_msg(f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
             return
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
@@ -1065,9 +911,7 @@ async def kusonime_scrap(_, callback_query, strings):
 
 
 # Savefilm21 DDL
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "sf21extract#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "sf21extract#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def savefilm21_scrap(_, callback_query, strings):
@@ -1097,9 +941,7 @@ async def savefilm21_scrap(_, callback_query, strings):
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
         return
-    await callback_query.message.edit_msg(
-        strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
-    )
+    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard)
 
 
 # Scrape Link Download Movieku.CC
@@ -1124,17 +966,13 @@ async def muviku_scrap(_, message, strings):
         res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
         await message.reply(res)
     except IndexError:
-        return await message.reply(
-            strings("invalid_cmd_scrape").format(cmd=message.command[0])
-        )
+        return await message.reply(strings("invalid_cmd_scrape").format(cmd=message.command[0]))
     except Exception as e:
         await message.reply(f"ERROR: {str(e)}")
 
 
 # Scrape DDL Link Melongmovie
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "melongextract#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "melongextract#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def melong_scrap(_, callback_query, strings):
@@ -1167,15 +1005,11 @@ async def melong_scrap(_, callback_query, strings):
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
         return
-    await callback_query.message.edit_msg(
-        strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard
-    )
+    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard)
 
 
 # Scrape DDL Link Gomov
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "gomovextract#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "gomovextract#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def gomov_dl(_, callback_query, strings):
@@ -1209,14 +1043,10 @@ async def gomov_dl(_, callback_query, strings):
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
         return
-    await callback_query.message.edit_msg(
-        strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard
-    )
+    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard)
 
 
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "lendriveextract#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "lendriveextract#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def lendrive_dl(_, callback_query, strings):
@@ -1247,11 +1077,7 @@ async def lendrive_dl(_, callback_query, strings):
             if not i.find("a"):
                 continue
             kl += f"{i.find('strong')}:\n"
-            kl += "".join(
-                f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a")
-            )
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=kl), reply_markup=keyboard
-        )
+            kl += "".join(f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a"))
+        await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=kl), reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)

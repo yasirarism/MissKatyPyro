@@ -20,9 +20,7 @@ openai.api_key = OPENAI_API
 @use_chat_lang()
 async def chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(
-            strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
-        )
+        return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
     is_in_gap, sleep_time = await check_time_gap(ctx.from_user.id or ctx.sender_chat.id)
     if is_in_gap and (ctx.from_user.id or ctx.sender_chat.id not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)

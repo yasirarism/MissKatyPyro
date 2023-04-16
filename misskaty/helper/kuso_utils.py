@@ -32,26 +32,15 @@ async def kusonimeBypass(url: str, slug=None):
         # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
         title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
         genre = []
-        for _genre in soup.select(
-            "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"
-        ):
+        for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
-        status_anime = (
-            soup.select(
-                "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)"
-            )[0]
-            .text.split(":")
-            .pop()
-            .strip()
-        )
+        status_anime = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)")[0].text.split(":").pop().strip()
         for num, smokedl in enumerate(
             soup.find("div", {"class": "dlbod"}).find_all("div", {"class": "smokeddl"}),
             start=1,
         ):
-            titl = soup.select(
-                f"#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.dlbod > div:nth-child({num}) > div.smokettl"
-            )[0].text
+            titl = soup.select(f"#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.dlbod > div:nth-child({num}) > div.smokettl")[0].text
             titl = re.sub("Download", "", titl).strip()
             mendata = {"name": titl, "links": []}
             for smokeurl in smokedl.find_all("div", {"class": "smokeurl"}):
@@ -104,9 +93,7 @@ async def byPassPh(url: str, msg_id: int):
         telegraph = Telegraph()
         if telegraph.get_access_token() is None:
             await telegraph.create_account(short_name=BOT_USERNAME)
-        page = await telegraph.create_page(
-            f"{kusonime.get('title')}-{msg_id}", html_content=html
-        )
+        page = await telegraph.create_page(f"{kusonime.get('title')}-{msg_id}", html_content=html)
         results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results
