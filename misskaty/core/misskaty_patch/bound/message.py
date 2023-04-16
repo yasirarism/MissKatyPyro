@@ -158,10 +158,7 @@ async def edit_or_send_as_file(self, text: str, del_in: int = 0, as_raw: bool = 
     Raises:
         RPCError: In case of a Telegram RPC error.
     """
-    if as_raw:
-        text = html.escape(text.html)
-    else:
-        text = text
+    text = html.escape(text.html) if as_raw else text
     try:
         msg = await edit_text(self, text=text, *args, **kwargs)
         if del_in == 0:
@@ -219,10 +216,7 @@ async def reply_or_send_as_file(self, text: str, as_raw: bool = False, del_in: i
     Raises:
         RPCError: In case of a Telegram RPC error.
     """
-    if as_raw:
-        text = html.escape(text.html)
-    else:
-        text = text
+    text = html.escape(text.html) if as_raw else text
     try:
         return await reply_text(self, text=text, del_in=del_in, *args, **kwargs)
     except MessageTooLong:
