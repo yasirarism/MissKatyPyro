@@ -2,20 +2,20 @@ import asyncio
 import datetime
 import time
 
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message
 
 from database.users_chats_db import db
 from misskaty import app
-from misskaty.core.message_utils import *
 from misskaty.vars import SUDO
 from utils import broadcast_messages
 
 
 @app.on_message(filters.command("broadcast") & filters.user(SUDO) & filters.reply)
-async def broadcast(bot, message):
+async def broadcast(self: Client, ctx: Message):
     users = await db.get_all_users()
-    b_msg = message.reply_to_message
-    sts = await kirimPesan(message, "Broadcasting your messages...")
+    b_msg = ctx.reply_to_message
+    sts = await ctx.reply_msg("Broadcasting your messages...")
     start_time = time.time()
     total_users = await db.total_users_count()
     done = 0
@@ -38,6 +38,6 @@ async def broadcast(bot, message):
         done += 1
         await asyncio.sleep(2)
         if not done % 20:
-            await editPesan(sts, f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
+            await sts.edit_msg(f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
     time_taken = datetime.timedelta(seconds=int(time.time() - start_time))
-    await editPesan(sts, f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
+    await sts.edit_msg(f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")

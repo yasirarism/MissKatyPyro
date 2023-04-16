@@ -6,11 +6,11 @@
  * Copyright @YasirPedia All rights reserved
 """
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message, CallbackQuery
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import *
 from misskaty.helper.http import http
 from misskaty.plugins.web_scraper import split_arr, headers
 from misskaty.vars import COMMAND_HANDLER
@@ -22,7 +22,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
     if not PYPI_DICT.get(msg.id):
         pypijson = (await http.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
         if not pypijson.get("result"):
-            await editPesan(msg, "Sorry could not find any matching results!")
+            await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
             return None, 0, None
         PYPI_DICT[msg.id] = [split_arr(pypijson["result"], 6), kueri]
     try:
@@ -36,32 +36,32 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         pypiResult = "".join(i for i in pypiResult if i not in "[]")
         return pypiResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await editPesan(msg, "Sorry could not find any matching results!")
+        await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
         return None, 0, None
 
 
 @app.on_message(filters.command(["pypi"], COMMAND_HANDLER))
 @ratelimiter
-async def pypi_s(client, message):
-    kueri = " ".join(message.command[1:])
+async def pypi_s(self: Client, ctx: Message):
+    kueri = " ".join(ctx.command[1:])
     if not kueri:
-        return await kirimPesan(message, "Please add query after command. Ex: <code>/pypi pyrogram</code>")
-    pesan = await kirimPesan(message, "⏳ Please wait, getting data from pypi..", quote=True)
+        return await ctx.reply_msg("Please add query after command. Ex: <code>/pypi pyrogram</code>", del_in=6)
+    pesan = await ctx.reply_msg("⏳ Please wait, getting data from pypi..", quote=True)
     CurrentPage = 1
-    pypires, PageLen, btn = await getDataPypi(pesan, kueri, CurrentPage, message.from_user.id)
+    pypires, PageLen, btn = await getDataPypi(pesan, kueri, CurrentPage, ctx.from_user.id)
     if not pypires:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{pesan.id}#{message.from_user.id}")
+    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
     keyboard.row(InlineButton("👇 Get Info ", "Hmmm"))
     keyboard.row(*btn)
-    keyboard.row(InlineButton("❌ Close", f"close#{message.from_user.id}"))
-    await editPesan(pesan, pypires, reply_markup=keyboard)
+    keyboard.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
+    await pesan.edit_msg(pypires, reply_markup=keyboard)
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
 @ratelimiter
-async def pypipage_callback(client, callback_query):
+async def pypipage_callback(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split("#")[2])
@@ -81,12 +81,12 @@ async def pypipage_callback(client, callback_query):
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await editPesan(callback_query.message, pypires, reply_markup=keyboard)
+    await callback_query.message.edit_msg(pypires, reply_markup=keyboard)
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
 @ratelimiter
-async def pypi_getdata(_, callback_query):
+async def pypi_getdata(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])
@@ -119,6 +119,6 @@ async def pypi_getdata(_, callback_query):
         msg += f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
     except Exception as err:
-        await editPesan(callback_query.message, f"ERROR: {err}", reply_markup=keyboard)
+        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
         return
-    await editPesan(callback_query.message, msg, reply_markup=keyboard)
+    await callback_query.message.edit_msg(msg, reply_markup=keyboard)

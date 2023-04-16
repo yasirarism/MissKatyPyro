@@ -26,7 +26,6 @@ from misskaty.helper.http import http
 from misskaty.helper.eval_helper import meval, format_exception
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
-from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
@@ -74,7 +73,7 @@ async def log_file(self: Client, ctx: Message, strings) -> 'Message':
     elif len(ctx.command) == 2:
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
-        await editPesan(msg, f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))

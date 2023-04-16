@@ -25,7 +25,6 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.helper.http import http
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
@@ -67,8 +66,8 @@ async def readqr(c, m):
     r = await http.post(url, files=myfile)
     os.remove(foto)
     if res := r.json()[0]["symbol"][0]["data"] is None:
-        return await kirimPesan(m, res)
-    await kirimPesan(m, f"<b>QR Code Reader by @{c.me.username}:</b> <code>{r.json()[0]['symbol'][0]['data']}</code>", quote=True)
+        return await m.reply_msg(res)
+    await m.reply_msg(f"<b>QR Code Reader by @{c.me.username}:</b> <code>{r.json()[0]['symbol'][0]['data']}</code>", quote=True)
 
 
 @app.on_message(filters.command("createqr", COMMAND_HANDLER))
@@ -172,12 +171,12 @@ async def translate(client, message):
     try:
         my_translator = GoogleTranslator(source="auto", target=target_lang)
         result = my_translator.translate(text=text)
-        await editPesan(msg, f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
+        await msg.edit_msg(f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}")
     except MessageTooLong:
         url = await rentry(result)
-        await editPesan(msg, f"Your translated text pasted to rentry because has long text:\n{url}")
+        await msg.edit_msg(f"Your translated text pasted to rentry because has long text:\n{url}")
     except Exception as err:
-        await editPesan(msg, f"Oppss, Error: <code>{str(err)}</code>")
+        await msg.edit_msg(f"Oppss, Error: <code>{str(err)}</code>")
 
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
@@ -289,7 +288,7 @@ async def showid(client, message):
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     if message.sender_chat:
-        return await kirimPesan(message, "Not supported channel..")
+        return await message.reply_msg("Not supported channel..")
     status_message = await message.reply_text("`Fetching user info...`")
     await status_message.edit("`Processing user info...`")
     from_user = None
@@ -350,8 +349,8 @@ async def close_callback(bot: Client, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     await query.answer("Deleting this message in 5 seconds.")
     await asyncio.sleep(5)
-    await hapusPesan(query.message)
-    await hapusPesan(query.message.reply_to_message)
+    await query.message.delete_msg()
+    await query.message.reply_to_message.delete_msg()
 
 
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
