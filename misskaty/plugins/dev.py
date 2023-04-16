@@ -74,6 +74,8 @@ async def log_file(self: Client, ctx: Message, strings) -> 'Message':
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
         await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+    else:
+        await msg.edit_msg("Unsupported parameter")
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
