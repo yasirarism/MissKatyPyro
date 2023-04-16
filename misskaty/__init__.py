@@ -46,7 +46,11 @@ user = Client(
 
 pymonclient = MongoClient(DATABASE_URI)
 
-jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB", collection="nightmode")}
+jobstores = {
+    "default": MongoDBJobStore(
+        client=pymonclient, database="MissKatyDB", collection="nightmode"
+    )
+}
 
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 

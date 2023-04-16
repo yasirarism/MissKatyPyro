@@ -52,7 +52,9 @@ async def genss(self: Client, ctx: Message, strings):
             return await snt.edit_msg(strings("fail_open"))
         btns = gen_ik_buttons()
         await snt.edit_msg(
-            strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration),
+            strings("choose_no_ss").format(
+                td=datetime.timedelta(seconds=duration), dur=duration
+            ),
             reply_markup=InlineKeyboardMarkup(btns),
         )
     elif replied and replied.media:
@@ -72,11 +74,15 @@ async def genss(self: Client, ctx: Message, strings):
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await process.edit_msg(strings("success_dl_msg").format(path=the_real_download_location))
+                await process.edit_msg(
+                    strings("success_dl_msg").format(path=the_real_download_location)
+                )
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
                 await process.edit_msg(strings("up_progress"))
-                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await self.send_chat_action(
+                    chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO
+                )
 
                 try:
                     await gather(

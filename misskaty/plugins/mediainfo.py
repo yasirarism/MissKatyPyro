@@ -35,7 +35,13 @@ async def mediainfo(client, message, strings):
         file_info = get_file_id(message.reply_to_message)
         if file_info is None:
             return await editPesan(process, strings("media_invalid"))
-        if (message.reply_to_message.video and message.reply_to_message.video.file_size > 2097152000) or (message.reply_to_message.document and message.reply_to_message.document.file_size > 2097152000):
+        if (
+            message.reply_to_message.video
+            and message.reply_to_message.video.file_size > 2097152000
+        ) or (
+            message.reply_to_message.document
+            and message.reply_to_message.document.file_size > 2097152000
+        ):
             return await editPesan(process, strings("dl_limit_exceeded"))
         c_time = time.time()
         dl = await message.reply_to_message.download(
@@ -57,11 +63,15 @@ DETAILS
         file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+            markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+            )
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                )
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
@@ -82,7 +92,9 @@ DETAILS
             link = message.text.split(" ", maxsplit=1)[1]
             process = await kirimPesan(message, strings("wait_msg"))
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
+                output = subprocess.check_output(["mediainfo", f"{link}"]).decode(
+                    "utf-8"
+                )
             except Exception:
                 return await editPesan(process, strings("err_link"))
             body_text = f"""
@@ -92,21 +104,31 @@ DETAILS
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 link = await mediainfo_paste(out, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                )
             except:
                 try:
-                    link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                    link = await post_to_telegraph(
+                        False, "MissKaty MediaInfo", body_text
+                    )
+                    markup = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                    )
                 except:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await message.reply_document(
                     out_file,
-                    caption=strings("capt_media").format(ment=message.from_user.mention),
+                    caption=strings("capt_media").format(
+                        ment=message.from_user.mention
+                    ),
                     thumb="assets/thumb.jpg",
                     reply_markup=markup,
                 )
                 await process.delete()
         except IndexError:
-            return await kirimPesan(message, strings("mediainfo_help").format(cmd=message.command[0]))
+            return await kirimPesan(
+                message, strings("mediainfo_help").format(cmd=message.command[0])
+            )

@@ -22,12 +22,18 @@ __HELP__ = """
 async def take_ss(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_url"))
-    url = ctx.command[1] if ctx.command[1].startswith("http") else f"https://{ctx.command[1]}"
+    url = (
+        ctx.command[1]
+        if ctx.command[1].startswith("http")
+        else f"https://{ctx.command[1]}"
+    )
     filename = f"webSS_{ctx.from_user.id}.png"
     msg = await ctx.reply_msg(strings("wait_str"))
     try:
         url = f"https://webss.yasirapi.eu.org/api?url={url}&width=1280&height=720"
-        await gather(*[ctx.reply_document(url, file_name=filename), ctx.reply_photo(url)])
+        await gather(
+            *[ctx.reply_document(url, file_name=filename), ctx.reply_photo(url)]
+        )
         await msg.delete_msg()
     except Exception as e:
         await msg.edit_msg(strings("ss_failed_str").format(err=str(e)))
