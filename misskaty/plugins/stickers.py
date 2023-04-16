@@ -1,5 +1,4 @@
 import asyncio
-from email import message_from_string
 import os
 import re
 import shutil

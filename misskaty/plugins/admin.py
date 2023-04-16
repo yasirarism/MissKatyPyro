@@ -78,7 +78,7 @@ async def admin_cache_func(_, cmu):
 @require_admin(permissions=["can_delete_messages"], allow_in_private=True)
 @ratelimiter
 @use_chat_lang()
-async def purge(self: Client, ctx: Message, strings) -> 'Message':
+async def purge(self: Client, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     try:
@@ -134,7 +134,7 @@ async def purge(self: Client, ctx: Message, strings) -> 'Message':
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def kickFunc(client: Client, ctx: Message, strings) -> 'Message':
+async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     user_id, reason = await extract_user_and_reason(ctx)
@@ -676,7 +676,7 @@ async def check_warns(_, message, strings):
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def report_user(self: Client, ctx: Message, strings) -> 'Message':
+async def report_user(self: Client, ctx: Message, strings) -> "Message":
     if not ctx.reply_to_message:
         return await ctx.reply_text(strings("report_no_reply"))
     reply = ctx.reply_to_message

@@ -51,7 +51,7 @@ async def edit_or_reply(msg, **kwargs):
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def log_file(self: Client, ctx: Message, strings) -> 'Message':
+async def log_file(self: Client, ctx: Message, strings) -> "Message":
     """Send log file"""
     msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
     if len(ctx.command) == 1:
@@ -94,7 +94,7 @@ async def balas(self: Client, ctx: Message) -> "str":
 
 
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))
-async def server_stats(self: Client, ctx: Message) -> 'Message':
+async def server_stats(self: Client, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
@@ -132,7 +132,7 @@ async def server_stats(self: Client, ctx: Message) -> 'Message':
 @app.on_edited_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
-async def shell(self: Client, ctx: Message, strings) -> 'Message':
+async def shell(self: Client, ctx: Message, strings) -> "Message":
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
     msg = await ctx.edit_msg(strings("run_exec")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_exec"))
@@ -284,7 +284,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 # Update and restart bot
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def update_restart(self: Client, ctx: Message, strings) -> 'Message':
+async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     try:
         out = (await shell_exec("git pull"))[0]
         if "Already up to date." in str(out):

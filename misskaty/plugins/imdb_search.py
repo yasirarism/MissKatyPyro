@@ -10,13 +10,7 @@ from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters, enums, Client
-from pyrogram.errors import (
-    MediaEmpty,
-    MessageNotModified,
-    PhotoInvalidDimensions,
-    WebpageMediaEmpty,
-    MessageIdInvalid
-)
+from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty, MessageIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message, CallbackQuery
 
 from database.imdb_db import *

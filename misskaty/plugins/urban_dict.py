@@ -1,5 +1,3 @@
-import asyncio
-
 from pykeyboard import InlineKeyboard
 from pyrogram import Client, filters
 from pyrogram.types import Message, CallbackQuery

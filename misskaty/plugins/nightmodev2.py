@@ -3,9 +3,9 @@ from datetime import datetime, timedelta
 
 import pytz
 from apscheduler.jobstores.base import ConflictingIdError
-from pyrogram import filters, __version__, Client
+from pyrogram import filters, __version__
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, ChatAdminRequired, ChatNotModified
-from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.locale_db import get_db_lang
 from misskaty import BOT_NAME, app, scheduler
