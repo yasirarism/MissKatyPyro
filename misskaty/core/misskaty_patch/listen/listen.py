@@ -99,7 +99,11 @@ class MessageHandler:
         listener = client.listening.get(update.chat.id)
 
         if listener and not listener["future"].done():
-            return await listener["filters"](client, update) if callable(listener["filters"]) else True
+            return (
+                await listener["filters"](client, update)
+                if callable(listener["filters"])
+                else True
+            )
 
         return await self.filters(client, update) if callable(self.filters) else True
 

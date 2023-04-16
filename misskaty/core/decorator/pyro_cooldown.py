@@ -37,7 +37,9 @@ def wait(sec):
             else:
                 if not data[user_id]["warned"]:
                     data[user_id]["warned"] = True
-                    asyncio.ensure_future(task(msg, True, flt.data))  # for super accuracy use (future - time.time())
+                    asyncio.ensure_future(
+                        task(msg, True, flt.data)
+                    )  # for super accuracy use (future - time.time())
                     return False  # cause we dont need delete again
 
                 asyncio.ensure_future(task(msg))
