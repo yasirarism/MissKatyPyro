@@ -5,12 +5,11 @@ import shlex
 import time
 import traceback
 import uuid
+import asyncio
 from pathlib import Path
 
 from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton, InputMediaPhoto
-
-from misskaty.core.message_utils import *
 
 
 async def run_subprocess(cmd):
@@ -60,7 +59,7 @@ async def screenshot_flink(c, m):
     media_msg = m.message.reply_to_message
     # print(media_msg)
     if media_msg.empty:
-        await editPesan(m.message, "Why did you delete the file 😠, Now i cannot help you 😒.")
+        await m.message.edit_msg("Why did you delete the file 😠, Now i cannot help you 😒.")
         # c.CURRENT_PROCESSES[chat_id] -= 1
         return
 
@@ -72,15 +71,13 @@ async def screenshot_flink(c, m):
     try:
         start_time = time.time()
 
-        await editPesan(m.message, "Give me some time bruh!! 😴")
+        await m.message.edit_msg("Give me some time bruh!! 😴")
 
-        await editPesan(m.message, "😀 Taking Snaps!")
+        await m.message.edit_msg("😀 Taking Snaps!")
         file_link = m.message.reply_to_message.command[1]
         duration = await get_duration(file_link)
         if isinstance(duration, str):
-            await editPesan(m.message, "Oops, What's that? Couldn't Open the file😟.")
-            # c.CURRENT_PROCESSES[chat_id] -= 1
-            return
+            return await m.message.edit_msg("Oops, What's that? Couldn't Open the file😟.")
 
         reduced_sec = duration - int(duration * 2 / 100)
         print(f"Total seconds: {duration}, Reduced seconds: {reduced_sec}")
@@ -92,32 +89,26 @@ async def screenshot_flink(c, m):
 
         for i, sec in enumerate(screenshot_secs):
             thumbnail_template = output_folder.joinpath(f"{i+1}.png")
-            # print(sec)
             ffmpeg_cmd = f"mediaextract -hide_banner -ss {sec} -i {shlex.quote(file_link)} -vframes 1 '{thumbnail_template}'"
             output = await run_subprocess(ffmpeg_cmd)
-            await editPesan(m.message, f"😀 `{i+1}` of `{num_screenshots}` generated!")
+            await m.message.edit_msg(f"😀 `{i+1}` of `{num_screenshots}` generated!")
             if thumbnail_template.exists():
                 screenshots.append(InputMediaPhoto(str(thumbnail_template), caption=f"ScreenShot at {datetime.timedelta(seconds=sec)}"))
                 continue
             ffmpeg_errors += output[1].decode() + "\n\n"
 
-        # print(screenshots)
         if not screenshots:
-            await editPesan(m.message, "😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.")
-            # c.CURRENT_PROCESSES[chat_id] -= 1
-            return
+            return await m.message.edit_msg("😟 Sorry! Screenshot generation failed possibly due to some infrastructure failure 😥.")
 
-        await editPesan(m.message, "🤓 Its done , Now starting to upload!")
+        await m.message.edit_msg("🤓 Its done , Now starting to upload!")
         await media_msg.reply_chat_action(enums.ChatAction.UPLOAD_PHOTO)
         await media_msg.reply_media_group(screenshots, True)
 
-        await editPesan(m.message, f"Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org")
-        # c.CURRENT_PROCESSES[chat_id] -= 1
+        await m.message.edit_msg(f"Completed in {datetime.timedelta(seconds=int(time.time()-start_time))}\n\nJoin @YasirPediaChannel\n\n©️ https://yasirpedia.eu.org")
 
     except:
         traceback.print_exc()
-        await editPesan(m.message, "😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.")
-        # c.CURRENT_PROCESSES[chat_id] -= 1
+        await m.message.edit_msg("😟 Sorry! Screenshot generation failed, ERR: {aa} 😥.")
 
 
 def gen_ik_buttons():

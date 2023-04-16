@@ -11,7 +11,6 @@ from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import editPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Inkick"
@@ -25,7 +24,7 @@ __HELP__ = """"
 @ratelimiter
 async def inkick(_, message):
     if message.sender_chat:
-        return await message.reply("This feature not available for channel.")
+        return await message.reply_msg("This feature not available for channel.", del_in=4)
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         if len(message.command) > 1:
@@ -65,7 +64,7 @@ async def inkick(_, message):
 @ratelimiter
 async def uname(_, message):
     if message.sender_chat:
-        return await message.reply("This feature not available for channel.")
+        return await message.reply_msg("This feature not available for channel.", del_in=4)
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
@@ -101,7 +100,7 @@ async def uname(_, message):
 @ratelimiter
 async def rm_delacc(client, message):
     if message.sender_chat:
-        return await message.reply("This feature not available for channel.")
+        return await message.reply_msg("This feature not available for channel.", del_in=4)
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
@@ -122,8 +121,8 @@ async def rm_delacc(client, message):
                 except FloodWait as e:
                     await sleep(e.value)
         if count == 0:
-            return await editPesan(sent_message, "There are no deleted accounts in this chat.")
-        await editPesan(sent_message, f"✔️ **Berhasil menendang {count} akun terhapus.**")
+            return await sent_message.edit_msg("There are no deleted accounts in this chat.")
+        await sent_message.edit_msg(f"✔️ **Berhasil menendang {count} akun terhapus.**")
     else:
         sent_message = await message.reply_text("❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**")
         await sleep(5)
@@ -134,7 +133,7 @@ async def rm_delacc(client, message):
 @ratelimiter
 async def instatus(client, message):
     if message.sender_chat:
-        return await kirimPesan(message, "Not supported channel.")
+        return await message.reply_msg("Not supported channel.", del_in=4)
     start_time = time.perf_counter()
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     count = await app.get_chat_members_count(message.chat.id)

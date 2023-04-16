@@ -9,11 +9,11 @@
 
 import os
 
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message
 from telegraph.aio import Telegraph
 
 from misskaty import app
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.localization import use_chat_lang
@@ -28,15 +28,15 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def ocr(_, m, strings):
-    reply = m.reply_to_message
+async def ocr(self: Client, ctx: Message, strings):
+    reply = ctx.reply_to_message
     if not reply or not reply.photo and (reply.document and not reply.document.mime_type.startswith("image")) and not reply.sticker:
-        return await kirimPesan(m, strings("no_photo").format(cmd=m.command[0]), quote=True)
-    msg = await kirimPesan(m, strings("read_ocr"), quote=True)
+        return await ctx.reply_msg(strings("no_photo").format(cmd=ctx.command[0]), quote=True, del_in=6)
+    msg = await ctx.reply_msg(strings("read_ocr"), quote=True)
     try:
         file_path = await reply.download()
         if reply.sticker:
-            file_path = await reply.download(f"ocr_{m.from_user.id}.jpg")
+            file_path = await reply.download(f"ocr_{ctx.from_user.id}.jpg")
         response = await Telegraph().upload_file(file_path)
         url = f"https://telegra.ph{response[0]['src']}"
         req = (
@@ -45,8 +45,8 @@ async def ocr(_, m, strings):
                 follow_redirects=True,
             )
         ).json()
-        await editPesan(msg, strings("result_ocr").format(result=req["text"]))
+        await msg.edit_msg(strings("result_ocr").format(result=req["text"]))
         os.remove(file_path)
     except Exception as e:
-        await editPesan(msg, str(e))
+        await msg.edit_msg(str(e))
         os.remove(file_path)

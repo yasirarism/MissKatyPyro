@@ -18,15 +18,14 @@ from psutil import cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory
 
-from pyrogram import enums, filters, types
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import enums, filters, Client
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app, user, botStartTime, BOT_NAME
 from misskaty.helper.http import http
 from misskaty.helper.eval_helper import meval, format_exception
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
-from misskaty.core.message_utils import editPesan, hapusPesan, kirimPesan
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 __MODULE__ = "DevCommand"
@@ -45,18 +44,18 @@ teskode = {}
 
 
 async def edit_or_reply(msg, **kwargs):
-    func = msg.edit_text if msg.from_user.is_self else msg.reply
+    func = msg.edit if msg.from_user.is_self else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def log_file(bot, message, strings):
+async def log_file(self: Client, ctx: Message, strings) -> "Message":
     """Send log file"""
-    msg = await kirimPesan(message, "<b>Reading bot logs ...</b>")
-    if len(message.command) == 1:
-        await message.reply_document(
+    msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
+    if len(ctx.command) == 1:
+        await ctx.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
             reply_markup=InlineKeyboardMarkup(
@@ -64,17 +63,19 @@ async def log_file(bot, message, strings):
                     [
                         InlineKeyboardButton(
                             strings("cl_btn"),
-                            f"close#{message.from_user.id}",
+                            f"close#{ctx.from_user.id}",
                         )
                     ]
                 ]
             ),
         )
-        await hapusPesan(msg)
-    elif len(message.command) == 2:
-        val = message.text.split()
+        await msg.delete_msg()
+    elif len(ctx.command) == 2:
+        val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
-        await editPesan(msg, f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+    else:
+        await msg.edit_msg("Unsupported parameter")
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
@@ -86,14 +87,14 @@ async def donate(_, message):
 
 
 @app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply)
-async def balas(c, m):
-    pesan = m.text.split(" ", 1)
-    await hapusPesan(m)
-    await m.reply(pesan[1], reply_to_message_id=m.reply_to_message.id)
+async def balas(self: Client, ctx: Message) -> "str":
+    pesan = ctx.input
+    await ctx.delete_msg()
+    await ctx.reply_msg(pesan, reply_to_message_id=ctx.reply_to_message.id)
 
 
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))
-async def server_stats(c, m):
+async def server_stats(self: Client, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
@@ -124,68 +125,67 @@ async def server_stats(c, m):
 
 `{neofetch}`
 """
-    await kirimPesan(m, caption)
+    await ctx.reply_msg(caption)
 
 
 @app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
 @app.on_edited_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
-async def shell(_, m, strings):
-    cmd = m.text.split(" ", 1)
-    if len(m.command) == 1:
-        return await edit_or_reply(m, text=strings("no_cmd"))
-    msg = await editPesan(m, strings("run_exec")) if m.from_user.is_self else await kirimPesan(m, strings("run_exec"))
-    shell = (await shell_exec(cmd[1]))[0]
+async def shell(self: Client, ctx: Message, strings) -> "Message":
+    if len(ctx.command) == 1:
+        return await edit_or_reply(ctx, text=strings("no_cmd"))
+    msg = await ctx.edit_msg(strings("run_exec")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_exec"))
+    shell = (await shell_exec(ctx.input))[0]
     if len(shell) > 3000:
         with io.BytesIO(str.encode(shell)) as doc:
             doc.name = "shell_output.txt"
-            await m.reply_document(
+            await ctx.reply_document(
                 document=doc,
-                caption=f"<code>{cmd[1][: 4096 // 4 - 1]}</code>",
+                caption=f"<code>{ctx.input[: 4096 // 4 - 1]}</code>",
                 file_name=doc.name,
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
                             InlineKeyboardButton(
                                 text=strings("cl_btn"),
-                                callback_data=f"close#{m.from_user.id}",
+                                callback_data=f"close#{ctx.from_user.id}",
                             )
                         ]
                     ]
                 ),
             )
-            await msg.delete()
+            await msg.delete_msg()
     elif len(shell) != 0:
         await edit_or_reply(
-            m,
+            ctx,
             text=html.escape(shell),
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{m.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{ctx.from_user.id}")]]),
         )
-        if not m.from_user.is_self:
-            await msg.delete()
+        if not ctx.from_user.is_self:
+            await msg.delete_msg()
     else:
-        await m.reply(strings("no_reply"))
+        await ctx.reply(strings("no_reply"), del_in=5)
 
 
 @app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @app.on_edited_message((filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
-async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
-    if (message.command and len(message.command) == 1) or message.text == "app.run()":
-        return await edit_or_reply(message, text=strings("no_eval"))
-    status_message = await editPesan(message, strings("run_eval")) if message.from_user.is_self else await kirimPesan(message, strings("run_eval"), quote=True)
-    code = message.text.split(" ", 1)[1] if message.command else message.text.split("\napp.run()")[0]
+async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
+    if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
+        return await edit_or_reply(ctx, text=strings("no_eval"))
+    status_message = await ctx.edit_msg(strings("run_eval")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_eval"), quote=True)
+    code = ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
     out = ""
     humantime = get_readable_time
 
     async def _eval() -> Tuple[str, Optional[str]]:
         # Message sending helper for convenience
-        async def send(*args: Any, **kwargs: Any) -> types.Message:
-            return await message.reply(*args, **kwargs)
+        async def send(*args: Any, **kwargs: Any) -> Message:
+            return await ctx.reply_msg(*args, **kwargs)
 
         # Print wrapper to capture output
         # We don't override sys.stdout to avoid interfering with other output
@@ -197,9 +197,8 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
         eval_vars = {
             "self": self,
             "humantime": humantime,
-            "m": message,
+            "ctx": ctx,
             "var": var,
-            "app": app,
             "teskode": teskode,
             "re": re,
             "os": os,
@@ -212,7 +211,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
             "stdout": out_buf,
             "traceback": traceback,
             "http": http,
-            "replied": message.reply_to_message,
+            "replied": ctx.reply_to_message,
         }
         eval_vars.update(var)
         eval_vars.update(teskode)
@@ -254,7 +253,7 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
-            await message.reply_document(
+            await ctx.reply_document(
                 document=out_file,
                 caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
@@ -264,38 +263,38 @@ async def cmd_eval(self, message: types.Message, strings) -> Optional[str]:
                         [
                             InlineKeyboardButton(
                                 text=strings("cl_btn"),
-                                callback_data=f"close#{message.from_user.id}",
+                                callback_data=f"close#{ctx.from_user.id}",
                             )
                         ]
                     ]
                 ),
             )
-            await status_message.delete()
+            await status_message.delete_msg()
     else:
         await edit_or_reply(
-            message,
+            ctx,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{message.from_user.id}")]]),
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("cl_btn"), callback_data=f"close#{ctx.from_user.id}")]]),
         )
-        if not message.from_user.is_self:
-            await status_message.delete()
+        if not ctx.from_user.is_self:
+            await status_message.delete_msg()
 
 
 # Update and restart bot
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def update_restart(_, message, strings):
+async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     try:
         out = (await shell_exec("git pull"))[0]
         if "Already up to date." in str(out):
-            return await message.reply_text(strings("already_up"))
-        await message.reply_text(f"<code>{out}</code>")
+            return await ctx.reply_msg(strings("already_up"))
+        await ctx.reply_msg(f"<code>{out}</code>")
     except Exception as e:
-        return await message.reply_text(str(e))
-    msg = await message.reply_text(strings("up_and_rest"))
+        return await ctx.reply_msg(str(e))
+    msg = await ctx.reply_msg(strings("up_and_rest"))
     with open("restart.pickle", "wb") as status:
-        pickle.dump([message.chat.id, msg.id], status)
+        pickle.dump([ctx.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 

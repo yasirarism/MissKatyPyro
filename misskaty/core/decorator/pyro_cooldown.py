@@ -1,5 +1,4 @@
 from pyrogram import filters
-from misskaty.core.message_utils import *
 import asyncio
 
 data = {}
@@ -12,11 +11,9 @@ async def task(msg, warn=False, sec=None):
         pass
     if warn:
         user = msg.from_user
-        ids = await kirimPesan(msg, f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again..")
+        ids = await msg.reply_msg(f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again..")
         await asyncio.sleep(sec)
-        await editPesan(ids, f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.")
-        await asyncio.sleep(2)
-        await hapusPesan(ids)
+        await ids.edit_msg(f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.", del_in=3)
 
 
 def wait(sec):

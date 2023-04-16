@@ -12,11 +12,10 @@ from re import split as ngesplit
 from time import perf_counter, time
 from urllib.parse import unquote
 
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import filters, Client
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.pyro_progress import progress_for_pyrogram
@@ -65,13 +64,12 @@ def get_subname(lang, url, format):
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def ceksub(_, m, strings):
-    cmd = m.text.split(" ", 1)
-    if len(cmd) == 1:
-        return await kirimPesan(m, strings("sub_extr_help").format(cmd=m.command[0]), quote=True)
-    link = cmd[1]
+async def ceksub(self: Client, ctx: Message, strings):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5)
+    link = ctx.command[1]
     start_time = perf_counter()
-    pesan = await kirimPesan(m, strings("progress_str"), quote=True)
+    pesan = await ctx.reply_msg(strings("progress_str"), quote=True)
     try:
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
@@ -99,38 +97,37 @@ async def ceksub(_, m, strings):
             )
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
-        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{m.from_user.id}")])
-        await editPesan(
-            pesan,
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
+        await pesan.edit_msg(
             strings("press_btn_msg").format(timelog=timelog),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
     except:
-        await editPesan(pesan, strings("fail_extr_media"))
+        await pesan.edit_msg(strings("fail_extr_media"))
 
 
 @app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def convertsrt(c, m, strings):
-    reply = m.reply_to_message
+async def convertsrt(self: Client, ctx: Message, strings):
+    reply = ctx.reply_to_message
     if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
-        return await kirimPesan(m, strings("conv_sub_help").format(cmd=m.command[0]))
-    msg = await kirimPesan(m, strings("convert_str"), quote=True)
+        return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=5)
+    msg = await ctx.reply_msg(strings("convert_str"), quote=True)
     dl = await reply.download()
     filename = dl.split("/", 3)[3]
-    LOGGER.info(f"ConvertSub: {filename} by {m.from_user.first_name} [{m.from_user.id}]")
+    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name} [{ctx.from_user.id}]")
     (await shell_exec(f"mediaextract -i '{dl}' '{filename}.srt'"))[0]
     c_time = time()
-    await m.reply_document(
+    await ctx.reply_document(
         f"{filename}.srt",
-        caption=strings("capt_conv_sub").format(nf=filename, bot=c.me.username),
+        caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
         thumb="assets/thumb.jpg",
         progress=progress_for_pyrogram,
         progress_args=(strings("up_str"), msg, c_time),
     )
-    await hapusPesan(msg)
+    await msg.delete_msg()
     try:
         os.remove(dl)
         os.remove(f"{filename}.srt")
@@ -141,7 +138,7 @@ async def convertsrt(c, m, strings):
 @app.on_callback_query(filters.regex(r"^streamextract#"))
 @ratelimiter
 @use_chat_lang()
-async def stream_extract(bot, update, strings):
+async def stream_extract(self: Client, update: CallbackQuery, strings):
     cb_data = update.data
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
@@ -151,7 +148,7 @@ async def stream_extract(bot, update, strings):
         link = update.message.reply_to_message.command[1]
     except:
         return await update.answer(strings("invalid_cb"), True)
-    await editPesan(update.message, strings("progress_str"))
+    await update.message.edit_msg(strings("progress_str"))
     if codec == "aac":
         format = "aac"
     elif codec == "mp3":
@@ -170,13 +167,13 @@ async def stream_extract(bot, update, strings):
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=strings("capt_extr_sub").format(nf=namafile, bot=bot.me.username, timelog=timelog),
+            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=timelog),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
             progress_args=(strings("up_str"), update.message, c_time),
         )
-        await hapusPesan(update.message)
+        await update.message.delete_msg()
         try:
             os.remove(namafile)
         except:
@@ -186,4 +183,4 @@ async def stream_extract(bot, update, strings):
             os.remove(namafile)
         except:
             pass
-        await editPesan(update.message, strings("fail_extr_sub").format(link=link, e=e))
+        await update.message.edit_msg(strings("fail_extr_sub").format(link=link, e=e))

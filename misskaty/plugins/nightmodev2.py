@@ -9,7 +9,6 @@ from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboard
 
 from database.locale_db import get_db_lang
 from misskaty import BOT_NAME, app, scheduler
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import require_admin
 from misskaty.helper.localization import use_chat_lang, langdict
@@ -140,8 +139,8 @@ async def nightmode_handler(c, msg, strings):
             scheduler.remove_job(job_id=f"disable_nightmode_{chat_id}")
             if not bool(scheduler.get_jobs()) and bool(scheduler.state):
                 scheduler.shutdown()
-            return await kirimPesan(msg, strings("nmd_disabled"))
-        return await kirimPesan(msg, strings("nmd_not_enabled"))
+            return await msg.reply_msg(strings("nmd_disabled"))
+        return await msg.reply_msg(strings("nmd_not_enabled"))
 
     starttime = re.findall(r"-s=(\d+:\d+)", msg.text)
     start = starttime[0] if starttime else "00:00"
@@ -150,13 +149,13 @@ async def nightmode_handler(c, msg, strings):
     try:
         start_timestamp = TIME_ZONE.localize(datetime.strptime((now.strftime("%m:%d:%Y - ") + start), "%m:%d:%Y - %H:%M"))
     except ValueError:
-        return await kirimPesan(msg, strings("invalid_time_format"))
+        return await msg.reply_msg(strings("invalid_time_format"), del_in=6)
     lockdur = re.findall(r"-e=(\w+)", msg.text)
     lockdur = lockdur[0] if lockdur else "6h"
     lock_dur = extract_time(lockdur.lower())
 
     if not lock_dur:
-        return await kirimPesan(msg, strings("invalid_lockdur"))
+        return await msg.reply_msg(strings("invalid_lockdur"), del_in=6)
 
     if start_timestamp < now:
         start_timestamp = start_timestamp + timedelta(days=1)
@@ -168,8 +167,8 @@ async def nightmode_handler(c, msg, strings):
         # schedule to disable nightmode
         scheduler.add_job(un_mute_chat, "interval", [chat_id, msg.chat.permissions], id=f"disable_nightmode_{chat_id}", days=1, next_run_time=end_time_stamp, max_instances=50, misfire_grace_time=None)
     except ConflictingIdError:
-        return await kirimPesan(msg, strings("schedule_already_on"))
-    await kirimPesan(msg, strings("nmd_enable_success").format(st=start_timestamp.strftime("%H:%M:%S"), lockdur=lockdur))
+        return await msg.reply_msg(strings("schedule_already_on"))
+    await msg.reply_msg(strings("nmd_enable_success").format(st=start_timestamp.strftime("%H:%M:%S"), lockdur=lockdur))
     if not bool(scheduler.state):
         scheduler.start()
 

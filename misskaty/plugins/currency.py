@@ -3,7 +3,6 @@ from pyrogram.types import Message
 from misskaty import app
 import logging
 from misskaty.helper.http import http
-from misskaty.core.message_utils import kirimPesan
 from misskaty.vars import COMMAND_HANDLER, CURRENCY_API
 
 
@@ -16,17 +15,16 @@ LOGGER = logging.getLogger(__name__)
 
 
 @app.on_message(filters.command(["currency"], COMMAND_HANDLER))
-async def currency(c: Client, m: Message):
+async def currency(self: Client, ctx: Message):
     if CURRENCY_API is None:
-        return await kirimPesan(
-            m,
+        return await ctx.reply_msg(
             "<code>Oops!!get the API from</code> <a href='https://app.exchangerate-api.com/sign-up'>HERE</a> <code>& add it to config vars</code> (<code>CURRENCY_API</code>)",
             disable_web_page_preview=True,
         )
-    if len(m.text.split()) != 4:
-        return await kirimPesan(m, f"Use format /{m.command[0]} [amount] [currency_from] [currency_to] to convert currency.")
+    if len(ctx.text.split()) != 4:
+        return await ctx.reply_msg(f"Use format /{ctx.command[0]} [amount] [currency_from] [currency_to] to convert currency.", del_in=6)
 
-    teks = m.text.split()
+    teks = ctx.text.split()
     amount = teks[1]
     currency_from = teks[2]
     currency_to = teks[3]
@@ -42,9 +40,9 @@ async def currency(c: Client, m: Message):
                 base_code = data["base_code"]
                 last_update = data["time_last_update_utc"]
             except KeyError:
-                return await kirimPesan(m, "<code>Invalid response from api !</i>")
-            await kirimPesan(m, "**CURRENCY EXCHANGE RATE RESULT:**\n\n" f"`{amount}` **{base_code}** = `{round(conversion_result)}` **{target_code}**\n" f"<b>Rate Today</b> = `{round(conversion_rate)}`\n" f"<b>Last Update:</b> {last_update}")
+                return await ctx.reply_msg("<code>Invalid response from api !</i>")
+            await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{amount}` **{base_code}** = `{round(conversion_result)}` **{target_code}**\n<b>Rate Today</b> = `{round(conversion_rate)}`\n<b>Last Update:</b> {last_update}")
         except:
-            await kirimPesan(m, "Failed convert currency, maybe you give wrong currency format or api down.")
+            await ctx.reply_msg("Failed convert currency, maybe you give wrong currency format or api down.")
     else:
-        await kirimPesan(m, r"<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")
+        await ctx.reply_msg("<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")

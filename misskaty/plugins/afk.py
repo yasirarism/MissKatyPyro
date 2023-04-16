@@ -12,14 +12,15 @@
 import time
 import re
 
-from pyrogram import filters, enums
+from pyrogram import filters, enums, Client
+from pyrogram.types import Message
 
 from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import kirimPesan
+from misskaty.core.misskaty_patch.bound import message
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -37,9 +38,9 @@ Just type something in group to remove AFK Status."""
 @app.on_message(filters.command(["afk"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def active_afk(_, message, strings):
+async def active_afk(self: Client, ctx: Message, strings):
     if message.sender_chat:
-        return await kirimPesan(message, strings("no_channel"))
+        return await ctx.reply_msg(strings("no_channel"), del_in=6)
     user_id = message.from_user.id
     verifier, reasondb = await is_afk(user_id)
     if verifier:
@@ -182,7 +183,7 @@ async def active_afk(_, message, strings):
         }
 
     await add_afk(user_id, details)
-    send = await kirimPesan(message, strings("now_afk").format(usr=message.from_user.mention, id=message.from_user.id))
+    send = await ctx.reply_msg(strings("now_afk").format(usr=message.from_user.mention, id=message.from_user.id))
     await put_cleanmode(message.chat.id, send.id)
 
 
@@ -190,22 +191,22 @@ async def active_afk(_, message, strings):
 @ratelimiter
 @adminsOnly("can_change_info")
 @use_chat_lang()
-async def afk_state(_, message, strings):
+async def afk_state(self: Client, ctx: Message, strings):
     if not message.from_user:
         return
     if len(message.command) == 1:
-        return await kirimPesan(message, strings("afkdel_help").format(cmd=message.command[0]))
+        return await ctx.reply_msg(strings("afkdel_help").format(cmd=message.command[0]), del_in=6)
     chat_id = message.chat.id
     state = message.text.split(None, 1)[1].strip()
     state = state.lower()
     if state == "enable":
         await cleanmode_on(chat_id)
-        await kirimPesan(message, strings("afkdel_enable"))
+        await ctx.reply_msg(strings("afkdel_enable"))
     elif state == "disable":
         await cleanmode_off(chat_id)
-        await kirimPesan(message, strings("afkdel_disable"))
+        await ctx.reply_msg(strings("afkdel_disable"))
     else:
-        await kirimPesan(message, strings("afkdel_help").format(cmd=message.command[0]))
+        await ctx.reply_msg(strings("afkdel_help").format(cmd=message.command[0]), del_in=6)
 
 
 # Detect user that AFK based on Yukki Repo
@@ -214,13 +215,13 @@ async def afk_state(_, message, strings):
     group=1,
 )
 @use_chat_lang()
-async def chat_watcher_func(client, message, strings):
+async def chat_watcher_func(self: Client, ctx: Message, strings):
     if message.sender_chat:
         return
     userid = message.from_user.id
     user_name = message.from_user.mention
     if message.entities:
-        possible = ["/afk", f"/afk@{client.me.username}", "!afk"]
+        possible = ["/afk", f"/afk@{self.me.username}", "!afk"]
         message_text = message.text or message.caption
         for entity in message.entities:
             if entity.type == enums.MessageEntityType.BOT_COMMAND:

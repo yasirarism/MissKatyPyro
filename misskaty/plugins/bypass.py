@@ -10,12 +10,11 @@ import urllib.parse
 from urllib.parse import unquote
 
 import requests
-from pyrogram import filters
+from pyrogram import filters, Client
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_readable_file_size, rentry
@@ -91,17 +90,17 @@ def wetransfer_bypass(url: str) -> str:
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def bypass(_, message):
-    if len(message.command) == 1:
-        return await kirimPesan(message, f"Gunakan perintah /{message.command[0]} untuk bypass url")
-    url = message.command[1]
+async def bypass(self: Client, ctx: Message):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(f"Gunakan perintah /{ctx.command[0]} untuk bypass url", del_in=6)
+    url = ctx.command[1]
     urllib.parse.urlparse(url).netloc
-    msg = await kirimPesan(message, "Bypassing URL..", quote=True)
-    mention = f"**Bypasser:** {message.from_user.mention} ({message.from_user.id})"
+    msg = await ctx.reply_msg("Bypassing URL..", quote=True)
+    mention = f"**Bypasser:** {ctx.from_user.mention} ({ctx.from_user.id})"
     if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):
         data = await pling_bypass(url)
         try:
-            await editPesan(msg, f"{data}\n\n{mention}")
+            await msg.edit_msg(f"{data}\n\n{mention}")
         except (MessageTooLong, EntitiesTooLong):
             result = await rentry(data)
             markup = InlineKeyboardMarkup(
@@ -112,14 +111,11 @@ async def bypass(_, message):
                     ]
                 ]
             )
-            await editPesan(
-                msg,
+            await msg.edit_msg(
                 f"{result}\n\nBecause your bypassed url is too long, so your link will be pasted to rentry.\n{mention}",
                 reply_markup=markup,
                 disable_web_page_preview=True,
             )
-    elif "we.tl" or "wetransfer.com" in message.command[1]:
-        data = wetransfer_bypass(url)
-        await editPesan(msg, f"{data}\n\n{mention}")
     else:
-        await kirimPesan(message, "Unsupported url..")
+        data = wetransfer_bypass(url)
+        await msg.edit_msg(f"{data}\n\n{mention}")
