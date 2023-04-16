@@ -302,11 +302,14 @@ async def delete(self, revoke: bool = True) -> bool:
         try:
             return bool(await self.delete(revoke=revoke))
         except FloodWait as e:
-             LOGGER.warning(str(e))
-             await asleep(e.value)
-             await delete(self, revoke)
+            LOGGER.warning(str(e))
+            await asleep(e.value)
+            return await delete(self, revoke)
         except MessageDeleteForbidden as m_e:
-            raise m_e
+            return False
+        except Exception as e:
+            LOGGER.warning(str(e))
+
 
 Message.reply_msg = reply_text
 Message.edit_msg = edit_text

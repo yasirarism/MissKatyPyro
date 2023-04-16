@@ -4,7 +4,8 @@
 import html
 
 import regex
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message
 from pyrogram.errors import MessageEmpty
 
 from misskaty import app
@@ -13,8 +14,8 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 
 @app.on_message(filters.regex(r"^s/(.+)?/(.+)?(/.+)?") & filters.reply)
 @ratelimiter
-async def sed(c, m):
-    exp = regex.split(r"(?<![^\\]\\)/", m.text)
+async def sed(self: Client, ctx: Message):
+    exp = regex.split(r"(?<![^\\]\\)/", ctx.text)
     pattern = exp[1]
     replace_with = exp[2].replace(r"\/", "/")
     flags = exp[3] if len(exp) > 3 else ""
@@ -29,7 +30,7 @@ async def sed(c, m):
     elif "s" in flags:
         rflags = regex.S
 
-    text = m.reply_to_message.text or m.reply_to_message.caption
+    text = ctx.reply_to_message.text or ctx.reply_to_message.caption
 
     if not text:
         return
@@ -37,17 +38,17 @@ async def sed(c, m):
     try:
         res = regex.sub(pattern, replace_with, text, count=count, flags=rflags, timeout=1)
     except TimeoutError:
-        return await m.reply_text("Oops, your regex pattern has run for too long.")
+        return await ctx.reply_msg("Oops, your regex pattern has run for too long.")
     except regex.error as e:
-        return await m.reply_text(str(e))
+        return await ctx.reply_msg(str(e))
     else:
         try:
-            await c.send_message(
-                m.chat.id,
+            await self.send_msg(
+                ctx.chat.id,
                 f"<pre>{html.escape(res)}</pre>",
-                reply_to_message_id=m.reply_to_message.id,
+                reply_to_message_id=ctx.reply_to_message.id,
             )
         except MessageEmpty:
-            return await m.reply_text("Please reply message to use this feature.")
+            return await ctx.reply_msg("Please reply message to use this feature.", del_in=5)
         except Exception as e:
-            return await m.reply_text(f"ERROR: {str(e)}")
+            return await ctx.reply_msg(f"ERROR: {str(e)}")

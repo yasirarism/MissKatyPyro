@@ -63,7 +63,7 @@ async def send_message(self,
                                       *args,
                                       **kwargs)
         if del_in == 0:
-            return True
+            return msg
         if del_in > 0:
             await asyncio.sleep(del_in)
             return bool(await msg.delete())

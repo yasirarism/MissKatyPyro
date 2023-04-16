@@ -8,16 +8,15 @@
 import datetime
 import os
 import time
-from asyncio import gather, sleep
+from asyncio import gather, sleep, create_task
 from logging import getLogger
 
-from pyrogram import enums, filters
+from pyrogram import enums, filters, Client
 from pyrogram.errors import FloodWait
-from pyrogram.types import InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.message_utils import *
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -34,26 +33,26 @@ __HELP__ = """"
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def genss(c, m, strings):
-    if not m.from_user:
+async def genss(self: Client, ctx: Message, strings):
+    if not ctx.from_user:
         return
-    replied = m.reply_to_message
-    if len(m.command) == 2 and is_url(m.command[1]):
-        snt = await kirimPesan(m, strings("wait_msg"), quote=True)
+    replied = ctx.reply_to_message
+    if len(ctx.command) == 2 and is_url(ctx.command[1]):
+        snt = await ctx.reply_msg(strings("wait_msg"), quote=True)
 
-        duration = await get_duration(m.command[1])
+        duration = await get_duration(ctx.command[1])
         if isinstance(duration, str):
-            return await editPesan(snt, strings("fail_open"))
+            return await snt.edit_msg(strings("fail_open"))
         btns = gen_ik_buttons()
-        await editPesan(snt, strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
+        await snt.edit_msg(strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
         if media is None:
-            return await kirimPesan(m, strings("no_reply"), quote=True)
-        process = await kirimPesan(m, strings("wait_dl"), quote=True)
+            return await ctx.reply_msg(strings("no_reply"), quote=True)
+        process = await ctx.reply_msg(strings("wait_dl"), quote=True)
         if media.file_size > 2097152000:
-            return await editPesan(process, strings("limit_dl"))
+            return await process.edit_msg(strings("limit_dl"))
         c_time = time.time()
         dl = await replied.download(
             file_name="/downloads/",
@@ -63,31 +62,30 @@ async def genss(c, m, strings):
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await editPesan(process, strings("success_dl_msg").format(path=the_real_download_location))
+                await process.edit_msg(strings("success_dl_msg").format(path=the_real_download_location))
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
-                await editPesan(process, strings("up_progress"))
-                await c.send_chat_action(chat_id=m.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await process.edit_msg(strings("up_progress"))
+                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
 
                 try:
                     await gather(
                         *[
-                            m.reply_document(images, reply_to_message_id=m.id),
-                            m.reply_photo(images, reply_to_message_id=m.id),
+                            ctx.reply_document(images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
                         ]
                     )
                 except FloodWait as e:
                     await sleep(e.value)
                     await gather(
                         *[
-                            m.reply_document(images, reply_to_message_id=m.id),
-                            m.reply_photo(images, reply_to_message_id=m.id),
+                            ctx.reply_document(images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
                         ]
                     )
-                await kirimPesan(
-                    m,
-                    strings("up_msg").format(namma=m.from_user.mention, id=m.from_user.id, bot_uname=c.me.username),
-                    reply_to_message_id=m.id,
+                await ctx.reply_msg(
+                    strings("up_msg").format(namma=ctx.from_user.mention, id=ctx.from_user.id, bot_uname=self.me.username),
+                    reply_to_message_id=ctx.id,
                 )
                 await process.delete()
                 try:
@@ -96,17 +94,17 @@ async def genss(c, m, strings):
                 except:
                     pass
             except Exception as exc:
-                await kirimPesan(m, strings("err_ssgen").format(exc=exc))
+                await ctx.reply_msg(strings("err_ssgen").format(exc=exc))
                 try:
                     os.remove(images)
                     os.remove(the_real_download_location)
                 except:
                     pass
     else:
-        await kirimPesan(m, strings("no_reply"))
+        await ctx.reply_msg(strings("no_reply"), del_in=6)
 
 
 @app.on_callback_query(filters.regex(r"^scht"))
 @ratelimiter
-async def _(c, m):
-    asyncio.create_task(screenshot_flink(c, m))
+async def genss_cb(self: Client, cb: CallbackQuery):
+    create_task(screenshot_flink(self, cb))

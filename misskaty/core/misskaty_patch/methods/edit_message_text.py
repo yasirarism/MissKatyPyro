@@ -52,7 +52,7 @@ async def edit_message_text(self,
                                            *args,
                                            **kwargs)
         if del_in == 0:
-            return True
+            return msg
         await asyncio.sleep(del_in)
         return bool(await msg.delete())
         

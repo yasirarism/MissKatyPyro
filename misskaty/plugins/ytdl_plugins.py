@@ -3,11 +3,10 @@ from re import compile as recompile
 from uuid import uuid4
 
 from iytdl import iYTDL, main
-from pyrogram import filters
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from pyrogram import filters, Client
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
 
 from misskaty import app
-from misskaty.core.message_utils import *
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
@@ -27,17 +26,17 @@ def rand_key():
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def ytsearch(_, message, strings):
-    if message.sender_chat:
-        return await kirimPesan(message, strings("no_channel"))
-    if len(message.command) == 1:
-        return await kirimPesan(message, strings("no_query"))
-    query = message.text.split(" ", maxsplit=1)[1]
+async def ytsearch(self: Client, ctx: Message, strings):
+    if ctx.sender_chat:
+        return await ctx.reply_msg(strings("no_channel"))
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(strings("no_query"))
+    query = ctx.text.split(" ", maxsplit=1)[1]
     search_key = rand_key()
     YT_DB[search_key] = query
     search = await main.VideosSearch(query).next()
     if search["result"] == []:
-        return await message.reply(strings("no_res").format(kweri=query))
+        return await ctx.reply_msg(strings("no_res").format(kweri=query))
     i = search["result"][0]
     out = f"<b><a href={i['link']}>{i['title']}</a></b>\n"
     out = strings("yts_msg").format(pub=i["publishedTime"], dur=i["duration"], vi=i["viewCount"]["short"], clink=i["channel"]["link"], cname=i["channel"]["name"])
@@ -55,36 +54,36 @@ async def ytsearch(_, message, strings):
     img = await get_ytthumb(i["id"])
     caption = out
     markup = btn
-    await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+    await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
 @app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def ytdownv2(_, message, strings):
-    if not message.from_user:
-        return await kirimPesan(message, strings("no_channel"))
-    if len(message.command) == 1:
-        return await message.reply(strings("invalid_link"))
-    url = message.text.split(" ", maxsplit=1)[1]
+async def ytdownv2(self: Client, ctx: Message, strings):
+    if not ctx.from_user:
+        return await ctx.reply_msg(strings("no_channel"))
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(strings("invalid_link"))
+    url = ctx.input
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         try:
             x = await ytdl.parse(url)
             if x is None:
-                return await message.reply(strings("err_parse"))
+                return await ctx.reply_msg(strings("err_parse"))
             img = await get_ytthumb(x.key)
             caption = x.caption
             markup = x.buttons
-            await message.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+            await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
         except Exception as err:
-            await kirimPesan(message, f"Opps, ERROR: {str(err)}")
+            await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
 
 @app.on_callback_query(filters.regex(r"^yt_listall"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
+async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
@@ -96,7 +95,7 @@ async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
+async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     await cq.answer(strings("wait"))
@@ -123,7 +122,7 @@ async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_gendl_callback(_, cq: CallbackQuery, strings):
+async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
@@ -174,7 +173,7 @@ async def ytdl_gendl_callback(_, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
+async def ytdl_scroll_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")

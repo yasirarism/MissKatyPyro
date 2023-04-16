@@ -1,18 +1,19 @@
 # This plugin to learn session using pyrogram
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["session"], COMMAND_HANDLER))
-async def session(_, message):
-    if not message.from_user:
+async def session(self: Client, ctx: Message):
+    if not ctx.from_user:
         return
-    nama = await message.chat.ask("Ketik nama kamu:")
-    umur = await message.chat.ask("Ketik umur kamu")
-    alamat = await message.chat.ask("Ketik alamat kamu:")
-    await app.send_message(
-        message.chat.id,
+    nama = await ctx.chat.ask("Ketik nama kamu:")
+    umur = await ctx.chat.ask("Ketik umur kamu")
+    alamat = await ctx.chat.ask("Ketik alamat kamu:")
+    await app.send_msg(
+        ctx.chat.id,
         f"Nama Kamu Adalah: {nama.text}\nUmur Kamu Adalah: {umur.text}\nAlamat Kamu Adalah: {alamat.text}",
     )

@@ -11,7 +11,8 @@ from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import filters
+from pyrogram import filters, Client
+from pyrogram.types import Message
 
 from misskaty import app, botStartTime
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -23,7 +24,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 @ratelimiter
-async def ping(_, message):
+async def ping(self: Client, ctx: Message):
     if os.path.exists(".git"):
         botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
     else:
@@ -35,19 +36,16 @@ async def ping(_, message):
         org = "N/A"
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
-    rm = await message.reply_text("🐱 Pong!!...")
+    rm = await ctx.reply_msg("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
-    try:
-        await rm.edit(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
-    except Exception:
-        pass
+    await rm.edit_msg(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))
 @ratelimiter
-async def ping_handler(_, message):
-    m = await message.reply("Pinging datacenters...")
+async def ping_handler(self: Client, ctx: Message):
+    m = await ctx.reply_msg("Pinging datacenters...")
     async with Lock():
         ips = {
             "dc1": "149.154.175.53",
@@ -72,4 +70,4 @@ async def ping_handler(_, message):
             except Exception:
                 # There's a cross emoji here, but it's invisible.
                 text += f"    **{dc.upper}:** ❌\n"
-        await m.edit(text)
+        await m.edit_msg(text)
