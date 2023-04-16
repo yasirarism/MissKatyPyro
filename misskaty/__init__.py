@@ -1,6 +1,5 @@
 import os
 import time
-import uvloop
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from misskaty.core import misskaty_patch
