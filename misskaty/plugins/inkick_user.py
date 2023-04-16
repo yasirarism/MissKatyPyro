@@ -21,9 +21,7 @@ __HELP__ = """"
 """
 
 
-@app.on_message(
-    filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER)
-)
+@app.on_message(filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER))
 @ratelimiter
 async def inkick(_, message):
     if message.sender_chat:
@@ -32,62 +30,45 @@ async def inkick(_, message):
     if user.status.value in ("administrator", "owner"):
         if len(message.command) > 1:
             input_str = message.command
-            sent_message = await message.reply_text(
-                "🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**"
-            )
+            sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
             count = 0
             async for member in app.get_chat_members(message.chat.id):
                 if member.user.is_bot:
                     continue
-                if (
-                    member.user.status.value in input_str
-                    and member.status.value not in ("administrator", "owner")
-                ):
+                if member.user.status.value in input_str and member.status.value not in ("administrator", "owner"):
                     try:
                         await message.chat.ban_member(member.user.id)
                         count += 1
                         await sleep(1)
                         await message.chat.unban_member(member.user.id)
                     except (ChatAdminRequired, UserAdminInvalid):
-                        await sent_message.edit(
-                            "❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__"
-                        )
+                        await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
                         await app.leave_chat(message.chat.id)
                         break
                     except FloodWait as e:
                         await sleep(e.value)
             try:
-                await sent_message.edit(
-                    f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
-                )
+                await sent_message.edit(f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**")
 
             except ChatWriteForbidden:
                 await app.leave_chat(message.chat.id)
         else:
-            await message.reply_text(
-                "❗ **Arguments Required**\n__See /help in personal message for more information.__"
-            )
+            await message.reply_text("❗ **Arguments Required**\n__See /help in personal message for more information.__")
     else:
-        sent_message = await message.reply_text(
-            "❗ **You have to be the group creator to do that.**"
-        )
+        sent_message = await message.reply_text("❗ **You have to be the group creator to do that.**")
         await sleep(5)
         await sent_message.delete()
 
 
 # Kick User Without Username
-@app.on_message(
-    filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER)
-)
+@app.on_message(filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER))
 @ratelimiter
 async def uname(_, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
-        sent_message = await message.reply_text(
-            "🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**"
-        )
+        sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
             if not member.user.username and member.status.value not in (
@@ -100,42 +81,30 @@ async def uname(_, message):
                     await sleep(1)
                     await message.chat.unban_member(member.user.id)
                 except (ChatAdminRequired, UserAdminInvalid):
-                    await sent_message.edit(
-                        "❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__"
-                    )
+                    await sent_message.edit("❗**Oh tidaakk, saya bukan admin disini**\n__Saya pergi dari sini, tambahkan aku kembali dengan perijinan banned pengguna.__")
                     await app.leave_chat(message.chat.id)
                     break
                 except FloodWait as e:
                     await sleep(e.value)
         try:
-            await sent_message.edit(
-                f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
-            )
+            await sent_message.edit(f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**")
 
         except ChatWriteForbidden:
             await app.leave_chat(message.chat.id)
     else:
-        sent_message = await message.reply_text(
-            "❗ **You have to be the group creator to do that.**"
-        )
+        sent_message = await message.reply_text("❗ **You have to be the group creator to do that.**")
         await sleep(5)
         await sent_message.delete()
 
 
-@app.on_message(
-    filters.incoming
-    & ~filters.private
-    & filters.command(["ban_ghosts"], COMMAND_HANDLER)
-)
+@app.on_message(filters.incoming & ~filters.private & filters.command(["ban_ghosts"], COMMAND_HANDLER))
 @ratelimiter
 async def rm_delacc(client, message):
     if message.sender_chat:
         return await message.reply("This feature not available for channel.")
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
-        sent_message = await message.reply_text(
-            "🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**"
-        )
+        sent_message = await message.reply_text("🚮**Sedang membersihkan user, mungkin butuh waktu beberapa saat...**")
         count = 0
         async for member in app.get_chat_members(message.chat.id):
             if member.user.is_deleted and member.status.value not in (
@@ -148,30 +117,20 @@ async def rm_delacc(client, message):
                     await sleep(1)
                     await message.chat.unban_member(member.user.id)
                 except (ChatAdminRequired, UserAdminInvalid):
-                    await sent_message.edit(
-                        "❗**Oh Nooo, i'm doesn't have admin permission in this group. Make sure i'm have admin permission to <b>ban users</b>."
-                    )
+                    await sent_message.edit("❗**Oh Nooo, i'm doesn't have admin permission in this group. Make sure i'm have admin permission to <b>ban users</b>.")
                     break
                 except FloodWait as e:
                     await sleep(e.value)
         if count == 0:
-            return await editPesan(
-                sent_message, "There are no deleted accounts in this chat."
-            )
-        await editPesan(
-            sent_message, f"✔️ **Berhasil menendang {count} akun terhapus.**"
-        )
+            return await editPesan(sent_message, "There are no deleted accounts in this chat.")
+        await editPesan(sent_message, f"✔️ **Berhasil menendang {count} akun terhapus.**")
     else:
-        sent_message = await message.reply_text(
-            "❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**"
-        )
+        sent_message = await message.reply_text("❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**")
         await sleep(5)
         await sent_message.delete()
 
 
-@app.on_message(
-    filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER)
-)
+@app.on_message(filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER))
 @ratelimiter
 async def instatus(client, message):
     if message.sender_chat:
@@ -183,9 +142,7 @@ async def instatus(client, message):
         enums.ChatMemberStatus.ADMINISTRATOR,
         enums.ChatMemberStatus.OWNER,
     ):
-        sent_message = await message.reply_text(
-            "**Sedang mengumpulkan informasi pengguna...**"
-        )
+        sent_message = await message.reply_text("**Sedang mengumpulkan informasi pengguna...**")
         recently = 0
         within_week = 0
         within_month = 0
@@ -197,13 +154,9 @@ async def instatus(client, message):
         banned = 0
         uncached = 0
         bot = 0
-        async for ban in app.get_chat_members(
-            message.chat.id, filter=enums.ChatMembersFilter.BANNED
-        ):
+        async for ban in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.BANNED):
             banned += 1
-        async for restr in app.get_chat_members(
-            message.chat.id, filter=enums.ChatMembersFilter.RESTRICTED
-        ):
+        async for restr in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.RESTRICTED):
             restricted += 1
         async for member in app.get_chat_members(message.chat.id):
             user = member.user
@@ -246,8 +199,6 @@ async def instatus(client, message):
             )
         )
     else:
-        sent_message = await message.reply_text(
-            "❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**"
-        )
+        sent_message = await message.reply_text("❗ **Kamu harus jadi admin atau owner grup untuk melakukan tindakan ini.**")
         await sleep(5)
         await sent_message.delete()

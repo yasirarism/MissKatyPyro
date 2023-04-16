@@ -19,16 +19,10 @@ from pyrogram.types import Message
 
 LOGGER = getLogger(__name__)
 
-Message.input = property(
-    lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1 :]
-    if len(m.command) > 1
-    else None
-)
+Message.input = property(lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1 :] if len(m.command) > 1 else None)
 
 
-async def reply_text(
-    self: Message, text: str, as_raw: bool = False, del_in: int = 0, *args, **kwargs
-) -> Union["Message", bool]:
+async def reply_text(self: Message, text: str, as_raw: bool = False, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
     """\nExample:
             message.reply_msg("hello")
     Parameters:
@@ -76,9 +70,7 @@ async def reply_text(
     """
     try:
         if as_raw:
-            msg = await self.reply_text(
-                text=f"<code>{html.escape(text.html)}</code>", *args, **kwargs
-            )
+            msg = await self.reply_text(text=f"<code>{html.escape(text.html)}</code>", *args, **kwargs)
         else:
             msg = await self.reply_text(text=text, *args, **kwargs)
         if del_in == 0:
@@ -89,15 +81,11 @@ async def reply_text(
         await asleep(e.value)
         return await reply_text(self, text, *args, **kwargs)
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(
-            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
-        )
+        LOGGER.info(f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
         return await self.chat.leave()
 
 
-async def edit_text(
-    self, text: str, del_in: int = 0, *args, **kwargs
-) -> Union["Message", bool]:
+async def edit_text(self, text: str, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
     """\nExample:
             message.edit_msg("hello")
     Parameters:
@@ -136,17 +124,13 @@ async def edit_text(
     except MessageNotModified:
         return False
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(
-            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
-        )
+        LOGGER.info(f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
         return await self.chat.leave()
     except (MessageAuthorRequired, MessageIdInvalid):
         return await reply_text(text=text, *args, **kwargs)
 
 
-async def edit_or_send_as_file(
-    self, text: str, del_in: int = 0, as_raw: bool = False, *args, **kwargs
-) -> Union["Message", bool]:
+async def edit_or_send_as_file(self, text: str, del_in: int = 0, as_raw: bool = False, *args, **kwargs) -> Union["Message", bool]:
     """\nThis will first try to message.edit.
     If it raises MessageTooLong error,
     run message.send_as_file.
@@ -199,9 +183,7 @@ async def edit_or_send_as_file(
         return await reply_as_file(self, text=text, *args, **kwargs)
 
 
-async def reply_or_send_as_file(
-    self, text: str, as_raw: bool = False, del_in: int = -1, *args, **kwargs
-) -> Union["Message", bool]:
+async def reply_or_send_as_file(self, text: str, as_raw: bool = False, del_in: int = -1, *args, **kwargs) -> Union["Message", bool]:
     """\nThis will first try to message.reply.
     If it raise MessageTooLong error,
     run message.send_as_file.
@@ -312,7 +294,7 @@ async def delete(self, revoke: bool = True) -> bool:
         LOGGER.warning(str(e))
         await asleep(e.value)
         return await delete(self, revoke)
-    except MessageDeleteForbidden as m_e:
+    except MessageDeleteForbidden:
         return False
     except Exception as e:
         LOGGER.warning(str(e))
