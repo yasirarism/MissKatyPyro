@@ -72,10 +72,6 @@ async def admin_cache_func(_, cmu):
         except:
             pass
 
-@app.on_user_status(filters.private & filters.user(2024984460))
-async def tes_status(c, m):
-    LOGGER.info(m)
-
 
 # Purge CMD
 @app.on_message(filters.command("purge", COMMAND_HANDLER) & filters.group)
