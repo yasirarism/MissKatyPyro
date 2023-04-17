@@ -40,7 +40,6 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    max_concurrent_transmissions=1000,
 )
 app.storage = MongoStorage(mongo["MissKatyDB"], remove_peers=False)
 
@@ -48,7 +47,6 @@ app.storage = MongoStorage(mongo["MissKatyDB"], remove_peers=False)
 user = Client(
     "YasirUBot",
     session_string=USER_SESSION,
-    max_concurrent_transmissions=1000,
 )
 
 jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB", collection="nightmode")}
