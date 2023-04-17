@@ -20,7 +20,6 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.misskaty_patch.bound import message
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
