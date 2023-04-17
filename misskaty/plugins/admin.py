@@ -71,6 +71,8 @@ async def admin_cache_func(_, cmu):
             LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
         except:
             pass
+    else:
+        LOGGER.info(cmu)
 
 
 # Purge CMD
