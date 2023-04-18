@@ -1,7 +1,7 @@
 {
-    "no_uname": "<code>Ora Jeneng Panganggo</code>",
+    "no_uname": "<code>Ora nganggo username</code>",
     "no_last_name": "<kode>Ora Ana Jeneng mburi</code>",
-    "uname_change_msg": "✨ Jeneng pangguna diganti saka {bef} ➡️ {aft}.\n",
+    "uname_change_msg": "✨ Username diganti saka {bef} ➡️ {aft}.\n",
     "lastname_change_msg": "✨ Ganti jeneng mburi saka {bef} ➡️ {aft}.\n",
     "firstname_change_msg": "✨ Ganti jeneng ngarep saka {bef} ➡️ {aft}.\n",
     "set_sangmata_help": "Gunakake <code>/{cmd} on</code>, kanggo ngaktifake sangmata. Yen sampeyan pengin mateni, sampeyan bisa nggunakake parameter mati.",
