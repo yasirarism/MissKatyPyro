@@ -69,7 +69,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
     url = ctx.input
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         try:
-            x = await ytdl.parse(url)
+            x = await ytdl.parse(url, extract=True)
             if x is None:
                 return await ctx.reply_msg(strings("err_parse"))
             img = await get_ytthumb(x.key)
