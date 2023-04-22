@@ -103,22 +103,25 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
     await cq.answer(strings("wait"))
     callback = cq.data.split("|")
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
-        if data := await ytdl.extract_info_from_key(callback[1]):
-            if len(callback[1]) == 11:
-                await cq.edit_message_text(
-                    text=data.caption,
-                    reply_markup=data.buttons.add(cq.from_user.id),
-                )
-            else:
-                await cq.edit_message_media(
-                    media=(
-                        InputMediaPhoto(
-                            media=data.image_url,
-                            caption=data.caption,
-                        )
-                    ),
-                    reply_markup=data.buttons.add(cq.from_user.id),
-                )
+        try:
+            if data := await ytdl.extract_info_from_key(callback[1]):
+                if len(callback[1]) == 11:
+                    await cq.edit_message_text(
+                        text=data.caption,
+                        reply_markup=data.buttons.add(cq.from_user.id),
+                    )
+                else:
+                    await cq.edit_message_media(
+                        media=(
+                            InputMediaPhoto(
+                                media=data.image_url,
+                                caption=data.caption,
+                            )
+                        ),
+                        reply_markup=data.buttons.add(cq.from_user.id),
+                    )
+        except Exception as e:
+            await cq.edit_message_text(f"Extract Info Failed -> {e}")
 
 
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
@@ -146,7 +149,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         uid, disp_str = ytdl.get_choice_by_id(
             match[2], media_type, yt_url=yt_url
         )
-        await cq.answer(f"⬇️ Downloading - {disp_str}", show_alert=True)
+        await cq.answer(f"⬇️ Downloading - {disp_str}")
         try:
             key = await ytdl.download(
                 url=video_link,
