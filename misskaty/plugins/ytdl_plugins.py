@@ -156,7 +156,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
                 )
             await ytdl.upload(
                 client=self,
-                key=key,
+                key=key[0],
                 downtype=media_type,
                 update=cq,
                 caption_link=video_link,
