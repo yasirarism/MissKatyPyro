@@ -2,7 +2,9 @@ from logging import getLogger
 from re import compile as recompile
 from uuid import uuid4
 
-from iytdl import iYTDL, main
+from iytdl import iYTDL, main, Process
+from iytdl.exceptions import DownloadFailedError
+from iytdl.constants import YT_VID_URL
 from pyrogram import filters, Client
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
 
@@ -72,10 +74,10 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             x = await ytdl.parse(url, extract=True)
             if x is None:
                 return await ctx.reply_msg(strings("err_parse"))
-            img = await get_ytthumb(x.key)
             caption = x.caption
             markup = x.buttons
-            await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+            photo = x.image_url
+            await ctx.reply_photo(photo, caption=caption, reply_markup=markup, quote=True)
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
@@ -102,7 +104,7 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
     callback = cq.data.split("|")
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         if data := await ytdl.extract_info_from_key(callback[1]):
-            if len(key) == 11:
+            if len(callback[1]) == 11:
                 await cq.edit_message_text(
                     text=data.caption,
                     reply_markup=data.buttons.add(cq.from_user.id),
@@ -123,51 +125,60 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
 @ratelimiter
 @use_chat_lang()
 async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
+    match = cq.data.split("|")
+    if cq.from_user.id != cq.message.reply_to_message.from_user.id:
+        return await cq.answer("This message is not for you !", show_alert=True)
+
+    async with iYTDL(
+        log_group_id=LOG_CHANNEL,
+        cache_path="cache",
+        ffmpeg_location="/usr/bin/mediaextract",
+        delete_media=True,
+    ) as ytdl:
+        if match[0] == "yt_gen":
+            yt_url = False
+            video_link = await ytdl.cache.get_url(match[1])
+        else:
+            yt_url = True
+            video_link = f"{YT_VID_URL}{match[1]}"
+
+        media_type = "video" if match[3] == "v" else "audio"
+        uid, disp_str = await ytdl.get_choice_by_id(
+            match[2], media_type, yt_url=yt_url
+        )
+        await cq.answer(f"⬇️ Downloading - {disp_str}", show_alert=True)
+        try:
+            key = await ytdl.download(
+                url=video_link,
+                uid=uid,
+                downtype=media_type,
+                update=cq,
+                )
+            await ytdl.upload(
+                client=self,
+                key=key,
+                downtype=media_type,
+                update=cq,
+                caption_link=video_link,
+            )
+        except DownloadFailedError as e:
+            return await cq.edit_message_caption(f"Download Failed - {e}")
+
+
+@app.on_callback_query(filters.regex(r"^ytdl_cancel"))
+@ratelimiter
+@use_chat_lang()
+async def ytdl_cancel_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
-    key = callback[1]
-    if callback[0] == "yt_gen":
-        if match := regex.match(cq.message.reply_to_message.command[1]) or len(callback) == 2:
-            x = await main.Extractor().get_download_button(key)
-            await cq.edit_message_caption(caption=x.caption, reply_markup=x.buttons)
-        else:
-            uid = callback[2]
-            type_ = callback[3]
-            format_ = "audio" if type_ == "a" else "video"
-            async with iYTDL(
-                log_group_id=LOG_CHANNEL,
-                cache_path="cache",
-                ffmpeg_location="/usr/bin/mediaextract",
-                delete_media=True,
-            ) as ytdl:
-                try:
-                    upload_key = await ytdl.download(cq.message.reply_to_message.command[1], uid, format_, cq, True, 3)
-                    await ytdl.upload(app, upload_key[0], format_, cq, True)
-                except Exception as err:
-                    await cq.edit_message_caption(err)
+    await cq.answer("Trying to Cancel Process..")
+    process_id = callback[1]
+    Process.cancel_id(process_id)
+    if cq.message:
+        await cq.message.delete()
     else:
-        uid = callback[2]
-        type_ = callback[3]
-        format_ = "audio" if type_ == "a" else "video"
-        async with iYTDL(
-            log_group_id=LOG_CHANNEL,
-            cache_path="cache",
-            ffmpeg_location="/usr/bin/mediaextract",
-            delete_media=True,
-        ) as ytdl:
-            try:
-                upload_key = await ytdl.download(
-                    f"https://www.youtube.com/watch?v={key}",
-                    uid,
-                    format_,
-                    cq,
-                    True,
-                    3,
-                )
-                await ytdl.upload(app, upload_key[0], format_, cq, True)
-            except Exception as err:
-                await cq.edit_message_caption(err)
+        await cq.edit_message_text("✔️ `Stopped Successfully`")
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
