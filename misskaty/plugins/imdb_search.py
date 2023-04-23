@@ -16,7 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedi
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+from misskaty.core.misskaty_patch import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
@@ -63,7 +63,8 @@ async def imdb_choose(self: Client, ctx: Message):
             timeout=30
         )
     except ListenerTimeout:
-        await msg.edit_caption("😶‍🌫️ Waktu Habis. Task dibatalkan!")
+        del LIST_CARI[ranval]
+        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
 
 
 
@@ -82,7 +83,14 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     if is_imdb:
         buttons.row(InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
-    await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+    msg = await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+    try:
+        await msg.wait_for_click(
+            from_user_id=uid,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
 
 
 @app.on_callback_query(filters.regex("^setimdb"))
@@ -147,7 +155,13 @@ async def imdb_search_id(kueri, message):
             )
         )
         buttons.add(*BTN)
-        await k.edit_caption(msg, reply_markup=buttons)
+        msg = await k.edit_caption(msg, reply_markup=buttons)
+        await msg.wait_for_click(
+            from_user_id=message.from_user.id,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
     except Exception as err:
         await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
@@ -197,7 +211,13 @@ async def imdb_search_en(kueri, message):
             )
         )
         buttons.add(*BTN)
-        await k.edit_caption(msg, reply_markup=buttons)
+        msg = await k.edit_caption(msg, reply_markup=buttons)
+        await msg.wait_for_click(
+            from_user_id=message.from_user.id,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
     except Exception as err:
         await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
@@ -243,7 +263,13 @@ async def imdbcari(self: Client, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            await query.message.edit_caption(msg, reply_markup=buttons)
+            msg = await query.message.edit_caption(msg, reply_markup=buttons)
+            await msg.wait_for_click(
+                from_user_id=uid.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
         except Exception as err:
             await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
@@ -282,7 +308,13 @@ async def imdbcari(self: Client, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            await query.message.edit_caption(msg, reply_markup=buttons)
+            msg = await query.message.edit_caption(msg, reply_markup=buttons)
+            await msg.wait_for_click(
+                from_user_id=uid.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
         except Exception as err:
             await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
