@@ -104,12 +104,12 @@ async def ceksub(self: Client, ctx: Message, strings):
             strings("press_btn_msg").format(timelog=timelog),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-        await msg.wait_for_click(
-            from_user_id=ctx.from_user.id,
-            timeout=30
-        )
-    except ListenerTimeout:
-        await msg.edit_msg("😶‍🌫️ Timeout. Task has been cancelled!")
+    #     await msg.wait_for_click(
+    #         from_user_id=ctx.from_user.id,
+    #         timeout=30
+    #     )
+    # except ListenerTimeout:
+    #     await msg.edit_msg("😶‍🌫️ Timeout. Task has been cancelled!")
     except Exception:
         await pesan.edit_msg(strings("fail_extr_media"))
 
