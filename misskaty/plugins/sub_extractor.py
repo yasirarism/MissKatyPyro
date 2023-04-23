@@ -18,6 +18,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.misskaty_patch import ListenerTimeout
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
 from misskaty.helper.localization import use_chat_lang
@@ -98,11 +99,17 @@ async def ceksub(self: Client, ctx: Message, strings):
         end_time = perf_counter()
         timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
         buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
-        await pesan.edit_msg(
+        msg = await pesan.edit_msg(
             strings("press_btn_msg").format(timelog=timelog),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-    except:
+        await msg.wait_for_click(
+            from_user_id=ctx.from_user.id,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_msg(strings("exp_task"))
+    except Exception:
         await pesan.edit_msg(strings("fail_extr_media"))
 
 

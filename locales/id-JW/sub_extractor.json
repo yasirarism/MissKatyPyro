@@ -12,5 +12,6 @@
     "fail_extr_media": "Media ekstrak sing gagal, priksa manawa pranala sampeyan ora direksa WAF utawa ora bisa diakses kanggo bot.",
     "fail_extr_sub": "Gagal ekstrak sub, Mungkin format ora didhukung..\n\nLink: {link}\nERR: {e}",
     "capt_extr_sub": "<b>Jeneng berkas:</b> <kode>{nf}</code>\n\nDiekstrak saka @{bot} ing {timelog}",
-    "capt_conv_sub": "<kode>{nf}.srt</code>\n\nDiowahi dening @{bot}"
+    "capt_conv_sub": "<kode>{nf}.srt</code>\n\nDiowahi dening @{bot}",
+    "exp_task": "😶‍🌫️ Wektu wis entek. Tugas wis dibatalake!"
 }

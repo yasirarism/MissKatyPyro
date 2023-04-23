@@ -12,5 +12,6 @@
     "fail_extr_media": "Gagal mengekstrak media, pastikan tautan Anda tidak dilindungi oleh WAF atau mungkin tidak dapat diakses oleh bot.",
     "fail_extr_sub": "Sub ekstrak gagal, Mungkin formatnya tidak didukung..\n\nTautan: {link}\nERR: {e}",
     "capt_extr_sub": "<b>Nama file:</b> <kode>{nf}</code>\n\nDiekstrak oleh @{bot} dalam {timelog}",
-    "capt_conv_sub": "<code>{nf}.srt</code>\n\nDikonversi oleh @{bot}"
+    "capt_conv_sub": "<code>{nf}.srt</code>\n\nDikonversi oleh @{bot}",
+    "exp_task": "😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!"
 }

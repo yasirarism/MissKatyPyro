@@ -86,7 +86,7 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     msg = await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
     try:
         await msg.wait_for_click(
-            from_user_id=uid,
+            from_user_id=int(uid),
             timeout=30
         )
     except ListenerTimeout:
@@ -99,6 +99,9 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
+    is_imdb, langset = await is_imdbset(query.from_user.id)
+    if langset == lang:
+        return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
     if lang == "eng":
         await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Language interface for IMDB has been changed to English.")

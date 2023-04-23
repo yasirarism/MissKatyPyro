@@ -9,5 +9,6 @@
     "err_parse": "Failed parse URL, check logs..",
     "wait": "Please wait..",
     "unauth": "Not Your Task..",
-    "endlist": "That's the end of list"
+    "endlist": "That's the end of list",
+    "exp_task": "😶‍🌫️ Timeout. Task has been cancelled!"
 }

@@ -9,5 +9,6 @@
     "err_ssgen": "Pembuatan screenshot gagal.\n\n{exc}",
     "up_msg": "☑️ Pembuatan screenshot berhasil.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Dibuat oleh @{bot_uname} ",
     "no_reply": "Balas video atau dokumen Telegram atau gunakan tautan langsung setelah perintah untuk membuat screenshot dari media!",
-    "choose_no_ss": "Sekarang pilih berapa hasil screenshot? 🥳.\n\nTotal durasi: `{td}` (`{dur} detik`)"
+    "choose_no_ss": "Sekarang pilih berapa hasil screenshot? 🥳.\n\nTotal durasi: `{td}` (`{dur} detik`)",
+    "exp_task": "😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!"
 }

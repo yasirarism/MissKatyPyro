@@ -1,32 +1,34 @@
 import asyncio
+import html
 import io
+import json
 import os
+import pickle
 import re
 import sys
-import html
-import pickle
-import json
 import traceback
-import cfscrape
-import aiohttp
+from datetime import datetime
+from inspect import getfullargspec
 from shutil import disk_usage
 from time import time
-from inspect import getfullargspec
 from typing import Any, Optional, Tuple
 
+import aiohttp
+import cfscrape
 from psutil import cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory
-
-from pyrogram import enums, filters, Client
+from pyrogram import Client, enums, filters
+from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from misskaty import app, user, botStartTime, BOT_NAME
+from misskaty import BOT_NAME, app, botStartTime, user
+from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.http import http
-from misskaty.helper.eval_helper import meval, format_exception
+from misskaty.helper.human_read import (get_readable_file_size,
+                                        get_readable_time)
 from misskaty.helper.localization import use_chat_lang
-from misskaty.helper.human_read import get_readable_file_size, get_readable_time
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, SUDO, LOG_CHANNEL
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -296,6 +298,15 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     with open("restart.pickle", "wb") as status:
         pickle.dump([ctx.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
+
+
+@app.on_raw_update(filters.private, group=-99)
+async def raw(client, update, users, chats):
+    if isinstance(update, UpdateBotStopped):
+        user = users[update.user_id]
+        await client.send_msg(LOG_CHANNEL, f"{user.mention} ({user.id}) "
+              f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at "
+              f"{datetime.fromtimestamp(update.date)}")
 
 
 async def aexec(code, c, m):

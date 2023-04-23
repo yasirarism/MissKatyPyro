@@ -9,5 +9,6 @@
     "err_ssgen": "Failed screenshoot generation.\n\n{exc}",
     "up_msg": "☑️ Generation screenshot successfully.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Generate by @{bot_uname}",
     "no_reply": "Reply to a Telegram video or document or use direct link after command to generate screenshoot from media!",
-    "choose_no_ss": "Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{td}` (`{dur} second`)"
+    "choose_no_ss": "Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{td}` (`{dur} second`)",
+    "exp_task": "😶‍🌫️ Timeout. Task has been cancelled!"
 }

@@ -17,6 +17,7 @@ from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.core.misskaty_patch import ListenerTimeout
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -44,7 +45,14 @@ async def genss(self: Client, ctx: Message, strings):
         if isinstance(duration, str):
             return await snt.edit_msg(strings("fail_open"))
         btns = gen_ik_buttons()
-        await snt.edit_msg(strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
+        msg = await snt.edit_msg(strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
+        try:
+            await msg.wait_for_click(
+                from_user_id=ctx.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_msg(strings("exp_task"))
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)

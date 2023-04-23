@@ -10,6 +10,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.misskaty_patch import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
@@ -77,7 +78,13 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
-            await ctx.reply_photo(photo, caption=caption, reply_markup=markup, quote=True)
+            msg = await ctx.reply_photo(photo, caption=caption, reply_markup=markup, quote=True)
+            await msg.wait_for_click(
+                from_user_id=ctx.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption(strings("exp_task"))
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
@@ -138,19 +145,19 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         ffmpeg_location="/usr/bin/mediaextract",
         delete_media=True,
     ) as ytdl:
-        if match[0] == "yt_gen":
-            yt_url = False
-            video_link = await ytdl.cache.get_url(match[1])
-        else:
-            yt_url = True
-            video_link = f"{YT_VID_URL}{match[1]}"
-
-        media_type = "video" if match[3] == "v" else "audio"
-        uid, disp_str = ytdl.get_choice_by_id(
-            match[2], media_type, yt_url=yt_url
-        )
-        await cq.answer(f"⬇️ Downloading - {disp_str}")
         try:
+            if match[0] == "yt_gen":
+                yt_url = False
+                video_link = await ytdl.cache.get_url(match[1])
+            else:
+                yt_url = True
+                video_link = f"{YT_VID_URL}{match[1]}"
+
+            media_type = "video" if match[3] == "v" else "audio"
+            uid, disp_str = ytdl.get_choice_by_id(
+                match[2], media_type, yt_url=yt_url
+            )
+            await cq.answer(f"⬇️ Downloading - {disp_str}")
             key = await ytdl.download(
                 url=video_link,
                 uid=uid,
@@ -165,7 +172,9 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
                 caption_link=video_link,
             )
         except DownloadFailedError as e:
-            return await cq.edit_message_caption(f"Download Failed - {e}")
+            await cq.edit_message_caption(f"Download Failed - {e}")
+        except Exception as err:
+            await cq.edit_message_caption(f"Download Failed for url -> {video_link}\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_cancel"))

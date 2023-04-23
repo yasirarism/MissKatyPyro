@@ -12,5 +12,6 @@
     "fail_extr_media": "Failed extract media, make sure your link is not protected by WAF or maybe inaccessible for bot.",
     "fail_extr_sub": "Failed extract sub, Maybe unsupported format..\n\nLink: {link}\nERR: {e}",
     "capt_extr_sub": "<b>Filename:</b> <code>{nf}</code>\n\nExtracted by @{bot} in {timelog}",
-    "capt_conv_sub": "<code>{nf}.srt</code>\n\nConverted by @{bot}"
+    "capt_conv_sub": "<code>{nf}.srt</code>\n\nConverted by @{bot}",
+    "exp_task": "😶‍🌫️ Timeout. Task Has Been Cancelled!"
 }
