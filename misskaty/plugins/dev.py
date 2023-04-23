@@ -7,8 +7,9 @@ import html
 import pickle
 import json
 import traceback
-import cfscrape
+import caiohttp
 import aiohttp
+from datetime import datetime
 from shutil import disk_usage
 from time import time
 from inspect import getfullargspec
