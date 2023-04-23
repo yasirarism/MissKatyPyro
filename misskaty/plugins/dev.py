@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import html
+import logging
 import pickle
 import json
 import traceback
@@ -300,10 +301,10 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 
     
 @app.on_raw_update(group=-99)
-async def updtebot(client, update, users, chats):
+async def updtebot(client, update, users, chats)
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
-        await client.send_msg(LOG_CHANNEL, f"{user.mention} ({user.id}) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
+        await client.send_msg(LOG_CHANNEL, f"{user.first_name} ({user.id}) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
 
 async def aexec(code, c, m):
     exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))
