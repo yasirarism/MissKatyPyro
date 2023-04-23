@@ -3,9 +3,7 @@ class PyromodConfig:
     stopped_handler = None
     throw_exceptions = True
     unallowed_click_alert = True
-    unallowed_click_alert_text = (
-        "[misskaty] You're not authorized to click this button."
-    )
+    unallowed_click_alert_text = "[misskaty] You're not authorized to click this button."
 
 
 def patch(obj):
@@ -15,8 +13,8 @@ def patch(obj):
     def wrapper(container):
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(obj, name, None)
-            if old is not None: # Not adding 'old' to new func
-                setattr(obj, "old" + name, old)
+            if old is not None:  # Not adding 'old' to new func
+                setattr(obj, f"old{name}", old)
             setattr(obj, name, func)
         return container
 

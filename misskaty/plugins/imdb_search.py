@@ -58,14 +58,10 @@ async def imdb_choose(self: Client, ctx: Message):
         quote=True,
     )
     try:
-        await msg.wait_for_click(
-            from_user_id=ctx.from_user.id,
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
     except ListenerTimeout:
         del LIST_CARI[ranval]
         await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
-
 
 
 @app.on_callback_query(filters.regex("^imdbset"))
