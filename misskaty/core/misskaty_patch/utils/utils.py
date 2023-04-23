@@ -16,7 +16,7 @@ def patch(obj):
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(obj, name, None)
             if old is not None: # Not adding 'old' to new func
-                setattr(obj, "old" + name, old)
+                setattr(obj, f"old{name}", old)
             setattr(obj, name, func)
         return container
 
