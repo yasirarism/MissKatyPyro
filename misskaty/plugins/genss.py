@@ -16,7 +16,7 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
+# from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
 from misskaty.helper.localization import use_chat_lang

@@ -10,7 +10,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMa
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+# from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
