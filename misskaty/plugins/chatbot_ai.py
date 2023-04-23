@@ -1,14 +1,16 @@
-import openai
 import asyncio
+import html
+
+import openai
 from aiohttp import ClientSession
-from pyrogram import filters, Client
-from pyrogram.types import Message
+from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong
+from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.helper.localization import use_chat_lang
-from misskaty.helper import post_to_telegraph, check_time_gap
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper import check_time_gap, post_to_telegraph
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
@@ -42,7 +44,7 @@ async def chatbot(self: Client, ctx: Message, strings):
         await msg.edit_msg(answer)
         await openai.aiosession.get().close()
     except MessageTooLong:
-        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", answer)
+        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", html.escape(answer))
         await msg.edit_msg(strings("answers_too_long").format(answerlink=answerlink), disable_web_page_preview=True)
     except Exception as err:
         await msg.edit_msg(f"ERROR: {str(err)}")
