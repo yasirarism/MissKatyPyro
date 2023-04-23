@@ -10,6 +10,7 @@ from logging import getLogger
 from re import I
 from re import split as ngesplit
 from time import perf_counter, time
+from turtle import listen
 from urllib.parse import unquote
 
 from pyrogram import filters, Client
@@ -18,7 +19,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.misskaty_patch import ListenerTimeout
+from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
 from misskaty.helper.localization import use_chat_lang

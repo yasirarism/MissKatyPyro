@@ -301,7 +301,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 
 
 @app.on_raw_update(filters.private, group=-99)
-async def raw(client, update, users, chats):
+async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
         await client.send_msg(LOG_CHANNEL, f"{user.mention} ({user.id}) "
