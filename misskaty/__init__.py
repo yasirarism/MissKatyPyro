@@ -39,7 +39,7 @@ app = Client(
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
 )
-# Revert for now cuz make peer id invalid 
+# Revert for now cuz make peer id invalid
 # app.storage = MongoStorage(mongo["MissKatyDB"], remove_peers=False)
 
 # Pyrogram UserBot Client

@@ -25,8 +25,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from misskaty import BOT_NAME, app, botStartTime, user
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.http import http
-from misskaty.helper.human_read import (get_readable_file_size,
-                                        get_readable_time)
+from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO, LOG_CHANNEL
 
@@ -304,9 +303,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
-        await client.send_msg(LOG_CHANNEL, f"{user.mention} ({user.id}) "
-              f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at "
-              f"{datetime.fromtimestamp(update.date)}")
+        await client.send_msg(LOG_CHANNEL, f"{user.mention} ({user.id}) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
 
 
 async def aexec(code, c, m):
