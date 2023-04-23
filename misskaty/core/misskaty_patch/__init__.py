@@ -1,3 +1,2 @@
-from . import bound, methods
-from .listen.listen import *
+from . import bound, methods, listen
 from .utils import PyromodConfig

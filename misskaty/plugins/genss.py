@@ -52,7 +52,7 @@ async def genss(self: Client, ctx: Message, strings):
                 timeout=30
             )
         except ListenerTimeout:
-            await msg.edit_msg(strings("exp_task"))
+            await msg.edit_msg("😶‍🌫️ Timeout. Task has been cancelled!")
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)

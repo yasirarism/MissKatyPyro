@@ -84,7 +84,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
                 timeout=30
             )
         except ListenerTimeout:
-            await msg.edit_caption(strings("exp_task"))
+            await msg.edit_caption("😶‍🌫️ Timeout. Task has been cancelled!")
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
