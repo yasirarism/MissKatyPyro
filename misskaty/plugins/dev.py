@@ -300,7 +300,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 
-@app.on_raw_update(filters.private, group=-99)
+# @app.on_raw_update(filters.private, group=-99)
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
