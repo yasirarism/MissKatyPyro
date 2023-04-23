@@ -265,7 +265,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             await msg.wait_for_click(
-                from_user_id=uid.from_user.id,
+                from_user_id=int(uid),
                 timeout=30
             )
         except ListenerTimeout:
@@ -310,7 +310,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             await msg.wait_for_click(
-                from_user_id=uid.from_user.id,
+                from_user_id=int(uid),
                 timeout=30
             )
         except ListenerTimeout:
