@@ -1,15 +1,51 @@
+<p align="center">
+<img src="https://avatars.githubusercontent.com/yasirarism" width="200" height="200"/>
+</p>
+<p align="center">
+  <a href="#"><img src="http://readme-typing-svg.herokuapp.com?color=d1fa02&center=true&vCenter=true&multiline=false&lines=Welcome+To+MissKaty+Repository" alt="">
+</p>
+<p align="center">
+<a href="#"><img title="Creator" src="https://img.shields.io/badge/Creator-MissKaty-red.svg?style=for-the-badge&logo=github"></a>
+</p>
+<p align="center">
+<a href="https://github.com/yasirarism?tab=followers"><img title="Followers" src="https://img.shields.io/github/followers/yasirarism?color=green&style=flat-square"></a>
+<a href="https://github.com/yasirarism/MissKatyPyro/stargazers/"><img title="Stars" src="https://img.shields.io/github/stars/yasirarism/MissKatyPyro?color=white&style=flat-square"></a>
+<a href="https://github.com/yasirarism/MissKatyPyro/network/members"><img title="Forks" src="https://img.shields.io/github/forks/yasirarism/MissKatyPyro?color=yellow&style=flat-square"></a>
+<a href="https://github.com/yasirarism/MissKatyPyro/watchers"><img title="Watching" src="https://img.shields.io/github/watchers/yasirarism/MissKatyPyro?label=Watchers&color=red&style=flat-square"></a>
+<a href="https://github.com/yasirarism/MissKatyPyro"><img title="Open Source" src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103"></a>
+<a href="https://github.com/yasirarism/MissKatyPyro/"><img title="Size" src="https://img.shields.io/github/repo-size/yasirarism/MissKatyPyro?style=flat-square&color=darkred"></a>
+<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fyasirarism%2FMissKatyPyro%2Fhit-counter&count_bg=%2379C83D&title_bg=%23555555&icon=probot.svg&icon_color=%2304FF00&title=hits&edge_flat=false"/></a>
+<a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-No-red.svg"></a>&nbsp;&nbsp;
+</p>
 <h1 align="center">
-  <p align="center"><img src="https://socialify.git.ci/yasirarism/MissKatyPyro/image?description=1&font=Raleway&forks=1&issues=1&language=1&logo=https%3A%2F%2Fi.ibb.co%2FPrNF7HY%2Fphoto-2022-12-02-22-04-51.jpg&name=1&owner=1&pulls=1&stargazers=1&theme=Dark" alt="Cover Image" width="650"></p>
   <p align="center"><b>MissKaty Bot based on Pyrogram</b></p>
 </h1>
 
 ## NOTES
-This repo has some small bugs and i dont have time to fix it. If you can help me, please open pull request (PR).
+If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me.
 
 ## Demo
 You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
 
 ## Features and Give Support
+
+| FEATURE MY BOT |🌱|
+| ------------- | ------------- |
+| Basic Admin Feature |✔️|
+| AFK Feature |✔️|
+| Downloader FB, TikTok and YT-DLP Support  |✔️|
+| MultiLanguage Support (Still Beta) |⚠️|
+| NightMode  |✔️|
+| ChatBot based on OpenAI |✔️|
+| MissKaty Mata |✔️|
+| Inline Search  |✔️|
+| Sticker Tools  |✔️|
+| PasteBin Tools  |✔️|
+| WebScraper (Pahe, MelongMovie, LK21, Terbit21, Kusonime, etc)  |✔️|
+| IMDB Search With Multi Language Per User |✔️|
+| GenSS From Media and MediaInfo Generator |✔️|
+| And Many More.. |✔️|
+
 * Please open this web https://yasirpedia.eu.org/ to know about me or support me.
 
 ## Variables
@@ -44,6 +80,7 @@ sudo docker run misskaty
 sudo docker ps
 ```
 sudo docker stop <pid>
+```
 
 #### Build And Run The Docker Image Using docker-compose
 
@@ -83,4 +120,5 @@ sudo docker-compose stop <pid>
 ## Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
 Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
-Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
+WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
+PERINGATAN: Dilarang memperjualbelikan script ini tanpa seijin pembuat script.
