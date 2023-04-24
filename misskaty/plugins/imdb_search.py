@@ -16,6 +16,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMedi
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
@@ -50,12 +51,17 @@ async def imdb_choose(self: Client, ctx: Message):
     )
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
-    await ctx.reply_photo(
+    msg = await ctx.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
         caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
         reply_markup=buttons,
         quote=True,
     )
+    try:
+        await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
+    except ListenerTimeout:
+        del LIST_CARI[ranval]
+        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
 
 
 @app.on_callback_query(filters.regex("^imdbset"))

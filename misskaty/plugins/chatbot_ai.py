@@ -1,5 +1,6 @@
 import openai
 import asyncio
+import html
 from aiohttp import ClientSession
 from pyrogram import filters, Client
 from pyrogram.types import Message
@@ -42,7 +43,7 @@ async def chatbot(self: Client, ctx: Message, strings):
         await msg.edit_msg(answer)
         await openai.aiosession.get().close()
     except MessageTooLong:
-        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", answer)
+        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", html.escape(answer))
         await msg.edit_msg(strings("answers_too_long").format(answerlink=answerlink), disable_web_page_preview=True)
     except Exception as err:
         await msg.edit_msg(f"ERROR: {str(err)}")

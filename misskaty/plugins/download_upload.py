@@ -23,10 +23,10 @@ __HELP__ = """
 /download [url] - Download file from URL (Sudo Only)
 /download [reply_to_TG_File] - Download TG File
 /tgraph_up [reply_to_TG_File] - Download TG File
-/tiktokdl [link] - Download TikTok Video
-/fbdl [link] - Download Facebook Video
-/anon [link] - Upload files to Anonfiles
-/ytdown [link] - Download YouTube dengan YT-DLP
+/tiktokdl [link] - Download TikTok Video, try use ytdown command if error.
+/fbdl [link] - Download Facebook Video.
+/anon [link] - Upload files to Anonfiles.
+/ytdown [YT-DLP Supported URL] - Downloading YT-DLP Supported Video and Audio.
 """
 
 
