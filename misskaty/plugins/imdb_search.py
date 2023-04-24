@@ -79,7 +79,14 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     if is_imdb:
         buttons.row(InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
-    await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+    msg = await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
+    try:
+        await msg.wait_for_click(
+            from_user_id=int(uid),
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
 
 
 @app.on_callback_query(filters.regex("^setimdb"))
@@ -88,6 +95,9 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
+    is_imdb, langset = await is_imdbset(query.from_user.id)
+    if langset == lang:
+        return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
     if lang == "eng":
         await add_imdbset(query.from_user.id, lang)
         await query.message.edit_caption("Language interface for IMDB has been changed to English.")
@@ -144,7 +154,13 @@ async def imdb_search_id(kueri, message):
             )
         )
         buttons.add(*BTN)
-        await k.edit_caption(msg, reply_markup=buttons)
+        msg = await k.edit_caption(msg, reply_markup=buttons)
+        await msg.wait_for_click(
+            from_user_id=message.from_user.id,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
     except Exception as err:
         await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
@@ -194,7 +210,13 @@ async def imdb_search_en(kueri, message):
             )
         )
         buttons.add(*BTN)
-        await k.edit_caption(msg, reply_markup=buttons)
+        msg = await k.edit_caption(msg, reply_markup=buttons)
+        await msg.wait_for_click(
+            from_user_id=message.from_user.id,
+            timeout=30
+        )
+    except ListenerTimeout:
+        await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
     except Exception as err:
         await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
