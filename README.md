@@ -78,7 +78,6 @@ sudo docker run misskaty
 - To stop the image:
 ```
 sudo docker ps
-```
 sudo docker stop <pid>
 ```
 
