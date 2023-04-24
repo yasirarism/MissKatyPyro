@@ -19,6 +19,14 @@ along with pyromod.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 
+class PyromodConfig:
+    timeout_handler = None
+    stopped_handler = None
+    throw_exceptions = True
+    unallowed_click_alert = True
+    unallowed_click_alert_text = "[misskaty] You're not authorized to click this button."
+
+
 def patch(obj):
     def is_patchable(item):
         return getattr(item[1], "patchable", False)
@@ -26,7 +34,8 @@ def patch(obj):
     def wrapper(container):
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(obj, name, None)
-            setattr(obj, f"old{name}", old)
+            if old is not None:  # Not adding 'old' to new func
+                setattr(obj, f"old{name}", old)
             setattr(obj, name, func)
         return container
 
