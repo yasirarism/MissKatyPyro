@@ -2,12 +2,15 @@ from logging import getLogger
 from re import compile as recompile
 from uuid import uuid4
 
-from iytdl import iYTDL, main
+from iytdl import iYTDL, main, Process
+from iytdl.exceptions import DownloadFailedError
+from iytdl.constants import YT_VID_URL
 from pyrogram import filters, Client
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
@@ -69,13 +72,19 @@ async def ytdownv2(self: Client, ctx: Message, strings):
     url = ctx.input
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
         try:
-            x = await ytdl.parse(url)
+            x = await ytdl.parse(url, extract=True)
             if x is None:
                 return await ctx.reply_msg(strings("err_parse"))
-            img = await get_ytthumb(x.key)
             caption = x.caption
             markup = x.buttons
-            await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+            photo = x.image_url
+            msg = await ctx.reply_photo(photo, caption=caption, reply_markup=markup, quote=True)
+            await msg.wait_for_click(
+                from_user_id=ctx.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Timeout. Task has been cancelled!")
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 

@@ -262,7 +262,13 @@ async def imdbcari(self: Client, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            await query.message.edit_caption(msg, reply_markup=buttons)
+            msg = await query.message.edit_caption(msg, reply_markup=buttons)
+            await msg.wait_for_click(
+                from_user_id=int(uid),
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
         except Exception as err:
             await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
@@ -301,7 +307,13 @@ async def imdbcari(self: Client, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            await query.message.edit_caption(msg, reply_markup=buttons)
+            msg = await query.message.edit_caption(msg, reply_markup=buttons)
+            await msg.wait_for_click(
+                from_user_id=int(uid),
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
         except Exception as err:
             await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
