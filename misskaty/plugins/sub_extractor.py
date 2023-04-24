@@ -108,7 +108,7 @@ async def ceksub(self: Client, ctx: Message, strings):
             timeout=30
         )
     except ListenerTimeout:
-        await msg.edit_msg("😶‍🌫️ Timeout. Task has been cancelled!")
+        await msg.edit_msg(strings("exp_task", context="general"))
     except Exception:
         await pesan.edit_msg(strings("fail_extr_media"))
 
