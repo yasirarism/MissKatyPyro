@@ -72,7 +72,7 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     msg = await sender(res, reply_markup=keyboard)
     try:
         await msg.wait_for_click(
-            from_user_id=ctx.from_user.id,
+            from_user_id=m.from_user.id,
             timeout=30
         )
     except ListenerTimeout:
