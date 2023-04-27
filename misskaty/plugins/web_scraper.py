@@ -692,7 +692,7 @@ async def samepg(client, query, strings):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, int(current_page), "page_same#{number}" + f"#{_id}#{query.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
-    await callback_query.message.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
+    await query.message.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
     
 
 # Terbit21 Page Callback
