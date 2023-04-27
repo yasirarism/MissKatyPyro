@@ -154,8 +154,13 @@ async def memify(client, message):
                 hapus(png)
             except:
                 pass
-        except:
-            await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
+        except Exception as err:
+            try:
+                hapus(webp)
+                hapus(png)
+            except:
+                pass
+            await message.reply(f"ERROR: {err}")
     else:
         await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
 
