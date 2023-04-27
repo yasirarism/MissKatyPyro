@@ -332,7 +332,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     
 # getData samehada
 async def getSame(msg, query, current_page, strings):
-    if not savedict.get(msg.id):
+    if not SCRAP_DICT.get(msg.id):
         cfse = cfscrape.CloudflareScraper()
         if query:
             data = cfse.get(f"https://samehadaku.cam/?s={query}", headers=headers)
@@ -349,12 +349,12 @@ async def getSame(msg, query, current_page, strings):
         if not sdata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None, 0
-        savedict[msg.id] = [split_arr(sdata, 10), query]
+        SCRAP_DICT[msg.id] = [split_arr(sdata, 10), query]
     try:
         index = int(current_page - 1)
-        PageLen = len(savedict[msg.id][0])
+        PageLen = len(SCRAP_DICT[msg.id][0])
         sameresult = ""
-        for c, i in enumerate(savedict[msg.id][0][index], start=1):
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             sameresult += f"<b>{c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
         IGNORE_CHAR = "[]"
         sameresult = "".join(i for i in sameresult if not i in IGNORE_CHAR)
