@@ -19,11 +19,11 @@
 </p>
 
 ## FRAMEWORK & TOOLS THAT USED IN THIS CODE
-🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)
-🌱 Python 3.11
-🌱 MongoDB as Database
-🌱 PyKeyboard for Building Pagination
-🌱 VS Code
+ 🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
+ 🌱 Python 3.11<br>
+ 🌱 MongoDB as Database<br>
+ 🌱 PyKeyboard for Building Pagination<br>
+ 🌱 VS Code<br>
 
 ## NOTES
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me.
