@@ -169,7 +169,7 @@ async def edit_or_send_as_file(self, text: str, del_in: int = 0, as_raw: bool = 
         return await reply_as_file(self, text=text, *args, **kwargs)
 
 
-async def reply_or_send_as_file(self, text: str, as_raw: bool = False, del_in: int = -1, *args, **kwargs) -> Union["Message", bool]:
+async def reply_or_send_as_file(self, text: str, as_raw: bool = False, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
     """\nThis will first try to message.reply.
     If it raise MessageTooLong error,
     run message.send_as_file.

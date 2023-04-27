@@ -7,39 +7,30 @@
 """
 import time
 import os
+import platform
 from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import filters, Client
+from pyrogram import filters, Client, __version__ as pyrover
 from pyrogram.types import Message
 
-from misskaty import app, botStartTime
+from misskaty import app, botStartTime, misskaty_version
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.http import http
-from .dev import shell_exec
 from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 @ratelimiter
 async def ping(self: Client, ctx: Message):
-    if os.path.exists(".git"):
-        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
-    else:
-        botVersion = "v2.49"
-    try:
-        serverinfo = await http.get("https://ipinfo.io/json")
-        org = serverinfo.json()["org"]
-    except:
-        org = "N/A"
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
     rm = await ctx.reply_msg("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
-    await rm.edit_msg(f"<b>🐈 MissKatyBot {botVersion} online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\nHosted by <code>{org}</code>")
+    await rm.edit_msg(f"<b>🐈 MissKatyBot {botVersion} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>")
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))

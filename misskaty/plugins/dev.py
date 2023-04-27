@@ -19,11 +19,11 @@ from psutil import cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory
 
-from pyrogram import enums, filters, Client
+from pyrogram import enums, filters, Client, __version__ as pyrover
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from pyrogram.raw.types import UpdateBotStopped
 
-from misskaty import app, user, botStartTime, BOT_NAME
+from misskaty import app, user, botStartTime, misskaty_version, BOT_NAME
 from misskaty.helper.http import http
 from misskaty.helper.eval_helper import meval, format_exception
 from misskaty.helper.localization import use_chat_lang
@@ -100,10 +100,6 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
-    if os.path.exists(".git"):
-        botVersion = (await shell_exec("git log -1 --date=format:v%y.%m%d.%H%M --pretty=format:%cd"))[0]
-    else:
-        botVersion = "v2.49"
     try:
         serverinfo = await http.get("https://ipinfo.io/json")
         org = serverinfo.json()["org"]
@@ -116,16 +112,18 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     free = get_readable_file_size(free)
     neofetch = (await shell_exec("neofetch --stdout"))[0]
     caption = f"""
-**{BOT_NAME} {botVersion} is Up and Running successfully.**
-<b>Bot Uptime:</b> `{currentTime}`
+<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>
+<b>Bot Uptime:</b> <code>{currentTime}</code>
+<b>Pyrogram Version</b>: <code>{pyrover}</code>
+<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>
 <b>Server:</b> <code>{org}</code>
-<b>Total Disk Space:</b> `{total}`
-<b>Used:</b> `{used}({disk_usage_percent("/").percent}%)`
-<b>Free:</b> `{free}`
-<b>CPU Usage:</b> `{cpu_percent()}%`
-<b>RAM Usage:</b> `{virtual_memory().percent}%`
+<b>Total Disk Space:</b> <code>{total}</code>
+<b>Used:</b> <code>{used}({disk_usage_percent("/").percent}%)</code>
+<b>Free:</b> <code>{free}</code>
+<b>CPU Usage:</b> <code>{cpu_percent()}%</code>
+<b>RAM Usage:</b> <code>{virtual_memory().percent}%</code>
 
-`{neofetch}`
+<code>{neofetch}</code>
 """
     await ctx.reply_msg(caption)
 
@@ -304,7 +302,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
-        await client.send_msg(LOG_CHANNEL, f"<a href='tg://user?id={user.id}'>{user.first_name}</a> ({user.id}) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
+        await client.send_msg(LOG_CHANNEL, f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
 
 async def aexec(code, c, m):
     exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))

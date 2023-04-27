@@ -481,7 +481,7 @@ async def lendrive_s(self: Client, ctx: Message, strings):
     kueri = ctx.input
     if not kueri:
         kueri = ""
-    pesan = await ctx.edit_msg(strings("get_data"), quote=True)
+    pesan = await ctx.reply_msg(strings("get_data"), quote=True)
     CurrentPage = 1
     lendres, PageLen, btn = await getDataLendrive(pesan, kueri, CurrentPage, ctx.from_user.id, strings)
     if not lendres:

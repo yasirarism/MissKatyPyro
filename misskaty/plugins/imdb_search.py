@@ -443,8 +443,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
-    await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
     try:
+        await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
         url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await http.get(url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")

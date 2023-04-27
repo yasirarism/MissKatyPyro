@@ -11,6 +11,7 @@ from motor import version as mongover
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
+from pyrogram.errors import MessageIdInvalid, MessageNotModified
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -541,8 +542,8 @@ async def destroy_msg(_, c_q):
 async def imdb_inl(_, query):
     i, user, movie = query.data.split("#")
     if user == f"{query.from_user.id}":
-        await query.edit_message_caption("⏳ <i>Permintaan kamu sedang diproses.. </i>")
         try:
+            await query.edit_message_caption("⏳ <i>Permintaan kamu sedang diproses.. </i>")
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
@@ -649,6 +650,8 @@ async def imdb_inl(_, query):
                     ]
                 )
             await query.edit_message_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
+        except (MessageNotModified, MessageIdInvalid):
+            pass
         except Exception:
             exc = traceback.format_exc()
             await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
