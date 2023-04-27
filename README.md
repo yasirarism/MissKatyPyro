@@ -18,7 +18,7 @@
 <a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-Yes-green.svg"></a>&nbsp;&nbsp;
 </p>
 <h1 align="center">
-  <p align="center"><b>MissKaty Bot based on Pyrogram</b></p>
+  <p align="center"><b>MissKaty Bot based on Pyrogram v2 with Python v3.11 Support</b></p>
 </h1>
 
 ## NOTES
