@@ -371,11 +371,11 @@ async def getSame(msg, query, current_page, strings):
 async def same_search(client, msg, strings):
     query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
     bmsg = await msg.reply_msg(strings("get_data"), quote=True)
-    sameres, PageLen = await getSame(bmsg, query, 1)
+    sameres, PageLen = await getSame(bmsg, query, 1, strings)
     if not sameres:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, 1, "samepg#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
+    keyboard.paginate(PageLen, 1, "page_same#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
     await bmsg.edit_msg(sameres, reply_markup=keyboard)
     
@@ -674,7 +674,7 @@ async def moviekupage_callback(client, callback_query, strings):
 
 
 # Samehada Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "pagesame#" in query.data))
+@app.on_callback_query(filters.create(lambda _, __, query: "page_same#" in query.data))
 @ratelimiter
 @use_chat_lang()
 async def samepg(client, query, strings):
@@ -686,11 +686,11 @@ async def samepg(client, query, strings):
     except KeyError:
         return await query.answer(strings("invalid_cb"))
     try:
-        sameres, PageLen = await getSame(query.message, lquery, int(current_page))
+        sameres, PageLen = await getSame(query.message, lquery, int(current_page), strings)
     except TypeError:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, int(current_page), "pagesame#{number}" + f"#{_id}#{query.from_user.id}")
+    keyboard.paginate(PageLen, int(current_page), "page_same#{number}" + f"#{_id}#{query.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
     await callback_query.message.edit_msg(sameres, reply_markup=keyboard)
     
