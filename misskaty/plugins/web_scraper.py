@@ -6,6 +6,7 @@
 """
 import re
 import logging
+import cfscrape
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters, Client
@@ -29,6 +30,7 @@ __HELP__ = """
 /kusonime [query <optional>] - Scrape website data from Kusonime
 /lendrive [query <optional>] - Scrape website data from Lendrive
 /gomov [query <optional>] - Scrape website data from GoMov.
+/samehadaku [query <optional>] - Scrape website data from Samehadaku.
 """
 
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
@@ -326,7 +328,57 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
+    
+    
+# getData samehada
+async def getSame(msg, query, current_page, strings):
+    if not savedict.get(msg.id):
+        cfse = cfscrape.CloudflareScraper()
+        if query:
+            data = cfse.get(f"https://samehadaku.cam/?s={query}", headers=headers)
+        else:
+            data = cfse.get("https://samehadaku.cam/", headers=headers)
+        res = BeautifulSoup(data.text, "lxml").find_all(class_="animposx")
+        sdata = []
+        for i in res:
+            url = i.find("a")["href"]
+            title = i.find("a")["title"]
+            sta = i.find(class_="type TV").text if i.find(class_="type TV") else "Ongoing"
+            rate = i.find(class_="score")
+            sdata.append({"url": url, "title": title, "sta": sta, "rate": rate})
+        if not sdata:
+            await msg.edit_msg(strings("no_result"), del_in=5)
+            return None, None, 0
+        savedict[msg.id] = [split_arr(sdata, 10), query]
+    try:
+        index = int(current_page - 1)
+        PageLen = len(savedict[msg.id][0])
+        sameresult = ""
+        for c, i in enumerate(savedict[msg.id][0][index], start=1):
+            sameresult += f"<b>{c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
+        IGNORE_CHAR = "[]"
+        sameresult = "".join(i for i in sameresult if not i in IGNORE_CHAR)
+        return sameresult, PageLen
+    except (IndexError, KeyError):
+        await msg.edit_msg(strings("no_result"), del_in=5)
+        return None, None
 
+
+# SameHada CMD
+@app.on_message(filters.command(["samehadaku"], COMMAND_HANDLER))
+@ratelimiter
+@use_chat_lang()
+async def same_search(client, msg, strings):
+    query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
+    bmsg = await sendMsgPyro(msg, strings("get_data"), True)
+    sameres, PageLen = await getSame(bmsg, query, 1)
+    if not sameres:
+        return
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, 1, "samepg#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
+    await editMsgPyro(bmsg, sameres, reply_markup=keyboard)
+    
 
 # Terbit21 CMD
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
@@ -608,7 +660,7 @@ async def moviekupage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.answer(strings("invalid_cb"), True)
 
     try:
         moviekures, PageLen = await getDataMovieku(callback_query.message, kueri, CurrentPage, strings)
@@ -620,6 +672,28 @@ async def moviekupage_callback(client, callback_query, strings):
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     await callback_query.message.edit_msg(moviekures, disable_web_page_preview=True, reply_markup=keyboard)
 
+
+# Samehada Page Callback
+@app.on_callback_query(filters.create(lambda _, __, query: "pagesame#" in query.data))
+@ratelimiter
+@use_chat_lang()
+async def samepg(client, query, strings):
+    _, current_page, _id, user_id = query.data.split("#")
+    if int(user_id) != query.from_user.id:
+        return await query.answer(strings("unauth"), True)
+    try:
+        lquery = savedict[int(_id)][1]
+    except KeyError:
+        return await query.answer(strings("invalid_cb"))
+    try:
+        sameres, PageLen = await getSame(query.message, lquery, int(current_page))
+    except TypeError:
+        return
+    keyboard = InlineKeyboard()
+    keyboard.paginate(PageLen, int(current_page), "pagesame#{number}" + f"#{_id}#{query.from_user.id}")
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
+    await callback_query.message.edit_msg(sameres, reply_markup=keyboard)
+    
 
 # Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_terbit21#" in query.data))
