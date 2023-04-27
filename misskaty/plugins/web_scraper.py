@@ -377,7 +377,7 @@ async def same_search(client, msg, strings):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, 1, "page_same#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
-    await bmsg.edit_msg(sameres, reply_markup=keyboard)
+    await bmsg.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
     
 
 # Terbit21 CMD
@@ -396,7 +396,7 @@ async def terbit21_s(client, message, strings):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, CurrentPage, "page_terbit21#{number}" + f"#{pesan.id}#{message.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit_msg(terbitres, reply_markup=keyboard)
+    await pesan.edit_msg(terbitres, disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # LK21 CMD
@@ -682,7 +682,7 @@ async def samepg(client, query, strings):
     if int(user_id) != query.from_user.id:
         return await query.answer(strings("unauth"), True)
     try:
-        lquery = savedict[int(_id)][1]
+        lquery = SCRAP_DICT[int(_id)][1]
     except KeyError:
         return await query.answer(strings("invalid_cb"))
     try:
@@ -692,7 +692,7 @@ async def samepg(client, query, strings):
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, int(current_page), "page_same#{number}" + f"#{_id}#{query.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
-    await callback_query.message.edit_msg(sameres, reply_markup=keyboard)
+    await callback_query.message.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
     
 
 # Terbit21 Page Callback
