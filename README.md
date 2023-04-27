@@ -17,9 +17,13 @@
 <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fyasirarism%2FMissKatyPyro%2Fhit-counter&count_bg=%2379C83D&title_bg=%23555555&icon=probot.svg&icon_color=%2304FF00&title=hits&edge_flat=false"/></a>
 <a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-Yes-green.svg"></a>&nbsp;&nbsp;
 </p>
-<h1 align="center">
-  <p align="center"><b>MissKaty Bot based on Pyrogram v2 with Python v3.11 Support</b></p>
-</h1>
+
+## FRAMEWORK & TOOLS THAT USED IN THIS CODE
+🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)
+🌱 Python 3.11
+🌱 MongoDB as Database
+🌱 PyKeyboard for Building Pagination
+🌱 VS Code
 
 ## NOTES
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me.
