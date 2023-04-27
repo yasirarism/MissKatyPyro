@@ -370,14 +370,14 @@ async def getSame(msg, query, current_page, strings):
 @use_chat_lang()
 async def same_search(client, msg, strings):
     query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
-    bmsg = await sendMsgPyro(msg, strings("get_data"), True)
+    bmsg = await msg.reply_msg(strings("get_data"), True)
     sameres, PageLen = await getSame(bmsg, query, 1)
     if not sameres:
         return
     keyboard = InlineKeyboard()
     keyboard.paginate(PageLen, 1, "samepg#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
-    await editMsgPyro(bmsg, sameres, reply_markup=keyboard)
+    await bmsg.edit_msg(sameres, reply_markup=keyboard)
     
 
 # Terbit21 CMD
