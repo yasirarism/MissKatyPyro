@@ -31,7 +31,7 @@ async def urbanDictionary(self: Client, ctx: Message):
     chat_id = ctx.chat.id
     GetWord = " ".join(ctx.command[1:])
     if not GetWord:
-        message = await ctx.chat.ask("Now give any word for query!", identifier=(ctx.from_user.id, ctx.from_user.id, None))
+        message = await ctx.chat.ask("Now give any word for query!")
         GetWord = message.text
 
     CurrentPage = 1
