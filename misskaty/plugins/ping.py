@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -30,7 +29,7 @@ async def ping(self: Client, ctx: Message):
     rm = await ctx.reply_msg("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
-    await rm.edit_msg(f"<b>🐈 MissKatyBot {botVersion} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>")
+    await rm.edit_msg(f"<b>🐈 MissKatyBot {misskaty_version} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>")
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))
