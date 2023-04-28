@@ -1,7 +1,7 @@
 {
     "no_channel": "Fitur iki ora didhukung kanggo channel.",
-    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana ing {tm}\n\n",
-    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana {tm}\n\n**Alesan:** `{reas}`\n\n",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana suwene {tm}\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana suwene {tm}\n\n**Alesan:** `{reas}`\n\n",
     "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] iku AFK wiwit {tm} kepungkur.\n\n",
     "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] iku AFK wiwit {tm} kepungkur.\n\n**Alesan:** {reas}\n\n" ,
     "is_online": "**{usr}** [<code>{id}</code>] wis online maneh",
