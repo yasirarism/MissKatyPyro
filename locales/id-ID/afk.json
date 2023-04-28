@@ -1,7 +1,7 @@
 {
     "no_channel": "Fitur ini tidak didukung untuk channel.",
-    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] kembali online dan pergi selama {tm}\n\n",
-    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] kembali online dan pergi untuk {tm}\n\n**Alasan:** `{reas}`\n\n",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] kembali online dan telah AFK selama {tm}\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] kembali online dan telah AFK selama {tm}\n\n**Alasan:** `{reas}`\n\n",
     "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] telah AFK sejak {tm} yang lalu.\n\n",
     "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] telah AFK sejak {tm} yang lalu.\n\n**Alasan:** {reas}\n\n" ,
     "is_online": "**{usr}** [<code>{id}</code>] kembali online",
