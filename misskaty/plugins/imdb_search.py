@@ -317,7 +317,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     timeout=30
                 )
             except ListenerTimeout:
-                return await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
         except Exception as err:
             await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
