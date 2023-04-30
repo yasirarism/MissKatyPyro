@@ -25,10 +25,10 @@ async def currency(self: Client, ctx: Message):
         return await ctx.reply_msg(f"Use format /{ctx.command[0]} [amount] [currency_from] [currency_to] to convert currency.", del_in=6)
 
     teks = ctx.text.split()
-    amount = int(teks[1])
+    amount = teks[1]
     currency_from = teks[2]
     currency_to = teks[3]
-    if isinstance(amount, (int, float)):
+    if amount.isdigit() or (amount.replace('.','',1).isdigit() and amount.count('.') < 2):
         url = f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/" f"pair/{currency_from}/{currency_to}/{amount}"
         try:
             res = await http.get(url)
