@@ -43,6 +43,6 @@ async def currency(self: Client, ctx: Message):
                 return await ctx.reply_msg("<code>Invalid response from api !</i>")
             await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{format(amount, ',')}` **{base_code}** = `{format(conversion_result, ',')}` **{target_code}**\n<b>Rate Today</b> = `{format(conversion_rate, ',')}`\n<b>Last Update:</b> {last_update}")
         except Exception as err:
-            await ctx.reply_msg("Failed convert currency, maybe you give wrong currency format or api down.")
+            await ctx.reply_msg(f"Failed convert currency, maybe you give wrong currency format or api down.\n\n<b>ERROR</b>: {err}")
     else:
         await ctx.reply_msg("<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")
