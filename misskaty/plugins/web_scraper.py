@@ -348,7 +348,7 @@ async def getSame(msg, query, current_page, strings):
             sdata.append({"url": url, "title": title, "sta": sta, "rate": rate})
         if not sdata:
             await msg.edit_msg(strings("no_result"), del_in=5)
-            return None, None, 0
+            return None, None
         SCRAP_DICT[msg.id] = [split_arr(sdata, 10), query]
     try:
         index = int(current_page - 1)
@@ -478,7 +478,10 @@ async def melong_s(client, message, strings):
     keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit_msg(melongres, disable_web_page_preview=True, reply_markup=keyboard)
+    try:
+        await pesan.edit_msg(melongres, disable_web_page_preview=True, reply_markup=keyboard)
+    except Exception as err:
+        await pesan.edit_msg(f"<b>ERROR:</b> {err}", disable_web_page_preview=True, reply_markup=keyboard)
 
 
 # Savefilm21 CMD
@@ -881,10 +884,9 @@ async def savefilm21_scrap(_, callback_query, strings):
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+        await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
-        return
-    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard)
 
 
 # Scrape Link Download Movieku.CC
@@ -920,7 +922,7 @@ async def muviku_scrap(_, message, strings):
 @use_chat_lang()
 async def melong_scrap(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("uauth"), True)
+        return await callback_query.answer(strings("unauth"), True)
     idlink = int(callback_query.data.split("#")[2])
     message_id = int(callback_query.data.split("#")[4])
     CurrentPage = int(callback_query.data.split("#")[1])
@@ -939,10 +941,9 @@ async def melong_scrap(_, callback_query, strings):
             hardsub = ep.findPrevious("div")
             softsub = ep.findNext("div")
             rep += f"{hardsub}\n{softsub}"
+        await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
-        return
-    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard)
 
 
 # Scrape DDL Link Gomov
@@ -971,10 +972,9 @@ async def gomov_dl(_, callback_query, strings):
             title = i.find("a").text
             link = i.find("a")["href"]
             hasil += f"\n{title}\n{link}\n"
+        await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
-        return
-    await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard)
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "lendriveextract#" in query.data))

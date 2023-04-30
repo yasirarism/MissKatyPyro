@@ -151,7 +151,10 @@ async def command_karma(_, message):
             )
         if not karma_dicc:
             return await m.edit("No karma in DB for this chat.")
-        userdb = await get_user_id_and_usernames(app)
+        try:
+            userdb = await get_user_id_and_usernames(app)
+        except AttributeError:
+            return
         karma = {}
         for user_idd, karma_count in karma_arranged.items():
             if limit > 15:

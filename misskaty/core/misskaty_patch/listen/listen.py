@@ -19,6 +19,7 @@ import pyrogram
 
 from inspect import iscoroutinefunction
 from typing import Optional, Callable, Union
+from pyrogram.errors import QueryIdInvalid
 from enum import Enum
 
 from ..utils import patch, patchable, PyromodConfig
@@ -268,7 +269,10 @@ class CallbackQueryHandler:
 
             if (permissive_listener and not listener) and permissive_listener["unallowed_click_alert"]:
                 alert = permissive_listener["unallowed_click_alert"] if type(permissive_listener["unallowed_click_alert"]) == str else PyromodConfig.unallowed_click_alert_text
-                await query.answer(alert)
+                try:
+                    await query.answer(alert)
+                except QueryIdInvalid:
+                    return False
                 return False
 
         filters = listener["filters"] if listener else self.filters

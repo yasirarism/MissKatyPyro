@@ -1,4 +1,5 @@
 import re
+import platform
 from datetime import datetime, timedelta
 
 import pytz
@@ -177,4 +178,4 @@ async def nightmode_handler(c, msg, strings):
 @ratelimiter
 @use_chat_lang()
 async def callbackanightmd(c, q, strings):
-    await q.answer(strings("nmd_cb").format(bname=c.me.first_name, ver=__version__), show_alert=True)
+    await q.answer(strings("nmd_cb").format(bname=c.me.first_name, ver=__version__, pyver=platform.python_version()), show_alert=True)

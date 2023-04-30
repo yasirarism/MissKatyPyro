@@ -5,7 +5,7 @@
     "invalid_lockdur": "Suwene wektu ora bener. Gunakake format sing bener.\nConto: 6h (6 jam), 10m kanggo 10 menit.",
     "schedule_already_on": "Wis ana jadwal ing obrolan iki. Pateni nganggo gendéra `-d`.",
     "nmd_enable_success": "Kasil ngaktifake mode wengi ing obrolan iki.\nGrup bakal dikunci ing {st} lan bakal dibukak sawise {lockdur} saben dina.",
-    "nmd_cb": "🔖 Hai, Aku {bname} digawe nganggo Framework Pyrogram v{ver} lan Python 3.10.\n\nMau gawe bot kaya iki? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+    "nmd_cb": "🔖 Hai, Aku {bname} digawe nganggo Framework Pyrogram v{ver} lan Python v{pyver}.\n\nMau gawe bot kaya iki? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
     "nmd_off_not_admin": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} dudu admin ing chat `{chat_id}`",
     "nmd_off_not_present": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} ora ana ing chat `{chat_id}`. Dibusak grup saka dhaptar.",
     "nmd_off_err": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`\nERROR: `{e}`",

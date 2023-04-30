@@ -41,8 +41,8 @@ async def currency(self: Client, ctx: Message):
                 last_update = data["time_last_update_utc"]
             except KeyError:
                 return await ctx.reply_msg("<code>Invalid response from api !</i>")
-            await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{amount}` **{base_code}** = `{round(conversion_result)}` **{target_code}**\n<b>Rate Today</b> = `{round(conversion_rate)}`\n<b>Last Update:</b> {last_update}")
-        except:
+            await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{format(amount, ",")}` **{base_code}** = `{format(conversion_result, ",")}` **{target_code}**\n<b>Rate Today</b> = `{format(conversion_rate, ",")}`\n<b>Last Update:</b> {last_update}")
+        except Exception as err:
             await ctx.reply_msg("Failed convert currency, maybe you give wrong currency format or api down.")
     else:
         await ctx.reply_msg("<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")
