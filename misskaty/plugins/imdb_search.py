@@ -155,14 +155,15 @@ async def imdb_search_id(kueri, message):
         )
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
-        await msg.wait_for_click(
-            from_user_id=message.from_user.id,
-            timeout=30
-        )
-    except ListenerTimeout:
-        await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+        try:
+            await msg.wait_for_click(
+                from_user_id=message.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
     except Exception as err:
-        await msg.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 async def imdb_search_en(kueri, message):
@@ -211,14 +212,15 @@ async def imdb_search_en(kueri, message):
         )
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
-        await msg.wait_for_click(
-            from_user_id=message.from_user.id,
-            timeout=30
-        )
-    except ListenerTimeout:
-        await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+        try:
+            await msg.wait_for_click(
+                from_user_id=message.from_user.id,
+                timeout=30
+            )
+        except ListenerTimeout:
+            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
     except Exception as err:
-        await msg.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
+        await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbcari"))
@@ -263,14 +265,15 @@ async def imdbcari(self: Client, query: CallbackQuery):
             )
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
-            await msg.wait_for_click(
-                from_user_id=int(uid),
-                timeout=30
-            )
-        except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            try:
+                await msg.wait_for_click(
+                    from_user_id=int(uid),
+                    timeout=30
+                )
+            except ListenerTimeout:
+                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
         except Exception as err:
-            await msg.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
+            await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
         if query.from_user.id != int(uid):
             return await query.answer("⚠️ Access Denied!", True)
@@ -308,14 +311,15 @@ async def imdbcari(self: Client, query: CallbackQuery):
             )
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
-            await msg.wait_for_click(
-                from_user_id=int(uid),
-                timeout=30
-            )
-        except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            try:
+                await msg.wait_for_click(
+                    from_user_id=int(uid),
+                    timeout=30
+                )
+            except ListenerTimeout:
+                return await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
         except Exception as err:
-            await msg.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
+            await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))

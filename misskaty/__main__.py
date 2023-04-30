@@ -81,7 +81,7 @@ if __name__ == "__main__":
         pass
     except Exception:
         err = traceback.format_exc()
-        print(err)
+        LOGGER.info(err)
     finally:
         loop.stop()
-        print("------------------------ Stopped Services ------------------------")
+        LOGGER.info("------------------------ Stopped Services ------------------------")
