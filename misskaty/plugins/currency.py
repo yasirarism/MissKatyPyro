@@ -25,7 +25,7 @@ async def currency(self: Client, ctx: Message):
         return await ctx.reply_msg(f"Use format /{ctx.command[0]} [amount] [currency_from] [currency_to] to convert currency.", del_in=6)
 
     teks = ctx.text.split()
-    amount = teks[1]
+    amount = int(teks[1])
     currency_from = teks[2]
     currency_to = teks[3]
     if isinstance(amount, (int, float)):
@@ -41,7 +41,7 @@ async def currency(self: Client, ctx: Message):
                 last_update = data["time_last_update_utc"]
             except KeyError:
                 return await ctx.reply_msg("<code>Invalid response from api !</i>")
-            await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{format(int(amount), ',')}` **{base_code}** = `{format(int(conversion_result), ',')}` **{target_code}**\n<b>Rate Today</b> = `{format(int(conversion_rate), ',')}`\n<b>Last Update:</b> {last_update}")
+            await ctx.reply_msg(f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{format(amount, ',')}` **{base_code}** = `{format(conversion_result, ',')}` **{target_code}**\n<b>Rate Today</b> = `{format(conversion_rate, ',')}`\n<b>Last Update:</b> {last_update}")
         except Exception as err:
             await ctx.reply_msg(f"Failed convert currency, maybe you give wrong currency format or api down.\n\n<b>ERROR</b>: {err}")
     else:
