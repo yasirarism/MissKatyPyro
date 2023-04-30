@@ -28,7 +28,7 @@ async def currency(self: Client, ctx: Message):
     amount = teks[1]
     currency_from = teks[2]
     currency_to = teks[3]
-    if amount.isdigit():
+    if amount.isdigit() or amount.isdecimal():
         url = f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/" f"pair/{currency_from}/{currency_to}/{amount}"
         try:
             res = await http.get(url)
