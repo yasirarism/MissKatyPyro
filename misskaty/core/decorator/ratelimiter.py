@@ -4,6 +4,7 @@ from ..ratelimiter_func import RateLimiter
 from typing import Callable, Union
 from pyrogram import Client
 from pyrogram.types import CallbackQuery, Message
+from pyrogram.errors import QueryIdInvalid
 
 ratelimit = RateLimiter()
 # storing spammy user in cache for 1minute before allowing them to use commands again.
