@@ -25,7 +25,7 @@ async def currency(self: Client, ctx: Message):
         return await ctx.reply_msg(f"Use format /{ctx.command[0]} [amount] [currency_from] [currency_to] to convert currency.", del_in=6)
 
     teks = ctx.text.split()
-    amount = teks[1]
+    amount = int(teks[1])
     currency_from = teks[2]
     currency_to = teks[3]
     if amount.isdigit() or amount.isdecimal():
