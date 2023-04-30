@@ -28,7 +28,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.04.27 - Stable"
+misskaty_version = "v2.04.30 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
 mongo = AsyncIOMotorClient(DATABASE_URI)
