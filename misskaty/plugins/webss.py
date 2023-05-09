@@ -33,6 +33,6 @@ async def take_ss(self: Client, ctx: Message, strings):
         downloader.start(blocking=True)
         await gather(*[ctx.reply_document(download_file_path), ctx.reply_photo(download_file_path, caption=strings("str_credit"))])
         await msg.delete_msg()
-        await os.remove(download_file_path)
+        os.remove(download_file_path)
     except Exception as e:
         await msg.edit_msg(strings("ss_failed_str").format(err=str(e)))
