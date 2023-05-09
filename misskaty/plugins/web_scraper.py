@@ -40,7 +40,7 @@ SCRAP_DICT = {}
 data_kuso = {}
 
 web = {
-    "yasirapi": "https://yasirapi.eu.org"
+    "yasirapi": "https://yasirapi.eu.org",
     "pahe": "https://pahe.li",
     "savefilm21": "https://savefilm21.store",
     "melongmovie": "http://146.190.193.128",
