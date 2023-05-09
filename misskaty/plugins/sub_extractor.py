@@ -119,16 +119,18 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if not reply and reply.document and (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
+    if not reply and not reply.document and not (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
         return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=5)
     msg = await ctx.reply_msg(strings("convert_str"), quote=True)
-    dl = await reply.download()
+    if not os.path.exists("downloads"):
+        os.makedirs("downloads")
+    dl = await reply.download(file_name="downloads/")
     filename = dl.split("/", 3)[3]
-    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name} [{ctx.from_user.id}]")
-    (await shell_exec(f"mediaextract -i '{dl}' '{filename}.srt'"))[0]
+    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
+    (await shell_exec(f"mediaextract -i '{dl}' 'downloads/{filename}.srt'"))[0]
     c_time = time()
     await ctx.reply_document(
-        f"{filename}.srt",
+        f"downloads/{filename}.srt",
         caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
         thumb="assets/thumb.jpg",
         progress=progress_for_pyrogram,
@@ -137,7 +139,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
     await msg.delete_msg()
     try:
         os.remove(dl)
-        os.remove(f"{filename}.srt")
+        os.remove(f"downloads/{filename}.srt")
     except:
         pass
 

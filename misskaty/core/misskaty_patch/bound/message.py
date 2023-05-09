@@ -65,7 +65,7 @@ async def reply_text(self: Message, text: str, as_raw: bool = False, del_in: int
         if del_in == 0:
             return msg
         await asleep(del_in)
-        return bool(await msg.delete())
+        return bool(await msg.delete_msg())
     except FloodWait as e:
         await asleep(e.value)
         return await reply_text(self, text, *args, **kwargs)
@@ -105,7 +105,7 @@ async def edit_text(self, text: str, del_in: int = 0, *args, **kwargs) -> Union[
         if del_in == 0:
             return msg
         await asleep(del_in)
-        return bool(await msg.delete())
+        return bool(await msg.delete_msg())
     except FloodWait as e:
         LOGGER.warning(str(e))
         await asleep(e.value)
@@ -116,7 +116,7 @@ async def edit_text(self, text: str, del_in: int = 0, *args, **kwargs) -> Union[
         LOGGER.info(f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
         return await self.chat.leave()
     except (MessageAuthorRequired, MessageIdInvalid):
-        return await reply_text(text=text, *args, **kwargs)
+        return await reply_text(self, text=text, *args, **kwargs)
 
 
 async def edit_or_send_as_file(self, text: str, del_in: int = 0, as_raw: bool = False, *args, **kwargs) -> Union["Message", bool]:
@@ -164,7 +164,7 @@ async def edit_or_send_as_file(self, text: str, del_in: int = 0, as_raw: bool = 
         if del_in == 0:
             return msg
         await asleep(del_in)
-        return bool(await msg.delete())
+        return bool(await msg.delete_msg())
     except (MessageTooLong, OSError):
         return await reply_as_file(self, text=text, *args, **kwargs)
 

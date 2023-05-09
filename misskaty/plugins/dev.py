@@ -166,7 +166,7 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
         if not ctx.from_user.is_self:
             await msg.delete_msg()
     else:
-        await ctx.reply(strings("no_reply"), del_in=5)
+        await ctx.reply_msg(strings("no_reply"), del_in=5)
 
 
 @app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))

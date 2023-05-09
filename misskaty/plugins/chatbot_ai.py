@@ -21,8 +21,9 @@ openai.api_key = OPENAI_API
 async def chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
-    is_in_gap, sleep_time = await check_time_gap(ctx.from_user.id or ctx.sender_chat.id)
-    if is_in_gap and (ctx.from_user.id or ctx.sender_chat.id not in SUDO):
+    uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
+    is_in_gap, sleep_time = await check_time_gap(uid)
+    if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     openai.aiosession.set(ClientSession())
     pertanyaan = ctx.input
@@ -41,9 +42,9 @@ async def chatbot(self: Client, ctx: Message, strings):
                 await asyncio.sleep(1.5)
                 num = 0
         await msg.edit_msg(answer)
-        await openai.aiosession.get().close()
     except MessageTooLong:
         answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", html.escape(answer))
         await msg.edit_msg(strings("answers_too_long").format(answerlink=answerlink), disable_web_page_preview=True)
     except Exception as err:
         await msg.edit_msg(f"ERROR: {str(err)}")
+    await openai.aiosession.get().close()

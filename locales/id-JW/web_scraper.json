@@ -13,6 +13,8 @@
     "res_scrape": "<b>Asil scrape saka</b> <kode>{link}</code>:\n\n{kl}",
     "header_with_query": "<b>Asil Nggoleki #{web} Kanggo:</b> <code>{kueri}</code>\n\n",
     "header_no_query": "<b>#{web} Paling anyar:</b>\n🌀 Gunakake /{cmd} [judhul] kanggo miwiti nggoleki kanthi judhul.\n\n",
-    "invalid_cmd_scrape": "Gunakake prentah /{cmd} <b>[pranala]</b> kanggo ngunduh pranala kethokan",
+    "invalid_cmd_scrape": "Gunakake prentah /{cmd} <b>[link]</b> kanggo ngunduh pranala kethokan",
+    "err_getweb": "ERROR: Gagal njupuk data saka web amarga {err}.",
+    "err_getapi": "ERROR: Gagal njupuk data saka API",
     "unsupport_dl_btn": "Sawetara asil ora bakal katon ing tombol ekstrak amarga pranala ora didhukung."
 }

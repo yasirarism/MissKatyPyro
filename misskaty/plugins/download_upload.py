@@ -85,7 +85,7 @@ async def download(client, message):
             url = url.strip()
             custom_file_name = custom_file_name.strip()
         download_file_path = os.path.join("downloads/", custom_file_name)
-        downloader = SmartDL(url, download_file_path, progress_bar=False)
+        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
         downloader.start(blocking=False)
         c_time = time.time()
         while not downloader.isFinished():
@@ -159,7 +159,7 @@ async def fbdl(client, message):
             url = resjson["result"]["links"]["hd"].replace("&amp;", "&")
         except:
             url = resjson["result"]["links"]["sd"].replace("&amp;", "&")
-        obj = SmartDL(url, progress_bar=False)
+        obj = SmartDL(url, progress_bar=False, timeout=10)
         obj.start()
         path = obj.get_dest()
         await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]", thumb="assets/thumb.jpg")

@@ -13,6 +13,8 @@
     "res_scrape": "<b>Scrape result from</b> <code>{link}</code>:\n\n{kl}",
     "header_with_query": "<b>#{web} Results For:</b> <code>{kueri}</code>\n\n",
     "header_no_query": "<b>#{web} Latest:</b>\n🌀 Use /{cmd} [title] to start search with title.\n\n",
-    "invalid_cmd_scrape": "Gunakan command /{cmd} <b>[link]</b> untuk scrap link download",
+    "invalid_cmd_scrape": "Use command /{cmd} <b>[link]</b> to scrape download link.",
+    "err_getweb": "ERROR: Failed getting data from web because {err}.",
+    "err_getapi": "ERROR: Failed getting data from API",
     "unsupport_dl_btn": "Some result will not appear in extract button because unsupported link."
 }
