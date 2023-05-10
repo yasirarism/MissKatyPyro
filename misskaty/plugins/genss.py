@@ -13,6 +13,7 @@ from logging import getLogger
 
 from pyrogram import enums, filters, Client
 from pyrogram.errors import FloodWait
+from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
@@ -62,10 +63,11 @@ async def genss(self: Client, ctx: Message, strings):
         if media.file_size > 2097152000:
             return await process.edit_msg(strings("limit_dl"))
         c_time = time.time()
+        dc_id = FileId.decode(media.file_id).dc_id
         dl = await replied.download(
             file_name="/downloads/",
             progress=progress_for_pyrogram,
-            progress_args=(strings("dl_progress"), process, c_time),
+            progress_args=(strings("dl_progress"), process, c_time, dc_id),
         )
         the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:

@@ -11,6 +11,7 @@ import time
 from os import remove as osremove, path
 
 from pyrogram import filters, Client
+from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
@@ -36,10 +37,11 @@ async def mediainfo(self: Client, ctx: Message, strings):
         if (ctx.reply_to_message.video and ctx.reply_to_message.video.file_size > 2097152000) or (ctx.reply_to_message.document and ctx.reply_to_message.document.file_size > 2097152000):
             return await process.edit_msg(strings("dl_limit_exceeded"), del_in=6)
         c_time = time.time()
+        dc_id = FileId.decode(file_info.file_id).dc_id
         dl = await ctx.reply_to_message.download(
             file_name="/downloads/",
             progress=progress_for_pyrogram,
-            progress_args=(strings("dl_args_text"), process, c_time),
+            progress_args=(strings("dl_args_text"), process, c_time, dc_id),
         )
         file_path = path.join("/downloads/", path.basename(dl))
         output_ = await runcmd(f'mediainfo "{file_path}"')

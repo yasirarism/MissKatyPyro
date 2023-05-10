@@ -3,7 +3,6 @@
     "conv_sub_help": "Use command /{cmd} by reply to .ass or .vtt file, to convert subtitle from .ass or .vtt to srt.",
     "progress_str": "⏳ Processing your request..",
     "convert_str": "⏳ Converting...",
-    "val_sec": " second",
     "unauth_cb": "⚠️ Access Denied!",
     "cancel_btn": "❌ Cancel",
     "invalid_cb": "⚠️ DONT DELETE YOUR MESSAGE!",

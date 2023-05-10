@@ -6,6 +6,7 @@ from datetime import datetime
 from logging import getLogger
 
 from pyrogram import filters
+from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pySmartDL import SmartDL
 
@@ -35,16 +36,16 @@ __HELP__ = """
 async def upload(bot, message):
     if not message.reply_to_message:
         return await message.reply("Please reply to media file.")
-    if message.reply_to_message is not None:
-        vid = [message.reply_to_message.video, message.reply_to_message.document]
-        for v in vid:
-            if v is not None:
-                break
+    vid = [message.reply_to_message.video, message.reply_to_message.document, message.reply_to_message.audio, message.reply_to_message.photo]
+    media = next((v for v in vid if v is not None), None)
+    if not media:
+        return await message.reply("Unsupported media type..")
     m = await message.reply("Download your file to my Server...")
     now = time.time()
+    dc_id = FileId.decode(media.file_id).dc_id
     fileku = await message.reply_to_message.download(
         progress=progress_for_pyrogram,
-        progress_args=("Trying to download, please wait..", m, now),
+        progress_args=("Trying to download, please wait..", m, now, dc_id),
     )
     try:
         files = {"file": open(fileku, "rb")}
@@ -67,10 +68,15 @@ async def download(client, message):
     if message.reply_to_message is not None:
         start_t = datetime.now()
         c_time = time.time()
+        vid = [message.reply_to_message.video, message.reply_to_message.document, message.reply_to_message.audio, message.reply_to_message.photo]
+        media = next((v for v in vid if v is not None), None)
+        if not media:
+            return await pesan.edit_msg("Unsupported media type..")
+        dc_id = FileId.decode(media.file_id).dc_id
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
             progress=progress_for_pyrogram,
-            progress_args=("trying to download, sabar yakk..", pesan, c_time),
+            progress_args=("Trying to download, sabar yakk..", pesan, c_time, dc_id),
         )
         end_t = datetime.now()
         ms = (end_t - start_t).seconds

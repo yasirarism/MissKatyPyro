@@ -214,7 +214,7 @@ async def afk_state(self: Client, ctx: Message, strings):
     group=1,
 )
 @use_chat_lang()
-async def chat_watcher_func(self: Client, ctx: Message, strings):
+async def afk_watcher_func(self: Client, ctx: Message, strings):
     if ctx.sender_chat:
         return
     userid = ctx.from_user.id

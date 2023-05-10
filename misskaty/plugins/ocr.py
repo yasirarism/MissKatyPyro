@@ -30,13 +30,13 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @use_chat_lang()
 async def ocr(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if not reply or not reply.photo and (reply.document and not reply.document.mime_type.startswith("image")) and not reply.sticker:
+    if not reply and not reply.photo or not (reply.document and reply.document.mime_type.startswith("image")) or not reply.sticker:
         return await ctx.reply_msg(strings("no_photo").format(cmd=ctx.command[0]), quote=True, del_in=6)
     msg = await ctx.reply_msg(strings("read_ocr"), quote=True)
     try:
         file_path = await reply.download()
         if reply.sticker:
-            file_path = await reply.download(f"ocr_{ctx.from_user.id}.jpg")
+            file_path = await reply.download(f"ocr_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}.jpg")
         response = await Telegraph().upload_file(file_path)
         url = f"https://telegra.ph{response[0]['src']}"
         req = (
@@ -46,7 +46,13 @@ async def ocr(self: Client, ctx: Message, strings):
             )
         ).json()
         await msg.edit_msg(strings("result_ocr").format(result=req["text"]))
-        os.remove(file_path)
+        try:
+            os.remove(file_path)
+        except:
+            pass
     except Exception as e:
         await msg.edit_msg(str(e))
-        os.remove(file_path)
+        try:
+            os.remove(file_path)
+        except:
+            pass

@@ -9,7 +9,7 @@ import os
 from logging import getLogger
 from re import I
 from re import split as ngesplit
-from time import perf_counter, time
+from time import time
 from urllib.parse import unquote
 
 from pyrogram import filters, Client
@@ -22,6 +22,7 @@ from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
 from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins.dev import shell_exec
 from misskaty.vars import COMMAND_HANDLER
 
@@ -57,8 +58,8 @@ def get_subname(lang, url, format):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
-    if scheme_removed.find("/") == -1:
-        return f"[{lang.upper()}] MissKatySub_{get_random_string(4)}.{format}"
+    if scheme_removed.find("/") == -1 or not get_base_name(os.path.basename(unquote(scheme_removed))):
+        return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{format}"
     return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}.{format}"
 
 
@@ -69,7 +70,7 @@ async def ceksub(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5)
     link = ctx.command[1]
-    start_time = perf_counter()
+    start_time = time()
     pesan = await ctx.reply_msg(strings("progress_str"), quote=True)
     try:
         res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
@@ -96,11 +97,10 @@ async def ceksub(self: Client, ctx: Message, strings):
                     )
                 ]
             )
-        end_time = perf_counter()
-        timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
+        timelog = time() - start_time
         buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
         msg = await pesan.edit_msg(
-            strings("press_btn_msg").format(timelog=timelog),
+            strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
         await msg.wait_for_click(
@@ -134,7 +134,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
         caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
         thumb="assets/thumb.jpg",
         progress=progress_for_pyrogram,
-        progress_args=(strings("up_str"), msg, c_time),
+        progress_args=(strings("up_str"), msg, c_time, self.me.dc_id),
     )
     await msg.delete_msg()
     try:
@@ -166,21 +166,20 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
         format = "eac3"
     else:
         format = "srt"
-    start_time = perf_counter()
+    start_time = time()
     namafile = get_subname(lang, link, format)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]
-        end_time = perf_counter()
-        timelog = "{:.2f}".format(end_time - start_time) + strings("val_sec")
+        timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=timelog),
+            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
-            progress_args=(strings("up_str"), update.message, c_time),
+            progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
         )
         await update.message.delete_msg()
         try:

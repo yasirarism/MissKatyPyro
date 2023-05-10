@@ -9,7 +9,7 @@ import time
 from pyrogram.errors import FloodWait, MessageNotModified, MessageIdInvalid
 
 
-async def progress_for_pyrogram(current, total, ud_type, message, start):
+async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
     """generic progress display for Telegram Upload / Download status"""
     now = time.time()
     diff = now - start
@@ -32,10 +32,11 @@ async def progress_for_pyrogram(current, total, ud_type, message, start):
             round(percentage, 2),
         )
 
-        tmp = progress + "{0} of {1}\nSpeed: {2}/s\nETA: {3}\n".format(
+        tmp = progress + "{0} <b>of</b> {1}\n<b>Speed:</b> {2}/s\n<b>DC ID:</b> {3}\n<b>ETA:</b> {4}</b>\n".format(
             humanbytes(current),
             humanbytes(total),
             humanbytes(speed),
+            dc_id,
             estimated_total_time if estimated_total_time != "" else "0 s",
         )
         try:
