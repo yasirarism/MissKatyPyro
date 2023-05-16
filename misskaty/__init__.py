@@ -9,7 +9,7 @@ from pyrogram import Client
 
 from database.session_db import MongoStorage
 from misskaty.core import misskaty_patch
-from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION
+from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION, DATABASE_NAME
 
 basicConfig(
     level=INFO,
@@ -39,6 +39,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
+    mongodb=dict(uri=DATABASE_URI, db_name=DATABASE_NAME, remove_peers=False),
 )
 
 # Pyrogram UserBot Client
@@ -47,7 +48,7 @@ user = Client(
     session_string=USER_SESSION,
 )
 
-jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB", collection="nightmode")}
+jobstores = {"default": MongoDBJobStore(client=pymonclient, database=DATABASE_NAME, collection="nightmode")}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()

@@ -93,7 +93,7 @@ async def donate(client, ctx):
         InlineButton('PayPal', url='https://paypal.me/yasirarism'),
     )
     await ctx.reply(
-        f"Hai {message.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa. Karena server bot ini tidaklah gratis. Terimakasih..\n\nHi {message.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above. Because this bot server is not free. Thank you..",
+        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa. Karena server bot ini tidaklah gratis. Terimakasih..\n\nHi {message.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above. Because this bot server is not free. Thank you..",
     )
 
 
