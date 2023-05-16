@@ -32,13 +32,13 @@ misskaty_version = "v2.023.5.16 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
 
-# Pyrogram Bot Client
+# Pyrogram Bot Client (Disable temporary for mongodb session)
 app = Client(
     "MissKatyBot",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(uri=DATABASE_URI, db_name=DATABASE_NAME, remove_peers=False),
+    # mongodb=dict(uri=DATABASE_URI, db_name=DATABASE_NAME, remove_peers=False),
 )
 
 # Pyrogram UserBot Client
