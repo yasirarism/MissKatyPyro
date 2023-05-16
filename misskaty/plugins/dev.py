@@ -35,10 +35,12 @@ __MODULE__ = "DevCommand"
 __HELP__ = """
 **For Owner Bot Only.**
 /run [args] - Run eval CMD
+/logs [int] - Check logs bot
 /shell [args] - Run Exec/Terminal CMD
 /download [link/reply_to_telegram_file] - Download file from Telegram
 
 **For Public Use**
+/stats - Check statistic bot
 /json - Send structure message Telegram in JSON using Pyrogram Style.
 """
 
@@ -93,7 +95,7 @@ async def donate(client, ctx):
         InlineButton('PayPal', url='https://paypal.me/yasirarism'),
     )
     await ctx.reply(
-        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa. Karena server bot ini tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above. Because this bot server is not free. Thank you..",
+        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa. Karena server bot ini tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above. Because this bot server is not free. Thank you..", reply_markup=keyboard
     )
 
 
