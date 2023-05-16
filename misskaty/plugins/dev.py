@@ -22,6 +22,7 @@ from psutil import virtual_memory
 from pyrogram import enums, filters, Client, __version__ as pyrover
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from pyrogram.raw.types import UpdateBotStopped
+from pykeyboard import InlineKeyboard
 
 from misskaty import app, user, botStartTime, misskaty_version, BOT_NAME
 from misskaty.helper.http import http
@@ -81,10 +82,18 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
-async def donate(_, message):
-    await message.reply_photo(
-        "https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
-        caption=f"Hai {message.from_user.mention}, jika kamu merasa bot ini berguna bisa melakukan donasi dengan scan kode QRIS diatas yaa. Terimakasih..",
+async def donate(client, ctx):
+    keyboard = InlineKeyboard(row_width=3)
+    keyboard.add(
+        InlineButton('QR QRIS [Yasir Store]', url='https://telegra.ph/file/2acf7698f300ef3d9138f.jpg'),
+        InlineButton('Bank Jago [Yasir Aris M]', '109641845083'),
+        InlineButton('Saweria', url='https://saweria.co/yasirarism'),
+        InlineButton('Trakteer', url='https://trakteer.id/yasir-aris-sp7cn'),
+        InlineButton('Ko-Fi', url='https://ko-fi.com/yasirarism'),
+        InlineButton('PayPal', url='https://paypal.me/yasirarism'),
+    )
+    await ctx.reply(
+        f"Hai {message.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa. Karena server bot ini tidaklah gratis. Terimakasih..\n\n"Hi {message.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above. Because this bot server is not free. Thank you..",
     )
 
 

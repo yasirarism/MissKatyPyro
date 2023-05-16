@@ -54,13 +54,13 @@ def get_base_name(orig_path: str):
         return ngesplit(f"{ext}$", orig_path, maxsplit=1, flags=I)[0]
 
 
-def get_subname(lang, url, format):
+def get_subname(lang, url, ext):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1 or not get_base_name(os.path.basename(unquote(scheme_removed))):
-        return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{format}"
-    return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}.{format}"
+        return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{ext}"
+    return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}.{ext}"
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -159,15 +159,15 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
         return await update.answer(strings("invalid_cb"), True)
     await update.message.edit_msg(strings("progress_str"))
     if codec == "aac":
-        format = "aac"
+        ext = "aac"
     elif codec == "mp3":
-        format = "mp3"
+        ext = "mp3"
     elif codec == "eac3":
-        format = "eac3"
+        ext = "eac3"
     else:
-        format = "srt"
+        ext = "srt"
     start_time = time()
-    namafile = get_subname(lang, link, format)
+    namafile = get_subname(lang, link, ext)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"mediaextract -i {link} -map {map} '{namafile}'"))[0]

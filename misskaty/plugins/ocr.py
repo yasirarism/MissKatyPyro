@@ -30,7 +30,7 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @use_chat_lang()
 async def ocr(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if not reply and not reply.photo or not (reply.document and reply.document.mime_type.startswith("image")) or not reply.sticker:
+    if not reply or not reply.photo or not (reply.document and reply.document.mime_type.startswith("image")) or not reply.sticker:
         return await ctx.reply_msg(strings("no_photo").format(cmd=ctx.command[0]), quote=True, del_in=6)
     msg = await ctx.reply_msg(strings("read_ocr"), quote=True)
     try:
@@ -46,13 +46,9 @@ async def ocr(self: Client, ctx: Message, strings):
             )
         ).json()
         await msg.edit_msg(strings("result_ocr").format(result=req["text"]))
-        try:
+        if os.path.exists(file_path):
             os.remove(file_path)
-        except:
-            pass
     except Exception as e:
         await msg.edit_msg(str(e))
-        try:
+        if os.path.exists(file_path):
             os.remove(file_path)
-        except:
-            pass

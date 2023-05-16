@@ -46,7 +46,10 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 @ratelimiter
 @use_chat_lang()
 async def getsticker_(self: Client, ctx: Message, strings):
-    if sticker := ctx.reply_to_message.sticker:
+    if not ctx.reply_to_message or ctx.reply_to_message.sticker:
+        await ctx.reply_msg(strings("not_sticker"))
+    else:
+        sticker = ctx.reply_to_message.sticker
         if sticker.is_animated:
             await ctx.reply_msg(strings("no_anim_stick"))
         else:
@@ -56,13 +59,11 @@ async def getsticker_(self: Client, ctx: Message, strings):
                 message=ctx.reply_to_message,
                 file_name=f"{path}/{sticker.set_name}.png",
             )
-            await self.reply_to_message.reply_document(
+            await ctx.reply_to_message.reply_document(
                 document=sticker_file,
                 caption=f"<b>Emoji:</b> {sticker.emoji}\n" f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n" f"<b>Send by:</b> @{BOT_USERNAME}",
             )
             shutil.rmtree(tempdir, ignore_errors=True)
-    else:
-        await ctx.reply_msg(strings("not_sticker"))
 
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)

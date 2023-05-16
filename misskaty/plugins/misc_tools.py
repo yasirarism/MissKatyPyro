@@ -349,8 +349,11 @@ async def close_callback(bot: Client, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     await query.answer("Deleting this message in 5 seconds.")
     await asyncio.sleep(5)
-    await query.message.delete_msg()
-    await query.message.reply_to_message.delete_msg()
+    try:
+        await query.message.delete()
+        await query.message.reply_to_message.delete()
+    except:
+        pass
 
 
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"}
