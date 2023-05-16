@@ -38,13 +38,13 @@ try:
     API_HASH = getConfig("API_HASH")
     # MongoDB information
     DATABASE_URI = getConfig("DATABASE_URI")
-    DATABASE_NAME = getConfig("DATABASE_NAME")
-    LOG_CHANNEL = int(environ.get("LOG_CHANNEL", 0))
-    USER_SESSION = getConfig("USER_SESSION")
+    LOG_CHANNEL = int(environ.get("LOG_CHANNEL"))
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
     sys.exit(1)
 
+USER_SESSION = environ.get("USER_SESSION")
+DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
