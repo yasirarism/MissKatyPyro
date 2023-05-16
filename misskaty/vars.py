@@ -36,6 +36,9 @@ try:
     BOT_TOKEN = getConfig("BOT_TOKEN")
     API_ID = getConfig("API_ID")
     API_HASH = getConfig("API_HASH")
+    BOTID = getConfig("BOT_ID")
+    BOTUSERNAME = getConfig("BOT_USERNAME")
+    BOTNAME = getConfig("BOT_NAME")
     # MongoDB information
     DATABASE_URI = getConfig("DATABASE_URI")
     LOG_CHANNEL = int(environ.get("LOG_CHANNEL"))

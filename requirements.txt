@@ -1,5 +1,6 @@
 emoji
 git+https://github.com/yasirarism/pyrofork
+urllib3<2
 tgcrypto
 pymongo
 python-dotenv

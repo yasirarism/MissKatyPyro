@@ -32,6 +32,7 @@ loop = asyncio.get_event_loop()
 
 # Run Bot
 async def start_bot():
+    await app.start()
     global HELPABLE
 
     for module in ALL_MODULES:
