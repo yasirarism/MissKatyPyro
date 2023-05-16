@@ -26,5 +26,5 @@ deep-translator
 telethon
 pyrate_limiter
 cachetools
-cfscrape
+cloudscraper
 openai

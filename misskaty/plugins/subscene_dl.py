@@ -2,7 +2,7 @@ import asyncio
 import logging
 import os
 
-import cfscrape
+import cloudscraper
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, filters
@@ -24,7 +24,7 @@ SUB_DL_DICT = {}
 async def getTitleSub(msg, kueri, CurrentPage, user):
     if not SUB_TITLE_DICT.get(msg.id):
         sdata = []
-        scraper = cfscrape.create_scraper()
+        scraper = cloudscraper.create_scraper()
         param = {"query": kueri}
         r = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
         soup = BeautifulSoup(r, "lxml")
@@ -61,7 +61,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
 async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
-        scraper = cfscrape.create_scraper()
+        scraper = cloudscraper.create_scraper()
         kuki = {"LanguageFilter": "13,44,50"}  # Only filter language English, Malay, Indonesian
         r = scraper.get(link, cookies=kuki).text
         soup = BeautifulSoup(r, "lxml")
@@ -194,7 +194,7 @@ async def dlsub_callback(self: Client, callback_query: CallbackQuery):
         await callback_query.answer("Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete_msg()
-    scraper = cfscrape.create_scraper()
+    scraper = cloudscraper.create_scraper()
     res = await down_page(link)
     dl = scraper.get(res.get("download_url"))
     f = open(f"{title}.zip", mode="wb").write(dl.content)

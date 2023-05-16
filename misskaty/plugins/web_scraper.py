@@ -6,7 +6,7 @@
 """
 import re
 import logging
-import cfscrape
+import cloudscraper
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters, Client
@@ -384,7 +384,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
 # getData samehada
 async def getSame(msg, query, current_page, strings):
     if not SCRAP_DICT.get(msg.id):
-        cfse = cfscrape.CloudflareScraper()
+        cfse = cloudscraper.create_scraper()
         try:
             if query:
                 data = cfse.get(f"{web['samehadaku']}/?s={query}", headers=headers)

@@ -7,7 +7,7 @@ import html
 import pickle
 import json
 import traceback
-import cfscrape
+import cloudscraper
 import aiohttp
 from datetime import datetime
 from shutil import disk_usage
@@ -212,7 +212,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "re": re,
             "os": os,
             "asyncio": asyncio,
-            "cfscrape": cfscrape,
+            "cloudscraper": cloudscraper,
             "json": json,
             "aiohttp": aiohttp,
             "print": _print,

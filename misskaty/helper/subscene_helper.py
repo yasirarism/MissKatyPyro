@@ -1,9 +1,9 @@
-import cfscrape
+import cloudscraper
 from bs4 import BeautifulSoup
 
 
 async def down_page(url):
-    f = cfscrape.create_scraper()
+    f = cloudscraper.create_scraper()
     resp = f.get(url).text
     soup = BeautifulSoup(resp, "lxml")
     maindiv = soup.body.find("div", class_="subtitle").find("div", class_="top left")
