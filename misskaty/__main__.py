@@ -67,7 +67,7 @@ async def start_bot():
             else:
                 await app.send_message(
                     i,
-                    f"BOT STARTED with Pyrogram v{__version__}..\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
+                    f"BOT STARTED with Pyrogram v{__version__} as {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
                 )
     except Exception as e:
         LOGGER.error(str(e))

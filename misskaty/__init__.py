@@ -56,6 +56,8 @@ if USER_SESSION:
     UBOT_ID = user.me.id
     UBOT_NAME = user.me.first_name
     UBOT_USERNAME = user.me.username
+else:
+    None, None, None = UBOT_ID, UBOT_NAME, UBOT_USERNAME
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.me.username

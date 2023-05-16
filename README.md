@@ -80,7 +80,7 @@ python3 --version
 ```
 apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl ffmpeg locales tzdata neofetch mediainfo speedtest-cli -y
 ```
-- Install requirements.txt, if using python 3.11, you need pass `--break-system-packages` parameter.
+- Install requirements.txt, if using python 3.11, you need pass `--break-system-packages` parameter or use venv when install.<br/>
 *Python < 3.10*
 ```
 pip3 install -r requirements.txt
@@ -89,7 +89,7 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt --break-system-packages
 ```
-- Setting your config.env or via environment. Make sure you fill all required env/
+- Setting your config.env or via environment. Make sure you fill all required env.
 - Run Bot
 ```
 bash start.sh
