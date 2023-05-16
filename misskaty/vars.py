@@ -44,8 +44,8 @@ except Exception as e:
     sys.exit(1)
 
 USER_SESSION = environ.get("USER_SESSION")
-FF_MPEG_NAME = environ.get("FF_MPEG_NAME", "ffmpeg")
-VCSI_NAME = environ.get("VCSI_NAME", "vcsi")
+FF_MPEG_NAME = environ.get("FF_MPEG_NAME", "mediaextract")
+VCSI_NAME = environ.get("VCSI_NAME", "ssmedia")
 DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
