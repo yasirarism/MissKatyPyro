@@ -14,7 +14,7 @@ from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, FF_MPEG_NAME
 
 LOGGER = getLogger(__name__)
 regex = recompile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})")
@@ -70,7 +70,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.input
-    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}") as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
             if x is None:
@@ -96,7 +96,7 @@ async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
-    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}") as ytdl:
         media, buttons = await ytdl.listview(callback[1])
         await cq.edit_message_media(media=media, reply_markup=buttons.add(cq.from_user.id))
 
@@ -109,7 +109,7 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
         return await cq.answer(strings("unauth"), True)
     await cq.answer(strings("wait"))
     callback = cq.data.split("|")
-    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/mediaextract") as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}") as ytdl:
         try:
             if data := await ytdl.extract_info_from_key(callback[1]):
                 if len(callback[1]) == 11:
@@ -142,7 +142,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
     async with iYTDL(
         log_group_id=LOG_CHANNEL,
         cache_path="cache",
-        ffmpeg_location="/usr/bin/mediaextract",
+        ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}",
         delete_media=True,
     ) as ytdl:
         try:

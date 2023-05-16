@@ -11,6 +11,8 @@ from pathlib import Path
 from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton, InputMediaPhoto
 
+from misskaty.vars import FF_MPEG_NAME
+
 
 async def run_subprocess(cmd):
     process = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
@@ -89,7 +91,7 @@ async def screenshot_flink(c, m):
 
         for i, sec in enumerate(screenshot_secs):
             thumbnail_template = output_folder.joinpath(f"{i+1}.png")
-            ffmpeg_cmd = f"mediaextract -hide_banner -ss {sec} -i {shlex.quote(file_link)} -vframes 1 '{thumbnail_template}'"
+            ffmpeg_cmd = f"{FF_MPEG_NAME} -hide_banner -ss {sec} -i {shlex.quote(file_link)} -vframes 1 '{thumbnail_template}'"
             output = await run_subprocess(ffmpeg_cmd)
             await m.message.edit_msg(f"😀 `{i+1}` of `{num_screenshots}` generated!")
             if thumbnail_template.exists():

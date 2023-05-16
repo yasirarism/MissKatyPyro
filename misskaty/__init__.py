@@ -31,7 +31,6 @@ botStartTime = time.time()
 misskaty_version = "v2.023.5.16 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
-mongo = AsyncIOMotorClient(DATABASE_URI)
 
 # Pyrogram Bot Client
 app = Client(

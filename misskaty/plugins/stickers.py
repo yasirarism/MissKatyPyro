@@ -17,7 +17,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, FF_MPEG_NAME
 
 __MODULE__ = "Stickers"
 __HELP__ = """
@@ -335,7 +335,7 @@ async def convert_video(filename: str) -> str:
     downpath, f_name = os.path.split(filename)
     webm_video = os.path.join(downpath, f"{f_name.split('.', 1)[0]}.webm")
     cmd = [
-        "mediaextract",
+        FF_MPEG_NAME,
         "-loglevel",
         "quiet",
         "-i",
