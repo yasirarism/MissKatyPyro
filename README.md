@@ -59,13 +59,43 @@ You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoB
 * `API_ID`: Get this value from [telegram.org](https://my.telegram.org/apps)
 * `API_HASH`: Get this value from [telegram.org](https://my.telegram.org/apps)
 * `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
-* `DATABASE_NAME`: Name of the database in [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
 * `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
-* `USER_SESSION` : Session string for Userbot.
-### Optional Variables
-Check by yourself in config files.
 
-## Deploy (Must Use Docker to Run This Bot, since i had make it built in all requirements)
+### Optional Variables
+* `USER_SESSION` : Session string for Userbot.
+* `DATABASE_NAME`: Name of the database in MongoDB
+* `COMMAND_HANDLER`: List of handler bot command splitted by space. Ex: `. !` > so bot will respond with `.cmd` or `!cmd`
+* `SUDO`: User ID that have access to bot, split by space
+* `OPENAI_API`: Get it from OpenAI Web
+* `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
+
+## Deploy (Recommended using Docker/Docker Compose)
+
+#### Build And Run Using Legacy Method
+- Make sure minimum python version is 3.8 to prevent some errors. Check it with this command:
+```
+python3 --version
+```
+- Install all dependency that needed bot to run. *(need root access, you can skip this if your server didn't have root access but some plugins will not work)*
+```
+apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl ffmpeg locales tzdata neofetch mediainfo speedtest-cli -y
+```
+- Install requirements.txt, if using python 3.11, you need pass `--break-system-packages` parameter.
+*Python < 3.10*
+```
+pip3 install -r requirements.txt
+```
+*Python 3.11*
+```
+pip3 install -r requirements.txt --break-system-packages
+```
+- Setting your config.env or via environment. Make sure you fill all required env/
+- Run Bot
+```
+bash start.sh
+```
+
+#### Build And Run Using Docker
 
 - Start Docker daemon (Skip if already running):
 ```

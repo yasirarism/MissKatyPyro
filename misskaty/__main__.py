@@ -24,7 +24,7 @@ from misskaty import (
     scheduler
 )
 from misskaty.plugins import ALL_MODULES
-from misskaty.vars import SUDO
+from misskaty.vars import SUDO, USER_SESSION
 from utils import auto_clean
 
 LOGGER = getLogger(__name__)
@@ -59,10 +59,16 @@ async def start_bot():
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         for i in SUDO:
-            await app.send_message(
-                i,
-                f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
-            )
+            if USER_SESSION:
+                await app.send_message(
+                    i,
+                    f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
+                )
+            else:
+                await app.send_message(
+                    i,
+                    f"BOT STARTED with Pyrogram v{__version__}..\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
+                )
     except Exception as e:
         LOGGER.error(str(e))
     scheduler.start()

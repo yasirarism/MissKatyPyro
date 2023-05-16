@@ -51,10 +51,11 @@ jobstores = {"default": MongoDBJobStore(client=pymonclient, database="MissKatyDB
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()
-user.start()
+if USER_SESSION:
+    user.start()
+    UBOT_ID = user.me.id
+    UBOT_NAME = user.me.first_name
+    UBOT_USERNAME = user.me.username
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.me.username
-UBOT_ID = user.me.id
-UBOT_NAME = user.me.first_name
-UBOT_USERNAME = user.me.username

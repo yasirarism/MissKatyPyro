@@ -22,7 +22,7 @@ from psutil import virtual_memory
 from pyrogram import enums, filters, Client, __version__ as pyrover
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from pyrogram.raw.types import UpdateBotStopped
-from pykeyboard import InlineKeyboard
+from pykeyboard import InlineKeyboard, InlineButton
 
 from misskaty import app, user, botStartTime, misskaty_version, BOT_NAME
 from misskaty.helper.http import http
