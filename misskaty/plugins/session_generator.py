@@ -170,7 +170,6 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             except (PasswordHashInvalid, PasswordHashInvalidError):
                 return await two_step_msg.reply("» The password you've sent is wrong.\n\nPlease start generating session again.", quote=True, reply_markup=InlineKeyboardMarkup(gen_button))
     elif telethon:
-        try:
         await client.start(bot_token=phone_number)
     else:
         await client.sign_in_bot(phone_number)
