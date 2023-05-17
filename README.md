@@ -4,13 +4,8 @@
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
 
 <!--Project Title Image-->
-![MissKatyPyro][project-img-url]
-
 <p align="center">
-<a href="https://github.com/yasirarism?tab=followers"><img title="Followers" src="https://img.shields.io/github/followers/yasirarism?color=green&style=flat-square"></a>
-<a href="https://github.com/yasirarism/MissKatyPyro/stargazers/"><img title="Stars" src="https://img.shields.io/github/stars/yasirarism/MissKatyPyro?color=white&style=flat-square"></a>
-<a href="https://github.com/yasirarism/MissKatyPyro/network/members"><img title="Forks" src="https://img.shields.io/github/forks/yasirarism/MissKatyPyro?color=yellow&style=flat-square"></a>
-<a href="https://github.com/yasirarism/MissKatyPyro/watchers"><img title="Watching" src="https://img.shields.io/github/watchers/yasirarism/MissKatyPyro?label=Watchers&color=red&style=flat-square"></a>
+  ![MissKatyPyro][project-img-url]
 </p>
 
 <!--Project Buttons-->
