@@ -1,3 +1,5 @@
+![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
+
 <p align="center">
 <img src="https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8" width="200" height="200"/>
 </p>
@@ -18,12 +20,22 @@
 <a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-Yes-green.svg"></a>&nbsp;&nbsp;
 </p>
 
-## FRAMEWORK & TOOLS THAT USED IN THIS CODE
+## FRAMEWORK, TOOLS AND SERVER THAT USED TO BUILD THIS BOT
  🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
- 🌱 Python 3.11<br>
+ 🌱 Python 3.11 Support<br>
  🌱 MongoDB as Database<br>
  🌱 PyKeyboard for Building Pagination<br>
  🌱 VS Code<br>
+ 🌱 VPS/Server With Docker Support (Recommended)<br>
+
+## DONATION
+For Indonesian Only:
+
+
+For International Payment:
+
+
+You can also give donation via Github Sponsor.
 
 ## NOTES
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me.
@@ -89,7 +101,7 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt --break-system-packages
 ```
-- Setting your config.env or via environment. Make sure you fill all required env.
+- Setting your config.env or via environment. Dont forget fill all required value and need fill *FF_MPEG_NAME* and *VCSI_NAME* if you're deploying using this method.
 - Run Bot
 ```
 bash start.sh
@@ -154,4 +166,7 @@ sudo docker-compose stop <pid>
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
 Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
 WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
-PERINGATAN: Dilarang memperjualbelikan script ini tanpa seijin pembuat script.
+
+[license-shield]: https://img.shields.io/github/license/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=04B4AE
+[repository-size-shield]: https://img.shields.io/github/repo-size/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=BE81F7
+[issue-closed-shield]: https://img.shields.io/github/issues-closed/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=FE9A2E
