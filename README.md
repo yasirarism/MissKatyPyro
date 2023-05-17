@@ -1,28 +1,20 @@
+# MissKatyPyro
+
 <!--Badges-->
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
 
-<p align="center">
-<img src="https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8" width="200" height="200"/>
-</p>
-<p align="center">
-  <a href="#"><img src="http://readme-typing-svg.herokuapp.com?color=d1fa02&center=true&vCenter=true&multiline=false&lines=Welcome+To+MissKaty+Repository" alt="">
-</p>
-<p align="center">
-<a href="#"><img title="Creator" src="https://img.shields.io/badge/Creator-MissKaty-red.svg?style=for-the-badge&logo=github"></a>
-</p>
+<!--Project Title Image-->
+![MissKatyPyro][project-img-url]
+
 <p align="center">
 <a href="https://github.com/yasirarism?tab=followers"><img title="Followers" src="https://img.shields.io/github/followers/yasirarism?color=green&style=flat-square"></a>
 <a href="https://github.com/yasirarism/MissKatyPyro/stargazers/"><img title="Stars" src="https://img.shields.io/github/stars/yasirarism/MissKatyPyro?color=white&style=flat-square"></a>
 <a href="https://github.com/yasirarism/MissKatyPyro/network/members"><img title="Forks" src="https://img.shields.io/github/forks/yasirarism/MissKatyPyro?color=yellow&style=flat-square"></a>
 <a href="https://github.com/yasirarism/MissKatyPyro/watchers"><img title="Watching" src="https://img.shields.io/github/watchers/yasirarism/MissKatyPyro?label=Watchers&color=red&style=flat-square"></a>
-<a href="https://github.com/yasirarism/MissKatyPyro"><img title="Open Source" src="https://badges.frapsoft.com/os/v2/open-source.svg?v=103"></a>
-<a href="https://github.com/yasirarism/MissKatyPyro/"><img title="Size" src="https://img.shields.io/github/repo-size/yasirarism/MissKatyPyro?style=flat-square&color=darkred"></a>
-<a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fyasirarism%2FMissKatyPyro%2Fhit-counter&count_bg=%2379C83D&title_bg=%23555555&icon=probot.svg&icon_color=%2304FF00&title=hits&edge_flat=false"/></a>
-<a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-Yes-green.svg"></a>&nbsp;&nbsp;
 </p>
 
 <!--Project Buttons-->
- [![Readme in Korean][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
+ [![Readme in Indonesian][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
 
 ## FRAMEWORK, TOOLS AND SERVER THAT USED TO BUILD THIS BOT
  🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
@@ -184,3 +176,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. G
 [report-bug-url]: https://github.com/yasirarism/MissKatyPyro/issues
 [request-feature-shield]: https://img.shields.io/badge/-%E2%9C%A8%20request%20feature-A9D0F5?style=for-the-badge
 [request-feature-url]: https://github.com/yasirarism/MissKatyPyro/issues
+
+<!--URLS-->
+[readme-ko-url]: README.id.md
+[project-img-url]: https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8

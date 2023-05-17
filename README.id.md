@@ -4,7 +4,7 @@
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
 
 <!--Project Title Image-->
-![Project Title]("https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8")
+![MissKatyPyro][project-img-url]
 
 <p align="center">
 <a href="https://github.com/yasirarism?tab=followers"><img title="Followers" src="https://img.shields.io/github/followers/yasirarism?color=green&style=flat-square"></a>
@@ -56,4 +56,5 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. G
 [request-feature-url]: https://github.com/yasirarism/MissKatyPyro/issues
 
 <!--URLS-->
-[readme-ko-url]: README.id.md
+[readme-ko-url]: README.md
+[project-img-url]: https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8
