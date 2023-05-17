@@ -39,15 +39,16 @@
 
 ## [3] Donation
 *For Indonesian Only:*
- 🌱 ![QR QRIS an. Yasir Store](qris-url)
+ 🌱 [QR QRIS an. Yasir Store](qris-url)
  🌱 Bank Jago an. Yasir Aris M = 109641845083
- 🌱 ![Saweria](saweria-url)
- 🌱 ![Trakteer](trakteer-url)
+ 🌱 [Saweria](saweria-url)
+ 🌱 [Trakteer](trakteer-url)
 
 *For All Payment:*
- 🌱 ![Sociabuzz](sociabuzz-url)
- 🌱 ![Paypal](paypal-url)
- 🌱 ![Ko-Fi](kofi-url)
+ 🌱 [Sociabuzz](sociabuzz-url)
+ 🌱 [Paypal](paypal-url)
+ 🌱 [Ko-Fi](kofi-url)
+
 
 ## [4] Notes
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me. You can also give support to me for buying server.

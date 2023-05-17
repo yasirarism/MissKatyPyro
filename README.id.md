@@ -27,30 +27,30 @@
 - [[9] Disclaimer](#8-disclaimer)
 
 # [1] About MissKaty
-*MissKaty* is a Telegram Bot built using Python and the Pyrogram library. Many useful features for us to use. I hope that one day this project will be discontinued, someone will continue or develop it again. I gave the name MissKaty because I like cats, a cute animal that likes to be played with and friendly with humans.
+*MissKaty* adalah Bot Telegram yang dibuat menggunakan Python dan library Pyrogram. Banyak fitur yang berguna untuk kita gunakan. Saya berharap suatu saat jika project ini dihentikan, ada yang melanjutkan atau mengembangkannya lagi. Saya memberi nama MissKaty karena saya suka kucing, hewan lucu yang suka bermain dan bersahabat dengan manusia.
 
 ## [2] Framework Tools And Server That Used To Build This Bot
- 🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
- 🌱 Python 3.11 Support<br>
- 🌱 MongoDB as Database<br>
+ 🌱 PyroFork v2.x.x (Fork Pyrogram dengan Dukungan Topik dan Beberapa Patch)<br>
+ 🌱 Dukungan Python 3.11<br>
+ 🌱 MongoDB sebagai Database<br>
  🌱 PyKeyboard for Building Pagination<br>
  🌱 VS Code<br>
  🌱 VPS/Server With Docker Support (Recommended)<br>
 
 ## [3] Donation
-*For Indonesian Only:*
- 🌱 ![QR QRIS an. Yasir Store](qris-url)
+*Khusus Indonesia Saja:*
+ 🌱 [QR QRIS an. Yasir Store](qris-url)
  🌱 Bank Jago an. Yasir Aris M = 109641845083
- 🌱 ![Saweria](saweria-url)
- 🌱 ![Trakteer](trakteer-url)
+ 🌱 [Saweria](saweria-url)
+ 🌱 [Trakteer](trakteer-url)
 
-*For All Payment:*
- 🌱 ![Sociabuzz](sociabuzz-url)
- 🌱 ![Paypal](paypal-url)
- 🌱 ![Ko-Fi](kofi-url)
+*Untuk Semua Negara:*
+ 🌱 [Sociabuzz](sociabuzz-url)
+ 🌱 [Paypal](paypal-url)
+ 🌱 [Ko-Fi](kofi-url)
 
 ## [4] Notes
-If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me. You can also give support to me for buying server.
+Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda dapat membuat permintaan tarik ke repo ini. Saya sangat senang jika Anda dapat membantu saya. Anda juga dapat memberikan dukungan kepada saya untuk membeli server.
 
 ## [5] Features
 
@@ -73,33 +73,33 @@ If you want help me fixing some error in my bot, you can make pull request to th
 
 ## [6] Variables
 
-### Required Variables
-* `BOT_TOKEN`: Create a bot using [@BotFather](https://t.me/BotFather), and get the Telegram API token.
-* `API_ID`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `API_HASH`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Get this value from [mongoDB](https://www.mongodb.com). For more help watch this [video](https://youtu.be/1G1XwEOnxxo)
-* `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
+### Variabel yang Diperlukan
+* `BOT_TOKEN`: Buat bot menggunakan [@BotFather](https://t.me/BotFather), dan dapatkan token Telegram API.
+* `API_ID`: Dapatkan value ini dari [telegram.org](https://my.telegram.org/apps)
+* `API_HASH`: Dapatkan value ini dari [telegram.org](https://my.telegram.org/apps)
+* `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Dapatkan value ini dari [mongoDB](https://www.mongodb.com). Untuk bantuan lebih lanjut, tonton [video] ini(https://youtu.be/1G1XwEOnxxo)
+* `LOG_CHANNEL` : Channel untuk mencatat aktivitas bot. Pastikan bot adalah admin di channel.
 
-### Optional Variables
-* `USER_SESSION` : Session string for Userbot.
-* `DATABASE_NAME`: Name of the database in MongoDB
-* `COMMAND_HANDLER`: List of handler bot command splitted by space. Ex: `. !` > so bot will respond with `.cmd` or `!cmd`
-* `SUDO`: User ID that have access to bot, split by space
-* `OPENAI_API`: Get it from OpenAI Web
-* `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
+### Variabel Opsional
+* `USER_SESSION` : String session untuk Userbot.
+* `DATABASE_NAME`: Nama database di MongoDB
+* `COMMAND_HANDLER`: Daftar perintah handler bot dipisahkan dengan spasi. Contoh: `. !` > jadi bot akan merespon dengan `.cmd` atau `!cmd`
+* `SUDO`: User ID yang memiliki akses ke bot, dipisahkan dengan spasi
+* `OPENAI_API`: Dapatkan dari Web OpenAI
+* `CURRENCY_API`: Dapatkan API Key di https://app.exchangerate-api.com/sign-up
 
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
-#### Build And Run Using Legacy Method
-- Make sure minimum python version is 3.8 to prevent some errors. Check it with this command:
+#### Bangun Dan Jalankan Menggunakan Metode Lama
+- Pastikan versi python minimum adalah 3.8 untuk mencegah beberapa error. Periksa dengan perintah ini:
 ```
 python3 --version
 ```
-- Install all dependency that needed bot to run. *(need root access, you can skip this if your server didn't have root access but some plugins will not work)*
+- Instal semua dependensi yang membutuhkan bot untuk dijalankan. *(memerlukan akses root, Anda dapat melewati ini jika server Anda tidak memiliki akses root tetapi beberapa plugin tidak berfungsi)*
 ```
-apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl ffmpeg locales tzdata neofetch mediainfo speedtest-cli -y
+apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl lokal ffmpeg tzdata neofetch mediainfo speedtest-cli -y
 ```
-- Install requirements.txt, if using python 3.11, you need pass `--break-system-packages` parameter or use venv when install.<br/>
+- Instal requirements.txt, jika menggunakan python 3.11, Anda harus menambahkan parameter `--break-system-packages` atau gunakan venv saat menginstal.<br/>
 *Python < 3.10*
 ```
 pip3 install -r requirements.txt
@@ -108,15 +108,15 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt --break-system-packages
 ```
-- Setting your config.env or via environment. Dont forget fill all required value and need fill *FF_MPEG_NAME* and *VCSI_NAME* if you're deploying using this method.
-- Run Bot
+- Atur config.env Anda atau melalui env saat menjalankan bot. Jangan lupa isi semua value yang diminta dan perlu isi *FF_MPEG_NAME* dan *VCSI_NAME* jika Anda menggunakan metode ini.
+- Jalankan Bot
 ```
 bash start.sh
 ```
 
 #### Build And Run Using Docker
 
-- Start Docker daemon (Skip if already running):
+- Mulai daemon Docker (Lewati jika sudah berjalan):
 ```
 sudo dockerd
 ```
@@ -124,11 +124,11 @@ sudo dockerd
 ```
 sudo docker build . -t misskaty
 ```
-- Run the image:
+- Jalankan Docker image:
 ```
 sudo docker run misskaty
 ```
-- To stop the image:
+- Untuk Menghentikan image:
 ```
 sudo docker ps
 sudo docker stop <pid>
@@ -160,19 +160,19 @@ sudo docker-compose stop <pid>
 
 
 ## [8] Thanks to 
- - Thanks To Allah Swt.
- - Thanks To Dan For His Awesome [Library](https://github.com/pyrogram/pyrogram).
- - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For WilliamButcher Code.
- - Thanks To [Team Yukki](https://github.com/TeamYukki) For AFK Bot Code.
- - Thanks To [Wrench](https://github.com/EverythingSuckz) For Some Code.
- - Thanks To [AmanoTeam](https://github.com/AmanoTeam) For MultiLanguage Template.
- - And All People Who Help Me In My Life...
- If your code used in this repo and want to give credit please open issue..
+ - Terima kasih Kepada Allah Swt.
+ - Terima kasih Kepada Dan [Pyrogram Library](https://github.com/pyrogram/pyrogram).
+ - Terima kasih Kepada [The Hamker Cat](https://github.com/TheHamkerCat) Untuk Kode WilliamButcher.
+ - Terima kasih Kepada [Team Yukki](https://github.com/TeamYukki) Untuk Kode AFK Bot.
+ - Terima kasih Kepada [Wrench](https://github.com/EverythingSuckz) Untuk Beberapa Kode.
+ - Terima kasih Kepada [AmanoTeam](https://github.com/AmanoTeam) Untuk Template MultiBahasa.
+ - Dan Semua Orang Yang Membantuku Dalam Hidupku...
+Jika kode Anda digunakan dalam repo ini dan ingin memberikan kredit, silakan buka masalah..
 
 ## [9] Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
-Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
-WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
+Dilisensikan di bawah [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
+PERINGATAN: Menjual Kode Kepada Orang Lain Demi Uang *Dilarang Keras*. Tuhan selalu melihatmu dimanapun kamu berada.
 
 <!--Url for Badges-->
 [license-shield]: https://img.shields.io/github/license/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=04B4AE
