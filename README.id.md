@@ -38,16 +38,16 @@
  🌱 VPS/Server With Docker Support (Recommended)<br>
 
 ## [3] Donation
-*Khusus Indonesia Saja:*
- 🌱 [QR QRIS an. Yasir Store](qris-url)
- 🌱 Bank Jago an. Yasir Aris M = 109641845083
- 🌱 [Saweria](saweria-url)
+*Khusus Indonesia Saja:*<br>
+ 🌱 [QR QRIS an. Yasir Store](qris-url)<br>
+ 🌱 Bank Jago an. Yasir Aris M = 109641845083<br>
+ 🌱 [Saweria](saweria-url)<br>
  🌱 [Trakteer](trakteer-url)
 
-*Untuk Semua Negara:*
- 🌱 [Sociabuzz](sociabuzz-url)
- 🌱 [Paypal](paypal-url)
- 🌱 [Ko-Fi](kofi-url)
+*Untuk Semua Negara:*<br>
+ 🌱 [Sociabuzz](sociabuzz-url)<br>
+ 🌱 [Paypal](paypal-url)<br>
+ 🌱 [Ko-Fi](kofi-url)<br>
 
 ## [4] Notes
 Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda dapat membuat permintaan tarik ke repo ini. Saya sangat senang jika Anda dapat membantu saya. Anda juga dapat memberikan dukungan kepada saya untuk membeli server.
