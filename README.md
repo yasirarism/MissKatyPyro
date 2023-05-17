@@ -38,13 +38,13 @@
  🌱 VPS/Server With Docker Support (Recommended)<br>
 
 ## [3] Donation
-*For Indonesian Only:*
+*For Indonesian Only:*<br>
  🌱 [QR QRIS an. Yasir Store](qris-url)<br>
  🌱 Bank Jago an. Yasir Aris M = 109641845083<br>
  🌱 [Saweria](saweria-url)<br>
  🌱 [Trakteer](trakteer-url)
 
-*For All Payment:*
+*For All Payment:*<br>
  🌱 [Sociabuzz](sociabuzz-url)<br>
  🌱 [Paypal](paypal-url)<br>
  🌱 [Ko-Fi](kofi-url)

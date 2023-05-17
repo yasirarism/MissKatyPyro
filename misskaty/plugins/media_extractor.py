@@ -60,7 +60,7 @@ def get_subname(lang, url, ext):
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
     if scheme_removed.find("/") == -1 or not get_base_name(os.path.basename(unquote(scheme_removed))):
         return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{ext}"
-    return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}.{ext}"
+    return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}_{get_random_string(3)}{ext}"
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
