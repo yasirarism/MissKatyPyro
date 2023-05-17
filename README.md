@@ -1,3 +1,4 @@
+<!--Badges-->
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
 
 <p align="center">
@@ -19,6 +20,9 @@
 <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fyasirarism%2FMissKatyPyro%2Fhit-counter&count_bg=%2379C83D&title_bg=%23555555&icon=probot.svg&icon_color=%2304FF00&title=hits&edge_flat=false"/></a>
 <a href="https://github.com/yasirarism/MissKatyPyro/graphs/commit-activity"><img height="20" src="https://img.shields.io/badge/Maintained-Yes-green.svg"></a>&nbsp;&nbsp;
 </p>
+
+<!--Project Buttons-->
+ [![Readme in Korean][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
 
 ## FRAMEWORK, TOOLS AND SERVER THAT USED TO BUILD THIS BOT
  🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
@@ -167,6 +171,16 @@ sudo docker-compose stop <pid>
 Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
 WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
 
+<!--Url for Badges-->
 [license-shield]: https://img.shields.io/github/license/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=04B4AE
 [repository-size-shield]: https://img.shields.io/github/repo-size/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=BE81F7
 [issue-closed-shield]: https://img.shields.io/github/issues-closed/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=FE9A2E
+
+<!--Url for Buttons-->
+[readme-ko-shield]: https://img.shields.io/badge/-readme%20in%20Indonesian-2E2E2E?style=for-the-badge
+[view-demo-shield]: https://img.shields.io/badge/-%F0%9F%98%8E%20view%20demo-F3F781?style=for-the-badge
+[view-demo-url]: https://t.me/MissKatyPyro
+[report-bug-shield]: https://img.shields.io/badge/-%F0%9F%90%9E%20report%20bug-F5A9A9?style=for-the-badge
+[report-bug-url]: https://github.com/yasirarism/MissKatyPyro/issues
+[request-feature-shield]: https://img.shields.io/badge/-%E2%9C%A8%20request%20feature-A9D0F5?style=for-the-badge
+[request-feature-url]: https://github.com/yasirarism/MissKatyPyro/issues
