@@ -5,13 +5,31 @@
 
 <!--Project Title Image-->
 <p align="center">
-  ![MissKatyPyro][project-img-url]
+  <img src="https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8" width="200" height="200"/>
 </p>
 
 <!--Project Buttons-->
  [![Readme in Indonesian][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
 
-## FRAMEWORK, TOOLS AND SERVER THAT USED TO BUILD THIS BOT
+<!--Table of Contents-->
+# Table of Contents
+- [[1] About MissKaty](#1-about-misskaty)
+- [[2] Framework Tools And Server That Used To Build This Bot](#2-framework-tools-and-server-that-used-to-build-this-bot)
+- [[3] Donation](#3-donation)
+- [[4] Notes](#4-notes)
+- [[5] Features](#5-features)
+- [[6] Variables](#6-variables)
+- [[7] Deploying Tutorial](#7-deploy-recommended-using-dockerdocker-compose)
+  - [Build And Run Using Legacy Method](#build-and-run-using-legacy-method)
+  - [Build And Run Using Docker](#build-and-run-using-docker)
+  - [Build And Run The Docker Image Using docker-compose](#build-and-run-the-docker-image-using-docker-compose)
+- [[8] Credits](#8-thanks-to)
+- [[9] Disclaimer](#8-disclaimer)
+
+# [1] About MissKaty
+*MissKaty* is a Telegram Bot built using Python and the Pyrogram library. Many useful features for us to use. I hope that one day this project will be discontinued, someone will continue or develop it again. I gave the name MissKaty because I like cats, a cute animal that likes to be played with and friendly with humans.
+
+## [2] Framework Tools And Server That Used To Build This Bot
  🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics Support and Some Patch)<br>
  🌱 Python 3.11 Support<br>
  🌱 MongoDB as Database<br>
@@ -19,22 +37,22 @@
  🌱 VS Code<br>
  🌱 VPS/Server With Docker Support (Recommended)<br>
 
-## DONATION
-For Indonesian Only:
+## [3] Donation
+*For Indonesian Only:*
+ 🌱 ![QR QRIS (Yasir Store)][qris-url]
+ 🌱 Bank Jago (Yasir Aris M)] = 109641845083
+ 🌱 ![Saweria][saweria-url]
+ 🌱 ![Trakteer][trakteer-url]
 
+*For All Payment:*
+ 🌱 ![Sociabuzz][sociabuzz-url]
+ 🌱 ![Paypal][paypal-url]
+ 🌱 ![Ko-Fi][kofi-url]
 
-For International Payment:
+## [4] Notes
+If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me. You can also give support to me for buying server.
 
-
-You can also give donation via Github Sponsor.
-
-## NOTES
-If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me.
-
-## Demo
-You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoBot)
-
-## Features and Give Support
+## [5] Features
 
 | FEATURE MY BOT |🌱|
 | ------------- | ------------- |
@@ -53,9 +71,7 @@ You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoB
 | GenSS From Media and MediaInfo Generator |✔️|
 | And Many More.. |✔️|
 
-* Please open this web https://yasirpedia.eu.org/ to know about me or support me.
-
-## Variables
+## [6] Variables
 
 ### Required Variables
 * `BOT_TOKEN`: Create a bot using [@BotFather](https://t.me/BotFather), and get the Telegram API token.
@@ -72,7 +88,7 @@ You can check demo this repo in this bot [MissKatyPyro](https://t.me/MissKatyRoB
 * `OPENAI_API`: Get it from OpenAI Web
 * `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
 
-## Deploy (Recommended using Docker/Docker Compose)
+## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
 #### Build And Run Using Legacy Method
 - Make sure minimum python version is 3.8 to prevent some errors. Check it with this command:
@@ -143,7 +159,7 @@ sudo docker-compose stop <pid>
 ----
 
 
-## Thanks to 
+## [8] Thanks to 
  - Thanks To Allah Swt.
  - Thanks To Dan For His Awesome [Library](https://github.com/pyrogram/pyrogram).
  - Thanks To [The Hamker Cat](https://github.com/TheHamkerCat) For WilliamButcher Code.
@@ -153,7 +169,7 @@ sudo docker-compose stop <pid>
  - And All People Who Help Me In My Life...
  If your code used in this repo and want to give credit please open issue..
 
-## Disclaimer
+## [9] Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
 Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
 WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. God always sees you.
@@ -174,4 +190,9 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. G
 
 <!--URLS-->
 [readme-ko-url]: README.id.md
-[project-img-url]: https://repository-images.githubusercontent.com/433350689/26cb713b-43c3-4dec-94cb-6c80599547e8
+[kofi-url]: https://ko-fi.com/yasirarism
+[paypal-url]: https://paypal.me/yasirarism
+[qris-url]: https://telegra.ph/file/2acf7698f300ef3d9138f.jpg
+[sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
+[saweria-url]: https://saweria.co/yasirarism
+[trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
