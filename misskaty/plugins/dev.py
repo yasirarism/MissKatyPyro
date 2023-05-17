@@ -88,7 +88,7 @@ async def donate(client, ctx):
     keyboard = InlineKeyboard(row_width=2)
     keyboard.add(
         InlineButton('QR QRIS [Yasir Store]', url='https://telegra.ph/file/2acf7698f300ef3d9138f.jpg'),
-        InlineButton('Sociabuzz', 'https://sociabuzz.com/yasirarism/tribe'),
+        InlineButton('Sociabuzz', url='https://sociabuzz.com/yasirarism/tribe'),
         InlineButton('Saweria', url='https://saweria.co/yasirarism'),
         InlineButton('Trakteer', url='https://trakteer.id/yasir-aris-sp7cn'),
         InlineButton('Ko-Fi', url='https://ko-fi.com/yasirarism'),
