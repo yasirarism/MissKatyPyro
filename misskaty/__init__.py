@@ -7,7 +7,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from pyrogram import Client
 
-from database.session_db import MongoStorage
 from misskaty.core import misskaty_patch
 from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION, DATABASE_NAME
 
