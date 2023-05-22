@@ -91,6 +91,7 @@ async def byPassPh(url: str, name: str):
     <br>
 {{/data}}
 """.strip()
+    LOGGER.info(kusonime)
     if not kusonime["error"]:
         html = render(template, kusonime)
         telegraph = Telegraph()
