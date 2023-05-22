@@ -117,7 +117,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         else:
             lkResult = strings("header_no_query").format(web="Layarkaca21", cmd="lk21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lkResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+            lkResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
             lkResult += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         lkResult = "".join(i for i in lkResult if i not in "[]")
         return lkResult, PageLen
