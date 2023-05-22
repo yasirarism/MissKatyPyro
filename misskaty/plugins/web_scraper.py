@@ -6,6 +6,7 @@
 """
 import re
 import logging
+import traceback
 import cloudscraper
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
