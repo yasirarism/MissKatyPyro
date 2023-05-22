@@ -81,7 +81,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        num = SCRAP_DICT[msg.id][0][index]
+        num = len(SCRAP_DICT[msg.id][0][index])
 
         if kueri:
             TerbitRes = strings("header_with_query").format(web="Terbit21", kueri=kueri)
