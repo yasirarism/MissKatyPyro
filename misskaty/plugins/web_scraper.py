@@ -144,7 +144,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 
         paheResult = strings("header_with_query").format(web="Pahe", kueri=kueri) if kueri else strings("header_no_query").format(web="Pahe", cmd="pahe")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            paheResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
+            paheResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
         paheResult = "".join(i for i in paheResult if i not in "[]")
         return paheResult, PageLen
     except (IndexError, KeyError):
@@ -179,7 +179,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 
         kusoResult = strings("header_no_query").format(web="Kusonime", cmd="kusonime") if kueri == "" else strings("header_with_query").format(web="Kusonime", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            kusoResult += f"<b>{c}</b>. {i['title']}\n{i['link']}\n\n"
+            kusoResult += f"<b>{index*6+c}</b>. {i['title']}\n{i['link']}\n\n"
             if c < 6:
                 extractbtn1.append(InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"))
             else:
@@ -218,7 +218,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
 
         moviekuResult = strings("header_no_query").format(web="Movieku", cmd="movieku") if kueri == "" else strings("header_with_query").format(web="Movieku", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
+            moviekuResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
         moviekuResult = "".join(i for i in moviekuResult if i not in "[]")
         return moviekuResult, PageLen
     except (IndexError, KeyError):
@@ -256,7 +256,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         extractbtn = []
         sfResult = strings("header_no_query").format(web="Savefilm21", cmd="savefilm21") if kueri == "" else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sfResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+            sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
             extractbtn.append(InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}"))
         sfResult = "".join(i for i in sfResult if i not in "[]")
         return sfResult, PageLen, extractbtn
@@ -292,7 +292,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 
         lenddataResult = strings("header_no_query").format(web="Lendrive", cmd="lendrive") if kueri == "" else strings("header_with_query").format(web="Lendrive", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lenddataResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+            lenddataResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
             extractbtn.append(InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
         return lenddataResult, PageLen, extractbtn
@@ -331,7 +331,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 
         melongResult = strings("header_no_query").format(web="Melongmovie", cmd="melongmovie") if kueri == "" else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
+            melongResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
             extractbtn.append(InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         melongResult = "".join(i for i in melongResult if i not in "[]")
         return melongResult, PageLen, extractbtn
@@ -371,7 +371,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
 
         gomovResult = strings("header_with_query").format(web="GoMov", kueri=kueri) if kueri else strings("header_no_query").format(web="GoMov", cmd="gomov")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            gomovResult += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
+            gomovResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
             if not re.search(r"Series", i["genre"]):
                 extractbtn.append(InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"))
         gomovResult += strings("unsupport_dl_btn")
@@ -411,7 +411,7 @@ async def getSame(msg, query, current_page, strings):
         PageLen = len(SCRAP_DICT[msg.id][0])
         sameresult = ""
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sameresult += f"<b>{c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
+            sameresult += f"<b>{index*6+c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
         IGNORE_CHAR = "[]"
         sameresult = "".join(i for i in sameresult if not i in IGNORE_CHAR)
         return sameresult, PageLen
