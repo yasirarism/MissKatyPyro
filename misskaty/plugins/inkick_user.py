@@ -134,6 +134,9 @@ async def rm_delacc(client, message):
 async def instatus(client, message):
     if message.sender_chat:
         return await message.reply_msg("Not supported channel.", del_in=4)
+    bstat = await app.get_chat_member(message.chat.id, client.me.id)
+    if bstat.status.value != "administrator":
+        return await message.reply_msg("Please give me all basic admin permission, to run this command.")
     start_time = time.perf_counter()
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     count = await app.get_chat_members_count(message.chat.id)

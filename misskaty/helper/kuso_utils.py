@@ -60,7 +60,6 @@ async def kusonimeBypass(url: str, slug=None):
         LOGGER.error(err)
         result.update({"error": True, "error_message": err})
     finally:
-        LOGGER.info(result)
         await http.delete(_url)
         return result
 
@@ -93,7 +92,7 @@ async def byPassPh(url: str, name: str):
 {{/data}}
 """.strip()
     if not kusonime["error"]:
-        html = render(template, kusonime)
+        html = chevron.render(template, kusonime)
         telegraph = Telegraph()
         if not telegraph.get_access_token():
             await telegraph.create_account(short_name=bot_name)
