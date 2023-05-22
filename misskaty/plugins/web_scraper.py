@@ -912,7 +912,7 @@ async def kusonime_scrap(client, callback_query, strings):
         if tgh["error"]:
             return await callback_query.message.edit_msg(f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
     except Exception:
-        e = traceback.format_exc()
+        err = traceback.format_exc()
         return await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
     data_kuso[link] = {"ph_url": tgh["url"]}
     await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=tgh["url"]), reply_markup=keyboard, disable_web_page_preview=False)
