@@ -903,7 +903,7 @@ async def kusonime_scrap(client, callback_query, strings):
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton(strings("back_btn"), f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
-        init_url := data_kuso.get(link, None)
+        init_url = data_kuso.get(link, None):
         if init_url != None:
             ph = init_url.get("ph_url")
             await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=ph), reply_markup=keyboard, disable_web_page_preview=False)
