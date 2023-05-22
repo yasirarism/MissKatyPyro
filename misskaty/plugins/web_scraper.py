@@ -887,7 +887,7 @@ async def gomovpage_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "kusoextract#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def kusonime_scrap(_, callback_query, strings):
+async def kusonime_scrap(client, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     idlink = int(callback_query.data.split("#")[2])
@@ -906,7 +906,7 @@ async def kusonime_scrap(_, callback_query, strings):
             ph = init_url.get("ph_url")
             await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=ph), reply_markup=keyboard, disable_web_page_preview=False)
             return
-        tgh = await kuso.telegraph(link, message_id)
+        tgh = await kuso.telegraph(link, client.me.username)
         if tgh["error"]:
             await callback_query.message.edit_msg(f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
             return
