@@ -1,8 +1,8 @@
-import html
 import re
 import traceback
 import chevron
 import logging
+from html import escape
 from telegraph.aio import Telegraph
 from misskaty.helper.http import http
 from misskaty import BOT_USERNAME
@@ -97,7 +97,7 @@ async def byPassPh(url: str, name: str):
         telegraph = Telegraph()
         if not telegraph.get_access_token():
             await telegraph.create_account(short_name=BOT_USERNAME)
-        page = await telegraph.create_page(f"{kusonime.get('title')} By {html.escape(name)}", html_content=html)
+        page = await telegraph.create_page(f"{kusonime.get('title')} By {escape(name)}", html_content=html)
         results.update({"error": False, "url": "https://telegra.ph/{}".format(page["path"])})
         del results["error_message"]
     return results
