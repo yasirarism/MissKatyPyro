@@ -896,6 +896,7 @@ async def kusonime_scrap(client, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
+        await callback_query.message.delete()
         return await callback_query.answer(strings("invalid_cb"))
 
     kuso = Kusonime()
@@ -903,16 +904,15 @@ async def kusonime_scrap(client, callback_query, strings):
     keyboard.row(InlineButton(strings("back_btn"), f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
     try:
         if init_url := data_kuso.get(link, None):
+        if init_url != None:
             ph = init_url.get("ph_url")
             await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=ph), reply_markup=keyboard, disable_web_page_preview=False)
-            return
         tgh = await kuso.telegraph(link, client.me.username)
         if tgh["error"]:
-            await callback_query.message.edit_msg(f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
-            return
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
-        return
+            return await callback_query.message.edit_msg(f"ERROR: {tgh['error_message']}", reply_markup=keyboard)
+    except Exception:
+        e = traceback.format_exc()
+        return await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
     data_kuso[link] = {"ph_url": tgh["url"]}
     await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=tgh["url"]), reply_markup=keyboard, disable_web_page_preview=False)
 
