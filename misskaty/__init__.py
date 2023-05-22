@@ -21,6 +21,7 @@ basicConfig(
 )
 getLogger("pyrogram").setLevel(ERROR)
 getLogger("openai").setLevel(ERROR)
+getLogger("httpx").setLevel(logging.ERROR)
 
 MOD_LOAD = []
 MOD_NOLOAD = ["subscene_dl"]

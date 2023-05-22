@@ -1,11 +1,11 @@
 import re
-
+import traceback
 import chevron
-from telegraph.aio import Telegraph
 import logging
+from telegraph.aio import Telegraph
 from misskaty.helper.http import http
 from misskaty import BOT_USERNAME
-from bs4 import BeautifulSoup as bs4
+from bs4 import BeautifulSoup
 
 LOGGER = logging.getLogger(__name__)
 
@@ -92,7 +92,6 @@ async def byPassPh(url: str, name: str):
     <br>
 {{/data}}
 """.strip()
-    LOGGER.info(kusonime)
     if not kusonime["error"]:
         html = render(template, kusonime)
         telegraph = Telegraph()
