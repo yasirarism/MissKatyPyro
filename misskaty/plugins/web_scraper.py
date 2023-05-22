@@ -90,6 +90,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
             TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
+        LOGGER.info(f"{index} {PageLen}")
         return TerbitRes, PageLen
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)
@@ -1026,8 +1027,8 @@ async def gomov_dl(_, callback_query, strings):
         hasil = soup.find(class_="title-download").text
         for i in entry.find(class_="list-inline gmr-download-list clearfix"):
             title = i.find("a").text
-            link = i.find("a")["href"]
-            hasil += f"\n{title}\n{link}\n"
+            ddl = i.find("a")["href"]
+            hasil += f"\n{title}\n{ddl}\n"
         await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
