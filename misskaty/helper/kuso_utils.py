@@ -64,7 +64,7 @@ async def kusonimeBypass(url: str, slug=None):
         return result
 
 
-aasync def byPassPh(url: str, name: str):
+async def byPassPh(url: str, name: str):
     kusonime = await kusonimeBypass(url)
     results = {"error": True, "error_message": kusonime}
     template = """
