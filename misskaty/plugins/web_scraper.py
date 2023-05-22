@@ -87,7 +87,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
         else:
             TerbitRes = strings("header_no_query").format(web="Terbit21", cmd="terbit21")
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            TerbitRes += f"<b>{c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+            TerbitRes += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
             TerbitRes += "\n" if re.search(r"Complete|Ongoing", i["kategori"]) else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
         return TerbitRes, PageLen
