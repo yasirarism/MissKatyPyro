@@ -60,6 +60,7 @@ async def kusonimeBypass(url: str, slug=None):
         LOGGER.error(err)
         result.update({"error": True, "error_message": err})
     finally:
+        LOGGER.info(result)
         await http.delete(_url)
         return result
 
