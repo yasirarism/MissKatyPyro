@@ -37,7 +37,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(uri=DATABASE_URI, db_name=DATABASE_NAME, remove_peers=False),
+    mongodb=dict(uri=DATABASE_URI, remove_peers=False),
 )
 
 # Pyrogram UserBot Client
