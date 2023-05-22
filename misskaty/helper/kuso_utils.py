@@ -95,7 +95,7 @@ async def byPassPh(url: str, name: str):
         html = chevron.render(template, kusonime)
         telegraph = Telegraph()
         if not telegraph.get_access_token():
-            await telegraph.create_account(short_name=bot_name)
+            await telegraph.create_account(short_name=BOT_USERNAME)
         page = await telegraph.create_page(f"{kusonime.get('title')} By {escape(name)}", html_content=html)
         results.update({"error": False, "url": "https://telegra.ph/{}".format(page["path"])})
         del results["error_message"]
