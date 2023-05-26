@@ -26,6 +26,7 @@ from misskaty import (
 from misskaty.plugins import ALL_MODULES
 from misskaty.vars import SUDO, USER_SESSION
 from utils import auto_clean
+from database import dbname
 
 LOGGER = getLogger(__name__)
 loop = asyncio.get_event_loop()
@@ -73,8 +74,8 @@ async def start_bot():
         LOGGER.error(str(e))
     scheduler.start()
     if "web" not in await dbname.list_collection_names():
+        webdb = dbname.web
         for key, value in web.items():
-            webdb = dbname.web
             await webdb.insert_one({key: value})
     if os.path.exists("restart.pickle"):
         with open('restart.pickle', 'rb') as status:
