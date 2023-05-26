@@ -76,17 +76,17 @@ async def active_afk(self: Client, ctx: Message, strings):
                 )
             elif afktype == "text":
                 send = await ctx.reply_text(
-                    caption=strings("on_afk_msg_no_r").format(usr=ctx.from_user.mention, id=ctx.from_user.id, tm=seenago),
+                    strings("on_afk_msg_no_r").format(usr=ctx.from_user.mention, id=ctx.from_user.id, tm=seenago),
                     disable_web_page_preview=True,
                 )
             elif afktype == "text_reason":
                 send = await ctx.reply_text(
-                    caption=strings("on_afk_msg_with_r").format(usr=ctx.from_user.mention, id=ctx.from_user.id, tm=seenago, reas=reasonafk),
+                    strings("on_afk_msg_with_r").format(usr=ctx.from_user.mention, id=ctx.from_user.id, tm=seenago, reas=reasonafk),
                     disable_web_page_preview=True,
                 )
         except Exception:
             send = await ctx.reply_text(
-                strings("is_online").format(usr=ctx.from_user.first_name),
+                strings("is_online").format(usr=ctx.from_user.first_name, id=ctx.from_user.id),
                 disable_web_page_preview=True,
             )
         await put_cleanmode(ctx.chat.id, send.id)

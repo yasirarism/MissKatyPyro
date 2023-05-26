@@ -1,6 +1,7 @@
 import random
 import re
 import os
+import shutil
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import enums, filters
@@ -11,6 +12,7 @@ from misskaty import app
 from .web_scraper import SCRAP_DICT, data_kuso
 from .pypi_search import PYPI_DICT
 from .ytdl_plugins import YT_DB
+from utils import temp
 from misskaty.core.decorator.permissions import admins_in_chat
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
@@ -110,7 +112,7 @@ async def request_user(client, message):
         pass
 
 
-# To reduce cache
+# To reduce cache and disk
 async def clear_reqdict():
     SCRAP_DICT.clear()
     data_kuso.clear()
@@ -118,11 +120,9 @@ async def clear_reqdict():
     PYPI_DICT.clear()
     YT_DB.clear()
     admins_in_chat.clear()
-    try:
-        os.rmdir("downloads")
-        os.rmdir("GenSS")
-    except:
-        pass
+    temp.MELCOW.clear()
+    shutil.rmtree("downloads", ignore_errors=True)
+    shutil.rmtree("GensSS", ignore_errors=True)
 
 
 # @app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))

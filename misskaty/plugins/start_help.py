@@ -158,7 +158,7 @@ async def help_command(self: Client, ctx: Message, strings):
                     ]
                 )
                 await ctx.reply_msg(
-                    strings("click_btn"),
+                    strings("click_btn").format(nm=name),
                     reply_markup=key,
                 )
             else:

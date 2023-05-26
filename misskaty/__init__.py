@@ -32,7 +32,7 @@ misskaty_version = "v2.023.5.16 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
 
-# Pyrogram Bot Client (Disable temporary for mongodb session)
+# Pyrogram Bot Client
 app = Client(
     "MissKatyBot",
     api_id=API_ID,
@@ -51,6 +51,9 @@ jobstores = {"default": MongoDBJobStore(client=pymonclient, database=DATABASE_NA
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()
+BOT_ID = app.me.id
+BOT_NAME = app.me.first_name
+BOT_USERNAME = app.me.username
 if USER_SESSION:
     user.start()
     UBOT_ID = user.me.id
@@ -60,6 +63,3 @@ else:
     UBOT_ID = None
     UBOT_NAME = None
     UBOT_USERNAME = None
-BOT_ID = app.me.id
-BOT_NAME = app.me.first_name
-BOT_USERNAME = app.me.username

@@ -51,7 +51,7 @@ web = {
     "movieku": "https://107.152.37.223",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
-    "samehadaku": "https://samehadaku.cam",
+    "samehadaku": "https://samehadaku.day",
     "oplovers": "https://oploverz.top",
 }
 
@@ -308,7 +308,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
             data = await http.get(f"{web['melongmovie']}/?s={kueri}", headers=headers, follow_redirects=True)
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
-            return None, None
+            return None, 0, None
         bs4 = BeautifulSoup(data, "lxml")
         melongdata = []
         for res in bs4.select(".box"):

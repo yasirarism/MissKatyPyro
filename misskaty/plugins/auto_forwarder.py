@@ -79,8 +79,8 @@ async def ForwardMessage(client: user, msg: Message):
                 await ForwardMessage(client, msg)
             except Exception as err:
                 LOGGER.warning(f"#ERROR: {err}\n\nUnable to Forward Message to {str(FORWARD_TO_CHAT_ID[i])}, reason: <code>{err}</code>")
-    except Exception as err:
-        LOGGER.warning(f"#ERROR: {err}")
+    except:
+        pass
 
 
 @user.on_message((filters.text | filters.media) & filters.chat(FORWARD_FROM_CHAT_ID))

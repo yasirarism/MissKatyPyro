@@ -191,7 +191,7 @@ async def kang_sticker(self: Client, ctx: Message, strings):
                 sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[2:])))) or sticker_emoji
             resize = True
     else:
-        return await prog_msg.edit_msg(strings("kang_help"), del_in=5)
+        return await prog_msg.edit_msg(strings("kang_help"))
     try:
         if resize:
             filename = resize_image(filename)

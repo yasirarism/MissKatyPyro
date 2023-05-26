@@ -300,8 +300,7 @@ async def re_enable_chat(bot, message):
     await message.reply("Chat Succesfully re-enabled")
 
 
-# a function for trespassing into others groups, Inspired by a Vazha
-# Not to be used , But Just to showcase his vazhatharam.
+# Not to be used
 # @app.on_message(filters.command('invite') & filters.user(SUDO))
 async def gen_invite(bot, message):
     if len(message.command) == 1:
