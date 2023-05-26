@@ -24,6 +24,7 @@ from misskaty import (
     scheduler
 )
 from misskaty.plugins import ALL_MODULES
+from misskaty.plugins.web_scraper import web
 from misskaty.vars import SUDO, USER_SESSION
 from utils import auto_clean
 from database import dbname
