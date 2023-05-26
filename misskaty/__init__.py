@@ -3,6 +3,7 @@ from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from database import dbname
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from pyrogram import Client
@@ -49,7 +50,7 @@ user = Client(
 
 jobstores = {"default": MongoDBJobStore(client=pymonclient, database=DATABASE_NAME, collection="nightmode")}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
-
+        
 app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name

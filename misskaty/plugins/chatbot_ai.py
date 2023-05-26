@@ -31,7 +31,7 @@ async def chatbot(self: Client, ctx: Message, strings):
     num = 0
     answer = ""
     try:
-        response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo", messages=[{"role": "user", "content": pertanyaan}], temperature=0.2, stream=True)
+        response = await openai.ChatCompletion.acreate(model="gpt-3.5-turbo", messages=[{"role": "user", "content": pertanyaan}], temperature=0.7, stream=True)
         async for chunk in response:
             if not chunk.choices[0].delta or chunk.choices[0].delta.get("role"):
                 continue

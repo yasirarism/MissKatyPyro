@@ -55,7 +55,6 @@ web = {
     "oplovers": "https://oploverz.top",
 }
 
-
 def split_arr(arr, size: 5):
     arrs = []
     while len(arr) > size:

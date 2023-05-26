@@ -72,6 +72,10 @@ async def start_bot():
     except Exception as e:
         LOGGER.error(str(e))
     scheduler.start()
+    if "web" not in await dbname.list_collection_names():
+        for key, value in web.items():
+            webdb = dbname.web
+            await webdb.insert_one({key: value})
     if os.path.exists("restart.pickle"):
         with open('restart.pickle', 'rb') as status:
             chat_id, message_id = pickle.load(status)
