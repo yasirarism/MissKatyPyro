@@ -8,6 +8,7 @@ import re
 import logging
 import traceback
 import cloudscraper
+from database import dbname
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
 from pyrogram import filters, Client
@@ -39,12 +40,13 @@ headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 LOGGER = logging.getLogger(__name__)
 SCRAP_DICT = {}
 data_kuso = {}
+webdb = dbname.web
 
 web = {
     "yasirapi": "https://yasirapi.eu.org",
     "pahe": "https://pahe.li",
     "savefilm21": "https://savefilm21.store",
-    "melongmovie": "http://146.190.193.128",
+    "melongmovie": "https://melongmovie.site",
     "terbit21": "https://terbit21.art",
     "lk21": "https://nonton.lk21official.wiki",
     "gomov": "https://gomov.bio",
