@@ -119,29 +119,30 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if not reply or not reply.document and not (reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
-        return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=5)
-    msg = await ctx.reply_msg(strings("convert_str"), quote=True)
-    if not os.path.exists("downloads"):
-        os.makedirs("downloads")
-    dl = await reply.download(file_name="downloads/")
-    filename = dl.split("/", 3)[3]
-    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
-    (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.srt'"))[0]
-    c_time = time()
-    await ctx.reply_document(
-        f"downloads/{filename}.srt",
-        caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
-        thumb="assets/thumb.jpg",
-        progress=progress_for_pyrogram,
-        progress_args=(strings("up_str"), msg, c_time, self.me.dc_id),
-    )
-    await msg.delete_msg()
-    try:
-        os.remove(dl)
-        os.remove(f"downloads/{filename}.srt")
-    except:
-        pass
+    if replied and replied.document and (replied.document.file_name and replied.document.file_name.endswith(".vtt") or replied.document.file_name.endswith(".ass")):
+        msg = await ctx.reply_msg(strings("convert_str"), quote=True)
+        if not os.path.exists("downloads"):
+            os.makedirs("downloads")
+        dl = await reply.download(file_name="downloads/")
+        filename = dl.split("/", 3)[3]
+        LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
+        (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.srt'"))[0]
+        c_time = time()
+        await ctx.reply_document(
+            f"downloads/{filename}.srt",
+            caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
+            thumb="assets/thumb.jpg",
+            progress=progress_for_pyrogram,
+            progress_args=(strings("up_str"), msg, c_time, self.me.dc_id),
+        )
+        await msg.delete_msg()
+        try:
+            os.remove(dl)
+            os.remove(f"downloads/{filename}.srt")
+        except:
+            pass
+    else:
+        return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=6)
 
 
 @app.on_callback_query(filters.regex(r"^streamextract#"))
