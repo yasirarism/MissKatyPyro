@@ -12,6 +12,7 @@ import aiohttp
 from datetime import datetime
 from shutil import disk_usage
 from time import time
+from database.users_chats_db import db
 from inspect import getfullargspec
 from typing import Any, Optional, Tuple
 
@@ -313,6 +314,8 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
         user = users[update.user_id]
+        if update.stopped and await db.is_user_exist(user.id)::
+            await db.delete_user(user.id)
         await client.send_msg(LOG_CHANNEL, f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
 
 async def aexec(code, c, m):
