@@ -7,7 +7,7 @@
 # Base Docker
 FROM yasirarism/misskaty-docker:latest
 
-RUN hostname yasirvps
+ENV HOSTNAME yasirvps
 COPY . .
 # Set CMD Bot
 CMD ["bash", "start.sh"]
