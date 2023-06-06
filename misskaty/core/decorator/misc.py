@@ -1,4 +1,5 @@
 import asyncio
+from functools import wraps
 
 def asyncify(func):
     async def inner(*args, **kwargs):
