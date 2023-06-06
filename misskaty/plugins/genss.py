@@ -84,7 +84,7 @@ async def genss(self: Client, ctx: Message, strings):
             ms = (end_t - start_t).seconds
             await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
             try:
-                images = await take_ss(the_real_download_location)
+                images = await take_ss(download_file_path)
                 await process.edit_msg(strings("up_progress"))
                 await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
                 try:
@@ -109,14 +109,14 @@ async def genss(self: Client, ctx: Message, strings):
                 await pesan.delete()
                 try:
                     os.remove(images)
-                    os.remove(the_real_download_location)
+                    os.remove(download_file_path)
                 except:
                     pass
             except Exception as exc:
                 await ctx.reply_msg(strings("err_ssgen").format(exc=exc))
                 try:
                     os.remove(images)
-                    os.remove(the_real_download_location)
+                    os.remove(download_file_path)
                 except:
                     pass
     elif replied and replied.media:
