@@ -93,7 +93,10 @@ async def download(client, message):
             custom_file_name = custom_file_name.strip()
         download_file_path = os.path.join("downloads/", custom_file_name)
         downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
-        downloader.start(blocking=False)
+        try:
+            downloader.start(blocking=False)
+        except Exception as err:
+            return await ctx.edit(str(err))
         c_time = time.time()
         while not downloader.isFinished():
             total_length = downloader.filesize or None

@@ -48,7 +48,10 @@ async def genss(self: Client, ctx: Message, strings):
         file_name = os.path.basename(url)
         download_file_path = os.path.join("downloads/", file_name)
         downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
-        downloader.start(blocking=False)
+        try:
+            downloader.start(blocking=False)
+        except Exception as err:
+            return await ctx.edit(str(err))
         c_time = time.time()
         while not downloader.isFinished():
             total_length = downloader.filesize or None
