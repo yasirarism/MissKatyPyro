@@ -103,10 +103,9 @@ async def download(client, message):
             diff = now - c_time
             percentage = downloader.get_progress() * 100
             speed = downloader.get_speed(human=True)
-            round(diff) * 1000
             progress_str = "[{0}{1}]\nProgress: {2}%".format(
-                "".join(["█" for _ in range(math.floor(percentage / 5))]),
-                "".join(["░" for _ in range(20 - math.floor(percentage / 5))]),
+                "".join(["●" for _ in range(math.floor(percentage / 5))]),
+                "".join(["○" for _ in range(20 - math.floor(percentage / 5))]),
                 round(percentage, 2),
             )
 
