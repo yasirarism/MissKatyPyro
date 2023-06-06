@@ -12,7 +12,7 @@ from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboa
 from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.decorator.errors import asyncify, capture_err
+from misskaty.core.decorator import asyncify, capture_err
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT

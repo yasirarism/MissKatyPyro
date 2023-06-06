@@ -11,7 +11,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pySmartDL import SmartDL
 
 from misskaty import app
-from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator import capture_err, new_task
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
@@ -63,6 +63,7 @@ async def upload(bot, message):
 
 @app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user(SUDO))
 @capture_err
+@new_task
 async def download(client, message):
     pesan = await message.reply_text("Processing...", quote=True)
     if message.reply_to_message is not None:

@@ -9,15 +9,6 @@ from misskaty import app
 from misskaty.vars import LOG_CHANNEL
 
 
-def asyncify(func):
-    async def inner(*args, **kwargs):
-        loop = asyncio.get_running_loop()
-        func_out = await loop.run_in_executor(None, func, *args, **kwargs)
-        return func_out
-
-    return inner
-
-
 def split_limits(text):
     if len(text) < 2048:
         return [text]
