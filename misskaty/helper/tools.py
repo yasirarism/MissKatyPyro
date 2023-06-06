@@ -5,6 +5,7 @@ import time
 import logging
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
+from re import match as re_match
 
 import psutil
 
@@ -14,7 +15,7 @@ from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins import ALL_MODULES
 
 LOGGER = logging.getLogger(__name__)
-
+URL_REGEX = "(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])"
 GENRES_EMOJI = {
     "Action": "👊",
     "Adventure": random.choice(["🪂", "🧗‍♀", "🌋"]),
@@ -39,6 +40,11 @@ GENRES_EMOJI = {
     "Supernatural": "🫧",
     "Thriller": random.choice(["🥶", "🔪", "🤯"]),
 }
+
+
+def is_url(url):
+    url = re_match(URL_REGEX, url)
+    return bool(url)
 
 
 async def bot_sys_stats():
@@ -138,6 +144,3 @@ async def search_jw(movie_name: str, locale: str):
                 m_t_ = m_t_[:-2].strip()
             break
     return m_t_
-
-
-SUPPORTED_URL_REGEX = {r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])": "ddl"}

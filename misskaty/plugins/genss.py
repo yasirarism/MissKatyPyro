@@ -1,15 +1,15 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-import datetime
 import os
 import time
-from asyncio import gather, sleep, create_task
+from asyncio import gather, sleep
+from datetime import datetime
 from logging import getLogger
+from pySmartDL import SmartDL
 
 from pyrogram import enums, filters, Client
 from pyrogram.errors import FloodWait
@@ -17,9 +17,9 @@ from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.core.decorator import ratelimiter, new_task
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
-from misskaty.helper import gen_ik_buttons, get_duration, is_url, progress_for_pyrogram, screenshot_flink, take_ss
+from misskaty.helper import is_url, progress_for_pyrogram, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
@@ -34,26 +34,91 @@ __HELP__ = """"
 
 @app.on_message(filters.command(["genss"], COMMAND_HANDLER))
 @ratelimiter
+@new_task
 @use_chat_lang()
 async def genss(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return
     replied = ctx.reply_to_message
     if len(ctx.command) == 2 and is_url(ctx.command[1]):
-        snt = await ctx.reply_msg(strings("wait_msg"), quote=True)
-
-        duration = await get_duration(ctx.command[1])
-        if isinstance(duration, str):
-            return await snt.edit_msg(strings("fail_open"))
-        btns = gen_ik_buttons()
-        msg = await snt.edit_msg(strings("choose_no_ss").format(td=datetime.timedelta(seconds=duration), dur=duration), reply_markup=InlineKeyboardMarkup(btns))
-        try:
-            await msg.wait_for_click(
-                from_user_id=ctx.from_user.id,
-                timeout=30
+        pesan = await ctx.reply_msg(strings("wait_msg"), quote=True)
+        start_t = datetime.now()
+        the_url_parts = " ".join(message.command[1:])
+        url = the_url_parts.strip()
+        file_name = os.path.basename(url)
+        download_file_path = os.path.join("downloads/", file_name)
+        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader.start(blocking=False)
+        c_time = time.time()
+        while not downloader.isFinished():
+            total_length = downloader.filesize or None
+            downloaded = downloader.get_dl_size(human=True)
+            display_message = ""
+            now = time.time()
+            diff = now - c_time
+            percentage = downloader.get_progress() * 100
+            speed = downloader.get_speed(human=True)
+            progress_str = "[{0}{1}]\nProgress: {2}%".format(
+                "".join(["█" for _ in range(math.floor(percentage / 5))]),
+                "".join(["░" for _ in range(20 - math.floor(percentage / 5))]),
+                round(percentage, 2),
             )
-        except ListenerTimeout:
-            await msg.edit_msg(strings("exp_task", context="general"))
+
+            estimated_total_time = downloader.get_eta(human=True)
+            try:
+                current_message = "Trying to download...\n"
+                current_message += f"URL: <code>{url}</code>\n"
+                current_message += f"File Name: <code>{custom_file_name}</code>\n"
+                current_message += f"Speed: {speed}\n"
+                current_message += f"{progress_str}\n"
+                current_message += f"{downloaded} of {humanbytes(total_length)}\n"
+                current_message += f"ETA: {estimated_total_time}"
+                if round(diff % 10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True, text=current_message)
+                    display_message = current_message
+                    await sleep(10)
+            except Exception as e:
+                LOGGER.info(str(e))
+        if os.path.exists(download_file_path):
+            end_t = datetime.now()
+            ms = (end_t - start_t).seconds
+            await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
+            try:
+                images = await take_ss(the_real_download_location)
+                await process.edit_msg(strings("up_progress"))
+                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                try:
+                    await gather(
+                        *[
+                            ctx.reply_document(images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                        ]
+                    )
+                except FloodWait as e:
+                    await sleep(e.value)
+                    await gather(
+                        *[
+                            ctx.reply_document(images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                        ]
+                    )
+                await ctx.reply_msg(
+                    strings("up_msg").format(namma=ctx.from_user.mention, id=ctx.from_user.id, bot_uname=self.me.username),
+                    reply_to_message_id=ctx.id,
+                )
+                await pesan.delete()
+                try:
+                    os.remove(images)
+                    os.remove(the_real_download_location)
+                except:
+                    pass
+            except Exception as exc:
+                await ctx.reply_msg(strings("err_ssgen").format(exc=exc))
+                try:
+                    os.remove(images)
+                    os.remove(the_real_download_location)
+                except:
+                    pass
     elif replied and replied.media:
         vid = [replied.video, replied.document]
         media = next((v for v in vid if v is not None), None)
@@ -112,9 +177,3 @@ async def genss(self: Client, ctx: Message, strings):
                     pass
     else:
         await ctx.reply_msg(strings("no_reply"), del_in=6)
-
-
-@app.on_callback_query(filters.regex(r"^scht"))
-@ratelimiter
-async def genss_cb(self: Client, cb: CallbackQuery):
-    create_task(screenshot_flink(self, cb))
