@@ -110,20 +110,20 @@ async def download(client, message):
             )
 
             estimated_total_time = downloader.get_eta(human=True)
-            # try:
-            current_message = "Trying to download...\n"
-            current_message += f"URL: <code>{url}</code>\n"
-            current_message += f"File Name: <code>{custom_file_name}</code>\n"
-            current_message += f"Speed: {speed}\n"
-            current_message += f"{progress_str}\n"
-            current_message += f"{humanbytes(downloaded)} of {humanbytes(total_length)}\n"
-            current_message += f"ETA: {estimated_total_time}"
-            if round(diff % 10.00) == 0 and current_message != display_message:
-                await pesan.edit(disable_web_page_preview=True, text=current_message)
-                display_message = current_message
-                await asyncio.sleep(10)
-            # except Exception as e:
-            #     LOGGER.info(str(e))
+            try:
+                current_message = "Trying to download...\n"
+                current_message += f"URL: <code>{url}</code>\n"
+                current_message += f"File Name: <code>{custom_file_name}</code>\n"
+                current_message += f"Speed: {speed}\n"
+                current_message += f"{progress_str}\n"
+                current_message += f"{downloaded} of {humanbytes(total_length)}\n"
+                current_message += f"ETA: {estimated_total_time}"
+                if round(diff % 10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True, text=current_message)
+                    display_message = current_message
+                    await asyncio.sleep(10)
+            except Exception as e:
+                LOGGER.info(str(e))
         if os.path.exists(download_file_path):
             end_t = datetime.now()
             ms = (end_t - start_t).seconds
