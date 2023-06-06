@@ -80,7 +80,7 @@ async def getstickerid(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply("You're anon, unkang in my PM")
     if sticker := ctx.reply_to_message.sticker:
-        if str(ctx.from_user.id) in ctx.sticker.set_name:
+        if str(ctx.from_user.id) in sticker.set_name:
             return await ctx.reply_msg("This sticker is not your pack, don't do it..")
         pp = await ctx.reply_msg(strings("unkang_msg"))
         try:
