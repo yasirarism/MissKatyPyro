@@ -77,10 +77,14 @@ async def getstickerid(self: Client, ctx: Message):
 @ratelimiter
 @use_chat_lang()
 async def getstickerid(self: Client, ctx: Message, strings):
-    if ctx.reply_to_message.sticker:
+    if not ctx.from_user:
+        return await ctx.reply("You're anon, unkang in my PM")
+    if sticker := ctx.reply_to_message.sticker:
+        if str(ctx.from_user.id) in ctx.sticker.set_name:
+            return await ctx.reply_msg("This sticker is not your pack, don't do it..")
         pp = await ctx.reply_msg(strings("unkang_msg"))
         try:
-            decoded = FileId.decode(ctx.reply_to_message.sticker.file_id)
+            decoded = FileId.decode(sticker.file_id)
             sticker = InputDocument(
                 id=decoded.media_id,
                 access_hash=decoded.access_hash,
