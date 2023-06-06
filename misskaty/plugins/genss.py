@@ -11,6 +11,7 @@ from asyncio import gather, sleep
 from datetime import datetime
 from logging import getLogger
 from pySmartDL import SmartDL
+from urllib.parse import unquote
 
 from pyrogram import enums, filters, Client
 from pyrogram.errors import FloodWait
@@ -73,7 +74,7 @@ async def genss(self: Client, ctx: Message, strings):
             try:
                 current_message = "Trying to download...\n"
                 current_message += f"URL: <code>{url}</code>\n"
-                current_message += f"File Name: <code>{file_name}</code>\n"
+                current_message += f"File Name: <code>{unquote(file_name)}</code>\n"
                 current_message += f"Speed: {speed}\n"
                 current_message += f"{progress_str}\n"
                 current_message += f"{downloaded} of {humanbytes(total_length)}\n"
@@ -90,7 +91,7 @@ async def genss(self: Client, ctx: Message, strings):
             await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
             try:
                 images = await take_ss(download_file_path)
-                await process.edit_msg(strings("up_progress"))
+                await pesan.edit_msg(strings("up_progress"))
                 await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
                 try:
                     await gather(

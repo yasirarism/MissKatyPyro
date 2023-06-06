@@ -4,6 +4,7 @@ import os
 import time
 from datetime import datetime
 from logging import getLogger
+from urllib.parse import unquote
 
 from pyrogram import filters
 from pyrogram.file_id import FileId
@@ -116,7 +117,7 @@ async def download(client, message):
             try:
                 current_message = "Trying to download...\n"
                 current_message += f"URL: <code>{url}</code>\n"
-                current_message += f"File Name: <code>{custom_file_name}</code>\n"
+                current_message += f"File Name: <code>{unquote(custom_file_name)}</code>\n"
                 current_message += f"Speed: {speed}\n"
                 current_message += f"{progress_str}\n"
                 current_message += f"{downloaded} of {humanbytes(total_length)}\n"
