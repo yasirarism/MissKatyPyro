@@ -25,7 +25,7 @@ async def bard_chatbot(self: Client, ctx: Message, strings):
     data = {'message': ctx.input, 'session_id':'XAjzKUFvf_nQtNg4bt0pG54rCLnaWeJFE1_FXuQnVjNyfmjDhkKZyoqXqW5cgBmmnf8Eqg.'}
     try:
         req = await http.post("https://bard-api-rho.vercel.app/ask", json=data)
-        await msg.edit_msg(req.get("content"))
+        await msg.edit_msg(req.json().get("content"))
     except Exception as e:
         await msg.edit_msg(str(e))
 
