@@ -9,16 +9,26 @@ from pyrogram.errors import MessageTooLong
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper import post_to_telegraph, check_time_gap
+from misskaty.helper.http import http
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
+# This only for testing things, since maybe in future it will got blocked
+@app.on_message(filters.command("bard", COMMAND_HANDLER))
+async def bard_chatbot(self: Client, ctx: Message, strings):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
+    msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
+    data = {'message': ctx.input, 'session_id':'XAjzKUFvf_nQtNg4bt0pG54rCLnaWeJFE1_FXuQnVjNyfmjDhkKZyoqXqW5cgBmmnf8Eqg.'}
+    req = await http.post("https://bard-api-rho.vercel.app/ask", json=data)
+    await msg.edit_msg(req.get("content"))
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def chatbot(self: Client, ctx: Message, strings):
+async def openai_chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
