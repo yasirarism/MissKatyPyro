@@ -124,7 +124,7 @@ async def gsearch(client, message):
         # collect data
         data = []
 
-        for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc")
+        for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc"):
             link = result.find("div", class_ ="yuRUbf").find("a").get("href")
             title = result.find("div", class_ ="yuRUbf").find("h3").get_text()
             try:
