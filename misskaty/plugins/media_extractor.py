@@ -113,23 +113,24 @@ async def ceksub(self: Client, ctx: Message, strings):
         await pesan.edit_msg(strings("fail_extr_media"))
 
 
-@app.on_message(filters.command(["converttosrt"], COMMAND_HANDLER))
+@app.on_message(filters.command(["converttosrt", "converttoass"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if reply and reply.document and (reply.document.file_name and reply.document.file_name.endswith(".vtt") or reply.document.file_name.endswith(".ass")):
+    if reply and reply.document and (reply.document.file_name and reply.document.file_name.endswith((".vtt", ".ass", ".srt")):
         msg = await ctx.reply_msg(strings("convert_str"), quote=True)
         if not os.path.exists("downloads"):
             os.makedirs("downloads")
         dl = await reply.download(file_name="downloads/")
         filename = dl.split("/", 3)[3]
         LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
-        (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.srt'"))[0]
+        suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
+        (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
         c_time = time()
         await ctx.reply_document(
-            f"downloads/{filename}.srt",
+            f"downloads/{filename}.{suffix}",
             caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
@@ -138,7 +139,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
         await msg.delete_msg()
         try:
             os.remove(dl)
-            os.remove(f"downloads/{filename}.srt")
+            os.remove(f"downloads/{filename}.{suffix}")
         except:
             pass
     else:
