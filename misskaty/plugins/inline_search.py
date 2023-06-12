@@ -199,7 +199,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"}
         search_results = await http.get(f"https://www.google.com/search?q={judul}&num=20", headers=headers)
         soup = BeautifulSoup(search_results.text, "lxml")
         data = []

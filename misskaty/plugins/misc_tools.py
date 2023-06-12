@@ -114,7 +114,7 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " "Chrome/61.0.3163.100 Safari/537.36"}
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"}
         html = await http.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
             headers=headers,
