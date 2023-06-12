@@ -42,6 +42,8 @@ __HELP__ = """
 /readqr [reply to photo] - Read QR Code From Photo.
 /createqr [text] - Convert Text to QR Code.
 /anime [query] - Search title in myanimelist.
+/info - Get info user with Pic and full description if user set profile picture.
+/id - Get simple user ID.
 """
 
 
@@ -252,7 +254,7 @@ async def topho(client, message):
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
 @ratelimiter
 async def showid(client, message):
-    chat_type = message.chat.type
+    chat_type = message.chat.type.value
     if chat_type == "private":
         user_id = message.chat.id
         first = message.from_user.first_name

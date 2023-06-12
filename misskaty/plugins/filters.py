@@ -42,7 +42,7 @@ You can use markdown or html to save text too.
 """
 
 
-@app.on_message(filters.command("addfilter") & ~filters.private)
+@app.on_message(filters.command(["addfilter", "filter"]) & ~filters.private)
 @adminsOnly("can_change_info")
 @ratelimiter
 async def save_filters(_, m):
@@ -77,7 +77,7 @@ async def get_filterss(_, m):
     await m.reply_msg(msg)
 
 
-@app.on_message(filters.command("stopfilter") & ~filters.private)
+@app.on_message(filters.command(["stop", "stopfilter"]) & ~filters.private)
 @adminsOnly("can_change_info")
 @ratelimiter
 async def del_filter(_, m):

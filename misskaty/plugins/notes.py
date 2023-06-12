@@ -36,15 +36,15 @@ from misskaty.helper.functions import extract_text_and_keyb
 __MODULE__ = "Notes"
 __HELP__ = """/notes To Get All The Notes In The Chat.
 
-/addnote [NOTE_NAME] To Save A Note (Can be a sticker or text).
+(/save, /addnote) [NOTE_NAME] To Save A Note (Can be a sticker or text).
 
 #NOTE_NAME To Get A Note.
 
-/delnote [NOTE_NAME] To Delete A Note.
+(/clear, /delnote) [NOTE_NAME] To Delete A Note.
 """
 
 
-@app.on_message(filters.command("addnote") & ~filters.private)
+@app.on_message(filters.command(["addnote", "save"]) & ~filters.private)
 @adminsOnly("can_change_info")
 @ratelimiter
 async def save_notee(_, message):
@@ -113,7 +113,7 @@ async def get_one_note(_, message):
         await message.reply_sticker(_note["data"])
 
 
-@app.on_message(filters.command("delnote") & ~filters.private)
+@app.on_message(filters.command(["delnote", "clear"]) & ~filters.private)
 @adminsOnly("can_change_info")
 @ratelimiter
 async def del_note(_, message):
