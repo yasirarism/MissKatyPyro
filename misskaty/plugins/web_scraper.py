@@ -8,6 +8,7 @@ import re
 import logging
 import traceback
 import cloudscraper
+from cachetools import TTLCache
 from database import dbname
 from bs4 import BeautifulSoup
 from pykeyboard import InlineKeyboard, InlineButton
@@ -38,8 +39,8 @@ __HELP__ = """
 headers = {"User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
 
 LOGGER = logging.getLogger(__name__)
-SCRAP_DICT = {}
-data_kuso = {}
+SCRAP_DICT = TTLCache(maxsize=1000, ttl=1800)
+data_kuso = TTLCache(maxsize=1000, ttl=1800)
 webdb = dbname.web
 
 web = {

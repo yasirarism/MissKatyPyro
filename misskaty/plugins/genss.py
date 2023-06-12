@@ -54,7 +54,7 @@ async def genss(self: Client, ctx: Message, strings):
         try:
             downloader.start(blocking=False)
         except Exception as err:
-            return await ctx.edit(str(err))
+            return await pesan.edit(str(err))
         c_time = time.time()
         while not downloader.isFinished():
             total_length = downloader.filesize or None

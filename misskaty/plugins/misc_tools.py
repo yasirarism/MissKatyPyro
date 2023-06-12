@@ -124,11 +124,11 @@ async def gsearch(client, message):
         # collect data
         data = []
 
-        for result in soup.select(".tF2Cxc"):
-            title = result.select_one(".DKV0Md").text
-            link = result.select_one(".yuRUbf a")["href"]
+        for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc")
+            link = result.find("div", class_ ="yuRUbf").find("a").get("href")
+            title = result.find("div", class_ ="yuRUbf").find("h3").get_text()
             try:
-                snippet = result.select_one("#rso .lyLwlc").text
+                snippet = result.find("div", class_="VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc lEBKkf").get_text()
             except:
                 snippet = "-"
 
