@@ -4,7 +4,7 @@ from PIL import Image, ImageFont, ImageDraw
 
 __MODULE__ = "nulis"
 __HELP__ = f"""
-๏ Command: <code>{cmd}nulis</code> [reply to msg or after cmd]
+๏ Command: <code>/nulis</code> [reply to msg or after cmd]
 ◉ Desc: For those of you who are lazy to write.
 """
 
