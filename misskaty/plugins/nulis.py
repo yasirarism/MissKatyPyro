@@ -1,3 +1,4 @@
+import os
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 from PIL import Image, ImageFont, ImageDraw
