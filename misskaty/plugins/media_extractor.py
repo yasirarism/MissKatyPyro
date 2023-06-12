@@ -119,7 +119,7 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if reply and reply.document and (reply.document.file_name and reply.document.file_name.endswith((".vtt", ".ass", ".srt")):
+    if reply and reply.document and (reply.document.file_name and reply.document.file_name.endswith((".vtt", ".ass", ".srt"))):
         msg = await ctx.reply_msg(strings("convert_str"), quote=True)
         if not os.path.exists("downloads"):
             os.makedirs("downloads")
