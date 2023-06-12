@@ -1,6 +1,7 @@
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
 from PIL import Image, ImageFont, ImageDraw
+from pyrogram import filters
 
 __MODULE__ = "nulis"
 __HELP__ = """
