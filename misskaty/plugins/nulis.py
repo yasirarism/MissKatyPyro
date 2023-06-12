@@ -27,7 +27,7 @@ def text_set(text):
 async def handwrite(client, message):
     if message.reply_to_message and message.reply_to_message.text:
         txt = message.reply_to_message.text
-    elif message.command > 1:
+    elif len(message.command) > 1:
         txt = message.text.split(None, 1)[1]
     else:
         return await message.reply("Please reply to message or write after command to use Nulis CMD.")
