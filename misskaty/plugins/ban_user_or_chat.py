@@ -17,8 +17,7 @@ async def ban_reply(self: Client, ctx: Message):
 @app.on_message(filters.group & filters.incoming, group=3)
 @use_chat_lang()
 async def grp_bd(self: Client, ctx: Message, strings):
-    chck = await db.get_chat(ctx.chat.id)
-    if not chck:
+    if not await db.is_chat_exist(ctx.chat.id):
         total = await self.get_chat_members_count(ctx.chat.id)
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
         await self.send_message(
@@ -26,6 +25,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
             strings("log_bot_added", context="grup_tools").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
         )
         await db.add_chat(ctx.chat.id, ctx.chat.title)
+    chck = await db.get_chat(ctx.chat.id)
     if chck['is_disabled']:
         buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
         reply_markup = InlineKeyboardMarkup(buttons)
