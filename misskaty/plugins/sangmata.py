@@ -18,7 +18,7 @@ This feature inspired from SangMata Bot. I'm created simple detection to check u
 # Check user that change first_name, last_name and usernaname
 @app.on_message(
     filters.group & ~filters.bot & ~filters.via_bot,
-    group=3,
+    group=5,
 )
 @use_chat_lang()
 async def cek_mataa(self: Client, ctx: Message, strings):

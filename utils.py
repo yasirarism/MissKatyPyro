@@ -55,8 +55,6 @@ async def auto_clean():
 
 # temp db for banned
 class temp(object):
-    BANNED_USERS = []
-    BANNED_CHATS = []
     ME = None
     CURRENT = int(os.environ.get("SKIP", 2))
     CANCEL = False

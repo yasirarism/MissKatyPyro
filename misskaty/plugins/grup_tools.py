@@ -135,47 +135,9 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
             pass
 
 
-@app.on_message(filters.new_chat_members & filters.group)
+@app.on_message(filters.new_chat_members & filters.group, group=4)
 @use_chat_lang()
-async def save_group(bot, message, strings):
-    r_j_check = [u.id for u in message.new_chat_members]
-    if temp.ME in r_j_check:
-        if not await db.get_chat(message.chat.id):
-            total = await bot.get_chat_members_count(message.chat.id)
-            r_j = message.from_user.mention if message.from_user else "Anonymous"
-            await bot.send_message(
-                LOG_CHANNEL,
-                strings("log_bot_added").format(ttl=message.chat.title, cid=message.chat.id, tot=total, r_j=r_j),
-            )
-
-            await db.add_chat(message.chat.id, message.chat.title)
-        if message.chat.id in temp.BANNED_CHATS:
-            # Inspired from a boat of a banana tree
-            buttons = [[InlineKeyboardButton(strings("support_btn"), url=f"https://t.me/{SUPPORT_CHAT}")]]
-            reply_markup = InlineKeyboardMarkup(buttons)
-            k = await message.reply(
-                text=strings("chat_not_allowed"),
-                reply_markup=reply_markup,
-            )
-
-            try:
-                await k.pin()
-            except:
-                pass
-            await bot.leave_chat(message.chat.id)
-            return
-        buttons = [
-            [
-                InlineKeyboardButton(strings("help_btn"), url=f"https://t.me/{temp.U_NAME}?start=help"),
-                InlineKeyboardButton(strings("update_btn"), url="https://t.me/YasirPediaChannel"),
-            ]
-        ]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await message.reply_text(
-            text=strings("welcome_thanks").format(ttl=message.chat.title),
-            reply_markup=reply_markup,
-        )
-    else:
+async def greet_group(bot, message, strings):
         for u in message.new_chat_members:
             try:
                 pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
@@ -243,61 +205,6 @@ async def leave_a_chat(bot, message):
     except Exception as e:
         await message.reply(f"Error - {e}")
         await bot.leave_chat(chat)
-
-
-@app.on_message(filters.command("disable") & filters.user(SUDO))
-async def disable_chat(bot, message):
-    if len(message.command) == 1:
-        return await message.reply("Give me a chat id")
-    r = message.text.split(None)
-    if len(r) > 2:
-        reason = message.text.split(None, 2)[2]
-        chat = message.text.split(None, 2)[1]
-    else:
-        chat = message.command[1]
-        reason = "No reason Provided"
-    try:
-        chat_ = int(chat)
-    except:
-        return await message.reply("Give Me A Valid Chat ID")
-    cha_t = await db.get_chat(chat_)
-    if not cha_t:
-        return await message.reply("Chat Not Found In DB")
-    if cha_t["is_disabled"]:
-        return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
-    await db.disable_chat(chat_, reason)
-    temp.BANNED_CHATS.append(chat_)
-    await message.reply("Chat Succesfully Disabled")
-    try:
-        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
-        reply_markup = InlineKeyboardMarkup(buttons)
-        await bot.send_message(
-            chat_id=chat_,
-            text=f"<b>Hello Friends, \nMy admin has told me to leave from group so i go! If you wanna add me again contact my support group.</b> \nReason : <code>{reason}</code>",
-            reply_markup=reply_markup,
-        )
-        await bot.leave_chat(chat_)
-    except Exception as e:
-        await message.reply(f"Error - {e}")
-
-
-@app.on_message(filters.command("enable") & filters.user(SUDO))
-async def re_enable_chat(bot, message):
-    if len(message.command) == 1:
-        return await message.reply("Give me a chat id")
-    chat = message.command[1]
-    try:
-        chat_ = int(chat)
-    except:
-        return await message.reply("Give Me A Valid Chat ID")
-    sts = await db.get_chat(int(chat))
-    if not sts:
-        return await message.reply("Chat Not Found In DB !")
-    if not sts.get("is_disabled"):
-        return await message.reply("This chat is not yet disabled.")
-    await db.re_enable_chat(chat_)
-    temp.BANNED_CHATS.remove(chat_)
-    await message.reply("Chat Succesfully re-enabled")
 
 
 # Not to be used

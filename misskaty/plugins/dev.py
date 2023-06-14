@@ -39,6 +39,10 @@ __HELP__ = """
 /logs [int] - Check logs bot
 /shell [args] - Run Exec/Terminal CMD
 /download [link/reply_to_telegram_file] - Download file from Telegram
+/disablechat [chat id] - Remove blacklist group
+/enablechat [chat id] - Add Blacklist group
+/banuser [chat id] - Ban user and block user so cannot use bot
+/unbanuser [chat id] - Unban user and make their can use bot again
 
 **For Public Use**
 /stats - Check statistic bot
