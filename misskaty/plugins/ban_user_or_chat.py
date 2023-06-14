@@ -7,14 +7,14 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL, COMMAND_HANDLER
 
 
-@app.on_message(filters.private & filters.incoming, group=2)
+@app.on_message(filters.private & filters.incoming, group=-1)
 async def ban_reply(self: Client, ctx: Message):
     ban = await db.get_ban_status(ctx.from_user.id)
     if ban.get("is_banned"):
         await ctx.reply_msg(f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}')
 
 
-@app.on_message(filters.group & filters.incoming, group=3)
+@app.on_message(filters.group & filters.incoming, group=-2)
 @use_chat_lang()
 async def grp_bd(self: Client, ctx: Message, strings):
     if not await db.is_chat_exist(ctx.chat.id):
@@ -69,7 +69,7 @@ async def ban_a_user(bot, message):
         if jar['is_banned']:
             return await message.reply(f"{k.mention} is already banned\nReason: {jar['ban_reason']}")
         await db.ban_user(k.id, reason)
-        await message.reply(f"Successfully banned this {k.mention}!! Reason: jar['ban_reason']")
+        await message.reply(f"Successfully banned this {k.mention}!! Reason: {jar['ban_reason']}")
 
 
     
