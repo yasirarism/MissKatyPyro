@@ -12,6 +12,7 @@ async def ban_reply(self: Client, ctx: Message):
     ban = await db.get_ban_status(ctx.from_user.id)
     if ban.get("is_banned"):
         await ctx.reply_msg(f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}')
+    await ctx.stop_propagation()
 
 
 @app.on_message(filters.group & filters.incoming, group=-2)
@@ -39,6 +40,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         except:
             pass
         await self.leave_chat(ctx.chat.id)
+        await ctx.stop_propagation()
 
 
 @app.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
