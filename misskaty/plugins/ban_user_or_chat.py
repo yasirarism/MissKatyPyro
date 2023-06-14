@@ -41,7 +41,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         await self.leave_chat(ctx.chat.id)
 
 
-@Client.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -73,7 +73,7 @@ async def ban_a_user(bot, message):
 
 
     
-@Client.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
