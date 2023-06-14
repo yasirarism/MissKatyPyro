@@ -9,8 +9,10 @@ from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL, COMMAND_HANDLER
 
 @app.on_message(filters.incoming, group=-1)
 async def ban_reply(self: Client, ctx: Message):
+    if not ctx.from_user:
+        return
     ban = await db.get_ban_status(ctx.from_user.id)
-    if ban.get("is_banned"):
+    if ban.get("is_banned") and (ctx.chat.type.value == "private" or (ctx.chat.type.value == "supergroup" and ctx.command)):
         await ctx.reply_msg(f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}')
         await ctx.stop_propagation()
 
@@ -18,6 +20,8 @@ async def ban_reply(self: Client, ctx: Message):
 @app.on_message(filters.group & filters.incoming, group=-2)
 @use_chat_lang()
 async def grp_bd(self: Client, ctx: Message, strings):
+    if not ctx.from_user:
+        return
     if not await db.is_chat_exist(ctx.chat.id):
         total = await self.get_chat_members_count(ctx.chat.id)
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
@@ -71,7 +75,7 @@ async def ban_a_user(bot, message):
         if jar['is_banned']:
             return await message.reply(f"{k.mention} is already banned\nReason: {jar['ban_reason']}")
         await db.ban_user(k.id, reason)
-        await message.reply(f"Successfully banned user {k.mention}!! Reason: {jar['ban_reason']}")
+        await message.reply(f"Successfully banned user {k.mention}!! Reason: {reason}")
 
 
     
