@@ -18,7 +18,15 @@ async def ban_reply(self: Client, ctx: Message):
 @use_chat_lang()
 async def grp_bd(self: Client, ctx: Message, strings):
     chck = await db.get_chat(ctx.chat.id)
-    if chck:
+    if not chck:
+        total = await bot.get_chat_members_count(ctx.chat.id)
+        r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
+        await self.send_message(
+            LOG_CHANNEL,
+            strings("log_bot_added").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
+        )
+        await db.add_chat(ctx.chat.id, ctx.chat.title)
+    if cha_t['is_disabled']:
         buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
         reply_markup = InlineKeyboardMarkup(buttons)
         vazha = await db.get_chat(ctx.chat.id)
@@ -31,14 +39,6 @@ async def grp_bd(self: Client, ctx: Message, strings):
         except:
             pass
         await self.leave_chat(ctx.chat.id)
-    else:
-        total = await bot.get_chat_members_count(ctx.chat.id)
-        r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
-        await self.send_message(
-            LOG_CHANNEL,
-            strings("log_bot_added").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
-        )
-        await db.add_chat(ctx.chat.id, ctx.chat.title)
 
 
 @Client.on_message(filters.command('banuser') & filters.user(SUDO))
