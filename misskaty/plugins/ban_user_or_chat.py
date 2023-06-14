@@ -23,7 +23,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
         await self.send_message(
             LOG_CHANNEL,
-            strings("log_bot_added").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
+            strings("log_bot_added", context="grup_tools")).format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
         )
         await db.add_chat(ctx.chat.id, ctx.chat.title)
     if chck['is_disabled']:
