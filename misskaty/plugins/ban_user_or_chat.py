@@ -19,7 +19,7 @@ async def ban_reply(self: Client, ctx: Message):
 async def grp_bd(self: Client, ctx: Message, strings):
     chck = await db.get_chat(ctx.chat.id)
     if not chck:
-        total = await bot.get_chat_members_count(ctx.chat.id)
+        total = await self.get_chat_members_count(ctx.chat.id)
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
         await self.send_message(
             LOG_CHANNEL,
