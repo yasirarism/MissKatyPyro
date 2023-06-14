@@ -26,7 +26,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
             strings("log_bot_added").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
         )
         await db.add_chat(ctx.chat.id, ctx.chat.title)
-    if cha_t['is_disabled']:
+    if chck['is_disabled']:
         buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
         reply_markup = InlineKeyboardMarkup(buttons)
         vazha = await db.get_chat(ctx.chat.id)
