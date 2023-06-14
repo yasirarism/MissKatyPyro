@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import SUPPORT_CHAT
+from misskaty.vars import SUPPORT_CHAT, SUDO
 
 
 @app.on_message(filters.private & filters.incoming, group=2)
@@ -41,7 +41,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         await db.add_chat(ctx.chat.id, ctx.chat.title)
 
 
-@Client.on_message(filters.command('banuser') & filters.user(ADMINS))
+@Client.on_message(filters.command('banuser') & filters.user(SUDO))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -73,7 +73,7 @@ async def ban_a_user(bot, message):
 
 
     
-@Client.on_message(filters.command('unbanuser') & filters.user(ADMINS))
+@Client.on_message(filters.command('unbanuser') & filters.user(SUDO))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
