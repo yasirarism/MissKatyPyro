@@ -27,7 +27,7 @@ from pyrogram.types import ChatPermissions
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from wbb.core.decorator.permissions import adminsOnly, list_admins
+from misskaty.core.decorator.permissions import adminsOnly, list_admins
 from misskaty.helper.functions import get_urls_from_text
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
