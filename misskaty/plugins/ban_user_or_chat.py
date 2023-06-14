@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import SUPPORT_CHAT, SUDO
+from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL
 
 
 @app.on_message(filters.private & filters.incoming, group=2)
