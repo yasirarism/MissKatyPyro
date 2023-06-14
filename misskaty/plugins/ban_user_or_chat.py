@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL
+from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL, COMMAND_HANDLER
 
 
 @app.on_message(filters.private & filters.incoming, group=2)
@@ -41,7 +41,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         await self.leave_chat(ctx.chat.id)
 
 
-@Client.on_message(filters.command('banuser') & filters.user(SUDO))
+@Client.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -73,7 +73,7 @@ async def ban_a_user(bot, message):
 
 
     
-@Client.on_message(filters.command('unbanuser') & filters.user(SUDO))
+@Client.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply('Give me a user id / username')
@@ -104,7 +104,7 @@ async def unban_a_user(bot, message):
         await message.reply(f"Successfully unbanned ! Sudhrr ja babu {k.mention}")
 
 
-@app.on_message(filters.command("disablechat") & filters.user(SUDO))
+@app.on_message(filters.command("disablechat", COMMAND_HANDLER) & filters.user(SUDO))
 async def disable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -131,7 +131,7 @@ async def disable_chat(bot, message):
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat_,
-            text=f"<b>Hello Friends, \nMy admin has told me to leave from group so i go! If you wanna add me again contact my support group.</b> \nReason : <code>{reason}</code>",
+            text=f"<b>Hello Friends, \nMy owner has told me to leave from group so i go! If you wanna add me again contact my Owner.</b> \nReason : <code>{reason}</code>",
             reply_markup=reply_markup,
         )
         await bot.leave_chat(chat_)
@@ -139,7 +139,7 @@ async def disable_chat(bot, message):
         await message.reply(f"Error - {e}")
 
 
-@app.on_message(filters.command("enablechat") & filters.user(SUDO))
+@app.on_message(filters.command("enablechat", COMMAND_HANDLER) & filters.user(SUDO))
 async def re_enable_chat(bot: Client, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply("Give me a chat id")
