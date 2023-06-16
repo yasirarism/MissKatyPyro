@@ -16,7 +16,7 @@ from database.users_chats_db import db
 from inspect import getfullargspec
 from typing import Any, Optional, Tuple
 
-from psutil import cpu_percent, Process
+from psutil import cpu_percent, Process, cpu_count
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory, cpu_count, boot_time, net_io_counters
 
