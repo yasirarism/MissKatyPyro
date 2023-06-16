@@ -93,9 +93,9 @@ async def tg_lock(message, permissions: list, perm: str, lock: bool):
         if perm not in permissions:
             return await message.reply_text("Already locked.")
         permissions.remove(perm)
+    elif perm in permissions:
+        return await message.reply_text("Already Unlocked.")
     else:
-        if perm in permissions:
-            return await message.reply_text("Already Unlocked.")
         permissions.append(perm)
 
     permissions = {perm: True for perm in list(set(permissions))}
@@ -126,12 +126,7 @@ async def locks_func(_, message):
     permissions = await current_chat_permissions(chat_id)
 
     if parameter in data:
-        await tg_lock(
-            message,
-            permissions,
-            data[parameter],
-            bool(state == "lock"),
-        )
+        await tg_lock(message, permissions, data[parameter], state == "lock")
     elif parameter == "all" and state == "lock":
         await app.set_chat_permissions(chat_id, ChatPermissions())
         await message.reply_text(f"Locked Everything in {message.chat.title}")
@@ -161,10 +156,7 @@ async def locktypes(_, message):
     if not permissions:
         return await message.reply_text("No Permissions.")
 
-    perms = ""
-    for i in permissions:
-        perms += f"__**{i}**__\n"
-
+    perms = "".join(f"__**{i}**__\n" for i in permissions)
     await message.reply_text(perms)
 
 
@@ -180,8 +172,7 @@ async def url_detector(_, message):
     if user.id in mods or user.id in SUDO:
         return
 
-    check = get_urls_from_text(text)
-    if check:
+    if check := get_urls_from_text(text):
         permissions = await current_chat_permissions(chat_id)
         if "can_add_web_page_previews" not in permissions:
             try:

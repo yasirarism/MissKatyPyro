@@ -34,12 +34,11 @@ def get_readable_time(seconds: int) -> str:
 
 
 def get_readable_bitrate(bitrate_kbps):
-    if bitrate_kbps > 10000:
-        bitrate = str(round(bitrate_kbps / 1000, 2)) + " " + "Mb/s"
-    else:
-        bitrate = str(round(bitrate_kbps, 2)) + " " + "kb/s"
-
-    return bitrate
+    return (
+        f"{str(round(bitrate_kbps / 1000, 2))} Mb/s"
+        if bitrate_kbps > 10000
+        else f"{str(round(bitrate_kbps, 2))} kb/s"
+    )
 
 
 def get_readable_time2(seconds: int) -> str:

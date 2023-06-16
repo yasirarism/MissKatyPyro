@@ -411,11 +411,11 @@ async def getSame(msg, query, current_page, strings):
     try:
         index = int(current_page - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        sameresult = ""
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sameresult += f"<b>{index*6+c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
-        IGNORE_CHAR = "[]"
-        sameresult = "".join(i for i in sameresult if not i in IGNORE_CHAR)
+        sameresult = "".join(
+            f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
+            for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1)
+        )
+        sameresult = "".join(i for i in sameresult if i not in "[]")
         return sameresult, PageLen
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)

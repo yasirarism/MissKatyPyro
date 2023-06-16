@@ -34,9 +34,17 @@ async def down_page(url):
         releases = ""
         for i in range(2):
             r = release[i].text.strip()
-            releases = releases + f"\n{r}"
+            releases = f"{releases}\n{r}"
     except Exception:
         releases = ""
 
-    response = {"title": title, "imdb": imdb, "poster": poster, "author_name": author_name, "author_url": author_link, "download_url": download_url, "comments": comments, "releases": releases}
-    return response
+    return {
+        "title": title,
+        "imdb": imdb,
+        "poster": poster,
+        "author_name": author_name,
+        "author_url": author_link,
+        "download_url": download_url,
+        "comments": comments,
+        "releases": releases,
+    }
