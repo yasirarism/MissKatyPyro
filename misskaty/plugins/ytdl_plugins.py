@@ -17,7 +17,7 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, FF_MPEG_NAME
 
 LOGGER = getLogger(__name__)
-regex = recompile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})")
+regex = "^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
 YT_DB = {}
 
 
@@ -34,7 +34,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
         return await ctx.reply_msg(strings("no_channel"))
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_query"))
-    query = ctx.text.split(" ", maxsplit=1)[1]
+    query = ctx.text.split(" ", maxsplit=1)[1] if len(ctx.command) > 1 
     search_key = rand_key()
     YT_DB[search_key] = query
     search = await main.VideosSearch(query).next()
@@ -60,7 +60,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
     await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
 
 
-@app.on_message(filters.command(["ytdown"], COMMAND_HANDLER))
+@app.on_message(filters.command(["ytdown"], COMMAND_HANDLER) | filters.regex(YT_REGEX) & ~filters.channel)
 @capture_err
 @ratelimiter
 @use_chat_lang()
@@ -69,7 +69,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
         return await ctx.reply_msg(strings("no_channel"))
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
-    url = ctx.input
+    url = ctx.input if len(ctx.command) > 1 else ctx.text
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}") as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
@@ -166,7 +166,6 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
                 key=key[0],
                 downtype=media_type,
                 update=cq,
-                caption_link=video_link,
             )
         except DownloadFailedError as e:
             await cq.edit_message_caption(f"Download Failed - {e}")

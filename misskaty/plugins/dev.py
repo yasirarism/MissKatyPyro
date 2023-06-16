@@ -16,14 +16,15 @@ from database.users_chats_db import db
 from inspect import getfullargspec
 from typing import Any, Optional, Tuple
 
-from psutil import cpu_percent
+from psutil import cpu_percent, Process
 from psutil import disk_usage as disk_usage_percent
-from psutil import virtual_memory
+from psutil import virtual_memory, cpu_count, boot_time, net_io_counters
 
 from pyrogram import enums, filters, Client, __version__ as pyrover
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, InputMediaPhoto
 from pyrogram.raw.types import UpdateBotStopped
 from pykeyboard import InlineKeyboard, InlineButton
+from PIL import Image, ImageDraw, ImageFont
 
 from misskaty import app, user, botStartTime, misskaty_version, BOT_NAME
 from misskaty.helper.http import http
@@ -116,32 +117,86 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
-    try:
-        serverinfo = await http.get("https://ipinfo.io/json")
-        org = serverinfo.json()["org"]
-    except:
-        org = "N/A"
-    currentTime = get_readable_time(time() - botStartTime)
-    total, used, free = disk_usage(".")
-    total = get_readable_file_size(total)
-    used = get_readable_file_size(used)
-    free = get_readable_file_size(free)
-    neofetch = (await shell_exec("neofetch --stdout"))[0]
-    caption = f"""
-<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>
-<b>Bot Uptime:</b> <code>{currentTime}</code>
-<b>Pyrogram Version</b>: <code>{pyrover}</code>
-<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>
-<b>Server:</b> <code>{org}</code>
-<b>Total Disk Space:</b> <code>{total}</code>
-<b>Used:</b> <code>{used}({disk_usage_percent("/").percent}%)</code>
-<b>Free:</b> <code>{free}</code>
-<b>CPU Usage:</b> <code>{cpu_percent()}%</code>
-<b>RAM Usage:</b> <code>{virtual_memory().percent}%</code>
+    image = Image.open("assets/statsbg.jpg").convert("RGB")
+    IronFont = ImageFont.truetype("assets/IronFont.otf", 42)
+    draw = ImageDraw.Draw(image)
 
-<code>{neofetch}</code>
-"""
-    await ctx.reply_msg(caption)
+    def draw_progressbar(coordinate, progress):
+        progress = 110 + (progress * 10.8)
+        draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
+        draw.rectangle((120, coordinate, progress, coordinate - 25), fill="#FFFFFF")
+        draw.ellipse(
+            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
+        )
+
+    total, used, free = disk_usage_percent(".")
+    process = Process(os.getpid())
+
+    botuptime = get_readable_time(time() - BotStartTime)
+    osuptime = get_readable_time(time() - boot_time())
+    currentTime = get_readable_time(time() - botStartTime)
+    botusage = f"{round(process.memory_info()[0]/1024 ** 2)} MB"
+
+    upload = get_readable_file_size(net_io_counters().bytes_sent)
+    download = get_readable_file_size(net_io_counters().bytes_recv)
+
+    cpu_percentage = cpu_percent()
+    cpu_count = cpu_count()
+
+    ram_percentage = virtual_memory().percent
+    ram_total = get_readable_file_size(virtual_memory().total)
+    ram_used = get_readable_file_size(virtual_memory().used)
+
+    disk_percenatge = disk_usage("/").percent
+    disk_total = get_readable_file_size(total)
+    disk_used = get_readable_file_size(used)
+    disk_free = get_readable_file_size(free)
+
+    caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>**OS Uptime:** {osuptime}\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** {botusage}\n\n**Total Space:** {disk_total}\n**Free Space:** {disk_free}\n\n**Download:** {download}\n**Upload:** {upload}\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
+
+    start = datetime.now()
+    msg = await message.reply_photo(
+        photo="https://te.legra.ph/file/30a82c22854971d0232c7.jpg",
+        caption=caption,
+        quote=True,
+    )
+    end = datetime.now()
+
+    draw_progressbar(243, int(cpu_percentage))
+    draw.text(
+        (225, 153),
+        f"( {cpu_count} core, {cpu_percentage}% )",
+        (255, 255, 255),
+        font=IronFont,
+    )
+
+    draw_progressbar(395, int(disk_percenatge))
+    draw.text(
+        (335, 302),
+        f"( {disk_used} / {disk_total}, {disk_percenatge}% )",
+        (255, 255, 255),
+        font=IronFont,
+    )
+
+    draw_progressbar(533, int(ram_percentage))
+    draw.text(
+        (225, 445),
+        f"( {ram_used} / {ram_total} , {ram_percentage}% )",
+        (255, 255, 255),
+        font=IronFont,
+    )
+
+    draw.text((335, 600), f"{botuptime}", (255, 255, 255), font=IronFont)
+    draw.text(
+        (857, 607),
+        f"{(end-start).microseconds/1000} ms",
+        (255, 255, 255),
+        font=IronFont,
+    )
+
+    image.save("stats.png")
+    await msg.edit_media(media=InputMediaPhoto("stats.png", caption=caption))
+    os.remove("stats.png")
 
 
 @app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))

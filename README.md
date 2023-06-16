@@ -59,7 +59,7 @@ If you want help me fixing some error in my bot, you can make pull request to th
 | Basic Admin Feature |✔️|
 | AFK Feature |✔️|
 | Downloader FB, TikTok and YT-DLP Support  |✔️|
-| MultiLanguage Support (Still Beta) |⚠️|
+| MultiLanguage Support (Unfinished) |⚠️|
 | NightMode  |✔️|
 | ChatBot based on OpenAI |✔️|
 | MissKaty Mata |✔️|

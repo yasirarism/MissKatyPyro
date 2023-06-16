@@ -1,5 +1,29 @@
+"""
+MIT License
+
+Copyright (c) 2023 TheHamkerCat
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import asyncio
 import re
+import os
 from logging import getLogger
 from time import time
 
@@ -56,6 +80,9 @@ __HELP__ = """
 /unmute - Unmute A User
 /ban_ghosts - Ban Deleted Accounts
 /report | @admins | @admin - Report A Message To Admins.
+/set_chat_title - Change The Name Of A Group/Channel.
+/set_chat_photo - Change The PFP Of A Group/Channel.
+/set_user_title - Change The Administrator Title Of An Admin.
 """
 
 
@@ -704,3 +731,63 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
             continue
         text += f"<a href='tg://user?id={admin.user.id}>\u2063</a>"
     await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)
+
+
+@app.on_message(filters.command("set_chat_title", COMMAND_HANDLER) & ~filters.private)
+@adminsOnly("can_change_info")
+async def set_chat_title(self: Client, ctx: Message):
+    if len(ctx.command) < 2:
+        return await ctx.reply_text("**Usage:**\n/set_chat_title NEW NAME")
+    old_title = ctx.chat.title
+    new_title = ctx.text.split(None, 1)[1]
+    await ctx.chat.set_title(new_title)
+    await ctx.reply_text(
+        f"Successfully Changed Group Title From {old_title} To {new_title}"
+    )
+
+
+@app.on_message(filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
+@adminsOnly("can_change_info")
+async def set_user_title(self: Client, ctx: Message):
+    if not ctx.reply_to_message:
+        return await ctx.reply_text(
+            "Reply to user's message to set his admin title"
+        )
+    if not ctx.reply_to_message.from_user:
+        return await ctx.reply_text(
+            "I can't change admin title of an unknown entity"
+        )
+    chat_id = ctx.chat.id
+    from_user = ctx.reply_to_message.from_user
+    if len(ctx.command) < 2:
+        return await ctx.reply_text(
+            "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE"
+        )
+    title = ctx.text.split(None, 1)[1]
+    await app.set_administrator_title(chat_id, from_user.id, title)
+    await ctx.reply_text(
+        f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
+    )
+
+
+@app.on_message(filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
+@adminsOnly("can_change_info")
+async def set_chat_photo(self: Client, ctx: Message):
+    reply = ctx.reply_to_message
+
+    if not reply:
+        return await ctx.reply_text("Reply to a photo to set it as chat_photo")
+
+    file = reply.document or reply.photo
+    if not file:
+        return await ctx.reply_text(
+            "Reply to a photo or document to set it as chat_photo"
+        )
+
+    if file.file_size > 5000000:
+        return await ctx.reply("File size too large.")
+
+    photo = await reply.download()
+    await ctx.chat.set_photo(photo)
+    await ctx.reply_text("Successfully Changed Group Photo")
+    os.remove(photo)
