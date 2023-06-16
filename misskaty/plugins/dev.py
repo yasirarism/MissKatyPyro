@@ -255,7 +255,7 @@ async def ban_globally(self: Client, ctx: Message):
     await m.edit(f"Banned {user_mention} Globally!")
     ban_text = f"""
 __**New Global Ban**__
-**Origin:** {message.chat.title} [`{message.chat.id}`]
+**Origin:** {ctx.chat.title} [`{ctx.chat.id}`]
 **Admin:** {from_user.mention}
 **Banned User:** {user_mention}
 **Banned User ID:** `{user_id}`
