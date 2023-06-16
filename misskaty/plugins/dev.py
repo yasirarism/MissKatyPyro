@@ -25,7 +25,7 @@ from psutil import virtual_memory, cpu_count, boot_time, net_io_counters
 from pyrogram import enums, filters, Client, __version__ as pyrover
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, InputMediaPhoto
 from pyrogram.raw.types import UpdateBotStopped
-from pyrogram.errors import PeerIdInvalid
+from pyrogram.errors import PeerIdInvalid, FloodWait
 from pykeyboard import InlineKeyboard, InlineButton
 from PIL import Image, ImageDraw, ImageFont
 
