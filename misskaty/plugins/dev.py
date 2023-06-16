@@ -295,7 +295,7 @@ async def unban_globally(self: Client, ctx: Message):
     if not is_gbanned:
         await ctx.reply_text("I don't remember Gbanning him.")
     else:
-        await remove_gban_user(user)
+        await remove_gban_user(user_id)
         await ctx.reply_text(f"Lifted {user_mention}'s Global Ban.'")
 
 
