@@ -19,17 +19,17 @@ def get_readable_time(seconds: int) -> str:
     (days, remainder) = divmod(seconds, 86400)
     days = int(days)
     if days != 0:
-        result += f"{days} day "
+        result += f"{days} d "
     (hours, remainder) = divmod(remainder, 3600)
     hours = int(hours)
     if hours != 0:
-        result += f"{hours} hour "
+        result += f"{hours} h "
     (minutes, seconds) = divmod(remainder, 60)
     minutes = int(minutes)
     if minutes != 0:
-        result += f"{minutes} minute "
+        result += f"{minutes} m "
     seconds = int(seconds)
-    result += f"{seconds} second "
+    result += f"{seconds} s "
     return result
 
 
@@ -46,7 +46,7 @@ def get_readable_time2(seconds: int) -> str:
     count = 0
     ping_time = ""
     time_list = []
-    time_suffix_list = ["second", "minute", "hour", "day", "week", "month", "year"]
+    time_suffix_list = ["s", "m", "h", "d", "w", "m", "y"]
     while count < 4:
         count += 1
         remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
