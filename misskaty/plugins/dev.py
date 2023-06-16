@@ -147,7 +147,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     ram_total = get_readable_file_size(virtual_memory().total)
     ram_used = get_readable_file_size(virtual_memory().used)
 
-    disk_percenatge = disk_usage("/").percent
+    disk_percenatge = disk_usage_percent("/").percent
     disk_total = get_readable_file_size(total)
     disk_used = get_readable_file_size(used)
     disk_free = get_readable_file_size(free)
