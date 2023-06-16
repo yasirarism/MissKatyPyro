@@ -25,6 +25,7 @@ from psutil import virtual_memory, cpu_count, boot_time, net_io_counters
 from pyrogram import enums, filters, Client, __version__ as pyrover
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, InputMediaPhoto
 from pyrogram.raw.types import UpdateBotStopped
+from pyrogram.errors import PeerIdInvalid
 from pykeyboard import InlineKeyboard, InlineButton
 from PIL import Image, ImageDraw, ImageFont
 
@@ -216,21 +217,27 @@ async def ban_globally(self: Client, ctx: Message):
     if not reason:
         return await ctx.reply("No reason provided.")
 
-    user = await app.get_users(user_id)
+    try:
+        user = await app.get_users(user_id)
+        user_mention = user.mention
+        user_id = user.id
+    except PeerIdInvalid:
+        user_mention = int(user_id)
+        user_id = int(user_id)
+
     from_user = ctx.from_user
 
     if user_id in [from_user.id, self.me.id] or user_id in SUDO:
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
     m = await ctx.reply_text(
-        f"**Banning {user.mention} Globally!**"
-        + f" **This Action Should Take About {len(served_chats)} Seconds.**"
+        f"**Banning {user} Globally! This may take several times.**"
     )
     await add_gban_user(user_id)
     number_of_chats = 0
     for served_chat in served_chats:
         try:
-            await app.ban_chat_member(served_chat["chat_id"], user.id)
+            await app.ban_chat_member(served_chat["id"], user_id)
             number_of_chats += 1
             await asyncio.sleep(1)
         except FloodWait as e:
@@ -239,18 +246,18 @@ async def ban_globally(self: Client, ctx: Message):
             pass
     try:
         await app.send_message(
-            user.id,
+            user_id,
             f"Hello, You have been globally banned by {from_user.mention},"
             + " You can appeal for this ban by talking to him.",
         )
     except Exception:
         pass
-    await m.edit(f"Banned {user.mention} Globally!")
+    await m.edit(f"Banned {user_mention} Globally!")
     ban_text = f"""
 __**New Global Ban**__
 **Origin:** {message.chat.title} [`{message.chat.id}`]
 **Admin:** {from_user.mention}
-**Banned User:** {user.mention}
+**Banned User:** {user_mention}
 **Banned User ID:** `{user_id}`
 **Reason:** __{reason}__
 **Chats:** `{number_of_chats}`"""
@@ -261,7 +268,7 @@ __**New Global Ban**__
             disable_web_page_preview=True,
         )
         await m.edit(
-            f"Banned {user.mention} Globally!\nAction Log: {m2.link}",
+            f"Banned {user_mention} Globally!\nAction Log: {m2.link}",
             disable_web_page_preview=True,
         )
     except Exception:
@@ -276,14 +283,20 @@ async def unban_globally(self: Client, ctx: Message):
     user_id = await extract_user(ctx)
     if not user_id:
         return await ctx.reply_text("I can't find that user.")
-    user = await app.get_users(user_id)
+    try:
+        user = await app.get_users(user_id)
+        user_mention = user.mention
+        user_id = user.id
+    except PeerIdInvalid:
+        user_mention = int(user_id)
+        user_id = int(user_id)
 
-    is_gbanned = await is_gbanned_user(user.id)
+    is_gbanned = await is_gbanned_user(user_id)
     if not is_gbanned:
         await ctx.reply_text("I don't remember Gbanning him.")
     else:
-        await remove_gban_user(user.id)
-        await ctx.reply_text(f"Lifted {user.mention}'s Global Ban.'")
+        await remove_gban_user(user)
+        await ctx.reply_text(f"Lifted {user_mention}'s Global Ban.'")
 
 
 @app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
