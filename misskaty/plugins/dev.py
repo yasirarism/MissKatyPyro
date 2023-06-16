@@ -141,6 +141,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     download = get_readable_file_size(net_io_counters().bytes_recv)
 
     cpu_percentage = cpu_percent()
+    LOGGER.info(cpu_percentage)
     cpu_counts = cpu_count()
 
     ram_percentage = virtual_memory().percent
@@ -152,7 +153,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     disk_used = get_readable_file_size(used)
     disk_free = get_readable_file_size(free)
 
-    caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>**OS Uptime:** {osuptime}\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** {botusage}\n\n**Total Space:** {disk_total}\n**Free Space:** {disk_free}\n\n**Download:** {download}\n**Upload:** {upload}\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
+    caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>\n\n**OS Uptime:** <code>{osuptime}</code>\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** <code>{botusage}</code>\n\n**Total Space:** <code>{disk_total}</code>\n**Free Space:** <code>{disk_free}</code>\n\n**Download:** <code>{download}</code>\n**Upload:** <code>{upload}</code>\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
 
     start = datetime.now()
     msg = await ctx.reply_photo(
