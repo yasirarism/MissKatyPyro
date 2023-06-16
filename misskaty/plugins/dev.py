@@ -123,9 +123,11 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     draw = ImageDraw.Draw(image)
 
     def draw_progressbar(coordinate, progress):
+        coordinate = 243
+        progress = 563
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
-        draw.rectangle((120, coordinate, progress, coordinate - 25), fill="#FFFFFF")
+        draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
         draw.ellipse(
             (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
         )
@@ -164,7 +166,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     )
     end = datetime.now()
 
-    # draw_progressbar(243, int(cpu_percentage))
+    draw_progressbar(243, int(cpu_percentage))
     draw.text(
         (225, 153),
         f"( {cpu_counts} core, {cpu_percentage}% )",
