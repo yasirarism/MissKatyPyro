@@ -155,7 +155,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>**OS Uptime:** {osuptime}\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** {botusage}\n\n**Total Space:** {disk_total}\n**Free Space:** {disk_free}\n\n**Download:** {download}\n**Upload:** {upload}\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
 
     start = datetime.now()
-    msg = await message.reply_photo(
+    msg = await ctx.reply_photo(
         photo="https://te.legra.ph/file/30a82c22854971d0232c7.jpg",
         caption=caption,
         quote=True,
