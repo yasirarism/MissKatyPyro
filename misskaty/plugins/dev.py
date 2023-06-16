@@ -16,7 +16,7 @@ from database.users_chats_db import db
 from inspect import getfullargspec
 from typing import Any, Optional, Tuple
 
-from psutil import cpu_percent, Process, cpu_count
+from psutil import cpu_percent, Process
 from psutil import disk_usage as disk_usage_percent
 from psutil import virtual_memory, cpu_count, boot_time, net_io_counters
 
@@ -141,7 +141,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     download = get_readable_file_size(net_io_counters().bytes_recv)
 
     cpu_percentage = cpu_percent()
-    cpu_count = cpu_count()
+    cpu_counts = cpu_count()
 
     ram_percentage = virtual_memory().percent
     ram_total = get_readable_file_size(virtual_memory().total)
@@ -165,7 +165,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     draw_progressbar(243, int(cpu_percentage))
     draw.text(
         (225, 153),
-        f"( {cpu_count} core, {cpu_percentage}% )",
+        f"( {cpu_counts} core, {cpu_percentage}% )",
         (255, 255, 255),
         font=IronFont,
     )
