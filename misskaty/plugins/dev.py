@@ -231,11 +231,11 @@ async def ban_globally(self: Client, ctx: Message):
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
     m = await ctx.reply_text(
-        f"**Banning {user} Globally! This may take several times.**"
+        f"**Banning {user_mention} Globally! This may take several times.**"
     )
     await add_gban_user(user_id)
     number_of_chats = 0
-    for served_chat in served_chats:
+    async for served_chat in served_chats:
         try:
             await app.ban_chat_member(served_chat["id"], user_id)
             number_of_chats += 1
