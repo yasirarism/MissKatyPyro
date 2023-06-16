@@ -34,7 +34,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
         return await ctx.reply_msg(strings("no_channel"))
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_query"))
-    query = ctx.text.split(" ", maxsplit=1)[1] if len(ctx.command) > 1 
+    query = ctx.text.split(" ", maxsplit=1)[1]
     search_key = rand_key()
     YT_DB[search_key] = query
     search = await main.VideosSearch(query).next()
