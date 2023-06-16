@@ -218,7 +218,7 @@ async def banFunc(client, message, strings):
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def unban_func(_, message, strings):
+async def unban_func(self, message, strings):
     if not message.from_user:
         return
     # we don't need reasons for unban, also, we
@@ -231,7 +231,7 @@ async def unban_func(_, message, strings):
         return await message.reply_text(strings("unban_channel_err"))
 
     if len(message.command) == 2:
-        user = message.text.split(None, 1)[1]
+        user = int(message.text.split(None, 1)[1])
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
     else:
@@ -544,7 +544,7 @@ async def warn_user(client, message, strings):
         get_warn(chat_id, await int_to_alpha(user_id)),
     )
     mention = user.mention
-    keyboard = ikb({strings("rmwarn_btn"): f"unwarn_{user_id}"})
+    keyboard = ikb({strings("rm_warn_btn"): f"unwarn_{user_id}"})
     warns = warns["warns"] if warns else 0
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
@@ -620,12 +620,15 @@ async def unban_user(_, cq, strings):
             strings("no_permission_error").format(permissions=permission),
             show_alert=True,
         )
-    user_id = cq.data.split("_")[1]
+    user_id = int(cq.data.split("_")[1])
     text = cq.message.text.markdown
     text = f"~~{text}~~\n\n"
     text += strings("unban_msg").format(mention=from_user.mention)
-    await cq.message.chat.unban_member(user_id)
-    await cq.message.edit(text)
+    try:
+        await cq.message.chat.unban_member(user_id)
+        await cq.message.edit(text)
+    except Exception as e:
+        await cq.answer(str(e))
 
 
 # Remove Warn

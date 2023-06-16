@@ -236,7 +236,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
             data = await http.get(f"{web['savefilm21']}/?s={kueri}", headers=headers, follow_redirects=True)
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
-            return None, None
+            return None, 0, None
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:

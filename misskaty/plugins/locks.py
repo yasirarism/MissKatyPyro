@@ -185,9 +185,9 @@ async def url_detector(_, message):
         permissions = await current_chat_permissions(chat_id)
         if "can_add_web_page_previews" not in permissions:
             try:
-                await message.delete()
+                await message.delete_msg()
             except Exception:
-                await message.reply_text(
+                await message.reply_msg(
                     "This message contains a URL, "
                     + "but i don't have enough permissions to delete it"
                 )
