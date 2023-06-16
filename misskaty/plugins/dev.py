@@ -123,8 +123,6 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     draw = ImageDraw.Draw(image)
 
     def draw_progressbar(coordinate, progress):
-        coordinate = 243
-        progress = 563
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
         draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
@@ -144,7 +142,6 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     download = get_readable_file_size(net_io_counters().bytes_recv)
 
     cpu_percentage = cpu_percent()
-    logging.info(cpu_percentage)
     cpu_counts = cpu_count()
 
     ram_percentage = virtual_memory().percent
