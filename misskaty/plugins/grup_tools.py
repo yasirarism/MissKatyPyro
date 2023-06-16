@@ -233,7 +233,7 @@ async def adminlist(_, message):
     if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("Perintah ini hanya untuk grup")
     try:
-        msg = await m.reply_msg(f"Getting admin list in {message.chat.title}..")
+        msg = await message.reply_msg(f"Getting admin list in {message.chat.title}..")
         administrators = []
         async for m in app.get_chat_members(message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
             uname = f"@{m.user.username}" if m.user.username else ""
