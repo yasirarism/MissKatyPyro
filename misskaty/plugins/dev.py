@@ -129,7 +129,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
             (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
         )
 
-    total, used, free = disk_usage_percent(".")
+    total, used, free = disk_usage(".")
     process = Process(os.getpid())
 
     botuptime = get_readable_time(time() - BotStartTime)
