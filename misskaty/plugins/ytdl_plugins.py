@@ -67,7 +67,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
 async def ytdownv2(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(strings("no_channel"))
-    if len(ctx.command) == 1:
+    if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.input if len(ctx.command) > 1 else ctx.text
     async with iYTDL(log_group_id=0, cache_path="cache", ffmpeg_location=f"/usr/bin/{FF_MPEG_NAME}") as ytdl:
