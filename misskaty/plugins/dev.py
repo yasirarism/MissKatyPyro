@@ -211,13 +211,13 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
 @app.on_message(filters.command("gban", COMMAND_HANDLER) & filters.user(SUDO))
 async def ban_globally(self: Client, ctx: Message):
     user_id, reason = await extract_user_and_reason(ctx)
-    user = await app.get_users(user_id)
-    from_user = ctx.from_user
-
     if not user_id:
         return await ctx.reply_text("I can't find that user.")
     if not reason:
         return await ctx.reply("No reason provided.")
+
+    user = await app.get_users(user_id)
+    from_user = ctx.from_user
 
     if user_id in [from_user.id, self.me.id] or user_id in SUDO:
         return await ctx.reply_text("I can't ban that user.")
@@ -275,7 +275,7 @@ __**New Global Ban**__
 async def unban_globally(self: Client, ctx: Message):
     user_id = await extract_user(ctx)
     if not user_id:
-        return await message.reply_text("I can't find that user.")
+        return await ctx.reply_text("I can't find that user.")
     user = await app.get_users(user_id)
 
     is_gbanned = await is_gbanned_user(user.id)
