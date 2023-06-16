@@ -38,12 +38,11 @@ async def kusonimeBypass(url: str, slug=None):
             e = traceback.format_exc()
             LOGGER.error(e)
             title, season, tipe, status_anime, ep, score, duration, rilis = "None", "None", "None", "None", 0, 0, 0, "None"
-        num = 1
         genre = []
         for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
-        for smokedl in soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddlrh"}):
+        for num, smokedl in enumerate(soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddlrh"}), start=1):
             mendata = {"name": title, "links": []}
             for smokeurl in smokedl.find_all("div", {"class": "smokeurlrh"}):
                 quality = smokeurl.find("strong").text
@@ -54,12 +53,25 @@ async def kusonimeBypass(url: str, slug=None):
                     links.append({"client": client, "url": url})
                 mendata["links"].append({"quality": quality, "link_download": links})
             data.append(mendata)
-            num += 1
-        result.update({"error": False, "title": title, "thumb": thumb, "genre": genre, "genre_string": ", ".join(genre), "status_anime": status_anime, "season": season, "tipe": tipe, "ep": ep, "score": score, "duration": duration, "rilis": rilis, "data": data})
+        result |= {
+            "error": False,
+            "title": title,
+            "thumb": thumb,
+            "genre": genre,
+            "genre_string": ", ".join(genre),
+            "status_anime": status_anime,
+            "season": season,
+            "tipe": tipe,
+            "ep": ep,
+            "score": score,
+            "duration": duration,
+            "rilis": rilis,
+            "data": data,
+        }
     except Exception:
         err = traceback.format_exc()
         LOGGER.error(err)
-        result.update({"error": True, "error_message": err})
+        result |= {"error": True, "error_message": err}
     finally:
         await http.delete(_url)
         return result
@@ -68,7 +80,8 @@ async def kusonimeBypass(url: str, slug=None):
 async def byPassPh(url: str, name: str):
     kusonime = await kusonimeBypass(url)
     results = {"error": True, "error_message": kusonime}
-    template = """
+    if not kusonime["error"]:
+        template = """
 <img src={{{thumb}}}>
 
 <p><b>Title</b> : <code>{{title}}</code></p>
@@ -92,13 +105,12 @@ async def byPassPh(url: str, name: str):
     <br>
 {{/data}}
 """.strip()
-    if not kusonime["error"]:
         html = chevron.render(template, kusonime)
         telegraph = Telegraph()
         if not telegraph.get_access_token():
             await telegraph.create_account(short_name=BOT_USERNAME)
         page = await telegraph.create_page(f"{kusonime.get('title')} By {escape(name)}", html_content=html)
-        results.update({"error": False, "url": "https://telegra.ph/{}".format(page["path"])})
+        results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results
 

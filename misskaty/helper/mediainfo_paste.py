@@ -161,7 +161,7 @@ def html_builder(title: str, text: str) -> str:
     infobox = "<span class='container infobox'>"
     subtitlebox = "<span class='container subtitlebox'>"
     icon = "<img class='icons' src={icon_url} width='35px' height='35px' alt='' >"
-    html_msg = "<body>" + heading.format(content=title)
+    html_msg = f"<body>{heading.format(content=title)}"
 
     for line in text.splitlines():
         if ":" not in line and bool(line):
@@ -194,14 +194,10 @@ def html_builder(title: str, text: str) -> str:
             html_msg += subtitlebox if "Text #" in line else infobox
 
         elif ":" in line:
-            if "Attachments" in line:
-                pass
-            elif "ErrorDetectionType" in line:
-                pass
-            else:
+            if "Attachments" not in line and "ErrorDetectionType" not in line:
                 html_msg += f"<div><code>{line.strip()}</code></div>"
 
-        elif not bool(line):
+        else:
             html_msg += "</span>"
 
     html_msg += "</span>"
