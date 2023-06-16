@@ -258,7 +258,9 @@ async def unban_func(self, message, strings):
         return await message.reply_text(strings("unban_channel_err"))
 
     if len(message.command) == 2:
-        user = int(message.text.split(None, 1)[1])
+        user = message.text.split(None, 1)[1]
+        if not user.startswith("@"):
+            user = int(user)
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
     else:
