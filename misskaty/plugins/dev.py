@@ -132,7 +132,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
 
-    botuptime = get_readable_time(time() - BotStartTime)
+    botuptime = get_readable_time(time() - botStartTime)
     osuptime = get_readable_time(time() - boot_time())
     currentTime = get_readable_time(time() - botStartTime)
     botusage = f"{round(process.memory_info()[0]/1024 ** 2)} MB"
