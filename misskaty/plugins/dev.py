@@ -164,7 +164,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     )
     end = datetime.now()
 
-    draw_progressbar(243, int(cpu_percentage))
+    # draw_progressbar(243, int(cpu_percentage))
     draw.text(
         (225, 153),
         f"( {cpu_counts} core, {cpu_percentage}% )",
