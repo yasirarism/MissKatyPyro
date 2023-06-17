@@ -507,7 +507,7 @@ async def mute(client, message, strings):
         return await message.reply_text(strings("mute_admin_err"))
     mention = (await app.get_users(user_id)).mention
     keyboard = ikb({"🚨 Unmute 🚨": f"unmute_{user_id}"})
-    msg = strings("muted_msg").format(mention=mention, muter=message.from_user.mention if message.from_user else "Anon")
+    msg = strings("mute_msg").format(mention=mention, muter=message.from_user.mention if message.from_user else "Anon")
     if message.command[0] == "tmute":
         split = reason.split(None, 1)
         time_value = split[0]
@@ -601,7 +601,7 @@ async def remove_warning(_, cq, strings):
             strings("no_permission_error").format(permissions=permission),
             show_alert=True,
         )
-    user_id = cq.data.split("_")[1]
+    user_id = int(cq.data.split("_")[1])
     warns = await get_warn(chat_id, await int_to_alpha(user_id))
     if warns:
         warns = warns["warns"]
@@ -628,7 +628,7 @@ async def unmute_user(_, cq, strings):
             strings("no_permission_error").format(permissions=permission),
             show_alert=True,
         )
-    user_id = cq.data.split("_")[1]
+    user_id = int(cq.data.split("_")[1])
     text = cq.message.text.markdown
     text = f"~~{text}~~\n\n"
     text += strings("rmmute_msg").format(mention=from_user.mention)
