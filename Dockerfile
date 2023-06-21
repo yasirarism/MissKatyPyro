@@ -8,7 +8,7 @@ FROM yasirarism/misskaty-docker:latest
 
 ENV HOSTNAME yasirvps
 COPY . .
-RUN python -m venv /venv
+RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 RUN pip3 install -r requirements.txt
 # Set CMD Bot
