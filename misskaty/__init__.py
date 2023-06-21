@@ -34,8 +34,6 @@ cleanmode = {}
 botStartTime = time.time()
 misskaty_version = "v2.8.7 - Stable"
 
-pymonclient = MongoClient(DATABASE_URI)
-
 # Pyrogram Bot Client
 app = Client(
     "MissKatyBot",
@@ -51,7 +49,7 @@ user = Client(
     session_string=USER_SESSION,
 )
 
-jobstores = {"default": MongoDBJobStore(client=pymonclient, database=DATABASE_NAME, collection="nightmode")}
+jobstores = {"default": MongoDBJobStore(client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode")}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
         
 app.start()
