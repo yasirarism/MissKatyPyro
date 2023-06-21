@@ -32,7 +32,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.8.1 - Stable"
+misskaty_version = "v2.8.7 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
 
@@ -42,7 +42,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(uri=DATABASE_URI, remove_peers=False),
+    mongodb=dict(AsyncIOMotorClient(DATABASE_URI), remove_peers=False),
 )
 
 # Pyrogram UserBot Client
