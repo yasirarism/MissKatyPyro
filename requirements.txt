@@ -2,7 +2,7 @@ emoji
 git+https://github.com/yasirarism/pyrofork
 tgcrypto
 async_pymongo
-mongo
+pymongo
 python-dotenv
 motor[srv]>=3.1.2
 requests
