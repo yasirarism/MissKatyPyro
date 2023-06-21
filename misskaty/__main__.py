@@ -73,7 +73,7 @@ async def start_bot():
                 )
     except Exception as e:
         LOGGER.error(str(e))
-    scheduler.start()
+    await scheduler.start()
     if "web" not in await dbname.list_collection_names():
         webdb = dbname.web
         for key, value in web.items():
