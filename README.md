@@ -108,7 +108,7 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt --break-system-packages
 ```
-- Setting your config.env or via environment. Dont forget fill all required value and need fill *FF_MPEG_NAME* and *VCSI_NAME* if you're deploying using this method.
+- Setting your config.env or via environment and dont forget fill all required value.
 - Run Bot
 ```
 bash start.sh

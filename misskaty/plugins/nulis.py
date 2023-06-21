@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import os
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
@@ -6,8 +10,8 @@ from pyrogram import filters
 
 __MODULE__ = "nulis"
 __HELP__ = """
-๏ Command: <code>/nulis</code> [reply to msg or after cmd]
-◉ Desc: For those of you who are lazy to write.
+Command: <code>/nulis</code> [reply to msg or after cmd]
+Desc: For those of you who are lazy to write.
 """
 
 def text_set(text):

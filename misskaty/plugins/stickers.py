@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import asyncio
 import os
 import re
@@ -17,7 +21,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, FF_MPEG_NAME
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"
 __HELP__ = """
@@ -339,7 +343,7 @@ async def convert_video(filename: str) -> str:
     downpath, f_name = os.path.split(filename)
     webm_video = os.path.join(downpath, f"{f_name.split('.', 1)[0]}.webm")
     cmd = [
-        FF_MPEG_NAME,
+        "ffmpeg",
         "-loglevel",
         "quiet",
         "-i",

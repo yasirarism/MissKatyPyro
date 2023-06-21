@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import sys, os, requests
 from dotenv import load_dotenv
 from logging import getLogger
@@ -44,8 +48,6 @@ except Exception as e:
     sys.exit(1)
 
 USER_SESSION = environ.get("USER_SESSION")
-FF_MPEG_NAME = environ.get("FF_MPEG_NAME", "mediaextract")
-VCSI_NAME = environ.get("VCSI_NAME", "ssmedia")
 DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()

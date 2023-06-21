@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2023-01-23 19:41:27
- * @lastModified  2023-01-23 19:41:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """

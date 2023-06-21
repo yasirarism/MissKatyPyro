@@ -24,7 +24,7 @@ from misskaty.helper.tools import get_random_string
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins.dev import shell_exec
-from misskaty.vars import COMMAND_HANDLER, FF_MPEG_NAME
+from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
 
@@ -134,7 +134,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
     filename = dl.split("/", 3)[3]
     LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
-    (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
+    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
     c_time = time()
     await ctx.reply_document(
         f"downloads/{filename}.{suffix}",
@@ -177,7 +177,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     namafile = get_subname(lang, link, ext)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        (await shell_exec(f"{FF_MPEG_NAME} -i {link} -map {map} '{namafile}'"))[0]
+        (await shell_exec(f"ffmpeg -i {link} -map {map} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(
