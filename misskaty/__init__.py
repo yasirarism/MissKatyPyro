@@ -8,7 +8,7 @@ from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import MongoClient
+from async_pymongo import AsyncClient
 from pyrogram import Client
 
 from misskaty.core import misskaty_patch
@@ -35,7 +35,6 @@ botStartTime = time.time()
 misskaty_version = "v2.8.7 - Stable"
 
 pymonclient = MongoClient(DATABASE_URI)
-conn = AsyncIOMotorClient(DATABASE_URI)
 
 # Pyrogram Bot Client
 app = Client(
@@ -43,7 +42,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict("MissKatyBot", connection=conn, remove_peers=False),
+    mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
 )
 
 # Pyrogram UserBot Client
