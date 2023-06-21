@@ -1,4 +1,5 @@
 import asyncio
+import os
 import traceback
 from functools import wraps
 from datetime import datetime
@@ -30,13 +31,13 @@ def capture_err(func):
 
             cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
             await message.reply("😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience...")
-            with open(f"crash_{tgl_now.strftime('%d %B %Y')}.log", "w+", encoding="utf-8") as log:
+            with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8") as log:
                 log.write(error_feedback)
                 log.close()
             await app.send_document(
-                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.log", caption=f"Crash Report of this Bot\n{cap_day}"
+                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption=f"Crash Report of this Bot\n{cap_day}"
             )
-            os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.log")
+            os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
             raise err
 
     return capture

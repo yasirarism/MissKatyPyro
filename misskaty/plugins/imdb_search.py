@@ -10,7 +10,7 @@ from utils import demoji
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters, enums, Client
-from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty, MessageIdInvalid
+from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty, MessageIdInvalid, MediaCaptionTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message, CallbackQuery
 
 from database.imdb_db import *
@@ -61,11 +61,15 @@ async def imdb_choose(self: Client, ctx: Message):
         await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
     except ListenerTimeout:
         del LIST_CARI[ranval]
-        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        try:
+            await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        except MessageIdInvalid:
+            pass
 
 
 @app.on_callback_query(filters.regex("^imdbset"))
 @ratelimiter
+@capture_err
 async def imdbsetlang(self: Client, query: CallbackQuery):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -86,11 +90,15 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
             timeout=30
         )
     except ListenerTimeout:
-        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        try:
+            await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        except MessageIdInvalid:
+            pass
 
 
 @app.on_callback_query(filters.regex("^setimdb"))
 @ratelimiter
+@capture_err
 async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -161,7 +169,10 @@ async def imdb_search_id(kueri, message):
                 timeout=30
             )
         except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            try:
+                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            except MessageIdInvalid:
+                pass
     except Exception as err:
         await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
@@ -218,13 +229,17 @@ async def imdb_search_en(kueri, message):
                 timeout=30
             )
         except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            try:
+                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            except MessageIdInvalid:
+                pass
     except Exception as err:
         await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbcari"))
 @ratelimiter
+@capture_err
 async def imdbcari(self: Client, query: CallbackQuery):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
@@ -271,7 +286,10 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     timeout=30
                 )
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                except MessageIdInvalid:
+                    pass
         except Exception as err:
             await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
@@ -317,13 +335,17 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     timeout=30
                 )
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                except MessageIdInvalid:
+                    pass
         except Exception as err:
             await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
 @ratelimiter
+@capture_err
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -429,20 +451,19 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+            except MediaCaptionTooLong:
+                await query.message.reply(res_str)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except (MessageNotModified, MessageIdInvalid):
         pass
-    except Exception as exc:
-        err = traceback.format_exc(limit=20)
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nSilahkan lapor ke owner detail errornya dengan lengkap, atau laporan error akan diabaikan.")
-        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Indonesia:\n<code>{str(err)}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
 @ratelimiter
+@capture_err
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -547,13 +568,11 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+            except MediaCaptionTooLong:
+                await query.message.reply(res_str)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except (MessageNotModified, MessageIdInvalid):
         pass
-    except Exception as exc:
-        err = traceback.format_exc(limit=20)
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nPlease report to owner with detail of error, or your report will be ignored.")
-        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Eng:\n<code>{str(err)}</code>")

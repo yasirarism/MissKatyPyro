@@ -160,13 +160,13 @@ async def memify(client, message):
                 hapus(png)
             except:
                 pass
-            await message.reply(f"ERROR: {err}")
+            await message.reply_msg(f"ERROR: {err}")
     else:
-        await message.reply("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
+        await message.reply_msg("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
 
 
 @app.on_message(filters.command(["dice"], COMMAND_HANDLER))
 @use_chat_lang()
 async def dice(c, m, strings):
     dices = await c.send_dice(m.chat.id, reply_to_message_id=m.id)
-    await dices.reply_text(strings("result").format(number=dices.dice.value), quote=True)
+    await dices.reply_msg(strings("result").format(number=dices.dice.value), quote=True)

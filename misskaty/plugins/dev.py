@@ -7,6 +7,7 @@ import html
 import pickle
 import json
 import traceback
+import contextlib
 import cloudscraper
 import aiohttp
 import logging
@@ -365,6 +366,10 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                 kwargs["file"] = out_buf
             return print(*args, **kwargs)
 
+        def _help(*args: Any, **kwargs: Any) -> None:
+            with contextlib.redirect_stdout(out_buf):
+                help(*args, **kwargs)
+
         eval_vars = {
             "self": self,
             "humantime": humantime,
@@ -383,6 +388,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "traceback": traceback,
             "http": http,
             "replied": ctx.reply_to_message,
+            "help": _help,
         }
         eval_vars.update(var)
         eval_vars.update(teskode)

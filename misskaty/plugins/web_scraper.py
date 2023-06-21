@@ -427,6 +427,8 @@ async def getSame(msg, query, current_page, strings):
 @ratelimiter
 @use_chat_lang()
 async def same_search(client, msg, strings):
+    if not msg.from_user:
+        return await msg.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
     bmsg = await msg.reply_msg(strings("get_data"), quote=True)
     sameres, PageLen = await getSame(bmsg, query, 1, strings)
@@ -443,6 +445,8 @@ async def same_search(client, msg, strings):
 @ratelimiter
 @use_chat_lang()
 async def terbit21_s(client, message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = None
@@ -462,7 +466,8 @@ async def terbit21_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def lk21_s(client, message, strings):
-    message.chat.id
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = None
@@ -482,7 +487,8 @@ async def lk21_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def pahe_s(client, message, strings):
-    message.chat.id
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -502,6 +508,8 @@ async def pahe_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def gomov_s(client, message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -523,6 +531,8 @@ async def gomov_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def melong_s(client, message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -547,6 +557,8 @@ async def melong_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def savefilm_s(client, message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -568,6 +580,8 @@ async def savefilm_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def kusonime_s(client, message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -591,6 +605,8 @@ async def kusonime_s(client, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def lendrive_s(self: Client, ctx: Message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -612,6 +628,8 @@ async def lendrive_s(self: Client, ctx: Message, strings):
 @ratelimiter
 @use_chat_lang()
 async def movieku_s(self: Client, ctx: Message, strings):
+    if not message.from_user:
+        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -638,7 +656,7 @@ async def savefilmpage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         savefilmres, PageLen, btn = await getDataSavefilm21(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
@@ -665,7 +683,7 @@ async def kusopage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         kusores, PageLen, btn1, btn2 = await getDataKuso(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
@@ -694,7 +712,7 @@ async def moviekupage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         lendres, PageLen, btn = await getDataLendrive(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
@@ -721,7 +739,7 @@ async def moviekupage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"), True)
+        return await callback_query.message.edit_msg(strings("invalid_cb"), True)
 
     try:
         moviekures, PageLen = await getDataMovieku(callback_query.message, kueri, CurrentPage, strings)
@@ -745,7 +763,7 @@ async def samepg(client, query, strings):
     try:
         lquery = SCRAP_DICT[int(_id)][1]
     except KeyError:
-        return await query.answer(strings("invalid_cb"))
+        return await query.message.edit_msg(strings("invalid_cb"))
     try:
         sameres, PageLen = await getSame(query.message, lquery, int(current_page), strings)
     except TypeError:
@@ -768,7 +786,7 @@ async def terbit21page_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         terbitres, PageLen = await getDataTerbit21(callback_query.message, kueri, CurrentPage, strings)
@@ -793,7 +811,7 @@ async def melongpage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         terbitres, PageLen, btn = await getDataMelong(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
@@ -820,7 +838,7 @@ async def lk21page_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         lkres, PageLen = await getDatalk21(callback_query.message, kueri, CurrentPage, strings)
@@ -845,7 +863,7 @@ async def pahepage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         lkres, PageLen = await getDataPahe(callback_query.message, kueri, CurrentPage, strings)
@@ -870,7 +888,7 @@ async def gomovpage_callback(client, callback_query, strings):
     try:
         kueri = SCRAP_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     try:
         gomovres, PageLen, btn = await getDataGomov(callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings)
@@ -899,8 +917,7 @@ async def kusonime_scrap(client, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
-        await callback_query.message.delete()
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     kuso = Kusonime()
     keyboard = InlineKeyboard()
@@ -933,7 +950,7 @@ async def savefilm21_scrap(_, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton(strings("back_btn"), f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
@@ -987,7 +1004,7 @@ async def melong_scrap(_, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton(strings("back_btn"), f"page_melong#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
@@ -1017,7 +1034,7 @@ async def gomov_dl(_, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton(strings("back_btn"), f"page_gomov#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))
@@ -1047,7 +1064,7 @@ async def lendrive_dl(_, callback_query, strings):
     try:
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
-        return await callback_query.answer(strings("invalid_cb"))
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
 
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton(strings("back_btn"), f"page_lendrive#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"))

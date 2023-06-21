@@ -6,6 +6,7 @@ from iytdl import iYTDL, main, Process
 from iytdl.exceptions import DownloadFailedError
 from iytdl.constants import YT_VID_URL
 from pyrogram import filters, Client
+from pyrogram.errors import MessageIdInvalid
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message
 
 from misskaty import app
@@ -170,7 +171,10 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         except DownloadFailedError as e:
             await cq.edit_message_caption(f"Download Failed - {e}")
         except Exception as err:
-            await cq.edit_message_caption(f"Download Failed for url -> {video_link}\n\n<b>ERROR:</b> <code>{err}</code>")
+            try:
+                await cq.edit_message_caption(f"Download Failed for url -> {video_link}\n\n<b>ERROR:</b> <code>{err}</code>")
+            except MessageIdInvalid:
+                pass
 
 
 @app.on_callback_query(filters.regex(r"^yt_cancel"))

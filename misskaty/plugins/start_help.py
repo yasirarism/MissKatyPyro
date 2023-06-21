@@ -68,30 +68,12 @@ keyboard = InlineKeyboardMarkup(
 @use_chat_lang()
 async def start(self: Client, ctx: Message, strings):
     if ctx.chat.type.value != "private":
-        if not await db.get_chat(ctx.chat.id):
-            try:
-                total = await app.get_chat_members_count(ctx.chat.id)
-            except ChannelPrivate:
-                return await ctx.chat.leave()
-            await app.send_message(
-                LOG_CHANNEL,
-                strings("newgroup_log").format(jdl=ctx.chat.title, id=ctx.chat.id, c=total),
-            )
-
-            await db.add_chat(ctx.chat.id, ctx.chat.title)
         nama = ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title
         return await ctx.reply_photo(
             photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
             caption=strings("start_msg").format(kamuh=nama),
             reply_markup=keyboard,
         )
-    if not await db.is_user_exist(ctx.from_user.id):
-        await db.add_user(ctx.from_user.id, ctx.from_user.first_name)
-        await app.send_message(
-            LOG_CHANNEL,
-            strings("newuser_log").format(id=ctx.from_user.id, nm=ctx.from_user.mention),
-        )
-
     if len(ctx.text.split()) > 1:
         name = (ctx.text.split(None, 1)[1]).lower()
         if "_" in name:
@@ -136,14 +118,6 @@ async def stats_callbacc(self: Client, cb: CallbackQuery):
 @use_chat_lang()
 async def help_command(self: Client, ctx: Message, strings):
     if ctx.chat.type.value != "private":
-        if not await db.get_chat(ctx.chat.id):
-            total = await app.get_chat_members_count(ctx.chat.id)
-            await app.send_message(
-                LOG_CHANNEL,
-                strings("newgroup_log").format(jdl=ctx.chat.title, id=ctx.chat.id, c=total),
-            )
-
-            await db.add_chat(ctx.chat.id, ctx.chat.title)
         if len(ctx.command) >= 2:
             name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:
@@ -166,13 +140,6 @@ async def help_command(self: Client, ctx: Message, strings):
         else:
             await ctx.reply_msg(strings("pm_detail"), reply_markup=keyboard)
     else:
-        if not await db.is_user_exist(ctx.from_user.id):
-            await db.add_user(ctx.from_user.id, ctx.from_user.first_name)
-            await app.send_message(
-                LOG_CHANNEL,
-                strings("newuser_log").format(id=ctx.from_user.id, nm=ctx.from_user.mention),
-            )
-
         if len(ctx.command) >= 2:
             name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
             if str(name) in HELPABLE:

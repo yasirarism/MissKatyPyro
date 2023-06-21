@@ -1,4 +1,5 @@
 from pyrogram import filters, Client
+from pyrogram.errors import ChannelPrivate
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database.users_chats_db import db
@@ -23,7 +24,10 @@ async def grp_bd(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return
     if not await db.is_chat_exist(ctx.chat.id):
-        total = await self.get_chat_members_count(ctx.chat.id)
+        try:
+            total = await self.get_chat_members_count(ctx.chat.id)
+        except ChannelPrivate:
+            await ctx.stop_propagation()
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
         await self.send_message(
             LOG_CHANNEL,
