@@ -6,7 +6,7 @@
 # Base Docker Using Ubuntu 23.04 and Python 3.11
 FROM yasirarism/misskaty-docker:latest
 
-ENV HOSTNAME yasirvps
+ENV HOSTNAME misskaty
 COPY . .
 RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
