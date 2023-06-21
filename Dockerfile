@@ -7,7 +7,7 @@
 FROM yasirarism/misskaty-docker:latest
 
 ENV HOSTNAME yasirvps
-RUN pip3 install -r requirements.txt --break-system-packages
 COPY . .
+RUN pip3 install -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]
