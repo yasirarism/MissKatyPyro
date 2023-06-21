@@ -10,10 +10,7 @@ FROM yasirarism/misskaty-docker:latest
 ENV HOSTNAME misskaty
 # Copy Files
 COPY . .
-# Set venv
-RUN python3 -m venv /venv
-ENV PATH="/venv/bin:$PATH"
 # Install modules
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]
