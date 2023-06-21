@@ -42,7 +42,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(AsyncIOMotorClient(DATABASE_URI), remove_peers=False),
+    mongodb=dict(connection=AsyncIOMotorClient(DATABASE_URI), remove_peers=False),
 )
 
 # Pyrogram UserBot Client
