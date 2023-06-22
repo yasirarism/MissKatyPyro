@@ -6,7 +6,7 @@ import asyncio
 import math
 import time
 
-from pyrogram.errors import FloodWait, MessageNotModified, MessageIdInvalid
+from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified
 
 
 async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
@@ -32,12 +32,15 @@ async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
             round(percentage, 2),
         )
 
-        tmp = progress + "{0} <b>of</b> {1}\n<b>Speed:</b> {2}/s\n<b>DC ID:</b> {3}\n<b>ETA:</b> {4}</b>\n".format(
-            humanbytes(current),
-            humanbytes(total),
-            humanbytes(speed),
-            dc_id,
-            estimated_total_time if estimated_total_time != "" else "0 s",
+        tmp = (
+            progress
+            + "{0} <b>of</b> {1}\n<b>Speed:</b> {2}/s\n<b>DC ID:</b> {3}\n<b>ETA:</b> {4}</b>\n".format(
+                humanbytes(current),
+                humanbytes(total),
+                humanbytes(speed),
+                dc_id,
+                estimated_total_time if estimated_total_time != "" else "0 s",
+            )
         )
         try:
             await message.edit(f"{ud_type}\n {tmp}")

@@ -45,22 +45,56 @@ async def meval(code, globs, **kwargs):
 
     if not any(isinstance(node, ast.Return) for node in code):
         for i in range(len(code)):
-            if isinstance(code[i], ast.Expr) and (i == len(code) - 1 or not isinstance(code[i].value, ast.Call)):
-                code[i] = ast.copy_location(ast.Expr(ast.Call(func=ast.Attribute(value=ast.Name(id=ret_name, ctx=ast.Load()), attr="append", ctx=ast.Load()), args=[code[i].value], keywords=[])), code[-1])
+            if isinstance(code[i], ast.Expr) and (
+                i == len(code) - 1 or not isinstance(code[i].value, ast.Call)
+            ):
+                code[i] = ast.copy_location(
+                    ast.Expr(
+                        ast.Call(
+                            func=ast.Attribute(
+                                value=ast.Name(id=ret_name, ctx=ast.Load()),
+                                attr="append",
+                                ctx=ast.Load(),
+                            ),
+                            args=[code[i].value],
+                            keywords=[],
+                        )
+                    ),
+                    code[-1],
+                )
     else:
         for node in code:
             if isinstance(node, ast.Return):
                 node.value = ast.List(elts=[node.value], ctx=ast.Load())
 
-    code.append(ast.copy_location(ast.Return(value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]))
+    code.append(
+        ast.copy_location(
+            ast.Return(value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]
+        )
+    )
 
     # globals().update(**<global_args>)
     glob_copy = ast.Expr(
-        ast.Call(func=ast.Attribute(value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]), attr="update", ctx=ast.Load()), args=[], keywords=[ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))])
+        ast.Call(
+            func=ast.Attribute(
+                value=ast.Call(
+                    func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]
+                ),
+                attr="update",
+                ctx=ast.Load(),
+            ),
+            args=[],
+            keywords=[
+                ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))
+            ],
+        )
     )
     ast.fix_missing_locations(glob_copy)
     code.insert(0, glob_copy)
-    ret_decl = ast.Assign(targets=[ast.Name(id=ret_name, ctx=ast.Store())], value=ast.List(elts=[], ctx=ast.Load()))
+    ret_decl = ast.Assign(
+        targets=[ast.Name(id=ret_name, ctx=ast.Store())],
+        value=ast.List(elts=[], ctx=ast.Load()),
+    )
     ast.fix_missing_locations(ret_decl)
     code.insert(1, ret_decl)
     args = []
@@ -76,7 +110,9 @@ async def meval(code, globs, **kwargs):
         kw_defaults=[None for _ in range(len(args))],
     )
     args.posonlyargs = []
-    fun = ast.AsyncFunctionDef(name="tmp", args=args, body=code, decorator_list=[], returns=None)
+    fun = ast.AsyncFunctionDef(
+        name="tmp", args=args, body=code, decorator_list=[], returns=None
+    )
     ast.fix_missing_locations(fun)
     mod = ast.parse("")
     mod.body = [fun]
@@ -101,7 +137,9 @@ async def meval(code, globs, **kwargs):
     return r
 
 
-def format_exception(exp: BaseException, tb: Optional[List[traceback.FrameSummary]] = None) -> str:
+def format_exception(
+    exp: BaseException, tb: Optional[List[traceback.FrameSummary]] = None
+) -> str:
     """Formats an exception traceback as a string, similar to the Python interpreter."""
 
     if tb is None:

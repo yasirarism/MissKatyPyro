@@ -9,12 +9,22 @@ import shutil
 import tempfile
 
 from PIL import Image
-from pyrogram import emoji, filters, enums, Client
+from pyrogram import Client, emoji, enums, filters
 from pyrogram.errors import BadRequest, PeerIdInvalid, StickersetInvalid
 from pyrogram.file_id import FileId
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import AddStickerToSet, CreateStickerSet, RemoveStickerFromSet
-from pyrogram.raw.types import DocumentAttributeFilename, InputDocument, InputMediaUploadedDocument, InputStickerSetItem, InputStickerSetShortName
+from pyrogram.raw.functions.stickers import (
+    AddStickerToSet,
+    CreateStickerSet,
+    RemoveStickerFromSet,
+)
+from pyrogram.raw.types import (
+    DocumentAttributeFilename,
+    InputDocument,
+    InputMediaUploadedDocument,
+    InputStickerSetItem,
+    InputStickerSetShortName,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import BOT_USERNAME, app
@@ -33,7 +43,11 @@ __HELP__ = """
 
 
 def get_emoji_regex():
-    e_list = [getattr(emoji, e).encode("unicode-escape").decode("ASCII") for e in dir(emoji) if not e.startswith("_")]
+    e_list = [
+        getattr(emoji, e).encode("unicode-escape").decode("ASCII")
+        for e in dir(emoji)
+        if not e.startswith("_")
+    ]
     # to avoid re.error excluding char that start with '*'
     e_sort = sorted([x for x in e_list if not x.startswith("*")], reverse=True)
     # Sort emojis by length to make sure multi-character emojis are
@@ -65,7 +79,9 @@ async def getsticker_(self: Client, ctx: Message, strings):
             )
             await ctx.reply_to_message.reply_document(
                 document=sticker_file,
-                caption=f"<b>Emoji:</b> {sticker.emoji}\n" f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n" f"<b>Send by:</b> @{BOT_USERNAME}",
+                caption=f"<b>Emoji:</b> {sticker.emoji}\n"
+                f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n"
+                f"<b>Send by:</b> @{BOT_USERNAME}",
             )
             shutil.rmtree(tempdir, ignore_errors=True)
 
@@ -74,7 +90,11 @@ async def getsticker_(self: Client, ctx: Message, strings):
 @ratelimiter
 async def getstickerid(self: Client, ctx: Message):
     if ctx.reply_to_message.sticker:
-        await ctx.reply_msg("The ID of this sticker is: <code>{stickerid}</code>".format(stickerid=ctx.reply_to_message.sticker.file_id))
+        await ctx.reply_msg(
+            "The ID of this sticker is: <code>{stickerid}</code>".format(
+                stickerid=ctx.reply_to_message.sticker.file_id
+            )
+        )
 
 
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
@@ -159,13 +179,22 @@ async def kang_sticker(self: Client, ctx: Message, strings):
         pack_prefix = "anim" if animated else "vid" if videos else "a"
         packname = f"{pack_prefix}_{ctx.from_user.id}_by_{self.me.username}"
 
-        if len(ctx.command) > 1 and ctx.command[1].isdigit() and int(ctx.command[1]) > 0:
+        if (
+            len(ctx.command) > 1
+            and ctx.command[1].isdigit()
+            and int(ctx.command[1]) > 0
+        ):
             # provide pack number to kang in desired pack
             packnum = ctx.command.pop(1)
-            packname = f"{pack_prefix}{packnum}_{ctx.from_user.id}_by_{self.me.username}"
+            packname = (
+                f"{pack_prefix}{packnum}_{ctx.from_user.id}_by_{self.me.username}"
+            )
         if len(ctx.command) > 1:
             # matches all valid emojis in input
-            sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[1:])))) or sticker_emoji
+            sticker_emoji = (
+                "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[1:]))))
+                or sticker_emoji
+            )
         filename = await self.download_media(ctx.reply_to_message)
         if not filename:
             # Failed to download
@@ -176,7 +205,11 @@ async def kang_sticker(self: Client, ctx: Message, strings):
         filename = "sticker.png"
         packname = f"c{ctx.from_user.id}_by_{self.me.username}"
         img_url = next(
-            (ctx.text[y.offset : (y.offset + y.length)] for y in ctx.entities if y.type == "url"),
+            (
+                ctx.text[y.offset : (y.offset + y.length)]
+                for y in ctx.entities
+                if y.type == "url"
+            ),
             None,
         )
 
@@ -196,7 +229,10 @@ async def kang_sticker(self: Client, ctx: Message, strings):
                 packnum = ctx.command.pop(2)
                 packname = f"a{packnum}_{ctx.from_user.id}_by_{self.me.username}"
             if len(ctx.command) > 2:
-                sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[2:])))) or sticker_emoji
+                sticker_emoji = (
+                    "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[2:]))))
+                    or sticker_emoji
+                )
             resize = True
     else:
         return await prog_msg.edit_msg(strings("kang_help"))
@@ -317,7 +353,9 @@ async def kang_sticker(self: Client, ctx: Message, strings):
             reply_markup=markup,
         )
         # Cleanup
-        await self.delete_messages(chat_id=LOG_CHANNEL, message_ids=msg_.id, revoke=True)
+        await self.delete_messages(
+            chat_id=LOG_CHANNEL, message_ids=msg_.id, revoke=True
+        )
         try:
             os.remove(filename)
         except OSError:

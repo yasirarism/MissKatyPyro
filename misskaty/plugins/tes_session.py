@@ -1,5 +1,5 @@
 # This plugin to learn session using pyrogram
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app
