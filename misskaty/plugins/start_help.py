@@ -143,22 +143,21 @@ async def help_command(self: Client, ctx: Message, strings):
                 await ctx.reply_msg(strings("pm_detail"), reply_markup=keyboard)
         else:
             await ctx.reply_msg(strings("pm_detail"), reply_markup=keyboard)
-    else:
-        if len(ctx.command) >= 2:
-            name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
-            if str(name) in HELPABLE:
-                text = strings("help_name").format(mod=HELPABLE[name].__MODULE__) + HELPABLE[name].__HELP__
-                await ctx.reply_msg(text, disable_web_page_preview=True)
-            else:
-                text, help_keyboard = await help_parser(ctx.from_user.first_name)
-                await ctx.reply_msg(
-                    text,
-                    reply_markup=help_keyboard,
-                    disable_web_page_preview=True,
-                )
+    elif len(ctx.command) >= 2:
+        name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
+        if str(name) in HELPABLE:
+            text = strings("help_name").format(mod=HELPABLE[name].__MODULE__) + HELPABLE[name].__HELP__
+            await ctx.reply_msg(text, disable_web_page_preview=True)
         else:
             text, help_keyboard = await help_parser(ctx.from_user.first_name)
-            await ctx.reply_msg(text, reply_markup=help_keyboard, disable_web_page_preview=True)
+            await ctx.reply_msg(
+                text,
+                reply_markup=help_keyboard,
+                disable_web_page_preview=True,
+            )
+    else:
+        text, help_keyboard = await help_parser(ctx.from_user.first_name)
+        await ctx.reply_msg(text, reply_markup=help_keyboard, disable_web_page_preview=True)
 
 
 async def help_parser(name, keyboard=None):

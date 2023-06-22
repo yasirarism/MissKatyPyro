@@ -33,7 +33,7 @@ def capture_err(func):
                 msg,
                 exc,
             )
-            day = datetime.today()
+            day = datetime.now()
             tgl_now = datetime.now()
 
             cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"

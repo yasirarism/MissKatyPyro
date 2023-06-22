@@ -247,13 +247,11 @@ async def ban_globally(self: Client, ctx: Message):
             await asyncio.sleep(int(e.value))
         except Exception:
             pass
-    try:
+    with contextlib.suppress(Exception):
         await app.send_message(
             user_id,
-            f"Hello, You have been globally banned by {from_user.mention}," + " You can appeal for this ban by talking to him.",
+            f"Hello, You have been globally banned by {from_user.mention}, You can appeal for this ban by talking to him.",
         )
-    except Exception:
-        pass
     await m.edit(f"Banned {user_mention} Globally!")
     ban_text = f"""
 __**New Global Ban**__
