@@ -54,7 +54,6 @@ JSON
 DETAILS
 {out or 'Not Supported'}
     """
-        file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
