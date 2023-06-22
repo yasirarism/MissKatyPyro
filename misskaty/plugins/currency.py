@@ -36,8 +36,13 @@ async def currency(self: Client, ctx: Message):
     amount = teks[1]
     currency_from = teks[2]
     currency_to = teks[3]
-    if amount.isdigit() or (amount.replace(".", "", 1).isdigit() and amount.count(".") < 2):
-        url = f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/" f"pair/{currency_from}/{currency_to}/{amount}"
+    if amount.isdigit() or (
+        amount.replace(".", "", 1).isdigit() and amount.count(".") < 2
+    ):
+        url = (
+            f"https://v6.exchangerate-api.com/v6/{CURRENCY_API}/"
+            f"pair/{currency_from}/{currency_to}/{amount}"
+        )
         try:
             res = await http.get(url)
             data = res.json()
@@ -53,6 +58,10 @@ async def currency(self: Client, ctx: Message):
                 f"**CURRENCY EXCHANGE RATE RESULT:**\n\n`{format(float(amount), ',')}` **{base_code}** = `{format(float(conversion_result), ',')}` **{target_code}**\n<b>Rate Today</b> = `{format(float(conversion_rate), ',')}`\n<b>Last Update:</b> {last_update}"
             )
         except Exception as err:
-            await ctx.reply_msg(f"Failed convert currency, maybe you give wrong currency format or api down.\n\n<b>ERROR</b>: {err}")
+            await ctx.reply_msg(
+                f"Failed convert currency, maybe you give wrong currency format or api down.\n\n<b>ERROR</b>: {err}"
+            )
     else:
-        await ctx.reply_msg("<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>")
+        await ctx.reply_msg(
+            "<code>This seems to be some alien currency, which I can't convert right now.. (⊙_⊙;)</code>"
+        )
