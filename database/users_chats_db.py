@@ -10,7 +10,8 @@ class Database:
         self.col = self.db.users
         self.grp = self.db.groups
 
-    def new_user(self, id, name):
+    @staticmethod
+    def new_user(id, name):
         return dict(
             id=id,
             name=name,
@@ -20,7 +21,8 @@ class Database:
             ),
         )
 
-    def new_group(self, id, title):
+    @staticmethod
+    def new_group(id, title):
         return dict(
             id=id,
             title=title,

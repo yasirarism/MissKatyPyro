@@ -134,8 +134,10 @@ class Kusonime:
     def __init__(self):
         pass
 
-    async def byPass(self, url):
+    @staticmethod
+    async def byPass(url):
         return await kusonimeBypass(url)
 
-    async def telegraph(self, url, name):
+    @staticmethod
+    async def telegraph(url, name):
         return await byPassPh(url, name)
