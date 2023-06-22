@@ -34,7 +34,6 @@ loop = asyncio.get_event_loop()
 
 # Run Bot
 async def start_bot():
-    global HELPABLE
 
     for module in ALL_MODULES:
         imported_module = importlib.import_module(f"misskaty.plugins.{module}")
