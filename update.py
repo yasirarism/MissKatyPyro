@@ -35,7 +35,7 @@ if len(UPSTREAM_REPO_BRANCH) == 0:
 
 if UPSTREAM_REPO_URL is not None:
     if os.path.exists(".git"):
-        srun(["rm", "-rf", ".git"])
+        srun(["rm", "-rf", ".git"], check=True)
 
     update = srun(
         [
@@ -49,9 +49,12 @@ if UPSTREAM_REPO_URL is not None:
                      && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"
         ],
         shell=True,
+        check=True,
     )
 
     if update.returncode == 0:
         LOGGER.error("Successfully updated with latest commit from UPSTREAM_REPO")
     else:
-        LOGGER.error("Something went wrong while updating, check UPSTREAM_REPO if valid or not!")
+        LOGGER.error(
+            "Something went wrong while updating, check UPSTREAM_REPO if valid or not!"
+        )
