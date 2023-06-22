@@ -4,7 +4,6 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-import os
 import platform
 import time
 from asyncio import Lock
@@ -18,7 +17,6 @@ from pyrogram.types import Message
 
 from misskaty import app, botStartTime, misskaty_version
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
 from misskaty.helper.human_read import get_readable_time
 from misskaty.vars import COMMAND_HANDLER
 
@@ -58,9 +56,7 @@ async def ping_handler(self: Client, ctx: Message):
                     check=True,
                     capture_output=True,
                 )
-                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace(
-                    "time=", ""
-                )
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:

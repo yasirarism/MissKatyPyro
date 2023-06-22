@@ -64,9 +64,7 @@ def get_subname(lang, url, ext):
     fragment_removed = url.split("#")[0]  # keep to left of first #
     query_string_removed = fragment_removed.split("?")[0]
     scheme_removed = query_string_removed.split("://")[-1].split(":")[-1]
-    if scheme_removed.find("/") == -1 or not get_base_name(
-        os.path.basename(unquote(scheme_removed))
-    ):
+    if scheme_removed.find("/") == -1 or not get_base_name(os.path.basename(unquote(scheme_removed))):
         return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{ext}"
     return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}{get_random_string(3)}.{ext}"
 
@@ -76,18 +74,12 @@ def get_subname(lang, url, ext):
 @use_chat_lang()
 async def ceksub(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(
-            strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5
-        )
+        return await ctx.reply_msg(strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5)
     link = ctx.command[1]
     start_time = time()
     pesan = await ctx.reply_msg(strings("progress_str"), quote=True)
     try:
-        res = (
-            await shell_exec(
-                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
-            )
-        )[0]
+        res = (await shell_exec(f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"))[0]
         details = json.loads(res)
         buttons = []
         for stream in details["streams"]:
@@ -112,9 +104,7 @@ async def ceksub(self: Client, ctx: Message, strings):
                 ]
             )
         timelog = time() - start_time
-        buttons.append(
-            [InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")]
-        )
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
         msg = await pesan.edit_msg(
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
@@ -132,23 +122,14 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if (
-        not reply
-        or not reply.document
-        or not reply.document.file_name
-        or not reply.document.file_name.endswith((".vtt", ".ass", ".srt"))
-    ):
-        return await ctx.reply_msg(
-            strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=6
-        )
+    if not reply or not reply.document or not reply.document.file_name or not reply.document.file_name.endswith((".vtt", ".ass", ".srt")):
+        return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=6)
     msg = await ctx.reply_msg(strings("convert_str"), quote=True)
     if not os.path.exists("downloads"):
         os.makedirs("downloads")
     dl = await reply.download(file_name="downloads/")
     filename = dl.split("/", 3)[3]
-    LOGGER.info(
-        f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]"
-    )
+    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
     (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
     c_time = time()
@@ -192,17 +173,13 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     start_time = time()
     namafile = get_subname(lang, link, ext)
     try:
-        LOGGER.info(
-            f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
-        )
+        LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"ffmpeg -i {link} -map {map} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=strings("capt_extr_sub").format(
-                nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
-            ),
+            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,

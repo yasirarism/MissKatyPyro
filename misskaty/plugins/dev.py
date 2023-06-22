@@ -3,7 +3,6 @@ import contextlib
 import html
 import io
 import json
-import logging
 import os
 import pickle
 import re
@@ -122,9 +121,7 @@ async def donate(client, ctx):
     )
 
 
-@app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
-)
+@app.on_message(filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply)
 async def balas(self: Client, ctx: Message) -> "str":
     pesan = ctx.input
     await ctx.delete_msg()
@@ -144,9 +141,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
         draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
-        draw.ellipse(
-            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
-        )
+        draw.ellipse((progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF")
 
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
@@ -240,9 +235,7 @@ async def ban_globally(self: Client, ctx: Message):
     if user_id in [from_user.id, self.me.id] or user_id in SUDO:
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
-    m = await ctx.reply_text(
-        f"**Banning {user_mention} Globally! This may take several times.**"
-    )
+    m = await ctx.reply_text(f"**Banning {user_mention} Globally! This may take several times.**")
     await add_gban_user(user_id)
     number_of_chats = 0
     async for served_chat in served_chats:
@@ -257,8 +250,7 @@ async def ban_globally(self: Client, ctx: Message):
     try:
         await app.send_message(
             user_id,
-            f"Hello, You have been globally banned by {from_user.mention},"
-            + " You can appeal for this ban by talking to him.",
+            f"Hello, You have been globally banned by {from_user.mention}," + " You can appeal for this ban by talking to him.",
         )
     except Exception:
         pass
@@ -282,9 +274,7 @@ __**New Global Ban**__
             disable_web_page_preview=True,
         )
     except Exception:
-        await ctx.reply_text(
-            "User Gbanned, But This Gban Action Wasn't Logged, Add Me In LOG_CHANNEL"
-        )
+        await ctx.reply_text("User Gbanned, But This Gban Action Wasn't Logged, Add Me In LOG_CHANNEL")
 
 
 # Ungban
@@ -309,22 +299,14 @@ async def unban_globally(self: Client, ctx: Message):
         await ctx.reply_text(f"Lifted {user_mention}'s Global Ban.'")
 
 
-@app.on_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
-)
-@app.on_edited_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
-)
+@app.on_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_edited_message(filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO))
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
 async def shell(self: Client, ctx: Message, strings) -> "Message":
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
-    msg = (
-        await ctx.edit_msg(strings("run_exec"))
-        if ctx.from_user.is_self
-        else await ctx.reply_msg(strings("run_exec"))
-    )
+    msg = await ctx.edit_msg(strings("run_exec")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_exec"))
     shell = (await shell_exec(ctx.input))[0]
     if len(shell) > 3000:
         with io.BytesIO(str.encode(shell)) as doc:
@@ -367,30 +349,15 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
         await ctx.reply_msg(strings("no_reply"), del_in=5)
 
 
-@app.on_message(
-    (
-        filters.command(["ev", "run", "myeval"], COMMAND_HANDLER)
-        | filters.regex(r"app.run\(\)$")
-    )
-    & filters.user(SUDO)
-)
-@app.on_edited_message(
-    (filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$"))
-    & filters.user(SUDO)
-)
+@app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
+@app.on_edited_message((filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$")) & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
         return await edit_or_reply(ctx, text=strings("no_eval"))
-    status_message = (
-        await ctx.edit_msg(strings("run_eval"))
-        if ctx.from_user.is_self
-        else await ctx.reply_msg(strings("run_eval"), quote=True)
-    )
-    code = (
-        ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
-    )
+    status_message = await ctx.edit_msg(strings("run_eval")) if ctx.from_user.is_self else await ctx.reply_msg(strings("run_eval"), quote=True)
+    code = ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
     out_buf = io.StringIO()
     out = ""
     humantime = get_readable_time
@@ -533,26 +500,17 @@ async def updtebot(client, update, users, chats):
             await db.delete_user(user.id)
         await client.send_msg(
             LOG_CHANNEL,
-            f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) "
-            f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at "
-            f"{datetime.fromtimestamp(update.date)}",
+            f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}",
         )
 
 
 async def aexec(code, c, m):
-    exec(
-        "async def __aexec(c, m): "
-        + "\n p = print"
-        + "\n replied = m.reply_to_message"
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
+    exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](c, m)
 
 
 async def shell_exec(code, treat=True):
-    process = await asyncio.create_subprocess_shell(
-        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
-    )
+    process = await asyncio.create_subprocess_shell(code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
 
     stdout = (await process.communicate())[0]
     if treat:
