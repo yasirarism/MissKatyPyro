@@ -32,7 +32,7 @@ def humanbytes(size: int):
     """Convert Bytes To Bytes So That Human Can Read It"""
     if not isinstance(size, int):
         try:
-            size = size
+            pass
         except ValueError:
             size = None
     if not size:

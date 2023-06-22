@@ -192,7 +192,7 @@ async def leave_a_chat(bot, message):
     try:
         chat = int(chat)
     except:
-        chat = chat
+        pass
     try:
         buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
         reply_markup = InlineKeyboardMarkup(buttons)
