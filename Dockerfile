@@ -10,5 +10,6 @@ FROM yasirarism/misskaty-docker:latest
 ENV HOSTNAME misskaty
 # Copy Files
 COPY . .
+RUN pip3 install --no-cache-dir git+https://github.com/yasirarism/iytdl
 # Set CMD Bot
 CMD ["bash", "start.sh"]
