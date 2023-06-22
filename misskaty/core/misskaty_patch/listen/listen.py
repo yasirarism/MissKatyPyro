@@ -61,10 +61,15 @@ class Client:
         unallowed_click_alert=True,
     ):
         if type(listener_type) != ListenerTypes:
-            raise TypeError("Parameter listener_type should be a" " value from pyromod.listen.ListenerTypes")
+            raise TypeError(
+                "Parameter listener_type should be a"
+                " value from pyromod.listen.ListenerTypes"
+            )
 
         future = self.loop.create_future()
-        future.add_done_callback(lambda f: self.stop_listening(identifier, listener_type))
+        future.add_done_callback(
+            lambda f: self.stop_listening(identifier, listener_type)
+        )
 
         listener_data = {
             "future": future,
@@ -160,7 +165,9 @@ class Client:
         listener_type: ListenerTypes = ListenerTypes.MESSAGE,
         identifier_pattern: Optional[tuple] = None,
     ):
-        listener, identifier = self.match_listener(data, listener_type, identifier_pattern)
+        listener, identifier = self.match_listener(
+            data, listener_type, identifier_pattern
+        )
 
         if not listener:
             return
@@ -204,7 +211,9 @@ class MessageHandler:
                 if iscoroutinefunction(filters.__call__):
                     listener_does_match = await filters(client, message)
                 else:
-                    listener_does_match = await client.loop.run_in_executor(None, filters, client, message)
+                    listener_does_match = await client.loop.run_in_executor(
+                        None, filters, client, message
+                    )
             else:
                 listener_does_match = True
 
@@ -212,7 +221,9 @@ class MessageHandler:
             if iscoroutinefunction(self.filters.__call__):
                 handler_does_match = await self.filters(client, message)
             else:
-                handler_does_match = await client.loop.run_in_executor(None, self.filters, client, message)
+                handler_does_match = await client.loop.run_in_executor(
+                    None, self.filters, client, message
+                )
         else:
             handler_does_match = True
 
@@ -236,7 +247,9 @@ class MessageHandler:
                 if iscoroutinefunction(filters.__call__):
                     listener_does_match = await filters(client, message)
                 else:
-                    listener_does_match = await client.loop.run_in_executor(None, filters, client, message)
+                    listener_does_match = await client.loop.run_in_executor(
+                        None, filters, client, message
+                    )
             else:
                 listener_does_match = True
 
@@ -281,8 +294,14 @@ class CallbackQueryHandler:
                 listener_type=ListenerTypes.CALLBACK_QUERY,
             )[0]
 
-            if (permissive_listener and not listener) and permissive_listener["unallowed_click_alert"]:
-                alert = permissive_listener["unallowed_click_alert"] if type(permissive_listener["unallowed_click_alert"]) == str else PyromodConfig.unallowed_click_alert_text
+            if (permissive_listener and not listener) and permissive_listener[
+                "unallowed_click_alert"
+            ]:
+                alert = (
+                    permissive_listener["unallowed_click_alert"]
+                    if type(permissive_listener["unallowed_click_alert"]) == str
+                    else PyromodConfig.unallowed_click_alert_text
+                )
                 await query.answer(alert)
                 return False
 
@@ -345,7 +364,9 @@ class Chat(pyrogram.types.Chat):
 
     @patchable()
     def stop_listening(self, *args, **kwargs):
-        return self._client.stop_listening(*args, identifier_pattern=(self.id, None, None), **kwargs)
+        return self._client.stop_listening(
+            *args, identifier_pattern=(self.id, None, None), **kwargs
+        )
 
 
 @patch(pyrogram.types.user_and_chats.user.User)
@@ -360,4 +381,6 @@ class User(pyrogram.types.User):
 
     @patchable()
     def stop_listening(self, *args, **kwargs):
-        return self._client.stop_listening(*args, identifier_pattern=(None, self.id, None), **kwargs)
+        return self._client.stop_listening(
+            *args, identifier_pattern=(None, self.id, None), **kwargs
+        )

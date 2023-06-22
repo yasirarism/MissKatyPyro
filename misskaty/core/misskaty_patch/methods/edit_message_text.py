@@ -5,7 +5,15 @@ from pyrogram import Client
 from pyrogram.types import Message
 
 
-async def edit_message_text(self, chat_id: Union[int, str], message_id: int, text: str, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
+async def edit_message_text(
+    self,
+    chat_id: Union[int, str],
+    message_id: int,
+    text: str,
+    del_in: int = 0,
+    *args,
+    **kwargs
+) -> Union["Message", bool]:
     """\nExample:
             message.edit_text("hello")
     Parameters:
@@ -42,7 +50,9 @@ async def edit_message_text(self, chat_id: Union[int, str], message_id: int, tex
     Raises:
         RPCError: In case of a Telegram RPC error.
     """
-    msg = await self.edit_message_text(chat_id=chat_id, message_id=message_id, text=text, *args, **kwargs)
+    msg = await self.edit_message_text(
+        chat_id=chat_id, message_id=message_id, text=text, *args, **kwargs
+    )
     if del_in == 0:
         return msg
     await asyncio.sleep(del_in)
