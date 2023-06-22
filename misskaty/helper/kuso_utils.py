@@ -1,16 +1,20 @@
-import re
-import traceback
-import chevron
 import logging
+import traceback
 from html import escape
-from telegraph.aio import Telegraph
-from misskaty.helper.http import http
-from misskaty import BOT_USERNAME
+
+import chevron
 from bs4 import BeautifulSoup
+from telegraph.aio import Telegraph
+
+from misskaty import BOT_USERNAME
+from misskaty.helper.http import http
 
 LOGGER = logging.getLogger(__name__)
 
-headers = {"Accept": "*/*", "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"}
+headers = {
+    "Accept": "*/*",
+    "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
+}
 
 
 async def kusonimeBypass(url: str, slug=None):
@@ -27,22 +31,87 @@ async def kusonimeBypass(url: str, slug=None):
         # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
         try:
             title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
-            season = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)")[0].text.split(":").pop().strip()
-            tipe = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)")[0].text.split(":").pop().strip()
-            status_anime = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)")[0].text.split(":").pop().strip()
-            ep = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)")[0].text.split(":").pop().strip()
-            score = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)")[0].text.split(":").pop().strip()
-            duration = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)")[0].text.split(":").pop().strip()
-            rilis = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)")[0].text.split(":").pop().strip()
+            season = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            tipe = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            status_anime = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            ep = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            score = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            duration = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            rilis = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
         except Exception:
             e = traceback.format_exc()
             LOGGER.error(e)
-            title, season, tipe, status_anime, ep, score, duration, rilis = "None", "None", "None", "None", 0, 0, 0, "None"
+            title, season, tipe, status_anime, ep, score, duration, rilis = (
+                "None",
+                "None",
+                "None",
+                "None",
+                0,
+                0,
+                0,
+                "None",
+            )
         genre = []
-        for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
+        for _genre in soup.select(
+            "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"
+        ):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
-        for num, smokedl in enumerate(soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddlrh"}), start=1):
+        for num, smokedl in enumerate(
+            soup.find("div", {"class": "dlbodz"}).find_all(
+                "div", {"class": "smokeddlrh"}
+            ),
+            start=1,
+        ):
             mendata = {"name": title, "links": []}
             for smokeurl in smokedl.find_all("div", {"class": "smokeurlrh"}):
                 quality = smokeurl.find("strong").text
@@ -109,7 +178,9 @@ async def byPassPh(url: str, name: str):
         telegraph = Telegraph()
         if not telegraph.get_access_token():
             await telegraph.create_account(short_name=BOT_USERNAME)
-        page = await telegraph.create_page(f"{kusonime.get('title')} By {escape(name)}", html_content=html)
+        page = await telegraph.create_page(
+            f"{kusonime.get('title')} By {escape(name)}", html_content=html
+        )
         results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results

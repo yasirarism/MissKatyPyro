@@ -3,16 +3,19 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import os
+
+from PIL import Image, ImageDraw, ImageFont
+from pyrogram import filters
+
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
-from PIL import Image, ImageFont, ImageDraw
-from pyrogram import filters
 
 __MODULE__ = "nulis"
 __HELP__ = """
 Command: <code>/nulis</code> [reply to msg or after cmd]
 Desc: For those of you who are lazy to write.
 """
+
 
 def text_set(text):
     lines = []
@@ -28,6 +31,7 @@ def text_set(text):
                 lines.extend(line[((z - 1) * 55) : (z * 55)] for z in range(1, k + 2))
     return lines[:25]
 
+
 @app.on_message(filters.command(["nulis"], COMMAND_HANDLER))
 async def handwrite(client, message):
     if message.reply_to_message and message.reply_to_message.text:
@@ -35,7 +39,9 @@ async def handwrite(client, message):
     elif len(message.command) > 1:
         txt = message.text.split(None, 1)[1]
     else:
-        return await message.reply("Please reply to message or write after command to use Nulis CMD.")
+        return await message.reply(
+            "Please reply to message or write after command to use Nulis CMD."
+        )
     nan = await message.reply_msg("Processing...")
     try:
         img = Image.open("assets/kertas.jpg")

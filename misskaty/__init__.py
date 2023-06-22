@@ -7,13 +7,21 @@ from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from motor.motor_asyncio import AsyncIOMotorClient
 from async_pymongo import AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from pyrogram import Client
 
 from misskaty.core import misskaty_patch
-from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION, DATABASE_NAME
+from misskaty.vars import (
+    API_HASH,
+    API_ID,
+    BOT_TOKEN,
+    DATABASE_NAME,
+    DATABASE_URI,
+    TZ,
+    USER_SESSION,
+)
 
 basicConfig(
     level=INFO,
@@ -50,9 +58,13 @@ user = Client(
     session_string=USER_SESSION,
 )
 
-jobstores = {"default": MongoDBJobStore(client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode")}
+jobstores = {
+    "default": MongoDBJobStore(
+        client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode"
+    )
+}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
-        
+
 app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name

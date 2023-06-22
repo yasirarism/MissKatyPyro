@@ -1,7 +1,9 @@
 import typing
 
 import pyrogram
+
 from misskaty.vars import COMMAND_HANDLER
+
 
 class Command:
     def on_cmd(
@@ -14,7 +16,7 @@ class Command:
         handler: typing.Optional[list] = None,
         filter: typing.Union[pyrogram.filters.Filter, pyrogram.filters.Filter] = None,
         *args,
-        **kwargs
+        **kwargs,
     ):
         """
         ### `tgEasy.tgClient.command`

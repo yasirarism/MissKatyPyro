@@ -9,10 +9,12 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     Message,
 )
-from misskaty.vars import COMMAND_HANDLER
-from misskaty import app
+
 from database.locale_db import set_db_lang
+from misskaty import app
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+from misskaty.vars import COMMAND_HANDLER
+
 from ..core.decorator.permissions import require_admin
 from ..helper.localization import (
     default_language,
@@ -57,7 +59,11 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             *gen_langs_kb(),
-            [InlineKeyboardButton(strings("back_btn", context="general"), callback_data="start_back")],
+            [
+                InlineKeyboardButton(
+                    strings("back_btn", context="general"), callback_data="start_back"
+                )
+            ],
         ]
     )
 
@@ -68,13 +74,14 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
         msg = m
         sender = msg.reply_text
 
-    res = strings("language_changer_private") if msg.chat.type == ChatType.PRIVATE else strings("language_changer_chat")
+    res = (
+        strings("language_changer_private")
+        if msg.chat.type == ChatType.PRIVATE
+        else strings("language_changer_chat")
+    )
     msg = await sender(res, reply_markup=keyboard)
     try:
-        await msg.wait_for_click(
-            from_user_id=m.from_user.id,
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=m.from_user.id, timeout=30)
     except ListenerTimeout:
         await msg.edit_msg(strings("exp_task", context="general"))
 
@@ -106,4 +113,6 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
         )
     else:
         keyboard = None
-    await m.message.edit_text(strings("language_changed_successfully"), reply_markup=keyboard)
+    await m.message.edit_text(
+        strings("language_changed_successfully"), reply_markup=keyboard
+    )

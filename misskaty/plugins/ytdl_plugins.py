@@ -3,7 +3,6 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 from logging import getLogger
-from re import compile as recompile
 from uuid import uuid4
 
 from iytdl import Process, iYTDL, main
