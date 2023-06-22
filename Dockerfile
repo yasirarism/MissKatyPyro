@@ -4,12 +4,15 @@
 # * Copyright ©YasirPedia All rights reserved
 
 # Base Docker Using Ubuntu 23.04, Python 3.11 and Built In Pip
-FROM yasirarism/misskaty-docker:latest
+## With Buily in Pip Package
+# FROM yasirarism/misskaty-docker:latest
+## Without Built in Pip Package
+FROM yasirarism/misskaty-docker:free
 
 # Set Hostname
 ENV HOSTNAME misskaty
 # Copy Files
 COPY . .
-RUN pip3 install --no-cache-dir git+https://github.com/yasirarism/iytdl --break-system-packages
+RUN pip3 install -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]
