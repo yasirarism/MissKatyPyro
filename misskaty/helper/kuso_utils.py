@@ -28,7 +28,6 @@ async def kusonimeBypass(url: str, slug=None):
         soup = BeautifulSoup(page.text, "lxml")
         thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
         data = []
-        # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
         try:
             title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
             season = (

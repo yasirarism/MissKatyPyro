@@ -1,7 +1,3 @@
-# * @author        Yasir Aris M <yasiramunandar@gmail.com>
-# * @date          2023-06-21 22:12:27
-# * @projectName   MissKatyPyro
-# * Copyright ©YasirPedia All rights reserved
 import json
 from calendar import month_name
 
@@ -180,7 +176,6 @@ async def anime_search(_, mesg):
     variables = {"search": search}
     if not (res := json.loads(await get_anime(variables))["data"].get("Media", None)):
         return await reply.edit("💢 No Resource Anime found! [404]")
-    # LOGGER.info(json.dumps(res, indent=3)) # For Debug JSON
     durasi = (
         get_readable_time(int(res.get("duration") * 60))
         if res.get("duration") is not None

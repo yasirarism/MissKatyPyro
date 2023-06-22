@@ -37,9 +37,6 @@ class PyromodConfig:
 
 def patch(obj):
     def is_patchable(item):
-        # item = (name, value)
-        # item[0] = name
-        # item[1] = value
         return getattr(item[1], "patchable", False)
 
     def wrapper(container):
