@@ -10,7 +10,8 @@ class Database:
         self.col = self.db.users
         self.grp = self.db.groups
 
-    def new_user(self, id, name):
+    @staticmethod
+    def new_user(id, name):
         return dict(
             id=id,
             name=name,
@@ -20,7 +21,8 @@ class Database:
             ),
         )
 
-    def new_group(self, id, title):
+    @staticmethod
+    def new_group(id, title):
         return dict(
             id=id,
             title=title,
@@ -84,14 +86,18 @@ class Database:
             is_disabled=False,
             reason="",
         )
-        await self.grp.update_one({"id": int(id)}, {"$set": {"chat_status": chat_status}})
+        await self.grp.update_one(
+            {"id": int(id)}, {"$set": {"chat_status": chat_status}}
+        )
 
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status = dict(
             is_disabled=True,
             reason=reason,
         )
-        await self.grp.update_one({"id": int(chat)}, {"$set": {"chat_status": chat_status}})
+        await self.grp.update_one(
+            {"id": int(chat)}, {"$set": {"chat_status": chat_status}}
+        )
 
     async def total_chat_count(self):
         return await self.grp.count_documents({})
