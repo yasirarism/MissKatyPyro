@@ -30,13 +30,62 @@ async def kusonimeBypass(url: str, slug=None):
         data = []
         try:
             title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
-            season = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)")[0].text.split(":").pop().strip()
-            tipe = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)")[0].text.split(":").pop().strip()
-            status_anime = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)")[0].text.split(":").pop().strip()
-            ep = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)")[0].text.split(":").pop().strip()
-            score = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)")[0].text.split(":").pop().strip()
-            duration = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)")[0].text.split(":").pop().strip()
-            rilis = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)")[0].text.split(":").pop().strip()
+            season = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            tipe = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            status_anime = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            ep = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            score = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            duration = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            rilis = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
         except Exception:
             e = traceback.format_exc()
             LOGGER.error(e)
@@ -51,11 +100,15 @@ async def kusonimeBypass(url: str, slug=None):
                 "None",
             )
         genre = []
-        for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
+        for _genre in soup.select(
+            "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"
+        ):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
         for num, smokedl in enumerate(
-            soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddlrh"}),
+            soup.find("div", {"class": "dlbodz"}).find_all(
+                "div", {"class": "smokeddlrh"}
+            ),
             start=1,
         ):
             mendata = {"name": title, "links": []}
@@ -124,7 +177,9 @@ async def byPassPh(url: str, name: str):
         telegraph = Telegraph()
         if not telegraph.get_access_token():
             await telegraph.create_account(short_name=BOT_USERNAME)
-        page = await telegraph.create_page(f"{kusonime.get('title')} By {escape(name)}", html_content=html)
+        page = await telegraph.create_page(
+            f"{kusonime.get('title')} By {escape(name)}", html_content=html
+        )
         results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results

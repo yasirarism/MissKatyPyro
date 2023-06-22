@@ -103,7 +103,9 @@ async def tg_lock(message, permissions: list, perm: str, lock: bool):
     try:
         await app.set_chat_permissions(message.chat.id, ChatPermissions(**permissions))
     except ChatNotModified:
-        return await message.reply_text("To unlock this, you have to unlock 'messages' first.")
+        return await message.reply_text(
+            "To unlock this, you have to unlock 'messages' first."
+        )
 
     await message.reply_text(("Locked." if lock else "Unlocked."))
 
@@ -176,4 +178,7 @@ async def url_detector(_, message):
             try:
                 await message.delete_msg()
             except Exception:
-                await message.reply_msg("This message contains a URL, " + "but i don't have enough permissions to delete it")
+                await message.reply_msg(
+                    "This message contains a URL, "
+                    + "but i don't have enough permissions to delete it"
+                )
