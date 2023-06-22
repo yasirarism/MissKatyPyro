@@ -449,6 +449,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             )
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+        LOGGER.info(markup)
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
@@ -456,7 +457,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except MediaCaptionTooLong:
-                await query.message.reply(res_str)
+                await query.message.reply(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
@@ -573,7 +574,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
             except MediaCaptionTooLong:
-                await query.message.reply(res_str)
+                await query.message.reply(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
