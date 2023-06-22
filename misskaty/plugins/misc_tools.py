@@ -376,9 +376,8 @@ async def get_content(url):
 
 async def mdlapi(title):
     link = f"https://kuryana.vercel.app/search/q/{title}"
-    async with aiohttp.ClientSession() as ses:
-        async with ses.get(link) as result:
-            return await result.json()
+    async with aiohttp.ClientSession() as ses, ses.get(link) as result:
+        return await result.json()
 
 
 @app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
