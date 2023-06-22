@@ -393,6 +393,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
+        LOGGER.info(r_json.get("director"))
         if directors := r_json.get("director"):
             director = ""
             for i in directors:
@@ -449,7 +450,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             )
         else:
             markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
-        LOGGER.info(markup)
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
