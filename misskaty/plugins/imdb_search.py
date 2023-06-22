@@ -349,7 +349,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
 @ratelimiter
-# @capture_err
+@capture_err
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -442,13 +442,13 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
+                        InlineKeyboardButton("🎬 Open IMDB", url=url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url]])
         LOGGER.info(markup)
         if thumb := r_json.get("image"):
             try:
@@ -468,7 +468,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
 @ratelimiter
-# @capture_err
+@capture_err
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -560,13 +560,13 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
+                        InlineKeyboardButton("🎬 Open IMDB", url=url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
