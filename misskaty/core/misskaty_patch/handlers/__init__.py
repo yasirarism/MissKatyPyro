@@ -1,1 +1,1 @@
-from .on_command import on_cmd
+from .on_command import Command
