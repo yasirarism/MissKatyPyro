@@ -25,7 +25,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
         UDFReasult = "".join(i for i in UDReasult if i not in "[]")
         return (UDFReasult, PageLen)
 
-    except IndexError or KeyError:
+    except (IndexError, KeyError):
         await app.send_msg(
             chat_id=chat_id,
             reply_to_message_id=message_id,
