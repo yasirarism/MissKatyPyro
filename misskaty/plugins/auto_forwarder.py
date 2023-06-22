@@ -70,15 +70,15 @@ async def ForwardMessage(client: user, msg: Message):
         if file_size_passed is False:
             return 400
         ## --- Check 4 --- ##
-        for i in range(len(FORWARD_TO_CHAT_ID)):
+        for i, item in enumerate(FORWARD_TO_CHAT_ID):
             try:
-                await msg.copy(FORWARD_TO_CHAT_ID[i])
+                await msg.copy(item)
             except FloodWait as e:
                 await sleep(e.value)
                 LOGGER.warning(f"#FloodWait: Stopped Forwarder for {e.x}s!")
                 await ForwardMessage(client, msg)
             except Exception as err:
-                LOGGER.warning(f"#ERROR: {err}\n\nUnable to Forward Message to {str(FORWARD_TO_CHAT_ID[i])}, reason: <code>{err}</code>")
+                LOGGER.warning(f"#ERROR: {err}\n\nUnable to Forward Message to {str(item)}, reason: <code>{err}</code>")
     except:
         pass
 
