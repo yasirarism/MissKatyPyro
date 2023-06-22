@@ -2,7 +2,6 @@ import io
 from typing import Optional, Union
 
 from pyrogram import Client
-from pyrogram.types import Message
 
 
 async def send_as_file(
