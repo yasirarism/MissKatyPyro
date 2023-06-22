@@ -375,7 +375,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         typee = r_json.get("@type", "")
         res_str = ""
         tahun = re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text) else "N/A"
-        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+        res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -499,7 +499,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
         typee = r_json.get("@type", "")
         res_str = ""
         tahun = re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text) else "N/A"
-        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+        res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:

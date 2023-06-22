@@ -27,7 +27,7 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 LOGGER = getLogger(__name__)
-YT_REGEX = "^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
+YT_REGEX = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
 YT_DB = {}
 
 
