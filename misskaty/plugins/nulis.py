@@ -39,7 +39,9 @@ async def handwrite(client, message):
     elif len(message.command) > 1:
         txt = message.text.split(None, 1)[1]
     else:
-        return await message.reply("Please reply to message or write after command to use Nulis CMD.")
+        return await message.reply(
+            "Please reply to message or write after command to use Nulis CMD."
+        )
     nan = await message.reply_msg("Processing...")
     try:
         img = Image.open("assets/kertas.jpg")
@@ -54,7 +56,9 @@ async def handwrite(client, message):
         file = f"nulis_{message.from_user.id}.jpg"
         img.save(file)
         if os.path.exists(file):
-            await message.reply_photo(photo=file, caption=f"<b>Written By :</b> {client.me.mention}")
+            await message.reply_photo(
+                photo=file, caption=f"<b>Written By :</b> {client.me.mention}"
+            )
             os.remove(file)
             await nan.delete()
     except Exception as e:
