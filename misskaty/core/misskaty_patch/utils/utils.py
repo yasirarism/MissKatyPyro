@@ -43,10 +43,13 @@ def patch(obj):
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(obj, name, None)
             if old is not None:  # Not adding 'old' to new func
-                setattr(obj, "old" + name, old)
+                setattr(obj, f"old{name}", old)
 
             # Worse Code
-            tempConf = {i: getattr(func, i, False) for i in ["is_property", "is_static", "is_context"]}
+            tempConf = {
+                i: getattr(func, i, False)
+                for i in ["is_property", "is_static", "is_context"]
+            }
 
             async_to_sync(container, name)
             func = getattr(container, name)
@@ -64,14 +67,18 @@ def patch(obj):
                 else:
                     func = contextmanager(func)
 
-            logger.info(f"Patch Attribute To {obj.__name__} From {container.__name__} : {name}")
+            logger.info(
+                f"Patch Attribute To {obj.__name__} From {container.__name__} : {name}"
+            )
             setattr(obj, name, func)
         return container
 
     return wrapper
 
 
-def patchable(is_property: bool = False, is_static: bool = False, is_context: bool = False) -> Callable:
+def patchable(
+    is_property: bool = False, is_static: bool = False, is_context: bool = False
+) -> Callable:
     """
     A decorator that marks a function as patchable.
 

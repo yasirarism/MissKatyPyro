@@ -75,7 +75,7 @@ async def ForwardMessage(client: user, msg: Message):
         if file_size_passed is False:
             return 400
         ## --- Check 4 --- ##
-        for i, item in enumerate(FORWARD_TO_CHAT_ID):
+        for item in FORWARD_TO_CHAT_ID:
             try:
                 await msg.copy(item)
             except FloodWait as e:
