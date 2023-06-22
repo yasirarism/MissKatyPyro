@@ -628,8 +628,8 @@ async def lendrive_s(self: Client, ctx: Message, strings):
 @ratelimiter
 @use_chat_lang()
 async def movieku_s(self: Client, ctx: Message, strings):
-    if not message.from_user:
-        return await message.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
+    if not ctx.from_user:
+        return await ctx.reply_msg("Cannot identify user, please use this command in private chat..", del_in=7)
     kueri = ctx.input
     if not kueri:
         kueri = ""

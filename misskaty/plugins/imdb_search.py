@@ -448,7 +448,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
         LOGGER.info(markup)
         if thumb := r_json.get("image"):
             try:
