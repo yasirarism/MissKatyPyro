@@ -234,9 +234,11 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
         possible = ["/afk", f"/afk@{self.me.username}", "!afk"]
         message_text = ctx.text or ctx.caption
         for entity in ctx.entities:
-            if entity.type == enums.MessageEntityType.BOT_COMMAND:
-                if (message_text[0 : 0 + entity.length]).lower() in possible:
-                    return
+            if (
+                entity.type == enums.MessageEntityType.BOT_COMMAND
+                and (message_text[0 : 0 + entity.length]).lower() in possible
+            ):
+                return
 
     msg = ""
     replied_user_id = 0
