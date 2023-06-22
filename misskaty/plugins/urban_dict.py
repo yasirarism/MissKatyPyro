@@ -9,9 +9,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 
 async def getData(chat_id, message_id, GetWord, CurrentPage):
-    UDJson = (
-        await http.get(f"https://api.urbandictionary.com/v0/define?term={GetWord}")
-    ).json()
+    UDJson = (await http.get(f"https://api.urbandictionary.com/v0/define?term={GetWord}")).json()
 
     if "list" not in UDJson:
         return await app.send_msg(
@@ -23,12 +21,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
     try:
         index = int(CurrentPage - 1)
         PageLen = len(UDJson["list"])
-        UDReasult = (
-            f"**Definition of {GetWord}**\n"
-            f"{UDJson['list'][index]['definition']}\n\n"
-            "**📌 Examples**\n"
-            f"__{UDJson['list'][index]['example']}__"
-        )
+        UDReasult = f"**Definition of {GetWord}**\n" f"{UDJson['list'][index]['definition']}\n\n" "**📌 Examples**\n" f"__{UDJson['list'][index]['example']}__"
         UDFReasult = "".join(i for i in UDReasult if i not in "[]")
         return (UDFReasult, PageLen)
 
@@ -62,9 +55,7 @@ async def urbanDictionary(self: Client, ctx: Message):
     await ctx.reply_msg(text=f"{UDReasult}", reply_markup=keyboard)
 
 
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "pagination_urban#" in query.data)
-)
+@app.on_callback_query(filters.create(lambda _, __, query: "pagination_urban#" in query.data))
 @ratelimiter
 async def ud_callback(self: Client, callback_query: CallbackQuery):
     message_id = callback_query.message.id

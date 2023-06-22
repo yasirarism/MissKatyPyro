@@ -54,6 +54,4 @@ if UPSTREAM_REPO_URL is not None:
     if update.returncode == 0:
         LOGGER.error("Successfully updated with latest commit from UPSTREAM_REPO")
     else:
-        LOGGER.error(
-            "Something went wrong while updating, check UPSTREAM_REPO if valid or not!"
-        )
+        LOGGER.error("Something went wrong while updating, check UPSTREAM_REPO if valid or not!")

@@ -37,12 +37,8 @@ def capture_err(func):
             tgl_now = datetime.now()
 
             cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
-            await sender(
-                "😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience..."
-            )
-            with open(
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
-            ) as log:
+            await sender("😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience...")
+            with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8") as log:
                 log.write(error_feedback)
                 log.close()
             await app.send_document(

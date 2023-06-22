@@ -34,13 +34,7 @@ async def mediainfo(self: Client, ctx: Message, strings):
         file_info = get_file_id(ctx.reply_to_message)
         if file_info is None:
             return await process.edit_msg(strings("media_invalid"))
-        if (
-            ctx.reply_to_message.video
-            and ctx.reply_to_message.video.file_size > 2097152000
-        ) or (
-            ctx.reply_to_message.document
-            and ctx.reply_to_message.document.file_size > 2097152000
-        ):
+        if (ctx.reply_to_message.video and ctx.reply_to_message.video.file_size > 2097152000) or (ctx.reply_to_message.document and ctx.reply_to_message.document.file_size > 2097152000):
             return await process.edit_msg(strings("dl_limit_exceeded"), del_in=6)
         c_time = time.time()
         dc_id = FileId.decode(file_info.file_id).dc_id
@@ -63,15 +57,11 @@ DETAILS
         file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-            )
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                )
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
@@ -92,9 +82,7 @@ DETAILS
             link = ctx.input
             process = await ctx.reply_msg(strings("wait_msg"))
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode(
-                    "utf-8"
-                )
+                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
             except Exception:
                 return await process.edit_msg(strings("err_link"))
             body_text = f"""
@@ -104,17 +92,11 @@ DETAILS
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 link = await mediainfo_paste(out, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                )
+                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 try:
-                    link = await post_to_telegraph(
-                        False, "MissKaty MediaInfo", body_text
-                    )
-                    markup = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                    )
+                    link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
+                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
                 except:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
@@ -127,6 +109,4 @@ DETAILS
                 )
                 await process.delete()
         except IndexError:
-            return await ctx.reply_msg(
-                strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6
-            )
+            return await ctx.reply_msg(strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6)
