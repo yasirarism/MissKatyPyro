@@ -12,19 +12,24 @@ from re import split as ngesplit
 from time import time
 from urllib.parse import unquote
 
-from pyrogram import filters, Client
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
+from pyrogram import Client, filters
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+from misskaty.helper.human_read import get_readable_time
+from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 from misskaty.helper.tools import get_random_string
-from misskaty.helper.localization import use_chat_lang
-from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins.dev import shell_exec
-from misskaty.vars import COMMAND_HANDLER, FF_MPEG_NAME
+from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
 
@@ -104,10 +109,7 @@ async def ceksub(self: Client, ctx: Message, strings):
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-        await msg.wait_for_click(
-            from_user_id=ctx.from_user.id,
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
     except ListenerTimeout:
         await msg.edit_msg(strings("exp_task", context="general"))
     except Exception:
@@ -120,12 +122,7 @@ async def ceksub(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if (
-        not reply
-        or not reply.document
-        or not reply.document.file_name
-        or not reply.document.file_name.endswith((".vtt", ".ass", ".srt"))
-    ):
+    if not reply or not reply.document or not reply.document.file_name or not reply.document.file_name.endswith((".vtt", ".ass", ".srt")):
         return await ctx.reply_msg(strings("conv_sub_help").format(cmd=ctx.command[0]), del_in=6)
     msg = await ctx.reply_msg(strings("convert_str"), quote=True)
     if not os.path.exists("downloads"):
@@ -134,7 +131,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
     filename = dl.split("/", 3)[3]
     LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
-    (await shell_exec(f"{FF_MPEG_NAME} -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
+    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
     c_time = time()
     await ctx.reply_document(
         f"downloads/{filename}.{suffix}",
@@ -177,7 +174,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     namafile = get_subname(lang, link, ext)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        (await shell_exec(f"{FF_MPEG_NAME} -i {link} -map {map} '{namafile}'"))[0]
+        (await shell_exec(f"ffmpeg -i {link} -map {map} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(

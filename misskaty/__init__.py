@@ -1,14 +1,27 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import time
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from async_pymongo import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from pyrogram import Client
 
 from misskaty.core import misskaty_patch
-from misskaty.vars import API_HASH, API_ID, BOT_TOKEN, DATABASE_URI, TZ, USER_SESSION, DATABASE_NAME
+from misskaty.vars import (
+    API_HASH,
+    API_ID,
+    BOT_TOKEN,
+    DATABASE_NAME,
+    DATABASE_URI,
+    TZ,
+    USER_SESSION,
+)
 
 basicConfig(
     level=INFO,
@@ -28,9 +41,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.7 - Stable"
-
-pymonclient = MongoClient(DATABASE_URI)
+misskaty_version = "v2.8.7 - Stable"
 
 # Pyrogram Bot Client
 app = Client(
@@ -38,7 +49,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(uri=DATABASE_URI, remove_peers=False),
+    mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
 )
 
 # Pyrogram UserBot Client
@@ -47,9 +58,9 @@ user = Client(
     session_string=USER_SESSION,
 )
 
-jobstores = {"default": MongoDBJobStore(client=pymonclient, database=DATABASE_NAME, collection="nightmode")}
+jobstores = {"default": MongoDBJobStore(client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode")}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
-        
+
 app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name

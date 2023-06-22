@@ -1,6 +1,9 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import random
 import re
-import os
 import shutil
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -9,21 +12,22 @@ from pyrogram.errors import PeerIdInvalid, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from .web_scraper import SCRAP_DICT, data_kuso
-from .pypi_search import PYPI_DICT
-from .ytdl_plugins import YT_DB
-from utils import temp
+from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import admins_in_chat
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.time_gap import check_time_gap
+from utils import temp
+
+from .pypi_search import PYPI_DICT
+from .web_scraper import SCRAP_DICT, data_kuso
+from .ytdl_plugins import YT_DB
 
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}
 
 
 @app.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
-async def start(_, message):
+async def salamregex(_, message):
     await message.reply_text(text=f"Wa'alaikumsalam {message.from_user.mention} 😇")
 
 
@@ -126,7 +130,7 @@ async def clear_reqdict():
 
 
 # @app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
-async def start(_, message):
+async def thankregex(_, message):
     pesan = [
         f"Sama-sama {message.from_user.first_name}",
         f"You're Welcome {message.from_user.first_name}",

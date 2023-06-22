@@ -146,9 +146,10 @@ padding-top: 0.25rem;
 </head>
 """
 
-from .http import http
 import json
 import re
+
+from .http import http
 
 
 def html_builder(title: str, text: str) -> str:

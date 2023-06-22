@@ -1,24 +1,24 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
 import io
 import subprocess
 import time
-from os import remove as osremove, path
+from os import path
+from os import remove as osremove
 
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import progress_for_pyrogram, runcmd, post_to_telegraph
-from misskaty.helper.mediainfo_paste import mediainfo_paste
+from misskaty.helper import post_to_telegraph, progress_for_pyrogram, runcmd
 from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.mediainfo_paste import mediainfo_paste
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
@@ -54,7 +54,6 @@ JSON
 DETAILS
 {out or 'Not Supported'}
     """
-        file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
             markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])

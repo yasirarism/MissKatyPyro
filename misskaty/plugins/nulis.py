@@ -1,14 +1,21 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import os
+
+from PIL import Image, ImageDraw, ImageFont
+from pyrogram import filters
+
 from misskaty import app
 from misskaty.vars import COMMAND_HANDLER
-from PIL import Image, ImageFont, ImageDraw
-from pyrogram import filters
 
 __MODULE__ = "nulis"
 __HELP__ = """
-๏ Command: <code>/nulis</code> [reply to msg or after cmd]
-◉ Desc: For those of you who are lazy to write.
+Command: <code>/nulis</code> [reply to msg or after cmd]
+Desc: For those of you who are lazy to write.
 """
+
 
 def text_set(text):
     lines = []
@@ -23,6 +30,7 @@ def text_set(text):
                 k = len(line) // 55
                 lines.extend(line[((z - 1) * 55) : (z * 55)] for z in range(1, k + 2))
     return lines[:25]
+
 
 @app.on_message(filters.command(["nulis"], COMMAND_HANDLER))
 async def handwrite(client, message):
@@ -46,9 +54,7 @@ async def handwrite(client, message):
         file = f"nulis_{message.from_user.id}.jpg"
         img.save(file)
         if os.path.exists(file):
-            await message.reply_photo(
-                photo=file, caption=f"<b>Written By :</b> {client.me.mention}"
-            )
+            await message.reply_photo(photo=file, caption=f"<b>Written By :</b> {client.me.mention}")
             os.remove(file)
             await nan.delete()
     except Exception as e:

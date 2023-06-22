@@ -1,7 +1,14 @@
-import sys, os, requests
-from dotenv import load_dotenv
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
+import os
+import sys
 from logging import getLogger
 from os import environ
+
+import requests
+from dotenv import load_dotenv
 
 LOGGER = getLogger(__name__)
 
@@ -44,8 +51,6 @@ except Exception as e:
     sys.exit(1)
 
 USER_SESSION = environ.get("USER_SESSION")
-FF_MPEG_NAME = environ.get("FF_MPEG_NAME", "mediaextract")
-VCSI_NAME = environ.get("VCSI_NAME", "ssmedia")
 DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
@@ -73,9 +78,13 @@ FORWARD_FROM_CHAT_ID = list(
     }
 )
 # Forward To Chat ID
-FORWARD_TO_CHAT_ID = list({int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()})
+FORWARD_TO_CHAT_ID = list(
+    {int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()}
+)
 FORWARD_FILTERS = list(set(environ.get("FORWARD_FILTERS", "video document").split()))
-BLOCK_FILES_WITHOUT_EXTENSIONS = bool(environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True))
+BLOCK_FILES_WITHOUT_EXTENSIONS = bool(
+    environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True)
+)
 BLOCKED_EXTENSIONS = list(
     set(
         environ.get(
@@ -84,5 +93,5 @@ BLOCKED_EXTENSIONS = list(
         ).split()
     )
 )
-MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE", None)
-CURRENCY_API = environ.get("CURRENCY_API", None)
+MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE")
+CURRENCY_API = environ.get("CURRENCY_API")

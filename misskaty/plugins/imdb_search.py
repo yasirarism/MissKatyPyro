@@ -1,25 +1,40 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import json
 import logging
 import re
-import traceback
-
-from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
 
-from utils import demoji
+from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters, enums, Client
-from pyrogram.errors import MediaEmpty, MessageNotModified, PhotoInvalidDimensions, WebpageMediaEmpty, MessageIdInvalid
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto, Message, CallbackQuery
+from pyrogram import Client, enums, filters
+from pyrogram.errors import (
+    MediaCaptionTooLong,
+    MediaEmpty,
+    MessageIdInvalid,
+    MessageNotModified,
+    PhotoInvalidDimensions,
+    WebpageMediaEmpty,
+)
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputMediaPhoto,
+    Message,
+)
 
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+from misskaty.helper import GENRES_EMOJI, get_random_string, http, search_jw
+from misskaty.vars import COMMAND_HANDLER
+from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
@@ -32,10 +47,13 @@ headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWe
 @ratelimiter
 async def imdb_choose(self: Client, ctx: Message):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>", del_in=5)
+        return await ctx.reply_msg(
+            f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>",
+            del_in=5,
+        )
     if ctx.sender_chat:
         return await ctx.reply_msg("This feature not supported for channel..", del_in=5)
-    kuery = ctx.input
+    kuery = ctx.text.split(" ", 1)[1]
     is_imdb, lang = await is_imdbset(ctx.from_user.id)
     if is_imdb:
         if lang == "eng":
@@ -61,12 +79,16 @@ async def imdb_choose(self: Client, ctx: Message):
         await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
     except ListenerTimeout:
         del LIST_CARI[ranval]
-        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        try:
+            await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        except MessageIdInvalid:
+            pass
 
 
 @app.on_callback_query(filters.regex("^imdbset"))
 @ratelimiter
-async def imdbsetlang(self: Client, query: CallbackQuery):
+@capture_err
+async def imdblangset(self: Client, query: CallbackQuery):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -81,16 +103,17 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     msg = await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
     try:
-        await msg.wait_for_click(
-            from_user_id=int(uid),
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=int(uid), timeout=30)
     except ListenerTimeout:
-        await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        try:
+            await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
+        except MessageIdInvalid:
+            pass
 
 
 @app.on_callback_query(filters.regex("^setimdb"))
 @ratelimiter
+@capture_err
 async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -119,7 +142,10 @@ async def imdb_search_id(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
+        r = await http.get(
+            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
+            headers=headers,
+        )
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
@@ -156,12 +182,12 @@ async def imdb_search_id(kueri, message):
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
         try:
-            await msg.wait_for_click(
-                from_user_id=message.from_user.id,
-                timeout=30
-            )
+            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
         except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            try:
+                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            except MessageIdInvalid:
+                pass
     except Exception as err:
         await k.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
@@ -176,7 +202,10 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
+        r = await http.get(
+            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
+            headers=headers,
+        )
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
@@ -213,18 +242,19 @@ async def imdb_search_en(kueri, message):
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
         try:
-            await msg.wait_for_click(
-                from_user_id=message.from_user.id,
-                timeout=30
-            )
+            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
         except ListenerTimeout:
-            await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            try:
+                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            except MessageIdInvalid:
+                pass
     except Exception as err:
         await k.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbcari"))
 @ratelimiter
+@capture_err
 async def imdbcari(self: Client, query: CallbackQuery):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
@@ -240,7 +270,10 @@ async def imdbcari(self: Client, query: CallbackQuery):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
+            r = await http.get(
+                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
+                headers=headers,
+            )
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(f"⛔️ Tidak ditemukan hasil untuk kueri: <code>{kueri}</code>")
@@ -266,12 +299,12 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
-                await msg.wait_for_click(
-                    from_user_id=int(uid),
-                    timeout=30
-                )
+                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                except MessageIdInvalid:
+                    pass
         except Exception as err:
             await query.message.edit_caption(f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>")
     else:
@@ -286,7 +319,10 @@ async def imdbcari(self: Client, query: CallbackQuery):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json", headers=headers)
+            r = await http.get(
+                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
+                headers=headers,
+            )
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(f"⛔️ Result not found for keywords: <code>{kueri}</code>")
@@ -312,18 +348,19 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
-                await msg.wait_for_click(
-                    from_user_id=int(uid),
-                    timeout=30
-                )
+                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                except MessageIdInvalid:
+                    pass
         except Exception as err:
             await query.message.edit_caption(f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
 @ratelimiter
+@capture_err
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -372,7 +409,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             for i in directors:
                 name = i["name"]
                 url = i["url"]
-                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                director += f"<a href='{url}'>{name}</a>, "
             director = director[:-2]
             res_str += f"<b>Sutradara:</b> {director}\n"
         if creators := r_json.get("creator"):
@@ -381,7 +418,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 if i["@type"] == "Person":
                     name = i["name"]
                     url = i["url"]
-                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    creator += f"<a href='{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
         if actor := r_json.get("actor"):
@@ -389,7 +426,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             for i in actor:
                 name = i["name"]
                 url = i["url"]
-                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                actors += f"<a href='{url}'>{name}</a>, "
             actors = actors[:-2]
             res_str += f"<b>Pemeran:</b> {actors}\n\n"
         if deskripsi := r_json.get("description"):
@@ -416,33 +453,38 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
+                        InlineKeyboardButton("🎬 Open IMDB", url=url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
         if thumb := r_json.get("image"):
             try:
-                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+                await query.message.edit_media(
+                    InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
+                    reply_markup=markup,
+                )
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+                await query.message.edit_media(
+                    InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML),
+                    reply_markup=markup,
+                )
+            except MediaCaptionTooLong:
+                await query.message.reply(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except (MessageNotModified, MessageIdInvalid):
         pass
-    except Exception as exc:
-        err = traceback.format_exc(limit=20)
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nSilahkan lapor ke owner detail errornya dengan lengkap, atau laporan error akan diabaikan.")
-        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Indonesia:\n<code>{str(err)}</code>")
 
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
 @ratelimiter
+@capture_err
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -491,7 +533,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             for i in directors:
                 name = i["name"]
                 url = i["url"]
-                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                director += f"<a href='{url}'>{name}</a>, "
             director = director[:-2]
             res_str += f"<b>Director:</b> {director}\n"
         if creators := r_json.get("creator"):
@@ -500,7 +542,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if i["@type"] == "Person":
                     name = i["name"]
                     url = i["url"]
-                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    creator += f"<a href='{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Writer:</b> {creator}\n"
         if actor := r_json.get("actor"):
@@ -508,7 +550,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             for i in actor:
                 name = i["name"]
                 url = i["url"]
-                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                actors += f"<a href='{url}'>{name}</a>, "
             actors = actors[:-2]
             res_str += f"<b>Stars:</b> {actors}\n\n"
         if description := r_json.get("description"):
@@ -534,26 +576,30 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}"),
+                        InlineKeyboardButton("🎬 Open IMDB", url=url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=f"https://www.imdb.com{r_json['url']}")]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
         if thumb := r_json.get("image"):
             try:
-                await query.message.edit_media(InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+                await query.message.edit_media(
+                    InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
+                    reply_markup=markup,
+                )
             except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                await query.message.edit_media(InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML), reply_markup=markup)
+                await query.message.edit_media(
+                    InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML),
+                    reply_markup=markup,
+                )
+            except MediaCaptionTooLong:
+                await query.message.reply(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
             except Exception:
                 await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
         else:
             await query.message.edit_caption(res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup)
     except (MessageNotModified, MessageIdInvalid):
         pass
-    except Exception as exc:
-        err = traceback.format_exc(limit=20)
-        await query.message.edit_caption(f"<b>ERROR:</b>\n<code>{exc}</code>\n<b>Full Error:</b> <code>{err}</code>\n\nPlease report to owner with detail of error, or your report will be ignored.")
-        await app.send_message(LOG_CHANNEL, f"ERROR getting IMDb Detail in Eng:\n<code>{str(err)}</code>")

@@ -22,12 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import asyncio
-import re
 import os
+import re
 from logging import getLogger
 from time import time
 
-from pyrogram import enums, filters, Client
+from pyrogram import Client, enums, filters
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 
@@ -37,19 +37,19 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import (
     admins_in_chat,
     adminsOnly,
-    require_admin,
     list_admins,
     member_permissions,
+    require_admin,
 )
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
-from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.functions import (
     extract_user,
     extract_user_and_reason,
     int_to_alpha,
     time_converter,
 )
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
 LOGGER = getLogger(__name__)
@@ -174,7 +174,12 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
     if user_id in (await list_admins(ctx.chat.id)):
         return await ctx.reply_msg(strings("kick_admin_err"))
     user = await app.get_users(user_id)
-    msg = strings("kick_msg").format(mention=user.mention, id=user.id, kicker=ctx.from_user.mention if ctx.from_user else "Anon Admin", reasonmsg=reason or "-")
+    msg = strings("kick_msg").format(
+        mention=user.mention,
+        id=user.id,
+        kicker=ctx.from_user.mention if ctx.from_user else "Anon Admin",
+        reasonmsg=reason or "-",
+    )
     if ctx.command[0][0] == "d":
         await ctx.reply_to_message.delete_msg()
     try:
@@ -210,7 +215,11 @@ async def banFunc(client, message, strings):
     except IndexError:
         mention = message.reply_to_message.sender_chat.title if message.reply_to_message else "Anon"
 
-    msg = strings("ban_msg").format(mention=mention, id=user_id, banner=message.from_user.mention if message.from_user else "Anon")
+    msg = strings("ban_msg").format(
+        mention=mention,
+        id=user_id,
+        banner=message.from_user.mention if message.from_user else "Anon",
+    )
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     if message.command[0] == "tban":
@@ -313,7 +322,13 @@ async def list_ban_(c, message, strings):
         count += 1
     mention = (await app.get_users(userid)).mention
 
-    msg = strings("listban_msg").format(mention=mention, uid=userid, frus=message.from_user.mention, ct=count, reas=reason)
+    msg = strings("listban_msg").format(
+        mention=mention,
+        uid=userid,
+        frus=message.from_user.mention,
+        ct=count,
+        reas=reason,
+    )
     await m.edit_text(msg)
 
 
@@ -507,7 +522,10 @@ async def mute(client, message, strings):
         return await message.reply_text(strings("mute_admin_err"))
     mention = (await app.get_users(user_id)).mention
     keyboard = ikb({"🚨 Unmute 🚨": f"unmute_{user_id}"})
-    msg = strings("mute_msg").format(mention=mention, muter=message.from_user.mention if message.from_user else "Anon")
+    msg = strings("mute_msg").format(
+        mention=mention,
+        muter=message.from_user.mention if message.from_user else "Anon",
+    )
     if message.command[0] == "tmute":
         split = reason.split(None, 1)
         time_value = split[0]
@@ -583,7 +601,12 @@ async def warn_user(client, message, strings):
         await remove_warns(chat_id, await int_to_alpha(user_id))
     else:
         warn = {"warns": warns + 1}
-        msg = strings("warn_msg").format(mention=mention, warner=message.from_user.mention if message.from_user else "Anon", reas=reason or "No Reason Provided.", twarn=warns + 1)
+        msg = strings("warn_msg").format(
+            mention=mention,
+            warner=message.from_user.mention if message.from_user else "Anon",
+            reas=reason or "No Reason Provided.",
+            twarn=warns + 1,
+        )
         await message.reply_text(msg, reply_markup=keyboard)
         await add_warn(chat_id, await int_to_alpha(user_id), warn)
 
@@ -743,33 +766,23 @@ async def set_chat_title(self: Client, ctx: Message):
     old_title = ctx.chat.title
     new_title = ctx.text.split(None, 1)[1]
     await ctx.chat.set_title(new_title)
-    await ctx.reply_text(
-        f"Successfully Changed Group Title From {old_title} To {new_title}"
-    )
+    await ctx.reply_text(f"Successfully Changed Group Title From {old_title} To {new_title}")
 
 
 @app.on_message(filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_user_title(self: Client, ctx: Message):
     if not ctx.reply_to_message:
-        return await ctx.reply_text(
-            "Reply to user's message to set his admin title"
-        )
+        return await ctx.reply_text("Reply to user's message to set his admin title")
     if not ctx.reply_to_message.from_user:
-        return await ctx.reply_text(
-            "I can't change admin title of an unknown entity"
-        )
+        return await ctx.reply_text("I can't change admin title of an unknown entity")
     chat_id = ctx.chat.id
     from_user = ctx.reply_to_message.from_user
     if len(ctx.command) < 2:
-        return await ctx.reply_text(
-            "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE"
-        )
+        return await ctx.reply_text("**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE")
     title = ctx.text.split(None, 1)[1]
     await app.set_administrator_title(chat_id, from_user.id, title)
-    await ctx.reply_text(
-        f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
-    )
+    await ctx.reply_text(f"Successfully Changed {from_user.mention}'s Admin Title To {title}")
 
 
 @app.on_message(filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
@@ -782,14 +795,15 @@ async def set_chat_photo(self: Client, ctx: Message):
 
     file = reply.document or reply.photo
     if not file:
-        return await ctx.reply_text(
-            "Reply to a photo or document to set it as chat_photo"
-        )
+        return await ctx.reply_text("Reply to a photo or document to set it as chat_photo")
 
     if file.file_size > 5000000:
         return await ctx.reply("File size too large.")
 
-    photo = await reply.download()
-    await ctx.chat.set_photo(photo)
-    await ctx.reply_text("Successfully Changed Group Photo")
+    file = await reply.download()
+    try:
+        await ctx.chat.set_photo(photo=photo)
+        await ctx.reply_text("Successfully Changed Group Photo")
+    except Exception as err:
+        await ctx.reply(f"Failed changed group photo. ERROR: {err}")
     os.remove(photo)

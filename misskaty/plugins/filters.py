@@ -25,11 +25,16 @@ import re
 
 from pyrogram import filters
 
-from database.filters_db import delete_filter, get_filter, get_filters_names, save_filter
+from database.filters_db import (
+    delete_filter,
+    get_filter,
+    get_filters_names,
+    save_filter,
+)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb
 
@@ -47,7 +52,10 @@ You can use markdown or html to save text too.
 @ratelimiter
 async def save_filters(_, m):
     if len(m.command) == 1 or not m.reply_to_message:
-        return await m.reply_msg("**Usage:**\nReply to a text or sticker with /addfilter [FILTER_NAME] to save it.", del_in=6)
+        return await m.reply_msg(
+            "**Usage:**\nReply to a text or sticker with /addfilter [FILTER_NAME] to save it.",
+            del_in=6,
+        )
     if not m.reply_to_message.text and not m.reply_to_message.sticker:
         return await m.reply_msg("__**You can only save text or stickers in filters for now.**__")
     name = m.text.split(None, 1)[1].strip()

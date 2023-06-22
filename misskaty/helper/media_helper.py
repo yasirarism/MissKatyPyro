@@ -3,8 +3,9 @@ import os
 import shlex
 from typing import Tuple
 
-from misskaty import BOT_USERNAME
 from telegraph.aio import Telegraph
+
+from misskaty import BOT_USERNAME
 
 
 async def post_to_telegraph(is_media: bool, title=None, content=None, media=None):
@@ -16,7 +17,12 @@ async def post_to_telegraph(is_media: bool, title=None, content=None, media=None
         response = await telegraph.upload_file(media)
         return f"https://telegra.ph{response[0]['src']}"
     """Create a Telegram Post using HTML Content"""
-    response = await telegraph.create_page(title, html_content=content, author_url=f"https://t.me/{BOT_USERNAME}", author_name=BOT_USERNAME)
+    response = await telegraph.create_page(
+        title,
+        html_content=content,
+        author_url=f"https://t.me/{BOT_USERNAME}",
+        author_name=BOT_USERNAME,
+    )
     return response["url"]
 
 

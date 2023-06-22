@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import asyncio
 import os
 import re
@@ -5,19 +9,29 @@ import shutil
 import tempfile
 
 from PIL import Image
-from pyrogram import emoji, filters, enums, Client
+from pyrogram import Client, emoji, enums, filters
 from pyrogram.errors import BadRequest, PeerIdInvalid, StickersetInvalid
 from pyrogram.file_id import FileId
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import AddStickerToSet, CreateStickerSet, RemoveStickerFromSet
-from pyrogram.raw.types import DocumentAttributeFilename, InputDocument, InputMediaUploadedDocument, InputStickerSetItem, InputStickerSetShortName
+from pyrogram.raw.functions.stickers import (
+    AddStickerToSet,
+    CreateStickerSet,
+    RemoveStickerFromSet,
+)
+from pyrogram.raw.types import (
+    DocumentAttributeFilename,
+    InputDocument,
+    InputMediaUploadedDocument,
+    InputStickerSetItem,
+    InputStickerSetShortName,
+)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, FF_MPEG_NAME
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"
 __HELP__ = """
@@ -76,7 +90,7 @@ async def getstickerid(self: Client, ctx: Message):
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
 @ratelimiter
 @use_chat_lang()
-async def getstickerid(self: Client, ctx: Message, strings):
+async def unkangs(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply("You're anon, unkang in my PM")
     if sticker := ctx.reply_to_message.sticker:
@@ -339,7 +353,7 @@ async def convert_video(filename: str) -> str:
     downpath, f_name = os.path.split(filename)
     webm_video = os.path.join(downpath, f"{f_name.split('.', 1)[0]}.webm")
     cmd = [
-        FF_MPEG_NAME,
+        "ffmpeg",
         "-loglevel",
         "quiet",
         "-i",

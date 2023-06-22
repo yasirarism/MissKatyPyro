@@ -3,8 +3,8 @@ from pyrogram import enums, filters
 from pyrogram.errors import MessageTooLong
 
 from misskaty import app
-from misskaty.helper.tools import rentry
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "CodeTester"

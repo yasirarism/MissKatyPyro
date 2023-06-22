@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import asyncio
 import math
 import os
@@ -37,7 +41,12 @@ __HELP__ = """
 async def upload(bot, message):
     if not message.reply_to_message:
         return await message.reply("Please reply to media file.")
-    vid = [message.reply_to_message.video, message.reply_to_message.document, message.reply_to_message.audio, message.reply_to_message.photo]
+    vid = [
+        message.reply_to_message.video,
+        message.reply_to_message.document,
+        message.reply_to_message.audio,
+        message.reply_to_message.photo,
+    ]
     media = next((v for v in vid if v is not None), None)
     if not media:
         return await message.reply("Unsupported media type..")
@@ -70,7 +79,12 @@ async def download(client, message):
     if message.reply_to_message is not None:
         start_t = datetime.now()
         c_time = time.time()
-        vid = [message.reply_to_message.video, message.reply_to_message.document, message.reply_to_message.audio, message.reply_to_message.photo]
+        vid = [
+            message.reply_to_message.video,
+            message.reply_to_message.document,
+            message.reply_to_message.audio,
+            message.reply_to_message.photo,
+        ]
         media = next((v for v in vid if v is not None), None)
         if not media:
             return await pesan.edit_msg("Unsupported media type..")
@@ -172,7 +186,11 @@ async def fbdl(client, message):
         obj = SmartDL(url, progress_bar=False, timeout=10)
         obj.start()
         path = obj.get_dest()
-        await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]", thumb="assets/thumb.jpg")
+        await message.reply_video(
+            path,
+            caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            thumb="assets/thumb.jpg",
+        )
         await msg.delete()
         try:
             os.remove(path)

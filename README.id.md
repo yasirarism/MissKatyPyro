@@ -50,7 +50,7 @@
  🌱 [Ko-Fi](kofi-url)<br>
 
 ## [4] Notes
-Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda dapat membuat permintaan tarik ke repo ini. Saya sangat senang jika Anda dapat membantu saya. Anda juga dapat memberikan dukungan kepada saya untuk membeli server.
+Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda dapat membuat PR ke repo ini. Saya sangat senang jika Anda dapat membantu saya. Anda juga dapat memberikan dukungan kepada saya untuk membeli server.
 
 ## [5] Features
 
@@ -108,7 +108,7 @@ pip3 install -r requirements.txt
 ```
 pip3 install -r requirements.txt --break-system-packages
 ```
-- Atur config.env Anda atau melalui env saat menjalankan bot. Jangan lupa isi semua value yang diminta dan perlu isi *FF_MPEG_NAME* dan *VCSI_NAME* jika Anda menggunakan metode ini.
+- Atur config environment saat menjalankan bot dan jangan lupa isi semua value yang wajib di isi.
 - Jalankan Bot
 ```
 bash start.sh

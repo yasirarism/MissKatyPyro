@@ -143,7 +143,10 @@ query ($id: Int, $idMal: Int, $search: String) {
 
 async def get_anime(title):
     async with aiohttp.ClientSession() as sesi:
-        r = await sesi.post("https://graphql.anilist.co", json={"query": anime_query, "variables": title})
+        r = await sesi.post(
+            "https://graphql.anilist.co",
+            json={"query": anime_query, "variables": title},
+        )
         return await r.read()
 
 
@@ -168,7 +171,6 @@ async def anime_search(_, mesg):
     variables = {"search": search}
     if not (res := json.loads(await get_anime(variables))["data"].get("Media", None)):
         return await reply.edit("💢 No Resource Anime found! [404]")
-    # LOGGER.info(json.dumps(res, indent=3)) # For Debug JSON
     durasi = get_readable_time(int(res.get("duration") * 60)) if res.get("duration") is not None else "0"
     msg = f"<b>{res['title']['romaji']}</b> (<code>{res['title']['native']}</code>)\n<b>Type</b>: {res['format']}\n<b>Status</b>: {res['status']}\n<b>Episodes</b>: {res.get('episodes', 'N/A')}\n<b>Duration </b>: {durasi} Per Eps.\n<b>Score</b>: {res['averageScore']}%\n<b>Category</b>: <code>"
     for x in res["genres"]:

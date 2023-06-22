@@ -1,18 +1,17 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2023-01-23 19:41:27
- * @lastModified  2023-01-23 19:41:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters, Client
-from pyrogram.types import Message, CallbackQuery
+from pyrogram import Client, filters
+from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
-from misskaty.plugins.web_scraper import split_arr, headers
+from misskaty.plugins.web_scraper import headers, split_arr
 from misskaty.vars import COMMAND_HANDLER
 
 PYPI_DICT = {}
@@ -77,7 +76,11 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{message_id}#{callback_query.from_user.id}")
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_pypi#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+    )
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
@@ -98,7 +101,13 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
     keyboard = InlineKeyboard()
-    keyboard.row(InlineButton("↩️ Back", f"page_pypi#{CurrentPage}#{message_id}#{callback_query.from_user.id}"), InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(
+        InlineButton(
+            "↩️ Back",
+            f"page_pypi#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+        ),
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}"),
+    )
     try:
         html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
         res = html.json()

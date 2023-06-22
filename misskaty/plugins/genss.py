@@ -4,23 +4,22 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
+import math
 import os
 import time
-import math
 from asyncio import gather, sleep
 from datetime import datetime
 from logging import getLogger
-from pySmartDL import SmartDL
 from urllib.parse import unquote
 
-from pyrogram import enums, filters, Client
+from pyrogram import Client, enums, filters
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
-from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
+from pyrogram.types import Message
+from pySmartDL import SmartDL
 
 from misskaty import app
-from misskaty.core.decorator import ratelimiter, new_task
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
+from misskaty.core.decorator import new_task, ratelimiter
 from misskaty.helper import is_url, progress_for_pyrogram, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import humanbytes
@@ -109,7 +108,11 @@ async def genss(self: Client, ctx: Message, strings):
                         ]
                     )
                 await ctx.reply_msg(
-                    strings("up_msg").format(namma=ctx.from_user.mention, id=ctx.from_user.id, bot_uname=self.me.username),
+                    strings("up_msg").format(
+                        namma=ctx.from_user.mention,
+                        id=ctx.from_user.id,
+                        bot_uname=self.me.username,
+                    ),
                     reply_to_message_id=ctx.id,
                 )
                 await pesan.delete()
@@ -165,7 +168,11 @@ async def genss(self: Client, ctx: Message, strings):
                         ]
                     )
                 await ctx.reply_msg(
-                    strings("up_msg").format(namma=ctx.from_user.mention, id=ctx.from_user.id, bot_uname=self.me.username),
+                    strings("up_msg").format(
+                        namma=ctx.from_user.mention,
+                        id=ctx.from_user.id,
+                        bot_uname=self.me.username,
+                    ),
                     reply_to_message_id=ctx.id,
                 )
                 await process.delete()

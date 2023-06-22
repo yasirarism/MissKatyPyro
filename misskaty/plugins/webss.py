@@ -1,7 +1,11 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import os
 from asyncio import gather
 
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.types import Message
 from pySmartDL import SmartDL
 
@@ -31,7 +35,12 @@ async def take_ss(self: Client, ctx: Message, strings):
         url = f"https://webss.yasirapi.eu.org/api?url={url}&width=1280&height=720"
         downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
         downloader.start(blocking=True)
-        await gather(*[ctx.reply_document(download_file_path), ctx.reply_photo(download_file_path, caption=strings("str_credit"))])
+        await gather(
+            *[
+                ctx.reply_document(download_file_path),
+                ctx.reply_photo(download_file_path, caption=strings("str_credit")),
+            ]
+        )
         await msg.delete_msg()
         os.remove(download_file_path)
     except Exception as e:

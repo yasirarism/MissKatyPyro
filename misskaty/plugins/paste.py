@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, rentry, post_to_telegraph
+from misskaty.helper import http, post_to_telegraph, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Paste"
@@ -32,7 +32,7 @@ def humanbytes(size: int):
     """Convert Bytes To Bytes So That Human Can Read It"""
     if not isinstance(size, int):
         try:
-            size = size
+            pass
         except ValueError:
             size = None
     if not size:
@@ -70,7 +70,10 @@ pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip
 async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
-        return await message.reply_msg(f"**Reply To A Message With /{message.command[0]} or with command**", del_in=6)
+        return await message.reply_msg(
+            f"**Reply To A Message With /{message.command[0]} or with command**",
+            del_in=6,
+        )
 
     if message.from_user:
         if message.from_user.username:
@@ -89,21 +92,35 @@ async def telegraph_paste(_, message):
             return msg.edit_msg(f"Failed to upload. ERR: {err}")
         button = [
             [InlineKeyboardButton("Open Link", url=url)],
-            [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+            [
+                InlineKeyboardButton(
+                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                )
+            ],
         ]
 
         pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
         remove(file)
-        return await msg.edit_msg(pasted, disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(button))
+        return await msg.edit_msg(
+            pasted,
+            disable_web_page_preview=True,
+            reply_markup=InlineKeyboardMarkup(button),
+        )
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await msg.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await msg.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
-        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
+        title = (
+            message.text.split(None, 1)[1]
+            if len(message.command) > 1
+            else "MissKaty Paste"
+        )
         try:
             with open(file, "r") as text:
                 data = text.read()
@@ -115,8 +132,14 @@ async def telegraph_paste(_, message):
                 pass
             return await msg.edit_msg("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        title = message.text.split(None, 1)[1] if len(message.command) > 1 else "MissKaty Paste"
-        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace("\n", "<br>")
+        title = (
+            message.text.split(None, 1)[1]
+            if len(message.command) > 1
+            else "MissKaty Paste"
+        )
+        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace(
+            "\n", "<br>"
+        )
     elif not reply and len(message.command) >= 2:
         title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]
@@ -130,7 +153,11 @@ async def telegraph_paste(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Telegraph<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -144,14 +171,18 @@ async def wastepaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await message.reply_msg(f"**Reply To A Message With /{target} or with command**", del_in=6)
+        return await message.reply_msg(
+            f"**Reply To A Message With /{target} or with command**", del_in=6
+        )
 
     msg = await message.reply_msg("`Pasting to YasirBin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await msg.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await msg.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
@@ -195,7 +226,11 @@ async def wastepaste(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -209,14 +244,18 @@ async def nekopaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await message.reply_msg(f"**Reply To A Message With /{target} or with command**", del_in=6)
+        return await message.reply_msg(
+            f"**Reply To A Message With /{target} or with command**", del_in=6
+        )
 
     msg = await message.reply_msg("`Pasting to Nekobin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await message.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await message.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await message.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
@@ -239,12 +278,16 @@ async def nekopaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
     try:
-        x = (await http.post("https://nekobin.com/api/documents", json={"content": data})).json()
+        x = (
+            await http.post("https://nekobin.com/api/documents", json={"content": data})
+        ).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
@@ -253,7 +296,11 @@ async def nekopaste(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -267,14 +314,18 @@ async def spacebinn(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await message.reply_msg(f"**Reply To A Message With /{target} or with command**", del_in=6)
+        return await message.reply_msg(
+            f"**Reply To A Message With /{target} or with command**", del_in=6
+        )
 
     msg = await message.reply_msg("`Pasting to Spacebin...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await msg.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await msg.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
@@ -297,7 +348,9 @@ async def spacebinn(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -313,7 +366,11 @@ async def spacebinn(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -327,14 +384,18 @@ async def rentrypaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await message.reply_msg(f"**Reply To A Message With /{target} or with command**", del_in=6)
+        return await message.reply_msg(
+            f"**Reply To A Message With /{target} or with command**", del_in=6
+        )
 
     msg = await message.reply_msg("`Pasting to Rentry...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await msg.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await msg.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
@@ -357,7 +418,9 @@ async def rentrypaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -370,7 +433,11 @@ async def rentrypaste(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
@@ -384,14 +451,18 @@ async def tempaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
-        return await message.edit_msg(f"**Reply To A Message With /{target} or with command**", del_in=6)
+        return await message.edit_msg(
+            f"**Reply To A Message With /{target} or with command**", del_in=6
+        )
 
     msg = await message.reply_msg("`Pasting to TempPaste...`")
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
         if reply.document.file_size > limit:
-            return await msg.edit_msg(f"**You can only paste files smaller than {humanbytes(limit)}.**")
+            return await msg.edit_msg(
+                f"**You can only paste files smaller than {humanbytes(limit)}.**"
+            )
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
@@ -414,7 +485,9 @@ async def tempaste(_, message):
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
         else:
-            uname = f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            uname = (
+                f"[{message.from_user.first_name}](tg://user?id={message.from_user.id})"
+            )
     else:
         uname = message.sender_chat.title
 
@@ -438,7 +511,11 @@ async def tempaste(_, message):
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
         [InlineKeyboardButton("Open Link", url=url)],
-        [InlineKeyboardButton("Share Link", url=f"https://telegram.me/share/url?url={url}")],
+        [
+            InlineKeyboardButton(
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+            )
+        ],
     ]
 
     pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"

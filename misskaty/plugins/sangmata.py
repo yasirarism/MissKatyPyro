@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
@@ -25,7 +29,12 @@ async def cek_mataa(self: Client, ctx: Message, strings):
     if ctx.sender_chat or not await is_sangmata_on(ctx.chat.id):
         return
     if not await cek_userdata(ctx.from_user.id):
-        return await add_userdata(ctx.from_user.id, ctx.from_user.username, ctx.from_user.first_name, ctx.from_user.last_name)
+        return await add_userdata(
+            ctx.from_user.id,
+            ctx.from_user.username,
+            ctx.from_user.first_name,
+            ctx.from_user.last_name,
+        )
     usernamebefore, first_name, lastname_before = await get_userdata(ctx.from_user.id)
     msg = ""
     if usernamebefore != ctx.from_user.username or first_name != ctx.from_user.first_name or lastname_before != ctx.from_user.last_name:
@@ -34,15 +43,30 @@ async def cek_mataa(self: Client, ctx: Message, strings):
         usernamebefore = f"@{usernamebefore}" if usernamebefore else strings("no_uname")
         usernameafter = f"@{ctx.from_user.username}" if ctx.from_user.username else strings("no_uname")
         msg += strings("uname_change_msg").format(bef=usernamebefore, aft=usernameafter)
-        await add_userdata(ctx.from_user.id, ctx.from_user.username, ctx.from_user.first_name, ctx.from_user.last_name)
+        await add_userdata(
+            ctx.from_user.id,
+            ctx.from_user.username,
+            ctx.from_user.first_name,
+            ctx.from_user.last_name,
+        )
     if first_name != ctx.from_user.first_name:
         msg += strings("firstname_change_msg").format(bef=first_name, aft=ctx.from_user.first_name)
-        await add_userdata(ctx.from_user.id, ctx.from_user.username, ctx.from_user.first_name, ctx.from_user.last_name)
+        await add_userdata(
+            ctx.from_user.id,
+            ctx.from_user.username,
+            ctx.from_user.first_name,
+            ctx.from_user.last_name,
+        )
     if lastname_before != ctx.from_user.last_name:
         lastname_before = lastname_before or strings("no_last_name")
         lastname_after = ctx.from_user.last_name or strings("no_last_name")
         msg += strings("lastname_change_msg").format(bef=lastname_before, aft=lastname_after)
-        await add_userdata(ctx.from_user.id, ctx.from_user.username, ctx.from_user.first_name, ctx.from_user.last_name)
+        await add_userdata(
+            ctx.from_user.id,
+            ctx.from_user.username,
+            ctx.from_user.first_name,
+            ctx.from_user.last_name,
+        )
     if msg != "":
         await ctx.reply_msg(msg, quote=True)
 

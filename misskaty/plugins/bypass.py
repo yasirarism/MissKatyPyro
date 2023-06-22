@@ -10,14 +10,14 @@ import urllib.parse
 from urllib.parse import unquote
 
 import requests
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, get_readable_file_size, rentry
+from misskaty.helper import get_readable_file_size, http, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -94,7 +94,6 @@ async def bypass(self: Client, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(f"Gunakan perintah /{ctx.command[0]} untuk bypass url", del_in=6)
     url = ctx.command[1]
-    urllib.parse.urlparse(url).netloc
     msg = await ctx.reply_msg("Bypassing URL..", quote=True)
     mention = f"**Bypasser:** {ctx.from_user.mention} ({ctx.from_user.id})"
     if re.match(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url):

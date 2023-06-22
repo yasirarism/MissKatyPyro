@@ -1,16 +1,21 @@
-from time import time
 from functools import partial, wraps
-from typing import Union, Optional
-
+from time import time
 from traceback import format_exc as err
+from typing import Optional, Union
 
-from pyrogram import enums, Client
-from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
-from ...helper.localization import default_language, get_lang, get_locale_string, langdict
-from pyrogram.types import Message, CallbackQuery
+from pyrogram import Client, enums
+from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidden
+from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.vars import SUDO
+
+from ...helper.localization import (
+    default_language,
+    get_lang,
+    get_locale_string,
+    langdict,
+)
 
 
 async def member_permissions(chat_id: int, user_id: int):
@@ -52,83 +57,12 @@ async def check_perms(
     else:
         sender = message.reply_text
         chat = message.chat
-    # TODO: Cache all admin permissions in db.
-    user = await chat.get_member(message.from_user.id)
-    if user.status == enums.ChatMemberStatus.OWNER:
-        return True
-
-    # No permissions specified, accept being an admin.
-    if not permissions and user.status == enums.ChatMemberStatus.ADMINISTRATOR:
-        return True
-    if user.status != enums.ChatMemberStatus.ADMINISTRATOR:
-        if complain_missing_perms:
-            await sender(strings("no_admin_error"))
-        return False
-
-    if isinstance(permissions, str):
-        permissions = [permissions]
-
-    missing_perms = [permission for permission in permissions if not getattr(user.privileges, permission)]
-
-    if not missing_perms:
-        return True
-    if complain_missing_perms:
-        await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
-    return False
-
-
-async def check_perms(
-    message: Union[CallbackQuery, Message],
-    permissions: Optional[Union[list, str]],
-    complain_missing_perms: bool,
-    strings,
-) -> bool:
-    if isinstance(message, CallbackQuery):
-        sender = partial(message.answer, show_alert=True)
-        chat = message.message.chat
-    else:
-        sender = message.reply_text
-        chat = message.chat
-    # TODO: Cache all admin permissions in db.
-    user = await chat.get_member(message.from_user.id)
-    if user.status == enums.ChatMemberStatus.OWNER:
-        return True
-
-    # No permissions specified, accept being an admin.
-    if not permissions and user.status == enums.ChatMemberStatus.ADMINISTRATOR:
-        return True
-    if user.status != enums.ChatMemberStatus.ADMINISTRATOR:
-        if complain_missing_perms:
-            await sender(strings("no_admin_error"))
-        return False
-
-    if isinstance(permissions, str):
-        permissions = [permissions]
-
-    missing_perms = [permission for permission in permissions if not getattr(user.privileges, permission)]
-
-    if not missing_perms:
-        return True
-    if complain_missing_perms:
-        await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
-    return False
-
-
-async def check_perms(
-    message: Union[CallbackQuery, Message],
-    permissions: Optional[Union[list, str]],
-    complain_missing_perms: bool,
-    strings,
-) -> bool:
-    if isinstance(message, CallbackQuery):
-        sender = partial(message.answer, show_alert=True)
-        chat = message.message.chat
-    else:
-        sender = message.reply_text
-        chat = message.chat
     if not message.from_user:
         return bool(message.sender_chat and message.sender_chat.id == message.chat.id)
-    user = await chat.get_member(message.from_user.id)
+    try:
+        user = await chat.get_member(message.from_user.id)
+    except ChatAdminRequired:
+        return False
     if user.status == enums.ChatMemberStatus.OWNER:
         return True
 
@@ -156,17 +90,19 @@ admins_in_chat = {}
 
 
 async def list_admins(chat_id: int):
-    global admins_in_chat
     if chat_id in admins_in_chat:
         interval = time() - admins_in_chat[chat_id]["last_updated_at"]
         if interval < 3600:
             return admins_in_chat[chat_id]["data"]
 
-    admins_in_chat[chat_id] = {
-        "last_updated_at": time(),
-        "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
-    }
-    return admins_in_chat[chat_id]["data"]
+    try:
+        admins_in_chat[chat_id] = {
+            "last_updated_at": time(),
+            "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+        }
+        return admins_in_chat[chat_id]["data"]
+    except ChannelPrivate:
+        return
 
 
 async def authorised(func, subFunc2, client, message, *args, **kwargs):

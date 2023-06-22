@@ -46,7 +46,20 @@ async def meval(code, globs, **kwargs):
     if not any(isinstance(node, ast.Return) for node in code):
         for i in range(len(code)):
             if isinstance(code[i], ast.Expr) and (i == len(code) - 1 or not isinstance(code[i].value, ast.Call)):
-                code[i] = ast.copy_location(ast.Expr(ast.Call(func=ast.Attribute(value=ast.Name(id=ret_name, ctx=ast.Load()), attr="append", ctx=ast.Load()), args=[code[i].value], keywords=[])), code[-1])
+                code[i] = ast.copy_location(
+                    ast.Expr(
+                        ast.Call(
+                            func=ast.Attribute(
+                                value=ast.Name(id=ret_name, ctx=ast.Load()),
+                                attr="append",
+                                ctx=ast.Load(),
+                            ),
+                            args=[code[i].value],
+                            keywords=[],
+                        )
+                    ),
+                    code[-1],
+                )
     else:
         for node in code:
             if isinstance(node, ast.Return):
@@ -56,11 +69,22 @@ async def meval(code, globs, **kwargs):
 
     # globals().update(**<global_args>)
     glob_copy = ast.Expr(
-        ast.Call(func=ast.Attribute(value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]), attr="update", ctx=ast.Load()), args=[], keywords=[ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))])
+        ast.Call(
+            func=ast.Attribute(
+                value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]),
+                attr="update",
+                ctx=ast.Load(),
+            ),
+            args=[],
+            keywords=[ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))],
+        )
     )
     ast.fix_missing_locations(glob_copy)
     code.insert(0, glob_copy)
-    ret_decl = ast.Assign(targets=[ast.Name(id=ret_name, ctx=ast.Store())], value=ast.List(elts=[], ctx=ast.Load()))
+    ret_decl = ast.Assign(
+        targets=[ast.Name(id=ret_name, ctx=ast.Store())],
+        value=ast.List(elts=[], ctx=ast.Load()),
+    )
     ast.fix_missing_locations(ret_decl)
     code.insert(1, ret_decl)
     args = []

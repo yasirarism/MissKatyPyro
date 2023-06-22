@@ -1,5 +1,6 @@
-from pyrogram import filters
 import asyncio
+
+from pyrogram import filters
 
 data = {}
 
@@ -13,7 +14,10 @@ async def task(msg, warn=False, sec=None):
         user = msg.from_user
         ids = await msg.reply_msg(f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again..")
         await asyncio.sleep(sec)
-        await ids.edit_msg(f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.", del_in=3)
+        await ids.edit_msg(
+            f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.",
+            del_in=3,
+        )
 
 
 def wait(sec):

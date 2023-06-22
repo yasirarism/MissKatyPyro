@@ -1,10 +1,21 @@
-import io
 import html
+import io
+from asyncio import get_event_loop
+from asyncio import sleep as asleep
 from logging import getLogger
-from pyrogram.types import Message
-from pyrogram.errors import MessageNotModified, MessageAuthorRequired, MessageIdInvalid, ChatWriteForbidden, ChatAdminRequired, FloodWait, MessageTooLong, MessageDeleteForbidden
-from asyncio import sleep as asleep, get_event_loop
 from typing import Union
+
+from pyrogram.errors import (
+    ChatAdminRequired,
+    ChatWriteForbidden,
+    FloodWait,
+    MessageAuthorRequired,
+    MessageDeleteForbidden,
+    MessageIdInvalid,
+    MessageNotModified,
+    MessageTooLong,
+)
+from pyrogram.types import Message
 
 LOGGER = getLogger(__name__)
 
@@ -223,7 +234,13 @@ async def reply_or_send_as_file(self, text: str, as_raw: bool = False, del_in: i
         return await reply_as_file(self, text=text, **kwargs)
 
 
-async def reply_as_file(self, text: str, filename: str = "output.txt", caption: str = "", delete_message: bool = True):
+async def reply_as_file(
+    self,
+    text: str,
+    filename: str = "output.txt",
+    caption: str = "",
+    delete_message: bool = True,
+):
     """\nYou can send large outputs as file
     Example:
         message.reply_as_file(text="hello")
@@ -245,7 +262,12 @@ async def reply_as_file(self, text: str, filename: str = "output.txt", caption: 
         get_event_loop().create_task(self.delete())
     doc = io.BytesIO(text.encode())
     doc.name = filename
-    return await self.reply_document(document=doc, caption=caption[:1024], disable_notification=True, reply_to_message_id=reply_to_id)
+    return await self.reply_document(
+        document=doc,
+        caption=caption[:1024],
+        disable_notification=True,
+        reply_to_message_id=reply_to_id,
+    )
 
 
 async def delete(self, revoke: bool = True) -> bool:

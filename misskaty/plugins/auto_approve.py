@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -10,8 +9,8 @@ from pyrogram.errors import UserAlreadyParticipant, UserIsBlocked
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 
 
 # Filters Approve User by bot in channel @YMovieZNew

@@ -1,3 +1,7 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 import asyncio
 import logging
 import os
@@ -108,7 +112,11 @@ async def subsceneCMD(self: Client, ctx: Message):
     if not subres:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "subscenepage#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "subscenepage#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
+    )
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn1)
     if btn2:
@@ -138,7 +146,11 @@ async def subpage_callback(self: Client, callback_query: CallbackQuery):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "subscenepage#{number}" + f"#{message_id}#{callback_query.from_user.id}")
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "subscenepage#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+    )
     keyboard.row(InlineButton("👇 Get Subtitle List", "Hmmm"))
     keyboard.row(*btn1)
     if btn2:
@@ -169,7 +181,11 @@ async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "sublist#{number}" + f"#{idlink}#{message_id}#{callback_query.from_user.id}")
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "sublist#{number}" + f"#{idlink}#{message_id}#{callback_query.from_user.id}",
+    )
     keyboard.row(InlineButton("👇 Download Subtitle", "Hmmm"))
     keyboard.row(*btn1)
     if btn2:
@@ -198,5 +214,8 @@ async def dlsub_callback(self: Client, callback_query: CallbackQuery):
     res = await down_page(link)
     dl = scraper.get(res.get("download_url"))
     f = open(f"{title}.zip", mode="wb").write(dl.content)
-    await callback_query.message.reply_document(f"{title}.zip", caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ")
+    await callback_query.message.reply_document(
+        f"{title}.zip",
+        caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ",
+    )
     os.remove(f"{title}.zip")

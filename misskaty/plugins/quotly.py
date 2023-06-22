@@ -1,11 +1,15 @@
+# * @author        Yasir Aris M <yasiramunandar@gmail.com>
+# * @date          2023-06-21 22:12:27
+# * @projectName   MissKatyPyro
+# * Copyright ©YasirPedia All rights reserved
 from io import BytesIO
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.helper.http import http
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper.http import http
 
 __MODULE__ = "Fun"
 __HELP__ = """

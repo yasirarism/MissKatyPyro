@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
@@ -9,15 +8,15 @@
 
 import os
 
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.types import Message
 from telegraph.aio import Telegraph
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.localization import use_chat_lang
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "OCR"
@@ -30,15 +29,7 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @use_chat_lang()
 async def ocr(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if (
-        not reply
-        or not reply.sticker
-        and not reply.photo
-        and (
-            not reply.document
-            or not reply.document.mime_type.startswith("image")
-        )
-    ):
+    if not reply or not reply.sticker and not reply.photo and (not reply.document or not reply.document.mime_type.startswith("image")):
         return await ctx.reply_msg(strings("no_photo").format(cmd=ctx.command[0]), quote=True)
     msg = await ctx.reply_msg(strings("read_ocr"), quote=True)
     try:

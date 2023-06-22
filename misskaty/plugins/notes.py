@@ -28,8 +28,8 @@ from pyrogram import filters
 from database.notes_db import delete_note, get_note, get_note_names, save_note
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.permissions import adminsOnly
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb
 
@@ -64,7 +64,6 @@ async def save_notee(_, message):
             "type": _type,
             "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
         }
-        message.text.split()[0][0]
         chat_id = message.chat.id
         await save_note(chat_id, name, note)
         await message.reply(f"__**Saved note {name}.**__")
@@ -74,7 +73,6 @@ async def save_notee(_, message):
 @capture_err
 @ratelimiter
 async def get_notes(_, message):
-    message.text.split()[0][0]
     chat_id = message.chat.id
 
     _notes = await get_note_names(chat_id)
@@ -123,7 +121,6 @@ async def del_note(_, message):
     if not name:
         return await message.reply("**Usage**\n__/delnote [NOTE_NAME]__")
 
-    message.text.split()[0][0]
     chat_id = message.chat.id
 
     deleted = await delete_note(chat_id, name)
