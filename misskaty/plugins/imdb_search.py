@@ -349,7 +349,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex("^imdbres_id"))
 @ratelimiter
-@capture_err
+# @capture_err
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -467,7 +467,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
 
 @app.on_callback_query(filters.regex("^imdbres_en"))
 @ratelimiter
-@capture_err
+# @capture_err
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
