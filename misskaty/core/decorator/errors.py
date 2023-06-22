@@ -29,7 +29,7 @@ def capture_err(func):
             exc = traceback.format_exc()
             error_feedback = "ERROR | {} | {}\n\n{}\n\n{}\n".format(
                     message.from_user.id if message.from_user else 0,
-                    message.chat.id if message.chat else 0,
+                    chat.id if chat else 0,
                     message.text or message.caption,
                     exc,
             )
