@@ -18,9 +18,11 @@ def capture_err(func):
         if isinstance(message, CallbackQuery):
             sender = partial(message.answer, show_alert=True)
             chat = message.message.chat
+            msg = message.message.text or message.message.caption
         else:
             sender = message.reply_text
             chat = message.chat
+            msg = message.text or message.caption
         try:
             return await func(client, message, *args, **kwargs)
         except ChatWriteForbidden:
@@ -30,7 +32,7 @@ def capture_err(func):
             error_feedback = "ERROR | {} | {}\n\n{}\n\n{}\n".format(
                     message.from_user.id if message.from_user else 0,
                     chat.id if chat else 0,
-                    message.text or message.caption,
+                    msg,
                     exc,
             )
             day = datetime.today()
