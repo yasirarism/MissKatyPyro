@@ -62,7 +62,9 @@ async def save_notee(_, message):
         _type = "text" if message.reply_to_message.text else "sticker"
         note = {
             "type": _type,
-            "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
+            "data": message.reply_to_message.text.markdown
+            if _type == "text"
+            else message.reply_to_message.sticker.file_id,
         }
         chat_id = message.chat.id
         await save_note(chat_id, name, note)

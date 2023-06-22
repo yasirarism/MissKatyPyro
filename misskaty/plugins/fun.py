@@ -16,7 +16,9 @@ async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
     hapus(image_path)
     i_width, i_height = img.size
-    m_font = ImageFont.truetype("assets/MutantAcademyStyle.ttf", int((70 / 640) * i_width))
+    m_font = ImageFont.truetype(
+        "assets/MutantAcademyStyle.ttf", int((70 / 640) * i_width)
+    )
     if ";" in text:
         upper_text, lower_text = text.split(";")
     else:
@@ -144,10 +146,14 @@ async def draw_meme_text(image_path, text):
 @capture_err
 @ratelimiter
 async def memify(client, message):
-    if message.reply_to_message and (message.reply_to_message.sticker or message.reply_to_message.photo):
+    if message.reply_to_message and (
+        message.reply_to_message.sticker or message.reply_to_message.photo
+    ):
         try:
             file = await message.reply_to_message.download()
-            webp, png = await draw_meme_text(file, message.text.split(None, 1)[1].strip())
+            webp, png = await draw_meme_text(
+                file, message.text.split(None, 1)[1].strip()
+            )
             await gather(*[message.reply_document(png), message.reply_sticker(webp)])
             try:
                 hapus(webp)
@@ -162,7 +168,9 @@ async def memify(client, message):
                 pass
             await message.reply_msg(f"ERROR: {err}")
     else:
-        await message.reply_msg("Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah.")
+        await message.reply_msg(
+            "Gunakan command <b>/mmf <text></b> dengan reply ke sticker, pisahkan dengan ; untuk membuat posisi text dibawah."
+        )
 
 
 @app.on_message(filters.command(["dice"], COMMAND_HANDLER))

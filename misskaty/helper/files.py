@@ -53,14 +53,20 @@ async def resize_file_to_sticker_size(file_path: str) -> str:
         im.save(file_path)
 
 
-async def upload_document(client: Client, file_path: str, chat_id: int) -> raw.base.InputDocument:
+async def upload_document(
+    client: Client, file_path: str, chat_id: int
+) -> raw.base.InputDocument:
     media = await client.send(
         raw.functions.messages.UploadMedia(
             peer=await client.resolve_peer(chat_id),
             media=raw.types.InputMediaUploadedDocument(
                 mime_type=client.guess_mime_type(file_path) or "application/zip",
                 file=await client.save_file(file_path),
-                attributes=[raw.types.DocumentAttributeFilename(file_name=os.path.basename(file_path))],
+                attributes=[
+                    raw.types.DocumentAttributeFilename(
+                        file_name=os.path.basename(file_path)
+                    )
+                ],
             ),
         )
     )

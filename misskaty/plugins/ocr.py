@@ -29,13 +29,22 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @use_chat_lang()
 async def ocr(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
-    if not reply or not reply.sticker and not reply.photo and (not reply.document or not reply.document.mime_type.startswith("image")):
-        return await ctx.reply_msg(strings("no_photo").format(cmd=ctx.command[0]), quote=True)
+    if (
+        not reply
+        or not reply.sticker
+        and not reply.photo
+        and (not reply.document or not reply.document.mime_type.startswith("image"))
+    ):
+        return await ctx.reply_msg(
+            strings("no_photo").format(cmd=ctx.command[0]), quote=True
+        )
     msg = await ctx.reply_msg(strings("read_ocr"), quote=True)
     try:
         file_path = await reply.download()
         if reply.sticker:
-            file_path = await reply.download(f"ocr_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}.jpg")
+            file_path = await reply.download(
+                f"ocr_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}.jpg"
+            )
         response = await Telegraph().upload_file(file_path)
         url = f"https://telegra.ph{response[0]['src']}"
         req = (
