@@ -64,7 +64,6 @@ async def save_notee(_, message):
             "type": _type,
             "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
         }
-        message.text.split()[0][0]
         chat_id = message.chat.id
         await save_note(chat_id, name, note)
         await message.reply(f"__**Saved note {name}.**__")
@@ -74,7 +73,6 @@ async def save_notee(_, message):
 @capture_err
 @ratelimiter
 async def get_notes(_, message):
-    message.text.split()[0][0]
     chat_id = message.chat.id
 
     _notes = await get_note_names(chat_id)
@@ -123,7 +121,6 @@ async def del_note(_, message):
     if not name:
         return await message.reply("**Usage**\n__/delnote [NOTE_NAME]__")
 
-    message.text.split()[0][0]
     chat_id = message.chat.id
 
     deleted = await delete_note(chat_id, name)

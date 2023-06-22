@@ -88,7 +88,6 @@ async def unban_a_user(bot, message):
         return await message.reply("Give me a user id / username")
     r = message.text.split(None)
     if len(r) > 2:
-        message.text.split(None, 2)[2]
         chat = message.text.split(None, 2)[1]
     else:
         chat = message.command[1]
