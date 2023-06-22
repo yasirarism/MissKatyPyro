@@ -1043,7 +1043,7 @@ async def kusonime_scrap(client, callback_query, strings):
     )
     try:
         init_url = data_kuso.get(link, None)
-        if init_url != None:
+        if init_url is not None:
             ph = init_url.get("ph_url")
             await callback_query.message.edit_msg(
                 strings("res_scrape").format(link=link, kl=ph),
