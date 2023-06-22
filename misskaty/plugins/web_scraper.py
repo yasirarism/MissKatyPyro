@@ -49,12 +49,12 @@ web = {
     "savefilm21": "https://savefilm21.store",
     "melongmovie": "https://melongmovie.site",
     "terbit21": "https://terbit21.art",
-    "lk21": "https://nonton.lk21official.wiki",
+    "lk21": "https://watch.lk21official.shop",
     "gomov": "https://gomov.bio",
     "movieku": "https://107.152.37.223",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
-    "samehadaku": "https://samehadaku.day",
+    "samehadaku": "https://samehadaku.bio",
     "oplovers": "https://oploverz.top",
 }
 
