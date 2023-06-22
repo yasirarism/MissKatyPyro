@@ -1,7 +1,7 @@
 import asyncio
 import os
 import traceback
-from functools import wraps
+from functools import wraps, partial
 from datetime import datetime
 
 from pyrogram.types import CallbackQuery
