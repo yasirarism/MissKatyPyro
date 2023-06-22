@@ -57,9 +57,7 @@ async def save_filters(_, m):
             del_in=6,
         )
     if not m.reply_to_message.text and not m.reply_to_message.sticker:
-        return await m.reply_msg(
-            "__**You can only save text or stickers in filters for now.**__"
-        )
+        return await m.reply_msg("__**You can only save text or stickers in filters for now.**__")
     name = m.text.split(None, 1)[1].strip()
     if not name:
         return await m.reply_msg("**Usage:**\n__/addfilter [FILTER_NAME]__", del_in=6)
@@ -67,9 +65,7 @@ async def save_filters(_, m):
     _type = "text" if m.reply_to_message.text else "sticker"
     _filter = {
         "type": _type,
-        "data": m.reply_to_message.text.markdown
-        if _type == "text"
-        else m.reply_to_message.sticker.file_id,
+        "data": m.reply_to_message.text.markdown if _type == "text" else m.reply_to_message.sticker.file_id,
     }
     await save_filter(chat_id, name, _filter)
     await m.reply_msg(f"__**Saved filter {name}.**__")
