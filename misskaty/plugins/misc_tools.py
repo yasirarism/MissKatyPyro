@@ -126,8 +126,8 @@ async def gsearch(client, message):
         data = []
 
         for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc"):
-            link = result.find("div", class_ ="yuRUbf").find("a").get("href")
-            title = result.find("div", class_ ="yuRUbf").find("h3").get_text()
+            link = result.find("div", class_="yuRUbf").find("a").get("href")
+            title = result.find("div", class_="yuRUbf").find("h3").get_text()
             try:
                 snippet = result.find("div", class_="VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc lEBKkf").get_text()
             except:

@@ -26,14 +26,13 @@ from pyrogram.sync import async_to_sync
 
 logger = getLogger(__name__)
 
+
 class PyromodConfig:
     timeout_handler = None
     stopped_handler = None
     throw_exceptions = True
     unallowed_click_alert = True
-    unallowed_click_alert_text = (
-        "[pyromod] You're not expected to click this button."
-    )
+    unallowed_click_alert_text = "[pyromod] You're not expected to click this button."
 
 
 def patch(obj):
@@ -46,15 +45,15 @@ def patch(obj):
     def wrapper(container):
         for name, func in filter(is_patchable, container.__dict__.items()):
             old = getattr(obj, name, None)
-            if old is not None: # Not adding 'old' to new func
+            if old is not None:  # Not adding 'old' to new func
                 setattr(obj, "old" + name, old)
-            
+
             # Worse Code
             tempConf = {i: getattr(func, i, False) for i in ["is_property", "is_static", "is_context"]}
-            
+
             async_to_sync(container, name)
             func = getattr(container, name)
-            
+
             for tKey, tValue in tempConf.items():
                 setattr(func, tKey, tValue)
 
@@ -67,7 +66,7 @@ def patch(obj):
                     func = asynccontextmanager(func)
                 else:
                     func = contextmanager(func)
-            
+
             logger.info(f"Patch Attribute To {obj.__name__} From {container.__name__} : {name}")
             setattr(obj, name, func)
         return container
@@ -80,7 +79,7 @@ def patchable(is_property: bool = False, is_static: bool = False, is_context: bo
     A decorator that marks a function as patchable.
 
     Usage:
-    
+
         @patchable(is_property=True)
         def my_property():
             ...
@@ -92,11 +91,11 @@ def patchable(is_property: bool = False, is_static: bool = False, is_context: bo
         @patchable(is_context=True)
         def my_context_manager():
             ...
-       
+
         @patchable(is_property=False, is_static=False, is_context=False)
         def my_function():
             ...
-        
+
         @patchable()
         def default_usage():
             ...
@@ -109,10 +108,12 @@ def patchable(is_property: bool = False, is_static: bool = False, is_context: bo
     Returns:
         - A callable object that marks the function as patchable.
     """
+
     def wrapper(func: Callable) -> Callable:
         func.patchable = True
         func.is_property = is_property
         func.is_static = is_static
         func.is_context = is_context
         return func
+
     return wrapper

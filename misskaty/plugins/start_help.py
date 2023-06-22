@@ -7,11 +7,9 @@
  """
 import re
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
-from database.users_chats_db import db
 from pyrogram import filters, Client
-from pyrogram.errors import ChannelPrivate
 from misskaty import app, BOT_USERNAME, HELPABLE, BOT_NAME
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.helper.localization import use_chat_lang

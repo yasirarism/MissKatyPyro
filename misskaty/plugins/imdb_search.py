@@ -5,7 +5,6 @@
 import json
 import logging
 import re
-import traceback
 
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
@@ -23,7 +22,7 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import http, get_random_string, search_jw, GENRES_EMOJI
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
+from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = {}
@@ -89,10 +88,7 @@ async def imdbsetlang(self: Client, query: CallbackQuery):
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     msg = await query.message.edit_caption("<i>Please select available language below..</i>", reply_markup=buttons)
     try:
-        await msg.wait_for_click(
-            from_user_id=int(uid),
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=int(uid), timeout=30)
     except ListenerTimeout:
         try:
             await msg.edit_caption("😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!")
@@ -168,10 +164,7 @@ async def imdb_search_id(kueri, message):
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
         try:
-            await msg.wait_for_click(
-                from_user_id=message.from_user.id,
-                timeout=30
-            )
+            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
         except ListenerTimeout:
             try:
                 await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
@@ -228,10 +221,7 @@ async def imdb_search_en(kueri, message):
         buttons.add(*BTN)
         msg = await k.edit_caption(msg, reply_markup=buttons)
         try:
-            await msg.wait_for_click(
-                from_user_id=message.from_user.id,
-                timeout=30
-            )
+            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
         except ListenerTimeout:
             try:
                 await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
@@ -285,10 +275,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
-                await msg.wait_for_click(
-                    from_user_id=int(uid),
-                    timeout=30
-                )
+                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
                 try:
                     await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
@@ -334,10 +321,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
             buttons.add(*BTN)
             msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
-                await msg.wait_for_click(
-                    from_user_id=int(uid),
-                    timeout=30
-                )
+                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
                 try:
                     await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")

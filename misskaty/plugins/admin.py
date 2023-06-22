@@ -743,33 +743,23 @@ async def set_chat_title(self: Client, ctx: Message):
     old_title = ctx.chat.title
     new_title = ctx.text.split(None, 1)[1]
     await ctx.chat.set_title(new_title)
-    await ctx.reply_text(
-        f"Successfully Changed Group Title From {old_title} To {new_title}"
-    )
+    await ctx.reply_text(f"Successfully Changed Group Title From {old_title} To {new_title}")
 
 
 @app.on_message(filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_user_title(self: Client, ctx: Message):
     if not ctx.reply_to_message:
-        return await ctx.reply_text(
-            "Reply to user's message to set his admin title"
-        )
+        return await ctx.reply_text("Reply to user's message to set his admin title")
     if not ctx.reply_to_message.from_user:
-        return await ctx.reply_text(
-            "I can't change admin title of an unknown entity"
-        )
+        return await ctx.reply_text("I can't change admin title of an unknown entity")
     chat_id = ctx.chat.id
     from_user = ctx.reply_to_message.from_user
     if len(ctx.command) < 2:
-        return await ctx.reply_text(
-            "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE"
-        )
+        return await ctx.reply_text("**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE")
     title = ctx.text.split(None, 1)[1]
     await app.set_administrator_title(chat_id, from_user.id, title)
-    await ctx.reply_text(
-        f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
-    )
+    await ctx.reply_text(f"Successfully Changed {from_user.mention}'s Admin Title To {title}")
 
 
 @app.on_message(filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
@@ -782,13 +772,11 @@ async def set_chat_photo(self: Client, ctx: Message):
 
     file = reply.document or reply.photo
     if not file:
-        return await ctx.reply_text(
-            "Reply to a photo or document to set it as chat_photo"
-        )
+        return await ctx.reply_text("Reply to a photo or document to set it as chat_photo")
 
     if file.file_size > 5000000:
         return await ctx.reply("File size too large.")
-    
+
     file = await reply.download()
     try:
         await ctx.chat.set_photo(photo=photo)

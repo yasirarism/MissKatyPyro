@@ -71,10 +71,7 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     res = strings("language_changer_private") if msg.chat.type == ChatType.PRIVATE else strings("language_changer_chat")
     msg = await sender(res, reply_markup=keyboard)
     try:
-        await msg.wait_for_click(
-            from_user_id=m.from_user.id,
-            timeout=30
-        )
+        await msg.wait_for_click(from_user_id=m.from_user.id, timeout=30)
     except ListenerTimeout:
         await msg.edit_msg(strings("exp_task", context="general"))
 

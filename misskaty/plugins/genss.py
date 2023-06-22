@@ -16,11 +16,10 @@ from urllib.parse import unquote
 from pyrogram import enums, filters, Client
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
-from pyrogram.types import InlineKeyboardMarkup, Message, CallbackQuery
+from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core.decorator import ratelimiter, new_task
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper import is_url, progress_for_pyrogram, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import humanbytes

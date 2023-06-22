@@ -30,6 +30,7 @@ from ..utils import patch, patchable, PyromodConfig
 
 logger = logging.getLogger(__name__)
 
+
 class ListenerStopped(Exception):
     pass
 
@@ -60,15 +61,10 @@ class Client:
         unallowed_click_alert=True,
     ):
         if type(listener_type) != ListenerTypes:
-            raise TypeError(
-                "Parameter listener_type should be a"
-                " value from pyromod.listen.ListenerTypes"
-            )
+            raise TypeError("Parameter listener_type should be a" " value from pyromod.listen.ListenerTypes")
 
         future = self.loop.create_future()
-        future.add_done_callback(
-            lambda f: self.stop_listening(identifier, listener_type)
-        )
+        future.add_done_callback(lambda f: self.stop_listening(identifier, listener_type))
 
         listener_data = {
             "future": future,
@@ -82,9 +78,7 @@ class Client:
             return await asyncio.wait_for(future, timeout)
         except asyncio.exceptions.TimeoutError:
             if callable(PyromodConfig.timeout_handler):
-                PyromodConfig.timeout_handler(
-                    identifier, listener_data, timeout
-                )
+                PyromodConfig.timeout_handler(identifier, listener_data, timeout)
             elif PyromodConfig.throw_exceptions:
                 raise ListenerTimeout(timeout)
 
@@ -100,9 +94,7 @@ class Client:
         **kwargs,
     ):
         request = await self.send_message(identifier[0], text, *args, **kwargs)
-        response = await self.listen(
-            identifier, filters, listener_type, timeout
-        )
+        response = await self.listen(identifier, filters, listener_type, timeout)
         if response:
             response.request = request
 
@@ -168,9 +160,7 @@ class Client:
         listener_type: ListenerTypes = ListenerTypes.MESSAGE,
         identifier_pattern: Optional[tuple] = None,
     ):
-        listener, identifier = self.match_listener(
-            data, listener_type, identifier_pattern
-        )
+        listener, identifier = self.match_listener(data, listener_type, identifier_pattern)
 
         if not listener:
             return
@@ -214,9 +204,7 @@ class MessageHandler:
                 if iscoroutinefunction(filters.__call__):
                     listener_does_match = await filters(client, message)
                 else:
-                    listener_does_match = await client.loop.run_in_executor(
-                        None, filters, client, message
-                    )
+                    listener_does_match = await client.loop.run_in_executor(None, filters, client, message)
             else:
                 listener_does_match = True
 
@@ -224,9 +212,7 @@ class MessageHandler:
             if iscoroutinefunction(self.filters.__call__):
                 handler_does_match = await self.filters(client, message)
             else:
-                handler_does_match = await client.loop.run_in_executor(
-                    None, self.filters, client, message
-                )
+                handler_does_match = await client.loop.run_in_executor(None, self.filters, client, message)
         else:
             handler_does_match = True
 
@@ -250,9 +236,7 @@ class MessageHandler:
                 if iscoroutinefunction(filters.__call__):
                     listener_does_match = await filters(client, message)
                 else:
-                    listener_does_match = await client.loop.run_in_executor(
-                        None, filters, client, message
-                    )
+                    listener_does_match = await client.loop.run_in_executor(None, filters, client, message)
             else:
                 listener_does_match = True
 
@@ -297,15 +281,8 @@ class CallbackQueryHandler:
                 listener_type=ListenerTypes.CALLBACK_QUERY,
             )[0]
 
-            if (permissive_listener and not listener) and permissive_listener[
-                "unallowed_click_alert"
-            ]:
-                alert = (
-                    permissive_listener["unallowed_click_alert"]
-                    if type(permissive_listener["unallowed_click_alert"])
-                    == str
-                    else PyromodConfig.unallowed_click_alert_text
-                )
+            if (permissive_listener and not listener) and permissive_listener["unallowed_click_alert"]:
+                alert = permissive_listener["unallowed_click_alert"] if type(permissive_listener["unallowed_click_alert"]) == str else PyromodConfig.unallowed_click_alert_text
                 await query.answer(alert)
                 return False
 
@@ -315,9 +292,7 @@ class CallbackQueryHandler:
             if iscoroutinefunction(filters.__call__):
                 return await filters(client, query)
             else:
-                return await client.loop.run_in_executor(
-                    None, filters, client, query
-                )
+                return await client.loop.run_in_executor(None, filters, client, query)
         else:
             return True
 
@@ -370,9 +345,7 @@ class Chat(pyrogram.types.Chat):
 
     @patchable()
     def stop_listening(self, *args, **kwargs):
-        return self._client.stop_listening(
-            *args, identifier_pattern=(self.id, None, None), **kwargs
-        )
+        return self._client.stop_listening(*args, identifier_pattern=(self.id, None, None), **kwargs)
 
 
 @patch(pyrogram.types.user_and_chats.user.User)
@@ -383,12 +356,8 @@ class User(pyrogram.types.User):
 
     @patchable()
     def ask(self, text, *args, **kwargs):
-        return self._client.ask(
-            text, (self.id, self.id, None), *args, **kwargs
-        )
+        return self._client.ask(text, (self.id, self.id, None), *args, **kwargs)
 
     @patchable()
     def stop_listening(self, *args, **kwargs):
-        return self._client.stop_listening(
-            *args, identifier_pattern=(None, self.id, None), **kwargs
-        )
+        return self._client.stop_listening(*args, identifier_pattern=(None, self.id, None), **kwargs)

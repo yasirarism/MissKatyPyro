@@ -35,7 +35,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         )
         await db.add_chat(ctx.chat.id, ctx.chat.title)
     chck = await db.get_chat(ctx.chat.id)
-    if chck['is_disabled']:
+    if chck["is_disabled"]:
         buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
         reply_markup = InlineKeyboardMarkup(buttons)
         vazha = await db.get_chat(ctx.chat.id)
@@ -54,7 +54,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
 @app.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
-        return await message.reply('Give me a user id / username')
+        return await message.reply("Give me a user id / username")
     r = message.text.split(None)
     if len(r) > 2:
         reason = message.text.split(None, 2)[2]
@@ -73,27 +73,25 @@ async def ban_a_user(bot, message):
     except IndexError:
         return await message.reply("This might be a channel, make sure its a user.")
     except Exception as e:
-        return await message.reply(f'Error - {e}')
+        return await message.reply(f"Error - {e}")
     else:
         jar = await db.get_ban_status(k.id)
-        if jar['is_banned']:
+        if jar["is_banned"]:
             return await message.reply(f"{k.mention} is already banned\nReason: {jar['ban_reason']}")
         await db.ban_user(k.id, reason)
         await message.reply(f"Successfully banned user {k.mention}!! Reason: {reason}")
 
 
-    
 @app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
-        return await message.reply('Give me a user id / username')
+        return await message.reply("Give me a user id / username")
     r = message.text.split(None)
     if len(r) > 2:
-        reason = message.text.split(None, 2)[2]
+        message.text.split(None, 2)[2]
         chat = message.text.split(None, 2)[1]
     else:
         chat = message.command[1]
-        reason = "No reason Provided"
     try:
         chat = int(chat)
     except:
@@ -105,10 +103,10 @@ async def unban_a_user(bot, message):
     except IndexError:
         return await message.reply("This might be a channel, make sure its a user.")
     except Exception as e:
-        return await message.reply(f'Error - {e}')
+        return await message.reply(f"Error - {e}")
     else:
         jar = await db.get_ban_status(k.id)
-        if not jar['is_banned']:
+        if not jar["is_banned"]:
             return await message.reply(f"{k.mention} is not yet banned.")
         await db.remove_ban(k.id)
         await message.reply(f"Successfully unbanned user {k.mention}!!!")

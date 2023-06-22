@@ -1,4 +1,3 @@
-import re
 import traceback
 import chevron
 import logging

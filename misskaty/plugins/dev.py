@@ -10,7 +10,6 @@ import traceback
 import contextlib
 import cloudscraper
 import aiohttp
-import logging
 from datetime import datetime
 from shutil import disk_usage
 from time import time
@@ -34,10 +33,7 @@ from misskaty import app, user, botStartTime, misskaty_version, BOT_NAME
 from misskaty.helper.http import http
 from misskaty.helper.eval_helper import meval, format_exception
 from misskaty.helper.localization import use_chat_lang
-from misskaty.helper.functions import (
-    extract_user,
-    extract_user_and_reason
-)
+from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.vars import COMMAND_HANDLER, SUDO, LOG_CHANNEL
 
@@ -103,15 +99,16 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
 async def donate(client, ctx):
     keyboard = InlineKeyboard(row_width=2)
     keyboard.add(
-        InlineButton('QR QRIS [Yasir Store]', url='https://telegra.ph/file/2acf7698f300ef3d9138f.jpg'),
-        InlineButton('Sociabuzz', url='https://sociabuzz.com/yasirarism/tribe'),
-        InlineButton('Saweria', url='https://saweria.co/yasirarism'),
-        InlineButton('Trakteer', url='https://trakteer.id/yasir-aris-sp7cn'),
-        InlineButton('Ko-Fi', url='https://ko-fi.com/yasirarism'),
-        InlineButton('PayPal', url='https://paypal.me/yasirarism'),
+        InlineButton("QR QRIS [Yasir Store]", url="https://telegra.ph/file/2acf7698f300ef3d9138f.jpg"),
+        InlineButton("Sociabuzz", url="https://sociabuzz.com/yasirarism/tribe"),
+        InlineButton("Saweria", url="https://saweria.co/yasirarism"),
+        InlineButton("Trakteer", url="https://trakteer.id/yasir-aris-sp7cn"),
+        InlineButton("Ko-Fi", url="https://ko-fi.com/yasirarism"),
+        InlineButton("PayPal", url="https://paypal.me/yasirarism"),
     )
     await ctx.reply(
-        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa (disarankan menggunakan QRIS atau Sociabuzz). Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above (Use PayPal, SociaBuzz, or Ko-Fi). Because this bot server is hosted in VPS and not free. Thank you..", reply_markup=keyboard
+        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa (disarankan menggunakan QRIS atau Sociabuzz). Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above (Use PayPal, SociaBuzz, or Ko-Fi). Because this bot server is hosted in VPS and not free. Thank you..",
+        reply_markup=keyboard,
     )
 
 
@@ -135,9 +132,7 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
         draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
-        draw.ellipse(
-            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
-        )
+        draw.ellipse((progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF")
 
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
@@ -231,9 +226,7 @@ async def ban_globally(self: Client, ctx: Message):
     if user_id in [from_user.id, self.me.id] or user_id in SUDO:
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
-    m = await ctx.reply_text(
-        f"**Banning {user_mention} Globally! This may take several times.**"
-    )
+    m = await ctx.reply_text(f"**Banning {user_mention} Globally! This may take several times.**")
     await add_gban_user(user_id)
     number_of_chats = 0
     async for served_chat in served_chats:
@@ -248,8 +241,7 @@ async def ban_globally(self: Client, ctx: Message):
     try:
         await app.send_message(
             user_id,
-            f"Hello, You have been globally banned by {from_user.mention},"
-            + " You can appeal for this ban by talking to him.",
+            f"Hello, You have been globally banned by {from_user.mention}," + " You can appeal for this ban by talking to him.",
         )
     except Exception:
         pass
@@ -273,9 +265,7 @@ __**New Global Ban**__
             disable_web_page_preview=True,
         )
     except Exception:
-        await ctx.reply_text(
-            "User Gbanned, But This Gban Action Wasn't Logged, Add Me In LOG_CHANNEL"
-        )
+        await ctx.reply_text("User Gbanned, But This Gban Action Wasn't Logged, Add Me In LOG_CHANNEL")
 
 
 # Ungban
@@ -474,7 +464,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
         pickle.dump([ctx.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
-    
+
 @app.on_raw_update(group=-99)
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
@@ -482,6 +472,7 @@ async def updtebot(client, update, users, chats):
         if update.stopped and await db.is_user_exist(user.id):
             await db.delete_user(user.id)
         await client.send_msg(LOG_CHANNEL, f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) " f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at " f"{datetime.fromtimestamp(update.date)}")
+
 
 async def aexec(code, c, m):
     exec("async def __aexec(c, m): " + "\n p = print" + "\n replied = m.reply_to_message" + "".join(f"\n {l_}" for l_ in code.split("\n")))

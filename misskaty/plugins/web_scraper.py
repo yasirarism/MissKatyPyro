@@ -58,6 +58,7 @@ web = {
     "oplovers": "https://oploverz.top",
 }
 
+
 def split_arr(arr, size: 5):
     arrs = []
     while len(arr) > size:
@@ -382,8 +383,8 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)
         return None, 0, None
-    
-    
+
+
 # getData samehada
 async def getSame(msg, query, current_page, strings):
     if not SCRAP_DICT.get(msg.id):
@@ -411,10 +412,7 @@ async def getSame(msg, query, current_page, strings):
     try:
         index = int(current_page - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
-        sameresult = "".join(
-            f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
-            for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1)
-        )
+        sameresult = "".join(f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n" for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1))
         sameresult = "".join(i for i in sameresult if i not in "[]")
         return sameresult, PageLen
     except (IndexError, KeyError):
@@ -438,7 +436,7 @@ async def same_search(client, msg, strings):
     keyboard.paginate(PageLen, 1, "page_same#{number}" + f"#{bmsg.id}#{msg.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
     await bmsg.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
-    
+
 
 # Terbit21 CMD
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
@@ -772,7 +770,7 @@ async def samepg(client, query, strings):
     keyboard.paginate(PageLen, int(current_page), "page_same#{number}" + f"#{_id}#{query.from_user.id}")
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
     await query.message.edit_msg(sameres, disable_web_page_preview=True, reply_markup=keyboard)
-    
+
 
 # Terbit21 Page Callback
 @app.on_callback_query(filters.create(lambda _, __, query: "page_terbit21#" in query.data))

@@ -5,7 +5,6 @@
  * Copyright @YasirPedia All rights reserved
 """
 import time
-import os
 import platform
 from asyncio import Lock
 from re import MULTILINE, findall
@@ -17,7 +16,6 @@ from pyrogram.types import Message
 from misskaty import app, botStartTime, misskaty_version
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.human_read import get_readable_time
-from misskaty.helper.http import http
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -29,7 +27,9 @@ async def ping(self: Client, ctx: Message):
     rm = await ctx.reply_msg("🐱 Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
-    await rm.edit_msg(f"<b>🐈 MissKatyBot {misskaty_version} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>")
+    await rm.edit_msg(
+        f"<b>🐈 MissKatyBot {misskaty_version} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>"
+    )
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))

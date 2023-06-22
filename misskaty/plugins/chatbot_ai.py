@@ -19,6 +19,7 @@ from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
+
 # This only for testing things, since maybe in future it will got blocked
 @app.on_message(filters.command("bard", COMMAND_HANDLER))
 @use_chat_lang()
@@ -26,12 +27,13 @@ async def bard_chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    data = {'message': ctx.input, 'session_id':'XQjzKRYITZ7fhplF-rXa_GTynUwdctKq4aGm-lqUCCJzF98xqDulL9UKopIadNpQn0lvnA.'}
+    data = {"message": ctx.input, "session_id": "XQjzKRYITZ7fhplF-rXa_GTynUwdctKq4aGm-lqUCCJzF98xqDulL9UKopIadNpQn0lvnA."}
     try:
         req = await http.post("https://bard-api-rho.vercel.app/ask", json=data)
         await msg.edit_msg(req.json().get("content"))
     except Exception as e:
         await msg.edit_msg(str(e))
+
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER))
 @ratelimiter

@@ -15,7 +15,7 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator import asyncify, capture_err
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
+from misskaty.vars import COMMAND_HANDLER, SUDO, SUPPORT_CHAT
 from utils import temp
 
 LOGGER = getLogger(__name__)
@@ -138,50 +138,50 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
 @app.on_message(filters.new_chat_members & filters.group, group=4)
 @use_chat_lang()
 async def greet_group(bot, message, strings):
-        for u in message.new_chat_members:
+    for u in message.new_chat_members:
+        try:
+            pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
+        except AttributeError:
+            pic = "assets/profilepic.png"
+        if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
             try:
-                pic = await app.download_media(u.photo.big_file_id, file_name=f"pp{u.id}.png")
-            except AttributeError:
-                pic = "assets/profilepic.png"
-            if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
-                try:
-                    await temp.MELCOW[f"welcome-{message.chat.id}"].delete()
-                except:
-                    pass
-            try:
-                welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, u.id, strings)
-                temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
-                    message.chat.id,
-                    photo=welcomeimg,
-                    caption=strings("capt_welc").format(umention=u.mention, uid=u.id, ttl=message.chat.title),
-                )
-                userspammer = ""
-                # Spamwatch Detection
-                try:
-                    headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
-                    apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{u.id}", headers=headers)).json()
-                    if not apispamwatch.get("error"):
-                        await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
-                        userspammer += strings("spamwatch_msg").format(umention=u.mention, uid=u.id, reas=apispamwatch.get("reason"))
-                except Exception as err:
-                    LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
-                # Combot API Detection
-                try:
-                    apicombot = (await http.get(f"https://api.cas.chat/check?user_id={u.id}")).json()
-                    if apicombot.get("ok") == "true":
-                        await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
-                        userspammer += strings("combot_msg").format(umention=u.mention, uid=u.id)
-                except Exception as err:
-                    LOGGER.error(f"ERROR in Combot API Detection. {err}")
-                if userspammer != "":
-                    await bot.send_message(message.chat.id, userspammer)
+                await temp.MELCOW[f"welcome-{message.chat.id}"].delete()
             except:
                 pass
+        try:
+            welcomeimg = await welcomepic(pic, u.first_name, message.chat.title, u.id, strings)
+            temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
+                message.chat.id,
+                photo=welcomeimg,
+                caption=strings("capt_welc").format(umention=u.mention, uid=u.id, ttl=message.chat.title),
+            )
+            userspammer = ""
+            # Spamwatch Detection
             try:
-                os.remove(f"downloads/welcome#{u.id}.png")
-                os.remove(f"downloads/pp{u.id}.png")
-            except Exception:
-                pass
+                headers = {"Authorization": "Bearer XvfzE4AUNXkzCy0DnIVpFDlxZi79lt6EnwKgBj8Quuzms0OSdHvf1k6zSeyzZ_lz"}
+                apispamwatch = (await http.get(f"https://api.spamwat.ch/banlist/{u.id}", headers=headers)).json()
+                if not apispamwatch.get("error"):
+                    await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
+                    userspammer += strings("spamwatch_msg").format(umention=u.mention, uid=u.id, reas=apispamwatch.get("reason"))
+            except Exception as err:
+                LOGGER.error(f"ERROR in Spamwatch Detection. {err}")
+            # Combot API Detection
+            try:
+                apicombot = (await http.get(f"https://api.cas.chat/check?user_id={u.id}")).json()
+                if apicombot.get("ok") == "true":
+                    await app.ban_chat_member(message.chat.id, u.id, datetime.now() + timedelta(seconds=30))
+                    userspammer += strings("combot_msg").format(umention=u.mention, uid=u.id)
+            except Exception as err:
+                LOGGER.error(f"ERROR in Combot API Detection. {err}")
+            if userspammer != "":
+                await bot.send_message(message.chat.id, userspammer)
+        except:
+            pass
+        try:
+            os.remove(f"downloads/welcome#{u.id}.png")
+            os.remove(f"downloads/pp{u.id}.png")
+        except Exception:
+            pass
 
 
 @app.on_message(filters.command("leave") & filters.user(SUDO))

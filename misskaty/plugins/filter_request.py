@@ -4,7 +4,6 @@
 # * Copyright ©YasirPedia All rights reserved
 import random
 import re
-import os
 import shutil
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
