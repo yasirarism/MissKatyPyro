@@ -4,6 +4,7 @@ import traceback
 from functools import wraps
 from datetime import datetime
 
+from pyrogram.types import CallbackQuery
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
@@ -14,6 +15,12 @@ from misskaty.vars import LOG_CHANNEL
 def capture_err(func):
     @wraps(func)
     async def capture(client, message, *args, **kwargs):
+        if isinstance(message, CallbackQuery):
+            sender = partial(message.answer, show_alert=True)
+            chat = message.message.chat
+        else:
+            sender = message.reply_text
+            chat = message.chat
         try:
             return await func(client, message, *args, **kwargs)
         except ChatWriteForbidden:
@@ -30,7 +37,7 @@ def capture_err(func):
             tgl_now = datetime.now()
 
             cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
-            await message.reply("😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience...")
+            await sender.reply("😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience...")
             with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8") as log:
                 log.write(error_feedback)
                 log.close()
