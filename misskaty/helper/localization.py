@@ -13,30 +13,8 @@ from database.locale_db import get_db_lang
 enabled_locales: List[str] = [
     # "en-GB",  # English (United Kingdom)
     "en-US",  # English (United States)
-    # "pt-BR",  # Portuguese (Brazil)
-    # "es-ES",  # Spanish
-    # "fr-FR",  # French
-    # "de-DE",  # German
-    # "it-IT",  # Italian
-    # "nl-NL",  # Dutch
-    # "ar-SA",  # Arabic
-    # "ckb-IR",  # Sorani (Kurdish)
-    # "fi-FI",  # Finnish
-    # "he-IL",  # Hebrew
     "id-ID",  # Indonesian
     "id-JW",  # Javanese
-    # "ja-JP",  # Japanese
-    # "no-NO",  # Norwegian
-    # "pl-PL",  # Polish
-    # "pt-BRe",  # Portuguese (Brazil, extended version)
-    # "pt-BR2",  # Portuguese (Brazil, informal version)
-    # "ro-RO",  # Romanian
-    # "ru-RU",  # Russian
-    # "sv-SE",  # Swedish
-    # "tr-TR",  # Turkish
-    # "uk-UA",  # Ukranian
-    # "zh-CN",  # Chinese (Simplified)
-    # "zh-TW",  # Chinese (Traditional)
 ]
 
 default_language: str = "en-US"
@@ -61,11 +39,15 @@ for locale in enabled_locales:
 langdict = cache_localizations(jsons)
 
 
-def get_locale_string(dic: dict, language: str, default_context: str, key: str, context: str = None) -> str:
+def get_locale_string(
+    dic: dict, language: str, default_context: str, key: str, context: str = None
+) -> str:
     if context:
         default_context = context
         dic = langdict[language].get(context, langdict[default_language][context])
-    res: str = dic.get(key) or langdict[default_language][default_context].get(key) or key
+    res: str = (
+        dic.get(key) or langdict[default_language][default_context].get(key) or key
+    )
     return res
 
 
