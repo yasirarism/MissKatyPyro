@@ -108,7 +108,6 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
     if is_bot:
         ty += " Bot"
     await msg.reply(f"» Trying to start **{ty}** session generator...")
-    msg.chat.id
     api_id_msg = await msg.chat.ask(
         "Please send your **API_ID** to proceed.\n\nClick on /skip for using bot's api.",
         filters=filters.text,
