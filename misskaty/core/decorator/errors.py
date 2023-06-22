@@ -1,10 +1,10 @@
 import os
 import traceback
-from functools import wraps
 from datetime import datetime
+from functools import wraps
 
-from pyrogram.types import CallbackQuery
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
+from pyrogram.types import CallbackQuery
 
 from misskaty import app
 from misskaty.vars import LOG_CHANNEL
@@ -37,11 +37,19 @@ def capture_err(func):
             tgl_now = datetime.now()
 
             cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
-            await sender("😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience...")
-            with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8") as log:
+            await sender(
+                "😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience..."
+            )
+            with open(
+                f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
+            ) as log:
                 log.write(error_feedback)
                 log.close()
-            await app.send_document(LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption=f"Crash Report of this Bot\n{cap_day}")
+            await app.send_document(
+                LOG_CHANNEL,
+                f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                caption=f"Crash Report of this Bot\n{cap_day}",
+            )
             os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
             raise err
 

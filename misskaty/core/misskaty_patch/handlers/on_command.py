@@ -1,6 +1,7 @@
 import typing
 
 import pyrogram
+
 from misskaty.vars import COMMAND_HANDLER
 
 
@@ -57,30 +58,57 @@ class Command:
             handler = COMMAND_HANDLER
         if filter:
             if self_only:
-                filter = pyrogram.filters.command(command, prefixes=handler) & filter & pyrogram.filters.me
+                filter = (
+                    pyrogram.filters.command(command, prefixes=handler)
+                    & filter
+                    & pyrogram.filters.me
+                )
             else:
-                filter = pyrogram.filters.command(command, prefixes=handler) & filter & pyrogram.filters.me
+                filter = (
+                    pyrogram.filters.command(command, prefixes=handler)
+                    & filter
+                    & pyrogram.filters.me
+                )
         else:
             if self_only:
-                filter = pyrogram.filters.command(command, prefixes=handler) & pyrogram.filters.me
+                filter = (
+                    pyrogram.filters.command(command, prefixes=handler)
+                    & pyrogram.filters.me
+                )
             else:
                 filter = pyrogram.filters.command(command, prefixes=handler)
 
         def wrapper(func):
             async def decorator(client, message: pyrogram.types.Message):
-                if self_admin and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
-                    return await message.reply_text("This command can be used in supergroups only.")
+                if (
+                    self_admin
+                    and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP
+                ):
+                    return await message.reply_text(
+                        "This command can be used in supergroups only."
+                    )
                 if self_admin:
-                    me = await client.get_chat_member(message.chat.id, (await client.get_me()).id)
+                    me = await client.get_chat_member(
+                        message.chat.id, (await client.get_me()).id
+                    )
                     if me.status not in (
                         pyrogram.enums.ChatMemberStatus.OWNER,
                         pyrogram.enums.ChatMemberStatus.ADMINISTRATOR,
                     ):
-                        return await message.reply_text("I must be admin to execute this Command")
-                if group_only and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
-                    return await message.reply_text("This command can be used in supergroups only.")
+                        return await message.reply_text(
+                            "I must be admin to execute this Command"
+                        )
+                if (
+                    group_only
+                    and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP
+                ):
+                    return await message.reply_text(
+                        "This command can be used in supergroups only."
+                    )
                 if pm_only and message.chat.type != pyrogram.enums.ChatType.PRIVATE:
-                    return await message.reply_text("This command can be used in PMs only.")
+                    return await message.reply_text(
+                        "This command can be used in PMs only."
+                    )
                 try:
                     await func(client, message)
                 except pyrogram.errors.exceptions.forbidden_403.ChatWriteForbidden:
@@ -88,7 +116,9 @@ class Command:
                 except BaseException as exception:
                     return await handle_error(exception, message)
 
-            self.__client__.add_handler(pyrogram.handlers.MessageHandler(callback=decorator, filters=filter))
+            self.__client__.add_handler(
+                pyrogram.handlers.MessageHandler(callback=decorator, filters=filter)
+            )
             return decorator
 
         return wrapper

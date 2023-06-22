@@ -4,13 +4,15 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-import time
 import platform
+import time
 from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import filters, Client, __version__ as pyrover
+from pyrogram import Client
+from pyrogram import __version__ as pyrover
+from pyrogram import filters
 from pyrogram.types import Message
 
 from misskaty import app, botStartTime, misskaty_version
@@ -54,7 +56,9 @@ async def ping_handler(self: Client, ctx: Message):
                     check=True,
                     capture_output=True,
                 )
-                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace(
+                    "time=", ""
+                )
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:
