@@ -2,7 +2,6 @@ import asyncio
 from typing import Union
 
 from pyrogram import Client
-from pyrogram.types import Message
 
 
 async def edit_message_text(self, chat_id: Union[int, str], message_id: int, text: str, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
