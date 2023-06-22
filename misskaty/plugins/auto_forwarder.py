@@ -20,7 +20,9 @@ LOGGER = getLogger(__name__)
 
 
 async def FilterMessage(message: Message):
-    if (message.forward_from or message.forward_from_chat) and ("forwarded" not in FORWARD_FILTERS):
+    if (message.forward_from or message.forward_from_chat) and (
+        "forwarded" not in FORWARD_FILTERS
+    ):
         return 400
     if (len(FORWARD_FILTERS) == 9) or (
         (message.video and ("video" in FORWARD_FILTERS))
@@ -44,7 +46,10 @@ async def CheckBlockedExt(event: Message):
     if (media is not None) and (media.file_name is not None):
         _file = media.file_name.rsplit(".", 1)
         if len(_file) == 2:
-            return _file[-1].lower() in BLOCKED_EXTENSIONS or _file[-1].upper() in BLOCKED_EXTENSIONS
+            return (
+                _file[-1].lower() in BLOCKED_EXTENSIONS
+                or _file[-1].upper() in BLOCKED_EXTENSIONS
+            )
 
         else:
             return False
@@ -70,15 +75,17 @@ async def ForwardMessage(client: user, msg: Message):
         if file_size_passed is False:
             return 400
         ## --- Check 4 --- ##
-        for i in range(len(FORWARD_TO_CHAT_ID)):
+        for i, item in enumerate(FORWARD_TO_CHAT_ID):
             try:
-                await msg.copy(FORWARD_TO_CHAT_ID[i])
+                await msg.copy(item)
             except FloodWait as e:
                 await sleep(e.value)
                 LOGGER.warning(f"#FloodWait: Stopped Forwarder for {e.x}s!")
                 await ForwardMessage(client, msg)
             except Exception as err:
-                LOGGER.warning(f"#ERROR: {err}\n\nUnable to Forward Message to {str(FORWARD_TO_CHAT_ID[i])}, reason: <code>{err}</code>")
+                LOGGER.warning(
+                    f"#ERROR: {err}\n\nUnable to Forward Message to {str(item)}, reason: <code>{err}</code>"
+                )
     except:
         pass
 
