@@ -590,7 +590,7 @@ async def imdb_inl(_, query):
                 for i in r_json["director"]:
                     name = i["name"]
                     url = i["url"]
-                    director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    director += f"<a href='{url}'>{name}</a>, "
                 director = director[:-2]
                 res_str += f"<b>Sutradara:</b> {director}\n"
             if r_json.get("creator"):
@@ -599,7 +599,7 @@ async def imdb_inl(_, query):
                     if i["@type"] == "Person":
                         name = i["name"]
                         url = i["url"]
-                        creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                        creator += f"<a href='{url}'>{name}</a>, "
                 creator = creator[:-2]
                 res_str += f"<b>Penulis:</b> {creator}\n"
             if r_json.get("actor"):
@@ -607,7 +607,7 @@ async def imdb_inl(_, query):
                 for i in r_json["actor"]:
                     name = i["name"]
                     url = i["url"]
-                    actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    actors += f"<a href='{url}'>{name}</a>, "
                 actors = actors[:-2]
                 res_str += f"<b>Pemeran:</b> {actors}\n\n"
             if r_json.get("description"):
@@ -636,7 +636,7 @@ async def imdb_inl(_, query):
                         [
                             InlineKeyboardButton(
                                 "🎬 Buka IMDB",
-                                url=f"https://www.imdb.com{r_json['url']}",
+                                url=url,
                             ),
                             InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                         ]
@@ -648,7 +648,7 @@ async def imdb_inl(_, query):
                         [
                             InlineKeyboardButton(
                                 "🎬 Open IMDB",
-                                url=f"https://www.imdb.com{r_json['url']}",
+                                url=url,
                             )
                         ]
                     ]

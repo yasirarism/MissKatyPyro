@@ -39,7 +39,7 @@ async def imdb_choose(self: Client, ctx: Message):
         return await ctx.reply_msg(f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>", del_in=5)
     if ctx.sender_chat:
         return await ctx.reply_msg("This feature not supported for channel..", del_in=5)
-    kuery = ctx.input
+    kuery = ctx.text.split(" ", 1)[1]
     is_imdb, lang = await is_imdbset(ctx.from_user.id)
     if is_imdb:
         if lang == "eng":
@@ -393,13 +393,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             language = language[:-2]
             res_str += f"<b>Bahasa:</b> {language}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
-        LOGGER.info(r_json.get("director"))
         if directors := r_json.get("director"):
             director = ""
             for i in directors:
                 name = i["name"]
                 url = i["url"]
-                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                director += f"<a href='{url}'>{name}</a>, "
             director = director[:-2]
             res_str += f"<b>Sutradara:</b> {director}\n"
         if creators := r_json.get("creator"):
@@ -408,7 +407,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 if i["@type"] == "Person":
                     name = i["name"]
                     url = i["url"]
-                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    creator += f"<a href='{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Penulis:</b> {creator}\n"
         if actor := r_json.get("actor"):
@@ -416,7 +415,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             for i in actor:
                 name = i["name"]
                 url = i["url"]
-                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                actors += f"<a href='{url}'>{name}</a>, "
             actors = actors[:-2]
             res_str += f"<b>Pemeran:</b> {actors}\n\n"
         if deskripsi := r_json.get("description"):
@@ -517,7 +516,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             for i in directors:
                 name = i["name"]
                 url = i["url"]
-                director += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                director += f"<a href='{url}'>{name}</a>, "
             director = director[:-2]
             res_str += f"<b>Director:</b> {director}\n"
         if creators := r_json.get("creator"):
@@ -526,7 +525,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if i["@type"] == "Person":
                     name = i["name"]
                     url = i["url"]
-                    creator += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                    creator += f"<a href='{url}'>{name}</a>, "
             creator = creator[:-2]
             res_str += f"<b>Writer:</b> {creator}\n"
         if actor := r_json.get("actor"):
@@ -534,7 +533,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             for i in actor:
                 name = i["name"]
                 url = i["url"]
-                actors += f"<a href='https://www.imdb.com{url}'>{name}</a>, "
+                actors += f"<a href='{url}'>{name}</a>, "
             actors = actors[:-2]
             res_str += f"<b>Stars:</b> {actors}\n\n"
         if description := r_json.get("description"):
