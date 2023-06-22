@@ -78,9 +78,13 @@ FORWARD_FROM_CHAT_ID = list(
     }
 )
 # Forward To Chat ID
-FORWARD_TO_CHAT_ID = list({int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()})
+FORWARD_TO_CHAT_ID = list(
+    {int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()}
+)
 FORWARD_FILTERS = list(set(environ.get("FORWARD_FILTERS", "video document").split()))
-BLOCK_FILES_WITHOUT_EXTENSIONS = bool(environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True))
+BLOCK_FILES_WITHOUT_EXTENSIONS = bool(
+    environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True)
+)
 BLOCKED_EXTENSIONS = list(
     set(
         environ.get(
@@ -89,5 +93,5 @@ BLOCKED_EXTENSIONS = list(
         ).split()
     )
 )
-MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE", None)
-CURRENCY_API = environ.get("CURRENCY_API", None)
+MINIMUM_FILE_SIZE = environ.get("MINIMUM_FILE_SIZE")
+CURRENCY_API = environ.get("CURRENCY_API")
