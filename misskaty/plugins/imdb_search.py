@@ -88,7 +88,7 @@ async def imdb_choose(self: Client, ctx: Message):
 @app.on_callback_query(filters.regex("^imdbset"))
 @ratelimiter
 @capture_err
-async def imdbsetlang(self: Client, query: CallbackQuery):
+async def imdblangset(self: Client, query: CallbackQuery):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)

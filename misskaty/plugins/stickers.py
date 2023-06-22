@@ -90,7 +90,7 @@ async def getstickerid(self: Client, ctx: Message):
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
 @ratelimiter
 @use_chat_lang()
-async def getstickerid(self: Client, ctx: Message, strings):
+async def unkangs(self: Client, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply("You're anon, unkang in my PM")
     if sticker := ctx.reply_to_message.sticker:

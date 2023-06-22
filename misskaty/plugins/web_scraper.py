@@ -908,7 +908,7 @@ async def kusopage_callback(client, callback_query, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def moviekupage_callback(client, callback_query, strings):
+async def lendrivepage_callback(client, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])

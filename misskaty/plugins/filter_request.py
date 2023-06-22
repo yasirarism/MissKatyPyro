@@ -27,7 +27,7 @@ REQUEST_DB = {}
 
 
 @app.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
-async def start(_, message):
+async def salamregex(_, message):
     await message.reply_text(text=f"Wa'alaikumsalam {message.from_user.mention} 😇")
 
 
@@ -130,7 +130,7 @@ async def clear_reqdict():
 
 
 # @app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
-async def start(_, message):
+async def thankregex(_, message):
     pesan = [
         f"Sama-sama {message.from_user.first_name}",
         f"You're Welcome {message.from_user.first_name}",
