@@ -56,9 +56,7 @@ async def ping_handler(self: Client, ctx: Message):
                     check=True,
                     capture_output=True,
                 )
-                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace(
-                    "time=", ""
-                )
+                resp_time = findall(r"time=.+m?s", shell.stdout, MULTILINE)[0].replace("time=", "")
 
                 text += f"    **{dc.upper()}:** {resp_time} ✅\n"
             except Exception:
