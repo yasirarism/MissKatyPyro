@@ -1,11 +1,11 @@
+import logging
 import os
 import random
 import string
 import time
-import logging
 from http.cookies import SimpleCookie
-from urllib.parse import urlparse
 from re import match as re_match
+from urllib.parse import urlparse
 
 import psutil
 
@@ -15,7 +15,7 @@ from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins import ALL_MODULES
 
 LOGGER = logging.getLogger(__name__)
-URL_REGEX = "(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])"
+URL_REGEX = r"(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])"
 GENRES_EMOJI = {
     "Action": "👊",
     "Adventure": random.choice(["🪂", "🧗‍♀", "🌋"]),
@@ -77,7 +77,10 @@ def remove_N(seq):
 
 
 def get_random_string(length: int = 5):
-    text_str = "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(length))
+    text_str = "".join(
+        random.SystemRandom().choice(string.ascii_letters + string.digits)
+        for _ in range(length)
+    )
     return text_str.upper()
 
 
@@ -124,7 +127,11 @@ def get_provider(url):
 async def search_jw(movie_name: str, locale: str):
     m_t_ = ""
     try:
-        response = (await http.get(f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}")).json()
+        response = (
+            await http.get(
+                f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}"
+            )
+        ).json()
     except:
         return m_t_
     if not response.get("results"):
