@@ -187,7 +187,7 @@ async def byPassPh(url: str, name: str):
 
 class Kusonime:
     def __init__(self):
-        pass
+        raise NotImplementedError()
 
     @staticmethod
     async def byPass(url):
