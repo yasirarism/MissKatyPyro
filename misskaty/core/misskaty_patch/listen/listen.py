@@ -282,7 +282,7 @@ class CallbackQueryHandler:
             )[0]
 
             if (permissive_listener and not listener) and permissive_listener["unallowed_click_alert"]:
-                alert = permissive_listener["unallowed_click_alert"] if type(permissive_listener["unallowed_click_alert"]) == str else PyromodConfig.unallowed_click_alert_text
+                alert = permissive_listener["unallowed_click_alert"] if type(permissive_listener["unallowed_click_alert"]) is str else PyromodConfig.unallowed_click_alert_text
                 await query.answer(alert)
                 return False
 
