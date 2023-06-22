@@ -19,16 +19,17 @@ along with pyromod.  If not, see <https://www.gnu.org/licenses/>.
 """
 
 import asyncio
-import pyrogram
 import logging
-
-from inspect import iscoroutinefunction
-from typing import Optional, Callable, Union
 from enum import Enum
+from inspect import iscoroutinefunction
+from typing import Callable, Optional, Union
 
-from ..utils import patch, patchable, PyromodConfig
+import pyrogram
+
+from ..utils import PyromodConfig, patch, patchable
 
 logger = logging.getLogger(__name__)
+
 
 class ListenerStopped(Exception):
     pass
@@ -82,9 +83,7 @@ class Client:
             return await asyncio.wait_for(future, timeout)
         except asyncio.exceptions.TimeoutError:
             if callable(PyromodConfig.timeout_handler):
-                PyromodConfig.timeout_handler(
-                    identifier, listener_data, timeout
-                )
+                PyromodConfig.timeout_handler(identifier, listener_data, timeout)
             elif PyromodConfig.throw_exceptions:
                 raise ListenerTimeout(timeout)
 
@@ -100,9 +99,7 @@ class Client:
         **kwargs,
     ):
         request = await self.send_message(identifier[0], text, *args, **kwargs)
-        response = await self.listen(
-            identifier, filters, listener_type, timeout
-        )
+        response = await self.listen(identifier, filters, listener_type, timeout)
         if response:
             response.request = request
 
@@ -302,8 +299,7 @@ class CallbackQueryHandler:
             ]:
                 alert = (
                     permissive_listener["unallowed_click_alert"]
-                    if type(permissive_listener["unallowed_click_alert"])
-                    == str
+                    if type(permissive_listener["unallowed_click_alert"]) == str
                     else PyromodConfig.unallowed_click_alert_text
                 )
                 await query.answer(alert)
@@ -315,9 +311,7 @@ class CallbackQueryHandler:
             if iscoroutinefunction(filters.__call__):
                 return await filters(client, query)
             else:
-                return await client.loop.run_in_executor(
-                    None, filters, client, query
-                )
+                return await client.loop.run_in_executor(None, filters, client, query)
         else:
             return True
 
@@ -383,9 +377,7 @@ class User(pyrogram.types.User):
 
     @patchable()
     def ask(self, text, *args, **kwargs):
-        return self._client.ask(
-            text, (self.id, self.id, None), *args, **kwargs
-        )
+        return self._client.ask(text, (self.id, self.id, None), *args, **kwargs)
 
     @patchable()
     def stop_listening(self, *args, **kwargs):

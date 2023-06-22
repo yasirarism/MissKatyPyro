@@ -1,7 +1,9 @@
 import typing
 
 import pyrogram
+
 from misskaty.vars import COMMAND_HANDLER
+
 
 class Command:
     def on_cmd(

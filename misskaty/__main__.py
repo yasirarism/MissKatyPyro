@@ -15,22 +15,16 @@ from logging import getLogger
 from pyrogram import __version__, idle
 from pyrogram.raw.all import layer
 
-from misskaty import (
-    BOT_NAME,
-    BOT_USERNAME,
-    HELPABLE,
-    UBOT_NAME,
-    app,
-    scheduler
-)
+from database import dbname
+from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app, scheduler
 from misskaty.plugins import ALL_MODULES
 from misskaty.plugins.web_scraper import web
 from misskaty.vars import SUDO, USER_SESSION
 from utils import auto_clean
-from database import dbname
 
 LOGGER = getLogger(__name__)
 loop = asyncio.get_event_loop()
+
 
 # Run Bot
 async def start_bot():
@@ -79,12 +73,17 @@ async def start_bot():
         for key, value in web.items():
             await webdb.insert_one({key: value})
     if os.path.exists("restart.pickle"):
-        with open('restart.pickle', 'rb') as status:
+        with open("restart.pickle", "rb") as status:
             chat_id, message_id = pickle.load(status)
         os.remove("restart.pickle")
-        await app.edit_message_text(chat_id=chat_id, message_id=message_id, text="<b>Bot restarted successfully!</b>")
+        await app.edit_message_text(
+            chat_id=chat_id,
+            message_id=message_id,
+            text="<b>Bot restarted successfully!</b>",
+        )
     asyncio.create_task(auto_clean())
     await idle()
+
 
 if __name__ == "__main__":
     try:
@@ -96,4 +95,6 @@ if __name__ == "__main__":
         LOGGER.info(err)
     finally:
         loop.stop()
-        LOGGER.info("------------------------ Stopped Services ------------------------")
+        LOGGER.info(
+            "------------------------ Stopped Services ------------------------"
+        )

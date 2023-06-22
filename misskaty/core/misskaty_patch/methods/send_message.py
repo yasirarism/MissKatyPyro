@@ -1,10 +1,13 @@
-from typing import Union
-from pyrogram.types import Message
-from pyrogram import Client
 import asyncio
+from typing import Union
+
+from pyrogram import Client
+from pyrogram.types import Message
 
 
-async def send_message(self, chat_id: Union[int, str], text: str, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
+async def send_message(
+    self, chat_id: Union[int, str], text: str, del_in: int = 0, *args, **kwargs
+) -> Union["Message", bool]:
     """\nSend text messages.
     Example:
             @userge.send_message(chat_id=12345, text='test')

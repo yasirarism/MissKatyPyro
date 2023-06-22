@@ -1,1 +1,1 @@
-from .utils import patch, patchable, PyromodConfig
+from .utils import PyromodConfig, patch, patchable

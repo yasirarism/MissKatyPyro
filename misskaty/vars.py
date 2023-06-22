@@ -2,10 +2,13 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import sys, os, requests
-from dotenv import load_dotenv
+import os
+import sys
 from logging import getLogger
 from os import environ
+
+import requests
+from dotenv import load_dotenv
 
 LOGGER = getLogger(__name__)
 
@@ -75,9 +78,13 @@ FORWARD_FROM_CHAT_ID = list(
     }
 )
 # Forward To Chat ID
-FORWARD_TO_CHAT_ID = list({int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()})
+FORWARD_TO_CHAT_ID = list(
+    {int(x) for x in environ.get("FORWARD_TO_CHAT_ID", "-1001210537567").split()}
+)
 FORWARD_FILTERS = list(set(environ.get("FORWARD_FILTERS", "video document").split()))
-BLOCK_FILES_WITHOUT_EXTENSIONS = bool(environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True))
+BLOCK_FILES_WITHOUT_EXTENSIONS = bool(
+    environ.get("BLOCK_FILES_WITHOUT_EXTENSIONS", True)
+)
 BLOCKED_EXTENSIONS = list(
     set(
         environ.get(

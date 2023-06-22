@@ -3,8 +3,8 @@ from pyrogram.errors import UserIsBlocked, UserNotParticipant
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER
 
 

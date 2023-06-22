@@ -7,17 +7,18 @@
 import io
 import subprocess
 import time
-from os import remove as osremove, path
+from os import path
+from os import remove as osremove
 
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import progress_for_pyrogram, runcmd, post_to_telegraph
-from misskaty.helper.mediainfo_paste import mediainfo_paste
+from misskaty.helper import post_to_telegraph, progress_for_pyrogram, runcmd
 from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.mediainfo_paste import mediainfo_paste
 from misskaty.vars import COMMAND_HANDLER
 from utils import get_file_id
 
@@ -33,7 +34,13 @@ async def mediainfo(self: Client, ctx: Message, strings):
         file_info = get_file_id(ctx.reply_to_message)
         if file_info is None:
             return await process.edit_msg(strings("media_invalid"))
-        if (ctx.reply_to_message.video and ctx.reply_to_message.video.file_size > 2097152000) or (ctx.reply_to_message.document and ctx.reply_to_message.document.file_size > 2097152000):
+        if (
+            ctx.reply_to_message.video
+            and ctx.reply_to_message.video.file_size > 2097152000
+        ) or (
+            ctx.reply_to_message.document
+            and ctx.reply_to_message.document.file_size > 2097152000
+        ):
             return await process.edit_msg(strings("dl_limit_exceeded"), del_in=6)
         c_time = time.time()
         dc_id = FileId.decode(file_info.file_id).dc_id
@@ -56,11 +63,15 @@ DETAILS
         file_info.message_type
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+            markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+            )
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                )
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
@@ -81,7 +92,9 @@ DETAILS
             link = ctx.input
             process = await ctx.reply_msg(strings("wait_msg"))
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
+                output = subprocess.check_output(["mediainfo", f"{link}"]).decode(
+                    "utf-8"
+                )
             except Exception:
                 return await process.edit_msg(strings("err_link"))
             body_text = f"""
@@ -91,11 +104,17 @@ DETAILS
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 link = await mediainfo_paste(out, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                )
             except:
                 try:
-                    link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                    link = await post_to_telegraph(
+                        False, "MissKaty MediaInfo", body_text
+                    )
+                    markup = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                    )
                 except:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
@@ -108,4 +127,6 @@ DETAILS
                 )
                 await process.delete()
         except IndexError:
-            return await ctx.reply_msg(strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6)
+            return await ctx.reply_msg(
+                strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6
+            )

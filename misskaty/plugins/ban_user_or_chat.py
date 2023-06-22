@@ -1,11 +1,11 @@
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.errors import ChannelPrivate
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import SUPPORT_CHAT, SUDO, LOG_CHANNEL, COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 
 
 @app.on_message(filters.incoming, group=-1)
@@ -13,8 +13,12 @@ async def ban_reply(self: Client, ctx: Message):
     if not ctx.from_user:
         return
     ban = await db.get_ban_status(ctx.from_user.id)
-    if (ban.get("is_banned") and ctx.chat.type.value == "private") or (ban.get("is_banned") and ctx.chat.type.value == "supergroup" and ctx.command):
-        await ctx.reply_msg(f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}')
+    if (ban.get("is_banned") and ctx.chat.type.value == "private") or (
+        ban.get("is_banned") and ctx.chat.type.value == "supergroup" and ctx.command
+    ):
+        await ctx.reply_msg(
+            f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
+        )
         await ctx.stop_propagation()
 
 
@@ -31,12 +35,16 @@ async def grp_bd(self: Client, ctx: Message, strings):
         r_j = ctx.from_user.mention if ctx.from_user else "Anonymous"
         await self.send_message(
             LOG_CHANNEL,
-            strings("log_bot_added", context="grup_tools").format(ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j),
+            strings("log_bot_added", context="grup_tools").format(
+                ttl=ctx.chat.title, cid=ctx.chat.id, tot=total, r_j=r_j
+            ),
         )
         await db.add_chat(ctx.chat.id, ctx.chat.title)
     chck = await db.get_chat(ctx.chat.id)
-    if chck['is_disabled']:
-        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+    if chck["is_disabled"]:
+        buttons = [
+            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         vazha = await db.get_chat(ctx.chat.id)
         try:
@@ -54,7 +62,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
 @app.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
-        return await message.reply('Give me a user id / username')
+        return await message.reply("Give me a user id / username")
     r = message.text.split(None)
     if len(r) > 2:
         reason = message.text.split(None, 2)[2]
@@ -69,24 +77,27 @@ async def ban_a_user(bot, message):
     try:
         k = await bot.get_users(chat)
     except PeerIdInvalid:
-        return await message.reply("This is an invalid user, make sure i have met him before.")
+        return await message.reply(
+            "This is an invalid user, make sure i have met him before."
+        )
     except IndexError:
         return await message.reply("This might be a channel, make sure its a user.")
     except Exception as e:
-        return await message.reply(f'Error - {e}')
+        return await message.reply(f"Error - {e}")
     else:
         jar = await db.get_ban_status(k.id)
-        if jar['is_banned']:
-            return await message.reply(f"{k.mention} is already banned\nReason: {jar['ban_reason']}")
+        if jar["is_banned"]:
+            return await message.reply(
+                f"{k.mention} is already banned\nReason: {jar['ban_reason']}"
+            )
         await db.ban_user(k.id, reason)
         await message.reply(f"Successfully banned user {k.mention}!! Reason: {reason}")
 
 
-    
 @app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
-        return await message.reply('Give me a user id / username')
+        return await message.reply("Give me a user id / username")
     r = message.text.split(None)
     if len(r) > 2:
         reason = message.text.split(None, 2)[2]
@@ -101,14 +112,16 @@ async def unban_a_user(bot, message):
     try:
         k = await bot.get_users(chat)
     except PeerIdInvalid:
-        return await message.reply("This is an invalid user, make sure ia have met him before.")
+        return await message.reply(
+            "This is an invalid user, make sure ia have met him before."
+        )
     except IndexError:
         return await message.reply("This might be a channel, make sure its a user.")
     except Exception as e:
-        return await message.reply(f'Error - {e}')
+        return await message.reply(f"Error - {e}")
     else:
         jar = await db.get_ban_status(k.id)
-        if not jar['is_banned']:
+        if not jar["is_banned"]:
             return await message.reply(f"{k.mention} is not yet banned.")
         await db.remove_ban(k.id)
         await message.reply(f"Successfully unbanned user {k.mention}!!!")
@@ -133,11 +146,15 @@ async def disable_chat(bot, message):
     if not cha_t:
         return await message.reply("Chat Not Found In DB")
     if cha_t["is_disabled"]:
-        return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
+        return await message.reply(
+            f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>"
+        )
     await db.disable_chat(chat_, reason)
     await message.reply("Chat Succesfully Disabled")
     try:
-        buttons = [[InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]]
+        buttons = [
+            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+        ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(
             chat_id=chat_,

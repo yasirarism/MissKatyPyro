@@ -3,8 +3,8 @@ from pyrogram import enums, filters
 from pyrogram.errors import MessageTooLong
 
 from misskaty import app
-from misskaty.helper.tools import rentry
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "CodeTester"
@@ -68,7 +68,9 @@ async def glot(lang, langcode, code):
             "content-type": "application/json",
             "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb",
         }
-        r = await session.post(f"https://glot.io/api/run/{lang}/latest", headers=headers, json=data)
+        r = await session.post(
+            f"https://glot.io/api/run/{lang}/latest", headers=headers, json=data
+        )
         return await r.json()
 
 
@@ -77,7 +79,9 @@ async def glot(lang, langcode, code):
 async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
-    return await message.reply(f"<b>List of Supported Programming Languages:</b>\n{list_}")
+    return await message.reply(
+        f"<b>List of Supported Programming Languages:</b>\n{list_}"
+    )
 
 
 @app.on_message(filters.command(["assembly"], "!"))

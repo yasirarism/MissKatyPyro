@@ -10,14 +10,14 @@ import urllib.parse
 from urllib.parse import unquote
 
 import requests
-from pyrogram import filters, Client
+from pyrogram import Client, filters
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, get_readable_file_size, rentry
+from misskaty.helper import get_readable_file_size, http, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -46,7 +46,10 @@ async def pling_bypass(url):
         res = await http.get(link)
         json_dic_files = res.json().pop("files")
         msg = f"\n**Source Link** :\n`{url}`\n**Direct Link :**\n"
-        msg += "\n".join(f'**→ [{i["name"]}]({unquote(i["url"])}) ({get_readable_file_size(int(i["size"]))})**' for i in json_dic_files)
+        msg += "\n".join(
+            f'**→ [{i["name"]}]({unquote(i["url"])}) ({get_readable_file_size(int(i["size"]))})**'
+            for i in json_dic_files
+        )
         return msg
     except Exception as e:
         return e
@@ -78,7 +81,9 @@ def wetransfer_bypass(url: str) -> str:
         r = s.get("https://wetransfer.com/")
         m = re.search('name="csrf-token" content="([^"]+)"', r.text)
         s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
-        r = s.post(f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j)
+        r = s.post(
+            f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j
+        )
         j = r.json()
         dl_url = j["direct_link"]
 
@@ -92,7 +97,9 @@ def wetransfer_bypass(url: str) -> str:
 @ratelimiter
 async def bypass(self: Client, ctx: Message):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(f"Gunakan perintah /{ctx.command[0]} untuk bypass url", del_in=6)
+        return await ctx.reply_msg(
+            f"Gunakan perintah /{ctx.command[0]} untuk bypass url", del_in=6
+        )
     url = ctx.command[1]
     urllib.parse.urlparse(url).netloc
     msg = await ctx.reply_msg("Bypassing URL..", quote=True)

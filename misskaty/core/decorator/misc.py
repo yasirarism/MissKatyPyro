@@ -1,6 +1,7 @@
 import asyncio
 from functools import wraps
 
+
 def asyncify(func):
     async def inner(*args, **kwargs):
         loop = asyncio.get_running_loop()
@@ -8,6 +9,7 @@ def asyncify(func):
         return func_out
 
     return inner
+
 
 def new_task(func):
     @wraps(func)
