@@ -4,7 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 
 # Base Docker Using Ubuntu 23.04, Python 3.11 and Built In Pip
-## With Buily in Pip Package but broken yt-dlp
+## With Built in Pip Package
 # FROM yasirarism/misskaty-docker:latest
 ## Without Built in Pip Package
 FROM yasirarism/misskaty-docker:free
@@ -13,6 +13,7 @@ FROM yasirarism/misskaty-docker:free
 ENV HOSTNAME misskaty
 # Copy Files
 COPY . .
-RUN pip3 install -r requirements.txt --break-system-packages
+# Instal pip package
+RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]
