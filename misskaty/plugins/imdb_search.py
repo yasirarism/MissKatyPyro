@@ -367,15 +367,15 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         return await query.answer("⚠️ Akses Ditolak!", True)
     try:
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
-        url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(url, headers=headers)
+        imdb_url = f"https://www.imdb.com/title/tt{movie}/"
+        resp = await http.get(imdb_url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "ID")
         typee = r_json.get("@type", "")
         res_str = ""
         tahun = re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text) else "N/A"
-        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+        res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -453,13 +453,13 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=url),
+                        InlineKeyboardButton("🎬 Open IMDB", url=imdb_url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]])
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(
@@ -491,15 +491,15 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     try:
         await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
-        url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(url, headers=headers)
+        imdb_url = f"https://www.imdb.com/title/tt{movie}/"
+        resp = await http.get(imdb_url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(sop.find("script", attrs={"type": "application/ld+json"}).contents[0])
         ott = await search_jw(r_json.get("name"), "US")
         typee = r_json.get("@type", "")
         res_str = ""
         tahun = re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text) else "N/A"
-        res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+        res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
         if aka := r_json.get("alternateName"):
             res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
         else:
@@ -576,13 +576,13 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("🎬 Open IMDB", url=url),
+                        InlineKeyboardButton("🎬 Open IMDB", url=imdb_url),
                         InlineKeyboardButton("▶️ Trailer", url=trailer_url),
                     ]
                 ]
             )
         else:
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=url)]])
+            markup = InlineKeyboardMarkup([[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]])
         if thumb := r_json.get("image"):
             try:
                 await query.message.edit_media(

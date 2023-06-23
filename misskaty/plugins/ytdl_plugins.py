@@ -217,11 +217,12 @@ async def ytdl_cancel_callback(self: Client, cq: CallbackQuery, strings):
     callback = cq.data.split("|")
     await cq.answer("Trying to Cancel Process..")
     process_id = callback[1]
-    Process.cancel_id(process_id)
-    if cq.message:
-        await cq.message.delete()
-    else:
-        await cq.edit_message_text("✔️ `Stopped Successfully`")
+    try:
+        Process.cancel_id(process_id)
+    except:
+        pass
+    await cq.message.delete()
+    await cq.edit_message_text("✔️ `Stopped Successfully`")
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
