@@ -58,7 +58,11 @@ user = Client(
     session_string=USER_SESSION,
 )
 
-jobstores = {"default": MongoDBJobStore(client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode")}
+jobstores = {
+    "default": MongoDBJobStore(
+        client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode"
+    )
+}
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 app.start()
