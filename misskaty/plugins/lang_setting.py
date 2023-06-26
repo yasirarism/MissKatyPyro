@@ -59,7 +59,11 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             *gen_langs_kb(),
-            [InlineKeyboardButton(strings("back_btn", context="general"), callback_data="start_back")],
+            [
+                InlineKeyboardButton(
+                    strings("back_btn", context="general"), callback_data="start_back"
+                )
+            ],
         ]
     )
 
@@ -72,7 +76,11 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
         if not msg.from_user:
             return
 
-    res = strings("language_changer_private") if msg.chat.type == ChatType.PRIVATE else strings("language_changer_chat")
+    res = (
+        strings("language_changer_private")
+        if msg.chat.type == ChatType.PRIVATE
+        else strings("language_changer_chat")
+    )
     msg = await sender(res, reply_markup=keyboard)
     try:
         await msg.wait_for_click(from_user_id=m.from_user.id, timeout=30)
@@ -107,4 +115,6 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
         )
     else:
         keyboard = None
-    await m.message.edit_msg(strings("language_changed_successfully"), reply_markup=keyboard)
+    await m.message.edit_msg(
+        strings("language_changed_successfully"), reply_markup=keyboard
+    )

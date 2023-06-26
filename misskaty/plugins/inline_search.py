@@ -617,7 +617,11 @@ async def imdb_inl(_, query):
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
             typee = r_json.get("@type", "")
-            tahun = re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0] if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text) else "N/A"
+            tahun = (
+                re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
+                if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
+                else "N/A"
+            )
             res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += (
@@ -674,13 +678,22 @@ async def imdb_inl(_, query):
                 res_str += f"<b>Bahasa:</b> {language[:-2]}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
             if r_json.get("director"):
-                director = "".join(f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["director"])
+                director = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, "
+                    for i in r_json["director"]
+                )
                 res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
             if r_json.get("creator"):
-                creator = "".join(f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["creator"] if i["@type"] == "Person")
+                creator = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, "
+                    for i in r_json["creator"]
+                    if i["@type"] == "Person"
+                )
                 res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
             if r_json.get("actor"):
-                actors = "".join(f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"])
+                actors = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
+                )
                 res_str += f"<b>Pemeran:</b> {actors[:-2]}\n\n"
             if r_json.get("description"):
                 summary = GoogleTranslator("auto", "id").translate(
@@ -688,7 +701,10 @@ async def imdb_inl(_, query):
                 )
                 res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
             if r_json.get("keywords"):
-                key_ = "".join(f"#{i.replace(' ', '_').replace('-', '_')}, " for i in r_json["keywords"].split(","))
+                key_ = "".join(
+                    f"#{i.replace(' ', '_').replace('-', '_')}, "
+                    for i in r_json["keywords"].split(",")
+                )
                 res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
