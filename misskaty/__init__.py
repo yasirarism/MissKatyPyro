@@ -41,7 +41,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.8.7 - Stable"
+misskaty_version = "v2.9.1 - Stable"
 
 # Pyrogram Bot Client
 app = Client(
