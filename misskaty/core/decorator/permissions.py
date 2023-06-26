@@ -1,9 +1,9 @@
 from functools import partial, wraps
 from time import time
 from traceback import format_exc as err
-from cachetools import TTLCache
 from typing import Optional, Union
 
+from cachetools import TTLCache
 from pyrogram import Client, enums
 from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidden
 from pyrogram.types import CallbackQuery, Message
@@ -78,16 +78,22 @@ async def check_perms(
     if isinstance(permissions, str):
         permissions = [permissions]
 
-    missing_perms = [permission for permission in permissions if not getattr(user.privileges, permission)]
+    missing_perms = [
+        permission
+        for permission in permissions
+        if not getattr(user.privileges, permission)
+    ]
 
     if not missing_perms:
         return True
     if complain_missing_perms:
-        await sender(strings("no_permission_error").format(permissions=", ".join(missing_perms)))
+        await sender(
+            strings("no_permission_error").format(permissions=", ".join(missing_perms))
+        )
     return False
 
 
-admins_in_chat = TTLCache(maxsize=1000, ttl=6*60*60)
+admins_in_chat = TTLCache(maxsize=1000, ttl=6 * 60 * 60)
 
 
 async def list_admins(chat_id: int):
@@ -99,7 +105,12 @@ async def list_admins(chat_id: int):
     try:
         admins_in_chat[chat_id] = {
             "last_updated_at": time(),
-            "data": [member.user.id async for member in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)],
+            "data": [
+                member.user.id
+                async for member in app.get_chat_members(
+                    chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                )
+            ],
         }
         return admins_in_chat[chat_id]["data"]
     except ChannelPrivate:
@@ -168,7 +179,9 @@ def require_admin(
 ):
     def decorator(func):
         @wraps(func)
-        async def wrapper(client: Client, message: Union[CallbackQuery, Message], *args, **kwargs):
+        async def wrapper(
+            client: Client, message: Union[CallbackQuery, Message], *args, **kwargs
+        ):
             lang = await get_lang(message)
             strings = partial(
                 get_locale_string,
@@ -184,7 +197,9 @@ def require_admin(
                 sender = message.reply_text
                 msg = message
             else:
-                raise NotImplementedError(f"require_admin can't process updates with the type '{message.__name__}' yet.")
+                raise NotImplementedError(
+                    f"require_admin can't process updates with the type '{message.__name__}' yet."
+                )
 
             # We don't actually check private and channel chats.
             if msg.chat.type == enums.ChatType.PRIVATE:
@@ -193,7 +208,9 @@ def require_admin(
                 return await sender(strings("private_not_allowed"))
             if msg.chat.type == enums.ChatType.CHANNEL:
                 return await func(client, message, *args, *kwargs)
-            has_perms = await check_perms(message, permissions, complain_missing_perms, strings)
+            has_perms = await check_perms(
+                message, permissions, complain_missing_perms, strings
+            )
             if has_perms:
                 return await func(client, message, *args, *kwargs)
 
