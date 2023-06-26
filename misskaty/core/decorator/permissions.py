@@ -1,6 +1,7 @@
 from functools import partial, wraps
 from time import time
 from traceback import format_exc as err
+from cachetools import TTLCache
 from typing import Optional, Union
 
 from pyrogram import Client, enums
@@ -86,7 +87,7 @@ async def check_perms(
     return False
 
 
-admins_in_chat = {}
+admins_in_chat = TTLCache(maxsize=1000, ttl=6*60*60)
 
 
 async def list_admins(chat_id: int):
