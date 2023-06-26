@@ -481,7 +481,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             res_str += f"<b>Bahasa:</b> {language[:-2]}\n"
         res_str += "\n<b>🙎 Info Cast:</b>\n"
         if directors := r_json.get("director"):
-            director = director = "".join(
+            director = "".join(
                 f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["director"]
             )
             res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
