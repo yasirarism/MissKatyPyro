@@ -220,11 +220,11 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
             kusoResult += f"<b>{index*6+c}</b>. {i['title']}\n{i['link']}\n\n"
             if c < 6:
                 extractbtn1.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                    InlineButton(index*6+c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
                 )
             else:
                 extractbtn2.append(
-                    InlineButton(c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                    InlineButton(index*6+c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}")
                 )
         kusoResult = "".join(i for i in kusoResult if i not in "[]")
         return kusoResult, PageLen, extractbtn1, extractbtn2
@@ -316,7 +316,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
             extractbtn.append(
-                InlineButton(c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
+                InlineButton(index*6+c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}")
             )
         sfResult = "".join(i for i in sfResult if i not in "[]")
         return sfResult, PageLen, extractbtn
@@ -366,7 +366,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             lenddataResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
             extractbtn.append(
-                InlineButton(c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                InlineButton(index*6+c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}")
             )
         lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
         return lenddataResult, PageLen, extractbtn
@@ -415,7 +415,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
             melongResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
             extractbtn.append(
-                InlineButton(c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                InlineButton(index*6+c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}")
             )
         melongResult = "".join(i for i in melongResult if i not in "[]")
         return melongResult, PageLen, extractbtn
@@ -466,7 +466,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
             gomovResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
             if not re.search(r"Series", i["genre"]):
                 extractbtn.append(
-                    InlineButton(c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
+                    InlineButton(index*6+c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}")
                 )
         gomovResult += strings("unsupport_dl_btn")
         gomovResult = "".join(i for i in gomovResult if i not in "[]")

@@ -69,6 +69,8 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
     else:
         msg = m
         sender = msg.reply_text
+        if not msg.from_user:
+            return
 
     res = strings("language_changer_private") if msg.chat.type == ChatType.PRIVATE else strings("language_changer_chat")
     msg = await sender(res, reply_markup=keyboard)
@@ -105,4 +107,4 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
         )
     else:
         keyboard = None
-    await m.message.edit_text(strings("language_changed_successfully"), reply_markup=keyboard)
+    await m.message.edit_msg(strings("language_changed_successfully"), reply_markup=keyboard)

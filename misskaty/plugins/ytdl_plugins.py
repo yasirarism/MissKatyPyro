@@ -108,7 +108,10 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             )
             await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
         except ListenerTimeout:
-            await msg.edit_caption(strings("exp_task", context="general"))
+            try:
+                await msg.edit_caption(strings("exp_task", context="general"))
+            except MessageIdInvalid:
+                pass
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
