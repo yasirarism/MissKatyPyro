@@ -659,8 +659,7 @@ async def imdb_inl(_, query):
                     else f"#{i.replace('-', '_').replace(' ', '_')}, "
                     for i in r_json["genre"]
                 )
-                genre = genre[:-2]
-                res_str += f"<b>Genre:</b> {genre}\n"
+                res_str += f"<b>Genre:</b> {genre[:-2]}\n"
             if negara := sop.select('li[data-testid="title-details-origin"]'):
                 country = "".join(
                     f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
@@ -668,8 +667,7 @@ async def imdb_inl(_, query):
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                country = country[:-2]
-                res_str += f"<b>Negara:</b> {country}\n"
+                res_str += f"<b>Negara:</b> {country[:-2]}\n"
             if bahasa := sop.select('li[data-testid="title-details-languages"]'):
                 language = "".join(
                     f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
@@ -677,47 +675,37 @@ async def imdb_inl(_, query):
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                language = language[:-2]
-                res_str += f"<b>Bahasa:</b> {language}\n"
+                res_str += f"<b>Bahasa:</b> {language[:-2]}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
             if r_json.get("director"):
-                director = ""
-                for i in r_json["director"]:
-                    name = i["name"]
-                    url = i["url"]
-                    director += f"<a href='{url}'>{name}</a>, "
-                director = director[:-2]
-                res_str += f"<b>Sutradara:</b> {director}\n"
+                director = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, "
+                    for i in r_json["director"]
+                )
+                res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
             if r_json.get("creator"):
-                creator = ""
-                for i in r_json["creator"]:
-                    if i["@type"] == "Person":
-                        name = i["name"]
-                        url = i["url"]
-                        creator += f"<a href='{url}'>{name}</a>, "
-                creator = creator[:-2]
-                res_str += f"<b>Penulis:</b> {creator}\n"
+                creator = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, "
+                    for i in r_json["creator"]
+                    if i["@type"] == "Person"
+                )
+                res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
             if r_json.get("actor"):
-                actors = ""
-                for i in r_json["actor"]:
-                    name = i["name"]
-                    url = i["url"]
-                    actors += f"<a href='{url}'>{name}</a>, "
-                actors = actors[:-2]
-                res_str += f"<b>Pemeran:</b> {actors}\n\n"
+                actors = "".join(
+                    f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
+                )
+                res_str += f"<b>Pemeran:</b> {actors[:-2]}\n\n"
             if r_json.get("description"):
                 summary = GoogleTranslator("auto", "id").translate(
                     r_json.get("description")
                 )
                 res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
             if r_json.get("keywords"):
-                keywords = r_json["keywords"].split(",")
-                key_ = ""
-                for i in keywords:
-                    i = i.replace(" ", "_").replace("-", "_")
-                    key_ += f"#{i}, "
-                key_ = key_[:-2]
-                res_str += f"<b>🔥 Kata Kunci:</b> {key_} \n"
+                key_ = "".join(
+                    f"#{i.replace(' ', '_').replace('-', '_')}, "
+                    for i in r_json["keywords"].split(",")
+                )
+                res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
                     award[0]
