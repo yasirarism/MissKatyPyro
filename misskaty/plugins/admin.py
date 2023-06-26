@@ -754,7 +754,7 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
         if admin.user.is_bot or admin.user.is_deleted:
             # return bots or deleted admins
             continue
-        text += f"<a href='tg://user?id={admin.user.id}>\u2063</a>"
+        text += f"<a href='tg://user?id={admin.user.id}'>\u2063</a>"
     await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)
 
 
