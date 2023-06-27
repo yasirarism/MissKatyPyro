@@ -7,7 +7,7 @@ name = "python"
   runtime_version = "3.x.x"
 
 [[transformers]]
-name = "black"
+name = "isort"
 
 [[transformers]]
-name = "isort"
+name = "yapf"
