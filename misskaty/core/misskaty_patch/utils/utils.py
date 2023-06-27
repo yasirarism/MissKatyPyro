@@ -36,6 +36,7 @@ class PyromodConfig:
 
 
 def patch(obj):
+
     def is_patchable(item):
         return getattr(item[1], "patchable", False)
 
@@ -76,9 +77,9 @@ def patch(obj):
     return wrapper
 
 
-def patchable(
-    is_property: bool = False, is_static: bool = False, is_context: bool = False
-) -> Callable:
+def patchable(is_property: bool = False,
+              is_static: bool = False,
+              is_context: bool = False) -> Callable:
     """
     A decorator that marks a function as patchable.
 

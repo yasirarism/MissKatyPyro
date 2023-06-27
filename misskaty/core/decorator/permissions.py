@@ -5,18 +5,15 @@ from typing import Optional, Union
 
 from cachetools import TTLCache
 from pyrogram import Client, enums
-from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidden
+from pyrogram.errors import (ChannelPrivate, ChatAdminRequired,
+                             ChatWriteForbidden)
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.vars import SUDO
 
-from ...helper.localization import (
-    default_language,
-    get_lang,
-    get_locale_string,
-    langdict,
-)
+from ...helper.localization import (default_language, get_lang,
+                                    get_locale_string, langdict)
 
 
 async def member_permissions(chat_id: int, user_id: int):
@@ -59,7 +56,8 @@ async def check_perms(
         sender = message.reply_text
         chat = message.chat
     if not message.from_user:
-        return bool(message.sender_chat and message.sender_chat.id == message.chat.id)
+        return bool(message.sender_chat
+                    and message.sender_chat.id == message.chat.id)
     try:
         user = await chat.get_member(message.from_user.id)
     except ChatAdminRequired:
@@ -79,8 +77,7 @@ async def check_perms(
         permissions = [permissions]
 
     missing_perms = [
-        permission
-        for permission in permissions
+        permission for permission in permissions
         if not getattr(user.privileges, permission)
     ]
 
@@ -88,8 +85,8 @@ async def check_perms(
         return True
     if complain_missing_perms:
         await sender(
-            strings("no_permission_error").format(permissions=", ".join(missing_perms))
-        )
+            strings("no_permission_error").format(
+                permissions=", ".join(missing_perms)))
     return False
 
 
@@ -104,12 +101,11 @@ async def list_admins(chat_id: int):
 
     try:
         admins_in_chat[chat_id] = {
-            "last_updated_at": time(),
+            "last_updated_at":
+            time(),
             "data": [
-                member.user.id
-                async for member in app.get_chat_members(
-                    chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
-                )
+                member.user.id async for member in app.get_chat_members(
+                    chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS)
             ],
         }
         return admins_in_chat[chat_id]["data"]
@@ -144,7 +140,9 @@ async def unauthorised(message: Message, permission, subFunc2):
 
 
 def adminsOnly(permission):
+
     def subFunc(func):
+
         @wraps(func)
         async def subFunc2(client, message: Message, *args, **kwargs):
             chatID = message.chat.id
@@ -165,7 +163,8 @@ def adminsOnly(permission):
             permissions = await member_permissions(chatID, userID)
             if userID not in SUDO and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
-            return await authorised(func, subFunc2, client, message, *args, **kwargs)
+            return await authorised(func, subFunc2, client, message, *args,
+                                    **kwargs)
 
         return subFunc2
 
@@ -177,15 +176,18 @@ def require_admin(
     allow_in_private: bool = False,
     complain_missing_perms: bool = True,
 ):
+
     def decorator(func):
+
         @wraps(func)
-        async def wrapper(
-            client: Client, message: Union[CallbackQuery, Message], *args, **kwargs
-        ):
+        async def wrapper(client: Client, message: Union[CallbackQuery,
+                                                         Message], *args,
+                          **kwargs):
             lang = await get_lang(message)
             strings = partial(
                 get_locale_string,
-                langdict[lang].get("admin", langdict[default_language]["admin"]),
+                langdict[lang].get("admin",
+                                   langdict[default_language]["admin"]),
                 lang,
                 "admin",
             )
@@ -208,9 +210,8 @@ def require_admin(
                 return await sender(strings("private_not_allowed"))
             if msg.chat.type == enums.ChatType.CHANNEL:
                 return await func(client, message, *args, *kwargs)
-            has_perms = await check_perms(
-                message, permissions, complain_missing_perms, strings
-            )
+            has_perms = await check_perms(message, permissions,
+                                          complain_missing_perms, strings)
             if has_perms:
                 return await func(client, message, *args, *kwargs)
 

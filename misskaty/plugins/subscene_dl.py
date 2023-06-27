@@ -30,7 +30,8 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         sdata = []
         scraper = cloudscraper.create_scraper()
         param = {"query": kueri}
-        r = scraper.post("https://subscene.com/subtitles/searchbytitle", data=param).text
+        r = scraper.post("https://subscene.com/subtitles/searchbytitle",
+                         data=param).text
         soup = BeautifulSoup(r, "lxml")
         lists = soup.find("div", {"class": "search-result"})
         entry = lists.find_all("div", {"class": "title"})
@@ -51,13 +52,18 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         for c, i in enumerate(SUB_TITLE_DICT[msg.id][0][index], start=1):
             subResult += f"<b>{c}. <a href='{i['link']}'>{i['title']}</a></b>\n"
             if c < 6:
-                extractbtn1.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{msg.id}#{user}"))
+                extractbtn1.append(
+                    InlineButton(c,
+                                 f"sublist#{CurrentPage}#{c}#{msg.id}#{user}"))
             else:
-                extractbtn2.append(InlineButton(c, f"sublist#{CurrentPage}#{c}#{msg.id}#{user}"))
+                extractbtn2.append(
+                    InlineButton(c,
+                                 f"sublist#{CurrentPage}#{c}#{msg.id}#{user}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn1, extractbtn2
     except (IndexError, KeyError):
-        await msg.edit_msg("Sorry could not find any matching results!", del_in=5)
+        await msg.edit_msg("Sorry could not find any matching results!",
+                           del_in=5)
         return None, 0, None
 
 
@@ -66,7 +72,9 @@ async def getListSub(msg, link, CurrentPage, user):
     if not SUB_DL_DICT.get(msg.id):
         sdata = []
         scraper = cloudscraper.create_scraper()
-        kuki = {"LanguageFilter": "13,44,50"}  # Only filter language English, Malay, Indonesian
+        kuki = {
+            "LanguageFilter": "13,44,50"
+        }  # Only filter language English, Malay, Indonesian
         r = scraper.get(link, cookies=kuki).text
         soup = BeautifulSoup(r, "lxml")
         for i in soup.findAll(class_="a1"):
@@ -79,7 +87,12 @@ async def getListSub(msg, link, CurrentPage, user):
             else:
                 rate = "☹️"
             dllink = f"https://subscene.com{i.find('a').get('href')}"
-            sdata.append({"title": title, "lang": lang, "rate": rate, "link": dllink})
+            sdata.append({
+                "title": title,
+                "lang": lang,
+                "rate": rate,
+                "link": dllink
+            })
         SUB_DL_DICT[msg.id] = [split_arr(sdata, 10), link]
     try:
         index = int(CurrentPage - 1)
@@ -90,9 +103,13 @@ async def getListSub(msg, link, CurrentPage, user):
         for c, i in enumerate(SUB_DL_DICT[msg.id][0][index], start=1):
             subResult += f"<b>{c}. {i['title']}</b> [{i['rate']}]\n{i['lang']}\n"
             if c < 6:
-                extractbtn1.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
+                extractbtn1.append(
+                    InlineButton(
+                        c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
             else:
-                extractbtn2.append(InlineButton(c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
+                extractbtn2.append(
+                    InlineButton(
+                        c, f"extractsubs#{CurrentPage}#{c}#{msg.id}#{user}"))
         subResult = "".join(i for i in subResult if i not in "[]")
         return subResult, PageLen, extractbtn1, extractbtn2
     except (IndexError, KeyError):
@@ -105,10 +122,15 @@ async def getListSub(msg, link, CurrentPage, user):
 @ratelimiter
 async def subsceneCMD(self: Client, ctx: Message):
     if not ctx.input:
-        return await ctx.reply_msg(f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>")
-    pesan = await ctx.reply_msg("⏳ Please wait, getting data from subscene..", quote=True)
+        return await ctx.reply_msg(
+            f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>"
+        )
+    pesan = await ctx.reply_msg("⏳ Please wait, getting data from subscene..",
+                                quote=True)
     CurrentPage = 1
-    subres, PageLen, btn1, btn2 = await getTitleSub(pesan, ctx.input, CurrentPage, ctx.from_user.id)
+    subres, PageLen, btn1, btn2 = await getTitleSub(pesan, ctx.input,
+                                                    CurrentPage,
+                                                    ctx.from_user.id)
     if not subres:
         return
     keyboard = InlineKeyboard()
@@ -122,11 +144,14 @@ async def subsceneCMD(self: Client, ctx: Message):
     if btn2:
         keyboard.row(*btn2)
     keyboard.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
-    await pesan.edit_msg(subres, disable_web_page_preview=True, reply_markup=keyboard)
+    await pesan.edit_msg(subres,
+                         disable_web_page_preview=True,
+                         reply_markup=keyboard)
 
 
 # Callback list title
-@app.on_callback_query(filters.create(lambda _, __, query: "subscenepage#" in query.data))
+@app.on_callback_query(
+    filters.create(lambda _, __, query: "subscenepage#" in query.data))
 @ratelimiter
 async def subpage_callback(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
@@ -136,12 +161,15 @@ async def subpage_callback(self: Client, callback_query: CallbackQuery):
     try:
         kueri = SUB_TITLE_DICT[message_id][1]
     except KeyError:
-        await callback_query.answer("Invalid callback data, please send CMD again..")
+        await callback_query.answer(
+            "Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete_msg()
 
     try:
-        subres, PageLen, btn1, btn2 = await getTitleSub(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        subres, PageLen, btn1, btn2 = await getTitleSub(
+            callback_query.message, kueri, CurrentPage,
+            callback_query.from_user.id)
     except TypeError:
         return
 
@@ -149,18 +177,23 @@ async def subpage_callback(self: Client, callback_query: CallbackQuery):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "subscenepage#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+        "subscenepage#{number}" +
+        f"#{message_id}#{callback_query.from_user.id}",
     )
     keyboard.row(InlineButton("👇 Get Subtitle List", "Hmmm"))
     keyboard.row(*btn1)
     if btn2:
         keyboard.row(*btn2)
-    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await callback_query.message.edit_msg(subres, disable_web_page_preview=True, reply_markup=keyboard)
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(subres,
+                                          disable_web_page_preview=True,
+                                          reply_markup=keyboard)
 
 
 # Callback list title
-@app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
+@app.on_callback_query(
+    filters.create(lambda _, __, query: "sublist#" in query.data))
 @ratelimiter
 async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
@@ -169,14 +202,18 @@ async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
     message_id = int(callback_query.data.split("#")[3])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        link = SUB_TITLE_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+        link = SUB_TITLE_DICT[message_id][0][CurrentPage - 1][idlink -
+                                                              1].get("link")
     except KeyError:
-        await callback_query.answer("Invalid callback data, please send CMD again..")
+        await callback_query.answer(
+            "Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete_msg()
 
     try:
-        subres, PageLen, btn1, btn2 = await getListSub(callback_query.message, link, CurrentPage, callback_query.from_user.id)
+        subres, PageLen, btn1, btn2 = await getListSub(
+            callback_query.message, link, CurrentPage,
+            callback_query.from_user.id)
     except TypeError:
         return
 
@@ -184,18 +221,23 @@ async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "sublist#{number}" + f"#{idlink}#{message_id}#{callback_query.from_user.id}",
+        "sublist#{number}" +
+        f"#{idlink}#{message_id}#{callback_query.from_user.id}",
     )
     keyboard.row(InlineButton("👇 Download Subtitle", "Hmmm"))
     keyboard.row(*btn1)
     if btn2:
         keyboard.row(*btn2)
-    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
-    await callback_query.message.edit_msg(subres, disable_web_page_preview=True, reply_markup=keyboard)
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    await callback_query.message.edit_msg(subres,
+                                          disable_web_page_preview=True,
+                                          reply_markup=keyboard)
 
 
 # Callback dl subtitle
-@app.on_callback_query(filters.create(lambda _, __, query: "extractsubs#" in query.data))
+@app.on_callback_query(
+    filters.create(lambda _, __, query: "extractsubs#" in query.data))
 @ratelimiter
 async def dlsub_callback(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
@@ -204,10 +246,13 @@ async def dlsub_callback(self: Client, callback_query: CallbackQuery):
     message_id = int(callback_query.data.split("#")[3])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        link = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-        title = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("title")
+        link = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink -
+                                                           1].get("link")
+        title = SUB_DL_DICT[message_id][0][CurrentPage - 1][idlink -
+                                                            1].get("title")
     except KeyError:
-        await callback_query.answer("Invalid callback data, please send CMD again..")
+        await callback_query.answer(
+            "Invalid callback data, please send CMD again..")
         await asyncio.sleep(3)
         return await callback_query.message.delete_msg()
     scraper = cloudscraper.create_scraper()
@@ -216,6 +261,7 @@ async def dlsub_callback(self: Client, callback_query: CallbackQuery):
     f = open(f"{title}.zip", mode="wb").write(dl.content)
     await callback_query.message.reply_document(
         f"{title}.zip",
-        caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ",
+        caption=
+        f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ",
     )
     os.remove(f"{title}.zip")

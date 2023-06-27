@@ -1,20 +1,14 @@
 import asyncio
 from logging import getLogger
 
-from pyrogram.errors import (
-    ChatAdminRequired,
-    ChatWriteForbidden,
-    FloodWait,
-    MessageDeleteForbidden,
-    MessageEmpty,
-    MessageIdInvalid,
-    MessageNotModified,
-)
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden, FloodWait,
+                             MessageDeleteForbidden, MessageEmpty,
+                             MessageIdInvalid, MessageNotModified)
 
 LOGGER = getLogger(__name__)
 
-# handler for TG function, so need write exception in every code
 
+# handler for TG function, so need write exception in every code
 
 # Send MSG Pyro
 async def kirimPesan(msg, text, **kwargs):
@@ -25,7 +19,9 @@ async def kirimPesan(msg, text, **kwargs):
         await asyncio.sleep(e.value)
         return await kirimPesan(msg, text, **kwargs)
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission.")
+        LOGGER.info(
+            f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission."
+        )
         return await msg.chat.leave()
     except Exception as e:
         LOGGER.error(str(e))
@@ -43,7 +39,9 @@ async def editPesan(msg, text, **kwargs):
     except (MessageNotModified, MessageIdInvalid, MessageEmpty):
         return
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission.")
+        LOGGER.info(
+            f"Leaving from {msg.chat.title} [{msg.chat.id}] because doesn't have admin permission."
+        )
         return await msg.chat.leave()
     except Exception as e:
         LOGGER.error(str(e))

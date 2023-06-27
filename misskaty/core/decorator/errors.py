@@ -11,6 +11,7 @@ from misskaty.vars import LOG_CHANNEL
 
 
 def capture_err(func):
+
     @wraps(func)
     async def capture(client, message, *args, **kwargs):
         if isinstance(message, CallbackQuery):
@@ -40,9 +41,9 @@ def capture_err(func):
             await sender(
                 "😭 An Internal Error Occurred while processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience..."
             )
-            with open(
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
-            ) as log:
+            with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                      "w+",
+                      encoding="utf-8") as log:
                 log.write(error_feedback)
                 log.close()
             await app.send_document(

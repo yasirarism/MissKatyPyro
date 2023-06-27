@@ -60,18 +60,24 @@ async def upload(bot, message):
     try:
         files = {"file": open(fileku, "rb")}
         await m.edit("Uploading to Anonfile, Please Wait||")
-        callapi = await http.post("https://api.anonfiles.com/upload", files=files)
+        callapi = await http.post("https://api.anonfiles.com/upload",
+                                  files=files)
         text = callapi.json()
         output = f'<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {text["data"]["file"]["metadata"]["name"]}\n\n📦 File Size: {text["data"]["file"]["metadata"]["size"]["readable"]}\n\n📥 Download Link: {text["data"]["file"]["url"]["full"]}'
 
-        btn = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
+        btn = InlineKeyboardMarkup([[
+            InlineKeyboardButton("📥 Download 📥",
+                                 url=f"{text['data']['file']['url']['full']}")
+        ]])
         await m.edit(output, reply_markup=btn)
     except Exception as e:
-        await bot.send_message(message.chat.id, text=f"Something Went Wrong!\n\n{e}")
+        await bot.send_message(message.chat.id,
+                               text=f"Something Went Wrong!\n\n{e}")
     os.remove(fileku)
 
 
-@app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(
+    filters.command(["download"], COMMAND_HANDLER) & filters.user(SUDO))
 @capture_err
 @new_task
 async def download(client, message):
@@ -92,11 +98,14 @@ async def download(client, message):
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
             progress=progress_for_pyrogram,
-            progress_args=("Trying to download, sabar yakk..", pesan, c_time, dc_id),
+            progress_args=("Trying to download, sabar yakk..", pesan, c_time,
+                           dc_id),
         )
         end_t = datetime.now()
         ms = (end_t - start_t).seconds
-        await pesan.edit(f"Downloaded to <code>{the_real_download_location}</code> in <u>{ms}</u> seconds.")
+        await pesan.edit(
+            f"Downloaded to <code>{the_real_download_location}</code> in <u>{ms}</u> seconds."
+        )
     elif len(message.command) > 1:
         start_t = datetime.now()
         the_url_parts = " ".join(message.command[1:])
@@ -107,7 +116,10 @@ async def download(client, message):
             url = url.strip()
             custom_file_name = custom_file_name.strip()
         download_file_path = os.path.join("downloads/", custom_file_name)
-        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader = SmartDL(url,
+                             download_file_path,
+                             progress_bar=False,
+                             timeout=10)
         try:
             downloader.start(blocking=False)
         except Exception as err:
@@ -136,8 +148,10 @@ async def download(client, message):
                 current_message += f"{progress_str}\n"
                 current_message += f"{downloaded} of {humanbytes(total_length)}\n"
                 current_message += f"ETA: {estimated_total_time}"
-                if round(diff % 10.00) == 0 and current_message != display_message:
-                    await pesan.edit(disable_web_page_preview=True, text=current_message)
+                if round(diff %
+                         10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True,
+                                     text=current_message)
                     display_message = current_message
                     await asyncio.sleep(10)
             except Exception as e:
@@ -145,9 +159,12 @@ async def download(client, message):
         if os.path.exists(download_file_path):
             end_t = datetime.now()
             ms = (end_t - start_t).seconds
-            await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
+            await pesan.edit(
+                f"Downloaded to <code>{download_file_path}</code> in {ms} seconds"
+            )
     else:
-        await pesan.edit("Reply to a Telegram Media, to download it to my local server.")
+        await pesan.edit(
+            "Reply to a Telegram Media, to download it to my local server.")
 
 
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
@@ -155,18 +172,24 @@ async def download(client, message):
 @ratelimiter
 async def tiktokdl(client, message):
     if len(message.command) == 1:
-        return await message.reply(f"Use command /{message.command[0]} [link] to download tiktok video.")
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download tiktok video."
+        )
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        r = (await http.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")).json()
+        r = (await
+             http.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")
+             ).json()
         await message.reply_video(
             r["hasil"]["download_mp4_hd"],
-            caption=f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            caption=
+            f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()
     except Exception as e:
-        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await message.reply(
+            f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
         await msg.delete()
 
 
@@ -174,11 +197,15 @@ async def tiktokdl(client, message):
 @capture_err
 async def fbdl(client, message):
     if len(message.command) == 1:
-        return await message.reply(f"Use command /{message.command[0]} [link] to download Facebook video.")
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download Facebook video."
+        )
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        resjson = (await http.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
+        resjson = (
+            await
+            http.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
         try:
             url = resjson["result"]["links"]["hd"].replace("&amp;", "&")
         except:
@@ -188,7 +215,8 @@ async def fbdl(client, message):
         path = obj.get_dest()
         await message.reply_video(
             path,
-            caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            caption=
+            f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
             thumb="assets/thumb.jpg",
         )
         await msg.delete()
@@ -197,5 +225,6 @@ async def fbdl(client, message):
         except:
             pass
     except Exception as e:
-        await message.reply(f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}")
+        await message.reply(
+            f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}")
         await msg.delete()

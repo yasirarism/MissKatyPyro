@@ -34,21 +34,14 @@ from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.permissions import (
-    admins_in_chat,
-    adminsOnly,
-    list_admins,
-    member_permissions,
-    require_admin,
-)
+from misskaty.core.decorator.permissions import (admins_in_chat, adminsOnly,
+                                                 list_admins,
+                                                 member_permissions,
+                                                 require_admin)
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
-from misskaty.helper.functions import (
-    extract_user,
-    extract_user_and_reason,
-    int_to_alpha,
-    time_converter,
-)
+from misskaty.helper.functions import (extract_user, extract_user_and_reason,
+                                       int_to_alpha, time_converter)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
@@ -92,15 +85,16 @@ async def admin_cache_func(_, cmu):
     if cmu.old_chat_member and cmu.old_chat_member.promoted_by:
         try:
             admins_in_chat[cmu.chat.id] = {
-                "last_updated_at": time(),
+                "last_updated_at":
+                time(),
                 "data": [
-                    member.user.id
-                    async for member in app.get_chat_members(
-                        cmu.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
-                    )
+                    member.user.id async for member in app.get_chat_members(
+                        cmu.chat.id,
+                        filter=enums.ChatMembersFilter.ADMINISTRATORS)
                 ],
             }
-            LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
+            LOGGER.info(
+                f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
         except:
             pass
 
@@ -132,8 +126,8 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
         del_total = 0
 
         for message_id in range(
-            repliedmsg.id,
-            purge_to,
+                repliedmsg.id,
+                purge_to,
         ):
             message_ids.append(message_id)
 
@@ -156,13 +150,15 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
                 revoke=True,
             )
             del_total += len(message_ids)
-        await ctx.reply_msg(strings("purge_success").format(del_total=del_total))
+        await ctx.reply_msg(
+            strings("purge_success").format(del_total=del_total))
     except Exception as err:
         await ctx.reply_msg(f"ERROR: {err}")
 
 
 # Kick members
-@app.on_message(filters.command(["kick", "dkick"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["kick", "dkick"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -198,8 +194,7 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
 
 # Ban/DBan/TBan User
 @app.on_message(
-    filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group
-)
+    filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -220,11 +215,8 @@ async def banFunc(client, message, strings):
     try:
         mention = (await app.get_users(user_id)).mention
     except IndexError:
-        mention = (
-            message.reply_to_message.sender_chat.title
-            if message.reply_to_message
-            else "Anon"
-        )
+        mention = (message.reply_to_message.sender_chat.title
+                   if message.reply_to_message else "Anon")
 
     msg = strings("ban_msg").format(
         mention=mention,
@@ -287,13 +279,14 @@ async def unban_func(self, message, strings):
         return await message.reply_text(strings("give_unban_user"))
     await message.chat.unban_member(user)
     umention = (await app.get_users(user)).mention
-    await message.reply_text(strings("unban_success").format(umention=umention))
+    await message.reply_text(
+        strings("unban_success").format(umention=umention))
 
 
 # Ban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group
-)
+    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER)
+    & filters.group)
 @ratelimiter
 @use_chat_lang()
 async def list_ban_(c, message, strings):
@@ -302,15 +295,15 @@ async def list_ban_(c, message, strings):
     userid, msglink_reason = await extract_user_and_reason(message)
     if not userid or not msglink_reason:
         return await message.reply_text(strings("give_idban_with_msg_link"))
-    if len(msglink_reason.split(" ")) == 1:  # message link included with the reason
+    if len(msglink_reason.split(
+            " ")) == 1:  # message link included with the reason
         return await message.reply_text(strings("give_reason_list_ban"))
     # seperate messge link from reason
     lreason = msglink_reason.split()
     messagelink, reason = lreason[0], " ".join(lreason[1:])
 
-    if not re.search(
-        r"(https?://)?t(elegram)?\.me/\w+/\d+", messagelink
-    ):  # validate link
+    if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+",
+                     messagelink):  # validate link
         return await message.reply_text(strings("invalid_tg_link"))
 
     if userid == c.me.id:
@@ -349,8 +342,8 @@ async def list_ban_(c, message, strings):
 
 # Unban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group
-)
+    filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER)
+    & filters.group)
 @ratelimiter
 @use_chat_lang()
 async def list_unban_(c, message, strings):
@@ -360,7 +353,8 @@ async def list_unban_(c, message, strings):
     if not userid or not msglink:
         return await message.reply_text(strings("give_idunban_with_msg_link"))
 
-    if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+", msglink):  # validate link
+    if not re.search(r"(https?://)?t(elegram)?\.me/\w+/\d+",
+                     msglink):  # validate link
         return await message.reply_text(strings("invalid_tg_link"))
 
     splitted = msglink.split("/")
@@ -382,9 +376,10 @@ async def list_unban_(c, message, strings):
             continue
         count += 1
     mention = (await app.get_users(userid)).mention
-    msg = strings("listunban_msg").format(
-        mention=mention, uid=userid, frus=message.from_user.mention, ct=count
-    )
+    msg = strings("listunban_msg").format(mention=mention,
+                                          uid=userid,
+                                          frus=message.from_user.mention,
+                                          ct=count)
     await m.edit_text(msg)
 
 
@@ -407,8 +402,8 @@ async def deleteFunc(_, message, strings):
 
 # Promote Members
 @app.on_message(
-    filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group
-)
+    filters.command(["promote", "fullpromote"], COMMAND_HANDLER)
+    & filters.group)
 @adminsOnly("can_promote_members")
 @ratelimiter
 @use_chat_lang()
@@ -442,8 +437,7 @@ async def promoteFunc(client, message, strings):
             ),
         )
         return await message.reply_text(
-            strings("full_promote").format(umention=umention)
-        )
+            strings("full_promote").format(umention=umention))
 
     await message.chat.promote_member(
         user_id=user_id,
@@ -458,7 +452,8 @@ async def promoteFunc(client, message, strings):
             can_manage_video_chats=bot.privileges.can_manage_video_chats,
         ),
     )
-    await message.reply_text(strings("normal_promote").format(umention=umention))
+    await message.reply_text(
+        strings("normal_promote").format(umention=umention))
 
 
 # Demote Member
@@ -494,7 +489,8 @@ async def demote(client, message, strings):
 
 
 # Pin Messages
-@app.on_message(filters.command(["pin", "unpin"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["pin", "unpin"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_pin_messages")
 @ratelimiter
 @use_chat_lang()
@@ -524,7 +520,8 @@ async def pin(_, message, strings):
 
 
 # Mute members
-@app.on_message(filters.command(["mute", "tmute"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["mute", "tmute"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -592,7 +589,8 @@ async def unmute(_, message, strings):
     await message.reply_text(strings("unmute_msg").format(umention=umention))
 
 
-@app.on_message(filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)
+@app.on_message(
+    filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -620,7 +618,8 @@ async def warn_user(client, message, strings):
         await message.reply_to_message.delete()
     if warns >= 2:
         await message.chat.ban_member(user_id)
-        await message.reply_text(strings("exceed_warn_msg").format(mention=mention))
+        await message.reply_text(
+            strings("exceed_warn_msg").format(mention=mention))
         await remove_warns(chat_id, await int_to_alpha(user_id))
     else:
         warn = {"warns": warns + 1}
@@ -654,9 +653,7 @@ async def remove_warning(_, cq, strings):
     if not warns or warns == 0:
         return await cq.answer(
             strings("user_no_warn").format(
-                mention=cq.message.reply_to_message.from_user.id
-            )
-        )
+                mention=cq.message.reply_to_message.from_user.id))
     warn = {"warns": warns - 1}
     await add_warn(chat_id, await int_to_alpha(user_id), warn)
     text = cq.message.text.markdown
@@ -727,7 +724,8 @@ async def remove_warnings(_, message, strings):
     if warns:
         warns = warns["warns"]
     if warns == 0 or not warns:
-        await message.reply_text(strings("user_no_warn").format(mention=mention))
+        await message.reply_text(
+            strings("user_no_warn").format(mention=mention))
     else:
         await remove_warns(chat_id, await int_to_alpha(user_id))
         await message.reply_text(strings("rmwarn_msg").format(mention=mention))
@@ -749,20 +747,16 @@ async def check_warns(_, message, strings):
     if warns:
         warns = warns["warns"]
     else:
-        return await message.reply_text(strings("user_no_warn").format(mention=mention))
+        return await message.reply_text(
+            strings("user_no_warn").format(mention=mention))
     return await message.reply_text(
-        strings("ch_warn_msg").format(mention=mention, warns=warns)
-    )
+        strings("ch_warn_msg").format(mention=mention, warns=warns))
 
 
 # Report User in Group
-@app.on_message(
-    (
-        filters.command("report", COMMAND_HANDLER)
-        | filters.command(["admins", "admin"], prefixes="@")
-    )
-    & filters.group
-)
+@app.on_message((filters.command("report", COMMAND_HANDLER)
+                 | filters.command(["admins", "admin"], prefixes="@"))
+                & filters.group)
 @capture_err
 @ratelimiter
 @use_chat_lang()
@@ -780,21 +774,15 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
     if linked_chat is None:
         if reply_id in list_of_admins or reply_id == ctx.chat.id:
             return await ctx.reply_text(strings("reported_is_admin"))
-    elif (
-        reply_id in list_of_admins
-        or reply_id == ctx.chat.id
-        or reply_id == linked_chat.id
-    ):
+    elif (reply_id in list_of_admins or reply_id == ctx.chat.id
+          or reply_id == linked_chat.id):
         return await ctx.reply_text(strings("reported_is_admin"))
-    user_mention = (
-        reply.from_user.mention if reply.from_user else reply.sender_chat.title
-    )
+    user_mention = (reply.from_user.mention
+                    if reply.from_user else reply.sender_chat.title)
     text = strings("report_msg").format(user_mention=user_mention)
     admin_data = [
-        m
-        async for m in app.get_chat_members(
-            ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
-        )
+        m async for m in app.get_chat_members(
+            ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS)
     ]
     for admin in admin_data:
         if admin.user.is_bot or admin.user.is_deleted:
@@ -804,7 +792,8 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
     await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)
 
 
-@app.on_message(filters.command("set_chat_title", COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command("set_chat_title", COMMAND_HANDLER) & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_chat_title(self: Client, ctx: Message):
     if len(ctx.command) < 2:
@@ -813,31 +802,32 @@ async def set_chat_title(self: Client, ctx: Message):
     new_title = ctx.text.split(None, 1)[1]
     await ctx.chat.set_title(new_title)
     await ctx.reply_text(
-        f"Successfully Changed Group Title From {old_title} To {new_title}"
-    )
+        f"Successfully Changed Group Title From {old_title} To {new_title}")
 
 
-@app.on_message(filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_user_title(self: Client, ctx: Message):
     if not ctx.reply_to_message:
-        return await ctx.reply_text("Reply to user's message to set his admin title")
+        return await ctx.reply_text(
+            "Reply to user's message to set his admin title")
     if not ctx.reply_to_message.from_user:
-        return await ctx.reply_text("I can't change admin title of an unknown entity")
+        return await ctx.reply_text(
+            "I can't change admin title of an unknown entity")
     chat_id = ctx.chat.id
     from_user = ctx.reply_to_message.from_user
     if len(ctx.command) < 2:
         return await ctx.reply_text(
-            "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE"
-        )
+            "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE")
     title = ctx.text.split(None, 1)[1]
     await app.set_administrator_title(chat_id, from_user.id, title)
     await ctx.reply_text(
-        f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
-    )
+        f"Successfully Changed {from_user.mention}'s Admin Title To {title}")
 
 
-@app.on_message(filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_chat_photo(self: Client, ctx: Message):
     reply = ctx.reply_to_message
@@ -848,8 +838,7 @@ async def set_chat_photo(self: Client, ctx: Message):
     file = reply.document or reply.photo
     if not file:
         return await ctx.reply_text(
-            "Reply to a photo or document to set it as chat_photo"
-        )
+            "Reply to a photo or document to set it as chat_photo")
 
     if file.file_size > 5000000:
         return await ctx.reply("File size too large.")

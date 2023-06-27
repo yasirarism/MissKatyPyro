@@ -20,7 +20,8 @@ enabled_locales: List[str] = [
 default_language: str = "en-US"
 
 
-def cache_localizations(files: List[str]) -> Dict[str, Dict[str, Dict[str, str]]]:
+def cache_localizations(
+        files: List[str]) -> Dict[str, Dict[str, Dict[str, str]]]:
     ldict = {lang: {} for lang in enabled_locales}
     for file in files:
         _, lname, pname = file.split(os.path.sep)
@@ -39,11 +40,17 @@ for locale in enabled_locales:
 langdict = cache_localizations(jsons)
 
 
-def get_locale_string(dic: dict, language: str, default_context: str, key: str, context: str = None) -> str:
+def get_locale_string(dic: dict,
+                      language: str,
+                      default_context: str,
+                      key: str,
+                      context: str = None) -> str:
     if context:
         default_context = context
-        dic = langdict[language].get(context, langdict[default_language][context])
-    res: str = dic.get(key) or langdict[default_language][default_context].get(key) or key
+        dic = langdict[language].get(context,
+                                     langdict[default_language][context])
+    res: str = dic.get(key) or langdict[default_language][default_context].get(
+        key) or key
     return res
 
 
@@ -84,17 +91,19 @@ def use_chat_lang(context: str = None):
         fname = frame.filename
 
         if fname.startswith(cwd):
-            fname = fname[len(cwd) + 1 :]
+            fname = fname[len(cwd) + 1:]
         context = fname.split(os.path.sep)[2].split(".")[0]
 
     def decorator(func):
+
         @wraps(func)
         async def wrapper(client, message):
             lang = await get_lang(message)
 
             dic = langdict.get(lang, langdict[default_language])
 
-            lfunc = partial(get_locale_string, dic.get(context, {}), lang, context)
+            lfunc = partial(get_locale_string, dic.get(context, {}), lang,
+                            context)
             return await func(client, message, lfunc)
 
         return wrapper

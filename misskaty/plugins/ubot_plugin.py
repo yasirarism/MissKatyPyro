@@ -10,12 +10,8 @@ from datetime import datetime
 
 from pyrogram import enums, filters
 from pyrogram.raw import functions
-from pyrogram.types import (
-    ChatEventFilter,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (ChatEventFilter, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import app, user
 
@@ -35,17 +31,25 @@ async def add_keep(_, message: Message):
         await message.edit("Autoscroll dimatikan")
     else:
         f.add(message.chat.id)
-        await message.edit("Autoscroll diaktifkan, semua chat akan otomatis terbaca")
+        await message.edit(
+            "Autoscroll diaktifkan, semua chat akan otomatis terbaca")
 
 
 # @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
 async def del_msg(client, message):
-    async for a in user.get_chat_event_log(message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)):
+    async for a in user.get_chat_event_log(
+            message[0].chat.id,
+            limit=1,
+            filters=ChatEventFilter(deleted_messages=True)):
         try:
-            ustat = (await user.get_chat_member(message[0].chat.id, a.deleted_message.from_user.id)).status
+            ustat = (await user.get_chat_member(
+                message[0].chat.id, a.deleted_message.from_user.id)).status
         except:
             ustat = enums.ChatMemberStatus.MEMBER
-        if ustat in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] or a.deleted_message.from_user.is_bot:
+        if ustat in [
+                enums.ChatMemberStatus.ADMINISTRATOR,
+                enums.ChatMemberStatus.OWNER
+        ] or a.deleted_message.from_user.is_bot:
             return
         if a.user.id == a.deleted_message.from_user.id:
             if a.deleted_message.text:
@@ -63,16 +67,21 @@ async def del_msg(client, message):
 # @user.on_edited_message(filters.text & filters.chat(-1001455886928))
 async def edit_msg(client, message):
     try:
-        ustat = (await user.get_chat_member(message.chat.id, message.from_user.id)).status
+        ustat = (await user.get_chat_member(message.chat.id,
+                                            message.from_user.id)).status
     except:
         ustat = enums.ChatMemberStatus.MEMBER
     if message.from_user.is_bot or ustat in [
-        enums.ChatMemberStatus.ADMINISTRATOR,
-        enums.ChatMemberStatus.OWNER,
+            enums.ChatMemberStatus.ADMINISTRATOR,
+            enums.ChatMemberStatus.OWNER,
     ]:
         return
-    async for a in user.get_chat_event_log(message.chat.id, limit=1, filters=ChatEventFilter(edited_messages=True)):
-        if a.old_message.text.startswith(("/mirror", "/leech", "/unzipmirror", "/unzipleech")):
+    async for a in user.get_chat_event_log(
+            message.chat.id,
+            limit=1,
+            filters=ChatEventFilter(edited_messages=True)):
+        if a.old_message.text.startswith(
+            ("/mirror", "/leech", "/unzipmirror", "/unzipleech")):
             await app.send_message(
                 message.chat.id,
                 f"#EDITED_MESSAGE\n\n<a href='tg://user?id={a.user.id}'>{a.user.first_name}</a> mengedit pesannya 🧐.\n<b>Pesan:</b> {a.old_message.text}",
@@ -96,16 +105,12 @@ async def mentioned(client, message):
     await app.send_message(
         617426792,
         f"{message.from_user.mention} mention kamu di {message.chat.title}\n\n<b>Pesan:</b> {pesan}",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        text="💬 Lihat Pesan",
-                        url=f"https://t.me/c/{str(cid)[4:]}/{message.id}",
-                    )
-                ]
-            ]
-        ),
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                text="💬 Lihat Pesan",
+                url=f"https://t.me/c/{str(cid)[4:]}/{message.id}",
+            )
+        ]]),
     )
 
 
@@ -113,18 +118,19 @@ async def mentioned(client, message):
 async def join_date(app, message: Message):
     members = []
     async for m in app.iter_chat_members(message.chat.id):
-        members.append(
-            (
-                m.user.first_name,
-                m.joined_date or (await app.get_messages(message.chat.id, 1)).date,
-            )
-        )
+        members.append((
+            m.user.first_name,
+            m.joined_date or (await app.get_messages(message.chat.id, 1)).date,
+        ))
     members.sort(key=lambda member: member[1])
 
     with open("joined_date.txt", "w", encoding="utf8") as f:
         f.write("Join Date      First Name\n")
         for member in members:
-            f.write(str(datetime.fromtimestamp(member[1]).strftime("%y-%m-%d %H:%M")) + f" {member[0]}\n")
+            f.write(
+                str(
+                    datetime.fromtimestamp(member[1]).strftime(
+                        "%y-%m-%d %H:%M")) + f" {member[0]}\n")
 
     await user.send_document(message.chat.id, "joined_date.txt")
     os.remove("joined_date.txt")
@@ -149,9 +155,9 @@ async def recent_act(client, message):
             max_id=0,
             min_id=0,
             limit=0,
-        )
-    )
-    with open(f"recent_actions_{message.chat.id}.txt", "w", encoding="utf8") as log_file:
+        ))
+    with open(f"recent_actions_{message.chat.id}.txt", "w",
+              encoding="utf8") as log_file:
         log_file.write(str(full_log))
     await message.reply_document(f"recent_actions_{message.chat.id}.txt")
 
@@ -164,5 +170,4 @@ async def take_a_screenshot(client, message):
             peer=await user.resolve_peer(message.chat.id),
             reply_to_msg_id=0,
             random_id=app.rnd_id(),
-        )
-    )
+        ))

@@ -17,7 +17,9 @@ async def delete_note(chat_id: int, name: str) -> bool:
         del notesd[name]
         await notesdb.update_one(
             {"chat_id": chat_id},
-            {"$set": {"notes": notesd}},
+            {"$set": {
+                "notes": notesd
+            }},
             upsert=True,
         )
         return True
@@ -39,4 +41,7 @@ async def save_note(chat_id: int, name: str, note: dict):
     _notes = await _get_notes(chat_id)
     _notes[name] = note
 
-    await notesdb.update_one({"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True)
+    await notesdb.update_one({"chat_id": chat_id}, {"$set": {
+        "notes": _notes
+    }},
+                             upsert=True)

@@ -11,7 +11,8 @@ from misskaty.vars import SUDO
 from utils import broadcast_messages
 
 
-@app.on_message(filters.command("broadcast") & filters.user(SUDO) & filters.reply)
+@app.on_message(
+    filters.command("broadcast") & filters.user(SUDO) & filters.reply)
 async def broadcast(self: Client, ctx: Message):
     users = await db.get_all_users()
     b_msg = ctx.reply_to_message
@@ -38,6 +39,10 @@ async def broadcast(self: Client, ctx: Message):
         done += 1
         await asyncio.sleep(2)
         if not done % 20:
-            await sts.edit_msg(f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
+            await sts.edit_msg(
+                f"Broadcast in progress:\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}"
+            )
     time_taken = datetime.timedelta(seconds=int(time.time() - start_time))
-    await sts.edit_msg(f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}")
+    await sts.edit_msg(
+        f"Broadcast Completed:\nCompleted in {time_taken} seconds.\n\nTotal Users {total_users}\nCompleted: {done} / {total_users}\nSuccess: {success}\nBlocked: {blocked}\nDeleted: {deleted}"
+    )

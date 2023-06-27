@@ -62,7 +62,8 @@ def humanbytes(size: int):
 
 
 # Pattern if extension supported, PR if want to add more
-pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip$")
+pattern = compiles(
+    r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip$")
 
 
 @app.on_message(filters.command(["tgraph"], COMMAND_HANDLER))
@@ -94,8 +95,8 @@ async def telegraph_paste(_, message):
             [InlineKeyboardButton("Open Link", url=url)],
             [
                 InlineKeyboardButton(
-                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
-                )
+                    "Share Link",
+                    url=f"https://telegram.me/share/url?url={url}")
             ],
         ]
 
@@ -116,11 +117,8 @@ async def telegraph_paste(_, message):
         if not pattern.search(reply.document.mime_type):
             return await msg.edit_msg("**Only text files can be pasted.**")
         file = await reply.download()
-        title = (
-            message.text.split(None, 1)[1]
-            if len(message.command) > 1
-            else "MissKaty Paste"
-        )
+        title = (message.text.split(None, 1)[1]
+                 if len(message.command) > 1 else "MissKaty Paste")
         try:
             with open(file, "r") as text:
                 data = text.read()
@@ -132,14 +130,10 @@ async def telegraph_paste(_, message):
                 pass
             return await msg.edit_msg("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
-        title = (
-            message.text.split(None, 1)[1]
-            if len(message.command) > 1
-            else "MissKaty Paste"
-        )
-        data = reply.text.html.replace("\n", "<br>") or reply.caption.html.replace(
-            "\n", "<br>"
-        )
+        title = (message.text.split(None, 1)[1]
+                 if len(message.command) > 1 else "MissKaty Paste")
+        data = reply.text.html.replace(
+            "\n", "<br>") or reply.caption.html.replace("\n", "<br>")
     elif not reply and len(message.command) >= 2:
         title = "MissKaty Paste"
         data = message.text.split(None, 1)[1]
@@ -155,8 +149,7 @@ async def telegraph_paste(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 
@@ -172,8 +165,7 @@ async def wastepaste(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.reply_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
-        )
+            f"**Reply To A Message With /{target} or with command**", del_in=6)
 
     msg = await message.reply_msg("`Pasting to YasirBin...`")
     data = ""
@@ -217,7 +209,8 @@ async def wastepaste(_, message):
             "expire_at": 0,
             "expire_in": 0,
         }
-        response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
+        response = await http.post("https://paste.yasir.eu.org/api/new",
+                                   json=json_data)
         url = f"https://paste.yasir.eu.org/{response.json()['id']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
@@ -228,8 +221,7 @@ async def wastepaste(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 
@@ -245,8 +237,7 @@ async def nekopaste(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.reply_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
-        )
+            f"**Reply To A Message With /{target} or with command**", del_in=6)
 
     msg = await message.reply_msg("`Pasting to Nekobin...`")
     data = ""
@@ -285,9 +276,8 @@ async def nekopaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        x = (
-            await http.post("https://nekobin.com/api/documents", json={"content": data})
-        ).json()
+        x = (await http.post("https://nekobin.com/api/documents",
+                             json={"content": data})).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
@@ -298,8 +288,7 @@ async def nekopaste(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 
@@ -315,8 +304,7 @@ async def spacebinn(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.reply_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
-        )
+            f"**Reply To A Message With /{target} or with command**", del_in=6)
 
     msg = await message.reply_msg("`Pasting to Spacebin...`")
     data = ""
@@ -356,7 +344,11 @@ async def spacebinn(_, message):
 
     try:
         siteurl = "https://spaceb.in/api/v1/documents/"
-        response = await http.post(siteurl, data={"content": data, "extension": "txt"})
+        response = await http.post(siteurl,
+                                   data={
+                                       "content": data,
+                                       "extension": "txt"
+                                   })
         response = response.json()
         url = "https://spaceb.in/" + response["payload"]["id"]
     except Exception as e:
@@ -368,8 +360,7 @@ async def spacebinn(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 
@@ -385,8 +376,7 @@ async def rentrypaste(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.reply_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
-        )
+            f"**Reply To A Message With /{target} or with command**", del_in=6)
 
     msg = await message.reply_msg("`Pasting to Rentry...`")
     data = ""
@@ -435,8 +425,7 @@ async def rentrypaste(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 
@@ -452,8 +441,7 @@ async def tempaste(_, message):
     target = str(message.command[0]).split("@", maxsplit=1)[0]
     if not reply and len(message.command) < 2:
         return await message.edit_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
-        )
+            f"**Reply To A Message With /{target} or with command**", del_in=6)
 
     msg = await message.reply_msg("`Pasting to TempPaste...`")
     data = ""
@@ -513,8 +501,7 @@ async def tempaste(_, message):
         [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
+                "Share Link", url=f"https://telegram.me/share/url?url={url}")
         ],
     ]
 

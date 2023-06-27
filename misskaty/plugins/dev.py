@@ -26,12 +26,8 @@ from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait, PeerIdInvalid
 from pyrogram.raw.types import UpdateBotStopped
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InputMediaPhoto, Message)
 
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
 from database.users_chats_db import db
@@ -39,7 +35,8 @@ from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import http
-from misskaty.helper.human_read import get_readable_file_size, get_readable_time
+from misskaty.helper.human_read import (get_readable_file_size,
+                                        get_readable_time)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
@@ -72,7 +69,8 @@ async def edit_or_reply(msg, **kwargs):
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
-@app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(
+    filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def log_file(self: Client, ctx: Message, strings) -> "Message":
     """Send log file"""
@@ -81,22 +79,19 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
         await ctx.reply_document(
             "MissKatyLogs.txt",
             caption="Log Bot MissKatyPyro",
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            strings("cl_btn"),
-                            f"close#{ctx.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    strings("cl_btn"),
+                    f"close#{ctx.from_user.id}",
+                )
+            ]]),
         )
         await msg.delete_msg()
     elif len(ctx.command) == 2:
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
-        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>"
+                           )
     else:
         await msg.edit_msg("Unsupported parameter")
 
@@ -109,7 +104,8 @@ async def donate(client, ctx):
             "QR QRIS [Yasir Store]",
             url="https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
         ),
-        InlineButton("Sociabuzz", url="https://sociabuzz.com/yasirarism/tribe"),
+        InlineButton("Sociabuzz",
+                     url="https://sociabuzz.com/yasirarism/tribe"),
         InlineButton("Saweria", url="https://saweria.co/yasirarism"),
         InlineButton("Trakteer", url="https://trakteer.id/yasir-aris-sp7cn"),
         InlineButton("Ko-Fi", url="https://ko-fi.com/yasirarism"),
@@ -122,8 +118,8 @@ async def donate(client, ctx):
 
 
 @app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
-)
+    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO)
+    & filters.reply)
 async def balas(self: Client, ctx: Message) -> "str":
     pesan = ctx.input
     await ctx.delete_msg()
@@ -142,10 +138,11 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     def draw_progressbar(coordinate, progress):
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
-        draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
+        draw.rectangle((120, coordinate - 25, progress, coordinate),
+                       fill="#FFFFFF")
         draw.ellipse(
-            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
-        )
+            (progress - 7, coordinate - 25, progress + 15, coordinate),
+            fill="#FFFFFF")
 
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
@@ -240,8 +237,7 @@ async def ban_globally(self: Client, ctx: Message):
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
     m = await ctx.reply_text(
-        f"**Banning {user_mention} Globally! This may take several times.**"
-    )
+        f"**Banning {user_mention} Globally! This may take several times.**")
     await add_gban_user(user_id)
     number_of_chats = 0
     async for served_chat in served_chats:
@@ -284,7 +280,8 @@ __**New Global Ban**__
 
 
 # Ungban
-@app.on_message(filters.command("ungban", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(
+    filters.command("ungban", COMMAND_HANDLER) & filters.user(SUDO))
 async def unban_globally(self: Client, ctx: Message):
     user_id = await extract_user(ctx)
     if not user_id:
@@ -306,21 +303,18 @@ async def unban_globally(self: Client, ctx: Message):
 
 
 @app.on_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
-)
+    filters.command(["shell", "sh", "term"], COMMAND_HANDLER)
+    & filters.user(SUDO))
 @app.on_edited_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
-)
+    filters.command(["shell", "sh", "term"], COMMAND_HANDLER)
+    & filters.user(SUDO))
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
 async def shell(self: Client, ctx: Message, strings) -> "Message":
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
-    msg = (
-        await ctx.edit_msg(strings("run_exec"))
-        if ctx.from_user.is_self
-        else await ctx.reply_msg(strings("run_exec"))
-    )
+    msg = (await ctx.edit_msg(strings("run_exec")) if ctx.from_user.is_self
+           else await ctx.reply_msg(strings("run_exec")))
     shell = (await shell_exec(ctx.input))[0]
     if len(shell) > 3000:
         with io.BytesIO(str.encode(shell)) as doc:
@@ -329,16 +323,12 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
                 document=doc,
                 caption=f"<code>{ctx.input[: 4096 // 4 - 1]}</code>",
                 file_name=doc.name,
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text=strings("cl_btn"),
-                                callback_data=f"close#{ctx.from_user.id}",
-                            )
-                        ]
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text=strings("cl_btn"),
+                        callback_data=f"close#{ctx.from_user.id}",
+                    )
+                ]]),
             )
             await msg.delete_msg()
     elif len(shell) != 0:
@@ -346,16 +336,12 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
             ctx,
             text=html.escape(shell),
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    text=strings("cl_btn"),
+                    callback_data=f"close#{ctx.from_user.id}",
+                )
+            ]]),
         )
         if not ctx.from_user.is_self:
             await msg.delete_msg()
@@ -363,30 +349,22 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
         await ctx.reply_msg(strings("no_reply"), del_in=5)
 
 
-@app.on_message(
-    (
-        filters.command(["ev", "run", "myeval"], COMMAND_HANDLER)
-        | filters.regex(r"app.run\(\)$")
-    )
-    & filters.user(SUDO)
-)
-@app.on_edited_message(
-    (filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$"))
-    & filters.user(SUDO)
-)
+@app.on_message((filters.command(["ev", "run", "myeval"], COMMAND_HANDLER)
+                 | filters.regex(r"app.run\(\)$"))
+                & filters.user(SUDO))
+@app.on_edited_message((filters.command(["ev", "run", "myeval"])
+                        | filters.regex(r"app.run\(\)$"))
+                       & filters.user(SUDO))
 @user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
         return await edit_or_reply(ctx, text=strings("no_eval"))
-    status_message = (
-        await ctx.edit_msg(strings("run_eval"))
-        if ctx.from_user.is_self
-        else await ctx.reply_msg(strings("run_eval"), quote=True)
-    )
-    code = (
-        ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
-    )
+    status_message = (await ctx.edit_msg(strings("run_eval"))
+                      if ctx.from_user.is_self else await ctx.reply_msg(
+                          strings("run_eval"), quote=True))
+    code = (ctx.text.split(" ", 1)[1]
+            if ctx.command else ctx.text.split("\napp.run()")[0])
     out_buf = io.StringIO()
     out = ""
     humantime = get_readable_time
@@ -436,7 +414,8 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             first_snip_idx = -1
             tb = traceback.extract_tb(e.__traceback__)
             for i, frame in enumerate(tb):
-                if frame.filename == "<string>" or frame.filename.endswith("ast.py"):
+                if frame.filename == "<string>" or frame.filename.endswith(
+                        "ast.py"):
                     first_snip_idx = i
                     break
             # Re-raise exception if it wasn't caused by the snippet
@@ -472,16 +451,12 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                 caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
                 thumb="assets/thumb.jpg",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text=strings("cl_btn"),
-                                callback_data=f"close#{ctx.from_user.id}",
-                            )
-                        ]
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text=strings("cl_btn"),
+                        callback_data=f"close#{ctx.from_user.id}",
+                    )
+                ]]),
             )
             await status_message.delete_msg()
     else:
@@ -489,23 +464,20 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             ctx,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id}",
-                        )
-                    ]
-                ]
-            ),
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    text=strings("cl_btn"),
+                    callback_data=f"close#{ctx.from_user.id}",
+                )
+            ]]),
         )
         if not ctx.from_user.is_self:
             await status_message.delete_msg()
 
 
 # Update and restart bot
-@app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(
+    filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     try:
@@ -536,19 +508,15 @@ async def updtebot(client, update, users, chats):
 
 
 async def aexec(code, c, m):
-    exec(
-        "async def __aexec(c, m): "
-        + "\n p = print"
-        + "\n replied = m.reply_to_message"
-        + "".join(f"\n {l_}" for l_ in code.split("\n"))
-    )
+    exec("async def __aexec(c, m): " + "\n p = print" +
+         "\n replied = m.reply_to_message" +
+         "".join(f"\n {l_}" for l_ in code.split("\n")))
     return await locals()["__aexec"](c, m)
 
 
 async def shell_exec(code, treat=True):
     process = await asyncio.create_subprocess_shell(
-        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
-    )
+        code, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
 
     stdout = (await process.communicate())[0]
     if treat:

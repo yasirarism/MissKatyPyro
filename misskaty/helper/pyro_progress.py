@@ -9,7 +9,8 @@ import time
 from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified
 
 
-async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
+async def progress_for_pyrogram(current, total, ud_type, message, start,
+                                dc_id):
     """generic progress display for Telegram Upload / Download status"""
     now = time.time()
     diff = now - start
@@ -67,7 +68,12 @@ def time_formatter(seconds: int) -> str:
     result = ""
     v_m = 0
     remainder = seconds
-    r_ange_s = {"days": (24 * 60 * 60), "hours": (60 * 60), "minutes": 60, "seconds": 1}
+    r_ange_s = {
+        "days": (24 * 60 * 60),
+        "hours": (60 * 60),
+        "minutes": 60,
+        "seconds": 1
+    }
     for age, divisor in r_ange_s.items():
         v_m, remainder = divmod(remainder, divisor)
         v_m = int(v_m)

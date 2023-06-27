@@ -145,7 +145,10 @@ async def get_anime(title):
     async with aiohttp.ClientSession() as sesi:
         r = await sesi.post(
             "https://graphql.anilist.co",
-            json={"query": anime_query, "variables": title},
+            json={
+                "query": anime_query,
+                "variables": title
+            },
         )
         return await r.read()
 
@@ -157,7 +160,9 @@ def shorten(description, info="anilist.co"):
         ms_g += f'\n<strong>Description:</strong> <em>{description}</em><a href="{info}">More info</a>'
     else:
         ms_g += f"\n<strong>Description:</strong> <em>{description}</em>"
-    return ms_g.replace("<br>", "").replace("</br>", "").replace("<i>", "").replace("</i>", "")
+    return ms_g.replace("<br>",
+                        "").replace("</br>",
+                                    "").replace("<i>", "").replace("</i>", "")
 
 
 @app.on_message(filters.command("anime", COMMAND_HANDLER))
@@ -169,9 +174,11 @@ async def anime_search(_, mesg):
     else:
         search = search[1]
     variables = {"search": search}
-    if not (res := json.loads(await get_anime(variables))["data"].get("Media", None)):
+    if not (res := json.loads(await get_anime(variables))["data"].get(
+            "Media", None)):
         return await reply.edit("💢 No Resource Anime found! [404]")
-    durasi = get_readable_time(int(res.get("duration") * 60)) if res.get("duration") is not None else "0"
+    durasi = get_readable_time(int(
+        res.get("duration") * 60)) if res.get("duration") is not None else "0"
     msg = f"<b>{res['title']['romaji']}</b> (<code>{res['title']['native']}</code>)\n<b>Type</b>: {res['format']}\n<b>Status</b>: {res['status']}\n<b>Episodes</b>: {res.get('episodes', 'N/A')}\n<b>Duration </b>: {durasi} Per Eps.\n<b>Score</b>: {res['averageScore']}%\n<b>Category</b>: <code>"
     for x in res["genres"]:
         msg += f"{x}, "
@@ -199,23 +206,21 @@ async def anime_search(_, mesg):
         site = trailer.get("site", None)
         if site == "youtube":
             trailer = f"https://youtu.be/{trailer_id}"
-    description = res.get("description").replace("<i>", "").replace("</i>", "").replace("<br>", "") if res.get("description") is not None else "N/A"
+    description = res.get("description").replace("<i>", "").replace(
+        "</i>", "").replace(
+            "<br>", "") if res.get("description") is not None else "N/A"
     msg += shorten(description, info)
     image = info.replace("anilist.co/anime/", "img.anili.st/media/")
-    btn = (
-        [
-            [
-                InlineKeyboardButton("More info", url=info),
-                InlineKeyboardButton("Trailer 🎬", url=trailer),
-            ]
-        ]
-        if trailer
-        else [[InlineKeyboardButton("More info", url=info)]]
-    )
+    btn = ([[
+        InlineKeyboardButton("More info", url=info),
+        InlineKeyboardButton("Trailer 🎬", url=trailer),
+    ]] if trailer else [[InlineKeyboardButton("More info", url=info)]])
 
     if image:
         try:
-            await mesg.reply_photo(image, caption=msg, reply_markup=InlineKeyboardMarkup(btn))
+            await mesg.reply_photo(image,
+                                   caption=msg,
+                                   reply_markup=InlineKeyboardMarkup(btn))
         except:
             msg += f" [〽️]({image})"
             await reply.edit(msg)

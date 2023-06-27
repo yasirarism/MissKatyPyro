@@ -19,9 +19,11 @@ PYPI_DICT = {}
 
 async def getDataPypi(msg, kueri, CurrentPage, user):
     if not PYPI_DICT.get(msg.id):
-        pypijson = (await http.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
+        pypijson = (
+            await http.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
         if not pypijson.get("result"):
-            await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
+            await msg.edit_msg("Sorry could not find any matching results!",
+                               del_in=6)
             return None, 0, None
         PYPI_DICT[msg.id] = [split_arr(pypijson["result"], 6), kueri]
     try:
@@ -31,11 +33,13 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         pypiResult = f"<b>#Pypi Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(PYPI_DICT[msg.id][0][index], start=1):
             pypiResult += f"<b>{c}.</b> <a href='{i['url']}'>{i['name']} {i['version']}</a>\n<b>Created:</b> <code>{i['created']}</code>\n<b>Desc:</b> <code>{i['description']}</code>\n\n"
-            extractbtn.append(InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}"))
+            extractbtn.append(
+                InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}"))
         pypiResult = "".join(i for i in pypiResult if i not in "[]")
         return pypiResult, PageLen, extractbtn
     except (IndexError, KeyError):
-        await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
+        await msg.edit_msg("Sorry could not find any matching results!",
+                           del_in=6)
         return None, 0, None
 
 
@@ -44,21 +48,27 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
 async def pypi_s(self: Client, ctx: Message):
     kueri = " ".join(ctx.command[1:])
     if not kueri:
-        return await ctx.reply_msg("Please add query after command. Ex: <code>/pypi pyrogram</code>", del_in=6)
-    pesan = await ctx.reply_msg("⏳ Please wait, getting data from pypi..", quote=True)
+        return await ctx.reply_msg(
+            "Please add query after command. Ex: <code>/pypi pyrogram</code>",
+            del_in=6)
+    pesan = await ctx.reply_msg("⏳ Please wait, getting data from pypi..",
+                                quote=True)
     CurrentPage = 1
-    pypires, PageLen, btn = await getDataPypi(pesan, kueri, CurrentPage, ctx.from_user.id)
+    pypires, PageLen, btn = await getDataPypi(pesan, kueri, CurrentPage,
+                                              ctx.from_user.id)
     if not pypires:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
+    keyboard.paginate(PageLen, CurrentPage,
+                      "page_pypi#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
     keyboard.row(InlineButton("👇 Get Info ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
     await pesan.edit_msg(pypires, reply_markup=keyboard)
 
 
-@app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
+@app.on_callback_query(
+    filters.create(lambda _, __, query: "page_pypi#" in query.data))
 @ratelimiter
 async def pypipage_callback(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
@@ -68,10 +78,13 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
     try:
         kueri = PYPI_DICT[message_id][1]
     except KeyError:
-        return await callback_query.answer("Invalid callback data, please send CMD again..")
+        return await callback_query.answer(
+            "Invalid callback data, please send CMD again..")
 
     try:
-        pypires, PageLen, btn = await getDataPypi(callback_query.message, kueri, CurrentPage, callback_query.from_user.id)
+        pypires, PageLen, btn = await getDataPypi(callback_query.message,
+                                                  kueri, CurrentPage,
+                                                  callback_query.from_user.id)
     except TypeError:
         return
 
@@ -83,11 +96,13 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
     )
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
-    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(
+        InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
     await callback_query.message.edit_msg(pypires, reply_markup=keyboard)
 
 
-@app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
+@app.on_callback_query(
+    filters.create(lambda _, __, query: "pypidata#" in query.data))
 @ratelimiter
 async def pypi_getdata(self: Client, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
@@ -96,9 +111,11 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
     message_id = int(callback_query.data.split("#")[4])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        pkgname = PYPI_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("name")
+        pkgname = PYPI_DICT[message_id][0][CurrentPage - 1][idlink -
+                                                            1].get("name")
     except KeyError:
-        return await callback_query.answer("Invalid callback data, please send CMD again..")
+        return await callback_query.answer(
+            "Invalid callback data, please send CMD again..")
 
     keyboard = InlineKeyboard()
     keyboard.row(
@@ -109,9 +126,13 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}"),
     )
     try:
-        html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
+        html = await http.get(f"https://pypi.org/pypi/{pkgname}/json",
+                              headers=headers)
         res = html.json()
-        requirement = "".join(f"{i}, " for i in res["info"].get("requires_dist")) if res["info"].get("requires_dist") else "Unknown"
+        requirement = "".join(
+            f"{i}, "
+            for i in res["info"].get("requires_dist")) if res["info"].get(
+                "requires_dist") else "Unknown"
         msg = ""
         msg += f"<b>Package Name:</b> {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Version:</b> {res['info'].get('version', 'Unknown')}\n"
@@ -128,6 +149,7 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
         msg += f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
     except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+        await callback_query.message.edit_msg(f"ERROR: {err}",
+                                              reply_markup=keyboard)
         return
     await callback_query.message.edit_msg(msg, reply_markup=keyboard)

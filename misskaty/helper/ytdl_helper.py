@@ -17,7 +17,8 @@ def DetectFileSize(url):
     return int(r.headers.get("content-length", 0))
 
 
-def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_id):
+def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id,
+                 chat_id):
     if os.path.exists(file_name):
         os.remove(file_name)
     if not url:
@@ -31,13 +32,15 @@ def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_i
             if chunk:
                 fd.write(chunk)
                 downloaded_size += chunk_size
-            if client is not None and ((total_size // downloaded_size) % 5) == 0:
+            if client is not None and ((total_size // downloaded_size) %
+                                       5) == 0:
                 time.sleep(0.3)
                 try:
                     client.edit_message_text(
                         chat_id,
                         message_id,
-                        text=f"{ud_type}: {get_readable_file_size(downloaded_size)} of {get_readable_file_size(total_size)}",
+                        text=
+                        f"{ud_type}: {get_readable_file_size(downloaded_size)} of {get_readable_file_size(total_size)}",
                     )
                 except:
                     pass

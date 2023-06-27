@@ -19,7 +19,8 @@ from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong, UserNotParticipant
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
@@ -83,12 +84,11 @@ async def makeqr(c, m):
         teks = m.text.split(None, 1)[1]
     else:
         return await m.reply(
-            "Please add text after command to convert text -> QR Code."
-        )
+            "Please add text after command to convert text -> QR Code.")
     url = f"https://api.qrserver.com/v1/create-qr-code/?data={quote(teks)}&size=300x300"
-    await m.reply_photo(
-        url, caption=f"<b>QR Code Maker by @{c.me.username}</b>", quote=True
-    )
+    await m.reply_photo(url,
+                        caption=f"<b>QR Code Maker by @{c.me.username}</b>",
+                        quote=True)
 
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
@@ -96,27 +96,25 @@ async def makeqr(c, m):
 async def stackoverflow(client, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
-    r = (
-        await http.get(
-            f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
-        )
-    ).json()
+    r = (await http.get(
+        f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
+    )).json()
     msg = await message.reply("Getting data..")
     hasil = ""
     for count, data in enumerate(r["items"], start=1):
         question = data["question_id"]
         title = data["title"]
-        snippet = (
-            remove_html_tags(data["excerpt"])[:80].replace("\n", "").replace("    ", "")
-            if len(remove_html_tags(data["excerpt"])) > 80
-            else remove_html_tags(data["excerpt"]).replace("\n", "").replace("    ", "")
-        )
+        snippet = (remove_html_tags(data["excerpt"])[:80].replace(
+            "\n", "").replace("    ", "") if len(
+                remove_html_tags(data["excerpt"])) > 80 else remove_html_tags(
+                    data["excerpt"]).replace("\n", "").replace("    ", ""))
         hasil += f"{count}. <a href='https://stackoverflow.com/questions/{question}'>{title}</a>\n<code>{snippet}</code>\n"
     try:
         await msg.edit(hasil)
     except MessageTooLong:
         url = await rentry(hasil)
-        await msg.edit(f"Your text pasted to rentry because has long text:\n{url}")
+        await msg.edit(
+            f"Your text pasted to rentry because has long text:\n{url}")
     except Exception as e:
         await msg.edit(e)
 
@@ -131,7 +129,8 @@ async def gsearch(client, message):
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"
+            "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"
         }
         html = await http.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
@@ -153,24 +152,23 @@ async def gsearch(client, message):
                 snippet = "-"
 
             # appending data to an array
-            data.append(
-                {
-                    "title": title,
-                    "link": link,
-                    "snippet": snippet,
-                }
-            )
+            data.append({
+                "title": title,
+                "link": link,
+                "snippet": snippet,
+            })
         arr = json.dumps(data, indent=2, ensure_ascii=False)
         parse = json.loads(arr)
         total = len(parse)
         res = "".join(
-            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse
-        )
+            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n"
+            for i in parse)
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
     await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{BOT_USERNAME}</b>",
+        text=
+        f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{BOT_USERNAME}</b>",
         disable_web_page_preview=True,
     )
 
@@ -179,10 +177,10 @@ async def gsearch(client, message):
 @capture_err
 @ratelimiter
 async def translate(client, message):
-    if message.reply_to_message and (
-        message.reply_to_message.text or message.reply_to_message.caption
-    ):
-        target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
+    if message.reply_to_message and (message.reply_to_message.text
+                                     or message.reply_to_message.caption):
+        target_lang = "id" if len(
+            message.command) == 1 else message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
         if len(message.command) < 3:
@@ -211,9 +209,8 @@ async def translate(client, message):
 @capture_err
 @ratelimiter
 async def tts(_, message):
-    if message.reply_to_message and (
-        message.reply_to_message.text or message.reply_to_message.caption
-    ):
+    if message.reply_to_message and (message.reply_to_message.text
+                                     or message.reply_to_message.caption):
         if len(message.text.split()) == 1:
             target_lang = "id"
         else:
@@ -248,7 +245,8 @@ async def tts(_, message):
 async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
-            return await message.reply_text("Reply ke foto untuk mengubah ke sticker")
+            return await message.reply_text(
+                "Reply ke foto untuk mengubah ke sticker")
         sticker = await client.download_media(
             message.reply_to_message.photo.file_id,
             f"tostick_{message.from_user.id}.webp",
@@ -265,23 +263,20 @@ async def tostick(client, message):
 async def topho(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.sticker:
-            return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
+            return await message.reply_text(
+                "Reply ke sticker untuk mengubah ke foto")
         if message.reply_to_message.sticker.is_animated:
             return await message.reply_text(
-                "Ini sticker animasi, command ini hanya untuk sticker biasa."
-            )
+                "Ini sticker animasi, command ini hanya untuk sticker biasa.")
         photo = await message.reply_to_message.download()
         im = Image.open(photo).convert("RGB")
         filename = f"toimg_{message.from_user.id}.png"
         im.save(filename, "png")
-        await asyncio.gather(
-            *[
-                message.reply_document(filename),
-                message.reply_photo(
-                    filename, caption=f"Sticker -> Image\n@{client.me.username}"
-                ),
-            ]
-        )
+        await asyncio.gather(*[
+            message.reply_document(filename),
+            message.reply_photo(
+                filename, caption=f"Sticker -> Image\n@{client.me.username}"),
+        ])
         os.remove(photo)
         os.remove(filename)
     except Exception as e:
@@ -321,10 +316,8 @@ async def showid(client, message):
             )
             file_info = get_file_id(message)
         if file_info:
-            _id += (
-                f"<b>{file_info.message_type}</b>: "
-                f"<code>{file_info.file_id}</code>\n"
-            )
+            _id += (f"<b>{file_info.message_type}</b>: "
+                    f"<code>{file_info.file_id}</code>\n")
         await message.reply_text(_id, quote=True)
 
 
@@ -344,7 +337,8 @@ async def who_is(client, message):
         await status_message.edit(str(error))
         return
     if from_user is None:
-        return await status_message.edit("no valid user_id / message specified")
+        return await status_message.edit("no valid user_id / message specified"
+                                         )
     message_out_str = ""
     message_out_str += f"<b>➲First Name:</b> {from_user.first_name}\n"
     last_name = from_user.last_name or "<b>None</b>"
@@ -359,20 +353,18 @@ async def who_is(client, message):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
             joined_date = chat_member_p.joined_date
-            message_out_str += (
-                "<b>➲Joined this Chat on:</b> <code>" f"{joined_date}" "</code>\n"
-            )
+            message_out_str += ("<b>➲Joined this Chat on:</b> <code>"
+                                f"{joined_date}"
+                                "</code>\n")
         except UserNotParticipant:
             pass
     if chat_photo := from_user.photo:
-        local_user_photo = await client.download_media(message=chat_photo.big_file_id)
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "🔐 Close", callback_data=f"close#{message.from_user.id}"
-                )
-            ]
-        ]
+        local_user_photo = await client.download_media(
+            message=chat_photo.big_file_id)
+        buttons = [[
+            InlineKeyboardButton("🔐 Close",
+                                 callback_data=f"close#{message.from_user.id}")
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
             photo=local_user_photo,
@@ -383,13 +375,10 @@ async def who_is(client, message):
         )
         os.remove(local_user_photo)
     else:
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "🔐 Close", callback_data=f"close#{message.from_user.id}"
-                )
-            ]
-        ]
+        buttons = [[
+            InlineKeyboardButton("🔐 Close",
+                                 callback_data=f"close#{message.from_user.id}")
+        ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_text(
             text=message_out_str,
@@ -416,7 +405,8 @@ async def close_callback(bot: Client, query: CallbackQuery):
 
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
+    "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
 }
 
 
@@ -443,15 +433,13 @@ async def mdlsearch(client, message):
         res = movies["results"]["dramas"]
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
-        btn = [
-            [
-                InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
-                    callback_data=f"mdls#{message.from_user.id}#{message.id}#{movie['slug']}",
-                )
-            ]
-            for movie in res
-        ]
+        btn = [[
+            InlineKeyboardButton(
+                text=f"{movie.get('title')} ({movie.get('year')})",
+                callback_data=
+                f"mdls#{message.from_user.id}#{message.id}#{movie['slug']}",
+            )
+        ] for movie in res]
         await k.edit(
             f"Ditemukan {len(movies)} query dari <code>{title}</code>",
             reply_markup=InlineKeyboardMarkup(btn),
@@ -468,7 +456,8 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
         try:
-            res = (await http.get(f"https://kuryana.vercel.app/id/{slug}")).json()
+            res = (await
+                   http.get(f"https://kuryana.vercel.app/id/{slug}")).json()
             result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
             result += (
                 f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
@@ -502,9 +491,10 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
             )
             result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
             result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
-            btn = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]]
-            )
+            btn = InlineKeyboardMarkup([[
+                InlineKeyboardButton("🎬 Open MyDramaList",
+                                     url=res["data"]["link"])
+            ]])
             await query.message.edit_text(result, reply_markup=btn)
         except Exception as e:
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")

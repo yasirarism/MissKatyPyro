@@ -16,7 +16,8 @@ from pyrogram import __version__, idle
 from pyrogram.raw.all import layer
 
 from database import dbname
-from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app, scheduler
+from misskaty import (BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app,
+                      scheduler)
 from misskaty.plugins import ALL_MODULES
 from misskaty.plugins.web_scraper import web
 from misskaty.vars import SUDO, USER_SESSION
@@ -30,9 +31,11 @@ loop = asyncio.get_event_loop()
 async def start_bot():
     for module in ALL_MODULES:
         imported_module = importlib.import_module(f"misskaty.plugins.{module}")
-        if hasattr(imported_module, "__MODULE__") and imported_module.__MODULE__:
+        if hasattr(imported_module,
+                   "__MODULE__") and imported_module.__MODULE__:
             imported_module.__MODULE__ = imported_module.__MODULE__
-            if hasattr(imported_module, "__HELP__") and imported_module.__HELP__:
+            if hasattr(imported_module,
+                       "__HELP__") and imported_module.__HELP__:
                 HELPABLE[imported_module.__MODULE__.lower()] = imported_module
     bot_modules = ""
     j = 1
@@ -43,11 +46,15 @@ async def start_bot():
         else:
             bot_modules += "|{:<15}".format(i)
         j += 1
-    LOGGER.info("+===============================================================+")
-    LOGGER.info("|                        MissKatyPyro                           |")
-    LOGGER.info("+===============+===============+===============+===============+")
+    LOGGER.info(
+        "+===============================================================+")
+    LOGGER.info(
+        "|                        MissKatyPyro                           |")
+    LOGGER.info(
+        "+===============+===============+===============+===============+")
     LOGGER.info(bot_modules)
-    LOGGER.info("+===============+===============+===============+===============+")
+    LOGGER.info(
+        "+===============+===============+===============+===============+")
     LOGGER.info(f"[INFO]: BOT STARTED AS @{BOT_USERNAME}!")
 
     try:

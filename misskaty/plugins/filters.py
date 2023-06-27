@@ -25,12 +25,8 @@ import re
 
 from pyrogram import filters
 
-from database.filters_db import (
-    delete_filter,
-    get_filter,
-    get_filters_names,
-    save_filter,
-)
+from database.filters_db import (delete_filter, get_filter, get_filters_names,
+                                 save_filter)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
@@ -57,15 +53,20 @@ async def save_filters(_, m):
             del_in=6,
         )
     if not m.reply_to_message.text and not m.reply_to_message.sticker:
-        return await m.reply_msg("__**You can only save text or stickers in filters for now.**__")
+        return await m.reply_msg(
+            "__**You can only save text or stickers in filters for now.**__")
     name = m.text.split(None, 1)[1].strip()
     if not name:
-        return await m.reply_msg("**Usage:**\n__/addfilter [FILTER_NAME]__", del_in=6)
+        return await m.reply_msg("**Usage:**\n__/addfilter [FILTER_NAME]__",
+                                 del_in=6)
     chat_id = m.chat.id
     _type = "text" if m.reply_to_message.text else "sticker"
     _filter = {
-        "type": _type,
-        "data": m.reply_to_message.text.markdown if _type == "text" else m.reply_to_message.sticker.file_id,
+        "type":
+        _type,
+        "data":
+        m.reply_to_message.text.markdown
+        if _type == "text" else m.reply_to_message.sticker.file_id,
     }
     await save_filter(chat_id, name, _filter)
     await m.reply_msg(f"__**Saved filter {name}.**__")
@@ -90,10 +91,12 @@ async def get_filterss(_, m):
 @ratelimiter
 async def del_filter(_, m):
     if len(m.command) < 2:
-        return await m.reply_msg("**Usage:**\n__/stopfilter [FILTER_NAME]__", del_in=6)
+        return await m.reply_msg("**Usage:**\n__/stopfilter [FILTER_NAME]__",
+                                 del_in=6)
     name = m.text.split(None, 1)[1].strip()
     if not name:
-        return await m.reply_msg("**Usage:**\n__/stopfilter [FILTER_NAME]__", del_in=6)
+        return await m.reply_msg("**Usage:**\n__/stopfilter [FILTER_NAME]__",
+                                 del_in=6)
     chat_id = m.chat.id
     deleted = await delete_filter(chat_id, name)
     if deleted:

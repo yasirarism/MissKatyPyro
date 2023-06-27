@@ -26,11 +26,16 @@ openai.api_key = OPENAI_API
 @use_chat_lang()
 async def bard_chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
+        return await ctx.reply_msg(
+            strings("no_question").format(cmd=ctx.command[0]),
+            quote=True,
+            del_in=5)
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     data = {
-        "message": ctx.input,
-        "session_id": "XQjzKRYITZ7fhplF-rXa_GTynUwdctKq4aGm-lqUCCJzF98xqDulL9UKopIadNpQn0lvnA.",
+        "message":
+        ctx.input,
+        "session_id":
+        "XQjzKRYITZ7fhplF-rXa_GTynUwdctKq4aGm-lqUCCJzF98xqDulL9UKopIadNpQn0lvnA.",
     }
     try:
         req = await http.post("https://bard-api-rho.vercel.app/ask", json=data)
@@ -44,7 +49,10 @@ async def bard_chatbot(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def openai_chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await ctx.reply_msg(strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5)
+        return await ctx.reply_msg(
+            strings("no_question").format(cmd=ctx.command[0]),
+            quote=True,
+            del_in=5)
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, sleep_time = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
@@ -57,12 +65,16 @@ async def openai_chatbot(self: Client, ctx: Message, strings):
     try:
         response = await openai.ChatCompletion.acreate(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": pertanyaan}],
+            messages=[{
+                "role": "user",
+                "content": pertanyaan
+            }],
             temperature=0.7,
             stream=True,
         )
         async for chunk in response:
-            if not chunk.choices[0].delta or chunk.choices[0].delta.get("role"):
+            if not chunk.choices[0].delta or chunk.choices[0].delta.get(
+                    "role"):
                 continue
             num += 1
             answer += chunk.choices[0].delta.content
@@ -72,7 +84,8 @@ async def openai_chatbot(self: Client, ctx: Message, strings):
                 num = 0
         await msg.edit_msg(answer)
     except MessageTooLong:
-        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ", html.escape(answer))
+        answerlink = await post_to_telegraph(False, "MissKaty ChatBot ",
+                                             html.escape(answer))
         await msg.edit_msg(
             strings("answers_too_long").format(answerlink=answerlink),
             disable_web_page_preview=True,

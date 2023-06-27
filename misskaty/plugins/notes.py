@@ -50,19 +50,24 @@ __HELP__ = """/notes To Get All The Notes In The Chat.
 async def save_notee(_, message):
     if len(message.command) < 2 or not message.reply_to_message:
         await message.reply(
-            text="**Usage:**\nReply to a text or sticker with /addnote [NOTE_NAME] to save it.",
+            text=
+            "**Usage:**\nReply to a text or sticker with /addnote [NOTE_NAME] to save it.",
         )
 
     elif not message.reply_to_message.text and not message.reply_to_message.sticker:
-        await message.reply("__**You can only save text or stickers in notes.**__")
+        await message.reply(
+            "__**You can only save text or stickers in notes.**__")
     else:
         name = message.text.split(None, 1)[1].strip()
         if not name:
             return await message.reply("**Usage**\n__/save [NOTE_NAME]__")
         _type = "text" if message.reply_to_message.text else "sticker"
         note = {
-            "type": _type,
-            "data": message.reply_to_message.text.markdown if _type == "text" else message.reply_to_message.sticker.file_id,
+            "type":
+            _type,
+            "data":
+            message.reply_to_message.text.markdown
+            if _type == "text" else message.reply_to_message.sticker.file_id,
         }
         chat_id = message.chat.id
         await save_note(chat_id, name, note)

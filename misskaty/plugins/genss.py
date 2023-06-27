@@ -49,7 +49,10 @@ async def genss(self: Client, ctx: Message, strings):
         url = the_url_parts.strip()
         file_name = os.path.basename(url)
         download_file_path = os.path.join("downloads/", file_name)
-        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader = SmartDL(url,
+                             download_file_path,
+                             progress_bar=False,
+                             timeout=10)
         try:
             downloader.start(blocking=False)
         except Exception as err:
@@ -78,8 +81,10 @@ async def genss(self: Client, ctx: Message, strings):
                 current_message += f"{progress_str}\n"
                 current_message += f"{downloaded} of {humanbytes(total_length)}\n"
                 current_message += f"ETA: {estimated_total_time}"
-                if round(diff % 10.00) == 0 and current_message != display_message:
-                    await pesan.edit(disable_web_page_preview=True, text=current_message)
+                if round(diff %
+                         10.00) == 0 and current_message != display_message:
+                    await pesan.edit(disable_web_page_preview=True,
+                                     text=current_message)
                     display_message = current_message
                     await sleep(10)
             except Exception as e:
@@ -87,26 +92,25 @@ async def genss(self: Client, ctx: Message, strings):
         if os.path.exists(download_file_path):
             end_t = datetime.now()
             ms = (end_t - start_t).seconds
-            await pesan.edit(f"Downloaded to <code>{download_file_path}</code> in {ms} seconds")
+            await pesan.edit(
+                f"Downloaded to <code>{download_file_path}</code> in {ms} seconds"
+            )
             try:
                 images = await take_ss(download_file_path)
                 await pesan.edit_msg(strings("up_progress"))
-                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await self.send_chat_action(
+                    chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
                 try:
-                    await gather(
-                        *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
-                        ]
-                    )
+                    await gather(*[
+                        ctx.reply_document(images, reply_to_message_id=ctx.id),
+                        ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                    ])
                 except FloodWait as e:
                     await sleep(e.value)
-                    await gather(
-                        *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
-                        ]
-                    )
+                    await gather(*[
+                        ctx.reply_document(images, reply_to_message_id=ctx.id),
+                        ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                    ])
                 await ctx.reply_msg(
                     strings("up_msg").format(
                         namma=ctx.from_user.mention,
@@ -143,30 +147,30 @@ async def genss(self: Client, ctx: Message, strings):
             progress=progress_for_pyrogram,
             progress_args=(strings("dl_progress"), process, c_time, dc_id),
         )
-        the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
+        the_real_download_location = os.path.join("/downloads/",
+                                                  os.path.basename(dl))
         if the_real_download_location is not None:
             try:
-                await process.edit_msg(strings("success_dl_msg").format(path=the_real_download_location))
+                await process.edit_msg(
+                    strings("success_dl_msg").format(
+                        path=the_real_download_location))
                 await sleep(2)
                 images = await take_ss(the_real_download_location)
                 await process.edit_msg(strings("up_progress"))
-                await self.send_chat_action(chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
+                await self.send_chat_action(
+                    chat_id=ctx.chat.id, action=enums.ChatAction.UPLOAD_PHOTO)
 
                 try:
-                    await gather(
-                        *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
-                        ]
-                    )
+                    await gather(*[
+                        ctx.reply_document(images, reply_to_message_id=ctx.id),
+                        ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                    ])
                 except FloodWait as e:
                     await sleep(e.value)
-                    await gather(
-                        *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
-                        ]
-                    )
+                    await gather(*[
+                        ctx.reply_document(images, reply_to_message_id=ctx.id),
+                        ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                    ])
                 await ctx.reply_msg(
                     strings("up_msg").format(
                         namma=ctx.from_user.mention,

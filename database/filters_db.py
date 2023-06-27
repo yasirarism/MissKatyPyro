@@ -17,7 +17,9 @@ async def delete_filter(chat_id: int, name: str) -> bool:
         del filtersd[name]
         await filtersdb.update_one(
             {"chat_id": chat_id},
-            {"$set": {"filters": filtersd}},
+            {"$set": {
+                "filters": filtersd
+            }},
             upsert=True,
         )
         return True
@@ -40,6 +42,8 @@ async def save_filter(chat_id: int, name: str, _filter: dict):
     _filters[name] = _filter
     await filtersdb.update_one(
         {"chat_id": chat_id},
-        {"$set": {"filters": _filters}},
+        {"$set": {
+            "filters": _filters
+        }},
         upsert=True,
     )

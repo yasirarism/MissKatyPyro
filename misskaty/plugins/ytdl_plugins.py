@@ -10,13 +10,8 @@ from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
 from pyrogram.errors import MessageIdInvalid
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
@@ -35,7 +30,8 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
+@app.on_message(
+    filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
 @capture_err
 @ratelimiter
 @use_chat_lang()
@@ -59,31 +55,30 @@ async def ytsearch(self: Client, ctx: Message, strings):
         clink=i["channel"]["link"],
         cname=i["channel"]["name"],
     )
-    btn = InlineKeyboardMarkup(
+    btn = InlineKeyboardMarkup([
         [
-            [
-                InlineKeyboardButton(
-                    f"1/{len(search['result'])}",
-                    callback_data=f"ytdl_scroll|{search_key}|1",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    strings("dl_btn"), callback_data=f"yt_gen|{i['id']}"
-                )
-            ],
-        ]
-    )
+            InlineKeyboardButton(
+                f"1/{len(search['result'])}",
+                callback_data=f"ytdl_scroll|{search_key}|1",
+            )
+        ],
+        [
+            InlineKeyboardButton(strings("dl_btn"),
+                                 callback_data=f"yt_gen|{i['id']}")
+        ],
+    ])
     img = await get_ytthumb(i["id"])
     caption = out
     markup = btn
-    await ctx.reply_photo(img, caption=caption, reply_markup=markup, quote=True)
+    await ctx.reply_photo(img,
+                          caption=caption,
+                          reply_markup=markup,
+                          quote=True)
 
 
 @app.on_message(
     filters.command(["ytdown"], COMMAND_HANDLER)
-    | filters.regex(YT_REGEX) & ~filters.channel
-)
+    | filters.regex(YT_REGEX) & ~filters.channel)
 @capture_err
 @ratelimiter
 @use_chat_lang()
@@ -93,9 +88,9 @@ async def ytdownv2(self: Client, ctx: Message, strings):
     if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.input if ctx.command and len(ctx.command) > 1 else ctx.text
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/ffmpeg"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0,
+                     cache_path="cache",
+                     ffmpeg_location="/usr/bin/ffmpeg") as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
             if x is None:
@@ -103,9 +98,10 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
-            msg = await ctx.reply_photo(
-                photo, caption=caption, reply_markup=markup, quote=True
-            )
+            msg = await ctx.reply_photo(photo,
+                                        caption=caption,
+                                        reply_markup=markup,
+                                        quote=True)
             await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
         except ListenerTimeout:
             try:
@@ -123,13 +119,12 @@ async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/ffmpeg"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0,
+                     cache_path="cache",
+                     ffmpeg_location="/usr/bin/ffmpeg") as ytdl:
         media, buttons = await ytdl.listview(callback[1])
-        await cq.edit_message_media(
-            media=media, reply_markup=buttons.add(cq.from_user.id)
-        )
+        await cq.edit_message_media(media=media,
+                                    reply_markup=buttons.add(cq.from_user.id))
 
 
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
@@ -140,9 +135,9 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
         return await cq.answer(strings("unauth"), True)
     await cq.answer(strings("wait"))
     callback = cq.data.split("|")
-    async with iYTDL(
-        log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/ffmpeg"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0,
+                     cache_path="cache",
+                     ffmpeg_location="/usr/bin/ffmpeg") as ytdl:
         try:
             if data := await ytdl.extract_info_from_key(callback[1]):
                 if len(callback[1]) == 11:
@@ -152,12 +147,10 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
                     )
                 else:
                     await cq.edit_message_media(
-                        media=(
-                            InputMediaPhoto(
-                                media=data.image_url,
-                                caption=data.caption,
-                            )
-                        ),
+                        media=(InputMediaPhoto(
+                            media=data.image_url,
+                            caption=data.caption,
+                        )),
                         reply_markup=data.buttons.add(cq.from_user.id),
                     )
         except Exception as e:
@@ -173,10 +166,10 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         return await cq.answer(strings("unauth"), True)
 
     async with iYTDL(
-        log_group_id=LOG_CHANNEL,
-        cache_path="cache",
-        ffmpeg_location="/usr/bin/ffmpeg",
-        delete_media=True,
+            log_group_id=LOG_CHANNEL,
+            cache_path="cache",
+            ffmpeg_location="/usr/bin/ffmpeg",
+            delete_media=True,
     ) as ytdl:
         try:
             if match[0] == "yt_gen":
@@ -187,7 +180,9 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
                 video_link = f"{YT_VID_URL}{match[1]}"
 
             media_type = "video" if match[3] == "v" else "audio"
-            uid, disp_str = ytdl.get_choice_by_id(match[2], media_type, yt_url=yt_url)
+            uid, disp_str = ytdl.get_choice_by_id(match[2],
+                                                  media_type,
+                                                  yt_url=yt_url)
             key = await ytdl.download(
                 url=video_link,
                 uid=uid,
@@ -248,28 +243,29 @@ async def ytdl_scroll_callback(self: Client, cq: CallbackQuery, strings):
         clink=i["channel"]["link"],
         cname=i["channel"]["name"],
     )
-    scroll_btn = [
-        [
-            InlineKeyboardButton(
-                strings("back"), callback_data=f"ytdl_scroll|{search_key}|{page-1}"
-            ),
-            InlineKeyboardButton(
-                f"{page+1}/{len(search['result'])}",
-                callback_data=f"ytdl_scroll|{search_key}|{page+1}",
-            ),
-        ]
-    ]
+    scroll_btn = [[
+        InlineKeyboardButton(
+            strings("back"),
+            callback_data=f"ytdl_scroll|{search_key}|{page-1}"),
+        InlineKeyboardButton(
+            f"{page+1}/{len(search['result'])}",
+            callback_data=f"ytdl_scroll|{search_key}|{page+1}",
+        ),
+    ]]
     if page == 0:
         if len(search["result"]) == 1:
             return await cq.answer(strings("endlist"), show_alert=True)
         scroll_btn = [[scroll_btn.pop().pop()]]
     elif page == (len(search["result"]) - 1):
         scroll_btn = [[scroll_btn.pop().pop(0)]]
-    btn = [[InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{i['id']}")]]
+    btn = [[
+        InlineKeyboardButton(strings("dl_btn"),
+                             callback_data=f"yt_gen|{i['id']}")
+    ]]
     btn = InlineKeyboardMarkup(scroll_btn + btn)
-    await cq.edit_message_media(
-        InputMediaPhoto(await get_ytthumb(i["id"]), caption=out), reply_markup=btn
-    )
+    await cq.edit_message_media(InputMediaPhoto(await get_ytthumb(i["id"]),
+                                                caption=out),
+                                reply_markup=btn)
 
 
 async def get_ytthumb(videoid: str):

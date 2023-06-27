@@ -3,6 +3,7 @@ from functools import wraps
 
 
 def asyncify(func):
+
     async def inner(*args, **kwargs):
         loop = asyncio.get_running_loop()
         func_out = await loop.run_in_executor(None, func, *args, **kwargs)
@@ -12,6 +13,7 @@ def asyncify(func):
 
 
 def new_task(func):
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:

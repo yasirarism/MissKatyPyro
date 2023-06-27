@@ -1,8 +1,10 @@
 from async_pymongo import AsyncClient
+
 from misskaty.vars import DATABASE_NAME, DATABASE_URI
 
 
 class UsersData:
+
     def __init__(self, uri, database_name):
         self._client = AsyncClient(uri)
         self.db = self._client[database_name]
@@ -44,11 +46,17 @@ class UsersData:
 
     async def remove_ban(self, id):
         ban_status = dict(is_banned=False, ban_reason="")
-        await self.col.update_one({"id": id}, {"$set": {"ban_status": ban_status}})
+        await self.col.update_one({"id": id},
+                                  {"$set": {
+                                      "ban_status": ban_status
+                                  }})
 
     async def ban_user(self, user_id, ban_reason="No Reason"):
         ban_status = dict(is_banned=True, ban_reason=ban_reason)
-        await self.col.update_one({"id": user_id}, {"$set": {"ban_status": ban_status}})
+        await self.col.update_one({"id": user_id},
+                                  {"$set": {
+                                      "ban_status": ban_status
+                                  }})
 
     async def get_ban_status(self, id):
         default = dict(is_banned=False, ban_reason="")
@@ -85,18 +93,20 @@ class UsersData:
             is_disabled=False,
             reason="",
         )
-        await self.grp.update_one(
-            {"id": int(id)}, {"$set": {"chat_status": chat_status}}
-        )
+        await self.grp.update_one({"id": int(id)},
+                                  {"$set": {
+                                      "chat_status": chat_status
+                                  }})
 
     async def disable_chat(self, chat, reason="No Reason"):
         chat_status = dict(
             is_disabled=True,
             reason=reason,
         )
-        await self.grp.update_one(
-            {"id": int(chat)}, {"$set": {"chat_status": chat_status}}
-        )
+        await self.grp.update_one({"id": int(chat)},
+                                  {"$set": {
+                                      "chat_status": chat_status
+                                  }})
 
     async def total_chat_count(self):
         return await self.grp.count_documents({})

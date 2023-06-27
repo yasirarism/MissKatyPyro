@@ -32,7 +32,10 @@ async def add_warn(chat_id: int, name: str, warn: dict):
     warns = await get_warns(chat_id)
     warns[name] = warn
 
-    await warnsdb.update_one({"chat_id": chat_id}, {"$set": {"warns": warns}}, upsert=True)
+    await warnsdb.update_one({"chat_id": chat_id}, {"$set": {
+        "warns": warns
+    }},
+                             upsert=True)
 
 
 async def remove_warns(chat_id: int, name: str) -> bool:
@@ -42,7 +45,9 @@ async def remove_warns(chat_id: int, name: str) -> bool:
         del warnsd[name]
         await warnsdb.update_one(
             {"chat_id": chat_id},
-            {"$set": {"warns": warnsd}},
+            {"$set": {
+                "warns": warnsd
+            }},
             upsert=True,
         )
         return True

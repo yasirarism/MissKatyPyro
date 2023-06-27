@@ -68,7 +68,9 @@ async def glot(lang, langcode, code):
             "content-type": "application/json",
             "Authorization": "Token b8a2b75a-a078-4089-869c-e53d448b1ebb",
         }
-        r = await session.post(f"https://glot.io/api/run/{lang}/latest", headers=headers, json=data)
+        r = await session.post(f"https://glot.io/api/run/{lang}/latest",
+                               headers=headers,
+                               json=data)
         return await r.json()
 
 
@@ -77,7 +79,8 @@ async def glot(lang, langcode, code):
 async def list_lang(client, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
-    return await message.reply(f"<b>List of Supported Programming Languages:</b>\n{list_}")
+    return await message.reply(
+        f"<b>List of Supported Programming Languages:</b>\n{list_}")
 
 
 @app.on_message(filters.command(["assembly"], "!"))
@@ -104,7 +107,8 @@ async def assembly(client, message):
 async def ats(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "dats", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "dats",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -194,7 +198,8 @@ async def cobol(client, message):
 async def coffeescript(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "coffee", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "coffee",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -373,7 +378,8 @@ async def go(client, message):
 async def groovy(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "groovy", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "groovy",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -427,7 +433,8 @@ async def idris(client, message):
 async def java(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "java", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "java",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -642,7 +649,8 @@ async def python(client, message):
 async def raku(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "raku", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "raku",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -696,7 +704,8 @@ async def rust(client, message):
 async def scala(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "scala", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "scala",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:
@@ -713,7 +722,8 @@ async def scala(client, message):
 async def swift(client, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
-    res = await glot(message.command[0], "swift", message.text.split(None, 1)[1])
+    res = await glot(message.command[0], "swift",
+                     message.text.split(None, 1)[1])
     hasil = res["stdout"] or res["stderr"]
     hasil = f"Result :\n{hasil}"
     try:

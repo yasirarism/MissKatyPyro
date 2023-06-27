@@ -5,12 +5,8 @@ from logging import getLogger
 from typing import Union
 
 import emoji
-from pyrogram.errors import (
-    FloodWait,
-    InputUserDeactivated,
-    PeerIdInvalid,
-    UserIsBlocked,
-)
+from pyrogram.errors import (FloodWait, InputUserDeactivated, PeerIdInvalid,
+                             UserIsBlocked)
 from pyrogram.types import Message
 
 from database.afk_db import is_cleanmode_on
@@ -104,14 +100,14 @@ def get_size(size):
 def get_file_id(msg: Message):
     if msg.media:
         for message_type in (
-            "photo",
-            "animation",
-            "audio",
-            "document",
-            "video",
-            "video_note",
-            "voice",
-            "sticker",
+                "photo",
+                "animation",
+                "audio",
+                "document",
+                "video",
+                "video_note",
+                "voice",
+                "sticker",
         ):
             if obj := getattr(msg, message_type):
                 setattr(obj, "message_type", message_type)
@@ -128,7 +124,8 @@ def extract_user(message: Message) -> Union[int, str]:
         user_first_name = message.reply_to_message.from_user.first_name
 
     elif len(message.command) > 1:
-        if len(message.entities) > 1 and message.entities[1].type == "text_mention":
+        if len(message.entities
+               ) > 1 and message.entities[1].type == "text_mention":
             required_entity = message.entities[1]
             user_id = required_entity.user.id
             user_first_name = required_entity.user.first_name

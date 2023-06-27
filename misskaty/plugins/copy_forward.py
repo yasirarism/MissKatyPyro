@@ -24,31 +24,24 @@ async def copy(client, message):
         except UserIsBlocked:
             return await message.reply(
                 "Silahkan PM Saya untuk mengcopy pesan ke chat pribadi..",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="💬 Chat Aku Yahh",
-                                url=f"https://t.me/{BOT_USERNAME}",
-                            )
-                        ]
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text="💬 Chat Aku Yahh",
+                        url=f"https://t.me/{BOT_USERNAME}",
+                    )
+                ]]),
             )
         except Exception as e:
             return await message.reply(f"ERROR: {str(e)}")
     elif message.reply_to_message:
         try:
             idtujuan = message.command[1]
-            userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
-            if (
-                userstat.status
-                not in [
+            userstat = await app.get_chat_member(-1001686184174,
+                                                 message.from_user.id)
+            if (userstat.status not in [
                     enums.ChatMemberStatus.ADMINISTRATOR,
                     enums.ChatMemberStatus.OWNER,
-                ]
-                and message.from_user.id != 2024984460
-            ):
+            ] and message.from_user.id != 2024984460):
                 return await message.reply_text("🦉🦉🦉")
             await message.reply_to_message.copy(
                 idtujuan,
@@ -57,7 +50,8 @@ async def copy(client, message):
             )
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserNotParticipant:
-            return await message.reply("Command ini hanya untuk admin YMoviezNew")
+            return await message.reply(
+                "Command ini hanya untuk admin YMoviezNew")
         except Exception as e:
             return await message.reply(f"ERROR: {e}")
     else:
@@ -76,36 +70,30 @@ async def forward(client, message):
         except UserIsBlocked:
             return await message.reply(
                 "Silahkan PM Saya untuk memforward pesan ke chat pribadi..",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                text="💬 Chat Aku Yahh",
-                                url=f"https://t.me/{BOT_USERNAME}",
-                            )
-                        ]
-                    ]
-                ),
+                reply_markup=InlineKeyboardMarkup([[
+                    InlineKeyboardButton(
+                        text="💬 Chat Aku Yahh",
+                        url=f"https://t.me/{BOT_USERNAME}",
+                    )
+                ]]),
             )
         except Exception as e:
             return await message.reply(f"ERROR: {str(e)}")
     elif message.reply_to_message:
         try:
             idtujuan = message.command[1]
-            userstat = await app.get_chat_member(-1001686184174, message.from_user.id)
-            if (
-                userstat.status
-                not in [
+            userstat = await app.get_chat_member(-1001686184174,
+                                                 message.from_user.id)
+            if (userstat.status not in [
                     enums.ChatMemberStatus.ADMINISTRATOR,
                     enums.ChatMemberStatus.OWNER,
-                ]
-                and message.from_user.id != 2024984460
-            ):
+            ] and message.from_user.id != 2024984460):
                 return await message.reply_text("🦉🦉🦉")
             await message.reply_to_message.forward(idtujuan)
             return await message.reply_text("Pesan berhasil dikirim..")
         except UserNotParticipant:
-            return await message.reply("Comman ini hanya untuk admin YMoviezNew")
+            return await message.reply(
+                "Comman ini hanya untuk admin YMoviezNew")
         except Exception as e:
             return await message.reply(f"ERROR: {e}")
     else:

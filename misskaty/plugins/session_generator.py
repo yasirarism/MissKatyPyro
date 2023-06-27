@@ -2,24 +2,15 @@ import traceback
 from logging import getLogger
 
 from pyrogram import Client, filters
-from pyrogram.errors import (
-    ApiIdInvalid,
-    PasswordHashInvalid,
-    PhoneCodeExpired,
-    PhoneCodeInvalid,
-    PhoneNumberInvalid,
-    SessionPasswordNeeded,
-)
+from pyrogram.errors import (ApiIdInvalid, PasswordHashInvalid,
+                             PhoneCodeExpired, PhoneCodeInvalid,
+                             PhoneNumberInvalid, SessionPasswordNeeded)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telethon import TelegramClient
-from telethon.errors import (
-    ApiIdInvalidError,
-    PasswordHashInvalidError,
-    PhoneCodeExpiredError,
-    PhoneCodeInvalidError,
-    PhoneNumberInvalidError,
-    SessionPasswordNeededError,
-)
+from telethon.errors import (ApiIdInvalidError, PasswordHashInvalidError,
+                             PhoneCodeExpiredError, PhoneCodeInvalidError,
+                             PhoneNumberInvalidError,
+                             SessionPasswordNeededError)
 from telethon.sessions import StringSession
 
 from misskaty import app
@@ -34,7 +25,6 @@ __HELP__ = """
 /genstring - Generate string session using this bot. Only support Pyrogram v2 and Telethon.
 """
 
-
 ask_ques = "**» Please choose the library for which you want generate string :**\n\nNote: I'm not collecting any personal info from this feature, you can deploy own bot if you want."
 buttons_ques = [
     [
@@ -47,7 +37,10 @@ buttons_ques = [
     ],
 ]
 
-gen_button = [[InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]]
+gen_button = [[
+    InlineKeyboardButton(text="🙄 Generate Session 🙄",
+                         callback_data="genstring")
+]]
 
 
 async def is_batal(msg):
@@ -70,34 +63,47 @@ async def is_batal(msg):
         return False
 
 
-@app.on_callback_query(filters.regex(pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
+@app.on_callback_query(
+    filters.regex(
+        pattern=r"^(genstring|pyrogram|pyrogram_bot|telethon_bot|telethon)$"))
 @ratelimiter
 async def callbackgenstring(bot, callback_query):
     query = callback_query.matches[0].group(1)
     if query == "genstring":
         await callback_query.answer()
-        await callback_query.message.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
+        await callback_query.message.reply(
+            ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
     elif query.startswith("pyrogram") or query.startswith("telethon"):
         try:
             if query == "pyrogram":
                 await callback_query.answer()
                 await generate_session(bot, callback_query.message)
             elif query == "pyrogram_bot":
-                await callback_query.answer("» The session generator will be of Pyrogram v2.", show_alert=True)
-                await generate_session(bot, callback_query.message, is_bot=True)
+                await callback_query.answer(
+                    "» The session generator will be of Pyrogram v2.",
+                    show_alert=True)
+                await generate_session(bot,
+                                       callback_query.message,
+                                       is_bot=True)
             elif query == "telethon_bot":
                 await callback_query.answer()
-                await generate_session(bot, callback_query.message, telethon=True, is_bot=True)
+                await generate_session(bot,
+                                       callback_query.message,
+                                       telethon=True,
+                                       is_bot=True)
             elif query == "telethon":
                 await callback_query.answer()
-                await generate_session(bot, callback_query.message, telethon=True)
+                await generate_session(bot,
+                                       callback_query.message,
+                                       telethon=True)
         except Exception as e:
             LOGGER.error(traceback.format_exc())
             ERROR_MESSAGE = "Something went wrong. \n\n**ERROR** : {} " "\n\n**Please forward this message to my Owner**, if this message " "doesn't contain any sensitive data " "because this error is **not logged by bot.** !"
             await callback_query.message.reply(ERROR_MESSAGE.format(str(e)))
 
 
-@app.on_message(filters.private & ~filters.forwarded & filters.command("genstring", COMMAND_HANDLER))
+@app.on_message(filters.private & ~filters.forwarded
+                & filters.command("genstring", COMMAND_HANDLER))
 @ratelimiter
 async def genstringg(_, msg):
     await msg.reply(ask_ques, reply_markup=InlineKeyboardMarkup(buttons_ques))
@@ -127,7 +133,9 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
                 quote=True,
                 reply_markup=InlineKeyboardMarkup(gen_button),
             )
-        api_hash_msg = await msg.chat.ask("» Now please send your **API_HASH** to continue.", filters=filters.text)
+        api_hash_msg = await msg.chat.ask(
+            "» Now please send your **API_HASH** to continue.",
+            filters=filters.text)
         if await is_batal(api_hash_msg):
             return
         api_hash = api_hash_msg.text
@@ -153,7 +161,10 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             in_memory=True,
         )
     else:
-        client = Client(name="user", api_id=api_id, api_hash=api_hash, in_memory=True)
+        client = Client(name="user",
+                        api_id=api_id,
+                        api_hash=api_hash,
+                        in_memory=True)
     await client.connect()
     try:
         code = None
@@ -194,7 +205,8 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             if telethon:
                 await client.sign_in(phone_number, phone_code, password=None)
             else:
-                await client.sign_in(phone_number, code.phone_code_hash, phone_code)
+                await client.sign_in(phone_number, code.phone_code_hash,
+                                     phone_code)
         except (PhoneCodeInvalid, PhoneCodeInvalidError):
             return await msg.reply(
                 "» The OTP you've sent is **wrong.**\n\nPlease start generating your session again.",
