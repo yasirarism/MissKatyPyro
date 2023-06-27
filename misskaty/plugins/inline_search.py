@@ -15,9 +15,14 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.errors import MessageIdInvalid, MessageNotModified
-from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                            InlineQuery, InlineQueryResultArticle,
-                            InlineQueryResultPhoto, InputTextMessageContent)
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InlineQuery,
+    InlineQueryResultArticle,
+    InlineQueryResultPhoto,
+    InputTextMessageContent,
+)
 
 from misskaty import BOT_USERNAME, app, user
 from misskaty.core.decorator.ratelimiter import ratelimiter
