@@ -26,12 +26,8 @@ from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait, PeerIdInvalid
 from pyrogram.raw.types import UpdateBotStopped
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InputMediaPhoto, Message)
 
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
 from database.users_chats_db import db
@@ -39,7 +35,8 @@ from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import http
-from misskaty.helper.human_read import get_readable_file_size, get_readable_time
+from misskaty.helper.human_read import (get_readable_file_size,
+                                        get_readable_time)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 

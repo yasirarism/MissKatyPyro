@@ -5,16 +5,10 @@ from asyncio import sleep as asleep
 from logging import getLogger
 from typing import Union
 
-from pyrogram.errors import (
-    ChatAdminRequired,
-    ChatWriteForbidden,
-    FloodWait,
-    MessageAuthorRequired,
-    MessageDeleteForbidden,
-    MessageIdInvalid,
-    MessageNotModified,
-    MessageTooLong,
-)
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden, FloodWait,
+                             MessageAuthorRequired, MessageDeleteForbidden,
+                             MessageIdInvalid, MessageNotModified,
+                             MessageTooLong)
 from pyrogram.types import Message
 
 LOGGER = getLogger(__name__)

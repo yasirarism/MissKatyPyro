@@ -9,14 +9,14 @@
 #
 
 import re
-
 # Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
 import time
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
+from database.afk_db import (add_afk, cleanmode_off, cleanmode_on, is_afk,
+                             remove_afk)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
