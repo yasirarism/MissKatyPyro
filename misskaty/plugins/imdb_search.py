@@ -11,21 +11,11 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, enums, filters
-from pyrogram.errors import (
-    MediaCaptionTooLong,
-    MediaEmpty,
-    MessageIdInvalid,
-    MessageNotModified,
-    PhotoInvalidDimensions,
-    WebpageMediaEmpty,
-)
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.errors import (MediaCaptionTooLong, MediaEmpty, MessageIdInvalid,
+                             MessageNotModified, PhotoInvalidDimensions,
+                             WebpageMediaEmpty)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
