@@ -13,12 +13,8 @@ from time import time
 from urllib.parse import unquote
 
 from pyrogram import Client, filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err

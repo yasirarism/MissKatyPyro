@@ -15,21 +15,16 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.errors import MessageIdInvalid, MessageNotModified
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InlineQuery,
-    InlineQueryResultArticle,
-    InlineQueryResultPhoto,
-    InputTextMessageContent,
-)
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InlineQuery, InlineQueryResultArticle,
+                            InlineQueryResultPhoto, InputTextMessageContent)
 
 from misskaty import BOT_USERNAME, app, user
-from misskaty.plugins.dev import shell_exec
-from misskaty.vars import USER_SESSION
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import GENRES_EMOJI, http, post_to_telegraph, search_jw
+from misskaty.plugins.dev import shell_exec
 from misskaty.plugins.misc_tools import get_content
+from misskaty.vars import USER_SESSION
 from utils import demoji
 
 __MODULE__ = "InlineFeature"
