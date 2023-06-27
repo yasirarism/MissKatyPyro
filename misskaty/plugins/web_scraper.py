@@ -44,7 +44,7 @@ headers = {
 LOGGER = logging.getLogger(__name__)
 SCRAP_DICT = TTLCache(maxsize=1000, ttl=1800)
 data_kuso = TTLCache(maxsize=1000, ttl=1800)
-webdb = dbname.web
+webdb = dbname["web"]
 
 web = {
     "yasirapi": "https://yasirapi.eu.org",

@@ -26,6 +26,7 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app, user
 from misskaty.plugins.dev import shell_exec
+from misskaty.vars import USER_SESSION
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import GENRES_EMOJI, http, post_to_telegraph, search_jw
 from misskaty.plugins.misc_tools import get_content
