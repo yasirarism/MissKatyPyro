@@ -16,7 +16,8 @@ from pyrogram import __version__, idle
 from pyrogram.raw.all import layer
 
 from database import dbname
-from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app, scheduler
+from misskaty import (BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app,
+                      scheduler)
 from misskaty.plugins import ALL_MODULES
 from misskaty.plugins.web_scraper import web
 from misskaty.vars import SUDO, USER_SESSION
