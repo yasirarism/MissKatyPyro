@@ -8,7 +8,6 @@ from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from async_pymongo import AsyncClient
-from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo import MongoClient
 from pyrogram import Client
 
@@ -41,7 +40,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.9.1 - Stable"
+misskaty_version = "v2.9.2 - Stable"
 
 # Pyrogram Bot Client
 app = Client(

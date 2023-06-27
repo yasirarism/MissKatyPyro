@@ -1,6 +1,6 @@
 from database import dbname
 
-gbansdb = dbname.gban
+gbansdb = dbname["gban"]
 
 
 async def is_gbanned_user(user_id: int) -> bool:

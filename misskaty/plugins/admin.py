@@ -854,7 +854,7 @@ async def set_chat_photo(self: Client, ctx: Message):
     if file.file_size > 5000000:
         return await ctx.reply("File size too large.")
 
-    file = await reply.download()
+    photo = await reply.download()
     try:
         await ctx.chat.set_photo(photo=photo)
         await ctx.reply_text("Successfully Changed Group Photo")

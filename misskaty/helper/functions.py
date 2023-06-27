@@ -5,6 +5,8 @@ from string import ascii_lowercase
 
 from pyrogram import enums
 
+from misskaty import app
+
 
 def get_urls_from_text(text: str) -> bool:
     regex = r"""(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]
@@ -47,7 +49,6 @@ async def extract_userid(message, text: str):
         return int(text)
 
     entities = message.entities
-    app = message._client
     if len(entities) < 2:
         return (await app.get_users(text)).id
     entity = entities[1]

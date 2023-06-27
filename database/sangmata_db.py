@@ -1,6 +1,6 @@
 from database import dbname
 
-matadb = dbname.sangmata
+matadb = dbname["sangmata"]
 
 
 # Get Data User

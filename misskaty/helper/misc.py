@@ -5,6 +5,7 @@ from pyrogram.types import InlineKeyboardButton
 from misskaty import MOD_LOAD, MOD_NOLOAD
 
 
+# skipcq: PYL-W1641
 class EqInlineKeyboardButton(InlineKeyboardButton):
     def __eq__(self, other):
         return self.text == other.text

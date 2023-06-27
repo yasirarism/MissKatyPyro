@@ -111,7 +111,7 @@ async def download(client, message):
         try:
             downloader.start(blocking=False)
         except Exception as err:
-            return await ctx.edit(str(err))
+            return await message.edit_msg(str(err))
         c_time = time.time()
         while not downloader.isFinished():
             total_length = downloader.filesize or None

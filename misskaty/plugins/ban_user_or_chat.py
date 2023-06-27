@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.errors import ChannelPrivate
+from pyrogram.errors import ChannelPrivate, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database.users_chats_db import db

@@ -13,12 +13,8 @@ from time import time
 from urllib.parse import unquote
 
 from pyrogram import Client, filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
@@ -131,7 +127,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
     filename = dl.split("/", 3)[3]
     LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
-    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
+    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0] # skipcq: PYL-W0106
     c_time = time()
     await ctx.reply_document(
         f"downloads/{filename}.{suffix}",
@@ -156,7 +152,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await update.answer(strings("unauth_cb"), True)
-    _, lang, map, codec = cb_data.split("#")
+    _, lang, map_code, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
     except:
@@ -174,7 +170,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     namafile = get_subname(lang, link, ext)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        (await shell_exec(f"ffmpeg -i {link} -map {map} '{namafile}'"))[0]
+        (await shell_exec(f"ffmpeg -i {link} -map {map_code} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(

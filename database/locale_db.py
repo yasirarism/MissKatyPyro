@@ -4,7 +4,7 @@ from pyrogram.enums import ChatType
 
 from database import dbname
 
-localesdb = dbname.locale  # DB for localization
+localesdb = dbname["locale"]  # DB for localization
 
 group_types: Iterable[ChatType] = (ChatType.GROUP, ChatType.SUPERGROUP)
 

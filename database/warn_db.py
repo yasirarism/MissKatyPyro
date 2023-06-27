@@ -2,7 +2,7 @@ from typing import Dict, Union
 
 from database import dbname
 
-warnsdb = dbname.warn
+warnsdb = dbname["warn"]
 
 
 async def get_warns_count() -> dict:
