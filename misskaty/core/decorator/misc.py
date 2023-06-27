@@ -1,4 +1,5 @@
-import asyncio, logging
+import asyncio
+import logging
 from functools import wraps
 
 LOGGER = logging.getLogger(__name__)
