@@ -1,14 +1,13 @@
-import motor.motor_asyncio
-
+from async_pymongo import AsyncClient
 from misskaty.vars import DATABASE_NAME, DATABASE_URI
 
 
-class Database:
+class UsersData:
     def __init__(self, uri, database_name):
-        self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
+        self._client = AsyncClient(uri)
         self.db = self._client[database_name]
-        self.col = self.db.users
-        self.grp = self.db.groups
+        self.col = self.db["users"]
+        self.grp = self.db["groups"]
 
     @staticmethod
     def new_user(id, name):
@@ -109,4 +108,4 @@ class Database:
         return (await self.db.command("dbstats"))["dataSize"]
 
 
-db = Database(DATABASE_URI, DATABASE_NAME)
+db = UsersData(DATABASE_URI, DATABASE_NAME)

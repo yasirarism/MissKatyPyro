@@ -1,6 +1,6 @@
 from database import dbname
 
-imbd_db = dbname.imdb
+imbd_db = dbname["imdb"]
 
 
 async def is_imdbset(user_id: int) -> bool:

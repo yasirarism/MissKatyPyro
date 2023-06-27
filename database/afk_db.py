@@ -10,8 +10,8 @@
 
 from database import dbname
 
-usersdb = dbname.users
-cleandb = dbname.cleanmode
+usersdb = dbname["users"]
+cleandb = dbname["cleanmode"]
 cleanmode = {}
 
 

@@ -11,7 +11,6 @@ from sys import version as pyver
 
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
-from motor import version as mongover
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
@@ -26,6 +25,7 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_USERNAME, app, user
+from misskaty.plugins.dev import shell_exec
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import GENRES_EMOJI, http, post_to_telegraph, search_jw
 from misskaty.plugins.misc_tools import get_content
@@ -50,6 +50,7 @@ LOGGER = getLogger()
 @app.on_inline_query()
 async def inline_menu(_, inline_query: InlineQuery):
     if inline_query.query.strip().lower().strip() == "":
+        aspymon_ver = (await shell_exec("pip freeze | grep async-pymongo"))[0]
         buttons = InlineKeyboard(row_width=2)
         buttons.add(
             *[
@@ -59,8 +60,8 @@ async def inline_menu(_, inline_query: InlineQuery):
         )
 
         btn = InlineKeyboard(row_width=2)
-        bot_state = "Alive" if await app.get_me() else "Dead"
-        ubot_state = "Alive" if await user.get_me() else "Dead"
+        bot_state = "Alive" if USER_SESSION and await app.get_me() else "Dead"
+        ubot_state = "Alive" if USER_SESSION and await user.get_me() else "Dead"
         btn.add(
             InlineKeyboardButton("Stats", callback_data="stats_callback"),
             InlineKeyboardButton("Go Inline!", switch_inline_query_current_chat=""),
@@ -72,10 +73,12 @@ async def inline_menu(_, inline_query: InlineQuery):
 **UserBot:** `{ubot_state}`
 **Python:** `{pyver.split()[0]}`
 **Pyrogram:** `{pyrover}`
-**MongoDB:** `{mongover}`
+**MongoDB:** `{aspymon_ver}`
 **Platform:** `{platform}`
-**Profiles:** {(await app.get_me()).username} | {(await user.get_me()).first_name}
+**Profiles:** {(await app.get_me()).username}
         """
+        if USER_SESSION:
+            msg += f" | {(await user.get_me()).first_name}"
         answerss = [
             InlineQueryResultArticle(
                 title="Inline Commands",

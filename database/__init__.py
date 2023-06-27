@@ -4,9 +4,8 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
-from motor.motor_asyncio import AsyncIOMotorClient as MongoClient
+from async_pymongo import AsyncClient
+from misskaty.vars import DATABASE_URI, DATABASE_NAME
 
-from misskaty.vars import DATABASE_URI
-
-mongo = MongoClient(DATABASE_URI)
-dbname = mongo.MissKatyDB
+mongo = AsyncClient(DATABASE_URI)
+dbname = mongo[DATABASE_NAME]

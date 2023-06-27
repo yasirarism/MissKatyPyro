@@ -2,7 +2,7 @@ from typing import Dict, List, Union
 
 from database import dbname
 
-notesdb = dbname.notes
+notesdb = dbname["notes"]
 
 
 async def _get_notes(chat_id: int) -> Dict[str, int]:

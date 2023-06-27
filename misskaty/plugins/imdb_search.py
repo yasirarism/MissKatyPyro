@@ -649,7 +649,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 for i in r_json["creator"]
                 if i["@type"] == "Person"
             )
-            res_str += f"<b>Writer:</b> {creator[-2]}\n"
+            res_str += f"<b>Writer:</b> {creator[:-2]}\n"
         if r_json.get("actor"):
             actors = actors = "".join(
                 f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
