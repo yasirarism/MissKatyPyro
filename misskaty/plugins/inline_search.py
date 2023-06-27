@@ -77,7 +77,7 @@ async def inline_menu(_, inline_query: InlineQuery):
 **MongoDB:** `{aspymon_ver}`
 **Platform:** `{platform}`
 **Bot:** {(await app.get_me()).first_name}
-        """
+"""
         if USER_SESSION:
             msg += f"**UserBot:** {(await user.get_me()).first_name}"
         answerss = [

@@ -1,6 +1,7 @@
-import asyncio
+import asyncio, logging
 from functools import wraps
 
+LOGGER = logging.getLogger(__name__)
 
 def asyncify(func):
     async def inner(*args, **kwargs):
@@ -18,6 +19,6 @@ def new_task(func):
             loop = asyncio.get_running_loop()
             return loop.create_task(func(*args, **kwargs))
         except Exception as e:
-            LOGGER.error(f"Failed to create task for {func.__name__} : {e}")
+            LOGGER.error(f"Failed to create task for {func.__name__} : {e}") # skipcq: PYL-E0602
 
     return wrapper
