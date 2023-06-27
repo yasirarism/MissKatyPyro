@@ -70,16 +70,16 @@ async def inline_menu(_, inline_query: InlineQuery):
 
         msg = f"""
 **[MissKaty✨](https://github.com/yasirarism):**
-**MainBot:** `{bot_state}`
-**UserBot:** `{ubot_state}`
+**MainBot Stats:** `{bot_state}`
+**UserBot Stats:** `{ubot_state}`
 **Python:** `{pyver.split()[0]}`
 **Pyrogram:** `{pyrover}`
 **MongoDB:** `{aspymon_ver}`
 **Platform:** `{platform}`
-**Profiles:** {(await app.get_me()).username}
+**Bot:** {(await app.get_me()).first_name}
         """
         if USER_SESSION:
-            msg += f" | {(await user.get_me()).first_name}"
+            msg += f"**UserBot:** {(await user.get_me()).first_name}"
         answerss = [
             InlineQueryResultArticle(
                 title="Inline Commands",
