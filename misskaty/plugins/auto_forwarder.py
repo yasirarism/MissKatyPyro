@@ -7,14 +7,9 @@ from pyrogram.errors import FloodWait
 from pyrogram.types import Message
 
 from misskaty import user
-from misskaty.vars import (
-    BLOCK_FILES_WITHOUT_EXTENSIONS,
-    BLOCKED_EXTENSIONS,
-    FORWARD_FILTERS,
-    FORWARD_FROM_CHAT_ID,
-    FORWARD_TO_CHAT_ID,
-    MINIMUM_FILE_SIZE,
-)
+from misskaty.vars import (BLOCK_FILES_WITHOUT_EXTENSIONS, BLOCKED_EXTENSIONS,
+                           FORWARD_FILTERS, FORWARD_FROM_CHAT_ID,
+                           FORWARD_TO_CHAT_ID, MINIMUM_FILE_SIZE)
 
 LOGGER = getLogger(__name__)
 

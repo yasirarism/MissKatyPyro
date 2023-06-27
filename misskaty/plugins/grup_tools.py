@@ -7,7 +7,8 @@ from logging import getLogger
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
 from pyrogram.errors import ChatAdminRequired, MessageTooLong, RPCError
-from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import (ChatMemberUpdated, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 
 from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app

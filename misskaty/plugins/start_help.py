@@ -8,12 +8,8 @@
 import re
 
 from pyrogram import Client, filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, app
 from misskaty.core.decorator.ratelimiter import ratelimiter

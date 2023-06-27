@@ -2,14 +2,8 @@ import re
 
 from pyrogram import filters
 
-from database.karma_db import (
-    get_karma,
-    get_karmas,
-    is_karma_on,
-    karma_off,
-    karma_on,
-    update_karma,
-)
+from database.karma_db import (get_karma, get_karmas, is_karma_on, karma_off,
+                               karma_on, update_karma)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly

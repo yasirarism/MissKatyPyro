@@ -10,12 +10,8 @@ from datetime import datetime
 
 from pyrogram import enums, filters
 from pyrogram.raw import functions
-from pyrogram.types import (
-    ChatEventFilter,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (ChatEventFilter, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import app, user
 

@@ -10,13 +10,8 @@ from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
 from pyrogram.errors import MessageIdInvalid
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err

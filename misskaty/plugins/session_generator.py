@@ -2,24 +2,15 @@ import traceback
 from logging import getLogger
 
 from pyrogram import Client, filters
-from pyrogram.errors import (
-    ApiIdInvalid,
-    PasswordHashInvalid,
-    PhoneCodeExpired,
-    PhoneCodeInvalid,
-    PhoneNumberInvalid,
-    SessionPasswordNeeded,
-)
+from pyrogram.errors import (ApiIdInvalid, PasswordHashInvalid,
+                             PhoneCodeExpired, PhoneCodeInvalid,
+                             PhoneNumberInvalid, SessionPasswordNeeded)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telethon import TelegramClient
-from telethon.errors import (
-    ApiIdInvalidError,
-    PasswordHashInvalidError,
-    PhoneCodeExpiredError,
-    PhoneCodeInvalidError,
-    PhoneNumberInvalidError,
-    SessionPasswordNeededError,
-)
+from telethon.errors import (ApiIdInvalidError, PasswordHashInvalidError,
+                             PhoneCodeExpiredError, PhoneCodeInvalidError,
+                             PhoneNumberInvalidError,
+                             SessionPasswordNeededError)
 from telethon.sessions import StringSession
 
 from misskaty import app
