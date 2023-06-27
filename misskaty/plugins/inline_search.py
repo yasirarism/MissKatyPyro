@@ -170,6 +170,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                         reply_markup=buttons,
                     )
                 )
+        is_img = False
         for types in parsetypes:
             if kueri.lower() in types.lower():
                 link = parsetypes[types]["href"]
@@ -195,7 +196,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     body_text = f"""
                         <pre>{msg}</pre>
                         """
-                    msg = await post_to_telegraph(False, method, body_text)
+                    msg = await post_to_telegraph(is_img, method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=types,

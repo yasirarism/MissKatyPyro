@@ -156,7 +156,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     usr = update.message.reply_to_message
     if update.from_user.id != usr.from_user.id:
         return await update.answer(strings("unauth_cb"), True)
-    _, lang, map, codec = cb_data.split("#")
+    _, lang, map_code, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
     except:
@@ -174,7 +174,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     namafile = get_subname(lang, link, ext)
     try:
         LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
-        (await shell_exec(f"ffmpeg -i {link} -map {map} '{namafile}'"))[0]
+        (await shell_exec(f"ffmpeg -i {link} -map {map_code} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(

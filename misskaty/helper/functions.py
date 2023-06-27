@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from re import findall
 from re import sub as re_sub
 from string import ascii_lowercase
-
+from misskaty import app
 from pyrogram import enums
 
 
@@ -47,7 +47,6 @@ async def extract_userid(message, text: str):
         return int(text)
 
     entities = message.entities
-    app = message._client
     if len(entities) < 2:
         return (await app.get_users(text)).id
     entity = entities[1]

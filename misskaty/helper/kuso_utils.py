@@ -140,9 +140,8 @@ async def kusonimeBypass(url: str, slug=None):
         err = traceback.format_exc()
         LOGGER.error(err)
         result |= {"error": True, "error_message": err}
-    finally:
-        await http.delete(_url)
-        return result
+    await http.delete(_url)
+    return result
 
 
 async def byPassPh(url: str, name: str):
