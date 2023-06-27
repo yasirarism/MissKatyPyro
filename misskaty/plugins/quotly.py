@@ -45,7 +45,11 @@ async def get_message_sender_name(ctx: Message):
         if ctx.forward_sender_name:
             return ctx.forward_sender_name
         elif ctx.forward_from:
-            return f"{ctx.forward_from.first_name} {ctx.forward_from.last_name}" if ctx.forward_from.last_name else ctx.forward_from.first_name
+            return (
+                f"{ctx.forward_from.first_name} {ctx.forward_from.last_name}"
+                if ctx.forward_from.last_name
+                else ctx.forward_from.first_name
+            )
 
         elif ctx.forward_from_chat:
             return ctx.forward_from_chat.title
@@ -64,22 +68,45 @@ async def get_message_sender_name(ctx: Message):
 
 async def get_custom_emoji(ctx: Message):
     if ctx.forward_date:
-        return "" if ctx.forward_sender_name or not ctx.forward_from and ctx.forward_from_chat or not ctx.forward_from else ctx.forward_from.emoji_status.custom_emoji_id
+        return (
+            ""
+            if ctx.forward_sender_name
+            or not ctx.forward_from
+            and ctx.forward_from_chat
+            or not ctx.forward_from
+            else ctx.forward_from.emoji_status.custom_emoji_id
+        )
 
     return ctx.from_user.emoji_status.custom_emoji_id if ctx.from_user else ""
 
 
 async def get_message_sender_username(ctx: Message):
     if ctx.forward_date:
-        if not ctx.forward_sender_name and not ctx.forward_from and ctx.forward_from_chat and ctx.forward_from_chat.username:
+        if (
+            not ctx.forward_sender_name
+            and not ctx.forward_from
+            and ctx.forward_from_chat
+            and ctx.forward_from_chat.username
+        ):
             return ctx.forward_from_chat.username
-        elif not ctx.forward_sender_name and not ctx.forward_from and ctx.forward_from_chat or ctx.forward_sender_name or not ctx.forward_from:
+        elif (
+            not ctx.forward_sender_name
+            and not ctx.forward_from
+            and ctx.forward_from_chat
+            or ctx.forward_sender_name
+            or not ctx.forward_from
+        ):
             return ""
         else:
             return ctx.forward_from.username or ""
     elif ctx.from_user and ctx.from_user.username:
         return ctx.from_user.username
-    elif ctx.from_user or ctx.sender_chat and not ctx.sender_chat.username or not ctx.sender_chat:
+    elif (
+        ctx.from_user
+        or ctx.sender_chat
+        and not ctx.sender_chat.username
+        or not ctx.sender_chat
+    ):
         return ""
     else:
         return ctx.sender_chat.username
@@ -87,14 +114,25 @@ async def get_message_sender_username(ctx: Message):
 
 async def get_message_sender_photo(ctx: Message):
     if ctx.forward_date:
-        if not ctx.forward_sender_name and not ctx.forward_from and ctx.forward_from_chat and ctx.forward_from_chat.photo:
+        if (
+            not ctx.forward_sender_name
+            and not ctx.forward_from
+            and ctx.forward_from_chat
+            and ctx.forward_from_chat.photo
+        ):
             return {
                 "small_file_id": ctx.forward_from_chat.photo.small_file_id,
                 "small_photo_unique_id": ctx.forward_from_chat.photo.small_photo_unique_id,
                 "big_file_id": ctx.forward_from_chat.photo.big_file_id,
                 "big_photo_unique_id": ctx.forward_from_chat.photo.big_photo_unique_id,
             }
-        elif not ctx.forward_sender_name and not ctx.forward_from and ctx.forward_from_chat or ctx.forward_sender_name or not ctx.forward_from:
+        elif (
+            not ctx.forward_sender_name
+            and not ctx.forward_from
+            and ctx.forward_from_chat
+            or ctx.forward_sender_name
+            or not ctx.forward_from
+        ):
             return ""
         else:
             return (
@@ -115,7 +153,12 @@ async def get_message_sender_photo(ctx: Message):
             "big_file_id": ctx.from_user.photo.big_file_id,
             "big_photo_unique_id": ctx.from_user.photo.big_photo_unique_id,
         }
-    elif ctx.from_user or ctx.sender_chat and not ctx.sender_chat.photo or not ctx.sender_chat:
+    elif (
+        ctx.from_user
+        or ctx.sender_chat
+        and not ctx.sender_chat.photo
+        or not ctx.sender_chat
+    ):
         return ""
     else:
         return {
@@ -172,10 +215,16 @@ async def pyrogram_to_quotly(messages):
         the_message_dict_to_append["avatar"] = True
         the_message_dict_to_append["from"] = {}
         the_message_dict_to_append["from"]["id"] = await get_message_sender_id(message)
-        the_message_dict_to_append["from"]["name"] = await get_message_sender_name(message)
-        the_message_dict_to_append["from"]["username"] = await get_message_sender_username(message)
+        the_message_dict_to_append["from"]["name"] = await get_message_sender_name(
+            message
+        )
+        the_message_dict_to_append["from"][
+            "username"
+        ] = await get_message_sender_username(message)
         the_message_dict_to_append["from"]["type"] = message.chat.type.name.lower()
-        the_message_dict_to_append["from"]["photo"] = await get_message_sender_photo(message)
+        the_message_dict_to_append["from"]["photo"] = await get_message_sender_photo(
+            message
+        )
         if message.reply_to_message:
             the_message_dict_to_append["replyMessage"] = {
                 "name": await get_message_sender_name(message.reply_to_message),
@@ -232,7 +281,9 @@ async def msg_quotly_cmd(self: Client, ctx: Message):
             except Exception:
                 return await ctx.reply_msg("🤷🏻‍♂️")
     try:
-        messages_one = await self.get_messages(chat_id=ctx.chat.id, message_ids=ctx.reply_to_message.id, replies=-1)
+        messages_one = await self.get_messages(
+            chat_id=ctx.chat.id, message_ids=ctx.reply_to_message.id, replies=-1
+        )
         messages = [messages_one]
     except Exception:
         return await ctx.reply_msg("🤷🏻‍♂️")
