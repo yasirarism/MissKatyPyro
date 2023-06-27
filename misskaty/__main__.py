@@ -48,7 +48,7 @@ async def start_bot():
     LOGGER.info("+===============+===============+===============+===============+")
     LOGGER.info(bot_modules)
     LOGGER.info("+===============+===============+===============+===============+")
-    LOGGER.info(f"[INFO]: BOT STARTED AS @{BOT_USERNAME}!")
+    LOGGER.info("[INFO]: BOT STARTED AS @%s!", BOT_USERNAME)
 
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
