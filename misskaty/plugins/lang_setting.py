@@ -3,12 +3,8 @@ from typing import Union
 
 from pyrogram import Client, filters
 from pyrogram.enums import ChatType
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from database.locale_db import set_db_lang
 from misskaty import app
@@ -16,12 +12,8 @@ from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.vars import COMMAND_HANDLER
 
 from ..core.decorator.permissions import require_admin
-from ..helper.localization import (
-    default_language,
-    get_locale_string,
-    langdict,
-    use_chat_lang,
-)
+from ..helper.localization import (default_language, get_locale_string,
+                                   langdict, use_chat_lang)
 
 
 def gen_langs_kb():
@@ -97,7 +89,8 @@ async def set_chat_lang(c: Client, m: CallbackQuery, strings):
 
     strings = partial(
         get_locale_string,
-        langdict[lang].get("lang_setting", langdict[default_language]["lang_setting"]),
+        langdict[lang].get(
+            "lang_setting", langdict[default_language]["lang_setting"]),
         lang,
         "lang_setting",
     )

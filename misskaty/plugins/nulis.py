@@ -28,7 +28,8 @@ def text_set(text):
                 lines.append(line)
             else:
                 k = len(line) // 55
-                lines.extend(line[((z - 1) * 55) : (z * 55)] for z in range(1, k + 2))
+                lines.extend(line[((z - 1) * 55): (z * 55)]
+                             for z in range(1, k + 2))
     return lines[:25]
 
 

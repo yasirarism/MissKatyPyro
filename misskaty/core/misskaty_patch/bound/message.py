@@ -5,21 +5,16 @@ from asyncio import sleep as asleep
 from logging import getLogger
 from typing import Union
 
-from pyrogram.errors import (
-    ChatAdminRequired,
-    ChatWriteForbidden,
-    FloodWait,
-    MessageAuthorRequired,
-    MessageDeleteForbidden,
-    MessageIdInvalid,
-    MessageNotModified,
-    MessageTooLong,
-)
+from pyrogram.errors import (ChatAdminRequired, ChatWriteForbidden, FloodWait,
+                             MessageAuthorRequired, MessageDeleteForbidden,
+                             MessageIdInvalid, MessageNotModified,
+                             MessageTooLong)
 from pyrogram.types import Message
 
 LOGGER = getLogger(__name__)
 
-Message.input = property(lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1 :] if len(m.command) > 1 else None)
+Message.input = property(lambda m: m.text[m.text.find(
+    m.command[0]) + len(m.command[0]) + 1:] if len(m.command) > 1 else None)
 
 
 async def reply_text(self: Message, text: str, as_raw: bool = False, del_in: int = 0, *args, **kwargs) -> Union["Message", bool]:
@@ -81,7 +76,8 @@ async def reply_text(self: Message, text: str, as_raw: bool = False, del_in: int
         await asleep(e.value)
         return await reply_text(self, text, *args, **kwargs)
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
+        LOGGER.info(
+            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
         return await self.chat.leave()
 
 
@@ -124,7 +120,8 @@ async def edit_text(self, text: str, del_in: int = 0, *args, **kwargs) -> Union[
     except MessageNotModified:
         return False
     except (ChatWriteForbidden, ChatAdminRequired):
-        LOGGER.info(f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
+        LOGGER.info(
+            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission.")
         return await self.chat.leave()
     except (MessageAuthorRequired, MessageIdInvalid):
         return await reply_text(self, text=text, *args, **kwargs)

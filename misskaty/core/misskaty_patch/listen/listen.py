@@ -83,7 +83,8 @@ class Client:
             return await asyncio.wait_for(future, timeout)
         except asyncio.exceptions.TimeoutError:
             if callable(PyromodConfig.timeout_handler):
-                PyromodConfig.timeout_handler(identifier, listener_data, timeout)
+                PyromodConfig.timeout_handler(
+                    identifier, listener_data, timeout)
             elif PyromodConfig.throw_exceptions:
                 raise ListenerTimeout(timeout)
 

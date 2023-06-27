@@ -58,9 +58,11 @@ async def upload_document(client: Client, file_path: str, chat_id: int) -> raw.b
         raw.functions.messages.UploadMedia(
             peer=await client.resolve_peer(chat_id),
             media=raw.types.InputMediaUploadedDocument(
-                mime_type=client.guess_mime_type(file_path) or "application/zip",
+                mime_type=client.guess_mime_type(
+                    file_path) or "application/zip",
                 file=await client.save_file(file_path),
-                attributes=[raw.types.DocumentAttributeFilename(file_name=os.path.basename(file_path))],
+                attributes=[raw.types.DocumentAttributeFilename(
+                    file_name=os.path.basename(file_path))],
             ),
         )
     )

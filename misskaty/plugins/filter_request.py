@@ -41,7 +41,8 @@ async def request_user(client, message):
         return await message.reply("Sabar dikit napa.. 🙄")
     markup = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.id}")],
+            [InlineKeyboardButton(
+                text="💬 Lihat Pesan", url=f"https://t.me/c/1255283935/{message.id}")],
             [
                 InlineKeyboardButton(
                     text="🚫 Tolak",
@@ -164,12 +165,14 @@ async def callbackreq(c, q):
             if q.message.caption:
                 await q.message.edit_text(
                     f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
                 )
             else:
                 await q.message.edit_text(
                     f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="✅ Request Completed", callback_data="reqcompl")]]),
                 )
             await q.answer("Request berhasil diselesaikan ✅")
         else:
@@ -260,12 +263,14 @@ async def callbackreject(c, q):
             if q.message.caption:
                 await q.message.edit_text(
                     f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
                 )
             else:
                 await q.message.edit_text(
                     f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text="🚫 Request Rejected", callback_data="reqreject")]]),
                 )
             await q.answer("Request berhasil ditolak 🚫")
         else:

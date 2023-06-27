@@ -5,18 +5,15 @@ from typing import Optional, Union
 
 from cachetools import TTLCache
 from pyrogram import Client, enums
-from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidden
+from pyrogram.errors import (ChannelPrivate, ChatAdminRequired,
+                             ChatWriteForbidden)
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.vars import SUDO
 
-from ...helper.localization import (
-    default_language,
-    get_lang,
-    get_locale_string,
-    langdict,
-)
+from ...helper.localization import (default_language, get_lang,
+                                    get_locale_string, langdict)
 
 
 async def member_permissions(chat_id: int, user_id: int):
@@ -88,7 +85,8 @@ async def check_perms(
         return True
     if complain_missing_perms:
         await sender(
-            strings("no_permission_error").format(permissions=", ".join(missing_perms))
+            strings("no_permission_error").format(
+                permissions=", ".join(missing_perms))
         )
     return False
 
@@ -185,7 +183,8 @@ def require_admin(
             lang = await get_lang(message)
             strings = partial(
                 get_locale_string,
-                langdict[lang].get("admin", langdict[default_language]["admin"]),
+                langdict[lang].get(
+                    "admin", langdict[default_language]["admin"]),
                 lang,
                 "admin",
             )

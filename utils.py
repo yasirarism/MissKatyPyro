@@ -5,12 +5,8 @@ from logging import getLogger
 from typing import Union
 
 import emoji
-from pyrogram.errors import (
-    FloodWait,
-    InputUserDeactivated,
-    PeerIdInvalid,
-    UserIsBlocked,
-)
+from pyrogram.errors import (FloodWait, InputUserDeactivated, PeerIdInvalid,
+                             UserIsBlocked)
 from pyrogram.types import Message
 
 from database.afk_db import is_cleanmode_on

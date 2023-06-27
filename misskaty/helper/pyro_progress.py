@@ -67,7 +67,8 @@ def time_formatter(seconds: int) -> str:
     result = ""
     v_m = 0
     remainder = seconds
-    r_ange_s = {"days": (24 * 60 * 60), "hours": (60 * 60), "minutes": 60, "seconds": 1}
+    r_ange_s = {"days": (24 * 60 * 60), "hours": (60 * 60),
+                "minutes": 60, "seconds": 1}
     for age, divisor in r_ange_s.items():
         v_m, remainder = divmod(remainder, divisor)
         v_m = int(v_m)

@@ -37,7 +37,8 @@ To use this feature, just type bot username with following args below.
 ~ info [user id/username] - Check info about a user.
 """
 
-keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
+keywords_list = ["imdb", "pypi", "git",
+                 "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 LOGGER = getLogger()
@@ -60,7 +61,8 @@ async def inline_menu(_, inline_query: InlineQuery):
         ubot_state = "Alive" if USER_SESSION and await user.get_me() else "Dead"
         btn.add(
             InlineKeyboardButton("Stats", callback_data="stats_callback"),
-            InlineKeyboardButton("Go Inline!", switch_inline_query_current_chat=""),
+            InlineKeyboardButton(
+                "Go Inline!", switch_inline_query_current_chat=""),
         )
 
         msg = f"""
@@ -137,9 +139,11 @@ async def inline_menu(_, inline_query: InlineQuery):
                     ),
                 )
                 buttons.row(
-                    InlineButton("Give Coffee", url="https://yasirpedia.eu.org"),
+                    InlineButton(
+                        "Give Coffee", url="https://yasirpedia.eu.org"),
                 )
-                returns = "".join(f"{i}, " for i in parsemethod[method]["returns"])
+                returns = "".join(
+                    f"{i}, " for i in parsemethod[method]["returns"])
                 msg = f"<b>{method}</b> (<code>{returns[:-2]}</code>)\n"
                 msg += f"{description}\n\n"
                 msg += "<b>Variables:</b>\n"
@@ -179,7 +183,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                     ),
                 )
                 buttons.row(
-                    InlineButton("Give Coffee", url="https://yasirpedia.eu.org"),
+                    InlineButton(
+                        "Give Coffee", url="https://yasirpedia.eu.org"),
                 )
                 msg = f"<b>{types}</b>\n"
                 msg += f"{description}\n\n"
@@ -398,7 +403,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                     description=deskripsi,
                     thumb_url="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
                     reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text="Open Github Link", url=link)]]
+                        [[InlineKeyboardButton(
+                            text="Open Github Link", url=link)]]
                     ),
                 )
             )
@@ -496,7 +502,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                     description=deskripsi,
                     thumb_url=thumb,
                     reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text="Watch Video 📹", url=link)]]
+                        [[InlineKeyboardButton(
+                            text="Watch Video 📹", url=link)]]
                     ),
                 )
             )
@@ -612,7 +619,8 @@ async def imdb_inl(_, query):
             resp = await get_content(url)
             sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
-                sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
+                sop.find("script", attrs={
+                         "type": "application/ld+json"}).contents[0]
             )
             ott = await search_jw(r_json["name"], "en_ID")
             res_str = ""
@@ -727,7 +735,8 @@ async def imdb_inl(_, query):
                                 "🎬 Buka IMDB",
                                 url=url,
                             ),
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url),
+                            InlineKeyboardButton(
+                                "▶️ Trailer", url=trailer_url),
                         ]
                     ]
                 )

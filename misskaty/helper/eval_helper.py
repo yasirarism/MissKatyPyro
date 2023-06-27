@@ -65,18 +65,21 @@ async def meval(code, globs, **kwargs):
             if isinstance(node, ast.Return):
                 node.value = ast.List(elts=[node.value], ctx=ast.Load())
 
-    code.append(ast.copy_location(ast.Return(value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]))
+    code.append(ast.copy_location(ast.Return(
+        value=ast.Name(id=ret_name, ctx=ast.Load())), code[-1]))
 
     # globals().update(**<global_args>)
     glob_copy = ast.Expr(
         ast.Call(
             func=ast.Attribute(
-                value=ast.Call(func=ast.Name(id="globals", ctx=ast.Load()), args=[], keywords=[]),
+                value=ast.Call(func=ast.Name(
+                    id="globals", ctx=ast.Load()), args=[], keywords=[]),
                 attr="update",
                 ctx=ast.Load(),
             ),
             args=[],
-            keywords=[ast.keyword(arg=None, value=ast.Name(id=global_args, ctx=ast.Load()))],
+            keywords=[ast.keyword(arg=None, value=ast.Name(
+                id=global_args, ctx=ast.Load()))],
         )
     )
     ast.fix_missing_locations(glob_copy)
@@ -100,7 +103,8 @@ async def meval(code, globs, **kwargs):
         kw_defaults=[None for _ in range(len(args))],
     )
     args.posonlyargs = []
-    fun = ast.AsyncFunctionDef(name="tmp", args=args, body=code, decorator_list=[], returns=None)
+    fun = ast.AsyncFunctionDef(
+        name="tmp", args=args, body=code, decorator_list=[], returns=None)
     ast.fix_missing_locations(fun)
     mod = ast.parse("")
     mod.body = [fun]

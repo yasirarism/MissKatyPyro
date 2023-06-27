@@ -42,8 +42,10 @@ langdict = cache_localizations(jsons)
 def get_locale_string(dic: dict, language: str, default_context: str, key: str, context: str = None) -> str:
     if context:
         default_context = context
-        dic = langdict[language].get(context, langdict[default_language][context])
-    res: str = dic.get(key) or langdict[default_language][default_context].get(key) or key
+        dic = langdict[language].get(
+            context, langdict[default_language][context])
+    res: str = dic.get(
+        key) or langdict[default_language][default_context].get(key) or key
     return res
 
 
@@ -84,7 +86,7 @@ def use_chat_lang(context: str = None):
         fname = frame.filename
 
         if fname.startswith(cwd):
-            fname = fname[len(cwd) + 1 :]
+            fname = fname[len(cwd) + 1:]
         context = fname.split(os.path.sep)[2].split(".")[0]
 
     def decorator(func):
@@ -94,7 +96,8 @@ def use_chat_lang(context: str = None):
 
             dic = langdict.get(lang, langdict[default_language])
 
-            lfunc = partial(get_locale_string, dic.get(context, {}), lang, context)
+            lfunc = partial(get_locale_string, dic.get(
+                context, {}), lang, context)
             return await func(client, message, lfunc)
 
         return wrapper

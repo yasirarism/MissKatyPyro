@@ -34,21 +34,14 @@ from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.permissions import (
-    admins_in_chat,
-    adminsOnly,
-    list_admins,
-    member_permissions,
-    require_admin,
-)
+from misskaty.core.decorator.permissions import (admins_in_chat, adminsOnly,
+                                                 list_admins,
+                                                 member_permissions,
+                                                 require_admin)
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
-from misskaty.helper.functions import (
-    extract_user,
-    extract_user_and_reason,
-    int_to_alpha,
-    time_converter,
-)
+from misskaty.helper.functions import (extract_user, extract_user_and_reason,
+                                       int_to_alpha, time_converter)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
@@ -100,7 +93,8 @@ async def admin_cache_func(_, cmu):
                     )
                 ],
             }
-            LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
+            LOGGER.info(
+                f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
         except:
             pass
 
@@ -292,7 +286,8 @@ async def unban_func(self, message, strings):
 
 # Ban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group
+    filters.user(SUDO) & filters.command(
+        "listban", COMMAND_HANDLER) & filters.group
 )
 @ratelimiter
 @use_chat_lang()
@@ -349,7 +344,8 @@ async def list_ban_(c, message, strings):
 
 # Unban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group
+    filters.user(SUDO) & filters.command(
+        "listunban", COMMAND_HANDLER) & filters.group
 )
 @ratelimiter
 @use_chat_lang()
@@ -407,7 +403,8 @@ async def deleteFunc(_, message, strings):
 
 # Promote Members
 @app.on_message(
-    filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group
+    filters.command(["promote", "fullpromote"],
+                    COMMAND_HANDLER) & filters.group
 )
 @adminsOnly("can_promote_members")
 @ratelimiter

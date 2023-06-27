@@ -26,12 +26,8 @@ from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait, PeerIdInvalid
 from pyrogram.raw.types import UpdateBotStopped
-from pyrogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                            InputMediaPhoto, Message)
 
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
 from database.users_chats_db import db
@@ -39,7 +35,8 @@ from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import http
-from misskaty.helper.human_read import get_readable_file_size, get_readable_time
+from misskaty.helper.human_read import (get_readable_file_size,
+                                        get_readable_time)
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
@@ -109,7 +106,8 @@ async def donate(client, ctx):
             "QR QRIS [Yasir Store]",
             url="https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
         ),
-        InlineButton("Sociabuzz", url="https://sociabuzz.com/yasirarism/tribe"),
+        InlineButton(
+            "Sociabuzz", url="https://sociabuzz.com/yasirarism/tribe"),
         InlineButton("Saweria", url="https://saweria.co/yasirarism"),
         InlineButton("Trakteer", url="https://trakteer.id/yasir-aris-sp7cn"),
         InlineButton("Ko-Fi", url="https://ko-fi.com/yasirarism"),
@@ -122,7 +120,8 @@ async def donate(client, ctx):
 
 
 @app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
+    filters.command(["balas"], COMMAND_HANDLER) & filters.user(
+        SUDO) & filters.reply
 )
 async def balas(self: Client, ctx: Message) -> "str":
     pesan = ctx.input
@@ -142,7 +141,8 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     def draw_progressbar(coordinate, progress):
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
-        draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
+        draw.rectangle((120, coordinate - 25, progress,
+                       coordinate), fill="#FFFFFF")
         draw.ellipse(
             (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
         )
@@ -306,10 +306,12 @@ async def unban_globally(self: Client, ctx: Message):
 
 
 @app.on_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
+    filters.command(["shell", "sh", "term"],
+                    COMMAND_HANDLER) & filters.user(SUDO)
 )
 @app.on_edited_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
+    filters.command(["shell", "sh", "term"],
+                    COMMAND_HANDLER) & filters.user(SUDO)
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
@@ -385,7 +387,8 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         else await ctx.reply_msg(strings("run_eval"), quote=True)
     )
     code = (
-        ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
+        ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split(
+            "\napp.run()")[0]
     )
     out_buf = io.StringIO()
     out = ""

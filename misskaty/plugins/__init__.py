@@ -20,7 +20,8 @@ def __list_all_modules():
     # This generates a list of modules in this
     # folder for the * in __main__ to work.
     mod_paths = glob.glob(f"{dirname(__file__)}/*.py")
-    all_modules = [basename(f)[:-3] for f in mod_paths if isfile(f) and f.endswith(".py") and not f.endswith("__init__.py") and not f.endswith("__main__.py")]
+    all_modules = [basename(f)[:-3] for f in mod_paths if isfile(f) and f.endswith(
+        ".py") and not f.endswith("__init__.py") and not f.endswith("__main__.py")]
 
     if MOD_LOAD or MOD_NOLOAD:
         to_load = MOD_LOAD

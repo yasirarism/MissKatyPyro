@@ -49,7 +49,8 @@ async def genss(self: Client, ctx: Message, strings):
         url = the_url_parts.strip()
         file_name = os.path.basename(url)
         download_file_path = os.path.join("downloads/", file_name)
-        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader = SmartDL(url, download_file_path,
+                             progress_bar=False, timeout=10)
         try:
             downloader.start(blocking=False)
         except Exception as err:
@@ -95,16 +96,20 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                            ctx.reply_document(
+                                images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(
+                                images, reply_to_message_id=ctx.id),
                         ]
                     )
                 except FloodWait as e:
                     await sleep(e.value)
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                            ctx.reply_document(
+                                images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(
+                                images, reply_to_message_id=ctx.id),
                         ]
                     )
                 await ctx.reply_msg(
@@ -143,7 +148,8 @@ async def genss(self: Client, ctx: Message, strings):
             progress=progress_for_pyrogram,
             progress_args=(strings("dl_progress"), process, c_time, dc_id),
         )
-        the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
+        the_real_download_location = os.path.join(
+            "/downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
                 await process.edit_msg(strings("success_dl_msg").format(path=the_real_download_location))
@@ -155,16 +161,20 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                            ctx.reply_document(
+                                images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(
+                                images, reply_to_message_id=ctx.id),
                         ]
                     )
                 except FloodWait as e:
                     await sleep(e.value)
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_to_message_id=ctx.id),
-                            ctx.reply_photo(images, reply_to_message_id=ctx.id),
+                            ctx.reply_document(
+                                images, reply_to_message_id=ctx.id),
+                            ctx.reply_photo(
+                                images, reply_to_message_id=ctx.id),
                         ]
                     )
                 await ctx.reply_msg(

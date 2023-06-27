@@ -26,10 +26,12 @@ async def kusonimeBypass(url: str, slug=None):
     try:
         page = await http.get(_url, headers=headers)
         soup = BeautifulSoup(page.text, "lxml")
-        thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
+        thumb = soup.find("div", {"class": "post-thumb"}
+                          ).find("img").get("src")
         data = []
         try:
-            title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
+            # fix title njing haha
+            title = soup.find("h1", {"class": "jdlz"}).text
             season = (
                 soup.select(
                     "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)"
@@ -119,7 +121,8 @@ async def kusonimeBypass(url: str, slug=None):
                     url = link.get("href")
                     client = link.text
                     links.append({"client": client, "url": url})
-                mendata["links"].append({"quality": quality, "link_download": links})
+                mendata["links"].append(
+                    {"quality": quality, "link_download": links})
             data.append(mendata)
         result |= {
             "error": False,
@@ -179,7 +182,8 @@ async def byPassPh(url: str, name: str):
         page = await telegraph.create_page(
             f"{kusonime.get('title')} By {escape(name)}", html_content=html
         )
-        results |= {"error": False, "url": f'https://telegra.ph/{page["path"]}'}
+        results |= {"error": False,
+                    "url": f'https://telegra.ph/{page["path"]}'}
         del results["error_message"]
     return results
 

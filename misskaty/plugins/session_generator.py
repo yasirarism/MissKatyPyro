@@ -2,24 +2,15 @@ import traceback
 from logging import getLogger
 
 from pyrogram import Client, filters
-from pyrogram.errors import (
-    ApiIdInvalid,
-    PasswordHashInvalid,
-    PhoneCodeExpired,
-    PhoneCodeInvalid,
-    PhoneNumberInvalid,
-    SessionPasswordNeeded,
-)
+from pyrogram.errors import (ApiIdInvalid, PasswordHashInvalid,
+                             PhoneCodeExpired, PhoneCodeInvalid,
+                             PhoneNumberInvalid, SessionPasswordNeeded)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telethon import TelegramClient
-from telethon.errors import (
-    ApiIdInvalidError,
-    PasswordHashInvalidError,
-    PhoneCodeExpiredError,
-    PhoneCodeInvalidError,
-    PhoneNumberInvalidError,
-    SessionPasswordNeededError,
-)
+from telethon.errors import (ApiIdInvalidError, PasswordHashInvalidError,
+                             PhoneCodeExpiredError, PhoneCodeInvalidError,
+                             PhoneNumberInvalidError,
+                             SessionPasswordNeededError)
 from telethon.sessions import StringSession
 
 from misskaty import app
@@ -47,7 +38,8 @@ buttons_ques = [
     ],
 ]
 
-gen_button = [[InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]]
+gen_button = [[InlineKeyboardButton(
+    text="🙄 Generate Session 🙄", callback_data="genstring")]]
 
 
 async def is_batal(msg):
@@ -153,7 +145,8 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
             in_memory=True,
         )
     else:
-        client = Client(name="user", api_id=api_id, api_hash=api_hash, in_memory=True)
+        client = Client(name="user", api_id=api_id,
+                        api_hash=api_hash, in_memory=True)
     await client.connect()
     try:
         code = None

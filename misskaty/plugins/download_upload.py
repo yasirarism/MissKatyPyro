@@ -64,7 +64,8 @@ async def upload(bot, message):
         text = callapi.json()
         output = f'<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {text["data"]["file"]["metadata"]["name"]}\n\n📦 File Size: {text["data"]["file"]["metadata"]["size"]["readable"]}\n\n📥 Download Link: {text["data"]["file"]["url"]["full"]}'
 
-        btn = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
+        btn = InlineKeyboardMarkup([[InlineKeyboardButton(
+            "📥 Download 📥", url=f"{text['data']['file']['url']['full']}")]])
         await m.edit(output, reply_markup=btn)
     except Exception as e:
         await bot.send_message(message.chat.id, text=f"Something Went Wrong!\n\n{e}")
@@ -92,7 +93,8 @@ async def download(client, message):
         the_real_download_location = await client.download_media(
             message=message.reply_to_message,
             progress=progress_for_pyrogram,
-            progress_args=("Trying to download, sabar yakk..", pesan, c_time, dc_id),
+            progress_args=("Trying to download, sabar yakk..",
+                           pesan, c_time, dc_id),
         )
         end_t = datetime.now()
         ms = (end_t - start_t).seconds
@@ -107,7 +109,8 @@ async def download(client, message):
             url = url.strip()
             custom_file_name = custom_file_name.strip()
         download_file_path = os.path.join("downloads/", custom_file_name)
-        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader = SmartDL(url, download_file_path,
+                             progress_bar=False, timeout=10)
         try:
             downloader.start(blocking=False)
         except Exception as err:

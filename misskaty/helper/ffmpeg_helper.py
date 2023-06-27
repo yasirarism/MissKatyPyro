@@ -50,7 +50,8 @@ async def genss_link(msg, video_link, output_directory, min_duration, no_of_phot
         current_ttl = ttl_step
         for looper in range(no_of_photos):
             ss_img = await ssgen_link(video_link, output_directory, current_ttl)
-            images.append(InputMediaPhoto(media=ss_img, caption=f"Screenshot at {hhmmss(current_ttl)}"))
+            images.append(InputMediaPhoto(
+                media=ss_img, caption=f"Screenshot at {hhmmss(current_ttl)}"))
             try:
                 await msg.edit(f"📸 <b>Take Screenshoot:</b>\n<code>{looper+1} of {no_of_photos} screenshot generated..</code>")
             except FloodWait as e:

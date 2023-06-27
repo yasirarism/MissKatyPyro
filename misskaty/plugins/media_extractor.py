@@ -100,9 +100,11 @@ async def ceksub(self: Client, ctx: Message, strings):
                 ]
             )
         timelog = time() - start_time
-        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")])
+        buttons.append([InlineKeyboardButton(
+            strings("cancel_btn"), f"close#{ctx.from_user.id}")])
         msg = await pesan.edit_msg(
-            strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
+            strings("press_btn_msg").format(
+                timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
         await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
@@ -125,13 +127,16 @@ async def convertsrt(self: Client, ctx: Message, strings):
         os.makedirs("downloads")
     dl = await reply.download(file_name="downloads/")
     filename = dl.split("/", 3)[3]
-    LOGGER.info(f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
+    LOGGER.info(
+        f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]")
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
-    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0] # skipcq: PYL-W0106
+    # skipcq: PYL-W0106
+    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[0]
     c_time = time()
     await ctx.reply_document(
         f"downloads/{filename}.{suffix}",
-        caption=strings("capt_conv_sub").format(nf=filename, bot=self.me.username),
+        caption=strings("capt_conv_sub").format(
+            nf=filename, bot=self.me.username),
         thumb="assets/thumb.jpg",
         progress=progress_for_pyrogram,
         progress_args=(strings("up_str"), msg, c_time, self.me.dc_id),
@@ -169,17 +174,20 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     start_time = time()
     namafile = get_subname(lang, link, ext)
     try:
-        LOGGER.info(f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
+        LOGGER.info(
+            f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]")
         (await shell_exec(f"ffmpeg -i {link} -map {map_code} '{namafile}'"))[0]
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(
             namafile,
-            caption=strings("capt_extr_sub").format(nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)),
+            caption=strings("capt_extr_sub").format(
+                nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)),
             reply_to_message_id=usr.id,
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
-            progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
+            progress_args=(strings("up_str"), update.message,
+                           c_time, self.me.dc_id),
         )
         await update.message.delete_msg()
         try:

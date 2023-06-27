@@ -21,8 +21,10 @@ async def approve_join_chat(c, m):
         markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(text="Sudah", callback_data=f"approve_{m.chat.id}"),
-                    InlineKeyboardButton(text="Belum", callback_data=f"declined_{m.chat.id}"),
+                    InlineKeyboardButton(
+                        text="Sudah", callback_data=f"approve_{m.chat.id}"),
+                    InlineKeyboardButton(
+                        text="Belum", callback_data=f"declined_{m.chat.id}"),
                 ]
             ]
         )

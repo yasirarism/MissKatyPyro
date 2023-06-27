@@ -10,12 +10,8 @@ from datetime import datetime
 
 from pyrogram import enums, filters
 from pyrogram.raw import functions
-from pyrogram.types import (
-    ChatEventFilter,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (ChatEventFilter, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import app, user
 
@@ -124,7 +120,8 @@ async def join_date(app, message: Message):
     with open("joined_date.txt", "w", encoding="utf8") as f:
         f.write("Join Date      First Name\n")
         for member in members:
-            f.write(str(datetime.fromtimestamp(member[1]).strftime("%y-%m-%d %H:%M")) + f" {member[0]}\n")
+            f.write(str(datetime.fromtimestamp(member[1]).strftime(
+                "%y-%m-%d %H:%M")) + f" {member[0]}\n")
 
     await user.send_document(message.chat.id, "joined_date.txt")
     os.remove("joined_date.txt")

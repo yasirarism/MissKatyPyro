@@ -8,12 +8,8 @@
 import re
 
 from pyrogram import Client, filters
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, Message)
 
 from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, app
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -24,7 +20,8 @@ from misskaty.vars import COMMAND_HANDLER
 home_keyboard_pm = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton(text="Commands ❓", callback_data="bot_commands"),
+            InlineKeyboardButton(
+                text="Commands ❓", callback_data="bot_commands"),
             InlineKeyboardButton(
                 text="Source Code 🛠",
                 url="https://github.com/yasirarism/MissKatyPyro",
@@ -51,7 +48,8 @@ home_text_pm = f"Hey there! My name is {BOT_NAME}. I have many useful features f
 keyboard = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton(text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"),
+            InlineKeyboardButton(
+                text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"),
             InlineKeyboardButton(
                 text="Source Code �",
                 url="https://github.com/yasirarism/MissKatyPyro",
@@ -208,7 +206,8 @@ async def help_button(self: Client, query: CallbackQuery, strings):
         await query.message.edit_msg(
             text=text,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]
+                [[InlineKeyboardButton(
+                    strings("back_btn"), callback_data="help_back")]]
             ),
             disable_web_page_preview=True,
         )
@@ -242,7 +241,8 @@ async def help_button(self: Client, query: CallbackQuery, strings):
     elif back_match:
         await query.message.edit_msg(
             text=top_text,
-            reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")),
+            reply_markup=InlineKeyboardMarkup(
+                paginate_modules(0, HELPABLE, "help")),
             disable_web_page_preview=True,
         )
 

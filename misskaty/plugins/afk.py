@@ -9,14 +9,14 @@
 #
 
 import re
-
 # Modified plugin by me from https://github.com/TeamYukki/YukkiAFKBot to make compatible with pyrogram v2
 import time
 
 from pyrogram import Client, enums, filters
 from pyrogram.types import Message
 
-from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
+from database.afk_db import (add_afk, cleanmode_off, cleanmode_on, is_afk,
+                             remove_afk)
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
@@ -204,7 +204,8 @@ async def active_afk(self: Client, ctx: Message, strings):
 
     await add_afk(user_id, details)
     send = await ctx.reply_msg(
-        strings("now_afk").format(usr=ctx.from_user.mention, id=ctx.from_user.id)
+        strings("now_afk").format(
+            usr=ctx.from_user.mention, id=ctx.from_user.id)
     )
     await put_cleanmode(ctx.chat.id, send.id)
 
@@ -250,7 +251,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
         for entity in ctx.entities:
             if (
                 entity.type == enums.MessageEntityType.BOT_COMMAND
-                and (message_text[0 : 0 + entity.length]).lower() in possible
+                and (message_text[0: 0 + entity.length]).lower() in possible
             ):
                 return
 
@@ -402,7 +403,8 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                         timeafk = reasondb["time"]
                         data = reasondb["data"]
                         reasonafk = reasondb["reason"]
-                        seenago = get_readable_time2((int(time.time() - timeafk)))
+                        seenago = get_readable_time2(
+                            (int(time.time() - timeafk)))
                         if afktype == "text":
                             msg += strings("is_afk_msg_no_r").format(
                                 usr=user.first_name[:25], id=user.id, tm=seenago
@@ -471,7 +473,8 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                         timeafk = reasondb["time"]
                         data = reasondb["data"]
                         reasonafk = reasondb["reason"]
-                        seenago = get_readable_time2((int(time.time() - timeafk)))
+                        seenago = get_readable_time2(
+                            (int(time.time() - timeafk)))
                         if afktype == "text":
                             msg += strings("is_afk_msg_no_r").format(
                                 usr=first_name[:25], id=user_id, tm=seenago
@@ -520,7 +523,8 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                                     ),
                                 )
                     except:
-                        msg += strings("is_afk").format(usr=first_name[:25], id=user_id)
+                        msg += strings("is_afk").format(
+                            usr=first_name[:25], id=user_id)
             j += 1
     if msg != "":
         try:

@@ -11,21 +11,11 @@ from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, enums, filters
-from pyrogram.errors import (
-    MediaCaptionTooLong,
-    MediaEmpty,
-    MessageIdInvalid,
-    MessageNotModified,
-    PhotoInvalidDimensions,
-    WebpageMediaEmpty,
-)
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.errors import (MediaCaptionTooLong, MediaEmpty, MessageIdInvalid,
+                             MessageNotModified, PhotoInvalidDimensions,
+                             WebpageMediaEmpty)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
 from database.imdb_db import *
 from misskaty import BOT_USERNAME, app
@@ -68,10 +58,13 @@ async def imdb_choose(self: Client, ctx: Message):
     ranval = get_random_string(4)
     LIST_CARI[ranval] = kuery
     buttons.row(
-        InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),
+        InlineButton(
+            "🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
+        InlineButton("🇮🇩 Indonesia",
+                     f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),
     )
-    buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
+    buttons.row(InlineButton("🚩 Set Default Language",
+                f"imdbset#{ctx.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
     msg = await ctx.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
@@ -106,7 +99,8 @@ async def imdblangset(self: Client, query: CallbackQuery):
     is_imdb, lang = await is_imdbset(query.from_user.id)
     if is_imdb:
         buttons.row(
-            InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
+            InlineButton("🗑 Remove UserSetting",
+                         f"setimdb#rm#{query.from_user.id}")
         )
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     msg = await query.message.edit_caption(
@@ -314,7 +308,8 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     year = f"({year})"
                 else:
                     year = "(N/A)"
-                typee = movie.get("q", "N/A").replace("feature", "movie").title()
+                typee = movie.get(
+                    "q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"
                 BTN.append(
@@ -327,7 +322,8 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     InlineKeyboardButton(
                         text="🚩 Language", callback_data=f"imdbset#{uid}"
                     ),
-                    InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+                    InlineKeyboardButton(
+                        text="❌ Close", callback_data=f"close#{uid}"),
                 )
             )
             buttons.add(*BTN)
@@ -373,7 +369,8 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     year = f"({year})"
                 else:
                     year = "(N/A)"
-                typee = movie.get("q", "N/A").replace("feature", "movie").title()
+                typee = movie.get(
+                    "q", "N/A").replace("feature", "movie").title()
                 movieID = re.findall(r"tt(\d+)", movie.get("id"))[0]
                 msg += f"{num}. {title} {year} - {typee}\n"
                 BTN.append(
@@ -386,7 +383,8 @@ async def imdbcari(self: Client, query: CallbackQuery):
                     InlineKeyboardButton(
                         text="🚩 Language", callback_data=f"imdbset#{uid}"
                     ),
-                    InlineKeyboardButton(text="❌ Close", callback_data=f"close#{uid}"),
+                    InlineKeyboardButton(
+                        text="❌ Close", callback_data=f"close#{uid}"),
                 )
             )
             buttons.add(*BTN)
@@ -417,7 +415,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         resp = await http.get(imdb_url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
-            sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
+            sop.find("script", attrs={
+                     "type": "application/ld+json"}).contents[0]
         )
         ott = await search_jw(r_json.get("name"), "ID")
         typee = r_json.get("@type", "")
@@ -434,7 +433,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             res_str += "\n"
         if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
             durasi = (
-                durasi[0].find(class_="ipc-metadata-list-item__content-container").text
+                durasi[0].find(
+                    class_="ipc-metadata-list-item__content-container").text
             )
             res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
         if kategori := r_json.get("contentRating"):
@@ -508,7 +508,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
         if award := sop.select('li[data-testid="award_information"]'):
             awards = (
-                award[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                award[0].find(
+                    class_="ipc-metadata-list-item__list-content-item").text
             )
             res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n"
         else:
@@ -575,7 +576,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
         resp = await http.get(imdb_url, headers=headers)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
-            sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
+            sop.find("script", attrs={
+                     "type": "application/ld+json"}).contents[0]
         )
         ott = await search_jw(r_json.get("name"), "US")
         typee = r_json.get("@type", "")
@@ -592,7 +594,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             res_str += "\n"
         if durasi := sop.select('li[data-testid="title-techspec_runtime"]'):
             durasi = (
-                durasi[0].find(class_="ipc-metadata-list-item__content-container").text
+                durasi[0].find(
+                    class_="ipc-metadata-list-item__content-container").text
             )
             res_str += f"<b>Duration:</b> <code>{durasi}</code>\n"
         if kategori := r_json.get("contentRating"):
@@ -665,7 +668,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             res_str += f"<b>🔥 Keywords:</b> {key_[:-2]} \n"
         if award := sop.select('li[data-testid="award_information"]'):
             awards = (
-                award[0].find(class_="ipc-metadata-list-item__list-content-item").text
+                award[0].find(
+                    class_="ipc-metadata-list-item__list-content-item").text
             )
             res_str += f"<b>🏆 Awards:</b> <code>{awards}</code>\n"
         else:

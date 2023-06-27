@@ -58,7 +58,8 @@ async def urbanDictionary(self: Client, ctx: Message):
         return await ctx.reply_msg("😭 Failed getting info from urban dictionary.")
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "pagination_urban#{number}" + f"#{GetWord}")
+    keyboard.paginate(PageLen, CurrentPage,
+                      "pagination_urban#{number}" + f"#{GetWord}")
     await ctx.reply_msg(text=f"{UDReasult}", reply_markup=keyboard)
 
 
@@ -78,5 +79,6 @@ async def ud_callback(self: Client, callback_query: CallbackQuery):
         return
 
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "pagination_urban#{number}" + f"#{GetWord}")
+    keyboard.paginate(PageLen, CurrentPage,
+                      "pagination_urban#{number}" + f"#{GetWord}")
     await callback_query.message.edit_msg(text=UDReasult, reply_markup=keyboard)

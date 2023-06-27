@@ -19,7 +19,8 @@ from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong, UserNotParticipant
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
@@ -107,7 +108,8 @@ async def stackoverflow(client, message):
         question = data["question_id"]
         title = data["title"]
         snippet = (
-            remove_html_tags(data["excerpt"])[:80].replace("\n", "").replace("    ", "")
+            remove_html_tags(data["excerpt"])[:80].replace(
+                "\n", "").replace("    ", "")
             if len(remove_html_tags(data["excerpt"])) > 80
             else remove_html_tags(data["excerpt"]).replace("\n", "").replace("    ", "")
         )
@@ -182,7 +184,8 @@ async def translate(client, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
     ):
-        target_lang = "id" if len(message.command) == 1 else message.text.split()[1]
+        target_lang = "id" if len(
+            message.command) == 1 else message.text.split()[1]
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
         if len(message.command) < 3:
@@ -503,7 +506,8 @@ async def mdl_callback(bot: Client, query: CallbackQuery):
             result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
             result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
             btn = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]]
+                [[InlineKeyboardButton(
+                    "🎬 Open MyDramaList", url=res["data"]["link"])]]
             )
             await query.message.edit_text(result, reply_markup=btn)
         except Exception as e:

@@ -13,18 +13,11 @@ from pyrogram import Client, emoji, enums, filters
 from pyrogram.errors import BadRequest, PeerIdInvalid, StickersetInvalid
 from pyrogram.file_id import FileId
 from pyrogram.raw.functions.messages import GetStickerSet, SendMedia
-from pyrogram.raw.functions.stickers import (
-    AddStickerToSet,
-    CreateStickerSet,
-    RemoveStickerFromSet,
-)
-from pyrogram.raw.types import (
-    DocumentAttributeFilename,
-    InputDocument,
-    InputMediaUploadedDocument,
-    InputStickerSetItem,
-    InputStickerSetShortName,
-)
+from pyrogram.raw.functions.stickers import (AddStickerToSet, CreateStickerSet,
+                                             RemoveStickerFromSet)
+from pyrogram.raw.types import (DocumentAttributeFilename, InputDocument,
+                                InputMediaUploadedDocument,
+                                InputStickerSetItem, InputStickerSetShortName)
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import BOT_USERNAME, app
@@ -43,7 +36,8 @@ __HELP__ = """
 
 
 def get_emoji_regex():
-    e_list = [getattr(emoji, e).encode("unicode-escape").decode("ASCII") for e in dir(emoji) if not e.startswith("_")]
+    e_list = [getattr(emoji, e).encode("unicode-escape").decode("ASCII")
+              for e in dir(emoji) if not e.startswith("_")]
     # to avoid re.error excluding char that start with '*'
     e_sort = sorted([x for x in e_list if not x.startswith("*")], reverse=True)
     # Sort emojis by length to make sure multi-character emojis are
@@ -175,7 +169,8 @@ async def kang_sticker(self: Client, ctx: Message, strings):
             packname = f"{pack_prefix}{packnum}_{ctx.from_user.id}_by_{self.me.username}"
         if len(ctx.command) > 1:
             # matches all valid emojis in input
-            sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[1:])))) or sticker_emoji
+            sticker_emoji = "".join(set(EMOJI_PATTERN.findall(
+                "".join(ctx.command[1:])))) or sticker_emoji
         filename = await self.download_media(ctx.reply_to_message)
         if not filename:
             # Failed to download
@@ -186,7 +181,8 @@ async def kang_sticker(self: Client, ctx: Message, strings):
         filename = "sticker.png"
         packname = f"c{ctx.from_user.id}_by_{self.me.username}"
         img_url = next(
-            (ctx.text[y.offset : (y.offset + y.length)] for y in ctx.entities if y.type == "url"),
+            (ctx.text[y.offset: (y.offset + y.length)]
+             for y in ctx.entities if y.type == "url"),
             None,
         )
 
@@ -206,7 +202,8 @@ async def kang_sticker(self: Client, ctx: Message, strings):
                 packnum = ctx.command.pop(2)
                 packname = f"a{packnum}_{ctx.from_user.id}_by_{self.me.username}"
             if len(ctx.command) > 2:
-                sticker_emoji = "".join(set(EMOJI_PATTERN.findall("".join(ctx.command[2:])))) or sticker_emoji
+                sticker_emoji = "".join(set(EMOJI_PATTERN.findall(
+                    "".join(ctx.command[2:])))) or sticker_emoji
             resize = True
     else:
         return await prog_msg.edit_msg(strings("kang_help"))
@@ -222,7 +219,8 @@ async def kang_sticker(self: Client, ctx: Message, strings):
             try:
                 stickerset = await self.invoke(
                     GetStickerSet(
-                        stickerset=InputStickerSetShortName(short_name=packname),
+                        stickerset=InputStickerSetShortName(
+                            short_name=packname),
                         hash=0,
                     )
                 )

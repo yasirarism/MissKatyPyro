@@ -6,7 +6,8 @@ async def down_page(url):
     f = cloudscraper.create_scraper()
     resp = f.get(url).text
     soup = BeautifulSoup(resp, "lxml")
-    maindiv = soup.body.find("div", class_="subtitle").find("div", class_="top left")
+    maindiv = soup.body.find("div", class_="subtitle").find(
+        "div", class_="top left")
     title = maindiv.find("div", class_="header").h1.span.text.strip()
     try:
         imdb = maindiv.find("div", class_="header").h1.a["href"]
@@ -17,7 +18,8 @@ async def down_page(url):
     except:
         poster = ""
     try:
-        author_name = maindiv.find("div", class_="header").ul.find("li", class_="author").a.text.strip()
+        author_name = maindiv.find("div", class_="header").ul.find(
+            "li", class_="author").a.text.strip()
         author_link = f"https://subscene.com{maindiv.find('div', class_='header').ul.find('li', class_='author').a['href']}"
     except:
         author_link = ""
@@ -26,11 +28,13 @@ async def down_page(url):
     download_url = f"https://subscene.com{maindiv.find('div', class_='header').ul.find('li', class_='clearfix').find('div', class_='download').a['href']}"
 
     try:
-        comments = maindiv.find("div", class_="header").ul.find("li", class_="comment-wrapper").find("div", class_="comment").text
+        comments = maindiv.find("div", class_="header").ul.find(
+            "li", class_="comment-wrapper").find("div", class_="comment").text
     except:
         comments = ""
     try:
-        release = maindiv.find("div", class_="header").ul.find("li", class_="release").find_all("div")
+        release = maindiv.find("div", class_="header").ul.find(
+            "li", class_="release").find_all("div")
         releases = ""
         for i in range(2):
             r = release[i].text.strip()

@@ -7,7 +7,8 @@ from logging import getLogger
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
 from pyrogram.errors import ChatAdminRequired, MessageTooLong, RPCError
-from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import (ChatMemberUpdated, InlineKeyboardButton,
+                            InlineKeyboardMarkup)
 
 from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
@@ -51,7 +52,8 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 
 @asyncify
 def welcomepic(pic, user, chat, id, strings):
-    background = Image.open("assets/bg.png")  # <- Background Image (Should be PNG)
+    # <- Background Image (Should be PNG)
+    background = Image.open("assets/bg.png")
     background = background.resize((1024, 500), Image.ANTIALIAS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
@@ -109,7 +111,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
             except:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
-        joined_date = datetime.fromtimestamp(time.time()).strftime("%Y.%m.%d %H:%M:%S")
+        joined_date = datetime.fromtimestamp(
+            time.time()).strftime("%Y.%m.%d %H:%M:%S")
         first_name = (
             f"{user.first_name} {user.last_name}" if user.last_name else user.first_name
         )
@@ -219,7 +222,8 @@ async def leave_a_chat(bot, message):
         pass
     try:
         buttons = [
-            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+            [InlineKeyboardButton(
+                "Support", url=f"https://t.me/{SUPPORT_CHAT}")]
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(

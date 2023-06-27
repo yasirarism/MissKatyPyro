@@ -77,7 +77,8 @@ def remove_N(seq):
 
 
 def get_random_string(length: int = 5):
-    text_str = "".join(random.SystemRandom().choice(string.ascii_letters + string.digits) for _ in range(length))
+    text_str = "".join(random.SystemRandom().choice(
+        string.ascii_letters + string.digits) for _ in range(length))
     return text_str.upper()
 
 

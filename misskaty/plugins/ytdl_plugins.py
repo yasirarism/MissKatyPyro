@@ -10,13 +10,8 @@ from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
 from pyrogram.errors import MessageIdInvalid
-from pyrogram.types import (
-    CallbackQuery,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    Message,
-)
+from pyrogram.types import (CallbackQuery, InlineKeyboardButton,
+                            InlineKeyboardMarkup, InputMediaPhoto, Message)
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
@@ -187,7 +182,8 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
                 video_link = f"{YT_VID_URL}{match[1]}"
 
             media_type = "video" if match[3] == "v" else "audio"
-            uid, disp_str = ytdl.get_choice_by_id(match[2], media_type, yt_url=yt_url)
+            uid, disp_str = ytdl.get_choice_by_id(
+                match[2], media_type, yt_url=yt_url)
             key = await ytdl.download(
                 url=video_link,
                 uid=uid,
@@ -265,7 +261,8 @@ async def ytdl_scroll_callback(self: Client, cq: CallbackQuery, strings):
         scroll_btn = [[scroll_btn.pop().pop()]]
     elif page == (len(search["result"]) - 1):
         scroll_btn = [[scroll_btn.pop().pop(0)]]
-    btn = [[InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{i['id']}")]]
+    btn = [[InlineKeyboardButton(
+        strings("dl_btn"), callback_data=f"yt_gen|{i['id']}")]]
     btn = InlineKeyboardMarkup(scroll_btn + btn)
     await cq.edit_message_media(
         InputMediaPhoto(await get_ytthumb(i["id"]), caption=out), reply_markup=btn

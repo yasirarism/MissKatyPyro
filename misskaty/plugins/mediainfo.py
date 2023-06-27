@@ -56,18 +56,21 @@ DETAILS
     """
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+            markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text=strings("viweb"), url=link)]])
         except:
             try:
                 link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
             out_file.name = "MissKaty_Mediainfo.txt"
             await ctx.reply_document(
                 out_file,
-                caption=strings("capt_media").format(ment=ctx.from_user.mention),
+                caption=strings("capt_media").format(
+                    ment=ctx.from_user.mention),
                 thumb="assets/thumb.jpg",
                 reply_markup=markup,
             )
@@ -81,7 +84,8 @@ DETAILS
             link = ctx.input
             process = await ctx.reply_msg(strings("wait_msg"))
             try:
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode("utf-8")
+                output = subprocess.check_output(
+                    ["mediainfo", f"{link}"]).decode("utf-8")
             except Exception:
                 return await process.edit_msg(strings("err_link"))
             body_text = f"""
@@ -91,18 +95,21 @@ DETAILS
             # link = await post_to_telegraph(False, title, body_text)
             try:
                 link = await mediainfo_paste(out, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]])
             except:
                 try:
                     link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
-                    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text=strings("viweb"), url=link)]])
+                    markup = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton(text=strings("viweb"), url=link)]])
                 except:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await ctx.reply_document(
                     out_file,
-                    caption=strings("capt_media").format(ment=ctx.from_user.mention),
+                    caption=strings("capt_media").format(
+                        ment=ctx.from_user.mention),
                     thumb="assets/thumb.jpg",
                     reply_markup=markup,
                 )

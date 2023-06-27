@@ -3,10 +3,8 @@ from asyncio import sleep
 
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait
-from pyrogram.errors.exceptions.bad_request_400 import (
-    ChatAdminRequired,
-    UserAdminInvalid,
-)
+from pyrogram.errors.exceptions.bad_request_400 import (ChatAdminRequired,
+                                                        UserAdminInvalid)
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app

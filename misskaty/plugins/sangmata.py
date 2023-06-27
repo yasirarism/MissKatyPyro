@@ -40,9 +40,12 @@ async def cek_mataa(self: Client, ctx: Message, strings):
     if usernamebefore != ctx.from_user.username or first_name != ctx.from_user.first_name or lastname_before != ctx.from_user.last_name:
         msg += f"👀 <b>Mata MissKaty</b>\n\n🌞 User: {ctx.from_user.mention} [<code>{ctx.from_user.id}</code>]\n"
     if usernamebefore != ctx.from_user.username:
-        usernamebefore = f"@{usernamebefore}" if usernamebefore else strings("no_uname")
-        usernameafter = f"@{ctx.from_user.username}" if ctx.from_user.username else strings("no_uname")
-        msg += strings("uname_change_msg").format(bef=usernamebefore, aft=usernameafter)
+        usernamebefore = f"@{usernamebefore}" if usernamebefore else strings(
+            "no_uname")
+        usernameafter = f"@{ctx.from_user.username}" if ctx.from_user.username else strings(
+            "no_uname")
+        msg += strings("uname_change_msg").format(bef=usernamebefore,
+                                                  aft=usernameafter)
         await add_userdata(
             ctx.from_user.id,
             ctx.from_user.username,
@@ -50,7 +53,8 @@ async def cek_mataa(self: Client, ctx: Message, strings):
             ctx.from_user.last_name,
         )
     if first_name != ctx.from_user.first_name:
-        msg += strings("firstname_change_msg").format(bef=first_name, aft=ctx.from_user.first_name)
+        msg += strings("firstname_change_msg").format(bef=first_name,
+                                                      aft=ctx.from_user.first_name)
         await add_userdata(
             ctx.from_user.id,
             ctx.from_user.username,
@@ -60,7 +64,8 @@ async def cek_mataa(self: Client, ctx: Message, strings):
     if lastname_before != ctx.from_user.last_name:
         lastname_before = lastname_before or strings("no_last_name")
         lastname_after = ctx.from_user.last_name or strings("no_last_name")
-        msg += strings("lastname_change_msg").format(bef=lastname_before, aft=lastname_after)
+        msg += strings("lastname_change_msg").format(bef=lastname_before,
+                                                     aft=lastname_after)
         await add_userdata(
             ctx.from_user.id,
             ctx.from_user.username,

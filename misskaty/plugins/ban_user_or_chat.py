@@ -15,7 +15,8 @@ async def ban_reply(self: Client, ctx: Message):
     try:
         ban = await db.get_ban_status(ctx.from_user.id)
         if (ban.get("is_banned") and ctx.chat.type.value == "private") or (
-            ban.get("is_banned") and ctx.chat.type.value == "supergroup" and ctx.command
+            ban.get(
+                "is_banned") and ctx.chat.type.value == "supergroup" and ctx.command
         ):
             await ctx.reply_msg(
                 f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
@@ -46,7 +47,8 @@ async def grp_bd(self: Client, ctx: Message, strings):
     chck = await db.get_chat(ctx.chat.id)
     if chck["is_disabled"]:
         buttons = [
-            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+            [InlineKeyboardButton(
+                "Support", url=f"https://t.me/{SUPPORT_CHAT}")]
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         vazha = await db.get_chat(ctx.chat.id)
@@ -154,7 +156,8 @@ async def disable_chat(bot, message):
     await message.reply("Chat Succesfully Disabled")
     try:
         buttons = [
-            [InlineKeyboardButton("Support", url=f"https://t.me/{SUPPORT_CHAT}")]
+            [InlineKeyboardButton(
+                "Support", url=f"https://t.me/{SUPPORT_CHAT}")]
         ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await bot.send_message(

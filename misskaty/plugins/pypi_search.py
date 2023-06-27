@@ -31,7 +31,8 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         pypiResult = f"<b>#Pypi Results For:</b> <code>{kueri}</code>\n\n"
         for c, i in enumerate(PYPI_DICT[msg.id][0][index], start=1):
             pypiResult += f"<b>{c}.</b> <a href='{i['url']}'>{i['name']} {i['version']}</a>\n<b>Created:</b> <code>{i['created']}</code>\n<b>Desc:</b> <code>{i['description']}</code>\n\n"
-            extractbtn.append(InlineButton(c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}"))
+            extractbtn.append(InlineButton(
+                c, f"pypidata#{CurrentPage}#{c}#{user}#{msg.id}"))
         pypiResult = "".join(i for i in pypiResult if i not in "[]")
         return pypiResult, PageLen, extractbtn
     except (IndexError, KeyError):
@@ -51,7 +52,8 @@ async def pypi_s(self: Client, ctx: Message):
     if not pypires:
         return
     keyboard = InlineKeyboard()
-    keyboard.paginate(PageLen, CurrentPage, "page_pypi#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
+    keyboard.paginate(PageLen, CurrentPage,
+                      "page_pypi#{number}" + f"#{pesan.id}#{ctx.from_user.id}")
     keyboard.row(InlineButton("👇 Get Info ", "Hmmm"))
     keyboard.row(*btn)
     keyboard.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
@@ -83,7 +85,8 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
     )
     keyboard.row(InlineButton("👇 Extract Data ", "Hmmm"))
     keyboard.row(*btn)
-    keyboard.row(InlineButton("❌ Close", f"close#{callback_query.from_user.id}"))
+    keyboard.row(InlineButton(
+        "❌ Close", f"close#{callback_query.from_user.id}"))
     await callback_query.message.edit_msg(pypires, reply_markup=keyboard)
 
 
@@ -96,7 +99,8 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
     message_id = int(callback_query.data.split("#")[4])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        pkgname = PYPI_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("name")
+        pkgname = PYPI_DICT[message_id][0][CurrentPage -
+                                           1][idlink - 1].get("name")
     except KeyError:
         return await callback_query.answer("Invalid callback data, please send CMD again..")
 
@@ -111,7 +115,8 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
     try:
         html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
         res = html.json()
-        requirement = "".join(f"{i}, " for i in res["info"].get("requires_dist")) if res["info"].get("requires_dist") else "Unknown"
+        requirement = "".join(f"{i}, " for i in res["info"].get(
+            "requires_dist")) if res["info"].get("requires_dist") else "Unknown"
         msg = ""
         msg += f"<b>Package Name:</b> {res['info'].get('name', 'Unknown')}\n"
         msg += f"<b>Version:</b> {res['info'].get('version', 'Unknown')}\n"
