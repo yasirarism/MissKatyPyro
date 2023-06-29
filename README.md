@@ -39,10 +39,10 @@
 
 ## [3] Donation and Support
 *For Indonesian Only and some supported country:*<br>
- 🌱 [![QRIS]][qris-url]<br>
+ 🌱 [QRIS][qris-url]<br>
 
 *For International Payment:*<br>
- 🌱 [![Paypal]][paypal-url]<br>
+ 🌱 [Paypal][paypal-url]<br>
 
 ## [4] Notes
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me. You can also give support to me for buying server.
