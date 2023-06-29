@@ -103,21 +103,9 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(client, ctx):
-    keyboard = InlineKeyboard(row_width=2)
-    keyboard.add(
-        InlineButton(
-            "QR QRIS [Yasir Store]",
-            url="https://telegra.ph/file/2acf7698f300ef3d9138f.jpg",
-        ),
-        InlineButton("Sociabuzz", url="https://sociabuzz.com/yasirarism/tribe"),
-        InlineButton("Saweria", url="https://saweria.co/yasirarism"),
-        InlineButton("Trakteer", url="https://trakteer.id/yasir-aris-sp7cn"),
-        InlineButton("Ko-Fi", url="https://ko-fi.com/yasirarism"),
-        InlineButton("PayPal", url="https://paypal.me/yasirarism"),
-    )
-    await ctx.reply(
-        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini besrguna bisa melakukan donasi dengan ke rekening diatas yaa (disarankan menggunakan QRIS atau Sociabuzz). Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation to the account above (Use PayPal, SociaBuzz, or Ko-Fi). Because this bot server is hosted in VPS and not free. Thank you..",
-        reply_markup=keyboard,
+    await ctx.reply_photo(
+        "https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg"
+        f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini berguna kamu bisa melakukan donasi dengan scan QR menggunakan merchant yang support QRIS ya. Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation via Paypal for international payment : https://paypal.me/yasirarism. Because this bot server is hosted in VPS and not free. Thank you..",
     )
 
 
