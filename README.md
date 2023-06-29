@@ -39,10 +39,10 @@
 
 ## [3] Donation
 *For Indonesian Only and some supported country:*<br>
- 🌱 [QRIS](qris-url)<br>
+ 🌱 ![QRIS][qris-url]<br>
 
 *For International Payment:*<br>
- 🌱 [Paypal](paypal-url)<br>
+ 🌱 ![Paypal][paypal-url]<br>
 
 ## [4] Notes
 If you want help me fixing some error in my bot, you can make pull request to this repo. I'm very glad if you can help me. You can also give support to me for buying server.
@@ -187,7 +187,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. G
 [readme-ko-url]: README.id.md
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
-[qris-url]: https://telegra.ph/file/2acf7698f300ef3d9138f.jpg
+[qris-url]: https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
