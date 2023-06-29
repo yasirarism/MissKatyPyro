@@ -104,7 +104,7 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(client, ctx):
     await ctx.reply_photo(
-        "https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg"
+        "https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg",
         caption=f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini berguna kamu bisa melakukan donasi dengan scan QR menggunakan merchant yang support QRIS ya. Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation via Paypal for international payment : https://paypal.me/yasirarism. Because this bot server is hosted in VPS and not free. Thank you..",
     )
 
