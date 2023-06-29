@@ -39,10 +39,10 @@
 
 ## [3] Donation
 *Khusus Indonesia Saja:*<br>
- 🌱 ![QRIS][qris-url]<br>
+ 🌱 [QRIS](qris-url)<br>
 
 *Untuk Semua Negara:*<br>
- 🌱 ![Paypal][paypal-url]<br>
+ 🌱 [Paypal](paypal-url)<br>
 
 ## [4] Notes
 Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda dapat membuat PR ke repo ini. Saya sangat senang jika Anda dapat membantu saya. Anda juga dapat memberikan dukungan kepada saya untuk membeli server.

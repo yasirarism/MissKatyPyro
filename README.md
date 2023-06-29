@@ -40,6 +40,7 @@
 ## [3] Donation
 *For Indonesian Only and some supported country:*<br>
  🌱 ![QRIS][qris-url]<br>
+ 🌱 [![Readme in Indonesian]][readme-ko-url]
 
 *For International Payment:*<br>
  🌱 ![Paypal][paypal-url]<br>
