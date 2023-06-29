@@ -38,14 +38,10 @@
  🌱 VPS/Server With Docker Support (Recommended)<br>
 
 ## [3] Donation
-*For Indonesian Only:*<br>
- 🌱 [QR QRIS](qris-url)<br>
- <p align="center">
-  <img src="https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg" width="200" height="200"/>
-</p>
- 🌱 [Saweria](saweria-url)<br>
+*For Indonesian Only and some supported country:*<br>
+ 🌱 [QRIS](qris-url)<br>
 
-*For All Payment:*<br>
+*For International Payment:*<br>
  🌱 [Paypal](paypal-url)<br>
 
 ## [4] Notes
