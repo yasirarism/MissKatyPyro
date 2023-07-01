@@ -46,7 +46,7 @@ if UPSTREAM_REPO_URL is not None and UPSTREAM_REPO_BRANCH is not None:
                      && git fetch origin -q \
                      && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"], shell=True)
     if update.returncode == 0:
-        logging.info(f'Successfully updated with latest commit branch > {UPSTREAM_REPO_BRANCH}')
+        LOGGER.info(f'Successfully updated with latest commit branch > {UPSTREAM_REPO_BRANCH}')
     else:
-        logging.error(f'Something went wrong while updating, check UPSTREAM_REPO_URL if valid or not! return code: {update.returncode}')
+        LOGGER.error(f'Something went wrong while updating, check UPSTREAM_REPO_URL if valid or not! return code: {update.returncode}')
         sys.exit(1)
