@@ -103,15 +103,9 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
-            msg = await ctx.reply_photo(
+            await ctx.reply_photo(
                 photo, caption=caption, reply_markup=markup, quote=True
             )
-            await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
-        except ListenerTimeout:
-            try:
-                await msg.edit_caption(strings("exp_task", context="general"))
-            except MessageIdInvalid:
-                pass
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
