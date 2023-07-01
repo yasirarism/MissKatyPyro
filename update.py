@@ -24,7 +24,7 @@ if len(CONFIG_FILE_URL) != 0:
         LOGGER.error(f"Something wrong while downloading config.env > {str(e)}")
         sys.exit(0)
 
-load_dotenv('config.env', override=True)
+load_dotenv("config.env", override=True)
 
 UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL", "")
 if len(UPSTREAM_REPO_URL) == 0:
@@ -35,18 +35,27 @@ if len(UPSTREAM_REPO_BRANCH) == 0:
     UPSTREAM_REPO_BRANCH = "master"
 
 if UPSTREAM_REPO is not None and UPSTREAM_BRANCH is not None:
-    if os.path.exists('.git'):
+    if os.path.exists(".git"):
         srun(["rm", "-rf", ".git"])
-    update = srun([f"git init -q \
+    update = srun(
+        [
+            f"git init -q \
                      && git config --global user.email mail@yasir.eu.org \
                      && git config --global user.name YasirArisM \
                      && git add . \
                      && git commit -sm update -q \
                      && git remote add origin {UPSTREAM_REPO} \
                      && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
+                     && git reset --hard origin/{UPSTREAM_BRANCH} -q"
+        ],
+        shell=True,
+    )
     if update.returncode == 0:
-        logging.info(f'Successfully updated with latest commit branch > {UPSTREAM_BRANCH}')
+        logging.info(
+            f"Successfully updated with latest commit branch > {UPSTREAM_BRANCH}"
+        )
     else:
-        logging.error(f'Something went wrong while updating, check UPSTREAM_REPO if valid or not! return code: {update.returncode}')
+        logging.error(
+            f"Something went wrong while updating, check UPSTREAM_REPO if valid or not! return code: {update.returncode}"
+        )
         sys.exit(1)
