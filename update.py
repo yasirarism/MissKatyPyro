@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 LOGGER = logging.getLogger(__name__)
 
-CONFIG_FILE_URL = environ.get("CONFIG_FILE_URL", "")
+CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL", "")
 if len(CONFIG_FILE_URL) != 0:
     try:
         res = requests.get(CONFIG_FILE_URL)
