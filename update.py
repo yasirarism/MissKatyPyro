@@ -34,7 +34,7 @@ UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH", "")
 if len(UPSTREAM_REPO_BRANCH) == 0:
     UPSTREAM_REPO_BRANCH = "master"
 
-if UPSTREAM_REPO is not None and UPSTREAM_BRANCH is not None:
+if UPSTREAM_REPO_URL is not None and UPSTREAM_REPO_BRANCH is not None:
     if os.path.exists('.git'):
         srun(["rm", "-rf", ".git"])
     update = srun([f"git init -q \
@@ -42,11 +42,11 @@ if UPSTREAM_REPO is not None and UPSTREAM_BRANCH is not None:
                      && git config --global user.name YasirArisM \
                      && git add . \
                      && git commit -sm update -q \
-                     && git remote add origin {UPSTREAM_REPO} \
+                     && git remote add origin {UPSTREAM_REPO_URL} \
                      && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_BRANCH} -q"], shell=True)
+                     && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"], shell=True)
     if update.returncode == 0:
-        logging.info(f'Successfully updated with latest commit branch > {UPSTREAM_BRANCH}')
+        logging.info(f'Successfully updated with latest commit branch > {UPSTREAM_REPO_BRANCH}')
     else:
-        logging.error(f'Something went wrong while updating, check UPSTREAM_REPO if valid or not! return code: {update.returncode}')
+        logging.error(f'Something went wrong while updating, check UPSTREAM_REPO_URL if valid or not! return code: {update.returncode}')
         sys.exit(1)
