@@ -32,7 +32,7 @@ if len(UPSTREAM_REPO_URL) == 0:
 
 UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH", "")
 if len(UPSTREAM_REPO_BRANCH) == 0:
-    UPSTREAM_REPO_BRANCH = "master"
+    UPSTREAM_REPO_BRANCH = None
 
 if UPSTREAM_REPO_URL is not None and UPSTREAM_REPO_BRANCH is not None:
     if os.path.exists('.git'):
