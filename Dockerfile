@@ -14,6 +14,6 @@ ENV HOSTNAME misskaty
 # Copy Files
 COPY . .
 # Instal pip package
-RUN pip3 install -r requirements.txt --break-system-packages
+RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]
