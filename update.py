@@ -1,11 +1,16 @@
+import logging
+import os
+import subprocess
+import time
+
+import dotenv
 import requests
 from git import Repo
-import logging, os, dotenv, subprocess, time
 
 logging.basicConfig(
-    format='[%(levelname)s] - [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s',
-    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
-    level=logging.INFO
+    format="[%(levelname)s] - [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s",
+    handlers=[logging.FileHandler("log.txt"), logging.StreamHandler()],
+    level=logging.INFO,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -28,11 +33,11 @@ except:
 
 dotenv.load_dotenv("config.env", override=True)
 
-UPSTREAM_REPO_URL = os.environ.get('UPSTREAM_REPO_URL')
-UPSTREAM_REPO_BRANCH = os.environ.get('UPSTREAM_REPO_BRANCH')
+UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL")
+UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH")
 
 if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
-    if os.path.exists('.git'):
+    if os.path.exists(".git"):
         subprocess.run(["rm", "-rf", ".git"])
 
     try:
@@ -40,7 +45,9 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
         origin = repo.create_remote("upstream", UPSTREAM_REPO_URL)
         origin.fetch()
         repo.create_head(UPSTREAM_REPO_BRANCH, origin.refs[UPSTREAM_REPO_BRANCH])
-        repo.heads[UPSTREAM_REPO_BRANCH].set_tracking_branch(origin.refs[UPSTREAM_REPO_BRANCH])
+        repo.heads[UPSTREAM_REPO_BRANCH].set_tracking_branch(
+            origin.refs[UPSTREAM_REPO_BRANCH]
+        )
         repo.heads[UPSTREAM_REPO_BRANCH].checkout(True)
         ups_rem = repo.remote("upstream")
         ups_rem.fetch(UPSTREAM_REPO_BRANCH)
@@ -52,7 +59,9 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
     # if update.returncode == 0:
     #    LOGGER.info("Successfully update package pip python")
-    #else:
+    # else:
     #    LOGGER.warning("Unsuccessfully update package pip python")
 else:
-    LOGGER.warning("UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update")
+    LOGGER.warning(
+        "UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update"
+    )
