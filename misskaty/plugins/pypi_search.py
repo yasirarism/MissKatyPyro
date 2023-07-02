@@ -149,7 +149,6 @@ async def pypi_getdata(self: Client, callback_query: CallbackQuery):
             f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"
         )
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
+        await callback_query.message.edit_msg(msg, reply_markup=keyboard)
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
-        return
-    await callback_query.message.edit_msg(msg, reply_markup=keyboard)

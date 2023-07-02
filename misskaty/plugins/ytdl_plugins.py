@@ -103,15 +103,9 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
-            msg = await ctx.reply_photo(
+            await ctx.reply_photo(
                 photo, caption=caption, reply_markup=markup, quote=True
             )
-            await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
-        except ListenerTimeout:
-            try:
-                await msg.edit_caption(strings("exp_task", context="general"))
-            except MessageIdInvalid:
-                pass
         except Exception as err:
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
@@ -168,6 +162,8 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
 @ratelimiter
 @use_chat_lang()
 async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
+    if not cq.message.reply_to_message.from_user:
+        return
     match = cq.data.split("|")
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)

@@ -301,35 +301,37 @@ async def kickme(_, message):
 @app.on_message(filters.command("users") & filters.user(SUDO))
 async def list_users(bot, message):
     # https://t.me/GetTGLink/4184
-    raju = await message.reply("Getting List Of Users")
+    msg = await message.reply("Getting List Of Users")
     users = await db.get_all_users()
     out = "Users Saved In DB Are:\n\n"
     async for user in users:
-        out += f"<a href=tg://user?id={user['id']}>{user['name']}</a>"
+        out += f"User ID: {user.get('id')} -> {user.get('name')}"
         if user["ban_status"]["is_banned"]:
             out += "( Banned User )"
         out += "\n"
     try:
-        await raju.edit_text(out)
+        await msg.edit_text(out)
     except MessageTooLong:
         with open("users.txt", "w+") as outfile:
             outfile.write(out)
         await message.reply_document("users.txt", caption="List Of Users")
+        await msg.delete_msg()
 
 
 @app.on_message(filters.command("chats") & filters.user(SUDO))
 async def list_chats(bot, message):
-    raju = await message.reply("Getting List Of chats")
+    msg = await message.reply("Getting List Of chats")
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
+        out += f"Title: {chat.get('title')} ({chat.get('id')}) "
         if chat["chat_status"]["is_disabled"]:
             out += "( Disabled Chat )"
         out += "\n"
     try:
-        await raju.edit_text(out)
+        await msg.edit_text(out)
     except MessageTooLong:
         with open("chats.txt", "w+") as outfile:
             outfile.write(out)
         await message.reply_document("chats.txt", caption="List Of Chats")
+        await msg.delete_msg()

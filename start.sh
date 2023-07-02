@@ -1,1 +1,1 @@
-python3 -m misskaty
+python3 update.py && python3 -m misskaty

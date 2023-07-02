@@ -1,13 +1,21 @@
 import logging
 import os
-from subprocess import run as srun
+import subprocess
+import time
 
+import dotenv
 import requests
-from dotenv import load_dotenv
+from git import Repo
+
+logging.basicConfig(
+    format="[%(levelname)s] - [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s",
+    handlers=[logging.FileHandler("log.txt"), logging.StreamHandler()],
+    level=logging.INFO,
+)
 
 LOGGER = logging.getLogger(__name__)
 
-CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL", "")
+CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL")
 try:
     if len(CONFIG_FILE_URL) == 0:
         raise TypeError
@@ -19,42 +27,41 @@ try:
         else:
             LOGGER.error(f"config.env err: {res.status_code}")
     except Exception as e:
-        LOGGER.error(f"ENV_URL: {e}")
+        LOGGER.error(f"CONFIG_FILE_URL: {e}")
 except:
     pass
 
-load_dotenv("config.env", override=True)
+dotenv.load_dotenv("config.env", override=True)
 
-UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL", "")
-if len(UPSTREAM_REPO_URL) == 0:
-    UPSTREAM_REPO_URL = None
+UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL")
+UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH")
 
-UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH", "")
-if len(UPSTREAM_REPO_BRANCH) == 0:
-    UPSTREAM_REPO_BRANCH = "master"
-
-if UPSTREAM_REPO_URL is not None:
+if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     if os.path.exists(".git"):
-        srun(["rm", "-rf", ".git"], check=True)
+        subprocess.run(["rm", "-rf", ".git"])
 
-    update = srun(
-        [
-            f"git init -q \
-                     && git config --global user.email mail@yasir.eu.org \
-                     && git config --global user.name yasirarism \
-                     && git add . \
-                     && git commit -sm update -q \
-                     && git remote add origin {UPSTREAM_REPO_URL} \
-                     && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"
-        ],
-        shell=True,
-        check=True,
-    )
-
-    if update.returncode == 0:
-        LOGGER.error("Successfully updated with latest commit from UPSTREAM_REPO")
-    else:
-        LOGGER.error(
-            "Something went wrong while updating, check UPSTREAM_REPO if valid or not!"
+    try:
+        repo = Repo.init()
+        origin = repo.create_remote("upstream", UPSTREAM_REPO_URL)
+        origin.fetch()
+        repo.create_head(UPSTREAM_REPO_BRANCH, origin.refs[UPSTREAM_REPO_BRANCH])
+        repo.heads[UPSTREAM_REPO_BRANCH].set_tracking_branch(
+            origin.refs[UPSTREAM_REPO_BRANCH]
         )
+        repo.heads[UPSTREAM_REPO_BRANCH].checkout(True)
+        ups_rem = repo.remote("upstream")
+        ups_rem.fetch(UPSTREAM_REPO_BRANCH)
+        LOGGER.info(f"Successfully update with latest branch > {UPSTREAM_REPO_BRANCH}")
+    except Exception as e:
+        LOGGER.error(e)
+        pass
+    # time.sleep(6)
+    # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
+    # if update.returncode == 0:
+    #    LOGGER.info("Successfully update package pip python")
+    # else:
+    #    LOGGER.warning("Unsuccessfully update package pip python")
+else:
+    LOGGER.warning(
+        "UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update"
+    )
