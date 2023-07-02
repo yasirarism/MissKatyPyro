@@ -28,3 +28,4 @@ pyrate_limiter
 cachetools
 cloudscraper
 openai
+PyGithub
