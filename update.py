@@ -1,52 +1,58 @@
-import logging
-import os
-import sys
-from subprocess import run as srun
-
 import requests
-from dotenv import load_dotenv
+from git import Repo
+import logging, os, dotenv, subprocess, time
+
+logging.basicConfig(
+    format='[%(levelname)s] - [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s',
+    handlers=[logging.FileHandler('log.txt'), logging.StreamHandler()],
+    level=logging.INFO
+)
 
 LOGGER = logging.getLogger(__name__)
 
-CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL", "")
-if len(CONFIG_FILE_URL) != 0:
+CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL")
+try:
+    if len(CONFIG_FILE_URL) == 0:
+        raise TypeError
     try:
         res = requests.get(CONFIG_FILE_URL)
         if res.status_code == 200:
-            with open("config.env", "wb+") as c:
-                c.write(res.content)
-                LOGGER.info("Config env has successfully writed")
+            with open("config.env", "wb+") as f:
+                f.write(res.content)
         else:
-            LOGGER.info(
-                f"config.env error: {res.status_code}\nMake sure ur config.env found in workdir, will continuing with config.env on workdir"
-            )
+            LOGGER.error(f"config.env err: {res.status_code}")
     except Exception as e:
-        LOGGER.error(f"Something wrong while downloading config.env > {str(e)}")
-        sys.exit(0)
+        LOGGER.error(f"CONFIG_FILE_URL: {e}")
+except:
+    pass
 
-load_dotenv('config.env', override=True)
+dotenv.load_dotenv("config.env", override=True)
 
-UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL", "")
-if len(UPSTREAM_REPO_URL) == 0:
-    UPSTREAM_REPO_URL = None
+UPSTREAM_REPO_URL = os.environ.get('UPSTREAM_REPO_URL')
+UPSTREAM_REPO_BRANCH = os.environ.get('UPSTREAM_REPO_BRANCH')
 
-UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH", "")
-if len(UPSTREAM_REPO_BRANCH) == 0:
-    UPSTREAM_REPO_BRANCH = None
-
-if UPSTREAM_REPO_URL is not None and UPSTREAM_REPO_BRANCH is not None:
+if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     if os.path.exists('.git'):
-        srun(["rm", "-rf", ".git"])
-    update = srun([f"git init -q \
-                     && git config --global user.email mail@yasir.eu.org \
-                     && git config --global user.name YasirArisM \
-                     && git add . \
-                     && git commit -sm update -q \
-                     && git remote add origin {UPSTREAM_REPO_URL} \
-                     && git fetch origin -q \
-                     && git reset --hard origin/{UPSTREAM_REPO_BRANCH} -q"], shell=True)
-    if update.returncode == 0:
-        LOGGER.info(f'Successfully updated with latest commit branch > {UPSTREAM_REPO_BRANCH}')
-    else:
-        LOGGER.error(f'Something went wrong while updating, check UPSTREAM_REPO_URL if valid or not! return code: {update.returncode}')
-        sys.exit(1)
+        subprocess.run(["rm", "-rf", ".git"])
+
+    try:
+        repo = Repo.init()
+        origin = repo.create_remote("upstream", UPSTREAM_REPO_URL)
+        origin.fetch()
+        repo.create_head(UPSTREAM_REPO_BRANCH, origin.refs[UPSTREAM_REPO_BRANCH])
+        repo.heads[UPSTREAM_REPO_BRANCH].set_tracking_branch(origin.refs[UPSTREAM_REPO_BRANCH])
+        repo.heads[UPSTREAM_REPO_BRANCH].checkout(True)
+        ups_rem = repo.remote("upstream")
+        ups_rem.fetch(UPSTREAM_REPO_BRANCH)
+        LOGGER.info(f"Successfully update with latest branch > {UPSTREAM_REPO_BRANCH}")
+    except Exception as e:
+        LOGGER.error(e)
+        pass
+    # time.sleep(6)
+    # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
+    # if update.returncode == 0:
+    #    LOGGER.info("Successfully update package pip python")
+    #else:
+    #    LOGGER.warning("Unsuccessfully update package pip python")
+else:
+    LOGGER.warning("UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update")
