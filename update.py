@@ -54,7 +54,6 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
         LOGGER.info(f"Successfully update with latest branch > {UPSTREAM_REPO_BRANCH}")
     except Exception as e:
         LOGGER.error(e)
-        pass
     # time.sleep(6)
     # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
     # if update.returncode == 0:
