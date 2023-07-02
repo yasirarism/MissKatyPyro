@@ -18,7 +18,7 @@ psutil
 python-dateutil
 telegraph
 hachoir
-Pillow>=9.5.0
+Pillow==10.0.0
 httpx[http2]
 git+https://github.com/yasirarism/vcsi
 git+https://github.com/yasirarism/iytdl
