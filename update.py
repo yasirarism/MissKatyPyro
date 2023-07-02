@@ -7,12 +7,6 @@ import dotenv
 import requests
 from git import Repo
 
-logging.basicConfig(
-    format="[%(levelname)s] - [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s",
-    handlers=[logging.FileHandler("log.txt"), logging.StreamHandler()],
-    level=logging.INFO,
-)
-
 LOGGER = logging.getLogger(__name__)
 
 CONFIG_FILE_URL = os.environ.get("CONFIG_FILE_URL")
