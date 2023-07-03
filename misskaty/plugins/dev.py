@@ -496,14 +496,8 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 @app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def update_restart(self: Client, ctx: Message, strings) -> "Message":
-    try:
-        out = (await shell_exec("git pull"))[0]
-        if "Already up to date." in str(out):
-            return await ctx.reply_msg(strings("already_up"))
-        await ctx.reply_msg(f"<code>{out}</code>")
-    except Exception as e:
-        return await ctx.reply_msg(str(e))
     msg = await ctx.reply_msg(strings("up_and_rest"))
+    await shell_exec("python3 update.py")
     with open("restart.pickle", "wb") as status:
         pickle.dump([ctx.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
