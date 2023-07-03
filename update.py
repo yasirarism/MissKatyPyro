@@ -7,6 +7,16 @@ import dotenv
 import requests
 from git import Repo
 
+logging.basicConfig(
+    level=INFO,
+    format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+    handlers=[
+        logging.handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),
+        logging.StreamHandler(),
+    ],
+)
+
 LOGGER = logging.getLogger(__name__)
 
 ENV_URL = os.environ.get("ENV_URL")

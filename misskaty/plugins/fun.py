@@ -1,4 +1,4 @@
-import textwrap
+import textwrap, logging
 from asyncio import gather
 from os import remove as hapus
 
@@ -11,6 +11,7 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
+LOGGER = logging.getLogger(__name__)
 
 async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
@@ -28,7 +29,7 @@ async def draw_meme_text(image_path, text):
     current_h, pad = 10, 5
     if upper_text:
         for u_text in textwrap.wrap(upper_text, width=15):
-            low_test = draw.textlength(text=l_text, font=m_font)
+            low_test = draw.textlength(text=u_text, font=m_font)
             LOGGER.info(low_test)
             u_width, u_height = draw.textlength(text=u_text, font=m_font)
             draw.text(
