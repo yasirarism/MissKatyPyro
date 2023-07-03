@@ -12,7 +12,9 @@ logging.basicConfig(
     format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
-        logging.handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),
+        logging.handlers.RotatingFileHandler(
+            "MissKatyLogs.txt", mode="w+", maxBytes=1000000
+        ),
         logging.StreamHandler(),
     ],
 )
