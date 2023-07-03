@@ -1,4 +1,5 @@
-import textwrap, logging
+import logging
+import textwrap
 from asyncio import gather
 from os import remove as hapus
 
@@ -12,6 +13,7 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = logging.getLogger(__name__)
+
 
 async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
