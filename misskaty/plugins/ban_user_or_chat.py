@@ -23,6 +23,7 @@ async def ban_reply(self: Client, ctx: Message):
             f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
         )
         await ctx.stop_propagation()
+        return
 
 
 @app.on_message(filters.group & filters.incoming, group=-2)
