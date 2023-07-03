@@ -8,7 +8,7 @@ import requests
 from git import Repo
 
 logging.basicConfig(
-    level=INFO,
+    level=logging.INFO,
     format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
