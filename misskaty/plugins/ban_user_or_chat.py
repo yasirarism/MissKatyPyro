@@ -8,7 +8,7 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 
 
-@app.on_message(filters.incoming, group=-1)
+@app.on_message(filters.incoming, group=-5)
 async def ban_reply(self: Client, ctx: Message):
     if not ctx.from_user:
         return
