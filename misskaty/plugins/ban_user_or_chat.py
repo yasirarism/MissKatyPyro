@@ -20,7 +20,7 @@ async def ban_reply(self: Client, ctx: Message):
             await ctx.reply_msg(
                 f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
             )
-            await ctx.stop_propagation()
+            return await ctx.stop_propagation()
     except:
         await ctx.continue_propagation()
 
