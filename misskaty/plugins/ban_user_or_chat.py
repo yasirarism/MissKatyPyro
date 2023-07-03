@@ -16,9 +16,10 @@ async def ban_reply(self: Client, ctx: Message):
     if (ban.get("is_banned") and ctx.chat.type.value == "private") or (
         ban.get("is_banned") and ctx.chat.type.value == "supergroup" and ctx.command
     ):
-        return await ctx.reply_msg(
+        await ctx.reply_msg(
             f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
         )
+        await ctx.stop_propagation()
 
 
 @app.on_message(filters.group & filters.incoming, group=-2)
