@@ -12,10 +12,7 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 async def ban_reply(self: Client, ctx: Message):
     if not ctx.from_user:
         return
-    try:
-        ban = await db.get_ban_status(ctx.from_user.id)
-    except:
-        return await ctx.continue_propagation()
+    ban = await db.get_ban_status(ctx.from_user.id)
     if (ban.get("is_banned") and ctx.chat.type.value == "private") or (
         ban.get("is_banned") and ctx.chat.type.value == "supergroup" and ctx.command
     ):
@@ -23,7 +20,6 @@ async def ban_reply(self: Client, ctx: Message):
             f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
         )
         await ctx.stop_propagation()
-        return
 
 
 @app.on_message(filters.group & filters.incoming, group=-2)
