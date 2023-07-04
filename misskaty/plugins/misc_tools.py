@@ -65,7 +65,7 @@ async def kbbi_search(_, ctx: Client):
         [[InlineKeyboardButton(text="Open in Web", url=r.get('link'))]]
         )
     res = f"<b>Definisi:</b>\n"
-    for a in r.get("result"):
+    for num, a in enumerate(r.get("result"), start=1):
         submakna = "".join(f"{a}, " for a in a['makna'][0]['submakna'])[:-2]
         contoh = "".join(f"{a}, " for a in a['makna'][0]['contoh'])[:-2]
         kt_dasar = "".join(f"{a}, " for a in a['kata_dasar'])[:-2]
@@ -78,7 +78,7 @@ async def kbbi_search(_, ctx: Client):
 async def carbon_make(self: Client, ctx: Message):
     if len(ctx.command) == 1 and not ctx.reply_to_message:
         return await ctx.reply("Please reply text to make carbon or add text after command.")
-    if not reply_to_message:
+    if not ctx.reply_to_message:
         return await ctx.reply("Please reply text to make carbon or add text after command.")
     if ctx.reply_to_message.text:
         text = ctx.reply_to_message.text
