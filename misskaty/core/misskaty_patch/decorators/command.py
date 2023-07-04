@@ -113,7 +113,7 @@ def command(
                 except BaseException as exception:
                     return
 
-            self.__client__.add_handler(
+            self.add_handler(
                 pyrogram.handlers.MessageHandler(callback=decorator, filters=filter)
             )
             return decorator
