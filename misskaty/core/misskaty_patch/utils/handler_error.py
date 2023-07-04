@@ -18,6 +18,7 @@
 import contextlib
 import os
 import typing
+import logging
 import pyrogram
 from datetime import datetime
 from misskaty.vars import LOG_CHANNEL
@@ -55,7 +56,7 @@ async def handle_error(
     import traceback
     import logging
 
-    logging = logger.getLogger(__name__)
+    logging = logging.getLogger(__name__)
     logging.exception(traceback.format_exc())
 
     day = datetime.now()
