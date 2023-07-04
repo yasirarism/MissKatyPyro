@@ -35,7 +35,7 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_cmd("ytsearch", ~filters.channel)
+@app.on_cmd("ytsearch", filter=~filters.channel)
 @capture_err
 @ratelimiter
 @use_chat_lang()
