@@ -81,7 +81,7 @@ def command(
             async def decorator(client, message: pyrogram.types.Message):
                 if is_disabled:
                     return await message.reply_text("Sorry, this command has been disabled by owner.")
-                if no_channel:
+                if not message.from_user:
                     return await message.reply_text("I'm cannot identify user. Use my command in private chat.")
                 if (
                     self_admin
