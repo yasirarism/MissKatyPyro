@@ -61,19 +61,22 @@ async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
         return await ctx.reply_msg("Please add keyword to search definition in kbbi")
     r = (await http.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
-    res = f"<b>Link:</b> {r.get('link')}\nDefinisi:\n"
+    kbbi_btn = InlineKeyboardMarkup(
+        [[InlineKeyboardButton(text="Open in Web", url=r.get('link'))]]
+        )
+    res = f"<b>Definisi:</b>\n"
     for a in r.get("result"):
         submakna = "".join(f"{a}, " for a in a['makna'][0]['submakna'])[:-2]
         contoh = "".join(f"{a}, " for a in a['makna'][0]['contoh'])[:-2]
         kt_dasar = "".join(f"{a}, " for a in a['kata_dasar'])[:-2]
         bt_takbaku = "".join(f"{a}, " for a in a['bentuk_tidak_baku'])[:-2]
         res += f"<b>{a['nama']} ({a['makna'][0]['kelas'][0]['nama']}: {a['makna'][0]['kelas'][0]['deskripsi']})</b>\n<b>Kata Dasar:</b> {kt_dasar if kt_dasar else '-'}\n<b>Bentuk Tidak Baku:</b> {bt_takbaku if bt_takbaku else '-'}\n<b>Submakna:</b> {submakna}\n<b>Contoh:</b> {contoh if contoh else '-'}\n\n"
-    await ctx.reply(f"{res}<b>By YasirPedia API</b>")
+    await ctx.reply(f"{res}<b>By YasirPedia API</b>", reply_markup=kbbi_btn)
 
 
 @app.on_cmd("carbon")
 async def carbon_make(self: Client, ctx: Message):
-    if len(ctx.command) == 1 and not reply_to_message:
+    if len(ctx.command) == 1 and not ctx.reply_to_message:
         return await ctx.reply("Please reply text to make carbon or add text after command.")
     if not reply_to_message:
         return await ctx.reply("Please reply text to make carbon or add text after command.")

@@ -72,7 +72,7 @@ async def handle_error(
                 "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
             )
             await m._client.send_document(
-                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
+                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption=f"Crash Report of this Bot\n{cap_day}"
             )
     if isinstance(m, pyrogram.types.CallbackQuery):
         with contextlib.suppress(Exception):
@@ -81,7 +81,7 @@ async def handle_error(
                 "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
             )
             await m.message._client.send_document(
-                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
+                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption=f"Crash Report of this Bot\n{cap_day}"
             )
     os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
     return True
