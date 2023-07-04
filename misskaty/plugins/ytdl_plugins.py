@@ -35,13 +35,11 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_cmd("ytsearch", filter=~filters.channel)
+@app.on_cmd("ytsearch", no_channel=True)
 @capture_err
 @ratelimiter
 @use_chat_lang()
 async def ytsearch(self: Client, ctx: Message, strings):
-    if ctx.sender_chat:
-        return await ctx.reply_msg(strings("no_channel"))
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_query"))
     query = ctx.text.split(" ", maxsplit=1)[1]
