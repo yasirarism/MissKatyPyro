@@ -19,7 +19,7 @@
 import typing
 import pyrogram
 from pyrogram.methods import Decorators
-from .utils import handle_error
+from ..utils import handle_error
 
 def callback(
         self,

@@ -1,6 +1,6 @@
 import typing
 import pyrogram
-from .utils import handle_error
+from ..utils import handle_error
 from pyrogram.methods import Decorators
 from misskaty.vars import COMMAND_HANDLER
 
