@@ -106,7 +106,7 @@ async def admin_cache_func(_, cmu):
 
 
 # Purge CMD
-@app.on_message(filters.command("purge", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("purge")
 @require_admin(permissions=["can_delete_messages"], allow_in_private=True)
 @ratelimiter
 @use_chat_lang()
@@ -162,7 +162,7 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
 
 
 # Kick members
-@app.on_message(filters.command(["kick", "dkick"], COMMAND_HANDLER) & filters.group)
+@app.on_cmd(["kick", "dkick"], group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -197,9 +197,7 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
 
 
 # Ban/DBan/TBan User
-@app.on_message(
-    filters.command(["ban", "dban", "tban"], COMMAND_HANDLER) & filters.group
-)
+@app.on_cmd(["ban", "dban", "tban"], group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -261,7 +259,7 @@ async def banFunc(client, message, strings):
 
 
 # Unban members
-@app.on_message(filters.command("unban", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("unban", group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -804,7 +802,7 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
     await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)
 
 
-@app.on_message(filters.command("set_chat_title", COMMAND_HANDLER) & ~filters.private)
+@app.on_cmd("set_chat_title", group_only=True)
 @adminsOnly("can_change_info")
 async def set_chat_title(self: Client, ctx: Message):
     if len(ctx.command) < 2:
@@ -817,7 +815,7 @@ async def set_chat_title(self: Client, ctx: Message):
     )
 
 
-@app.on_message(filters.command("set_user_title", COMMAND_HANDLER) & ~filters.private)
+@app.on_cmd("set_user_title", group_only=True)
 @adminsOnly("can_change_info")
 async def set_user_title(self: Client, ctx: Message):
     if not ctx.reply_to_message:
@@ -837,7 +835,7 @@ async def set_user_title(self: Client, ctx: Message):
     )
 
 
-@app.on_message(filters.command("set_chat_photo", COMMAND_HANDLER) & ~filters.private)
+@app.on_cmd("set_chat_photo", group_only=True)
 @adminsOnly("can_change_info")
 async def set_chat_photo(self: Client, ctx: Message):
     reply = ctx.reply_to_message

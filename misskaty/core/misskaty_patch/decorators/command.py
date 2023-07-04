@@ -49,7 +49,7 @@ def command(
 
             app = pyrogram.Client()
 
-            @app.command("start", is_disabled=False, group_only=False, pm_only=False, self_admin=False, self_only=False, pyrogram.filters.chat("777000") and pyrogram.filters.text)
+            @app.on_cmd("start", is_disabled=False, group_only=False, pm_only=False, self_admin=False, self_only=False, pyrogram.filters.chat("777000") and pyrogram.filters.text)
             async def start(client, message):
                 await message.reply_text(f"Hello {message.from_user.mention}")
         """
