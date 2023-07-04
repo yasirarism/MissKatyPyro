@@ -19,7 +19,7 @@ from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong, UserNotParticipant
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
