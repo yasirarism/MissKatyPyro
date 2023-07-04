@@ -63,7 +63,7 @@ async def handle_error(
     tgl_now = datetime.now()
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
 
-    with open("crash.txt", "w+", encoding="utf-8") as log:
+    with open(f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8") as log:
         log.write(traceback.format_exc())
         log.close()
     if isinstance(m, pyrogram.types.Message):
@@ -72,7 +72,7 @@ async def handle_error(
                 "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
             )
             await m._client.send_document(
-                LOG_CHANNEL, "crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
+                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
             )
     if isinstance(m, pyrogram.types.CallbackQuery):
         with contextlib.suppress(Exception):
@@ -81,7 +81,7 @@ async def handle_error(
                 "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
             )
             await m.message._client.send_document(
-                LOG_CHANNEL, "crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
+                LOG_CHANNEL, f"crash_{tgl_now.strftime('%d %B %Y')}.txt", caption="Crash Report of this Bot\n{cap_day}"
             )
-    os.remove("crash_{tgl_now.strftime('%d %B %Y')}.txt")
+    os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
     return True
