@@ -41,7 +41,7 @@ async def bard_chatbot(self: Client, ctx: Message, strings):
         await msg.edit_msg(str(e))
 
 
-@app.on_message(filters.command("ask", COMMAND_HANDLER))
+@app.on_cmd("ask")
 @ratelimiter
 @use_chat_lang()
 async def openai_chatbot(self: Client, ctx: Message, strings):

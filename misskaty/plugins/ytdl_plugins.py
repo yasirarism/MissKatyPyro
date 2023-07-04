@@ -35,7 +35,7 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
+@app.on_cmd("ytsearch", ~filters.channel)
 @capture_err
 @ratelimiter
 @use_chat_lang()
@@ -110,7 +110,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
 
-@app.on_callback_query(filters.regex(r"^yt_listall"))
+@app.on_cb(filters.regex(r"^yt_listall"))
 @ratelimiter
 @use_chat_lang()
 async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
