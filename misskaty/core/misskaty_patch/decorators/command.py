@@ -7,7 +7,7 @@ from misskaty.vars import COMMAND_HANDLER
 def command(
         self,
         command: typing.Union[str, list],
-        is_disabled: typing.Union[bool, bool] = False
+        is_disabled: typing.Union[bool, bool] = False,
         pm_only: typing.Union[bool, bool] = False,
         group_only: typing.Union[bool, bool] = False,
         self_admin: typing.Union[bool, bool] = False,
