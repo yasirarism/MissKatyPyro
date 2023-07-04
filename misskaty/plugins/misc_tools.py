@@ -33,6 +33,8 @@ LOGGER = getLogger(__name__)
 
 __MODULE__ = "Misc"
 __HELP__ = """
+/carbon [text or reply to text or caption] - Make beautiful snippet code on carbon from text.
+/kbbi [keyword] - Search definition on KBBI (For Indonesian People)
 /sof [query] - Search your problem in StackOverflow.
 /google [query] - Search using Google Search.
 (/tr, /trans, /translate) [lang code] - Translate text using Google Translate.
@@ -52,6 +54,42 @@ def remove_html_tags(text):
 
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
+
+
+@app.on_cmd("kbbi")
+async def kbbi_search(_, ctx: Client):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg("Please add keyword to search definition in kbbi")
+    r = (await http.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
+    res = f"<b>Link:</b> {r.get('link')}\nDefinisi:\n"
+    for a in r.get("result"):
+    submakna = "".join(f"{a}, " for a in a['makna'][0]['submakna'])[:-2]
+    contoh = "".join(f"{a}, " for a in a['makna'][0]['contoh'])[:-2]
+    res += f"<b>{a['nomor']}. {a['nama']} ({a['makna'][0]['kelas'][0]['nama']}: {a['makna'][0]['kelas'][0]['deskripsi']})</b>\n<b>Kata Dasar:</b> {a['kata_dasar'] if a['kata_dasar'] else '-'}\n<b>Bentuk Tidak Baku:</b> {a['bentuk_tidak_baku'] if a['bentuk_tidak_baku'] else '-'}\n<b>Submakna:</b> {submakna}\n<b>Contoh:</b> {contoh if contoh else '-'}\n"
+    await ctx.reply(res)
+
+
+@app.on_cmd("carbon")
+async def carbon_make(_, ctx: Client):
+    if len(ctx.command) or not ctx.reply_to_message:
+        return await ctx.reply("Please reply text to make carbon or add text after command.")
+    if ctx.reply_to_message.text:
+        text = ctx.reply_to_message.text
+    elif ctx.reply_to_message.caption:
+        text = ctx.reply_to_message.caption
+    else:
+        text = ctx.input
+    json_data = {
+        'code': text,
+        'backgroundColor': '#1F816D',
+    }
+
+    response = await http.post('https://carbon.yasirapi.eu.org/api/cook', json=json_data)
+    fname = f"carbonBY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.png"
+    with open(fname, 'wb') as e:
+        e.write(response.content)
+    await ctx.reply_photo(fname)
+    os.remove(fname)
 
 
 @app.on_message(filters.command("readqr", COMMAND_HANDLER))
