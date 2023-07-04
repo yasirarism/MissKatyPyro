@@ -63,8 +63,8 @@ async def kbbi_search(_, ctx: Client):
     r = (await http.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
     res = f"<b>Link:</b> {r.get('link')}\nDefinisi:\n"
     for a in r.get("result"):
-        submakna = "".join(f"{a}, " for a in a['makna'][0]['submakna'])[:-2]
-        contoh = "".join(f"{a}, " for a in a['makna'][0]['contoh'])[:-2]
+        submakna = "".join(f"{a}, " for a in a["makna"][0]["submakna"])[:-2]
+        contoh = "".join(f"{a}, " for a in a["makna"][0]["contoh"])[:-2]
         res += f"<b>{a['nomor']} {a['nama']} ({a['makna'][0]['kelas'][0]['nama']}: {a['makna'][0]['kelas'][0]['deskripsi']})</b>\n<b>Kata Dasar:</b> {a['kata_dasar'] if a['kata_dasar'] else '-'}\n<b>Bentuk Tidak Baku:</b> {a['bentuk_tidak_baku'] if a['bentuk_tidak_baku'] else '-'}\n<b>Submakna:</b> {submakna}\n<b>Contoh:</b> {contoh if contoh else '-'}\n"
     await ctx.reply(res)
 
@@ -72,9 +72,13 @@ async def kbbi_search(_, ctx: Client):
 @app.on_cmd("carbon")
 async def carbon_make(_, ctx: Client):
     if len(ctx.command) == 1 and not reply_to_message:
-        return await ctx.reply("Please reply text to make carbon or add text after command.")
+        return await ctx.reply(
+            "Please reply text to make carbon or add text after command."
+        )
     if not reply_to_message:
-        return await ctx.reply("Please reply text to make carbon or add text after command.")
+        return await ctx.reply(
+            "Please reply text to make carbon or add text after command."
+        )
     if ctx.reply_to_message.text:
         text = ctx.reply_to_message.text
     elif ctx.reply_to_message.caption:
@@ -82,13 +86,17 @@ async def carbon_make(_, ctx: Client):
     else:
         text = ctx.input
     json_data = {
-        'code': text,
-        'backgroundColor': '#1F816D',
+        "code": text,
+        "backgroundColor": "#1F816D",
     }
 
-    response = await http.post('https://carbon.yasirapi.eu.org/api/cook', json=json_data)
-    fname = f"carbonBY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.png"
-    with open(fname, 'wb') as e:
+    response = await http.post(
+        "https://carbon.yasirapi.eu.org/api/cook", json=json_data
+    )
+    fname = (
+        f"carbonBY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.png"
+    )
+    with open(fname, "wb") as e:
         e.write(response.content)
     await ctx.reply_photo(fname)
     os.remove(fname)
