@@ -18,7 +18,9 @@
 import contextlib
 import os
 import typing
+
 import pyrogram
+
 from misskaty.vars import LOG_CHANNEL
 
 
@@ -52,8 +54,8 @@ async def handle_error(
             except Exceptation as e:
                 return await handle_error(e, message)
     """
-    import traceback
     import logging
+    import traceback
 
     logging = logger.getLogger(__name__)
     logging.exception(traceback.format_exc())
