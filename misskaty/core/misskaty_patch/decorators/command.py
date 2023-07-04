@@ -1,5 +1,6 @@
 import typing
 import pyrogram
+from .utils import handle_error
 from pyrogram.methods import Decorators
 from misskaty.vars import COMMAND_HANDLER
 
@@ -111,7 +112,7 @@ def command(
                 except pyrogram.errors.exceptions.forbidden_403.ChatWriteForbidden:
                     await client.leave_chat(message.chat.id)
                 except BaseException as exception:
-                    return
+                    return await handle_error(exception, message)
 
             self.add_handler(
                 pyrogram.handlers.MessageHandler(callback=decorator, filters=filter)
@@ -120,4 +121,4 @@ def command(
 
         return wrapper
 
-Decorators.command = command
+Decorators.on_cmd = command

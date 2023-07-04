@@ -178,7 +178,3 @@ async def memify(client, message):
 async def dice(c, m, strings):
     dices = await c.send_dice(m.chat.id, reply_to_message_id=m.id)
     await dices.reply_msg(strings("result").format(number=dices.dice.value), quote=True)
-
-@app.command("cekdulu")
-async def tesdulu(c, m):
-    await m.reply("DONne")
