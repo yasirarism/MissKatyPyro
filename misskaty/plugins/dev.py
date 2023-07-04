@@ -56,6 +56,7 @@ __HELP__ = """
 /unbanuser [chat id] - Unban user and make their can use bot again
 /gban - To Ban A User Globally.
 /ungban - To remove ban user globbaly.
+/restart - update and restart bot.
 
 **For Public Use**
 /stats - Check statistic bot
@@ -493,7 +494,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 
 
 # Update and restart bot
-@app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["restart"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def update_restart(self: Client, ctx: Message, strings) -> "Message":
     msg = await ctx.reply_msg(strings("up_and_rest"))
