@@ -7,6 +7,7 @@ from misskaty.vars import COMMAND_HANDLER
 def command(
         self,
         command: typing.Union[str, list],
+        is_disabled: typing.Union[bool, bool] = False
         pm_only: typing.Union[bool, bool] = False,
         group_only: typing.Union[bool, bool] = False,
         self_admin: typing.Union[bool, bool] = False,
@@ -17,7 +18,7 @@ def command(
         **kwargs
     ):
         """
-        ### `tgEasy.tgClient.command`
+        ### `tgClient.command`
         - A decorater to Register Commands in simple way and manage errors in that Function itself, alternative for `@pyrogram.Client.on_message(pyrogram.filters.command('command'))`
         - Parameters:
         - command (str || list):
@@ -44,11 +45,10 @@ def command(
         #### Example
         .. code-block:: python
             import pyrogram
-            from tgEasy import tgClient
 
-            app = tgClient(pyrogram.Client())
+            app = pyrogram.Client()
 
-            @app.command("start", group_only=False, pm_only=False, self_admin=False, self_only=False, pyrogram.filters.chat("777000") and pyrogram.filters.text)
+            @app.command("start", is_disabled=False, group_only=False, pm_only=False, self_admin=False, self_only=False, pyrogram.filters.chat("777000") and pyrogram.filters.text)
             async def start(client, message):
                 await message.reply_text(f"Hello {message.from_user.mention}")
         """
@@ -78,6 +78,8 @@ def command(
 
         def wrapper(func):
             async def decorator(client, message: pyrogram.types.Message):
+                if is_disabled:
+                    return await message.reply_text("Sorry, this command has been disabled by owner.")
                 if (
                     self_admin
                     and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP

@@ -22,7 +22,7 @@ openai.api_key = OPENAI_API
 
 
 # This only for testing things, since maybe in future it will got blocked
-@app.on_message(filters.command("bard", COMMAND_HANDLER))
+@app.on_cmd("bard", is_disabled=True)
 @use_chat_lang()
 async def bard_chatbot(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
