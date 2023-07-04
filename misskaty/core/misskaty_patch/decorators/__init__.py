@@ -1,2 +1,2 @@
-from .command import command
 from .callback import callback
+from .command import command
