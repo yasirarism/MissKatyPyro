@@ -71,7 +71,9 @@ async def kbbi_search(_, ctx: Client):
 
 @app.on_cmd("carbon")
 async def carbon_make(_, ctx: Client):
-    if len(ctx.command) == 1 or not ctx.reply_to_message:
+    if len(ctx.command) == 1 and not reply_to_message:
+        return await ctx.reply("Please reply text to make carbon or add text after command.")
+    if not reply_to_message:
         return await ctx.reply("Please reply text to make carbon or add text after command.")
     if ctx.reply_to_message.text:
         text = ctx.reply_to_message.text
