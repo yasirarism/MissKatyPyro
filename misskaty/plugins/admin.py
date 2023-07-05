@@ -166,7 +166,7 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def kickFunc(_, ctx: Message, strings) -> "Message":
+async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     user_id, reason = await extract_user_and_reason(ctx)
