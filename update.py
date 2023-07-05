@@ -7,7 +7,7 @@ import dotenv
 import requests
 from git import Repo
 
-if ospath.exists("MissKatyLogs.txt"):
+if os.path.exists("MissKatyLogs.txt"):
     with open("MissKatyLogs.txt", "r+") as f:
         f.truncate(0)
 
