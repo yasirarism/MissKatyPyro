@@ -8,8 +8,8 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.helper.http import http
 from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.helper.http import http
 from misskaty.vars import CURRENCY_API
 
 __MODULE__ = "Currency"
