@@ -30,7 +30,6 @@ from pyrogram.types import ChatPermissions
 from misskaty import app
 from misskaty.vars import SUDO
 from misskaty.core.decorator.permissions import adminsOnly
-from wbb.modules.admin import list_admins
 from misskaty.core.decorator.permissions import list_admins
 from database.blacklist_db import (
     delete_blacklist_filter,
