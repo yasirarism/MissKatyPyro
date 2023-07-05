@@ -18,12 +18,10 @@ from pyrogram.types import Message
 
 from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
-from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER
 from utils import put_cleanmode
 
 __MODULE__ = "AFK"

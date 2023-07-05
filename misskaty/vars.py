@@ -2,13 +2,9 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import os
 import sys
 from logging import getLogger
 from os import environ
-
-import requests
-from dotenv import load_dotenv
 
 LOGGER = getLogger(__name__)
 

@@ -20,7 +20,6 @@ from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import net_io_counters, virtual_memory
-from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters

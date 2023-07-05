@@ -1,7 +1,6 @@
 from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 import os
 import subprocess
-import time
 
 import dotenv
 import requests
@@ -63,12 +62,6 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     except Exception as e:
         LOGGER.error(e)
         pass
-    # time.sleep(6)
-    # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
-    # if update.returncode == 0:
-    #    LOGGER.info("Successfully update package pip python")
-    # else:
-    #    LOGGER.warning("Unsuccessfully update package pip python")
 else:
     LOGGER.warning(
         "UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update"

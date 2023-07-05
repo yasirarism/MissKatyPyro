@@ -27,13 +27,11 @@ from pyrogram.types import (
     Message,
 )
 
-from database.imdb_db import *
-from misskaty import BOT_USERNAME, app
-from misskaty.core.decorator.errors import capture_err
+from database.imdb_db import is_imdbset, add_imdbset, remove_imdbset
+from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper import GENRES_EMOJI, get_random_string, http, search_jw
-from misskaty.vars import COMMAND_HANDLER
 from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
@@ -90,10 +88,9 @@ async def imdb_choose(self: Client, ctx: Message):
             pass
 
 
-@app.on_callback_query(filters.regex("^imdbset"))
+@app.on_cb("imdbset")
 @ratelimiter
-@capture_err
-async def imdblangset(self: Client, query: CallbackQuery):
+async def imdblangset(_, query: CallbackQuery):
     i, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -122,9 +119,8 @@ async def imdblangset(self: Client, query: CallbackQuery):
             pass
 
 
-@app.on_callback_query(filters.regex("^setimdb"))
+@app.on_cb("setimdb")
 @ratelimiter
-@capture_err
 async def imdbsetlang(self: Client, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -277,9 +273,8 @@ async def imdb_search_en(kueri, message):
         )
 
 
-@app.on_callback_query(filters.regex("^imdbcari"))
+@app.on_cb("imdbcari")
 @ratelimiter
-@capture_err
 async def imdbcari(self: Client, query: CallbackQuery):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
@@ -403,7 +398,7 @@ async def imdbcari(self: Client, query: CallbackQuery):
             )
 
 
-@app.on_cb(data="imdbres_id")
+@app.on_cb("imdbres_id")
 @ratelimiter
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
@@ -513,7 +508,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             res_str += "\n"
         if ott != "":
             res_str += f"Tersedia di:\n{ott}\n"
-        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
+        res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
         if trailer := r_json.get("trailer"):
             trailer_url = trailer["url"]
             markup = InlineKeyboardMarkup(
@@ -560,9 +555,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         pass
 
 
-@app.on_callback_query(filters.regex("^imdbres_en"))
+@app.on_cb("imdbres_en")
 @ratelimiter
-@capture_err
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -670,7 +664,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             res_str += "\n"
         if ott != "":
             res_str += f"Available On:\n{ott}\n"
-        res_str += f"<b>©️ IMDb by</b> @{BOT_USERNAME}"
+        res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
         if trailer := r_json.get("trailer"):
             trailer_url = trailer["url"]
             markup = InlineKeyboardMarkup(

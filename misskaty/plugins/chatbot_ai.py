@@ -7,7 +7,6 @@ import html
 
 import openai
 from aiohttp import ClientSession
-from pyrogram import Client, filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
@@ -16,7 +15,7 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import check_time_gap, post_to_telegraph
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
+from misskaty.vars import OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
@@ -24,7 +23,8 @@ openai.api_key = OPENAI_API
 # This only for testing things, since maybe in future it will got blocked
 @app.on_cmd("bard", is_disabled=True)
 @use_chat_lang()
-async def bard_chatbot(self: Client, ctx: Message, strings):
+@ratelimiter
+async def bard_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
@@ -44,7 +44,7 @@ async def bard_chatbot(self: Client, ctx: Message, strings):
 @app.on_cmd("ask")
 @ratelimiter
 @use_chat_lang()
-async def openai_chatbot(self: Client, ctx: Message, strings):
+async def openai_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5

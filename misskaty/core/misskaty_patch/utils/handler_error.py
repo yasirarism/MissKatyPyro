@@ -20,6 +20,7 @@ import os
 import typing
 import logging
 import pyrogram
+import traceback
 from datetime import datetime
 from misskaty.vars import LOG_CHANNEL
 
@@ -53,8 +54,6 @@ async def handle_error(
             except Exceptation as e:
                 return await handle_error(e, message)
     """
-    import traceback
-    import logging
 
     logging = logging.getLogger(__name__)
     logging.exception(traceback.format_exc())

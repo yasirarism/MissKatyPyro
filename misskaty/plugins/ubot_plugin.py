@@ -70,7 +70,7 @@ async def del_msg(client, message):
                 )
 
 
-# @user.on_edited_message(filters.text & filters.chat(-1001455886928))
+@user.on_edited_message(filters.text & filters.chat(-1001455886928))
 async def edit_msg(client, message):
     try:
         ustat = (
