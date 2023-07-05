@@ -1,6 +1,6 @@
 from database import dbname
 
-blacklist_filtersdb = db["blacklistFilters"]
+blacklist_filtersdb = dbname["blacklistFilters"]
 
 async def get_blacklisted_words(chat_id: int) -> List[str]:
     _filters = await blacklist_filtersdb.find_one({"chat_id": chat_id})
