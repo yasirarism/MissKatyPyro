@@ -61,7 +61,6 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
         LOGGER.info(f"Successfully update with latest branch > {UPSTREAM_REPO_BRANCH}")
     except Exception as e:
         LOGGER.error(e)
-        pass
 else:
     LOGGER.warning(
         "UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update"
