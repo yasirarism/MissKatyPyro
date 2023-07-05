@@ -10,7 +10,7 @@ from urllib.parse import quote_plus
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import Client, enums, filters
+from pyrogram import Client, enums
 from pyrogram.errors import (
     MediaCaptionTooLong,
     MediaEmpty,
@@ -44,7 +44,7 @@ headers = {
 # IMDB Choose Language
 @app.on_cmd("imdb")
 @ratelimiter
-async def imdb_choose(self: Client, ctx: Message):
+async def imdb_choose(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>",
@@ -121,7 +121,7 @@ async def imdblangset(_, query: CallbackQuery):
 
 @app.on_cb("setimdb")
 @ratelimiter
-async def imdbsetlang(self: Client, query: CallbackQuery):
+async def imdbsetlang(_, query: CallbackQuery):
     i, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -275,7 +275,7 @@ async def imdb_search_en(kueri, message):
 
 @app.on_cb("imdbcari")
 @ratelimiter
-async def imdbcari(self: Client, query: CallbackQuery):
+async def imdbcari(_, query: CallbackQuery):
     BTN = []
     i, lang, msg, uid = query.data.split("#")
     if lang == "ind":

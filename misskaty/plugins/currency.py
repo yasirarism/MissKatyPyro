@@ -3,8 +3,6 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import logging
-
-from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app

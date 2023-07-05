@@ -66,7 +66,7 @@ async def kbbi_search(_, ctx: Client):
     kbbi_btn = InlineKeyboardMarkup(
         [[InlineKeyboardButton(text="Open in Web", url=r.get('link'))]]
         )
-    res = f"<b>Definisi:</b>\n"
+    res = "<b>Definisi:</b>\n"
     for num, a in enumerate(r.get("result"), start=1):
         submakna = "".join(f"{a}, " for a in a['makna'][0]['submakna'])[:-2]
         contoh = "".join(f"{a}, " for a in a['makna'][0]['contoh'])[:-2]
