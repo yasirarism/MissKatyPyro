@@ -1,13 +1,26 @@
-import logging
+from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 import os
 import subprocess
-import time
 
 import dotenv
 import requests
 from git import Repo
 
-LOGGER = logging.getLogger(__name__)
+if os.path.exists("MissKatyLogs.txt"):
+    with open("MissKatyLogs.txt", "r+") as f:
+        f.truncate(0)
+
+basicConfig(
+    level=INFO,
+    format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
+    datefmt="%d-%b-%y %H:%M:%S",
+    handlers=[
+        handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),
+        StreamHandler(),
+    ],
+)
+
+LOGGER = getLogger(__name__)
 
 ENV_URL = os.environ.get("ENV_URL")
 try:
@@ -49,12 +62,6 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     except Exception as e:
         LOGGER.error(e)
         pass
-    # time.sleep(6)
-    # update = subprocess.run(['pip3', 'install', '-U', '-r', 'requirements.txt'])
-    # if update.returncode == 0:
-    #    LOGGER.info("Successfully update package pip python")
-    # else:
-    #    LOGGER.warning("Unsuccessfully update package pip python")
 else:
     LOGGER.warning(
         "UPSTREAM_REPO_URL or UPSTREAM_REPO_BRANCH is not defined, Skipping auto update"

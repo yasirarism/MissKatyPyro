@@ -150,9 +150,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
         f"ConvertSub: {filename} by {ctx.from_user.first_name if ctx.from_user else ctx.sender_chat.title} [{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}]"
     )
     suffix = "srt" if ctx.command[0] == "converttosrt" else "ass"
-    (await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'"))[
-        0
-    ]  # skipcq: PYL-W0106
+    await shell_exec(f"ffmpeg -i '{dl}' 'downloads/{filename}.{suffix}'")
     c_time = time()
     await ctx.reply_document(
         f"downloads/{filename}.{suffix}",

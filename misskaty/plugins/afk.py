@@ -18,12 +18,10 @@ from pyrogram.types import Message
 
 from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
-from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER
 from utils import put_cleanmode
 
 __MODULE__ = "AFK"
@@ -34,11 +32,10 @@ Just type something in group to remove AFK Status."""
 
 
 # Handle set AFK Command
-@capture_err
-@app.on_message(filters.command(["afk"], COMMAND_HANDLER))
+@app.on_cmd("afk")
 @ratelimiter
 @use_chat_lang()
-async def active_afk(self: Client, ctx: Message, strings):
+async def active_afk(_, ctx: Message, strings):
     if ctx.sender_chat:
         return await ctx.reply_msg(strings("no_channel"), del_in=6)
     user_id = ctx.from_user.id
@@ -209,11 +206,11 @@ async def active_afk(self: Client, ctx: Message, strings):
     await put_cleanmode(ctx.chat.id, send.id)
 
 
-@app.on_message(filters.command("afkdel", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("afkdel", group_only=True)
 @ratelimiter
 @adminsOnly("can_change_info")
 @use_chat_lang()
-async def afk_state(self: Client, ctx: Message, strings):
+async def afk_state(_, ctx: Message, strings):
     if not ctx.from_user:
         return
     if len(ctx.command) == 1:

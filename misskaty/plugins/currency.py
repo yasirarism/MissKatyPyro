@@ -4,12 +4,12 @@
 # * Copyright ©YasirPedia All rights reserved
 import logging
 
-from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app
+from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
-from misskaty.vars import COMMAND_HANDLER, CURRENCY_API
+from misskaty.vars import CURRENCY_API
 
 __MODULE__ = "Currency"
 __HELP__ = """
@@ -19,8 +19,9 @@ __HELP__ = """
 LOGGER = logging.getLogger(__name__)
 
 
-@app.on_message(filters.command(["currency"], COMMAND_HANDLER))
-async def currency(self: Client, ctx: Message):
+@app.on_cmd("currency")
+@ratelimiter
+async def currency(_, ctx: Message):
     if CURRENCY_API is None:
         return await ctx.reply_msg(
             "<code>Oops!!get the API from</code> <a href='https://app.exchangerate-api.com/sign-up'>HERE</a> <code>& add it to config vars</code> (<code>CURRENCY_API</code>)",
@@ -32,10 +33,7 @@ async def currency(self: Client, ctx: Message):
             del_in=6,
         )
 
-    teks = ctx.text.split()
-    amount = teks[1]
-    currency_from = teks[2]
-    currency_to = teks[3]
+    amount, currency_from, currency_to = ctx.text.split()
     if amount.isdigit() or (
         amount.replace(".", "", 1).isdigit() and amount.count(".") < 2
     ):

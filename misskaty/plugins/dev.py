@@ -20,7 +20,6 @@ from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import net_io_counters, virtual_memory
-from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
@@ -56,6 +55,7 @@ __HELP__ = """
 /unbanuser [chat id] - Unban user and make their can use bot again
 /gban - To Ban A User Globally.
 /ungban - To remove ban user globbaly.
+/restart - update and restart bot.
 
 **For Public Use**
 /stats - Check statistic bot
@@ -493,17 +493,11 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 
 
 # Update and restart bot
-@app.on_message(filters.command(["update"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["restart"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def update_restart(self: Client, ctx: Message, strings) -> "Message":
-    try:
-        out = (await shell_exec("git pull"))[0]
-        if "Already up to date." in str(out):
-            return await ctx.reply_msg(strings("already_up"))
-        await ctx.reply_msg(f"<code>{out}</code>")
-    except Exception as e:
-        return await ctx.reply_msg(str(e))
     msg = await ctx.reply_msg(strings("up_and_rest"))
+    await shell_exec("python3 update.py")
     with open("restart.pickle", "wb") as status:
         pickle.dump([ctx.chat.id, msg.id], status)
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])

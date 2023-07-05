@@ -37,7 +37,7 @@ async def getTitleSub(msg, kueri, CurrentPage, user):
         lists = soup.find("div", {"class": "search-result"})
         entry = lists.find_all("div", {"class": "title"})
         # if "Tidak Ditemukan" in entry[0].text:
-        #     await editPesan(msg, f"Sorry, could not find any result for: {kueri}")
+        #     await msg.edit_msg(f"Sorry, could not find any result for: {kueri}")
         #     return None, 0, None
         for sub in entry:
             title = sub.find("a").text

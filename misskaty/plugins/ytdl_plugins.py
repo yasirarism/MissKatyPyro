@@ -21,7 +21,6 @@ from pyrogram.types import (
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
@@ -35,13 +34,10 @@ def rand_key():
     return str(uuid4())[:8]
 
 
-@app.on_message(filters.command(["ytsearch"], COMMAND_HANDLER) & ~filters.channel)
-@capture_err
+@app.on_cmd("ytsearch", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def ytsearch(self: Client, ctx: Message, strings):
-    if ctx.sender_chat:
-        return await ctx.reply_msg(strings("no_channel"))
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_query"))
     query = ctx.text.split(" ", maxsplit=1)[1]
@@ -82,7 +78,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
 
 @app.on_message(
     filters.command(["ytdown"], COMMAND_HANDLER)
-    | filters.regex(YT_REGEX) & ~filters.channel
+    | filters.regex(YT_REGEX) & ~filters.channel & ~filters.via_bot
 )
 @capture_err
 @ratelimiter
@@ -110,7 +106,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
             await ctx.reply_msg(f"Opps, ERROR: {str(err)}")
 
 
-@app.on_callback_query(filters.regex(r"^yt_listall"))
+@app.on_cb(filters.regex(r"^yt_listall"))
 @ratelimiter
 @use_chat_lang()
 async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
