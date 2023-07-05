@@ -1,4 +1,5 @@
 from database import dbname
+from typing import List
 
 blacklist_filtersdb = dbname["blacklistFilters"]
 
