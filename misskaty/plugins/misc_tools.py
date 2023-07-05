@@ -61,6 +61,8 @@ async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
         return await ctx.reply_msg("Please add keyword to search definition in kbbi")
     r = (await http.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
+    if nomsg := r.get("detail"):
+        return await ctx.reply_msg(nomsg)
     kbbi_btn = InlineKeyboardMarkup(
         [[InlineKeyboardButton(text="Open in Web", url=r.get('link'))]]
         )

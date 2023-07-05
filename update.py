@@ -7,6 +7,10 @@ import dotenv
 import requests
 from git import Repo
 
+if ospath.exists("MissKatyLogs.txt"):
+    with open("MissKatyLogs.txt", "r+") as f:
+        f.truncate(0)
+
 basicConfig(
     level=INFO,
     format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
