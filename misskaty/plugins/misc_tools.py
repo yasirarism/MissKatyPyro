@@ -61,6 +61,17 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"
+}
+
+
+async def get_content(url):
+    async with aiohttp.ClientSession() as session:
+        r = await session.get(url, headers=headers)
+        return await r.read()
+
+
 @app.on_cmd("kbbi")
 async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
@@ -190,9 +201,6 @@ async def gsearch(client, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"
-        }
         html = await http.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
             headers=headers,
@@ -270,7 +278,7 @@ async def translate(client, message):
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def tts(_, message):
+async def tts_convert(_, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
     ):
@@ -473,17 +481,6 @@ async def close_callback(bot: Client, query: CallbackQuery):
         await query.message.reply_to_message.delete()
     except:
         pass
-
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
-}
-
-
-async def get_content(url):
-    async with aiohttp.ClientSession() as session:
-        r = await session.get(url, headers=headers)
-        return await r.read()
 
 
 async def mdlapi(title):
