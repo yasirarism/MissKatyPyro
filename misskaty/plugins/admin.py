@@ -166,7 +166,7 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
+async def kickFunc(_, ctx: Message, strings) -> "Message":
     if not ctx.from_user:
         return
     user_id, reason = await extract_user_and_reason(ctx)
@@ -387,7 +387,7 @@ async def list_unban_(c, message, strings):
 
 
 # Delete messages
-@app.on_message(filters.command("del", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("del", group_only=True)
 @adminsOnly("can_delete_messages")
 @ratelimiter
 @use_chat_lang()
@@ -404,9 +404,7 @@ async def deleteFunc(_, message, strings):
 
 
 # Promote Members
-@app.on_message(
-    filters.command(["promote", "fullpromote"], COMMAND_HANDLER) & filters.group
-)
+@app.on_cmd(["promote", "fullpromote"], group_only=True)
 @adminsOnly("can_promote_members")
 @ratelimiter
 @use_chat_lang()
@@ -460,7 +458,7 @@ async def promoteFunc(client, message, strings):
 
 
 # Demote Member
-@app.on_message(filters.command("demote", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("demote", group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -492,7 +490,7 @@ async def demote(client, message, strings):
 
 
 # Pin Messages
-@app.on_message(filters.command(["pin", "unpin"], COMMAND_HANDLER) & filters.group)
+@app.on_cmd(["pin", "unpin"])
 @adminsOnly("can_pin_messages")
 @ratelimiter
 @use_chat_lang()
@@ -522,7 +520,7 @@ async def pin(_, message, strings):
 
 
 # Mute members
-@app.on_message(filters.command(["mute", "tmute"], COMMAND_HANDLER) & filters.group)
+@app.on_cmd(["mute", "tmute"], group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -575,7 +573,7 @@ async def mute(client, message, strings):
 
 
 # Unmute members
-@app.on_message(filters.command("unmute", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("unmute", group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -590,7 +588,7 @@ async def unmute(_, message, strings):
     await message.reply_text(strings("unmute_msg").format(umention=umention))
 
 
-@app.on_message(filters.command(["warn", "dwarn"], COMMAND_HANDLER) & filters.group)
+@app.on_cmd(["warn", "dwarn"], group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -709,7 +707,7 @@ async def unban_user(_, cq, strings):
 
 
 # Remove Warn
-@app.on_message(filters.command("rmwarn", COMMAND_HANDLER) & filters.group)
+@app.on_cmd("rmwarn", group_only=True)
 @adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
@@ -732,8 +730,7 @@ async def remove_warnings(_, message, strings):
 
 
 # Warns
-@app.on_message(filters.command("warns", COMMAND_HANDLER) & filters.group)
-@capture_err
+@app.on_cmd("warns", group_only=True)
 @ratelimiter
 @use_chat_lang()
 async def check_warns(_, message, strings):
@@ -764,7 +761,7 @@ async def check_warns(_, message, strings):
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def report_user(self: Client, ctx: Message, strings) -> "Message":
+async def report_user(_, ctx: Message, strings) -> "Message":
     if not ctx.reply_to_message:
         return await ctx.reply_text(strings("report_no_reply"))
     reply = ctx.reply_to_message
@@ -804,7 +801,7 @@ async def report_user(self: Client, ctx: Message, strings) -> "Message":
 
 @app.on_cmd("set_chat_title", group_only=True)
 @adminsOnly("can_change_info")
-async def set_chat_title(self: Client, ctx: Message):
+async def set_chat_title(_, ctx: Message):
     if len(ctx.command) < 2:
         return await ctx.reply_text("**Usage:**\n/set_chat_title NEW NAME")
     old_title = ctx.chat.title
@@ -817,7 +814,7 @@ async def set_chat_title(self: Client, ctx: Message):
 
 @app.on_cmd("set_user_title", group_only=True)
 @adminsOnly("can_change_info")
-async def set_user_title(self: Client, ctx: Message):
+async def set_user_title(_, ctx: Message):
     if not ctx.reply_to_message:
         return await ctx.reply_text("Reply to user's message to set his admin title")
     if not ctx.reply_to_message.from_user:
@@ -837,7 +834,7 @@ async def set_user_title(self: Client, ctx: Message):
 
 @app.on_cmd("set_chat_photo", group_only=True)
 @adminsOnly("can_change_info")
-async def set_chat_photo(self: Client, ctx: Message):
+async def set_chat_photo(_, ctx: Message):
     reply = ctx.reply_to_message
 
     if not reply:

@@ -36,7 +36,6 @@ def rand_key():
 
 
 @app.on_cmd("ytsearch", no_channel=True)
-@capture_err
 @ratelimiter
 @use_chat_lang()
 async def ytsearch(self: Client, ctx: Message, strings):

@@ -44,8 +44,7 @@ headers = {
 
 
 # IMDB Choose Language
-@app.on_message(filters.command(["imdb"], COMMAND_HANDLER))
-@capture_err
+@app.on_cmd("imdb")
 @ratelimiter
 async def imdb_choose(self: Client, ctx: Message):
     if len(ctx.command) == 1:
@@ -404,9 +403,8 @@ async def imdbcari(self: Client, query: CallbackQuery):
             )
 
 
-@app.on_callback_query(filters.regex("^imdbres_id"))
+@app.on_cb(filters.regex("^imdbres_id"))
 @ratelimiter
-@capture_err
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
