@@ -1,7 +1,7 @@
-from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 import os
 import subprocess
 import time
+from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 
 import dotenv
 import requests
