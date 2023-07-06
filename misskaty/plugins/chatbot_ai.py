@@ -60,7 +60,7 @@ async def openai_chatbot(_, ctx: Message, strings):
     answer = ""
     try:
         response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0613",
             messages=[{"role": "user", "content": pertanyaan}],
             temperature=0.7,
             stream=True,
