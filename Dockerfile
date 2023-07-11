@@ -3,7 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 
-# Base Docker Using Ubuntu 23.04, Python 3.11 and Built In Pip
+# Base Docker Using Debian 12 (BookWorm), Python 3.11.4 and Built In Pip
 ## With Built in Pip Package
 FROM yasirarism/misskaty-docker:latest
 ## Without Built in Pip Package
