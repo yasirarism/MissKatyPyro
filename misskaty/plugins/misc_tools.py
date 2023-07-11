@@ -94,9 +94,9 @@ async def kbbi_search(_, ctx: Client):
 
 @app.on_cmd("carbon")
 async def carbon_make(self: Client, ctx: Message):
-    if ctx.reply_to_message.text:
+    if ctx.reply_to_message and ctx.reply_to_message.text:
         text = ctx.reply_to_message.text
-    elif ctx.reply_to_message.caption:
+    elif ctx.reply_to_message and ctx.reply_to_message.caption:
         text = ctx.reply_to_message.caption
     elif len(ctx.command) > 1:
         text = ctx.input
