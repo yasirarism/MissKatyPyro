@@ -101,7 +101,8 @@ pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-pip3 install -r requirements.txt --break-system-packages
+Install venv from your terminal and activate it
+pip3 install -r requirements.txt 
 ```
 - Setting your config.env or via environment and dont forget fill all required value.
 - Run Bot

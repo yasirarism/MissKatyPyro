@@ -254,4 +254,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
             disable_web_page_preview=True,
         )
 
-    await self.answer_callback_query(query.id)
+    try:
+        await self.answer_callback_query(query.id)
+    except:
+        pass

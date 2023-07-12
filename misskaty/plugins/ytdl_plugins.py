@@ -158,7 +158,7 @@ async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
 @ratelimiter
 @use_chat_lang()
 async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
-    if not cq.message.reply_to_message.from_user:
+    if not (cq.message.reply_to_message and cq.message.reply_to_message.from_user):
         return
     match = cq.data.split("|")
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:

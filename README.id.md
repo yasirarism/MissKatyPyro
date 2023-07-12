@@ -101,7 +101,8 @@ pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-pip3 install -r requirements.txt --break-system-packages
+Install venv dari terminal server kamu
+pip3 install -r requirements.txt
 ```
 - Atur config environment saat menjalankan bot dan jangan lupa isi semua value yang wajib di isi.
 - Jalankan Bot

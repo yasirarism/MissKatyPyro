@@ -3,14 +3,14 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 
-# Base Docker Using Debian 12 (BookWorm), Python 3.11.4 and Built In Pip
+# Base Docker Using Alpine 3.18, Python 3.11.4 and Built In Pip
 ## With Built in Pip Package
-FROM yasirarism/misskaty-docker:latest
+FROM yasirarism/misskaty-docker:alpine
 ## Without Built in Pip Package
 # FROM yasirarism/misskaty-docker:free
 
 # Set Hostname
-ENV HOSTNAME misskaty
+ENV HOSTNAME yasir-server
 # Copy Files
 COPY . .
 # Instal pip package

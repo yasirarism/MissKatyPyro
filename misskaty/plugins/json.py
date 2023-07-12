@@ -8,7 +8,7 @@
 import os
 
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -16,9 +16,9 @@ from misskaty.vars import COMMAND_HANDLER
 
 
 # View Structure Telegram Message As JSON
-@app.on_message(filters.command(["json"], COMMAND_HANDLER))
+@app.on_cmd("json")
 @ratelimiter
-async def jsonify(_, message):
+async def jsonify(_, message: Message):
     the_real_message = None
     reply_to_id = None
 
@@ -38,13 +38,13 @@ async def jsonify(_, message):
             ),
         )
     except Exception as e:
-        with open("json.text", "w+", encoding="utf8") as out_file:
+        with open("json.txt", "w+", encoding="utf8") as out_file:
             out_file.write(str(the_real_message))
         await message.reply_document(
-            document="json.text",
+            document="json.txt",
             caption=f"<code>{str(e)}</code>",
             disable_notification=True,
             reply_to_message_id=reply_to_id,
             thumb="assets/thumb.jpg",
         )
-        os.remove("json.text")
+        os.remove("json.txt")

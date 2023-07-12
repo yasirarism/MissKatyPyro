@@ -34,7 +34,7 @@ __HELP__ = """"
 """
 
 
-@app.on_message(filters.command(["genss"], COMMAND_HANDLER))
+@app.on_cmd("genss")
 @ratelimiter
 @new_task
 @use_chat_lang()
