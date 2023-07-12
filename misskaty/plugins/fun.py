@@ -32,8 +32,6 @@ async def draw_meme_text(image_path, text):
             (left, top, right, bottom) = text_bbox
             u_width = abs(right - left)
             u_height = abs(top - bottom)
-            text_size = (u_width, u_height)
-            # u_width, u_height = draw.textsize(u_text, font=m_font)
 
             draw.text(
                 xy=(((i_width - u_width) / 2) - 1, int((current_h / 640) * i_width)),
@@ -81,8 +79,6 @@ async def draw_meme_text(image_path, text):
             (left, top, right, bottom) = text_bbox
             u_width = abs(right - left)
             u_height = abs(top - bottom)
-            text_size = (u_width, u_height)
-            # u_width, u_height = draw.textsize(l_text, font=m_font)
 
             draw.text(
                 xy=(
