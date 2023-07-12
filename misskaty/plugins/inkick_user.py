@@ -24,6 +24,7 @@ __HELP__ = """"
     filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER)
 )
 @ratelimiter
+@app.adminsOnly("can_restrict_members")
 async def inkick(_, message):
     if message.sender_chat:
         return await message.reply_msg(
@@ -81,6 +82,7 @@ async def inkick(_, message):
     filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER)
 )
 @ratelimiter
+@app.adminsOnly("can_restrict_members")
 async def uname(_, message):
     if message.sender_chat:
         return await message.reply_msg(
@@ -131,6 +133,7 @@ async def uname(_, message):
     & filters.command(["ban_ghosts"], COMMAND_HANDLER)
 )
 @ratelimiter
+@app.adminsOnly("can_restrict_members")
 async def rm_delacc(client, message):
     if message.sender_chat:
         return await message.reply_msg(
@@ -176,6 +179,7 @@ async def rm_delacc(client, message):
     filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER)
 )
 @ratelimiter
+@app.adminsOnly("can_restrict_members")
 async def instatus(client, message):
     if message.sender_chat:
         return await message.reply_msg("Not supported channel.", del_in=4)

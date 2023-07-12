@@ -107,12 +107,10 @@ async def admin_cache_func(_, cmu):
 
 # Purge CMD
 @app.on_cmd("purge")
-@require_admin(permissions=["can_delete_messages"], allow_in_private=True)
+@app.adminsOnly("can_delete_messages")
 @ratelimiter
 @use_chat_lang()
 async def purge(self: Client, ctx: Message, strings) -> "Message":
-    if not ctx.from_user:
-        return
     try:
         repliedmsg = ctx.reply_to_message
         await ctx.delete_msg()
@@ -163,12 +161,10 @@ async def purge(self: Client, ctx: Message, strings) -> "Message":
 
 # Kick members
 @app.on_cmd(["kick", "dkick"], group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
-    if not ctx.from_user:
-        return
     user_id, reason = await extract_user_and_reason(ctx)
     if not user_id:
         return await ctx.reply_msg(strings("user_not_found"))
@@ -258,12 +254,10 @@ async def banFunc(client, message, strings):
 
 # Unban members
 @app.on_cmd("unban", group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def unban_func(self, message, strings):
-    if not message.from_user:
-        return
     # we don't need reasons for unban, also, we
     # don't need to get "text_mention" entity, because
     # normal users won't get text_mention if the user
@@ -293,8 +287,6 @@ async def unban_func(self, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def list_ban_(c, message, strings):
-    if not message.from_user:
-        return
     userid, msglink_reason = await extract_user_and_reason(message)
     if not userid or not msglink_reason:
         return await message.reply_text(strings("give_idban_with_msg_link"))
@@ -350,8 +342,6 @@ async def list_ban_(c, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def list_unban_(c, message, strings):
-    if not message.from_user:
-        return
     userid, msglink = await extract_user_and_reason(message)
     if not userid or not msglink:
         return await message.reply_text(strings("give_idunban_with_msg_link"))
@@ -386,12 +376,10 @@ async def list_unban_(c, message, strings):
 
 # Delete messages
 @app.on_cmd("del", group_only=True)
-@adminsOnly("can_delete_messages")
+@app.adminsOnly("can_delete_messages")
 @ratelimiter
 @use_chat_lang()
 async def deleteFunc(_, message, strings):
-    if not message.from_user:
-        return
     if not message.reply_to_message:
         return await message.reply_text(strings("delete_no_reply"))
     try:
@@ -403,12 +391,10 @@ async def deleteFunc(_, message, strings):
 
 # Promote Members
 @app.on_cmd(["promote", "fullpromote"], group_only=True)
-@adminsOnly("can_promote_members")
+@app.adminsOnly("can_promote_members")
 @ratelimiter
 @use_chat_lang()
 async def promoteFunc(client, message, strings):
-    if not message.from_user:
-        return
     try:
         user_id = await extract_user(message)
         umention = (await app.get_users(user_id)).mention
@@ -457,12 +443,10 @@ async def promoteFunc(client, message, strings):
 
 # Demote Member
 @app.on_cmd("demote", group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def demote(client, message, strings):
-    if not message.from_user:
-        return
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
@@ -489,12 +473,10 @@ async def demote(client, message, strings):
 
 # Pin Messages
 @app.on_cmd(["pin", "unpin"])
-@adminsOnly("can_pin_messages")
+@app.adminsOnly("can_pin_messages")
 @ratelimiter
 @use_chat_lang()
 async def pin(_, message, strings):
-    if not message.from_user:
-        return
     if not message.reply_to_message:
         return await message.reply_text(strings("pin_no_reply"))
     r = message.reply_to_message
@@ -519,12 +501,10 @@ async def pin(_, message, strings):
 
 # Mute members
 @app.on_cmd(["mute", "tmute"], group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def mute(client, message, strings):
-    if not message.from_user:
-        return
     try:
         user_id, reason = await extract_user_and_reason(message)
     except Exception as err:
@@ -572,12 +552,10 @@ async def mute(client, message, strings):
 
 # Unmute members
 @app.on_cmd("unmute", group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def unmute(_, message, strings):
-    if not message.from_user:
-        return
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
@@ -587,12 +565,10 @@ async def unmute(_, message, strings):
 
 
 @app.on_cmd(["warn", "dwarn"], group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def warn_user(client, message, strings):
-    if not message.from_user:
-        return
     user_id, reason = await extract_user_and_reason(message)
     chat_id = message.chat.id
     if not user_id:
@@ -706,12 +682,10 @@ async def unban_user(_, cq, strings):
 
 # Remove Warn
 @app.on_cmd("rmwarn", group_only=True)
-@adminsOnly("can_restrict_members")
+@app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
 async def remove_warnings(_, message, strings):
-    if not message.from_user:
-        return
     if not message.reply_to_message:
         return await message.reply_text(strings("reply_to_rm_warn"))
     user_id = message.reply_to_message.from_user.id
@@ -798,7 +772,7 @@ async def report_user(_, ctx: Message, strings) -> "Message":
 
 
 @app.on_cmd("set_chat_title", group_only=True)
-@adminsOnly("can_change_info")
+@app.adminsOnly("can_change_info")
 async def set_chat_title(_, ctx: Message):
     if len(ctx.command) < 2:
         return await ctx.reply_text("**Usage:**\n/set_chat_title NEW NAME")
@@ -811,7 +785,7 @@ async def set_chat_title(_, ctx: Message):
 
 
 @app.on_cmd("set_user_title", group_only=True)
-@adminsOnly("can_change_info")
+@app.adminsOnly("can_change_info")
 async def set_user_title(_, ctx: Message):
     if not ctx.reply_to_message:
         return await ctx.reply_text("Reply to user's message to set his admin title")
@@ -831,7 +805,7 @@ async def set_user_title(_, ctx: Message):
 
 
 @app.on_cmd("set_chat_photo", group_only=True)
-@adminsOnly("can_change_info")
+@app.adminsOnly("can_change_info")
 async def set_chat_photo(_, ctx: Message):
     reply = ctx.reply_to_message
 
