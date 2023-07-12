@@ -94,14 +94,15 @@ python3 --version
 ```
 apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl lokal ffmpeg tzdata neofetch mediainfo speedtest-cli -y
 ```
-- Instal requirements.txt, jika menggunakan python 3.11, Anda harus menambahkan parameter `--break-system-packages` atau gunakan venv saat menginstal.<br/>
+- Instal requirements.txt, jika menggunakan python 3.11, Anda harus menggunakan opsi venv saat menginstal.<br/>
 *Python < 3.10*
 ```
 pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-pip3 install -r requirements.txt --break-system-packages
+Install venv dari terminal server kamu
+pip3 install -r requirements.txt
 ```
 - Atur config environment saat menjalankan bot dan jangan lupa isi semua value yang wajib di isi.
 - Jalankan Bot

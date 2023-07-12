@@ -94,20 +94,16 @@ async def kbbi_search(_, ctx: Client):
 
 @app.on_cmd("carbon")
 async def carbon_make(self: Client, ctx: Message):
-    if len(ctx.command) == 1 and not ctx.reply_to_message:
-        return await ctx.reply(
-            "Please reply text to make carbon or add text after command."
-        )
-    if not ctx.reply_to_message:
-        return await ctx.reply(
-            "Please reply text to make carbon or add text after command."
-        )
-    if ctx.reply_to_message.text:
+    if ctx.reply_to_message and ctx.reply_to_message.text:
         text = ctx.reply_to_message.text
-    elif ctx.reply_to_message.caption:
+    elif ctx.reply_to_message and ctx.reply_to_message.caption:
         text = ctx.reply_to_message.caption
-    else:
+    elif len(ctx.command) > 1:
         text = ctx.input
+    else:
+        return await ctx.reply(
+            "Please reply text to make carbon or add text after command."
+        )
     json_data = {
         "code": text,
         "backgroundColor": "#1F816D",

@@ -3,17 +3,17 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 
-# Base Docker Using Ubuntu 23.04, Python 3.11 and Built In Pip
+# Base Docker Using Alpine 3.18, Python 3.11.4 and Built In Pip
 ## With Built in Pip Package
-# FROM yasirarism/misskaty-docker:latest
+FROM yasirarism/misskaty-docker:alpine
 ## Without Built in Pip Package
-FROM yasirarism/misskaty-docker:free
+# FROM yasirarism/misskaty-docker:free
 
 # Set Hostname
-ENV HOSTNAME misskaty
+ENV HOSTNAME yasir-server
 # Copy Files
 COPY . .
 # Instal pip package
-RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
+# RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 # Set CMD Bot
 CMD ["bash", "start.sh"]

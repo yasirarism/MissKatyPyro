@@ -94,14 +94,15 @@ python3 --version
 ```
 apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl ffmpeg locales tzdata neofetch mediainfo speedtest-cli -y
 ```
-- Install requirements.txt, if using python 3.11, you need pass `--break-system-packages` parameter or use venv when install.<br/>
+- Install requirements.txt, if using python 3.11, you need use venv when install pip package.<br/>
 *Python < 3.10*
 ```
 pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-pip3 install -r requirements.txt --break-system-packages
+Install venv from your terminal and activate it
+pip3 install -r requirements.txt 
 ```
 - Setting your config.env or via environment and dont forget fill all required value.
 - Run Bot

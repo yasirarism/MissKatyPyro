@@ -5,15 +5,13 @@
 import os
 from asyncio import gather
 
-from pyrogram import Client, filters
 from pyrogram.types import Message
 from pySmartDL import SmartDL
 
 from misskaty import app
-from misskaty.core.decorator.errors import capture_err
+from misskaty.core.decorator import capture_err, new_task
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "WebSS"
 __HELP__ = """
@@ -21,11 +19,11 @@ __HELP__ = """
 """
 
 
-@app.on_message(filters.command(["webss"], COMMAND_HANDLER))
-@capture_err
+@app.on_cmd("webss")
 @ratelimiter
+@new_task
 @use_chat_lang()
-async def take_ss(self: Client, ctx: Message, strings):
+async def take_ss(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_url"), del_in=6)
     url = (

@@ -35,6 +35,7 @@ from pyrogram.types import (
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
 from database.users_chats_db import db
 from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
+from misskaty.core.decorator import new_task
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import http
@@ -119,6 +120,7 @@ async def balas(self: Client, ctx: Message) -> "str":
 
 
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))
+@new_task
 async def server_stats(self: Client, ctx: Message) -> "Message":
     """
     Give system stats of the server.
@@ -158,7 +160,9 @@ async def server_stats(self: Client, ctx: Message) -> "Message":
     disk_used = get_readable_file_size(used)
     disk_free = get_readable_file_size(free)
 
-    caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>\n\n**OS Uptime:** <code>{osuptime}</code>\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** <code>{botusage}</code>\n\n**Total Space:** <code>{disk_total}</code>\n**Free Space:** <code>{disk_free}</code>\n\n**Download:** <code>{download}</code>\n**Upload:** <code>{upload}</code>\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
+    neofetch = (await shell_exec("neofetch --stdout"))[0]
+
+    caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>\n\n<code>{neofetch}</code>\n\n**OS Uptime:** <code>{osuptime}</code>\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** <code>{botusage}</code>\n\n**Total Space:** <code>{disk_total}</code>\n**Free Space:** <code>{disk_free}</code>\n\n**Download:** <code>{download}</code>\n**Upload:** <code>{upload}</code>\n\n<b>Pyrogram Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
 
     start = datetime.now()
     msg = await ctx.reply_photo(
@@ -364,6 +368,7 @@ async def shell(self: Client, ctx: Message, strings) -> "Message":
 )
 @user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
 @use_chat_lang()
+@new_task
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
         return await edit_or_reply(ctx, text=strings("no_eval"))
