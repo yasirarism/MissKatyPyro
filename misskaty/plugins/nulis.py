@@ -49,7 +49,7 @@ async def handwrite(client, message):
         font = ImageFont.truetype("assets/assfont.ttf", 30)
         x, y = 150, 140
         lines = text_set(txt)
-        line_height = font.getbbox("hg")[1]
+        line_height = font.getbbox("hg")[3]
         for line in lines:
             draw.text((x, y), line, fill=(1, 22, 55), font=font)
             y = y + line_height - 5
