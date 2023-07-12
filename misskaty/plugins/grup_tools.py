@@ -42,7 +42,10 @@ def draw_multiple_line_text(image, text, font, text_start_height):
     y_text = text_start_height
     lines = textwrap.wrap(text, width=50)
     for line in lines:
-        line_width, line_height = font.getsize(line)
+        text_bbox = font.getbbox(line)
+        (left, top, right, bottom) = text_bbox
+        line_width = abs(right - left)
+        line_height = abs(top - bottom)
         draw.text(
             ((image_width - line_width) / 2, y_text), line, font=font, fill="black"
         )
