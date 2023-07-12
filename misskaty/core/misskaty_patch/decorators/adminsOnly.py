@@ -20,6 +20,7 @@ import contextlib
 import typing
 
 import pyrogram
+from pyrogram.methods import Decorators
 from cachetools import TTLCache
 
 from ..utils import check_rights, handle_error, is_admin
@@ -190,3 +191,5 @@ def adminsOnly(
             return decorator
 
         return wrapper
+
+Decorators.adminsOnly = adminsOnly
