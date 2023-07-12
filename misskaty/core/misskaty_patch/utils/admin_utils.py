@@ -17,6 +17,7 @@
 # along with tgEasy.  If not, see <http://www.gnu.org/licenses/>.
 
 import typing
+
 import pyrogram
 
 
@@ -151,4 +152,7 @@ async def is_admin(
         user = await client.get_chat_member(chat_id, user_id)
     except Exception:
         return False
-    return user.status in (pyrogram.enums.ChatMemberStatus.OWNER, pyrogram.enums.ChatMemberStatus.ADMINISTRATOR,)
+    return user.status in (
+        pyrogram.enums.ChatMemberStatus.OWNER,
+        pyrogram.enums.ChatMemberStatus.ADMINISTRATOR,
+    )
