@@ -87,10 +87,10 @@ def command(
                 return await message.reply_text(
                     "Sorry, this command has been disabled by owner."
                 )
-            if not message.from_user:
-                return await message.reply_text(
-                    "I'm cannot identify user. Use my command in private chat."
-                )
+            # if not message.from_user:
+            #     return await message.reply_text(
+            #         "I'm cannot identify user. Use my command in private chat."
+            #     )
             if self_admin and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
                 return await message.reply_text(
                     "This command can be used in supergroups only."
