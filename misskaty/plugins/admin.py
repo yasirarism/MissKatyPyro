@@ -198,7 +198,6 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
 
 # Ban/DBan/TBan User
 @app.on_cmd(["ban", "dban", "tban"], group_only=True)
-# @adminsOnly("can_restrict_members")
 @app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()

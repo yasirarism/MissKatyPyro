@@ -199,8 +199,8 @@ async def greet_group(bot, message, strings):
                 LOGGER.error(f"ERROR in Combot API Detection. {err}")
             if userspammer != "":
                 await bot.send_message(message.chat.id, userspammer)
-        except:
-            pass
+        except Exception as e:
+            LOGGER.info(e)
         try:
             os.remove(f"downloads/welcome#{u.id}.png")
             os.remove(f"downloads/pp{u.id}.png")
