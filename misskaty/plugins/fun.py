@@ -30,9 +30,9 @@ async def draw_meme_text(image_path, text):
         for u_text in textwrap.wrap(upper_text, width=15):
             text_bbox = m_font.getbbox(u_text)
             (left, top, right, bottom) = text_bbox
-            i_width = abs(right - left)
-            i_height = abs(top - bottom)
-            text_size = (i_width, i_height)
+            u_width = abs(right - left)
+            u_height = abs(top - bottom)
+            text_size = (u_width, u_height)
             # u_width, u_height = draw.textsize(u_text, font=m_font)
 
             draw.text(
