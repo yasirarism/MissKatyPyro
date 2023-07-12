@@ -187,7 +187,7 @@ def adminsOnly(
 
         self.add_handler(
             pyrogram.handlers.CallbackQueryHandler(
-                AdminsOnly.anonymous_admin_verification,
+                anonymous_admin_verification,
                 pyrogram.filters.regex("^anon."),
             ),
         )
