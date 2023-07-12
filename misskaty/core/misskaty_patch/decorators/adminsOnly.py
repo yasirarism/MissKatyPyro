@@ -182,7 +182,7 @@ def adminsOnly(
                 except BaseException as exception:
                     await handle_error(exception, message)
 
-            self.__client__.add_handler(
+            self.add_handler(
                 pyrogram.handlers.CallbackQueryHandler(
                     AdminsOnly.anonymous_admin_verification,
                     pyrogram.filters.regex("^anon."),
