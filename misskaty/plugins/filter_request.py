@@ -142,7 +142,10 @@ async def clear_reqdict():
     shutil.rmtree("GensSS", ignore_errors=True)
 
 
-@app.on_message(filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I) & filters.chat(chat))
+@app.on_message(
+    filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I)
+    & filters.chat(chat)
+)
 async def thankregex(_, message):
     pesan = [
         f"Sama-sama {message.from_user.first_name}",

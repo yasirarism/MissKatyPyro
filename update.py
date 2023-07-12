@@ -1,6 +1,6 @@
-from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 import os
 import subprocess
+from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
 
 import dotenv
 import requests
