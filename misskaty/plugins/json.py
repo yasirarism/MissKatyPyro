@@ -7,7 +7,6 @@
 
 import os
 
-from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
@@ -31,7 +30,7 @@ async def jsonify(_, message: Message):
                     [
                         InlineKeyboardButton(
                             text="❌ Close",
-                            callback_data=f"close#{message.from_user.id}",
+                            callback_data=f"close#{message.from_user.id if message.from_user else 2024984460}",
                         )
                     ]
                 ]
