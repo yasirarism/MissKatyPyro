@@ -27,7 +27,12 @@ Message.input = property(
 
 
 async def reply_text(
-    *args, self: Message, text: str, as_raw: bool = False, del_in: int = 0, **kwargs, 
+    *args,
+    self: Message,
+    text: str,
+    as_raw: bool = False,
+    del_in: int = 0,
+    **kwargs,
 ) -> Union["Message", bool]:
     """\nExample:
             message.reply_msg("hello")
