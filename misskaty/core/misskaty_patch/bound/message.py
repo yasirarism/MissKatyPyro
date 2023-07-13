@@ -27,7 +27,7 @@ Message.input = property(
 
 
 async def reply_text(
-    *args, **kwargs, self: Message, text: str, as_raw: bool = False, del_in: int = 0
+    *args, self: Message, text: str, as_raw: bool = False, del_in: int = 0, **kwargs, 
 ) -> Union["Message", bool]:
     """\nExample:
             message.reply_msg("hello")
@@ -96,7 +96,7 @@ async def reply_text(
 
 
 async def edit_text(
-    *args, **kwargs, self, text: str, del_in: int = 0
+    *args, self, text: str, del_in: int = 0, **kwargs
 ) -> Union["Message", bool]:
     """\nExample:
             message.edit_msg("hello")
@@ -145,7 +145,7 @@ async def edit_text(
 
 
 async def edit_or_send_as_file(
-    *args, **kwargs, self, text: str, del_in: int = 0, as_raw: bool = False
+    *args, self, text: str, del_in: int = 0, as_raw: bool = False, **kwargs
 ) -> Union["Message", bool]:
     """\nThis will first try to message.edit.
     If it raises MessageTooLong error,
@@ -197,7 +197,7 @@ async def edit_or_send_as_file(
 
 
 async def reply_or_send_as_file(
-    *args, **kwargs, self, text: str, as_raw: bool = False, del_in: int = 0
+    *args, self, text: str, as_raw: bool = False, del_in: int = 0, **kwargs
 ) -> Union["Message", bool]:
     """\nThis will first try to message.reply.
     If it raise MessageTooLong error,
