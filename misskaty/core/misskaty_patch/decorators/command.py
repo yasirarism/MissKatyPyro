@@ -18,7 +18,7 @@ def command(
     self_only: typing.Union[bool, bool] = False,
     no_channel: typing.Union[bool, bool] = False,
     handler: typing.Optional[list] = None,
-    filter: typing.Union[pyrogram.filters.Filter, pyrogram.filters.Filter] = None,
+    filter: typing.Union[pyrogram.filters.Filter] = None,
     *args,
     **kwargs
 ):
