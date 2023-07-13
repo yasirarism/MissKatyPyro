@@ -243,7 +243,8 @@ async def dlsub_callback(self: Client, callback_query: CallbackQuery):
     scraper = cloudscraper.create_scraper()
     res = await down_page(link)
     dl = scraper.get(res.get("download_url"))
-    f = open(f"{title}.zip", mode="wb").write(dl.content)
+    with open(f"{title}.zip", mode="wb") as f:
+        f.write(dl.content)
     await callback_query.message.reply_document(
         f"{title}.zip",
         caption=f"Title: {res.get('title')}\nIMDb: {res['imdb']}\nAuthor: {res['author_name']}\nRelease Info: ",

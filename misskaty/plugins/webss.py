@@ -9,7 +9,7 @@ from pyrogram.types import Message
 from pySmartDL import SmartDL
 
 from misskaty import app
-from misskaty.core.decorator import capture_err, new_task
+from misskaty.core.decorator import new_task
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
 

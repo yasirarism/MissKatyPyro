@@ -22,12 +22,12 @@ LOGGER = getLogger(__name__)
 
 
 def circle(pfp, size=(215, 215)):
-    pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
+    pfp = pfp.resize(size, Image.LANCZOS).convert("RGBA")
     bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
     mask = Image.new("L", bigsize, 0)
     draw = ImageDraw.Draw(mask)
     draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(pfp.size, Image.ANTIALIAS)
+    mask = mask.resize(pfp.size, Image.LANCZOS)
     mask = ImageChops.darker(mask, pfp.split()[-1])
     pfp.putalpha(mask)
     return pfp
@@ -42,7 +42,10 @@ def draw_multiple_line_text(image, text, font, text_start_height):
     y_text = text_start_height
     lines = textwrap.wrap(text, width=50)
     for line in lines:
-        line_width, line_height = font.getsize(line)
+        text_bbox = font.getbbox(line)
+        (left, top, right, bottom) = text_bbox
+        line_width = abs(right - left)
+        line_height = abs(top - bottom)
         draw.text(
             ((image_width - line_width) / 2, y_text), line, font=font, fill="black"
         )
@@ -52,7 +55,7 @@ def draw_multiple_line_text(image, text, font, text_start_height):
 @asyncify
 def welcomepic(pic, user, chat, id, strings):
     background = Image.open("assets/bg.png")  # <- Background Image (Should be PNG)
-    background = background.resize((1024, 500), Image.ANTIALIAS)
+    background = background.resize((1024, 500), Image.LANCZOS)
     pfp = Image.open(pic).convert("RGBA")
     pfp = circle(pfp)
     pfp = pfp.resize(
@@ -199,8 +202,8 @@ async def greet_group(bot, message, strings):
                 LOGGER.error(f"ERROR in Combot API Detection. {err}")
             if userspammer != "":
                 await bot.send_message(message.chat.id, userspammer)
-        except:
-            pass
+        except Exception as e:
+            LOGGER.info(e)
         try:
             os.remove(f"downloads/welcome#{u.id}.png")
             os.remove(f"downloads/pp{u.id}.png")
