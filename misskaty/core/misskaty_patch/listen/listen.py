@@ -89,13 +89,13 @@ class Client:
 
     @patchable()
     async def ask(
-        *args,
         self,
         text,
         identifier: tuple,
         filters=None,
         listener_type=ListenerTypes.MESSAGE,
         timeout=None,
+        *args,
         **kwargs,
     ):
         request = await self.send_message(identifier[0], text, *args, **kwargs)

@@ -25,11 +25,11 @@ from ..utils import handle_error
 
 
 def callback(
-    *args,
     self,
     data: typing.Union[str, list],
     self_admin: typing.Union[bool, bool] = False,
     filter: typing.Union[pyrogram.filters.Filter, pyrogram.filters.Filter] = None,
+    *args,
     **kwargs,
 ):
     """

@@ -9,7 +9,6 @@ from ..utils import handle_error
 
 
 def command(
-    *args,
     self,
     command: typing.Union[str, list],
     is_disabled: typing.Union[bool, bool] = False,
@@ -20,7 +19,8 @@ def command(
     no_channel: typing.Union[bool, bool] = False,
     handler: typing.Optional[list] = None,
     filter: typing.Union[pyrogram.filters.Filter, pyrogram.filters.Filter] = None,
-    **kwargs,
+    *args,
+    **kwargs
 ):
     """
     ### `tgClient.command`

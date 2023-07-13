@@ -5,12 +5,12 @@ from pyrogram import Client
 
 
 async def edit_message_text(
-    *args,
     self,
     chat_id: Union[int, str],
     message_id: int,
     text: str,
     del_in: int = 0,
+    *args,
     **kwargs
 ) -> Union["Message", bool]:
     """\nExample:
