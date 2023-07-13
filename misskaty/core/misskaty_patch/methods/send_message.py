@@ -5,7 +5,7 @@ from pyrogram import Client
 
 
 async def send_message(
-    self, chat_id: Union[int, str], text: str, del_in: int = 0, *args, **kwargs
+    *args, **kwargs, self, chat_id: Union[int, str], text: str, del_in: int = 0
 ) -> Union["Message", bool]:
     """\nSend text messages.
     Example:
