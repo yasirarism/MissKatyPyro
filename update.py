@@ -45,7 +45,7 @@ UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH")
 
 if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
     if os.path.exists(".git"):
-        subprocess.run(["rm", "-rf", ".git"])
+        subprocess.run(["rm", "-rf", ".git"], check=True)
 
     try:
         repo = Repo.init()
