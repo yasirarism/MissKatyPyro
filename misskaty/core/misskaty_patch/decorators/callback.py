@@ -28,7 +28,7 @@ def callback(
     self,
     data: typing.Union[str, list],
     self_admin: typing.Union[bool, bool] = False,
-    filter: typing.Union[pyrogram.filters.Filter, pyrogram.filters.Filter] = None,
+    filter: typing.Union[pyrogram.filters.Filter] = None,
     *args,
     **kwargs,
 ):
