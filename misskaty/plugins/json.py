@@ -11,7 +11,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.vars import COMMAND_HANDLER
 
 
 # View Structure Telegram Message As JSON

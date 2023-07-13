@@ -12,7 +12,7 @@ from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
 
-from pyrogram import Client, enums, filters
+from pyrogram import Client, enums
 from pyrogram.errors import FloodWait
 from pyrogram.file_id import FileId
 from pyrogram.types import Message
@@ -23,7 +23,6 @@ from misskaty.core.decorator import new_task, ratelimiter
 from misskaty.helper import is_url, progress_for_pyrogram, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import humanbytes
-from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger(__name__)
 

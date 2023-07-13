@@ -36,10 +36,8 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import (
     admins_in_chat,
-    adminsOnly,
     list_admins,
     member_permissions,
-    require_admin,
 )
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
