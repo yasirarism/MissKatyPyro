@@ -829,9 +829,7 @@ async def movieku_s(self: Client, ctx: Message, strings):
 
 
 # Savefillm21 Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_savefilm#" in query.data)
-)
+@app.on_cb("page_savefilm")
 @ratelimiter
 @use_chat_lang()
 async def savefilmpage_callback(client, callback_query, strings):

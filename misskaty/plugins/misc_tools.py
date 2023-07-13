@@ -470,9 +470,9 @@ async def close_callback(bot: Client, query: CallbackQuery):
     i, userid = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
-    await query.answer("Deleting this message in 5 seconds.")
-    await asyncio.sleep(5)
     try:
+        await query.answer("Deleting this message in 5 seconds.")
+        await asyncio.sleep(5)
         await query.message.delete()
         await query.message.reply_to_message.delete()
     except:
