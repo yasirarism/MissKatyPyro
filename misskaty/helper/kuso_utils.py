@@ -185,7 +185,7 @@ async def byPassPh(url: str, name: str):
 
 
 class Kusonime:
-    def __init__(self):  # skipcq
+    def __init__(self): # skipcq
         pass
 
     @staticmethod
