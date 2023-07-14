@@ -75,7 +75,7 @@ async def draw_meme_text(image_path, text):
             current_h += u_height + pad
     if lower_text:
         for l_text in textwrap.wrap(lower_text, width=15):
-            text_bbox = m_font.getbbox(u_text)
+            text_bbox = m_font.getbbox(l_text)
             (left, top, right, bottom) = text_bbox
             u_width = abs(right - left)
             u_height = abs(top - bottom)
