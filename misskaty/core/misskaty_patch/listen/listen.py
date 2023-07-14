@@ -25,6 +25,7 @@ from inspect import iscoroutinefunction
 from typing import Callable, Optional, Union
 
 import pyrogram
+from pyrogram.errors import MessageIdInvalid
 
 from ..utils import PyromodConfig, patch, patchable
 
@@ -302,7 +303,10 @@ class CallbackQueryHandler:
                     if type(permissive_listener["unallowed_click_alert"]) is str
                     else PyromodConfig.unallowed_click_alert_text
                 )
-                await query.answer(alert)
+                try:
+                    await query.answer(alert)
+                except MessageIdInvalid:
+                    pass
                 return False
 
         filters = listener["filters"] if listener else self.filters
