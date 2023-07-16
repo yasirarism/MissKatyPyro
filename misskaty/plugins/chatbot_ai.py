@@ -23,7 +23,6 @@ openai.api_key = OPENAI_API
 
 # This only for testing things, since maybe in future it will got blocked
 @app.on_message(filters.command("bard", COMMAND_HANDLER) & pyro_cooldown.wait(10))
-@ratelimiter
 @use_chat_lang()
 async def bard_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
@@ -32,7 +31,7 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await http.get(f"https://api.safone.me/bard?message={ctx.text.split(' ', 1)[1]}", json=data)
+        req = await http.get(f"https://api.safone.me/bard?message={ctx.text.split(' ', 1)[1]}")
         await msg.edit_msg(req.json().get("message"))
     except Exception as e:
         await msg.edit_msg(str(e))
