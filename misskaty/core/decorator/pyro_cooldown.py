@@ -1,20 +1,21 @@
 import asyncio
 
 from pyrogram import filters
+from pyrogram.errors import MessageDeleteForbidden
 
 data = {}
 
 
 async def task(msg, warn=False, sec=None):
-    try:
-        await msg.delete()
-    except:
-        pass
     if warn:
         user = msg.from_user
         ids = await msg.reply_msg(
-            f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using command again.."
+            f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using feature again.."
         )
+        try:
+            await msg.delete_msg()
+        except MessageDeleteForbidden:
+            pass
         await asyncio.sleep(sec)
         await ids.edit_msg(
             f"Alright {user.mention} [<code>{user.id}</code>], your cooldown is over you can command again.",
@@ -23,7 +24,7 @@ async def task(msg, warn=False, sec=None):
 
 
 def wait(sec):
-    async def ___(flt, cli, msg):
+    async def ___(flt, _, msg):
         user_id = msg.from_user.id
         if user_id in data:
             if msg.date.timestamp() >= data[user_id]["timestamp"] + flt.data:

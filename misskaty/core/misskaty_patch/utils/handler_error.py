@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with tgEasy.  If not, see <http://www.gnu.org/licenses/>.
 import contextlib
-import logging
 import os
 import traceback
 import typing
@@ -56,9 +55,6 @@ async def handle_error(
             except Exceptation as e:
                 return await handle_error(e, message)
     """
-
-    logging = logging.getLogger(__name__)
-    logging.exception(traceback.format_exc())
 
     day = datetime.now()
     tgl_now = datetime.now()

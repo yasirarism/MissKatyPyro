@@ -21,8 +21,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import asyncio
 from pyrogram import filters
-from pyrogram.errors.exceptions.bad_request_400 import ChatNotModified
+from pyrogram.errors import ChatNotModified, FloodWait
 from pyrogram.types import ChatPermissions
 
 from misskaty import app
@@ -67,7 +68,11 @@ data = {
 
 async def current_chat_permissions(chat_id):
     perms = []
-    perm = (await app.get_chat(chat_id)).permissions
+    try:
+        perm = (await app.get_chat(chat_id)).permissions
+    except FloodWait as e:
+        await asyncio.sleep(e.value)
+        perm = (await app.get_chat(chat_id)).permissions
     if perm.can_send_messages:
         perms.append("can_send_messages")
     if perm.can_send_media_messages:
