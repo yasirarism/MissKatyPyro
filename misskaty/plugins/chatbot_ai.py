@@ -31,8 +31,8 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await http.get(f"https://api.safone.me/bard?message={ctx.text.split(' ', 1)[1]}")
-        await msg.edit_msg(req.json().get("message"))
+        req = await http.get(f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}")
+        await msg.edit_msg(req.json().get("content"))
     except Exception as e:
         await msg.edit_msg(str(e))
 
