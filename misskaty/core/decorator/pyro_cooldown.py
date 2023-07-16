@@ -23,7 +23,7 @@ async def task(msg, warn=False, sec=None):
 
 
 def wait(sec):
-    async def ___(flt, cli, msg):
+    async def ___(flt, _, msg):
         user_id = msg.from_user.id
         if user_id in data:
             if msg.date.timestamp() >= data[user_id]["timestamp"] + flt.data:

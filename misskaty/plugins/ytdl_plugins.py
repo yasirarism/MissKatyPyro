@@ -19,8 +19,7 @@ from pyrogram.types import (
 )
 
 from misskaty import app
-from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.core.decorator import capture_err, ratelimiter, pyro_cooldown
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
@@ -78,7 +77,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
 
 @app.on_message(
     filters.command(["ytdown"], COMMAND_HANDLER)
-    | filters.regex(YT_REGEX) & ~filters.channel & ~filters.via_bot
+    | filters.regex(YT_REGEX) & ~filters.channel & ~filters.via_bot & pyro_cooldown.wait(60)
 )
 @capture_err
 @ratelimiter
