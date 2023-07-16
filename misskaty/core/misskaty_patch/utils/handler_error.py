@@ -26,6 +26,8 @@ import pyrogram
 
 from misskaty.vars import LOG_CHANNEL
 
+logging = logging.getLogger(__name__)
+logging.exception(traceback.format_exc())
 
 async def handle_error(
     error, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
@@ -56,9 +58,6 @@ async def handle_error(
             except Exceptation as e:
                 return await handle_error(e, message)
     """
-
-    logging = logging.getLogger(__name__)
-    logging.exception(traceback.format_exc())
 
     day = datetime.now()
     tgl_now = datetime.now()
