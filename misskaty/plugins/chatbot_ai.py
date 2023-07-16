@@ -11,17 +11,17 @@ from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
+from misskaty.core.decorator import ratelimiter, pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import OPENAI_API, SUDO
+from misskaty.vars import OPENAI_API, SUDO, COMMAND_HANDLER
 
 openai.api_key = OPENAI_API
 
 
 # This only for testing things, since maybe in future it will got blocked
-@app.on_cmd("bard", is_disabled=True)
+@app.on_cmd("bard", is_disabled=False)
 @use_chat_lang()
 @ratelimiter
 async def bard_chatbot(_, ctx: Message, strings):
@@ -30,18 +30,14 @@ async def bard_chatbot(_, ctx: Message, strings):
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    data = {
-        "message": ctx.input,
-        "session_id": "XQjzKRYITZ7fhplF-rXa_GTynUwdctKq4aGm-lqUCCJzF98xqDulL9UKopIadNpQn0lvnA.",
-    }
     try:
-        req = await http.post("https://bard-api-rho.vercel.app/ask", json=data)
-        await msg.edit_msg(req.json().get("content"))
+        req = await http.get(f"https://api.safone.me/bard?message={ctx.text.split(" ", 1)[1]}", json=data)
+        await msg.edit_msg(req.json().get("message"))
     except Exception as e:
         await msg.edit_msg(str(e))
 
 
-@app.on_cmd("ask")
+@app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @ratelimiter
 @use_chat_lang()
 async def openai_chatbot(_, ctx: Message, strings):
