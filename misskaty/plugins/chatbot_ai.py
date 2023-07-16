@@ -7,6 +7,7 @@ import html
 
 import openai
 from aiohttp import ClientSession
+from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
