@@ -22,7 +22,7 @@ openai.api_key = OPENAI_API
 
 
 # This only for testing things, since maybe in future it will got blocked
-@app.on_cmd("bard", is_disabled=False)
+@app.on_message(filters.command("bard", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
 @ratelimiter
 async def bard_chatbot(_, ctx: Message, strings):
