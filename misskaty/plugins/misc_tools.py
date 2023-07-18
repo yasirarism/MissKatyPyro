@@ -18,7 +18,7 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
-from pyrogram.errors import MessageTooLong, UserNotParticipant, ChatAdminRequired
+from pyrogram.errors import ChatAdminRequired, MessageTooLong, UserNotParticipant
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
