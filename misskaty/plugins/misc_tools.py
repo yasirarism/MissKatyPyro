@@ -18,7 +18,7 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
-from pyrogram.errors import MessageTooLong, UserNotParticipant
+from pyrogram.errors import MessageTooLong, UserNotParticipant, ChatAdminRequired
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -426,7 +426,7 @@ async def who_is(client, message):
             message_out_str += (
                 "<b>➲Joined this Chat on:</b> <code>" f"{joined_date}" "</code>\n"
             )
-        except UserNotParticipant:
+        except (UserNotParticipant, ChatAdminRequired):
             pass
     if chat_photo := from_user.photo:
         local_user_photo = await client.download_media(message=chat_photo.big_file_id)

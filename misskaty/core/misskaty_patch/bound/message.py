@@ -88,6 +88,8 @@ async def reply_text(
     except FloodWait as e:
         await asleep(e.value)
         return await reply_text(self, text, *args, **kwargs)
+    except TopicClosed:
+        return
     except (ChatWriteForbidden, ChatAdminRequired):
         LOGGER.info(
             f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
