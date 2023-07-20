@@ -78,7 +78,7 @@ def tglsekarang():
     tgl = now.strftime("%d")
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
-    return f"{days[now.weekday()]}, {tgl} {month[now.month]} {tahun}"
+    return f"{days[now.weekday()]}, {tgl} {month[now.month]} {tahun} {jam}"
 
 
 def extract_time(time_val: str):
