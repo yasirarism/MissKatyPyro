@@ -3,9 +3,9 @@ import typing
 import pyrogram
 from pyrogram.methods import Decorators
 
+from misskaty.core import pyro_cooldown
 from misskaty.vars import COMMAND_HANDLER
 
-from misskaty.core import pyro_cooldown
 from ..utils import handle_error
 
 
@@ -80,7 +80,9 @@ def command(
                 pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
-            filtercmd = pyrogram.filters.command(cmd, prefixes=handler) & pyro_cooldown.wait(7)
+            filtercmd = pyrogram.filters.command(
+                cmd, prefixes=handler
+            ) & pyro_cooldown.wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
