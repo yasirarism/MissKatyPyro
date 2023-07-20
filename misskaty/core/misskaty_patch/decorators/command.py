@@ -80,7 +80,9 @@ def command(
                 pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
-            filtercmd = pyrogram.filters.command(cmd, prefixes=handler) & pyro_cooldown.wait(7)
+            filtercmd = pyrogram.filters.command(
+                cmd, prefixes=handler
+            ) & pyro_cooldown.wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
