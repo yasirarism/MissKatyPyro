@@ -383,7 +383,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
     if ctx.entities:
         entity = ctx.entities
         j = 0
-        for x in range(len(entity)):
+        for _ in range(len(entity)):
             if (entity[j].type) == enums.MessageEntityType.MENTION:
                 found = re.findall("@([_0-9a-zA-Z]+)", ctx.text)
                 try:
