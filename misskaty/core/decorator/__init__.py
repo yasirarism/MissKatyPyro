@@ -3,4 +3,11 @@ from .misc import asyncify, new_task
 from .permissions import adminsOnly, require_admin
 from .ratelimiter import ratelimiter
 
-__all__ = ["capture_err", "asyncify", "new_task", "adminsOnly", "require_admin", "ratelimiter"]
+__all__ = [
+    "capture_err",
+    "asyncify",
+    "new_task",
+    "adminsOnly",
+    "require_admin",
+    "ratelimiter",
+]
