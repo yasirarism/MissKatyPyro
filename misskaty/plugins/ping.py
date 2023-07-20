@@ -10,7 +10,8 @@ from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import __version__ as pyrover, filters
+from pyrogram import __version__ as pyrover
+from pyrogram import filters
 from pyrogram.types import Message
 
 from misskaty import app, botStartTime, misskaty_version
