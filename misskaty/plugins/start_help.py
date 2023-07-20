@@ -250,7 +250,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
         text, keyb = await help_parser(query)
         await query.message.edit_msg(
             text=text,
-            reply_markup=keyboard,
+            reply_markup=keyb,
             disable_web_page_preview=True,
         )
 
