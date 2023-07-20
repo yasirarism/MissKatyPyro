@@ -88,7 +88,7 @@ async def kbbi_search(_, ctx: Client):
         [[InlineKeyboardButton(text="Open in Web", url=r.get("link"))]]
     )
     res = "<b>Definisi:</b>\n"
-    for num, a in enumerate(r.get("result"), start=1):
+    for _, a in enumerate(r.get("result"), start=1):
         submakna = "".join(f"{a}, " for a in a["makna"][0]["submakna"])[:-2]
         contoh = "".join(f"{a}, " for a in a["makna"][0]["contoh"])[:-2]
         kt_dasar = "".join(f"{a}, " for a in a["kata_dasar"])[:-2]
@@ -472,7 +472,7 @@ async def who_is(client, message):
 @app.on_callback_query(filters.regex("^close"))
 @ratelimiter
 async def close_callback(bot: Client, query: CallbackQuery):
-    i, userid = query.data.split("#")
+    _, userid = query.data.split("#")
     if query.from_user.id != int(userid):
         try:
             return await query.answer("⚠️ Access Denied!", True)
@@ -498,7 +498,7 @@ async def mdlapi(title):
 @ratelimiter
 async def mdlsearch(client, message):
     if " " in message.text:
-        r, title = message.text.split(None, 1)
+        _, title = message.text.split(None, 1)
         k = await message.reply("Sedang mencari di Database MyDramaList.. 😴")
         movies = await mdlapi(title)
         res = movies["results"]["dramas"]
