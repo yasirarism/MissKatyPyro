@@ -77,8 +77,7 @@ def command(
     else:
         if self_only:
             filter = (
-                pyrogram.filters.command(cmd, prefixes=handler)
-                & pyrogram.filters.me
+                pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
             filter = pyrogram.filters.command(cmd, prefixes=handler) & wait(7)
