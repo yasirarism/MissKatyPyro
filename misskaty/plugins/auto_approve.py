@@ -60,7 +60,7 @@ async def approve_chat(c, q):
 @app.on_callback_query(filters.regex(r"^declined"))
 @ratelimiter
 async def decline_chat(c, q):
-    i, chat = q.data.split("_")
+    _, chat = q.data.split("_")
     try:
         await q.message.edit(
             "Yahh, kamu ditolak join channel. Biasakan rajin membaca yahhh.."
