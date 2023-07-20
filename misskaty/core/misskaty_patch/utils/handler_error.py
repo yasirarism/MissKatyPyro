@@ -64,9 +64,7 @@ async def handle_error(
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
     f_errname = f"crash_{tgl_now.strftime('%d %B %Y')}.txt"
     LOGGER.error(traceback.format_exc())
-    with open(
-        f_errname, "w+", encoding="utf-8"
-    ) as log:
+    with open(f_errname, "w+", encoding="utf-8") as log:
         log.write(traceback.format_exc())
         log.close()
     if isinstance(m, pyrogram.types.Message):

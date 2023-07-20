@@ -251,7 +251,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                     and (message_text[0 : 0 + entity.length]).lower() in possible
                 ):
                     return
-            except UnicodeDecodeError: # Some weird character make error
+            except UnicodeDecodeError:  # Some weird character make error
                 return
 
     msg = ""

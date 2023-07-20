@@ -6,8 +6,8 @@
 """
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, filters
-from pyrogram.types import CallbackQuery, Message
 from pyrogram.errors import QueryIdInvalid
+from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
