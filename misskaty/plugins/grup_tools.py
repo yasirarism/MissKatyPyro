@@ -322,7 +322,7 @@ async def list_users(_, message):
 
 
 @app.on_message(filters.command("chats") & filters.user(SUDO))
-async def list_chats(bot, message):
+async def list_chats(_, message):
     msg = await message.reply("Getting List Of chats")
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
