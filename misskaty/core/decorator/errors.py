@@ -6,7 +6,6 @@ from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 from pyrogram.types import CallbackQuery
 
-from misskaty import app
 from misskaty.vars import LOG_CHANNEL
 
 
@@ -24,7 +23,7 @@ def capture_err(func):
         try:
             return await func(client, message, *args, **kwargs)
         except ChatWriteForbidden:
-            return await app.leave_chat(message.chat.id)
+            return await client.leave_chat(message.chat.id)
         except Exception as err:
             exc = traceback.format_exc()
             error_feedback = "ERROR | {} | {}\n\n{}\n\n{}\n".format(
@@ -45,7 +44,7 @@ def capture_err(func):
             ) as log:
                 log.write(error_feedback)
                 log.close()
-            await app.send_document(
+            await client.send_document(
                 LOG_CHANNEL,
                 f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
                 caption=f"Crash Report of this Bot\n{cap_day}",

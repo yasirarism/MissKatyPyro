@@ -19,10 +19,10 @@ from ...helper.localization import (
 )
 
 
-async def member_permissions(chat_id: int, user_id: int):
+async def member_permissions(chat_id: int, user_id: int, client):
     perms = []
     try:
-        member = (await app.get_chat_member(chat_id, user_id)).privileges
+        member = (await client.get_chat_member(chat_id, user_id)).privileges
         if member.can_post_messages:
             perms.append("can_post_messages")
         if member.can_edit_messages:
@@ -122,7 +122,7 @@ async def authorised(func, subFunc2, client, message, *args, **kwargs):
     try:
         await func(client, message, *args, **kwargs)
     except ChatWriteForbidden:
-        await app.leave_chat(chatID)
+        await client.leave_chat(chatID)
     except Exception as e:
         try:
             await message.reply_text(str(e.MESSAGE))
@@ -139,7 +139,7 @@ async def unauthorised(message: Message, permission, subFunc2):
     try:
         await message.reply_text(text)
     except ChatWriteForbidden:
-        await app.leave_chat(chatID)
+        await message.chat.leave()
     return subFunc2
 
 
@@ -162,7 +162,7 @@ def adminsOnly(permission):
                 return await unauthorised(message, permission, subFunc2)
             # For admins and sudo users
             userID = message.from_user.id
-            permissions = await member_permissions(chatID, userID)
+            permissions = await member_permissions(chatID, userID, client)
             if userID not in SUDO and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
             return await authorised(func, subFunc2, client, message, *args, **kwargs)
