@@ -19,7 +19,7 @@ from pyrogram.types import (
 )
 
 from misskaty import app
-from misskaty.core.decorator import capture_err, pyro_cooldown, ratelimiter
+from misskaty.core import capture_err, pyro_cooldown, ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
