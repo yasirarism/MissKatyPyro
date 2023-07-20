@@ -305,7 +305,7 @@ async def unban_globally(self: Client, ctx: Message):
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
-async def shell(self: Client, ctx: Message, strings) -> "Message":
+async def shell_cmd(self: Client, ctx: Message, strings) -> "Message":
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
     msg = (
