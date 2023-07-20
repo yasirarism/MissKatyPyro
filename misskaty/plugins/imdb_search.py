@@ -91,7 +91,7 @@ async def imdb_choose(_, ctx: Message):
 @app.on_cb("imdbset")
 @ratelimiter
 async def imdblangset(_, query: CallbackQuery):
-    i, uid = query.data.split("#")
+    _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     buttons = InlineKeyboard()
@@ -99,7 +99,7 @@ async def imdblangset(_, query: CallbackQuery):
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}"),
     )
-    is_imdb, lang = await is_imdbset(query.from_user.id)
+    is_imdb, _ = await is_imdbset(query.from_user.id)
     if is_imdb:
         buttons.row(
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
@@ -122,7 +122,7 @@ async def imdblangset(_, query: CallbackQuery):
 @app.on_cb("setimdb")
 @ratelimiter
 async def imdbsetlang(_, query: CallbackQuery):
-    i, lang, uid = query.data.split("#")
+    _, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     is_imdb, langset = await is_imdbset(query.from_user.id)
@@ -492,7 +492,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         if keywd := r_json.get("keywords"):
             key_ = "".join(
                 f"#{i.replace(' ', '_').replace('-', '_')}, "
-                for i in r_json["keywords"].split(",")
+                for i in keywd.split(",")
             )
             res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
         if award := sop.select('li[data-testid="award_information"]'):
