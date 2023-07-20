@@ -16,8 +16,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with tgEasy.  If not, see <http://www.gnu.org/licenses/>.
 import contextlib
-import os
 import logging
+import os
 import traceback
 import typing
 from datetime import datetime
@@ -27,6 +27,7 @@ import pyrogram
 from misskaty.vars import LOG_CHANNEL
 
 LOGGER = logging.getLogger(__name___)
+
 
 async def handle_error(
     error, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]

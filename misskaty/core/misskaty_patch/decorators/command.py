@@ -4,8 +4,8 @@ import pyrogram
 from pyrogram.methods import Decorators
 
 from misskaty.vars import COMMAND_HANDLER
-from ..pyro_cooldown import wait
 
+from ..pyro_cooldown import wait
 from ..utils import handle_error
 
 
