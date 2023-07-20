@@ -103,12 +103,12 @@ async def start(self: Client, ctx: Message, strings):
 
 @app.on_callback_query(filters.regex("bot_commands"))
 @ratelimiter
-async def commands_callbacc(self: Client, CallbackQuery: CallbackQuery):
-    text, keyboard = await help_parser(CallbackQuery.from_user.mention)
+async def commands_callbacc(self: Client, cb: CallbackQuery):
+    text, keyb = await help_parser(cb.from_user.mention)
     await app.send_message(
         CallbackQuery.message.chat.id,
         text=text,
-        reply_markup=keyboard,
+        reply_markup=keyb,
     )
     await CallbackQuery.message.delete_msg()
 
@@ -168,9 +168,9 @@ async def help_command(self: Client, ctx: Message, strings):
         )
 
 
-async def help_parser(name, keyboard=None):
-    if not keyboard:
-        keyboard = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
+async def help_parser(name, keyb=None):
+    if not keyb:
+        keyb = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
     return (
         """Hello {first_name}, My name is {bot_name}.
 I'm a bot with some useful features. You can change language bot using /setlang command, but it's still in beta stage.
@@ -181,7 +181,7 @@ If you want give coffee to my owner you can send /donate command for more info.
             first_name=name,
             bot_name="MissKaty",
         ),
-        keyboard,
+        keyb,
     )
 
 
