@@ -126,13 +126,13 @@ async def mentioned(client, message):
 
 
 @user.on_message(filters.command("joindate", "!") & filters.me)
-async def join_date(app, message: Message):
+async def join_date(self, message: Message):
     members = []
-    async for m in app.iter_chat_members(message.chat.id):
+    async for m in self.iter_chat_members(message.chat.id):
         members.append(
             (
                 m.user.first_name,
-                m.joined_date or (await app.get_messages(message.chat.id, 1)).date,
+                m.joined_date or (await self.get_messages(message.chat.id, 1)).date,
             )
         )
     members.sort(key=lambda member: member[1])
