@@ -16,7 +16,7 @@ from misskaty.core.decorator import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import OPENAI_API, SUDO, COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
@@ -31,7 +31,9 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await http.get(f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}")
+        req = await http.get(
+            f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}"
+        )
         await msg.edit_msg(req.json().get("content"))
     except Exception as e:
         await msg.edit_msg(str(e))
