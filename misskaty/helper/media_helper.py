@@ -49,7 +49,7 @@ async def get_media_info(file_link):
         "-show_chapters",
         "-show_programs",
     ]
-    data, err = await run_subprocess(ffprobe_cmd)
+    data, _ = await run_subprocess(ffprobe_cmd)
     return data
 
 
