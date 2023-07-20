@@ -524,7 +524,7 @@ async def mdlsearch(client, message):
 @app.on_callback_query(filters.regex("^mdls"))
 @ratelimiter
 async def mdl_callback(bot: Client, query: CallbackQuery):
-    i, user, _, slug = query.data.split("#")
+    _, user, _, slug = query.data.split("#")
     if user == f"{query.from_user.id}":
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
