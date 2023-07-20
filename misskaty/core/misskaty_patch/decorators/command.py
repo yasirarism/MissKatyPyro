@@ -19,7 +19,7 @@ def command(
     self_only: typing.Union[bool, bool] = False,
     no_channel: typing.Union[bool, bool] = False,
     handler: typing.Optional[list] = None,
-    filter: typing.Union[pyrogram.filters.Filter] = None,
+    filtercmd: typing.Union[pyrogram.filters.Filter] = None,
     *args,
     **kwargs
 ):
@@ -45,7 +45,7 @@ def command(
     - self_admin (bool) **optional**:
         - If True, the command will only executeed if the Bot is Admin in the Chat, By Default False
 
-    - filter (`~pyrogram.filters`) **optional**:
+    - filtercmd (`~pyrogram.filters`) **optional**:
         - Pyrogram Filters, hope you know about this, for Advaced usage. Use `and` for seaperating filters.
 
     #### Example
@@ -60,27 +60,27 @@ def command(
     """
     if handler is None:
         handler = COMMAND_HANDLER
-    if filter:
+    if filtercmd:
         if self_only:
-            filter = (
+            filtercmd = (
                 pyrogram.filters.command(cmd, prefixes=handler)
-                & filter
+                & filtercmd
                 & pyrogram.filters.me
             )
         else:
-            filter = (
+            filtercmd = (
                 pyrogram.filters.command(cmd, prefixes=handler)
-                & filter
+                & filtercmd
                 & pyrogram.filters.me
                 & wait(7)
             )
     else:
         if self_only:
-            filter = (
+            filtercmd = (
                 pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
-            filter = pyrogram.filters.command(cmd, prefixes=handler) & wait(7)
+            filtercmd = pyrogram.filters.command(cmd, prefixes=handler) & wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
@@ -121,7 +121,7 @@ def command(
                 return await handle_error(exception, message)
 
         self.add_handler(
-            pyrogram.handlers.MessageHandler(callback=decorator, filters=filter)
+            pyrogram.handlers.MessageHandler(callback=decorator, filters=filtercmd)
         )
         return decorator
 
