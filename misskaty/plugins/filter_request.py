@@ -45,7 +45,9 @@ async def request_user(client, message):
         )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
-        return await message.reply(f"Sabar dikit napa.. Tunggu {sleep_time} detik lagi 🙄")
+        return await message.reply(
+            f"Sabar dikit napa.. Tunggu {sleep_time} detik lagi 🙄"
+        )
     markup = InlineKeyboardMarkup(
         [
             [
