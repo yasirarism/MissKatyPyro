@@ -88,7 +88,7 @@ async def getsticker_(self: Client, ctx: Message, strings):
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)
 @ratelimiter
-async def getstickerid(self: Client, ctx: Message):
+async def getstickerid(_, ctx: Message):
     if ctx.reply_to_message.sticker:
         await ctx.reply_msg(
             "The ID of this sticker is: <code>{stickerid}</code>".format(

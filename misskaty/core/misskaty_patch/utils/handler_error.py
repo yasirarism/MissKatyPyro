@@ -25,9 +25,11 @@ import pyrogram
 
 from misskaty.vars import LOG_CHANNEL
 
+LOGGER = logging.getLogger(__name__)
+
 
 async def handle_error(
-    error, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
+    _, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
 ):
     """
     ### `handle_error`
@@ -42,27 +44,14 @@ async def handle_error(
       - m (`pyrogram.types.Message` or `pyrogram.types.CallbackQuery`):
         - The Message or Callback Query where the Error occurred.
 
-    #### Exapmle
-        .. code-block:: python
-            import pyrogram
-
-            app = tgClient(pyrogram.Client())
-
-            @app.command("start")
-            async def start(client, message):
-            try:
-                await message.reply_text("Hi :D') # I intentionally made an bug for Example :/
-            except Exceptation as e:
-                return await handle_error(e, message)
     """
 
     day = datetime.now()
     tgl_now = datetime.now()
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
-
-    with open(
-        f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
-    ) as log:
+    f_errname = f"crash_{tgl_now.strftime('%d %B %Y')}.txt"
+    LOGGER.error(traceback.format_exc())
+    with open(f_errname, "w+", encoding="utf-8") as log:
         log.write(traceback.format_exc())
         log.close()
     if isinstance(m, pyrogram.types.Message):
@@ -72,7 +61,7 @@ async def handle_error(
             )
             await m._client.send_document(
                 LOG_CHANNEL,
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                f_errname,
                 caption=f"Crash Report of this Bot\n{cap_day}",
             )
     if isinstance(m, pyrogram.types.CallbackQuery):
@@ -83,8 +72,9 @@ async def handle_error(
             )
             await m.message._client.send_document(
                 LOG_CHANNEL,
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                f_errname,
                 caption=f"Crash Report of this Bot\n{cap_day}",
             )
-    os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
+    if os.path.exists(f_errname):
+        os.remove(f_errname)
     return True

@@ -108,7 +108,7 @@ async def admin_cache_func(_, cmu):
 @app.adminsOnly("can_delete_messages")
 @ratelimiter
 @use_chat_lang()
-async def purge(self: Client, ctx: Message, strings) -> "Message":
+async def purge(_, ctx: Message, strings):
     try:
         repliedmsg = ctx.reply_to_message
         await ctx.delete_msg()
@@ -255,7 +255,7 @@ async def banFunc(client, message, strings):
 @app.adminsOnly("can_restrict_members")
 @ratelimiter
 @use_chat_lang()
-async def unban_func(self, message, strings):
+async def unban_func(_, message, strings):
     # we don't need reasons for unban, also, we
     # don't need to get "text_mention" entity, because
     # normal users won't get text_mention if the user
@@ -339,7 +339,7 @@ async def list_ban_(c, message, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def list_unban_(c, message, strings):
+async def list_unban(_, message, strings):
     userid, msglink = await extract_user_and_reason(message)
     if not userid or not msglink:
         return await message.reply_text(strings("give_idunban_with_msg_link"))
@@ -605,10 +605,10 @@ async def warn_user(client, message, strings):
 @app.on_callback_query(filters.regex("unwarn_"))
 @ratelimiter
 @use_chat_lang()
-async def remove_warning(_, cq, strings):
+async def remove_warning(client, cq, strings):
     from_user = cq.from_user
     chat_id = cq.message.chat.id
-    permissions = await member_permissions(chat_id, from_user.id)
+    permissions = await member_permissions(chat_id, from_user.id, client)
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
@@ -636,10 +636,10 @@ async def remove_warning(_, cq, strings):
 @app.on_callback_query(filters.regex("unmute_"))
 @ratelimiter
 @use_chat_lang()
-async def unmute_user(_, cq, strings):
+async def unmute_user(client, cq, strings):
     from_user = cq.from_user
     chat_id = cq.message.chat.id
-    permissions = await member_permissions(chat_id, from_user.id)
+    permissions = await member_permissions(chat_id, from_user.id, client)
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(
@@ -657,10 +657,10 @@ async def unmute_user(_, cq, strings):
 @app.on_callback_query(filters.regex("unban_"))
 @ratelimiter
 @use_chat_lang()
-async def unban_user(_, cq, strings):
+async def unban_user(client, cq, strings):
     from_user = cq.from_user
     chat_id = cq.message.chat.id
-    permissions = await member_permissions(chat_id, from_user.id)
+    permissions = await member_permissions(chat_id, from_user.id, client)
     permission = "can_restrict_members"
     if permission not in permissions:
         return await cq.answer(

@@ -105,7 +105,7 @@ async def kusonimeBypass(url: str, slug=None):
         ):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
-        for num, smokedl in enumerate(
+        for _, smokedl in enumerate(
             soup.find("div", {"class": "dlbodz"}).find_all(
                 "div", {"class": "smokeddlrh"}
             ),
@@ -185,7 +185,7 @@ async def byPassPh(url: str, name: str):
 
 
 class Kusonime:
-    def __init__(self): # skipcq
+    def __init__(self):  # skipcq
         pass
 
     @staticmethod

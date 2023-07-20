@@ -10,7 +10,6 @@ from asyncio import Lock
 from re import MULTILINE, findall
 from subprocess import run as srun
 
-from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import filters
 from pyrogram.types import Message
@@ -23,7 +22,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 @ratelimiter
-async def ping(self: Client, ctx: Message):
+async def ping(_, ctx: Message):
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
     rm = await ctx.reply_msg("🐱 Pong!!...")
@@ -36,7 +35,7 @@ async def ping(self: Client, ctx: Message):
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))
 @ratelimiter
-async def ping_handler(self: Client, ctx: Message):
+async def ping_handler(_, ctx: Message):
     m = await ctx.reply_msg("Pinging datacenters...")
     async with Lock():
         ips = {

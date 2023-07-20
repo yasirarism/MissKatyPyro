@@ -134,7 +134,7 @@ async def uname(_, message):
 )
 @ratelimiter
 @app.adminsOnly("can_restrict_members")
-async def rm_delacc(client, message):
+async def rm_delacc(_, message):
     if message.sender_chat:
         return await message.reply_msg(
             "This feature not available for channel.", del_in=4
@@ -209,11 +209,11 @@ async def instatus(client, message):
         banned = 0
         uncached = 0
         bot = 0
-        async for ban in app.get_chat_members(
+        async for _ in app.get_chat_members(
             message.chat.id, filter=enums.ChatMembersFilter.BANNED
         ):
             banned += 1
-        async for restr in app.get_chat_members(
+        async for _ in app.get_chat_members(
             message.chat.id, filter=enums.ChatMembersFilter.RESTRICTED
         ):
             restricted += 1
@@ -239,7 +239,7 @@ async def instatus(client, message):
                 uncached += 1
         end_time = time.perf_counter()
         timelog = "{:.2f}".format(end_time - start_time)
-        await sent_message.edit(
+        await sent_message.edit_msg(
             "<b>💠 {}\n👥 {} Anggota\n——————\n👁‍🗨 Informasi Status Anggota\n——————\n</b>🕒 <code>recently</code>: {}\n🕒 <code>last_week</code>: {}\n🕒 <code>last_month</code>: {}\n🕒 <code>long_ago</code>: {}\n🉑 Tanpa Username: {}\n🤐 Dibatasi: {}\n🚫 Diblokir: {}\n👻 Deleted Account (<code>/ban_ghosts</code>): {}\n🤖 Bot: {}\n⭐️ Premium User: {}\n👽 UnCached: {}\n\n⏱ Waktu eksekusi {} detik.".format(
                 message.chat.title,
                 count,

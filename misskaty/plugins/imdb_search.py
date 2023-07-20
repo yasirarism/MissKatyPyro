@@ -91,7 +91,7 @@ async def imdb_choose(_, ctx: Message):
 @app.on_cb("imdbset")
 @ratelimiter
 async def imdblangset(_, query: CallbackQuery):
-    i, uid = query.data.split("#")
+    _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     buttons = InlineKeyboard()
@@ -99,7 +99,7 @@ async def imdblangset(_, query: CallbackQuery):
         InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}"),
     )
-    is_imdb, lang = await is_imdbset(query.from_user.id)
+    is_imdb, _ = await is_imdbset(query.from_user.id)
     if is_imdb:
         buttons.row(
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
@@ -122,10 +122,10 @@ async def imdblangset(_, query: CallbackQuery):
 @app.on_cb("setimdb")
 @ratelimiter
 async def imdbsetlang(_, query: CallbackQuery):
-    i, lang, uid = query.data.split("#")
+    _, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
-    is_imdb, langset = await is_imdbset(query.from_user.id)
+    _, langset = await is_imdbset(query.from_user.id)
     if langset == lang:
         return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
     if lang == "eng":
@@ -277,7 +277,7 @@ async def imdb_search_en(kueri, message):
 @ratelimiter
 async def imdbcari(_, query: CallbackQuery):
     BTN = []
-    i, lang, msg, uid = query.data.split("#")
+    _, lang, msg, uid = query.data.split("#")
     if lang == "ind":
         if query.from_user.id != int(uid):
             return await query.answer("⚠️ Akses Ditolak!", True)
@@ -325,14 +325,13 @@ async def imdbcari(_, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
+                msg = await query.message.edit_caption(msg, reply_markup=buttons)
                 await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                try:
-                    await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
-                except MessageIdInvalid:
-                    pass
+                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+            except MessageIdInvalid:
+                pass
         except Exception as err:
             await query.message.edit_caption(
                 f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -384,14 +383,13 @@ async def imdbcari(_, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            msg = await query.message.edit_caption(msg, reply_markup=buttons)
             try:
+                msg = await query.message.edit_caption(msg, reply_markup=buttons)
                 await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                try:
-                    await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
-                except MessageIdInvalid:
-                    pass
+                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+            except MessageIdInvalid:
+                pass
         except Exception as err:
             await query.message.edit_caption(
                 f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -475,28 +473,25 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         res_str += "\n<b>🙎 Info Cast:</b>\n"
         if directors := r_json.get("director"):
             director = "".join(
-                f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["director"]
+                f"<a href='{i['url']}'>{i['name']}</a>, " for i in directors
             )
             res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
         if creators := r_json.get("creator"):
             creator = "".join(
                 f"<a href='{i['url']}'>{i['name']}</a>, "
-                for i in r_json["creator"]
+                for i in creators
                 if i["@type"] == "Person"
             )
             res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
-        if actor := r_json.get("actor"):
-            actors = "".join(
-                f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
-            )
-            res_str += f"<b>Pemeran:</b> {actors[:-2]}\n\n"
+        if actors := r_json.get("actor"):
+            actor = "".join(f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors)
+            res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
         if deskripsi := r_json.get("description"):
             summary = GoogleTranslator("auto", "id").translate(deskripsi)
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
         if keywd := r_json.get("keywords"):
             key_ = "".join(
-                f"#{i.replace(' ', '_').replace('-', '_')}, "
-                for i in r_json["keywords"].split(",")
+                f"#{i.replace(' ', '_').replace('-', '_')}, " for i in keywd.split(",")
             )
             res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
         if award := sop.select('li[data-testid="award_information"]'):
@@ -551,6 +546,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except AttributeError:
+        await query.message.edit_caption("Maaf, gagal mendapatkan info data dari IMDB.")
     except (MessageNotModified, MessageIdInvalid):
         pass
 
@@ -707,5 +704,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except AttributeError:
+        await query.message.edit_caption("Sorry, failed getting data from IMDB.")
     except (MessageNotModified, MessageIdInvalid):
         pass

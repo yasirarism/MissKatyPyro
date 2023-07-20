@@ -78,7 +78,7 @@ def tglsekarang():
     tgl = now.strftime("%d")
     tahun = now.strftime("%Y")
     jam = now.strftime("%H:%M")
-    return f"{days[now.weekday()]}, {tgl} {month[now.month]} {tahun}"
+    return f"{days[now.weekday()]}, {tgl} {month[now.month]} {tahun} {jam}"
 
 
 def extract_time(time_val: str):
@@ -182,11 +182,11 @@ async def mute_chat(chat_id: int):
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
 @require_admin(permissions=["can_change_info"])
 @use_chat_lang()
-async def nightmode_handler(c, msg, strings):
+async def nightmode_handler(_, msg, strings):
     chat_id = msg.chat.id
 
     if "-d" in msg.text:
-        if job := scheduler.get_job(job_id=f"enable_nightmode_{chat_id}"):
+        if scheduler.get_job(job_id=f"enable_nightmode_{chat_id}"):
             scheduler.remove_job(job_id=f"enable_nightmode_{chat_id}")
             scheduler.remove_job(job_id=f"disable_nightmode_{chat_id}")
             if not bool(scheduler.get_jobs()) and bool(scheduler.state):

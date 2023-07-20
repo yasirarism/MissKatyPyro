@@ -245,10 +245,13 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
         possible = ["/afk", f"/afk@{self.me.username}", "!afk"]
         message_text = ctx.text or ctx.caption
         for entity in ctx.entities:
-            if (
-                entity.type == enums.MessageEntityType.BOT_COMMAND
-                and (message_text[0 : 0 + entity.length]).lower() in possible
-            ):
+            try:
+                if (
+                    entity.type == enums.MessageEntityType.BOT_COMMAND
+                    and (message_text[0 : 0 + entity.length]).lower() in possible
+                ):
+                    return
+            except UnicodeDecodeError:  # Some weird character make error
                 return
 
     msg = ""
@@ -380,7 +383,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
     if ctx.entities:
         entity = ctx.entities
         j = 0
-        for x in range(len(entity)):
+        for _ in range(len(entity)):
             if (entity[j].type) == enums.MessageEntityType.MENTION:
                 found = re.findall("@([_0-9a-zA-Z]+)", ctx.text)
                 try:

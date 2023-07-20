@@ -12,7 +12,7 @@ import cloudscraper
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 
 from database import dbname
@@ -532,7 +532,7 @@ async def getSame(msg, query, current_page, strings):
 @app.on_message(filters.command(["samehadaku"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def same_search(client, msg, strings):
+async def same_search(_, msg, strings):
     if not msg.from_user:
         return await msg.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -554,7 +554,7 @@ async def same_search(client, msg, strings):
 @app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def terbit21_s(client, message, strings):
+async def terbit21_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -583,7 +583,7 @@ async def terbit21_s(client, message, strings):
 @app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def lk21_s(client, message, strings):
+async def lk21_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -610,7 +610,7 @@ async def lk21_s(client, message, strings):
 @app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def pahe_s(client, message, strings):
+async def pahe_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -637,7 +637,7 @@ async def pahe_s(client, message, strings):
 @app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def gomov_s(client, message, strings):
+async def gomov_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -668,7 +668,7 @@ async def gomov_s(client, message, strings):
 @app.on_message(filters.command(["melongmovie"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def melong_s(client, message, strings):
+async def melong_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -706,7 +706,7 @@ async def melong_s(client, message, strings):
 @app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def savefilm_s(client, message, strings):
+async def savefilm_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -725,7 +725,7 @@ async def savefilm_s(client, message, strings):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "page_savefilm#{number}" + f"#{pesan.id}#{message.from_user.id}",
+        "page_sf21#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
     keyboard.row(*btn)
@@ -739,7 +739,7 @@ async def savefilm_s(client, message, strings):
 @app.on_message(filters.command(["kusonime"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def kusonime_s(client, message, strings):
+async def kusonime_s(_, message, strings):
     if not message.from_user:
         return await message.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -772,7 +772,7 @@ async def kusonime_s(client, message, strings):
 @app.on_message(filters.command(["lendrive"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def lendrive_s(self: Client, ctx: Message, strings):
+async def lendrive_s(_, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -803,7 +803,7 @@ async def lendrive_s(self: Client, ctx: Message, strings):
 @app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def movieku_s(self: Client, ctx: Message, strings):
+async def movieku_s(_, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(
             "Cannot identify user, please use this command in private chat..", del_in=7
@@ -829,10 +829,10 @@ async def movieku_s(self: Client, ctx: Message, strings):
 
 
 # Savefillm21 Page Callback
-@app.on_cb("page_savefilm")
+@app.on_cb("page_sf21")
 @ratelimiter
 @use_chat_lang()
-async def savefilmpage_callback(client, callback_query, strings):
+async def savefilmpage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -857,7 +857,7 @@ async def savefilmpage_callback(client, callback_query, strings):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "page_savefilm#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+        "page_sf21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
@@ -873,7 +873,7 @@ async def savefilmpage_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "page_kuso#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def kusopage_callback(client, callback_query, strings):
+async def kusopage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -918,7 +918,7 @@ async def kusopage_callback(client, callback_query, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def lendrivepage_callback(client, callback_query, strings):
+async def lendrivepage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -961,7 +961,7 @@ async def lendrivepage_callback(client, callback_query, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def moviekupage_callback(client, callback_query, strings):
+async def moviekupage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -996,7 +996,7 @@ async def moviekupage_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "page_same#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def samepg(client, query, strings):
+async def samepg(_, query, strings):
     _, current_page, _id, user_id = query.data.split("#")
     if int(user_id) != query.from_user.id:
         return await query.answer(strings("unauth"), True)
@@ -1028,7 +1028,7 @@ async def samepg(client, query, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def terbit21page_callback(client, callback_query, strings):
+async def terbit21page_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -1065,7 +1065,7 @@ async def terbit21page_callback(client, callback_query, strings):
 )
 @ratelimiter
 @use_chat_lang()
-async def melongpage_callback(client, callback_query, strings):
+async def melongpage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -1106,7 +1106,7 @@ async def melongpage_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "page_lk21#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def lk21page_callback(client, callback_query, strings):
+async def lk21page_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -1141,7 +1141,7 @@ async def lk21page_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pahe#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def pahepage_callback(client, callback_query, strings):
+async def pahepage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -1176,7 +1176,7 @@ async def pahepage_callback(client, callback_query, strings):
 @app.on_callback_query(filters.create(lambda _, __, query: "page_gomov#" in query.data))
 @ratelimiter
 @use_chat_lang()
-async def gomovpage_callback(client, callback_query, strings):
+async def gomovpage_callback(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer(strings("unauth"), True)
     message_id = int(callback_query.data.split("#")[2])
@@ -1288,7 +1288,7 @@ async def savefilm21_scrap(_, callback_query, strings):
     keyboard.row(
         InlineButton(
             strings("back_btn"),
-            f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+            f"page_sf21#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )

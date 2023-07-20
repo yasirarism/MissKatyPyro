@@ -13,10 +13,10 @@ async def post_to_telegraph(is_media: bool, title=None, content=None, media=None
     if telegraph.get_access_token() is None:
         await telegraph.create_account(short_name=BOT_USERNAME)
     if is_media:
-        """Create a Telegram Post Foto/Video"""
+        # Create a Telegram Post Foto/Video
         response = await telegraph.upload_file(media)
         return f"https://telegra.ph{response[0]['src']}"
-    """Create a Telegram Post using HTML Content"""
+    # Create a Telegram Post using HTML Content
     response = await telegraph.create_page(
         title,
         html_content=content,
@@ -49,7 +49,7 @@ async def get_media_info(file_link):
         "-show_chapters",
         "-show_programs",
     ]
-    data, err = await run_subprocess(ffprobe_cmd)
+    data, _ = await run_subprocess(ffprobe_cmd)
     return data
 
 

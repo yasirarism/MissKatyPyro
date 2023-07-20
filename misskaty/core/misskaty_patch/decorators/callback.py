@@ -28,7 +28,7 @@ def callback(
     self,
     data: typing.Union[str, list],
     self_admin: typing.Union[bool, bool] = False,
-    filter: typing.Union[pyrogram.filters.Filter] = None,
+    filtercb: typing.Union[pyrogram.filters.Filter] = None,
     *args,
     **kwargs,
 ):
@@ -68,10 +68,10 @@ def callback(
         async def data(client, CallbackQuery):
         await CallbackQuery.answer("Hello :)", show_alert=True)
     """
-    if filter:
-        filter = pyrogram.filters.regex(f"^{data}.*") & args["filter"]
+    if filtercb:
+        filtercb = pyrogram.filters.regex(f"^{data}.*") & args["filter"]
     else:
-        filter = pyrogram.filters.regex(f"^{data}.*")
+        filtercb = pyrogram.filters.regex(f"^{data}.*")
 
     def wrapper(func):
         async def decorator(client, CallbackQuery: pyrogram.types.CallbackQuery):
@@ -93,7 +93,7 @@ def callback(
             except BaseException as e:
                 return await handle_error(e, CallbackQuery)
 
-        self.add_handler(pyrogram.handlers.CallbackQueryHandler(decorator, filter))
+        self.add_handler(pyrogram.handlers.CallbackQueryHandler(decorator, filtercb))
         return decorator
 
     return wrapper

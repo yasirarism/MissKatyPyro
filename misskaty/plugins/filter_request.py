@@ -45,7 +45,9 @@ async def request_user(client, message):
         )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
-        return await message.reply("Sabar dikit napa.. 🙄")
+        return await message.reply(
+            f"Sabar dikit napa.. Tunggu {sleep_time} detik lagi 🙄"
+        )
     markup = InlineKeyboardMarkup(
         [
             [
@@ -170,7 +172,7 @@ async def callbackreq(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
@@ -227,7 +229,7 @@ async def callbackreqada(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="#SudahAda\nFilm/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
@@ -286,7 +288,7 @@ async def callbackreject(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules grup no.6 yaa 🙃.",
@@ -343,7 +345,7 @@ async def callbackunav(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="Mohon maaf, request kamu tidak tersedia. Silahkan baca beberapa alasannya di channel @YMovieZ_New",
@@ -401,7 +403,7 @@ async def callbackunav(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
 @ratelimiter
-async def callbackaft_done(c, q):
+async def callbackaft_done(_, q):
     await q.answer(
         "Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..",
         show_alert=True,
@@ -411,7 +413,7 @@ async def callbackaft_done(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqreject$"))
 @ratelimiter
-async def callbackaft_rej(c, q):
+async def callbackaft_rej(_, q):
     await q.answer(
         "Request ini ditolak 💔, silahkan cek rules grup yaa.",
         show_alert=True,
@@ -421,7 +423,7 @@ async def callbackaft_rej(c, q):
 
 @app.on_callback_query(filters.regex(r"^requnav$"))
 @ratelimiter
-async def callbackaft_unav(c, q):
+async def callbackaft_unav(_, q):
     await q.answer(
         "Request ini tidak tersedia ☹️, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
         show_alert=True,
@@ -431,7 +433,7 @@ async def callbackaft_unav(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
 @ratelimiter
-async def callbackaft_dahada(c, q):
+async def callbackaft_dahada(_, q):
     await q.answer(
         "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True
     )

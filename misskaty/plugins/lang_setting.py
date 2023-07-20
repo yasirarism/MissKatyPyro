@@ -1,7 +1,7 @@
 from functools import partial
 from typing import Union
 
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import (
     CallbackQuery,
@@ -55,7 +55,7 @@ def gen_langs_kb():
 @app.on_message(filters.command(["setchatlang", "setlang"], COMMAND_HANDLER))
 @require_admin(allow_in_private=True)
 @use_chat_lang()
-async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
+async def chlang(_, m: Union[CallbackQuery, Message], strings):
     keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             *gen_langs_kb(),
@@ -91,7 +91,7 @@ async def chlang(c: Client, m: Union[CallbackQuery, Message], strings):
 @app.on_callback_query(filters.regex("^set_lang "))
 @require_admin(allow_in_private=True)
 @use_chat_lang()
-async def set_chat_lang(c: Client, m: CallbackQuery, strings):
+async def set_chat_lang(_, m: CallbackQuery, strings):
     lang = m.data.split()[1]
     await set_db_lang(m.message.chat.id, m.message.chat.type, lang)
 

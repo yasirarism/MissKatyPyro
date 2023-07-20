@@ -3,6 +3,7 @@ import typing
 import pyrogram
 from pyrogram.methods import Decorators
 
+from misskaty.core import pyro_cooldown
 from misskaty.vars import COMMAND_HANDLER
 
 from ..utils import handle_error
@@ -10,7 +11,7 @@ from ..utils import handle_error
 
 def command(
     self,
-    command: typing.Union[str, list],
+    cmd: typing.Union[str, list],
     is_disabled: typing.Union[bool, bool] = False,
     pm_only: typing.Union[bool, bool] = False,
     group_only: typing.Union[bool, bool] = False,
@@ -18,7 +19,7 @@ def command(
     self_only: typing.Union[bool, bool] = False,
     no_channel: typing.Union[bool, bool] = False,
     handler: typing.Optional[list] = None,
-    filter: typing.Union[pyrogram.filters.Filter] = None,
+    filtercmd: typing.Union[pyrogram.filters.Filter] = None,
     *args,
     **kwargs
 ):
@@ -26,7 +27,7 @@ def command(
     ### `tgClient.command`
     - A decorater to Register Commands in simple way and manage errors in that Function itself, alternative for `@pyrogram.Client.on_message(pyrogram.filters.command('command'))`
     - Parameters:
-    - command (str || list):
+    - cmd (str || list):
         - The command to be handled for a function
 
     - group_only (bool) **optional**:
@@ -44,7 +45,7 @@ def command(
     - self_admin (bool) **optional**:
         - If True, the command will only executeed if the Bot is Admin in the Chat, By Default False
 
-    - filter (`~pyrogram.filters`) **optional**:
+    - filtercmd (`~pyrogram.filters`) **optional**:
         - Pyrogram Filters, hope you know about this, for Advaced usage. Use `and` for seaperating filters.
 
     #### Example
@@ -59,27 +60,29 @@ def command(
     """
     if handler is None:
         handler = COMMAND_HANDLER
-    if filter:
+    if filtercmd:
         if self_only:
-            filter = (
-                pyrogram.filters.command(command, prefixes=handler)
-                & filter
+            filtercmd = (
+                pyrogram.filters.command(cmd, prefixes=handler)
+                & filtercmd
                 & pyrogram.filters.me
             )
         else:
-            filter = (
-                pyrogram.filters.command(command, prefixes=handler)
-                & filter
+            filtercmd = (
+                pyrogram.filters.command(cmd, prefixes=handler)
+                & filtercmd
                 & pyrogram.filters.me
+                & pyro_cooldown.wait(7)
             )
     else:
         if self_only:
-            filter = (
-                pyrogram.filters.command(command, prefixes=handler)
-                & pyrogram.filters.me
+            filtercmd = (
+                pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
-            filter = pyrogram.filters.command(command, prefixes=handler)
+            filtercmd = pyrogram.filters.command(
+                cmd, prefixes=handler
+            ) & pyro_cooldown.wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
@@ -87,10 +90,10 @@ def command(
                 return await message.reply_text(
                     "Sorry, this command has been disabled by owner."
                 )
-            # if not message.from_user:
-            #     return await message.reply_text(
-            #         "I'm cannot identify user. Use my command in private chat."
-            #     )
+            if not message.from_user and no_channel:
+                return await message.reply_text(
+                    "I'm cannot identify user. Use my command in private chat."
+                )
             if self_admin and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
                 return await message.reply_text(
                     "This command can be used in supergroups only."
@@ -120,7 +123,7 @@ def command(
                 return await handle_error(exception, message)
 
         self.add_handler(
-            pyrogram.handlers.MessageHandler(callback=decorator, filters=filter)
+            pyrogram.handlers.MessageHandler(callback=decorator, filters=filtercmd)
         )
         return decorator
 

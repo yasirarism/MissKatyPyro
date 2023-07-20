@@ -10,7 +10,7 @@ import urllib.parse
 from urllib.parse import unquote
 
 import requests
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -95,7 +95,7 @@ def wetransfer_bypass(url: str) -> str:
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def bypass(self: Client, ctx: Message):
+async def bypass(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             f"Gunakan perintah /{ctx.command[0]} untuk bypass url", del_in=6

@@ -151,7 +151,7 @@ async def draw_meme_text(image_path, text):
 @app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def memify(client, message):
+async def memify(_, message):
     if message.reply_to_message and (
         message.reply_to_message.sticker or message.reply_to_message.photo
     ):

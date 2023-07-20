@@ -38,7 +38,7 @@ def draw_multiple_line_text(image, text, font, text_start_height):
     From unutbu on [python PIL draw multiline text on image](https://stackoverflow.com/a/7698300/395857)
     """
     draw = ImageDraw.Draw(image)
-    image_width, image_height = image.size
+    image_width, _ = image.size
     y_text = text_start_height
     lines = textwrap.wrap(text, width=50)
     for line in lines:
@@ -302,7 +302,7 @@ async def kickme(_, message):
 
 
 @app.on_message(filters.command("users") & filters.user(SUDO))
-async def list_users(bot, message):
+async def list_users(_, message):
     # https://t.me/GetTGLink/4184
     msg = await message.reply("Getting List Of Users")
     users = await db.get_all_users()
@@ -322,7 +322,7 @@ async def list_users(bot, message):
 
 
 @app.on_message(filters.command("chats") & filters.user(SUDO))
-async def list_chats(bot, message):
+async def list_chats(_, message):
     msg = await message.reply("Getting List Of chats")
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"

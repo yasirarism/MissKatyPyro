@@ -1,5 +1,5 @@
 from pykeyboard import InlineKeyboard
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
@@ -43,7 +43,7 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
 @app.on_message(filters.command(["ud"], COMMAND_HANDLER))
 @ratelimiter
-async def urbanDictionary(self: Client, ctx: Message):
+async def urbanDictionary(_, ctx: Message):
     message_id = ctx.id
     chat_id = ctx.chat.id
     GetWord = " ".join(ctx.command[1:])
@@ -66,7 +66,7 @@ async def urbanDictionary(self: Client, ctx: Message):
     filters.create(lambda _, __, query: "pagination_urban#" in query.data)
 )
 @ratelimiter
-async def ud_callback(self: Client, callback_query: CallbackQuery):
+async def ud_callback(_, callback_query: CallbackQuery):
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id
     CurrentPage = int(callback_query.data.split("#")[1])

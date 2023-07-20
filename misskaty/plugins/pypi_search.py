@@ -5,7 +5,8 @@
  * Copyright @YasirPedia All rights reserved
 """
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import Client, filters
+from pyrogram import filters
+from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
@@ -43,7 +44,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
 
 @app.on_message(filters.command(["pypi"], COMMAND_HANDLER))
 @ratelimiter
-async def pypi_s(self: Client, ctx: Message):
+async def pypi_s(_, ctx: Message):
     kueri = " ".join(ctx.command[1:])
     if not kueri:
         return await ctx.reply_msg(
@@ -68,7 +69,7 @@ async def pypi_s(self: Client, ctx: Message):
 
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
 @ratelimiter
-async def pypipage_callback(self: Client, callback_query: CallbackQuery):
+async def pypipage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split("#")[2])
@@ -79,6 +80,8 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
         return await callback_query.answer(
             "Invalid callback data, please send CMD again.."
         )
+    except QueryIdInvalid:
+        return
 
     try:
         pypires, PageLen, btn = await getDataPypi(
@@ -101,7 +104,7 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
 
 @app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
 @ratelimiter
-async def pypi_getdata(self: Client, callback_query: CallbackQuery):
+async def pypi_getdata(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])

@@ -12,11 +12,11 @@ from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.core.decorator import ratelimiter, pyro_cooldown
+from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import OPENAI_API, SUDO, COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
@@ -31,7 +31,9 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await http.get(f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}")
+        req = await http.get(
+            f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}"
+        )
         await msg.edit_msg(req.json().get("content"))
     except Exception as e:
         await msg.edit_msg(str(e))
@@ -45,7 +47,7 @@ async def openai_chatbot(_, ctx: Message, strings):
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
-    is_in_gap, sleep_time = await check_time_gap(uid)
+    is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     openai.aiosession.set(ClientSession())

@@ -171,7 +171,7 @@ async def download(client, message):
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def tiktokdl(client, message):
+async def tiktokdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
             f"Use command /{message.command[0]} [link] to download tiktok video."
@@ -194,7 +194,7 @@ async def tiktokdl(client, message):
 
 @app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
 @capture_err
-async def fbdl(client, message):
+async def fbdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
             f"Use command /{message.command[0]} [link] to download Facebook video."

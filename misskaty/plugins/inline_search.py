@@ -129,6 +129,8 @@ async def inline_menu(_, inline_query: InlineQuery):
         parsemethod = jsonapi.json().get("methods")
         parsetypes = jsonapi.json().get("types")
         datajson = []
+        method = None
+        is_img = False
         for method in parsemethod:
             if kueri.lower() in method.lower():
                 link = parsemethod[method]["href"]
@@ -155,7 +157,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                     body_text = f"""
                         <pre>{msg.replace("<user_id>", "(user_id)")}</pre>
                         """
-                    msg = await post_to_telegraph(False, method, body_text)
+                    msg = await post_to_telegraph(is_img, method, body_text)
                 datajson.append(
                     InlineQueryResultArticle(
                         title=method,
@@ -170,7 +172,6 @@ async def inline_menu(_, inline_query: InlineQuery):
                         reply_markup=buttons,
                     )
                 )
-        is_img = False
         for types in parsetypes:
             if kueri.lower() in types.lower():
                 link = parsetypes[types]["href"]
@@ -594,7 +595,7 @@ async def destroy_msg(_, c_q):
         await c_q.answer("message now outdated !", show_alert=True)
         return
 
-    user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
+    user_id, flname, sender_id, _ = PRVT_MSGS[msg_id]
 
     if c_q.from_user.id in (user_id, sender_id):
         del PRVT_MSGS[msg_id]
@@ -607,8 +608,8 @@ async def destroy_msg(_, c_q):
 @app.on_callback_query(filters.regex("^imdbinl#"))
 @ratelimiter
 async def imdb_inl(_, query):
-    i, user, movie = query.data.split("#")
-    if user == f"{query.from_user.id}":
+    i, cbuser, movie = query.data.split("#")
+    if cbuser == f"{query.from_user.id}":
         try:
             await query.edit_message_caption(
                 "⏳ <i>Permintaan kamu sedang diproses.. </i>"
