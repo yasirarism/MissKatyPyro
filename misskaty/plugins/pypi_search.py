@@ -7,6 +7,7 @@
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery, Message
+from pyrogram.errors import QueryIdInvalid
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
@@ -79,6 +80,8 @@ async def pypipage_callback(self: Client, callback_query: CallbackQuery):
         return await callback_query.answer(
             "Invalid callback data, please send CMD again.."
         )
+    except QueryIdInvalid:
+        return
 
     try:
         pypires, PageLen, btn = await getDataPypi(

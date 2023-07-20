@@ -18,7 +18,7 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
-from pyrogram.errors import ChatAdminRequired, MessageTooLong, UserNotParticipant
+from pyrogram.errors import ChatAdminRequired, MessageTooLong, UserNotParticipant, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -469,7 +469,10 @@ async def who_is(client, message):
 async def close_callback(bot: Client, query: CallbackQuery):
     i, userid = query.data.split("#")
     if query.from_user.id != int(userid):
-        return await query.answer("⚠️ Access Denied!", True)
+        try:
+            return await query.answer("⚠️ Access Denied!", True)
+        except QueryIdInvalid:
+            return
     try:
         await query.answer("Deleting this message in 5 seconds.")
         await asyncio.sleep(5)

@@ -14,6 +14,7 @@ from pyrogram.errors import (
     MessageIdInvalid,
     MessageNotModified,
     MessageTooLong,
+    TopicClosed
 )
 from pyrogram.types import Message
 

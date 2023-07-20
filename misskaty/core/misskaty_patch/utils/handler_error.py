@@ -26,7 +26,7 @@ import pyrogram
 
 from misskaty.vars import LOG_CHANNEL
 
-LOGGER = logging.getLogger(__name___)
+LOGGER = logging.getLogger(__name__)
 
 
 async def handle_error(
@@ -62,9 +62,10 @@ async def handle_error(
     day = datetime.now()
     tgl_now = datetime.now()
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
+    f_errname = f"crash_{tgl_now.strftime('%d %B %Y')}.txt"
     LOGGER.error(traceback.format_exc())
     with open(
-        f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
+        f_errname, "w+", encoding="utf-8"
     ) as log:
         log.write(traceback.format_exc())
         log.close()
@@ -75,7 +76,7 @@ async def handle_error(
             )
             await m._client.send_document(
                 LOG_CHANNEL,
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                f_errname,
                 caption=f"Crash Report of this Bot\n{cap_day}",
             )
     if isinstance(m, pyrogram.types.CallbackQuery):
@@ -86,8 +87,9 @@ async def handle_error(
             )
             await m.message._client.send_document(
                 LOG_CHANNEL,
-                f"crash_{tgl_now.strftime('%d %B %Y')}.txt",
+                f_errname,
                 caption=f"Crash Report of this Bot\n{cap_day}",
             )
-    os.remove(f"crash_{tgl_now.strftime('%d %B %Y')}.txt")
+    if os.path.exists(f_errname):
+        os.remove(f_errname)
     return True

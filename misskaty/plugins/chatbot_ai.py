@@ -12,7 +12,7 @@ from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.core.decorator import ratelimiter, pyro_cooldown
+from misskaty.core.decorator import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
