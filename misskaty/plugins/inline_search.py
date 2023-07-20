@@ -608,8 +608,8 @@ async def destroy_msg(_, c_q):
 @app.on_callback_query(filters.regex("^imdbinl#"))
 @ratelimiter
 async def imdb_inl(_, query):
-    i, user, movie = query.data.split("#")
-    if user == f"{query.from_user.id}":
+    i, cbuser, movie = query.data.split("#")
+    if cbuser == f"{query.from_user.id}":
         try:
             await query.edit_message_caption(
                 "⏳ <i>Permintaan kamu sedang diproses.. </i>"
