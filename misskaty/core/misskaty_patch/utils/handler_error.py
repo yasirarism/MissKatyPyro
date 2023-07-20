@@ -17,6 +17,7 @@
 # along with tgEasy.  If not, see <http://www.gnu.org/licenses/>.
 import contextlib
 import os
+import logging
 import traceback
 import typing
 from datetime import datetime
@@ -25,6 +26,7 @@ import pyrogram
 
 from misskaty.vars import LOG_CHANNEL
 
+LOGGER = logging.getLogger(__name___)
 
 async def handle_error(
     error, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
@@ -59,7 +61,7 @@ async def handle_error(
     day = datetime.now()
     tgl_now = datetime.now()
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
-
+    LOGGER.error(traceback.format_exc())
     with open(
         f"crash_{tgl_now.strftime('%d %B %Y')}.txt", "w+", encoding="utf-8"
     ) as log:

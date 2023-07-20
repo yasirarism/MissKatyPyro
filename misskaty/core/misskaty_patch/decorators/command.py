@@ -4,6 +4,7 @@ import pyrogram
 from pyrogram.methods import Decorators
 
 from misskaty.vars import COMMAND_HANDLER
+from ..pyro_cooldown import wait
 
 from ..utils import handle_error
 
@@ -71,6 +72,7 @@ def command(
                 pyrogram.filters.command(command, prefixes=handler)
                 & filter
                 & pyrogram.filters.me
+                & wait(7)
             )
     else:
         if self_only:
@@ -79,7 +81,7 @@ def command(
                 & pyrogram.filters.me
             )
         else:
-            filter = pyrogram.filters.command(command, prefixes=handler)
+            filter = pyrogram.filters.command(command, prefixes=handler) & wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
@@ -87,10 +89,10 @@ def command(
                 return await message.reply_text(
                     "Sorry, this command has been disabled by owner."
                 )
-            # if not message.from_user:
-            #     return await message.reply_text(
-            #         "I'm cannot identify user. Use my command in private chat."
-            #     )
+            if not message.from_user and no_channel:
+                return await message.reply_text(
+                    "I'm cannot identify user. Use my command in private chat."
+                )
             if self_admin and message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
                 return await message.reply_text(
                     "This command can be used in supergroups only."

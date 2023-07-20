@@ -725,7 +725,7 @@ async def savefilm_s(client, message, strings):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "page_savefilm#{number}" + f"#{pesan.id}#{message.from_user.id}",
+        "page_sf21#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
     keyboard.row(*btn)
@@ -829,7 +829,7 @@ async def movieku_s(self: Client, ctx: Message, strings):
 
 
 # Savefillm21 Page Callback
-@app.on_cb("page_savefilm")
+@app.on_cb("page_sf21")
 @ratelimiter
 @use_chat_lang()
 async def savefilmpage_callback(client, callback_query, strings):
@@ -857,7 +857,7 @@ async def savefilmpage_callback(client, callback_query, strings):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "page_savefilm#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+        "page_sf21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
     keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
     keyboard.row(*btn)
@@ -1288,7 +1288,7 @@ async def savefilm21_scrap(_, callback_query, strings):
     keyboard.row(
         InlineButton(
             strings("back_btn"),
-            f"page_savefilm#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+            f"page_sf21#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )

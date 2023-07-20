@@ -551,6 +551,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except AttributeError:
+        await query.message.edit_caption("Maaf, gagal mendapatkan info data dari IMDB.")
     except (MessageNotModified, MessageIdInvalid):
         pass
 
@@ -707,5 +709,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except AttributeError:
+        await query.message.edit_caption("Sorry, failed getting data from IMDB.")
     except (MessageNotModified, MessageIdInvalid):
         pass
