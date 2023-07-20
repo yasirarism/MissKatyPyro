@@ -473,21 +473,21 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         res_str += "\n<b>🙎 Info Cast:</b>\n"
         if directors := r_json.get("director"):
             director = "".join(
-                f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["director"]
+                f"<a href='{i['url']}'>{i['name']}</a>, " for i in directors
             )
             res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
         if creators := r_json.get("creator"):
             creator = "".join(
                 f"<a href='{i['url']}'>{i['name']}</a>, "
-                for i in r_json["creator"]
+                for i in creators
                 if i["@type"] == "Person"
             )
             res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
-        if actor := r_json.get("actor"):
-            actors = "".join(
-                f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
+        if actors := r_json.get("actor"):
+            actor = "".join(
+                f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors
             )
-            res_str += f"<b>Pemeran:</b> {actors[:-2]}\n\n"
+            res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
         if deskripsi := r_json.get("description"):
             summary = GoogleTranslator("auto", "id").translate(deskripsi)
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
