@@ -286,7 +286,7 @@ async def callbackreject(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules grup no.6 yaa 🙃.",
