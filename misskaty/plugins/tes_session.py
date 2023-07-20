@@ -1,5 +1,5 @@
 # This plugin to learn session using pyrogram
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 
 from misskaty import app
@@ -7,7 +7,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["session"], COMMAND_HANDLER))
-async def session(self: Client, ctx: Message):
+async def session(_, ctx: Message):
     if not ctx.from_user:
         return
     nama = await ctx.chat.ask("Ketik nama kamu:")
