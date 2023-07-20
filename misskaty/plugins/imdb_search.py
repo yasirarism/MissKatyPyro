@@ -277,7 +277,7 @@ async def imdb_search_en(kueri, message):
 @ratelimiter
 async def imdbcari(_, query: CallbackQuery):
     BTN = []
-    i, lang, msg, uid = query.data.split("#")
+    _, lang, msg, uid = query.data.split("#")
     if lang == "ind":
         if query.from_user.id != int(uid):
             return await query.answer("⚠️ Akses Ditolak!", True)
