@@ -227,7 +227,7 @@ async def callbackreqada(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="#SudahAda\nFilm/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
