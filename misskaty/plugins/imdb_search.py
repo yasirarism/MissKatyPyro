@@ -484,9 +484,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             )
             res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
         if actors := r_json.get("actor"):
-            actor = "".join(
-                f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors
-            )
+            actor = "".join(f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors)
             res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
         if deskripsi := r_json.get("description"):
             summary = GoogleTranslator("auto", "id").translate(deskripsi)
