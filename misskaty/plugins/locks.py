@@ -177,7 +177,7 @@ async def url_detector(_, message):
     if user.id in mods or user.id in SUDO:
         return
 
-    if check := get_urls_from_text(text):
+    if get_urls_from_text(text):
         permissions = await current_chat_permissions(chat_id)
         if "can_add_web_page_previews" not in permissions:
             try:
