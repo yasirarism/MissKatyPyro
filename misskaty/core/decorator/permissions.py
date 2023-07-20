@@ -118,11 +118,10 @@ async def list_admins(chat_id: int):
 
 
 async def authorised(func, subFunc2, client, message, *args, **kwargs):
-    chatID = message.chat.id
     try:
         await func(client, message, *args, **kwargs)
     except ChatWriteForbidden:
-        await client.leave_chat(chatID)
+        await message.chat.leave()
     except Exception as e:
         try:
             await message.reply_text(str(e.MESSAGE))
@@ -135,7 +134,6 @@ async def authorised(func, subFunc2, client, message, *args, **kwargs):
 
 async def unauthorised(message: Message, permission, subFunc2):
     text = f"You don't have the required permission to perform this action.\n**Permission:** __{permission}__"
-    chatID = message.chat.id
     try:
         await message.reply_text(text)
     except ChatWriteForbidden:
