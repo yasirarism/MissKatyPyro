@@ -8,7 +8,7 @@
 
 import os
 
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 from telegraph.aio import Telegraph
 
@@ -27,7 +27,7 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def ocr(self: Client, ctx: Message, strings):
+async def ocr(_, ctx: Message, strings):
     reply = ctx.reply_to_message
     if (
         not reply

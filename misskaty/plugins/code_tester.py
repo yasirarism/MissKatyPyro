@@ -76,7 +76,7 @@ async def glot(lang, langcode, code):
 
 @app.on_message(filters.command(["codelist"], COMMAND_HANDLER))
 @ratelimiter
-async def list_lang(client, message):
+async def list_lang(_, message):
     daftarlang = await listcode()
     list_ = "".join(f"~> {i['name']}\n" for i in daftarlang)
     return await message.reply(
@@ -87,7 +87,7 @@ async def list_lang(client, message):
 @app.on_message(filters.command(["assembly"], "!"))
 @app.on_edited_message(filters.command(["assembly"], "!"))
 @ratelimiter
-async def assembly(client, message):
+async def assembly(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "asm", message.text.split(None, 1)[1])
@@ -105,7 +105,7 @@ async def assembly(client, message):
 @app.on_message(filters.command(["ats"], "!"))
 @app.on_edited_message(filters.command(["ats"], "!"))
 @ratelimiter
-async def ats(client, message):
+async def ats(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "dats", message.text.split(None, 1)[1])
@@ -123,7 +123,7 @@ async def ats(client, message):
 @app.on_message(filters.command(["bash"], "!"))
 @app.on_edited_message(filters.command(["bash"], "!"))
 @ratelimiter
-async def bash(client, message):
+async def bash(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "sh", message.text.split(None, 1)[1])
@@ -141,7 +141,7 @@ async def bash(client, message):
 @app.on_message(filters.command(["c"], "!"))
 @app.on_edited_message(filters.command(["c"], "!"))
 @ratelimiter
-async def c(client, message):
+async def c(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "c", message.text.split(None, 1)[1])
@@ -159,7 +159,7 @@ async def c(client, message):
 @app.on_message(filters.command(["clojure"], "!"))
 @app.on_edited_message(filters.command(["clojure"], "!"))
 @ratelimiter
-async def clojure(client, message):
+async def clojure(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "clj", message.text.split(None, 1)[1])
@@ -177,7 +177,7 @@ async def clojure(client, message):
 @app.on_message(filters.command(["cobol"], "!"))
 @app.on_edited_message(filters.command(["cobol"], "!"))
 @ratelimiter
-async def cobol(client, message):
+async def cobol(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cob", message.text.split(None, 1)[1])
@@ -195,7 +195,7 @@ async def cobol(client, message):
 @app.on_message(filters.command(["coffeescript"], "!"))
 @app.on_edited_message(filters.command(["coffeescript"], "!"))
 @ratelimiter
-async def coffeescript(client, message):
+async def coffeescript(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "coffee", message.text.split(None, 1)[1])
@@ -213,7 +213,7 @@ async def coffeescript(client, message):
 @app.on_message(filters.command(["cpp"], "!"))
 @app.on_edited_message(filters.command(["cpp"], "!"))
 @ratelimiter
-async def cpp(client, message):
+async def cpp(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cpp", message.text.split(None, 1)[1])
@@ -231,7 +231,7 @@ async def cpp(client, message):
 @app.on_message(filters.command(["crystal"], "!"))
 @app.on_edited_message(filters.command(["crystal"], "!"))
 @ratelimiter
-async def crystal(client, message):
+async def crystal(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cr", message.text.split(None, 1)[1])
@@ -249,7 +249,7 @@ async def crystal(client, message):
 @app.on_message(filters.command(["csharp"], "!"))
 @app.on_edited_message(filters.command(["csharp"], "!"))
 @ratelimiter
-async def csharp(client, message):
+async def csharp(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "cs", message.text.split(None, 1)[1])
@@ -267,7 +267,7 @@ async def csharp(client, message):
 @app.on_message(filters.command(["d"], "!"))
 @app.on_edited_message(filters.command(["d"], "!"))
 @ratelimiter
-async def d(client, message):
+async def d(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "d", message.text.split(None, 1)[1])
@@ -285,7 +285,7 @@ async def d(client, message):
 @app.on_message(filters.command(["elixir"], "!"))
 @app.on_edited_message(filters.command(["elixir"], "!"))
 @ratelimiter
-async def elixir(client, message):
+async def elixir(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ex", message.text.split(None, 1)[1])
@@ -302,7 +302,7 @@ async def elixir(client, message):
 
 @app.on_message(filters.command(["elm"], "!"))
 @app.on_edited_message(filters.command(["elm"], "!"))
-async def elm(client, message):
+async def elm(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "elm", message.text.split(None, 1)[1])
@@ -320,7 +320,7 @@ async def elm(client, message):
 @app.on_message(filters.command(["erlang"], "!"))
 @app.on_edited_message(filters.command(["erlang"], "!"))
 @ratelimiter
-async def erlang(client, message):
+async def erlang(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "erl", message.text.split(None, 1)[1])
@@ -338,7 +338,7 @@ async def erlang(client, message):
 @app.on_message(filters.command(["fsharp"], "!"))
 @app.on_edited_message(filters.command(["fsharp"], "!"))
 @ratelimiter
-async def fsharp(client, message):
+async def fsharp(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "fs", message.text.split(None, 1)[1])
@@ -356,7 +356,7 @@ async def fsharp(client, message):
 @app.on_message(filters.command(["go"], "!"))
 @app.on_edited_message(filters.command(["go"], "!"))
 @ratelimiter
-async def go(client, message):
+async def go(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "go", message.text.split(None, 1)[1])
@@ -374,7 +374,7 @@ async def go(client, message):
 @app.on_message(filters.command(["groovy"], "!"))
 @app.on_edited_message(filters.command(["groovy"], "!"))
 @ratelimiter
-async def groovy(client, message):
+async def groovy(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "groovy", message.text.split(None, 1)[1])
@@ -392,7 +392,7 @@ async def groovy(client, message):
 @app.on_message(filters.command(["haskell"], "!"))
 @app.on_edited_message(filters.command(["haskell"], "!"))
 @ratelimiter
-async def haskell(client, message):
+async def haskell(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "hs", message.text.split(None, 1)[1])
@@ -410,7 +410,7 @@ async def haskell(client, message):
 @app.on_message(filters.command(["idris"], "!"))
 @app.on_edited_message(filters.command(["idris"], "!"))
 @ratelimiter
-async def idris(client, message):
+async def idris(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "idr", message.text.split(None, 1)[1])
@@ -428,7 +428,7 @@ async def idris(client, message):
 @app.on_message(filters.command(["java"], "!"))
 @app.on_edited_message(filters.command(["java"], "!"))
 @ratelimiter
-async def java(client, message):
+async def java(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "java", message.text.split(None, 1)[1])
@@ -446,7 +446,7 @@ async def java(client, message):
 @app.on_message(filters.command(["javascript"], "!"))
 @app.on_edited_message(filters.command(["javascript"], "!"))
 @ratelimiter
-async def javascript(client, message):
+async def javascript(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "js", message.text.split(None, 1)[1])
@@ -464,7 +464,7 @@ async def javascript(client, message):
 @app.on_message(filters.command(["julia"], "!"))
 @app.on_edited_message(filters.command(["julia"], "!"))
 @ratelimiter
-async def julia(client, message):
+async def julia(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "jl", message.text.split(None, 1)[1])
@@ -482,7 +482,7 @@ async def julia(client, message):
 @app.on_message(filters.command(["kotlin"], "!"))
 @app.on_edited_message(filters.command(["kotlin"], "!"))
 @ratelimiter
-async def kotlin(client, message):
+async def kotlin(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "kt", message.text.split(None, 1)[1])
@@ -500,7 +500,7 @@ async def kotlin(client, message):
 @app.on_message(filters.command(["lua"], "!"))
 @app.on_edited_message(filters.command(["lua"], "!"))
 @ratelimiter
-async def lua(client, message):
+async def lua(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "lua", message.text.split(None, 1)[1])
@@ -518,7 +518,7 @@ async def lua(client, message):
 @app.on_message(filters.command(["mercury"], "!"))
 @app.on_edited_message(filters.command(["mercury"], "!"))
 @ratelimiter
-async def mercury(client, message):
+async def mercury(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "m", message.text.split(None, 1)[1])
@@ -536,7 +536,7 @@ async def mercury(client, message):
 @app.on_message(filters.command(["nim"], "!"))
 @app.on_edited_message(filters.command(["nim"], "!"))
 @ratelimiter
-async def nim(client, message):
+async def nim(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "nim", message.text.split(None, 1)[1])
@@ -554,7 +554,7 @@ async def nim(client, message):
 @app.on_message(filters.command(["nix"], "!"))
 @app.on_edited_message(filters.command(["nix"], "!"))
 @ratelimiter
-async def nix(client, message):
+async def nix(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "nix", message.text.split(None, 1)[1])
@@ -572,7 +572,7 @@ async def nix(client, message):
 @app.on_message(filters.command(["ocaml"], "!"))
 @app.on_edited_message(filters.command(["ocaml"], "!"))
 @ratelimiter
-async def ocaml(client, message):
+async def ocaml(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ml", message.text.split(None, 1)[1])
@@ -590,7 +590,7 @@ async def ocaml(client, message):
 @app.on_message(filters.command(["perl"], "!"))
 @app.on_edited_message(filters.command(["perl"], "!"))
 @ratelimiter
-async def perl(client, message):
+async def perl(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "pl", message.text.split(None, 1)[1])
@@ -607,7 +607,7 @@ async def perl(client, message):
 
 @app.on_message(filters.command(["php"], "!"))
 @app.on_edited_message(filters.command(["php"], "!"))
-async def php(client, message):
+async def php(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "php", message.text.split(None, 1)[1])
@@ -625,7 +625,7 @@ async def php(client, message):
 @app.on_message(filters.command(["python"], "!"))
 @app.on_edited_message(filters.command(["python"], "!"))
 @ratelimiter
-async def python(client, message):
+async def python(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "py", message.text.split(None, 1)[1])
@@ -643,7 +643,7 @@ async def python(client, message):
 @app.on_message(filters.command(["raku"], "!"))
 @app.on_edited_message(filters.command(["raku"], "!"))
 @ratelimiter
-async def raku(client, message):
+async def raku(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "raku", message.text.split(None, 1)[1])
@@ -661,7 +661,7 @@ async def raku(client, message):
 @app.on_message(filters.command(["ruby"], "!"))
 @app.on_edited_message(filters.command(["ruby"], "!"))
 @ratelimiter
-async def ruby(client, message):
+async def ruby(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "rb", message.text.split(None, 1)[1])
@@ -679,7 +679,7 @@ async def ruby(client, message):
 @app.on_message(filters.command(["rust"], "!"))
 @app.on_edited_message(filters.command(["rust"], "!"))
 @ratelimiter
-async def rust(client, message):
+async def rust(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "rs", message.text.split(None, 1)[1])
@@ -697,7 +697,7 @@ async def rust(client, message):
 @app.on_message(filters.command(["scala"], "!"))
 @app.on_edited_message(filters.command(["scala"], "!"))
 @ratelimiter
-async def scala(client, message):
+async def scala(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "scala", message.text.split(None, 1)[1])
@@ -714,7 +714,7 @@ async def scala(client, message):
 
 @app.on_message(filters.command(["swift"], "!"))
 @app.on_edited_message(filters.command(["swift"], "!"))
-async def swift(client, message):
+async def swift(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "swift", message.text.split(None, 1)[1])
@@ -732,7 +732,7 @@ async def swift(client, message):
 @app.on_message(filters.command(["typescript"], "!"))
 @app.on_edited_message(filters.command(["typescript"], "!"))
 @ratelimiter
-async def typescript(client, message):
+async def typescript(_, message):
     if len(message.command) < 2:
         return await message.reply("Please enter the code you want to run.")
     res = await glot(message.command[0], "ts", message.text.split(None, 1)[1])

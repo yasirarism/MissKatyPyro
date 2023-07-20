@@ -2,7 +2,7 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 
 from database.sangmata_db import *
@@ -25,7 +25,7 @@ This feature inspired from SangMata Bot. I'm created simple detection to check u
     group=5,
 )
 @use_chat_lang()
-async def cek_mataa(self: Client, ctx: Message, strings):
+async def cek_mataa(_, ctx: Message, strings):
     if ctx.sender_chat or not await is_sangmata_on(ctx.chat.id):
         return
     if not await cek_userdata(ctx.from_user.id):
@@ -92,7 +92,7 @@ async def cek_mataa(self: Client, ctx: Message, strings):
 @adminsOnly("can_change_info")
 @ratelimiter
 @use_chat_lang()
-async def set_mataa(self: Client, ctx: Message, strings):
+async def set_mataa(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("set_sangmata_help").format(cmd=ctx.command[0]), del_in=6

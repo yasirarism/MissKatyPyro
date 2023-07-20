@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import time
 
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 
 from database.users_chats_db import db
@@ -12,7 +12,7 @@ from utils import broadcast_messages
 
 
 @app.on_message(filters.command("broadcast") & filters.user(SUDO) & filters.reply)
-async def broadcast(self: Client, ctx: Message):
+async def broadcast(_, ctx: Message):
     users = await db.get_all_users()
     b_msg = ctx.reply_to_message
     sts = await ctx.reply_msg("Broadcasting your messages...")

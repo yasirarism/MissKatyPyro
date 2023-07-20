@@ -403,7 +403,7 @@ async def callbackunav(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqcompl$"))
 @ratelimiter
-async def callbackaft_done(c, q):
+async def callbackaft_done(_, q):
     await q.answer(
         "Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..",
         show_alert=True,
@@ -413,7 +413,7 @@ async def callbackaft_done(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqreject$"))
 @ratelimiter
-async def callbackaft_rej(c, q):
+async def callbackaft_rej(_, q):
     await q.answer(
         "Request ini ditolak 💔, silahkan cek rules grup yaa.",
         show_alert=True,
@@ -423,7 +423,7 @@ async def callbackaft_rej(c, q):
 
 @app.on_callback_query(filters.regex(r"^requnav$"))
 @ratelimiter
-async def callbackaft_unav(c, q):
+async def callbackaft_unav(_, q):
     await q.answer(
         "Request ini tidak tersedia ☹️, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
         show_alert=True,
@@ -433,7 +433,7 @@ async def callbackaft_unav(c, q):
 
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
 @ratelimiter
-async def callbackaft_dahada(c, q):
+async def callbackaft_dahada(_, q):
     await q.answer(
         "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True
     )

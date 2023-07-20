@@ -37,7 +37,7 @@ def rand_key():
 @app.on_cmd("ytsearch", no_channel=True)
 @ratelimiter
 @use_chat_lang()
-async def ytsearch(self: Client, ctx: Message, strings):
+async def ytsearch(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(strings("no_query"))
     query = ctx.text.split(" ", maxsplit=1)[1]
@@ -86,7 +86,7 @@ async def ytsearch(self: Client, ctx: Message, strings):
 @capture_err
 @ratelimiter
 @use_chat_lang()
-async def ytdownv2(self: Client, ctx: Message, strings):
+async def ytdownv2(_, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(strings("no_channel"))
     if ctx.command and len(ctx.command) == 1:
@@ -112,7 +112,7 @@ async def ytdownv2(self: Client, ctx: Message, strings):
 @app.on_cb(filters.regex(r"^yt_listall"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
+async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
@@ -128,7 +128,7 @@ async def ytdl_listall_callback(self: Client, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_extractinfo_callback(self: Client, cq: CallbackQuery, strings):
+async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     await cq.answer(strings("wait"))
@@ -209,7 +209,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^yt_cancel"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_cancel_callback(self: Client, cq: CallbackQuery, strings):
+async def ytdl_cancel_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
@@ -226,7 +226,7 @@ async def ytdl_cancel_callback(self: Client, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
 @ratelimiter
 @use_chat_lang()
-async def ytdl_scroll_callback(self: Client, cq: CallbackQuery, strings):
+async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")

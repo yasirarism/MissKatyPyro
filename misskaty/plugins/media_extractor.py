@@ -74,7 +74,7 @@ def get_subname(lang, url, ext):
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def ceksub(self: Client, ctx: Message, strings):
+async def ceksub(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5

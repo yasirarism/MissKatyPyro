@@ -10,7 +10,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 @app.on_message(filters.command(["copy"], COMMAND_HANDLER))
 @ratelimiter
-async def copy(client, message):
+async def copymsg(_, message):
     if len(message.command) == 1:
         if not message.reply_to_message:
             return await message.reply("Silahkan balas pesan yang mau dicopy.")
@@ -66,7 +66,7 @@ async def copy(client, message):
 
 @app.on_message(filters.command(["forward"], COMMAND_HANDLER))
 @capture_err
-async def forward(client, message):
+async def forwardmsg(_, message):
     if len(message.command) == 1:
         if not message.reply_to_message:
             return await message.reply("Silahkan balas pesan yang mau dicopy.")

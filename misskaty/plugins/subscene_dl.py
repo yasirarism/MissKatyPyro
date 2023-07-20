@@ -9,7 +9,7 @@ import os
 import cloudscraper
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
@@ -115,7 +115,7 @@ async def getListSub(msg, link, CurrentPage, user):
 # Subscene CMD
 @app.on_message(filters.command(["subscene"], COMMAND_HANDLER))
 @ratelimiter
-async def subsceneCMD(self: Client, ctx: Message):
+async def subscene_cmd(_, ctx: Message):
     if not ctx.input:
         return await ctx.reply_msg(
             f"ℹ️ Please add query after CMD!\nEx: <code>/{ctx.command[0]} Jurassic World</code>"
@@ -148,7 +148,7 @@ async def subsceneCMD(self: Client, ctx: Message):
     filters.create(lambda _, __, query: "subscenepage#" in query.data)
 )
 @ratelimiter
-async def subpage_callback(self: Client, callback_query: CallbackQuery):
+async def subpage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
     message_id = int(callback_query.data.split("#")[2])
@@ -186,7 +186,7 @@ async def subpage_callback(self: Client, callback_query: CallbackQuery):
 # Callback list title
 @app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
 @ratelimiter
-async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
+async def subdlpage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])
@@ -227,7 +227,7 @@ async def subdlpage_callback(self: Client, callback_query: CallbackQuery):
     filters.create(lambda _, __, query: "extractsubs#" in query.data)
 )
 @ratelimiter
-async def dlsub_callback(self: Client, callback_query: CallbackQuery):
+async def dlsub_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
         return await callback_query.answer("Not yours..", True)
     idlink = int(callback_query.data.split("#")[2])

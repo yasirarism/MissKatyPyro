@@ -165,7 +165,7 @@ async def makeqr(c, m):
 
 @app.on_message(filters.command(["sof"], COMMAND_HANDLER))
 @capture_err
-async def stackoverflow(client, message):
+async def stackoverflow(_, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
     r = (
@@ -196,7 +196,7 @@ async def stackoverflow(client, message):
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def gsearch(client, message):
+async def gsearch(_, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
     query = message.text.split(" ", maxsplit=1)[1]
@@ -247,7 +247,7 @@ async def gsearch(client, message):
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def translate(client, message):
+async def translate(_, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
     ):
@@ -359,7 +359,7 @@ async def topho(client, message):
 
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
 @ratelimiter
-async def showid(client, message):
+async def showid(_, message):
     chat_type = message.chat.type.value
     if chat_type == "private":
         user_id = message.chat.id
@@ -471,7 +471,7 @@ async def who_is(client, message):
 
 @app.on_callback_query(filters.regex("^close"))
 @ratelimiter
-async def close_callback(bot: Client, query: CallbackQuery):
+async def close_callback(_, query: CallbackQuery):
     _, userid = query.data.split("#")
     if query.from_user.id != int(userid):
         try:
@@ -496,7 +496,7 @@ async def mdlapi(title):
 @app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
-async def mdlsearch(client, message):
+async def mdlsearch(_, message):
     if " " in message.text:
         _, title = message.text.split(None, 1)
         k = await message.reply("Sedang mencari di Database MyDramaList.. 😴")
@@ -523,7 +523,7 @@ async def mdlsearch(client, message):
 
 @app.on_callback_query(filters.regex("^mdls"))
 @ratelimiter
-async def mdl_callback(bot: Client, query: CallbackQuery):
+async def mdl_callback(_, query: CallbackQuery):
     _, user, _, slug = query.data.split("#")
     if user == f"{query.from_user.id}":
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")

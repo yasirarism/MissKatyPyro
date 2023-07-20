@@ -30,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 async def handle_error(
-    error, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
+    _, m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
 ):
     """
     ### `handle_error`
@@ -45,18 +45,6 @@ async def handle_error(
       - m (`pyrogram.types.Message` or `pyrogram.types.CallbackQuery`):
         - The Message or Callback Query where the Error occurred.
 
-    #### Exapmle
-        .. code-block:: python
-            import pyrogram
-
-            app = tgClient(pyrogram.Client())
-
-            @app.command("start")
-            async def start(client, message):
-            try:
-                await message.reply_text("Hi :D') # I intentionally made an bug for Example :/
-            except Exceptation as e:
-                return await handle_error(e, message)
     """
 
     day = datetime.now()

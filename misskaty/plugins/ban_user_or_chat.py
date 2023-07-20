@@ -9,7 +9,7 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 
 
 @app.on_message(filters.incoming, group=-5)
-async def ban_reply(self: Client, ctx: Message):
+async def ban_reply(_, ctx: Message):
     if not ctx.from_user:
         return
     ban = await db.get_ban_status(ctx.from_user.id)
@@ -167,7 +167,7 @@ async def disable_chat(bot, message):
 
 
 @app.on_message(filters.command("enablechat", COMMAND_HANDLER) & filters.user(SUDO))
-async def re_enable_chat(bot: Client, ctx: Message):
+async def re_enable_chat(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply("Give me a chat id")
     chat = ctx.command[1]

@@ -75,7 +75,7 @@ async def edit_or_reply(msg, **kwargs):
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def log_file(self: Client, ctx: Message, strings) -> "Message":
+async def log_file(_, ctx: Message, strings):
     """Send log file"""
     msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
     if len(ctx.command) == 1:
@@ -103,7 +103,7 @@ async def log_file(self: Client, ctx: Message, strings) -> "Message":
 
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
-async def donate(client, ctx):
+async def donate(_, ctx: Message):
     await ctx.reply_photo(
         "https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg",
         caption=f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini berguna kamu bisa melakukan donasi dengan scan QR menggunakan merchant yang support QRIS ya. Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation via Paypal for international payment : https://paypal.me/yasirarism. Because this bot server is hosted in VPS and not free. Thank you..",
@@ -113,7 +113,7 @@ async def donate(client, ctx):
 @app.on_message(
     filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
 )
-async def balas(self: Client, ctx: Message) -> "str":
+async def balas(_, ctx: Message) -> "str":
     pesan = ctx.input
     await ctx.delete_msg()
     await ctx.reply_msg(pesan, reply_to_message_id=ctx.reply_to_message.id)
@@ -121,7 +121,7 @@ async def balas(self: Client, ctx: Message) -> "str":
 
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))
 @new_task
-async def server_stats(self: Client, ctx: Message) -> "Message":
+async def server_stats(_, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
@@ -277,7 +277,7 @@ __**New Global Ban**__
 
 # Ungban
 @app.on_message(filters.command("ungban", COMMAND_HANDLER) & filters.user(SUDO))
-async def unban_globally(self: Client, ctx: Message):
+async def unban_globally(_, ctx: Message):
     user_id = await extract_user(ctx)
     if not user_id:
         return await ctx.reply_text("I can't find that user.")
@@ -305,7 +305,7 @@ async def unban_globally(self: Client, ctx: Message):
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
-async def shell_cmd(self: Client, ctx: Message, strings) -> "Message":
+async def shell_cmd(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
     msg = (
@@ -500,7 +500,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 # Update and restart bot
 @app.on_message(filters.command(["restart"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
-async def update_restart(self: Client, ctx: Message, strings) -> "Message":
+async def update_restart(_, ctx: Message, strings):
     msg = await ctx.reply_msg(strings("up_and_rest"))
     await shell_exec("python3 update.py")
     with open("restart.pickle", "wb") as status:
@@ -509,7 +509,7 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 
 
 @app.on_raw_update(group=-99)
-async def updtebot(client, update, users, chats):
+async def updtebot(client, update, users, _):
     if isinstance(update, UpdateBotStopped):
         niuser = users[update.user_id]
         if update.stopped and await db.is_user_exist(niuser.id):

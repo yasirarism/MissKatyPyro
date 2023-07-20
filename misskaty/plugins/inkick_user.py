@@ -134,7 +134,7 @@ async def uname(_, message):
 )
 @ratelimiter
 @app.adminsOnly("can_restrict_members")
-async def rm_delacc(client, message):
+async def rm_delacc(_, message):
     if message.sender_chat:
         return await message.reply_msg(
             "This feature not available for channel.", del_in=4

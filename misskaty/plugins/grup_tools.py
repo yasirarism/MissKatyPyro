@@ -302,7 +302,7 @@ async def kickme(_, message):
 
 
 @app.on_message(filters.command("users") & filters.user(SUDO))
-async def list_users(bot, message):
+async def list_users(_, message):
     # https://t.me/GetTGLink/4184
     msg = await message.reply("Getting List Of Users")
     users = await db.get_all_users()

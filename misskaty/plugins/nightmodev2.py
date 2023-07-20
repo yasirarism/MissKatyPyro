@@ -182,7 +182,7 @@ async def mute_chat(chat_id: int):
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
 @require_admin(permissions=["can_change_info"])
 @use_chat_lang()
-async def nightmode_handler(c, msg, strings):
+async def nightmode_handler(_, msg, strings):
     chat_id = msg.chat.id
 
     if "-d" in msg.text:

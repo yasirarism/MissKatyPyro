@@ -10,7 +10,6 @@ async def send_as_file(
     text: str,
     filename: str = "output.txt",
     caption: str = "",
-    log: Union[bool, str] = False,
     reply_to_message_id: Optional[int] = None,
 ) -> "Message":
     """\nYou can send large outputs as file
@@ -29,10 +28,6 @@ async def send_as_file(
             file_name for output file.
         caption (``str``, *optional*):
             caption for output file.
-        log (``bool`` | ``str``, *optional*):
-            If ``True``, the message will be forwarded
-            to the log channel.
-            If ``str``, the logger name will be updated.
         reply_to_message_id (``int``, *optional*):
             If the message is a reply, ID of the original message.
     Returns:

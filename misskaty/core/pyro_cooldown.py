@@ -10,7 +10,7 @@ async def task(msg, warn=False, sec=None):
     if warn:
         user = msg.from_user
         ids = await msg.reply_msg(
-            f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using feature again.."
+            f"Sorry {user.mention} [<code>{user.id}</code>], you must wait for {sec}s before using this feature again.."
         )
         try:
             await msg.delete_msg()

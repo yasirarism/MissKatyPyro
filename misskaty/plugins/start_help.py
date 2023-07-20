@@ -70,7 +70,7 @@ keyboard = InlineKeyboardMarkup(
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
 @use_chat_lang()
-async def start(self: Client, ctx: Message, strings):
+async def start(_, ctx: Message, strings):
     if ctx.chat.type.value != "private":
         nama = ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title
         return await ctx.reply_photo(
@@ -103,7 +103,7 @@ async def start(self: Client, ctx: Message, strings):
 
 @app.on_callback_query(filters.regex("bot_commands"))
 @ratelimiter
-async def commands_callbacc(self: Client, cb: CallbackQuery):
+async def commands_callbacc(_, cb: CallbackQuery):
     text, keyb = await help_parser(cb.from_user.mention)
     await app.send_message(
         CallbackQuery.message.chat.id,
@@ -115,7 +115,7 @@ async def commands_callbacc(self: Client, cb: CallbackQuery):
 
 @app.on_callback_query(filters.regex("stats_callback"))
 @ratelimiter
-async def stats_callbacc(self: Client, cb: CallbackQuery):
+async def stats_callbacc(_, cb: CallbackQuery):
     text = await bot_sys_stats()
     await app.answer_callback_query(cb.id, text, show_alert=True)
 
@@ -123,7 +123,7 @@ async def stats_callbacc(self: Client, cb: CallbackQuery):
 @app.on_message(filters.command("help", COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def help_command(self: Client, ctx: Message, strings):
+async def help_command(_, ctx: Message, strings):
     if ctx.chat.type.value != "private":
         if len(ctx.command) >= 2:
             name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()

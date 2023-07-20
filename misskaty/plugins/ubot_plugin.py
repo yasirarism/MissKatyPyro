@@ -39,7 +39,7 @@ async def add_keep(_, message: Message):
 
 
 @user.on_deleted_messages(filters.chat([-1001455886928, -1001255283935]))
-async def del_msg(client, message):
+async def del_msg(_, message):
     async for a in user.get_chat_event_log(
         message[0].chat.id, limit=1, filters=ChatEventFilter(deleted_messages=True)
     ):
@@ -71,7 +71,7 @@ async def del_msg(client, message):
 
 
 @user.on_edited_message(filters.text & filters.chat(-1001455886928))
-async def edit_msg(client, message):
+async def edit_msg(_, message):
     try:
         ustat = (
             await user.get_chat_member(message.chat.id, message.from_user.id)
@@ -96,7 +96,7 @@ async def edit_msg(client, message):
 
 
 @user.on_message(filters.private & ~filters.bot & ~filters.me & filters.text)
-async def message_pm(client, message):
+async def message_pm(_, message):
     await app.send_message(
         617426792,
         f"Ada pesan baru dari {message.from_user.mention}\n\n<b>Pesan: </b>{message.text}",
@@ -104,7 +104,7 @@ async def message_pm(client, message):
 
 
 @user.on_message(~filters.bot & filters.group & filters.mentioned)
-async def mentioned(client, message):
+async def mentioned(_, message):
     if message.sender_chat:
         return
     cid = message.chat.id
@@ -150,7 +150,7 @@ async def join_date(self, message: Message):
 
 
 @user.on_message(filters.command("memberstats", "!") & filters.me)
-async def memberstats(client, message):
+async def memberstats(_, message):
     people = {}
     total = await user.get_chat_members_count(message.chat.id)
     async for msg in user.iter_history(message.chat.id, limit=1000):
@@ -160,7 +160,7 @@ async def memberstats(client, message):
 
 
 @user.on_message(filters.command("recent_action", "!") & filters.me)
-async def recent_act(client, message):
+async def recent_act(_, message):
     full_log = await user.invoke(
         functions.channels.GetAdminLog(
             channel=await user.resolve_peer(message.chat.id),
@@ -178,7 +178,7 @@ async def recent_act(client, message):
 
 
 @user.on_message(filters.command(["screenshot"], prefixes="!"))
-async def take_a_screenshot(client, message):
+async def take_a_screenshot(_, message):
     await message.delete()
     await user.invoke(
         functions.messages.SendScreenshotNotification(

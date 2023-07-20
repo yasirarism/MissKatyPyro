@@ -10,7 +10,7 @@ import time
 from os import path
 from os import remove as osremove
 
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -26,7 +26,7 @@ from utils import get_file_id
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
 @ratelimiter
 @use_chat_lang()
-async def mediainfo(self: Client, ctx: Message, strings):
+async def mediainfo(_, ctx: Message, strings):
     if not ctx.from_user:
         return
     if ctx.reply_to_message and ctx.reply_to_message.media:
