@@ -219,8 +219,8 @@ async def ban_globally(self: Client, ctx: Message):
         return await ctx.reply("No reason provided.")
 
     try:
-        user = await app.get_users(user_id)
-        user_mention = user.mention
+        getuser = await app.get_users(user_id)
+        user_mention = getuser.mention
         user_id = user.id
     except PeerIdInvalid:
         user_mention = int(user_id)
@@ -282,8 +282,8 @@ async def unban_globally(self: Client, ctx: Message):
     if not user_id:
         return await ctx.reply_text("I can't find that user.")
     try:
-        user = await app.get_users(user_id)
-        user_mention = user.mention
+        getuser = await app.get_users(user_id)
+        user_mention = getuser.mention
         user_id = user.id
     except PeerIdInvalid:
         user_mention = int(user_id)
@@ -511,12 +511,12 @@ async def update_restart(self: Client, ctx: Message, strings) -> "Message":
 @app.on_raw_update(group=-99)
 async def updtebot(client, update, users, chats):
     if isinstance(update, UpdateBotStopped):
-        user = users[update.user_id]
-        if update.stopped and await db.is_user_exist(user.id):
-            await db.delete_user(user.id)
+        niuser = users[update.user_id]
+        if update.stopped and await db.is_user_exist(niuser.id):
+            await db.delete_user(niuser.id)
         await client.send_msg(
             LOG_CHANNEL,
-            f"<a href='tg://user?id={user.id}'>{user.first_name}</a> (<code>{user.id}</code>) "
+            f"<a href='tg://user?id={niuser.id}'>{niuser.first_name}</a> (<code>{niuser.id}</code>) "
             f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at "
             f"{datetime.fromtimestamp(update.date)}",
         )
