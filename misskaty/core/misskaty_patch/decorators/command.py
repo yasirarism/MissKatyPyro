@@ -11,7 +11,7 @@ from ..utils import handle_error
 
 def command(
     self,
-    command: typing.Union[str, list],
+    cmd: typing.Union[str, list],
     is_disabled: typing.Union[bool, bool] = False,
     pm_only: typing.Union[bool, bool] = False,
     group_only: typing.Union[bool, bool] = False,
@@ -27,7 +27,7 @@ def command(
     ### `tgClient.command`
     - A decorater to Register Commands in simple way and manage errors in that Function itself, alternative for `@pyrogram.Client.on_message(pyrogram.filters.command('command'))`
     - Parameters:
-    - command (str || list):
+    - cmd (str || list):
         - The command to be handled for a function
 
     - group_only (bool) **optional**:
@@ -63,13 +63,13 @@ def command(
     if filter:
         if self_only:
             filter = (
-                pyrogram.filters.command(command, prefixes=handler)
+                pyrogram.filters.command(cmd, prefixes=handler)
                 & filter
                 & pyrogram.filters.me
             )
         else:
             filter = (
-                pyrogram.filters.command(command, prefixes=handler)
+                pyrogram.filters.command(cmd, prefixes=handler)
                 & filter
                 & pyrogram.filters.me
                 & wait(7)
@@ -77,11 +77,11 @@ def command(
     else:
         if self_only:
             filter = (
-                pyrogram.filters.command(command, prefixes=handler)
+                pyrogram.filters.command(cmd, prefixes=handler)
                 & pyrogram.filters.me
             )
         else:
-            filter = pyrogram.filters.command(command, prefixes=handler) & wait(7)
+            filter = pyrogram.filters.command(cmd, prefixes=handler) & wait(7)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
