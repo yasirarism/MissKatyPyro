@@ -595,7 +595,7 @@ async def destroy_msg(_, c_q):
         await c_q.answer("message now outdated !", show_alert=True)
         return
 
-    user_id, flname, sender_id, msg = PRVT_MSGS[msg_id]
+    user_id, flname, sender_id, _ = PRVT_MSGS[msg_id]
 
     if c_q.from_user.id in (user_id, sender_id):
         del PRVT_MSGS[msg_id]
