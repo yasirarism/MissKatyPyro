@@ -5,7 +5,7 @@ from pyrogram.methods import Decorators
 
 from misskaty.vars import COMMAND_HANDLER
 
-from ..decorator import pyro_cooldown
+from ...decorator import pyro_cooldown
 from ..utils import handle_error
 
 
