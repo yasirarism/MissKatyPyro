@@ -5,7 +5,14 @@
 from pyrogram import filters
 from pyrogram.types import Message
 
-from database.sangmata_db import cek_userdata, is_sangmata_on, add_userdata, get_userdata, sangmata_on, sangmata_off
+from database.sangmata_db import (
+    add_userdata,
+    cek_userdata,
+    get_userdata,
+    is_sangmata_on,
+    sangmata_off,
+    sangmata_on,
+)
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.core.decorator.ratelimiter import ratelimiter
