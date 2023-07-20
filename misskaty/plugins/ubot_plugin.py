@@ -137,10 +137,10 @@ async def join_date(app, message: Message):
         )
     members.sort(key=lambda member: member[1])
 
-    with open("joined_date.txt", "w", encoding="utf8") as f:
-        f.write("Join Date      First Name\n")
+    with open("joined_date.txt", "w", encoding="utf8") as fj:
+        fj.write("Join Date      First Name\n")
         for member in members:
-            f.write(
+            fj.write(
                 str(datetime.fromtimestamp(member[1]).strftime("%y-%m-%d %H:%M"))
                 + f" {member[0]}\n"
             )
