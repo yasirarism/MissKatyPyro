@@ -491,8 +491,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
         if keywd := r_json.get("keywords"):
             key_ = "".join(
-                f"#{i.replace(' ', '_').replace('-', '_')}, "
-                for i in keywd.split(",")
+                f"#{i.replace(' ', '_').replace('-', '_')}, " for i in keywd.split(",")
             )
             res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
         if award := sop.select('li[data-testid="award_information"]'):
