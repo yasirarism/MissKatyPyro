@@ -247,7 +247,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
         )
 
     elif create_match:
-        text, keyboard = await help_parser(query)
+        text, keyb = await help_parser(query)
         await query.message.edit_msg(
             text=text,
             reply_markup=keyboard,
