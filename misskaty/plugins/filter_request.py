@@ -45,7 +45,7 @@ async def request_user(client, message):
         )
     is_in_gap, sleep_time = await check_time_gap(message.from_user.id)
     if is_in_gap:
-        return await message.reply("Sabar dikit napa.. 🙄")
+        return await message.reply(f"Sabar dikit napa.. Tunggu {sleep_time} detik lagi 🙄")
     markup = InlineKeyboardMarkup(
         [
             [
@@ -170,7 +170,7 @@ async def callbackreq(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
