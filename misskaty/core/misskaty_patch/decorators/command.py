@@ -5,7 +5,6 @@ from pyrogram.methods import Decorators
 
 from misskaty.vars import COMMAND_HANDLER
 
-from ...decorator import pyro_cooldown
 from ..utils import handle_error
 
 
@@ -72,7 +71,6 @@ def command(
                 pyrogram.filters.command(cmd, prefixes=handler)
                 & filtercmd
                 & pyrogram.filters.me
-                & pyro_cooldown.wait(7)
             )
     else:
         if self_only:
@@ -80,7 +78,7 @@ def command(
                 pyrogram.filters.command(cmd, prefixes=handler) & pyrogram.filters.me
             )
         else:
-            filtercmd = pyrogram.filters.command(cmd, prefixes=handler) & pyro_cooldown.wait(7)
+            filtercmd = pyrogram.filters.command(cmd, prefixes=handler)
 
     def wrapper(func):
         async def decorator(client, message: pyrogram.types.Message):
