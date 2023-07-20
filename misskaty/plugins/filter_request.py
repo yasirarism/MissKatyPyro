@@ -343,7 +343,7 @@ async def callbackunav(c, q):
             enums.ChatMemberStatus.ADMINISTRATOR,
             enums.ChatMemberStatus.OWNER,
         ]:
-            i, msg_id, chat_id = q.data.split("_")
+            _, msg_id, chat_id = q.data.split("_")
             await c.send_message(
                 chat_id=chat_id,
                 text="Mohon maaf, request kamu tidak tersedia. Silahkan baca beberapa alasannya di channel @YMovieZ_New",
