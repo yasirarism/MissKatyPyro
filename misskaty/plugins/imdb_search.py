@@ -125,7 +125,7 @@ async def imdbsetlang(_, query: CallbackQuery):
     _, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
-    is_imdb, langset = await is_imdbset(query.from_user.id)
+    _, langset = await is_imdbset(query.from_user.id)
     if langset == lang:
         return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
     if lang == "eng":
