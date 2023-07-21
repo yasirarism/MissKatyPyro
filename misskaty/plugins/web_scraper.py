@@ -14,6 +14,7 @@ from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.errors import QueryIdInvalid
 
 from database import dbname
 from misskaty import app
@@ -832,15 +833,19 @@ async def movieku_s(_, ctx: Message, strings):
 @app.on_cb("page_sf21")
 @ratelimiter
 @use_chat_lang()
-async def savefilmpage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
+async def sf21page_callback(_, callback_query, strings):
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except IndexError: # Debug dulu napa index error
+        LOGGER.info(callback_query)
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
+    except QueryIdInvalid:
+        return
 
     try:
         savefilmres, PageLen, btn = await getDataSavefilm21(

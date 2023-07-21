@@ -33,7 +33,7 @@ async def currency(_, ctx: Message):
             del_in=6,
         )
 
-    amount, currency_from, currency_to = ctx.text.split()
+    _, amount, currency_from, currency_to = ctx.text.split()
     if amount.isdigit() or (
         amount.replace(".", "", 1).isdigit() and amount.count(".") < 2
     ):
