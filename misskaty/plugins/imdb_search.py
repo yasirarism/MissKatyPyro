@@ -18,6 +18,7 @@ from pyrogram.errors import (
     MessageNotModified,
     PhotoInvalidDimensions,
     WebpageMediaEmpty,
+    WebpageCurlFailed
 )
 from pyrogram.types import (
     CallbackQuery,
@@ -532,7 +533,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+            except (PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(
                     InputMediaPhoto(
@@ -540,14 +541,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except MediaCaptionTooLong:
+            except (MediaEmpty, MediaCaptionTooLong, WebpageCurlFailed):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
-            except Exception:
-                await query.message.edit_caption(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-                )
+            except Exception as err:
+                LOGGER.error(f"Terjadi error saat menampilkan data IMDB. ERROR: {err}")
         else:
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
@@ -690,7 +689,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+            except (PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(
                     InputMediaPhoto(
@@ -698,14 +697,12 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except MediaCaptionTooLong:
+            except (MediaCaptionTooLong, WebpageCurlFailed, MediaEmpty):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
-            except Exception:
-                await query.message.edit_caption(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-                )
+            except Exception as err:
+                LOGGER.error(f"Error while displaying IMDB Data. ERROR: {err}")
         else:
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup

@@ -28,7 +28,7 @@ from logging import getLogger
 from time import time
 
 from pyrogram import Client, enums, filters
-from pyrogram.errors import ChatAdminRequired, FloodWait
+from pyrogram.errors import ChatAdminRequired, FloodWait, PeerIdInvalid
 from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 
 from database.warn_db import add_warn, get_warn, remove_warns
@@ -272,10 +272,13 @@ async def unban_func(_, message, strings):
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
     else:
-        return await message.reply_text(strings("give_unban_user"))
-    await message.chat.unban_member(user)
-    umention = (await app.get_users(user)).mention
-    await message.reply_text(strings("unban_success").format(umention=umention))
+        return await message.reply_msg(strings("give_unban_user"))
+    try:
+        await message.chat.unban_member(user)
+        umention = (await app.get_users(user)).mention
+        await message.reply_msg(strings("unban_success").format(umention=umention))
+    except PeerIdInvalid:
+        await message.reply_msg(strings("unknown_id", context="general"))
 
 
 # Ban users listed in a message

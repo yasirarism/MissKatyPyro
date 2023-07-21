@@ -27,7 +27,7 @@ from pyrogram.raw.types import (
 )
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
-from misskaty import BOT_USERNAME, app
+from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
@@ -60,7 +60,7 @@ EMOJI_PATTERN = get_emoji_regex()
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
-@app.on_message(filters.command(["getsticker"], COMMAND_HANDLER))
+@app.on_cmd("getsticker")
 @ratelimiter
 @use_chat_lang()
 async def getsticker_(self: Client, ctx: Message, strings):
@@ -81,7 +81,7 @@ async def getsticker_(self: Client, ctx: Message, strings):
                 document=sticker_file,
                 caption=f"<b>Emoji:</b> {sticker.emoji}\n"
                 f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n"
-                f"<b>Send by:</b> @{BOT_USERNAME}",
+                f"<b>Send by:</b> @{self.me.username}",
             )
             shutil.rmtree(tempdir, ignore_errors=True)
 
@@ -122,7 +122,7 @@ async def unkangs(self: Client, ctx: Message, strings):
         await ctx.reply_msg(strings("unkang_help").format(c=self.me.username), del_in=6)
 
 
-@app.on_message(filters.command(["curi", "kang"], COMMAND_HANDLER))
+@app.on_cmd(["curi", "kang"])
 @ratelimiter
 @use_chat_lang()
 async def kang_sticker(self: Client, ctx: Message, strings):

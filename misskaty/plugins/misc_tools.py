@@ -255,12 +255,12 @@ async def translate(_, message):
         text = message.reply_to_message.text or message.reply_to_message.caption
     else:
         if len(message.command) < 3:
-            return await message.reply_text(
+            return await message.reply_msg(
                 "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
             )
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
-    msg = await message.reply("Menerjemahkan...")
+    msg = await message.reply_msg("Menerjemahkan...")
     try:
         my_translator = GoogleTranslator(source="auto", target=target_lang)
         result = my_translator.translate(text=text)
