@@ -17,8 +17,8 @@ from pyrogram.errors import (
     MessageIdInvalid,
     MessageNotModified,
     PhotoInvalidDimensions,
+    WebpageCurlFailed,
     WebpageMediaEmpty,
-    WebpageCurlFailed
 )
 from pyrogram.types import (
     CallbackQuery,
