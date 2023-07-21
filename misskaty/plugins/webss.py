@@ -44,6 +44,7 @@ async def take_ss(_, ctx: Message, strings):
             ]
         )
         await msg.delete_msg()
-        os.remove(download_file_path)
+        if os.path.exists(download_file_path):
+            os.remove(download_file_path)
     except Exception as e:
         await msg.edit_msg(strings("ss_failed_str").format(err=str(e)))

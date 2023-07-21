@@ -17,6 +17,7 @@ from pyrogram.errors import (
     MessageIdInvalid,
     MessageNotModified,
     PhotoInvalidDimensions,
+    WebpageCurlFailed,
     WebpageMediaEmpty,
 )
 from pyrogram.types import (
@@ -329,7 +330,10 @@ async def imdbcari(_, query: CallbackQuery):
                 msg = await query.message.edit_caption(msg, reply_markup=buttons)
                 await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
+                except MessageIdInvalid:
+                    await msg.reply("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
             except MessageIdInvalid:
                 pass
         except Exception as err:
@@ -387,7 +391,10 @@ async def imdbcari(_, query: CallbackQuery):
                 msg = await query.message.edit_caption(msg, reply_markup=buttons)
                 await msg.wait_for_click(from_user_id=int(uid), timeout=30)
             except ListenerTimeout:
-                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                try:
+                    await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
+                except MessageIdInvalid:
+                    await msg.reply("😶‍🌫️ Timeout. Task Has Been Cancelled!")
             except MessageIdInvalid:
                 pass
         except Exception as err:
@@ -526,7 +533,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+            except (PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(
                     InputMediaPhoto(
@@ -534,14 +541,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except MediaCaptionTooLong:
+            except (MediaEmpty, MediaCaptionTooLong, WebpageCurlFailed):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
-            except Exception:
-                await query.message.edit_caption(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-                )
+            except Exception as err:
+                LOGGER.error(f"Terjadi error saat menampilkan data IMDB. ERROR: {err}")
         else:
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
@@ -684,7 +689,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+            except (PhotoInvalidDimensions, WebpageMediaEmpty):
                 poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                 await query.message.edit_media(
                     InputMediaPhoto(
@@ -692,14 +697,12 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except MediaCaptionTooLong:
+            except (MediaCaptionTooLong, WebpageCurlFailed, MediaEmpty):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
-            except Exception:
-                await query.message.edit_caption(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-                )
+            except Exception as err:
+                LOGGER.error(f"Error while displaying IMDB Data. ERROR: {err}")
         else:
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup

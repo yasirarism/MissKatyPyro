@@ -12,7 +12,7 @@ import cloudscraper
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters
+from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import Message
 
 from database import dbname
@@ -21,7 +21,6 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import http
 from misskaty.helper.kuso_utils import Kusonime
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -529,14 +528,10 @@ async def getSame(msg, query, current_page, strings):
 
 
 # SameHada CMD
-@app.on_message(filters.command(["samehadaku"], COMMAND_HANDLER))
+@app.on_cmd("samehadaku", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def same_search(_, msg, strings):
-    if not msg.from_user:
-        return await msg.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
     bmsg = await msg.reply_msg(strings("get_data"), quote=True)
     sameres, PageLen = await getSame(bmsg, query, 1, strings)
@@ -551,14 +546,10 @@ async def same_search(_, msg, strings):
 
 
 # Terbit21 CMD
-@app.on_message(filters.command(["terbit21"], COMMAND_HANDLER))
+@app.on_cmd("terbit21", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def terbit21_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = None
@@ -580,14 +571,10 @@ async def terbit21_s(_, message, strings):
 
 
 # LK21 CMD
-@app.on_message(filters.command(["lk21"], COMMAND_HANDLER))
+@app.on_cmd("lk21", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def lk21_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = None
@@ -607,14 +594,10 @@ async def lk21_s(_, message, strings):
 
 
 # Pahe CMD
-@app.on_message(filters.command(["pahe"], COMMAND_HANDLER))
+@app.on_cmd("pahe", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def pahe_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -634,14 +617,10 @@ async def pahe_s(_, message, strings):
 
 
 # Gomov CMD
-@app.on_message(filters.command(["gomov"], COMMAND_HANDLER))
+@app.on_cmd("gomov", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def gomov_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -665,14 +644,10 @@ async def gomov_s(_, message, strings):
 
 
 # MelongMovie CMD
-@app.on_message(filters.command(["melongmovie"], COMMAND_HANDLER))
+@app.on_cmd("melongmovie", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def melong_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -703,14 +678,10 @@ async def melong_s(_, message, strings):
 
 
 # Savefilm21 CMD
-@app.on_message(filters.command(["savefilm21"], COMMAND_HANDLER))
+@app.on_cmd("savefilm21", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def savefilm_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -736,14 +707,10 @@ async def savefilm_s(_, message, strings):
 
 
 # Kusonime CMD
-@app.on_message(filters.command(["kusonime"], COMMAND_HANDLER))
+@app.on_cmd("kusonime", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def kusonime_s(_, message, strings):
-    if not message.from_user:
-        return await message.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -769,14 +736,10 @@ async def kusonime_s(_, message, strings):
 
 
 # Lendrive CMD
-@app.on_message(filters.command(["lendrive"], COMMAND_HANDLER))
+@app.on_cmd("lendrive", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def lendrive_s(_, ctx: Message, strings):
-    if not ctx.from_user:
-        return await ctx.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -800,14 +763,10 @@ async def lendrive_s(_, ctx: Message, strings):
 
 
 # Movieku CMD
-@app.on_message(filters.command(["movieku"], COMMAND_HANDLER))
+@app.on_cmd("movieku", no_channel=True)
 @ratelimiter
 @use_chat_lang()
 async def movieku_s(_, ctx: Message, strings):
-    if not ctx.from_user:
-        return await ctx.reply_msg(
-            "Cannot identify user, please use this command in private chat..", del_in=7
-        )
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -829,18 +788,22 @@ async def movieku_s(_, ctx: Message, strings):
 
 
 # Savefillm21 Page Callback
-@app.on_cb("page_sf21")
+@app.on_cb("page_sf21#")
 @ratelimiter
 @use_chat_lang()
-async def savefilmpage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
+async def sf21page_callback(_, callback_query, strings):
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except IndexError:  # Gatau napa err ini
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
+    except QueryIdInvalid:
+        return
 
     try:
         savefilmres, PageLen, btn = await getDataSavefilm21(
@@ -870,7 +833,7 @@ async def savefilmpage_callback(_, callback_query, strings):
 
 
 # Kuso Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "page_kuso#" in query.data))
+@app.on_cb("page_kuso#")
 @ratelimiter
 @use_chat_lang()
 async def kusopage_callback(_, callback_query, strings):
@@ -913,9 +876,7 @@ async def kusopage_callback(_, callback_query, strings):
 
 
 # Lendrive Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_lendrive#" in query.data)
-)
+@app.on_cb("page_lendrive#")
 @ratelimiter
 @use_chat_lang()
 async def lendrivepage_callback(_, callback_query, strings):
@@ -956,9 +917,7 @@ async def lendrivepage_callback(_, callback_query, strings):
 
 
 # Movieku Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_movieku#" in query.data)
-)
+@app.on_cb("page_movieku#")
 @ratelimiter
 @use_chat_lang()
 async def moviekupage_callback(_, callback_query, strings):
@@ -993,7 +952,7 @@ async def moviekupage_callback(_, callback_query, strings):
 
 
 # Samehada Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "page_same#" in query.data))
+@app.on_cb("page_same#")
 @ratelimiter
 @use_chat_lang()
 async def samepg(_, query, strings):
@@ -1023,9 +982,7 @@ async def samepg(_, query, strings):
 
 
 # Terbit21 Page Callback
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_terbit21#" in query.data)
-)
+@app.on_cb("page_terbit21#")
 @ratelimiter
 @use_chat_lang()
 async def terbit21page_callback(_, callback_query, strings):
@@ -1060,9 +1017,7 @@ async def terbit21page_callback(_, callback_query, strings):
 
 
 # Page Callback Melong
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "page_melong#" in query.data)
-)
+@app.on_cb("page_melong#")
 @ratelimiter
 @use_chat_lang()
 async def melongpage_callback(_, callback_query, strings):
@@ -1103,7 +1058,7 @@ async def melongpage_callback(_, callback_query, strings):
 
 
 # Lk21 Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "page_lk21#" in query.data))
+@app.on_cb("page_lk21#")
 @ratelimiter
 @use_chat_lang()
 async def lk21page_callback(_, callback_query, strings):
@@ -1138,7 +1093,7 @@ async def lk21page_callback(_, callback_query, strings):
 
 
 # Pahe Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "page_pahe#" in query.data))
+@app.on_cb("page_pahe#")
 @ratelimiter
 @use_chat_lang()
 async def pahepage_callback(_, callback_query, strings):
@@ -1173,7 +1128,7 @@ async def pahepage_callback(_, callback_query, strings):
 
 
 # Gomov Page Callback
-@app.on_callback_query(filters.create(lambda _, __, query: "page_gomov#" in query.data))
+@app.on_cb("page_gomov#")
 @ratelimiter
 @use_chat_lang()
 async def gomovpage_callback(_, callback_query, strings):
@@ -1215,9 +1170,7 @@ async def gomovpage_callback(_, callback_query, strings):
 
 ### Scrape DDL Link From Web ###
 # Kusonime DDL
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "kusoextract#" in query.data)
-)
+@app.on_cb("kusoextract#")
 @ratelimiter
 @use_chat_lang()
 async def kusonime_scrap(client, callback_query, strings):
@@ -1268,9 +1221,7 @@ async def kusonime_scrap(client, callback_query, strings):
 
 
 # Savefilm21 DDL
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "sf21extract#" in query.data)
-)
+@app.on_cb("sf21extract#")
 @ratelimiter
 @use_chat_lang()
 async def savefilm21_scrap(_, callback_query, strings):
@@ -1305,7 +1256,7 @@ async def savefilm21_scrap(_, callback_query, strings):
 
 
 # Scrape Link Download Movieku.CC
-@app.on_message(filters.command(["movieku_scrap"], COMMAND_HANDLER))
+@app.on_cmd("movieku_scrap#")
 @ratelimiter
 @use_chat_lang()
 async def muviku_scrap(_, message, strings):
@@ -1334,9 +1285,7 @@ async def muviku_scrap(_, message, strings):
 
 
 # Scrape DDL Link Melongmovie
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "melongextract#" in query.data)
-)
+@app.on_cb("melongextract#")
 @ratelimiter
 @use_chat_lang()
 async def melong_scrap(_, callback_query, strings):
@@ -1374,9 +1323,7 @@ async def melong_scrap(_, callback_query, strings):
 
 
 # Scrape DDL Link Gomov
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "gomovextract#" in query.data)
-)
+@app.on_cb("gomovextract#")
 @ratelimiter
 @use_chat_lang()
 async def gomov_dl(_, callback_query, strings):
@@ -1414,9 +1361,7 @@ async def gomov_dl(_, callback_query, strings):
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
-@app.on_callback_query(
-    filters.create(lambda _, __, query: "lendriveextract#" in query.data)
-)
+@app.on_cb("lendriveextract#")
 @ratelimiter
 @use_chat_lang()
 async def lendrive_dl(_, callback_query, strings):
