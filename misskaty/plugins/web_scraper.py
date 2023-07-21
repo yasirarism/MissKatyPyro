@@ -13,8 +13,8 @@ from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
-from pyrogram.types import Message
 from pyrogram.errors import QueryIdInvalid
+from pyrogram.types import Message
 
 from database import dbname
 from misskaty import app
@@ -840,7 +840,7 @@ async def sf21page_callback(_, callback_query, strings):
         message_id = int(callback_query.data.split("#")[2])
         CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
-    except IndexError: # Debug dulu napa index error
+    except IndexError:  # Debug dulu napa index error
         LOGGER.info(callback_query)
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
