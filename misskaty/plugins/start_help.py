@@ -1,7 +1,6 @@
 """
  * @author        yasir <yasiramunandar@gmail.com>
  * @date          2022-12-01 09:12:27
- * @lastModified  2023-03-30 09:33:16
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
  """
@@ -106,11 +105,11 @@ async def start(_, ctx: Message, strings):
 async def commands_callbacc(_, cb: CallbackQuery):
     text, keyb = await help_parser(cb.from_user.mention)
     await app.send_message(
-        CallbackQuery.message.chat.id,
+        cb.message.chat.id,
         text=text,
         reply_markup=keyb,
     )
-    await CallbackQuery.message.delete_msg()
+    await cb.message.delete_msg()
 
 
 @app.on_callback_query(filters.regex("stats_callback"))

@@ -17,6 +17,7 @@
 # along with tgEasy.  If not, see <http://www.gnu.org/licenses/>.
 import contextlib
 import os
+import logging
 import traceback
 import typing
 from datetime import datetime
