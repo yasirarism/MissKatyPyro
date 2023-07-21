@@ -12,7 +12,6 @@ import cloudscraper
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters
 from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import Message
 
