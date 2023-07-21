@@ -1,5 +1,4 @@
 from pykeyboard import InlineKeyboard
-from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
