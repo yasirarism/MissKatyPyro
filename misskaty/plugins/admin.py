@@ -560,9 +560,12 @@ async def unmute(_, message, strings):
     user_id = await extract_user(message)
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
-    await message.chat.unban_member(user_id)
-    umention = (await app.get_users(user_id)).mention
-    await message.reply_text(strings("unmute_msg").format(umention=umention))
+    try:
+        await message.chat.unban_member(user_id)
+        umention = (await app.get_users(user_id)).mention
+        await message.reply_msg(strings("unmute_msg").format(umention=umention))
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 @app.on_cmd(["warn", "dwarn"], self_admin=True, group_only=True)

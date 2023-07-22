@@ -541,7 +541,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaEmpty, MediaCaptionTooLong, WebpageCurlFailed):
+            except (MediaEmpty, MediaCaptionTooLong, WebpageCurlFailed, MessageNotModified):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
@@ -697,7 +697,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     ),
                     reply_markup=markup,
                 )
-            except (MediaCaptionTooLong, WebpageCurlFailed, MediaEmpty):
+            except (MediaCaptionTooLong, WebpageCurlFailed, MediaEmpty, MessageNotModified):
                 await query.message.reply(
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )

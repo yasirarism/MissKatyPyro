@@ -9,7 +9,7 @@ from iytdl import Process, iYTDL, main
 from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
-from pyrogram.errors import MessageIdInvalid
+from pyrogram.errors import MessageIdInvalid, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -130,8 +130,14 @@ async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
 @use_chat_lang()
 async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
-        return await cq.answer(strings("unauth"), True)
-    await cq.answer(strings("wait"))
+        try:
+            return await cq.answer(strings("unauth"), True)
+        except QueryIdInvalid:
+            return
+    try:
+        await cq.answer(strings("wait"))
+    except QueryIdInvalid:
+        pass
     callback = cq.data.split("|")
     async with iYTDL(
         log_group_id=0, cache_path="cache", ffmpeg_location="/usr/bin/ffmpeg"
@@ -165,8 +171,10 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         return
     match = cq.data.split("|")
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
-        return await cq.answer(strings("unauth"), True)
-
+        try:
+            return await cq.answer(strings("unauth"), True)
+        except QueryIdInvalid:
+            return
     async with iYTDL(
         log_group_id=LOG_CHANNEL,
         cache_path="cache",
@@ -217,10 +225,10 @@ async def ytdl_cancel_callback(_, cq: CallbackQuery, strings):
     process_id = callback[1]
     try:
         Process.cancel_id(process_id)
+        await cq.message.delete()
+        await cq.edit_message_text("✔️ `Stopped Successfully`")
     except:
         pass
-    await cq.message.delete()
-    await cq.edit_message_text("✔️ `Stopped Successfully`")
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
