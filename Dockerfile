@@ -3,9 +3,9 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 
-# Base Docker Using Alpine 3.18, Python 3.11.4 and Built In Pip
+# Base Docker Using Debian 12 (Bookworm), Python 3.11.4 and Built In Pip
 ## With Built in Pip Package
-FROM yasirarism/misskaty-docker:alpine
+FROM yasirarism/misskaty-docker:latest
 ## Without Built in Pip Package
 # FROM yasirarism/misskaty-docker:free
 
