@@ -798,7 +798,7 @@ async def sf21page_callback(_, callback_query, strings):
         message_id = int(callback_query.data.split("#")[2])
         CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError): # Gatau napa err ini
+    except (IndexError, ValueError):  # Gatau napa err ini
         return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
