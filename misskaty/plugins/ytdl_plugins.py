@@ -95,7 +95,7 @@ async def ytdownv2(_, ctx: Message, strings):
     if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.input if ctx.command and len(ctx.command) > 1 else ctx.text
-    async with iYTDL(log_group_id=0, cache_path="cache") as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache", silent=True) as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
             if x is None:
