@@ -3,6 +3,8 @@ import asyncio
 from pyrogram import filters
 from pyrogram.errors import MessageDeleteForbidden
 
+from misskaty.vars import SUDO
+
 data = {}
 
 
@@ -26,6 +28,8 @@ async def task(msg, warn=False, sec=None):
 def wait(sec):
     async def ___(flt, _, msg):
         user_id = msg.from_user.id if msg.from_user else msg.sender_chat.id
+        if user_id in SUDO:
+            return True
         if user_id in data:
             if msg.date.timestamp() >= data[user_id]["timestamp"] + flt.data:
                 data[user_id] = {"timestamp": msg.date.timestamp(), "warned": False}
