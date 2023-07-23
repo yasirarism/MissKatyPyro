@@ -83,7 +83,7 @@ async def draw_meme_text(image_path, text):
             draw.text(
                 xy=(
                     ((i_width - u_width) / 2) - 1,
-                    i_height - u_height - int((20 / 640) * i_width),
+                    i_height - u_height - int((20 / 500) * i_width),
                 ),
                 text=l_text,
                 font=m_font,
@@ -94,7 +94,7 @@ async def draw_meme_text(image_path, text):
             draw.text(
                 xy=(
                     ((i_width - u_width) / 2) + 1,
-                    i_height - u_height - int((20 / 640) * i_width),
+                    i_height - u_height - int((20 / 500) * i_width),
                 ),
                 text=l_text,
                 font=m_font,
@@ -105,7 +105,7 @@ async def draw_meme_text(image_path, text):
             draw.text(
                 xy=(
                     (i_width - u_width) / 2,
-                    (i_height - u_height - int((20 / 640) * i_width)) - 1,
+                    (i_height - u_height - int((20 / 500) * i_width)) - 1,
                 ),
                 text=l_text,
                 font=m_font,
@@ -116,7 +116,7 @@ async def draw_meme_text(image_path, text):
             draw.text(
                 xy=(
                     (i_width - u_width) / 2,
-                    (i_height - u_height - int((20 / 640) * i_width)) + 1,
+                    (i_height - u_height - int((20 / 500) * i_width)) + 1,
                 ),
                 text=l_text,
                 font=m_font,
@@ -128,7 +128,7 @@ async def draw_meme_text(image_path, text):
             draw.text(
                 xy=(
                     (i_width - u_width) / 2,
-                    i_height - u_height - int((20 / 640) * i_width),
+                    i_height - u_height - int((20 / 500) * i_width),
                 ),
                 text=l_text,
                 font=m_font,
