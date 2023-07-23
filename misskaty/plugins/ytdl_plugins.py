@@ -9,8 +9,8 @@ from iytdl import Process, iYTDL, main
 from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
-from pyrogram.errors import MessageIdInvalid, QueryIdInvalid
 from pyrogram.enums import ParseMode
+from pyrogram.errors import MessageIdInvalid, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -74,7 +74,9 @@ async def ytsearch(_, ctx: Message, strings):
     img = await get_ytthumb(i["id"])
     caption = out
     markup = btn
-    await ctx.reply_photo(img, caption=caption, reply_markup=markup, parse_mode=ParseMode.HTML, quote=True)
+    await ctx.reply_photo(
+        img, caption=caption, reply_markup=markup, parse_mode=ParseMode.HTML, quote=True
+    )
 
 
 @app.on_message(
@@ -93,18 +95,22 @@ async def ytdownv2(_, ctx: Message, strings):
     if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.input if ctx.command and len(ctx.command) > 1 else ctx.text
-    async with iYTDL(
-        log_group_id=0, cache_path="cache"
-    ) as ytdl:
+    async with iYTDL(log_group_id=0, cache_path="cache") as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
             if x is None:
-                return await ctx.reply_msg(strings("err_parse"), parse_mode=ParseMode.HTML)
+                return await ctx.reply_msg(
+                    strings("err_parse"), parse_mode=ParseMode.HTML
+                )
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
             await ctx.reply_photo(
-                photo, caption=caption, reply_markup=markup, parse_mode=ParseMode.HTML, quote=True
+                photo,
+                caption=caption,
+                reply_markup=markup,
+                parse_mode=ParseMode.HTML,
+                quote=True,
             )
         except Exception as err:
             await ctx.reply_msg(str(err), parse_mode=ParseMode.HTML)
