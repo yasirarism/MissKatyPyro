@@ -10,7 +10,7 @@ from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.errors import MessageIdInvalid, QueryIdInvalid, MessageEmpty
+from pyrogram.errors import MessageIdInvalid, QueryIdInvalid, MessageEmpty, WebpageMediaEmpty
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
