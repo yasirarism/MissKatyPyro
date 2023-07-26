@@ -44,11 +44,14 @@ async def mediainfo(_, ctx: Message, strings):
             return await process.edit_msg(strings("dl_limit_exceeded"), del_in=6)
         c_time = time.time()
         dc_id = FileId.decode(file_info.file_id).dc_id
-        dl = await ctx.reply_to_message.download(
-            file_name="/downloads/",
-            progress=progress_for_pyrogram,
-            progress_args=(strings("dl_args_text"), process, c_time, dc_id),
-        )
+        try:
+            dl = await ctx.reply_to_message.download(
+                file_name="/downloads/",
+                progress=progress_for_pyrogram,
+                progress_args=(strings("dl_args_text"), process, c_time, dc_id),
+            )
+        except FileNotFoundError:
+            return await process.edit_msg("ERROR: FileNotFound, maybe you're spam bot with same file.")
         file_path = path.join("/downloads/", path.basename(dl))
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None

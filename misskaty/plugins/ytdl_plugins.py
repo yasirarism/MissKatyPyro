@@ -10,7 +10,7 @@ from iytdl.constants import YT_VID_URL
 from iytdl.exceptions import DownloadFailedError
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.errors import MessageIdInvalid, QueryIdInvalid
+from pyrogram.errors import MessageIdInvalid, QueryIdInvalid, MessageEmpty
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -105,13 +105,24 @@ async def ytdownv2(_, ctx: Message, strings):
             caption = x.caption
             markup = x.buttons
             photo = x.image_url
-            await ctx.reply_photo(
-                photo,
-                caption=caption,
-                reply_markup=markup,
-                parse_mode=ParseMode.HTML,
-                quote=True,
-            )
+            try:
+                await ctx.reply_photo(
+                    photo,
+                    caption=caption,
+                    reply_markup=markup,
+                    parse_mode=ParseMode.HTML,
+                    quote=True,
+                )
+            except WebpageMediaEmpty:
+                await ctx.reply_photo(
+                    "assets/thumb.jpg",
+                    caption=caption,
+                    reply_markup=markup,
+                    parse_mode=ParseMode.HTML,
+                    quote=True,
+                )
+        except MessageEmpty:
+            await ctx.reply("Invalid link.")
         except Exception as err:
             await ctx.reply_msg(str(err), parse_mode=ParseMode.HTML)
 
@@ -228,14 +239,16 @@ async def ytdl_cancel_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
         return await cq.answer(strings("unauth"), True)
     callback = cq.data.split("|")
-    await cq.answer("Trying to Cancel Process..")
+    try:
+        await cq.answer("Trying to Cancel Process..")
+    except QueryIdInvalid:
+        pass
     process_id = callback[1]
     try:
         Process.cancel_id(process_id)
-        await cq.message.delete()
-        await cq.edit_message_text("✔️ `Stopped Successfully`")
+        await cq.edit_message_caption("✔️ `Stopped Successfully`")
     except:
-        pass
+        return
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))

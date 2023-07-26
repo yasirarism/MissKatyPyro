@@ -837,12 +837,14 @@ async def sf21page_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def kusopage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -880,12 +882,14 @@ async def kusopage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def lendrivepage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -921,12 +925,14 @@ async def lendrivepage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def moviekupage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"), True)
 
@@ -956,11 +962,13 @@ async def moviekupage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def samepg(_, query, strings):
-    _, current_page, _id, user_id = query.data.split("#")
-    if int(user_id) != query.from_user.id:
-        return await query.answer(strings("unauth"), True)
     try:
+        _, current_page, _id, user_id = query.data.split("#")
+        if int(user_id) != query.from_user.id:
+            return await query.answer(strings("unauth"), True)
         lquery = SCRAP_DICT[int(_id)][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await query.message.edit_msg(strings("invalid_cb"))
     try:
@@ -986,12 +994,14 @@ async def samepg(_, query, strings):
 @ratelimiter
 @use_chat_lang()
 async def terbit21page_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1021,12 +1031,14 @@ async def terbit21page_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def melongpage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1062,12 +1074,14 @@ async def melongpage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def lk21page_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1097,12 +1111,14 @@ async def lk21page_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def pahepage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1132,12 +1148,14 @@ async def pahepage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def gomovpage_callback(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    message_id = int(callback_query.data.split("#")[2])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
         kueri = SCRAP_DICT[message_id][1]
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1174,13 +1192,15 @@ async def gomovpage_callback(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def kusonime_scrap(client, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1225,13 +1245,15 @@ async def kusonime_scrap(client, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def savefilm21_scrap(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1289,13 +1311,15 @@ async def muviku_scrap(_, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def melong_scrap(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
@@ -1327,13 +1351,15 @@ async def melong_scrap(_, callback_query, strings):
 @ratelimiter
 @use_chat_lang()
 async def gomov_dl(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
-    CurrentPage = int(callback_query.data.split("#")[1])
     try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
         link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 

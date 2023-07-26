@@ -175,7 +175,7 @@ async def command_karma(_, message):
             return await m.edit("No karma in DB for this chat.")
         try:
             userdb = await get_user_id_and_usernames(app)
-        except AttributeError:
+        except (AttributeError, TypeError):
             return
         karma = {}
         for user_idd, karma_count in karma_arranged.items():
