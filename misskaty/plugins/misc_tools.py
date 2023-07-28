@@ -297,18 +297,17 @@ async def tts_convert(_, message):
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Converting to voice...")
+    fname = f"tts_BY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.mp3"
     try:
         tts = gTTS(text, lang=target_lang)
-        tts.save(f"tts_{message.from_user.id}.mp3")
+        tts.save(fname)
     except ValueError as err:
         await msg.edit(f"Error: <code>{str(err)}</code>")
         return
     await msg.delete()
-    await msg.reply_audio(f"tts_{message.from_user.id}.mp3")
-    try:
-        os.remove(f"tts_{message.from_user.id}.mp3")
-    except:
-        pass
+    await msg.reply_audio(fname)
+    if os.path.exists(fname):
+        os.remove(fname)
 
 
 @app.on_message(filters.command(["tosticker"], COMMAND_HANDLER))
