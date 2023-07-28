@@ -203,15 +203,6 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
             return await cq.answer("Because some user abuse, best video now only for VIP.", True)
         except QueryIdInvalid:
             return
-    if match[0] == "yt_gen":
-        yt_url = False
-        video_link = await ytdl.cache.get_url(match[1])
-    else:
-        yt_url = True
-        video_link = f"{YT_VID_URL}{match[1]}"
-
-    media_type = "video" if match[3] == "v" else "audio"
-    uid, _ = ytdl.get_choice_by_id(match[2], media_type, yt_url=yt_url)
     async with iYTDL(
         log_group_id=LOG_CHANNEL,
         cache_path="cache",
@@ -219,6 +210,15 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         delete_media=True,
     ) as ytdl:
         try:
+            if match[0] == "yt_gen":
+                yt_url = False
+                video_link = await ytdl.cache.get_url(match[1])
+            else:
+                yt_url = True
+                video_link = f"{YT_VID_URL}{match[1]}"
+
+            media_type = "video" if match[3] == "v" else "audio"
+            uid, _ = ytdl.get_choice_by_id(match[2], media_type, yt_url=yt_url)
             key = await ytdl.download(
                 url=video_link,
                 uid=uid,
