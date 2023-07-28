@@ -200,7 +200,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
             return
     if match[2] in ["mkv", "mp4"] and cq.from_user.id not in SUDO:
         try:
-            return await cq.answer(, True)
+            return await cq.answer(strings("vip-btn"), True)
         except QueryIdInvalid:
             return
     async with iYTDL(
