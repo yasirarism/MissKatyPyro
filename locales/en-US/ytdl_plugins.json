@@ -9,5 +9,6 @@
     "err_parse": "Failed parse URL, check logs..",
     "wait": "Please wait..",
     "unauth": "Not Your Task..",
-    "endlist": "That's the end of list"
+    "endlist": "That's the end of list",
+    "vip-btn": "Because some user abuse, best video now only for VIP. You can donate some money if you need it."
 }
