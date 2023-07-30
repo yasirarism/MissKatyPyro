@@ -32,11 +32,11 @@ from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
-from misskaty.helper import GENRES_EMOJI, get_random_string, http, search_jw
+from misskaty.helper import GENRES_EMOJI, get_random_string, http, search_jw, Cache
 from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
-LIST_CARI = {}
+LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 headers = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
 }
@@ -64,7 +64,7 @@ async def imdb_choose(_, ctx: Message):
             return await imdb_search_id(kuery, ctx)
     buttons = InlineKeyboard()
     ranval = get_random_string(4)
-    LIST_CARI[ranval] = kuery
+    LIST_CARI.add(ranval, kuery, timeout=180)
     buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),

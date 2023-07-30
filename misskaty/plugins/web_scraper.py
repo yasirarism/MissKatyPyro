@@ -41,8 +41,8 @@ headers = {
 }
 
 LOGGER = logging.getLogger(__name__)
-SCRAP_DICT = Cache(filename="scraper_cache.db", path="Cache", in_memory=False)
-data_kuso = TTLCache(maxsize=1000, ttl=1800)
+SCRAP_DICT = Cache(filename="scraper_cache.db", path="cache", in_memory=False)
+data_kuso = Cache(filename="kuso_cache.db", path="cache", in_memory=False)
 webdb = dbname["web"]
 
 web = {
@@ -86,7 +86,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
         if not terbitjson.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT[msg.id] = [split_arr(terbitjson["result"], 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(terbitjson["result"], 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -126,7 +126,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         if not lk21json.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT[msg.id] = [split_arr(lk21json["result"], 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(lk21json["result"], 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -162,7 +162,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
         if not pahejson.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT[msg.id] = [split_arr(pahejson["result"], 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(pahejson["result"], 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -203,7 +203,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
         if not kusodata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None, None
-        SCRAP_DICT[msg.id] = [split_arr(kusodata, 10), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(kusodata, 10), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -258,7 +258,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
         if not moviekudata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT[msg.id] = [split_arr(moviekudata, 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(moviekudata, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -306,7 +306,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             sfdata.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT[msg.id] = [split_arr(sfdata, 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(sfdata, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -357,7 +357,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
-        SCRAP_DICT[msg.id] = [split_arr(lenddata, 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(lenddata, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -408,7 +408,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
         if not melongdata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
-        SCRAP_DICT[msg.id] = [split_arr(melongdata, 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(melongdata, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -460,7 +460,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             data.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT[msg.id] = [split_arr(data, 6), kueri]
+        SCRAP_DICT.add(msg.id, [split_arr(data, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -512,7 +512,7 @@ async def getSame(msg, query, current_page, strings):
         if not sdata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT[msg.id] = [split_arr(sdata, 10), query]
+        SCRAP_DICT.add(msg.id, [split_arr(sdata, 10), query], timeout=1800)
     try:
         index = int(current_page - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
