@@ -18,7 +18,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, Cache
+from misskaty.helper import Cache, http
 from misskaty.helper.kuso_utils import Kusonime
 from misskaty.helper.localization import use_chat_lang
 

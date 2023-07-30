@@ -79,7 +79,9 @@ class Cache:
         path: str = None,
         in_memory: bool = True,
         timeout: int = 5,
-        isolation_level: Optional[Literal["DEFERRED", "IMMEDIATE", "EXCLUSIVE"]] = "DEFERRED",
+        isolation_level: Optional[
+            Literal["DEFERRED", "IMMEDIATE", "EXCLUSIVE"]
+        ] = "DEFERRED",
         **kwargs,
     ):
         """Create a cache using sqlite3.
@@ -152,7 +154,9 @@ class Cache:
 
     def close(self) -> None:
         """Closes the cache."""
-        self._con.execute(self._set_pragma.format("optimize"))  # https://www.sqlite.org/pragma.html#pragma_optimize
+        self._con.execute(
+            self._set_pragma.format("optimize")
+        )  # https://www.sqlite.org/pragma.html#pragma_optimize
         self._con.close()
         with suppress(AttributeError):
             delattr(self.local, "con")
@@ -188,7 +192,11 @@ class Cache:
         :param timeout: How long the value is valid in the cache.
                         Negative numbers will keep the key in cache until manually removed.
         """
-        data = {"key": key, "value": self._stream(value), "exp": self._exp_timestamp(timeout)}
+        data = {
+            "key": key,
+            "value": self._stream(value),
+            "exp": self._exp_timestamp(timeout),
+        }
         self._con.execute(self._add_sql, data)
         self._con.commit()
 
@@ -198,7 +206,9 @@ class Cache:
         :param key: Cache key.
         :param default: Value to return if key not in the cache.
         """
-        result: Optional[Tuple[bytes, float]] = self._con.execute(self._get_sql, {"key": key}).fetchone()
+        result: Optional[Tuple[bytes, float]] = self._con.execute(
+            self._get_sql, {"key": key}
+        ).fetchone()
 
         if result is None:
             return default
@@ -219,7 +229,11 @@ class Cache:
         :param timeout: How long the value is valid in the cache.
                         Negative numbers will keep the key in cache until manually removed.
         """
-        data = {"key": key, "value": self._stream(value), "exp": self._exp_timestamp(timeout)}
+        data = {
+            "key": key,
+            "value": self._stream(value),
+            "exp": self._exp_timestamp(timeout),
+        }
         self._con.execute(self._set_sql, data)
         self._con.commit()
 
@@ -260,7 +274,9 @@ class Cache:
         :param timeout: How long the value is valid in the cache.
                         Negative numbers will keep the key in cache until manually removed.
         """
-        command = self._add_many_sql.format(", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))]))
+        command = self._add_many_sql.format(
+            ", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))])
+        )
 
         data = {}
         exp = self._exp_timestamp(timeout)
@@ -278,7 +294,9 @@ class Cache:
         :param keys: List of cache keys.
         """
         seq = ", ".join([f"'{value}'" for value in keys])
-        fetched: List[Tuple[str, Any, float]] = self._con.execute(self._get_many_sql.format(seq)).fetchall()
+        fetched: List[Tuple[str, Any, float]] = self._con.execute(
+            self._get_many_sql.format(seq)
+        ).fetchall()
 
         if not fetched:
             return {}
@@ -294,7 +312,11 @@ class Cache:
             results[key] = self._unstream(value)
 
         if to_delete:
-            self._con.execute(self._delete_many_sql.format(", ".join([f"'{value}'" for value in to_delete])))
+            self._con.execute(
+                self._delete_many_sql.format(
+                    ", ".join([f"'{value}'" for value in to_delete])
+                )
+            )
             self._con.commit()
 
         return results
@@ -306,7 +328,9 @@ class Cache:
         :param timeout: How long the value is valid in the cache.
                         Negative numbers will keep the key in cache until manually removed.
         """
-        command = self._set_many_sql.format(", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))]))
+        command = self._set_many_sql.format(
+            ", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))])
+        )
 
         data = {}
         exp = self._exp_timestamp(timeout)
@@ -323,7 +347,9 @@ class Cache:
 
         :param dict_:Cache keys with values to update to.
         """
-        seq = [{"key": key, "value": self._stream(value)} for key, value in dict_.items()]
+        seq = [
+            {"key": key, "value": self._stream(value)} for key, value in dict_.items()
+        ]
         self._con.executemany(self._update_sql, seq)
         self._con.commit()
 
@@ -345,7 +371,9 @@ class Cache:
 
         :param keys: List of cache keys.
         """
-        self._con.execute(self._delete_many_sql.format(", ".join([f"'{value}'" for value in keys])))
+        self._con.execute(
+            self._delete_many_sql.format(", ".join([f"'{value}'" for value in keys]))
+        )
         self._con.commit()
 
     def get_or_set(self, key: str, default: Any, timeout: int = DEFAULT_TIMEOUT) -> Any:
@@ -356,7 +384,9 @@ class Cache:
         :param timeout: How long the value is valid in the cache.
                         Negative numbers will keep the key in cache until manually removed.
         """
-        result: Optional[Tuple[bytes, float]] = self._con.execute(self._get_sql, {"key": key}).fetchone()
+        result: Optional[Tuple[bytes, float]] = self._con.execute(
+            self._get_sql, {"key": key}
+        ).fetchone()
 
         if result is not None:
             exp = self._exp_datetime(result[1])
@@ -365,11 +395,15 @@ class Cache:
             else:
                 return self._unstream(result[0])
 
-        data = {"key": key, "value": self._stream(default), "exp": self._exp_timestamp(timeout)}
+        data = {
+            "key": key,
+            "value": self._stream(default),
+            "exp": self._exp_timestamp(timeout),
+        }
         self._con.execute(self._set_sql, data)
         self._con.commit()
         return default
-    
+
     def get_all(self) -> Dict[str, Any]:
         """Get all key-value pairs from the cache."""
         all_data = self._con.execute("SELECT key, value FROM cache;").fetchall()
@@ -391,7 +425,9 @@ class Cache:
         :param delta: How much to increment.
         :raises ValueError: Value cannot be incremented.
         """
-        result: Optional[Tuple[bytes, float]] = self._con.execute(self._check_sql, {"key": key}).fetchone()
+        result: Optional[Tuple[bytes, float]] = self._con.execute(
+            self._check_sql, {"key": key}
+        ).fetchone()
 
         if result is None:
             raise ValueError("Nonexistent or expired cache key.")
@@ -401,7 +437,9 @@ class Cache:
             raise ValueError("Value is not a number.")
 
         new_value = value + delta
-        self._con.execute(self._update_sql, {"key": key, "value": self._stream(new_value)})
+        self._con.execute(
+            self._update_sql, {"key": key, "value": self._stream(new_value)}
+        )
         self._con.commit()
         return new_value
 
@@ -413,7 +451,9 @@ class Cache:
         :param delta: How much to decrement.
         :raises ValueError: Value cannot be decremented.
         """
-        result: Optional[Tuple[bytes, float]] = self._con.execute(self._check_sql, {"key": key}).fetchone()
+        result: Optional[Tuple[bytes, float]] = self._con.execute(
+            self._check_sql, {"key": key}
+        ).fetchone()
 
         if result is None:
             raise ValueError("Nonexistent or expired cache key.")
@@ -423,11 +463,15 @@ class Cache:
             raise ValueError("Value is not a number.")
 
         new_value = value - delta
-        self._con.execute(self._update_sql, {"key": key, "value": self._stream(new_value)})
+        self._con.execute(
+            self._update_sql, {"key": key, "value": self._stream(new_value)}
+        )
         self._con.commit()
         return new_value
 
-    def memoize(self, timeout: int = DEFAULT_TIMEOUT) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def memoize(
+        self, timeout: int = DEFAULT_TIMEOUT
+    ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
         """Save the result of the decorated function in cache. Calls with different
         arguments are saved under different keys.
 
@@ -458,7 +502,9 @@ class Cache:
 
         :param key: Cache key.
         """
-        result: Optional[Tuple[bytes, float]] = self._con.execute(self._get_sql, {"key": key}).fetchone()
+        result: Optional[Tuple[bytes, float]] = self._con.execute(
+            self._get_sql, {"key": key}
+        ).fetchone()
 
         if result is None:
             return -2
@@ -483,7 +529,9 @@ class Cache:
         :param keys: List of cache keys.
         """
         seq = ", ".join([f"'{value}'" for value in keys])
-        fetched: List[Tuple[str, Any, float]] = self._con.execute(self._get_many_sql.format(seq)).fetchall()
+        fetched: List[Tuple[str, Any, float]] = self._con.execute(
+            self._get_many_sql.format(seq)
+        ).fetchall()
         exp_by_key: Dict[str, float] = {key: exp for key, _, exp in fetched}
 
         results: Dict[str, int] = {}
@@ -507,7 +555,11 @@ class Cache:
             results[key] = int((exp - datetime.utcnow()).total_seconds())
 
         if to_delete:
-            self._con.execute(self._delete_many_sql.format(", ".join([f"'{value}'" for value in to_delete])))
+            self._con.execute(
+                self._delete_many_sql.format(
+                    ", ".join([f"'{value}'" for value in to_delete])
+                )
+            )
             self._con.commit()
 
         return results
