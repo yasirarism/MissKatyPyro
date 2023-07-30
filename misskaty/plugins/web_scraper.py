@@ -18,7 +18,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper import http, Cache
 from misskaty.helper.kuso_utils import Kusonime
 from misskaty.helper.localization import use_chat_lang
 
@@ -41,7 +41,7 @@ headers = {
 }
 
 LOGGER = logging.getLogger(__name__)
-SCRAP_DICT = TTLCache(maxsize=1000, ttl=1800)
+SCRAP_DICT = Cache(filename="scraper_cache.db", path="Cache", in_memory=False)
 data_kuso = TTLCache(maxsize=1000, ttl=1800)
 webdb = dbname["web"]
 
