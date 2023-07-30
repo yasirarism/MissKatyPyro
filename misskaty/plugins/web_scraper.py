@@ -18,7 +18,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, Cache
+from misskaty.helper import Cache, http
 from misskaty.helper.kuso_utils import Kusonime
 from misskaty.helper.localization import use_chat_lang
 
@@ -86,7 +86,9 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
         if not terbitjson.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT.add(msg.id, [split_arr(terbitjson["result"], 6), kueri], timeout=1800)
+        SCRAP_DICT.add(
+            msg.id, [split_arr(terbitjson["result"], 6), kueri], timeout=1800
+        )
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
