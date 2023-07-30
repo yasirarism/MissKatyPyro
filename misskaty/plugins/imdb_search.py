@@ -73,12 +73,15 @@ async def imdb_choose(_, ctx: Message):
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
     try:
-        await asyncio.wait_for(ctx.reply_photo(
-            "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
-            caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
-            reply_markup=buttons,
-            quote=True,
-        ), timeout=30)  # Set the timeout value in seconds (e.g., 60 seconds)
+        await asyncio.wait_for(
+            ctx.reply_photo(
+                "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
+                caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
+                reply_markup=buttons,
+                quote=True,
+            ),
+            timeout=30,
+        )  # Set the timeout value in seconds (e.g., 60 seconds)
 
     except asyncio.TimeoutError:
         # Handle the case when the timeout is reached
