@@ -48,10 +48,10 @@ webdb = dbname["web"]
 web = {
     "yasirapi": "https://yasirapi.eu.org",
     "pahe": "https://pahe.li",
-    "savefilm21": "https://savefilm21.store",
+    "savefilm21": "https://savefilm21.skin",
     "melongmovie": "https://melongmovie.site",
-    "terbit21": "https://terbit21.art",
-    "lk21": "https://watch.lk21official.shop",
+    "terbit21": "https://terbit21.gold",
+    "lk21": "https://tv1.lk21official.pro",
     "gomov": "https://gomov.bio",
     "movieku": "https://107.152.37.223",
     "kusonime": "https://kusonime.com",
