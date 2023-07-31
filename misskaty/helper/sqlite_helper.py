@@ -23,7 +23,7 @@ class Cache:
         "auto_vacuum": "none",  # https://www.sqlite.org/pragma.html#pragma_auto_vacuum
         "synchronous": "off",  # https://www.sqlite.org/pragma.html#pragma_synchronous
         "journal_mode": "wal",  # https://www.sqlite.org/pragma.html#pragma_journal_mode
-        "temp_store": "memory",  # https://www.sqlite.org/pragma.html#pragma_temp_store
+        "temp_store": "file",  # https://www.sqlite.org/pragma.html#pragma_temp_store
     }
 
     _transaction_sql = "BEGIN EXCLUSIVE TRANSACTION; {} COMMIT TRANSACTION;"
