@@ -36,7 +36,7 @@ async def bard_chatbot(_, ctx: Message, strings):
             f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}"
         )
         random_choice = random.choice(req.json().get("choices"))
-        await msg.edit_msg(random_choice["content"][0] if random_choice["content"] != "" else "Failed getting data from Bard")
+        await msg.edit_msg(random_choice["content"][0] if req.json().get("content") != "" else "Failed getting data from Bard")
     except Exception as e:
         await msg.edit_msg(str(e))
 
