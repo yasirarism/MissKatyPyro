@@ -4,6 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
 import html
+import random
 
 import openai
 from aiohttp import ClientSession
@@ -34,7 +35,8 @@ async def bard_chatbot(_, ctx: Message, strings):
         req = await http.get(
             f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}"
         )
-        await msg.edit_msg(req.json().get("content"))
+        random_choice = random.choice(req.json().get("choices"))
+        await msg.edit_msg(random_choice["content"] if random_choice["content"] != "" else "Failed getting data from Bard")
     except Exception as e:
         await msg.edit_msg(str(e))
 
@@ -74,7 +76,7 @@ async def openai_chatbot(_, ctx: Message, strings):
         await msg.edit_msg(answer)
     except MessageTooLong:
         answerlink = await post_to_telegraph(
-            False, "MissKaty ChatBot ", html.escape(answer)
+            False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
         )
         await msg.edit_msg(
             strings("answers_too_long").format(answerlink=answerlink),
