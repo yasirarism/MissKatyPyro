@@ -7,6 +7,7 @@ from typing import Union
 
 from pyrogram.errors import (
     ChatAdminRequired,
+    ChatSendPlainForbidden,
     ChatWriteForbidden,
     FloodWait,
     MessageAuthorRequired,
@@ -15,7 +16,6 @@ from pyrogram.errors import (
     MessageNotModified,
     MessageTooLong,
     TopicClosed,
-    ChatSendPlainForbidden
 )
 from pyrogram.types import Message
 

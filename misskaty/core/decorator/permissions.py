@@ -103,16 +103,18 @@ async def list_admins(chat_id: int):
             return admins_in_chat[chat_id]["data"]
 
     try:
-        admins_in_chat.add(ctx.chat.id, {
-            "last_updated_at": time(),
-            "data": [
-                member.user.id
-                async for member in self.get_chat_members(
-                    ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
-                )
-            ],
-        },
-        timeout=6 * 60 * 60
+        admins_in_chat.add(
+            ctx.chat.id,
+            {
+                "last_updated_at": time(),
+                "data": [
+                    member.user.id
+                    async for member in self.get_chat_members(
+                        ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                    )
+                ],
+            },
+            timeout=6 * 60 * 60,
         )
         return admins_in_chat[chat_id]["data"]
     except ChannelPrivate:

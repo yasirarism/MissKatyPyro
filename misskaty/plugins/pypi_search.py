@@ -11,7 +11,7 @@ from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, Cache
+from misskaty.helper import Cache, http
 from misskaty.plugins.web_scraper import headers, split_arr
 from misskaty.vars import COMMAND_HANDLER
 
