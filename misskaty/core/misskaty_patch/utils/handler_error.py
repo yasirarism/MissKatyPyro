@@ -57,9 +57,12 @@ async def handle_error(
         log.close()
     if isinstance(m, pyrogram.types.Message):
         with contextlib.suppress(Exception):
-            await m.reply_text(
-                "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
-            )
+            try:
+                await ctx.reply_photo("https://telegra.ph/file/3c9162b242567ae25d5af.jpg", caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience")
+            except:
+                await m.reply_msg(
+                    "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
+                )
             await m._client.send_document(
                 LOG_CHANNEL,
                 f_errname,
@@ -68,9 +71,12 @@ async def handle_error(
     if isinstance(m, pyrogram.types.CallbackQuery):
         with contextlib.suppress(Exception):
             await m.message.delete()
-            await m.message.reply_text(
-                "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
-            )
+            try:
+                await ctx.reply_photo("https://telegra.ph/file/3c9162b242567ae25d5af.jpg", caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience")
+            except MediaEmpty:
+                await m.message.reply_msg(
+                    "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
+                )
             await m.message._client.send_document(
                 LOG_CHANNEL,
                 f_errname,

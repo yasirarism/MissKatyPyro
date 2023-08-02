@@ -11,11 +11,11 @@ from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper import http, Cache
 from misskaty.plugins.web_scraper import headers, split_arr
 from misskaty.vars import COMMAND_HANDLER
 
-PYPI_DICT = {}
+PYPI_DICT = Cache(filename="pypi_cache.db", path="cache", in_memory=False)
 
 
 async def getDataPypi(msg, kueri, CurrentPage, user):
@@ -24,7 +24,7 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
         if not pypijson.get("result"):
             await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
             return None, 0, None
-        PYPI_DICT[msg.id] = [split_arr(pypijson["result"], 6), kueri]
+        PYPI_DICT.add(msg.id, [split_arr(pypijson["result"], 6), kueri], timeout=1600)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(PYPI_DICT[msg.id][0])

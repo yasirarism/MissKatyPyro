@@ -117,6 +117,8 @@ async def carbon_make(self: Client, ctx: Message):
     response = await http.post(
         "https://carbon.yasirapi.eu.org/api/cook", json=json_data
     )
+    if response.status_code != 200:
+        return await ctx.reply_photo(f"https://http.cat/{response.status_code}", caption="<b>🤧 Carbon API ERROR</b>")
     fname = (
         f"carbonBY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.png"
     )
@@ -297,7 +299,7 @@ async def tts_convert(_, message):
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
     msg = await message.reply("Converting to voice...")
-    fname = f"tts_BY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.mp3"
+    fname = f"tts_BY_{message.from_user.id if message.from_user else message.sender_chat.title}.mp3"
     try:
         tts = gTTS(text, lang=target_lang)
         tts.save(fname)

@@ -126,10 +126,11 @@ async def ytdownv2(_, ctx: Message, strings):
                     parse_mode=ParseMode.HTML,
                     quote=True,
                 )
-        except MessageEmpty:
-            await ctx.reply("Invalid link.")
         except Exception as err:
-            await ctx.reply_msg(str(err), parse_mode=ParseMode.HTML)
+            try:
+                await ctx.reply_msg(str(err), parse_mode=ParseMode.HTML)
+            except MessageEmpty:
+                await ctx.reply("Invalid link.")
 
 
 @app.on_cb(filters.regex(r"^yt_listall"))

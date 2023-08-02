@@ -178,7 +178,7 @@ async def get_text_or_caption(ctx: Message):
         return ""
 
 
-async def pyrogram_to_quotly(messages):
+async def pyrogram_to_quotly(messages, is_reply):
     if not isinstance(messages, list):
         messages = [messages]
     payload = {
@@ -225,7 +225,7 @@ async def pyrogram_to_quotly(messages):
         the_message_dict_to_append["from"]["photo"] = await get_message_sender_photo(
             message
         )
-        if message.reply_to_message:
+        if message.reply_to_message and is_reply:
             the_message_dict_to_append["replyMessage"] = {
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
@@ -250,7 +250,7 @@ def isArgInt(txt) -> list:
         return [False, 0]
 
 
-@app.on_message(filters.command(["q"]) & filters.reply)
+@app.on_message(filters.command(["q", "qr"]) & filters.reply)
 @ratelimiter
 async def msg_quotly_cmd(self: Client, ctx: Message):
     if len(ctx.text.split()) > 1:
@@ -288,9 +288,12 @@ async def msg_quotly_cmd(self: Client, ctx: Message):
     except Exception:
         return await ctx.reply_msg("🤷🏻‍♂️")
     try:
-        make_quotly = await pyrogram_to_quotly(messages)
+        is_reply = False
+        if message.command[0][1] == "r":
+            is_reply = True
+        make_quotly = await pyrogram_to_quotly(messages, is_reply=is_reply)
         bio_sticker = BytesIO(make_quotly)
-        bio_sticker.name = "biosticker.webp"
+        bio_sticker.name = "misskatyquote_sticker.webp"
         return await ctx.reply_sticker(bio_sticker)
     except Exception as e:
         return await ctx.reply_msg(f"ERROR: {e}")

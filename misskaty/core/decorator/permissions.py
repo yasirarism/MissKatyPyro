@@ -3,12 +3,12 @@ from time import time
 from traceback import format_exc as err
 from typing import Optional, Union
 
-from cachetools import TTLCache
 from pyrogram import Client, enums
 from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidden
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
+from misskaty.helper import Cache
 from misskaty.vars import SUDO
 
 from ...helper.localization import (
@@ -93,7 +93,7 @@ async def check_perms(
     return False
 
 
-admins_in_chat = TTLCache(maxsize=1000, ttl=6 * 60 * 60)
+admins_in_chat = Cache(filename="admin_cache.db", path="cache", in_memory=False)
 
 
 async def list_admins(chat_id: int):
@@ -103,15 +103,17 @@ async def list_admins(chat_id: int):
             return admins_in_chat[chat_id]["data"]
 
     try:
-        admins_in_chat[chat_id] = {
+        admins_in_chat.add(ctx.chat.id, {
             "last_updated_at": time(),
             "data": [
                 member.user.id
-                async for member in app.get_chat_members(
-                    chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                async for member in self.get_chat_members(
+                    ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
                 )
             ],
-        }
+        },
+        timeout=6 * 60 * 60
+        )
         return admins_in_chat[chat_id]["data"]
     except ChannelPrivate:
         return

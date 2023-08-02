@@ -15,6 +15,7 @@ from pyrogram.errors import (
     MessageNotModified,
     MessageTooLong,
     TopicClosed,
+    ChatSendPlainForbidden
 )
 from pyrogram.types import Message
 
@@ -91,9 +92,9 @@ async def reply_text(
         return await reply_text(self, text, *args, **kwargs)
     except TopicClosed:
         return
-    except (ChatWriteForbidden, ChatAdminRequired):
+    except (ChatWriteForbidden, ChatAdminRequired, ChatSendPlainForbidden):
         LOGGER.info(
-            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
+            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have enough permission."
         )
         return await self.chat.leave()
 

@@ -95,7 +95,7 @@ async def upvote(_, message):
         karma = 1
     new_karma = {"karma": karma}
     await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(
+    await message.reply_msg(
         f"Incremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
     )
 
@@ -143,7 +143,7 @@ async def downvote(_, message):
         karma = 1
     new_karma = {"karma": karma}
     await update_karma(chat_id, await int_to_alpha(user_id), new_karma)
-    await message.reply_text(
+    await message.reply_msg(
         f"Decremented Karma of {user_mention} By 1 \nTotal Points: {karma}"
     )
 
@@ -153,7 +153,7 @@ async def downvote(_, message):
 async def command_karma(_, message):
     chat_id = message.chat.id
     if not message.reply_to_message:
-        m = await message.reply_text("Analyzing Karma...")
+        m = await message.reply_msg("Analyzing Karma...")
         karma = await get_karmas(chat_id)
         if not karma:
             return await m.edit("No karma in DB for this chat.")

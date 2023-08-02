@@ -739,24 +739,24 @@ async def check_warns(_, message, strings):
 @use_chat_lang()
 async def report_user(_, ctx: Message, strings) -> "Message":
     if not ctx.reply_to_message:
-        return await ctx.reply_text(strings("report_no_reply"))
+        return await ctx.reply_msg(strings("report_no_reply"))
     reply = ctx.reply_to_message
     reply_id = reply.from_user.id if reply.from_user else reply.sender_chat.id
     user_id = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     if reply_id == user_id:
-        return await ctx.reply_text(strings("report_self_err"))
+        return await ctx.reply_msg(strings("report_self_err"))
 
     list_of_admins = await list_admins(ctx.chat.id)
     linked_chat = (await app.get_chat(ctx.chat.id)).linked_chat
     if linked_chat is None:
         if reply_id in list_of_admins or reply_id == ctx.chat.id:
-            return await ctx.reply_text(strings("reported_is_admin"))
+            return await ctx.reply_msg(strings("reported_is_admin"))
     elif (
         reply_id in list_of_admins
         or reply_id == ctx.chat.id
         or reply_id == linked_chat.id
     ):
-        return await ctx.reply_text(strings("reported_is_admin"))
+        return await ctx.reply_msg(strings("reported_is_admin"))
     user_mention = (
         reply.from_user.mention if reply.from_user else reply.sender_chat.title
     )
