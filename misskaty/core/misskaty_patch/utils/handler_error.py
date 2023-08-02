@@ -58,7 +58,10 @@ async def handle_error(
     if isinstance(m, pyrogram.types.Message):
         with contextlib.suppress(Exception):
             try:
-                await m.reply_photo("https://telegra.ph/file/3c9162b242567ae25d5af.jpg", caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience")
+                await m.reply_photo(
+                    "https://telegra.ph/file/3c9162b242567ae25d5af.jpg",
+                    caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience",
+                )
             except:
                 await m.reply_msg(
                     "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
@@ -72,7 +75,10 @@ async def handle_error(
         with contextlib.suppress(Exception):
             await m.message.delete()
             try:
-                await m.reply_photo("https://telegra.ph/file/3c9162b242567ae25d5af.jpg", caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience")
+                await m.reply_photo(
+                    "https://telegra.ph/file/3c9162b242567ae25d5af.jpg",
+                    caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience",
+                )
             except:
                 await m.message.reply_msg(
                     "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
