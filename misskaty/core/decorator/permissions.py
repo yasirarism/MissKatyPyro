@@ -103,12 +103,12 @@ async def list_admins(chat_id: int):
             return admins_in_chat[chat_id]["data"]
 
     try:
-        admins_in_chat.add(ctx.chat.id, {
+        admins_in_chat.add(chat_id, {
             "last_updated_at": time(),
             "data": [
                 member.user.id
                 async for member in self.get_chat_members(
-                    ctx.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS
+                    chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS
                 )
             ],
         },
