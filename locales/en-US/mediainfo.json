@@ -1,0 +1,11 @@
+{
+    "processing_text": "`Processing, total time is based on the size of your files...`",
+    "wait_msg": "`Please wait a moment...`",
+    "err_link": "It looks like the link you sent is invalid, make sure it's a direct link and can be downloaded.",
+    "media_invalid": "Please reply to valid media.",
+    "dl_limit_exceeded": "Sorry, download limited to 2GB to reduce flood. You can convert your files to link.",
+    "dl_args_text": "Trying to download..",
+    "mediainfo_help": "Use the command /{cmd} [link], or reply to telegram media with /{cmd}.",
+    "capt_media": "ℹ️ Your mediainfo results..\n\n**Request By:** {ment}",
+    "viweb": "💬 Open on Web"
+}

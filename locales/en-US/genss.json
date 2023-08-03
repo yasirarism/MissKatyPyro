@@ -1,0 +1,13 @@
+{
+    "wait_msg": "Give me some time to process your request!! 😴",
+    "wait_dl": "<code>Processing, please wait..</code>",
+    "dl_progress": "Trying to download, please wait..",
+    "up_progress": "Trying to upload...",
+    "success_dl_msg": "File has been downloaded to <code>{path}</code>.",
+    "fail_open": "😟 Sorry! I cannot open the file.",
+    "limit_dl": "Sorry, download limited to 2GB to reduce flood. You can convert your files to link.",
+    "err_ssgen": "Failed screenshoot generation.\n\n{exc}",
+    "up_msg": "☑️ Generation screenshot successfully.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Generate by @{bot_uname}",
+    "no_reply": "Reply to a Telegram video or document or use direct link after command to generate screenshoot from media!",
+    "choose_no_ss": "Now choose how many result for screenshot? 🥳.\n\nTotal duration: `{td}` (`{dur} second`)"
+}

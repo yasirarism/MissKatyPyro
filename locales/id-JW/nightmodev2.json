@@ -1,0 +1,17 @@
+{
+    "nmd_disabled": "Mode wengi dipateni.",
+    "nmd_not_enabled": "Mode wengi ora diaktifake ing obrolan iki.",
+    "invalid_time_format": "Format wektu ora valid. Gunakake format HH:MM.",
+    "invalid_lockdur": "Suwene wektu ora bener. Gunakake format sing bener.\nConto: 6h (6 jam), 10m kanggo 10 menit.",
+    "schedule_already_on": "Wis ana jadwal ing obrolan iki. Pateni nganggo gendéra `-d`.",
+    "nmd_enable_success": "Kasil ngaktifake mode wengi ing obrolan iki.\nGrup bakal dikunci ing {st} lan bakal dibukak sawise {lockdur} saben dina.",
+    "nmd_cb": "🔖 Hai, Aku {bname} digawe nganggo Framework Pyrogram v{ver} lan Python v{pyver}.\n\nMau gawe bot kaya iki? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+    "nmd_off_not_admin": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} dudu admin ing chat `{chat_id}`",
+    "nmd_off_not_present": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} ora ana ing chat `{chat_id}`. Dibusak grup saka dhaptar.",
+    "nmd_off_err": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`\nERROR: `{e}`",
+    "nmd_off_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n☀️ Grup dibukak.\nBakal ditutup jam {close_at}",
+    "nmd_on_not_admin": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`, amarga {bname} dudu admin ing chat `{chat_id}`",
+    "nmd_on_not_present": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`, amarga {bname} ora ana ing obrolan `{chat_id}`. Grup dibusak saka dhaptar.",
+    "nmd_on_err": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`\nERROR: `{e}`",
+    "nmd_on_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n🌗 Grup ditutup.\nBakal dibukak ing {open_at}"
+}

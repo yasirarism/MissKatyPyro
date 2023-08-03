@@ -1,0 +1,13 @@
+{
+    "sudo_join_msg": "Waw, Pemilikku yang keren baru saja bergabung ke grup!",
+    "log_bot_added": "#GrupBaru\nGrup = {ttl}(<code>{cid}</code>)\nJumlah Anggota = <code>{tot}</code>\nDitambahkan oleh - {r_j}",
+    "support_btn": "Dukungan",
+    "help_btn": "ℹ️ Bantuan",
+    "update_btn": "📢 Updates",
+    "chat_not_allowed": "<b>CHAT TIDAK DIIJINKAN 🐞\n\nPemilik saya sudah melarang saya untuk bekerja disini! Kamu bisa menghubungi pemilik bot ini..</b>",
+    "welcome_thanks": "<b>Terimakasih sudah menambahkan saya di {ttl} ❣️\n\nJika ada kendala atau saran bisa kontak ke saya.</b>",
+    "capt_welc": "Hai {umention} [<code>{uid}</code>], Selamat datang digrup {ttl}.",
+    "combot_msg": "<b>#CAS Federation Ban</b>\nPengguna {umention} [<code>{uid}</code>] terdeteksi sebagai spambot dan telah dikeluarkan. Powered by <a href='https://api.cas.chat/check?user_id={u.id}'>Combot AntiSpam.</a>",
+    "spamwatch_msg": "<b>#SpamWatch Federation Ban</b>\nPengguna {umention} [<code>{uid}</code>] telah dikeluarkan karena <code>{reas}</code>.\n",
+    "welcpic_msg": "Selamat Datang {userr} [{id}]"
+}

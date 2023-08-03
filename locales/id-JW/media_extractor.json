@@ -1,0 +1,15 @@
+{
+    "sub_extr_help": "Gunakake printah /{cmd} [link] kanggo mriksa subtitle utawa audio ing file video.",
+    "conv_sub_help": "Gunakake printah /{cmd} kanthi mbales berkas .ass utawa .vtt, kanggo ngowahi subtitle saka .ass utawa .vtt dadi srt.",
+    "progress_str": "⏳ Ngolah panjalukmu..",
+    "convert_str": "⏳ Ngonversi...",
+    "unauth_cb": "⚠️ Akses Ditolak!",
+    "cancel_btn": "❌ Rasido",
+    "invalid_cb": "⚠️ AJA Mbusak PESAN!",
+    "up_str": "Ngunggahaké berkas..",
+    "press_btn_msg": "Pencet tombol ing ngisor iki kanggo ngekstrak subtitle/audio. Mung ndhukung link langsung saiki.\nDiproses ing {timelog}",
+    "fail_extr_media": "Media ekstrak sing gagal, priksa manawa pranala sampeyan ora direksa WAF utawa ora bisa diakses kanggo bot.",
+    "fail_extr_sub": "Gagal ekstrak sub, Mungkin format ora didhukung..\n\nLink: {link}\nERR: {e}",
+    "capt_extr_sub": "<b>Jeneng berkas:</b> <kode>{nf}</code>\n\nDiekstrak saka @{bot} ing {timelog}",
+    "capt_conv_sub": "<kode>{nf}.srt</code>\n\nDiowahi dening @{bot}"
+}

@@ -1,0 +1,11 @@
+{
+    "already_up": "Sudah paling update!",
+    "up_and_rest": "<b>Diperbarui dengan branch default, dimulai ulang sekarang.</b>",
+    "cl_btn": "❌ Tutup",
+    "no_eval": "__Tidak ada pesan eval!__",
+    "run_eval": "<i>Memproses pyrogram eval..</i>",
+    "run_exec": "<i>Memproses pyrogram eksekutif..</i>",
+    "no_cmd": "Tidak ada perintah untuk dieksekusi.",
+    "sukses": "Sukses",
+    "no_reply": "Tidak ada balasan"
+}

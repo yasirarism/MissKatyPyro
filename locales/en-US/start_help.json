@@ -1,0 +1,11 @@
+{
+    "newgroup_log": "#NewGroup\nGroup = {jdl}(<code>{id}</code>)\nMembers Count = <code>{c}</code>",
+    "newuser_log": "#NewUser\nID - <code>{id}</code>\nName - {nm}",
+    "help_name": "Here is the help for **{mod}**:\n",
+    "help_txt": "Hello {kamuh}, My name is {bot}.\nI'm a pyrogram bot that developed by kind owner with some useful features.\nYou can look by clicking a button below.\n\nGeneral command are:\n - /start: Start the bot\n - /help: Give this message\n - /setlang: Change bot language [BETA]",
+    "click_me": "Click Me",
+    "back_btn": "Back",
+    "click_btn": "Click on the below button to get help about {nm}",
+    "pm_detail": "PM Me For More Details.",
+    "start_msg": "Hi {kamuh}, PM me to know about all my features. You can change bot language in bot using /setlang command but it's still in beta stage."
+}

@@ -1,0 +1,6 @@
+{
+    "no_photo": "Reply photo with /{cmd} command to scan text from images.",
+    "read_ocr": "Scanning your images..",
+    "result_ocr": "Hasil OCR:\n<code>{result}</code>",
+    "ocr_helper": "/ocr [reply to photo] - Read Text From Image"
+}

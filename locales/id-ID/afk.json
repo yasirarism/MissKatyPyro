@@ -1,0 +1,13 @@
+{
+    "no_channel": "Fitur ini tidak didukung untuk channel.",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] kembali online dan telah AFK selama {tm}\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] kembali online dan telah AFK selama {tm}\n\n**Alasan:** `{reas}`\n\n",
+    "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] telah AFK sejak {tm} yang lalu.\n\n",
+    "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] telah AFK sejak {tm} yang lalu.\n\n**Alasan:** {reas}\n\n" ,
+    "is_online": "**{usr}** [<code>{id}</code>] kembali online",
+    "now_afk": "{usr} [<code>{id}</code>] sekarang AFK!.",
+    "afkdel_help": "**Penggunaan:**\n/{cmd} [ENABLE|DISABLE] untuk mengaktifkan atau menonaktifkan hapus pesan AFK secara otomatis.",
+    "afkdel_disable": "Penghapusan otomatis pesan AFK dinonaktifkan.",
+    "afkdel_enable": "Penghapusan otomatis pesan AFK di obrolan ini diaktifkan.",
+    "is_afk": "{usr} [<code>{id}</code>] sedang AFK!."
+}

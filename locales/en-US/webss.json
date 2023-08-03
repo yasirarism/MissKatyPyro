@@ -1,0 +1,6 @@
+{
+    "no_url": "Give A Url To Fetch Screenshot.",
+    "wait_str": "Capturing screenshot...",
+    "str_credit": "🌞 Screenshot generated using Puppeteer",
+    "ss_failed_str": "Failed To Take Screenshot. {err}"
+}

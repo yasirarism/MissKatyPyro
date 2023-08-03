@@ -1,0 +1,13 @@
+{
+    "wait_msg": "Wenehi wektu kanggo ngolah panjalukmu!! 😴",
+    "wait_dl": "<code>Lagi diproses, mangga ngenteni..</code>",
+    "dl_progress": "Nyoba ngundhuh, mangga ngenteni..",
+    "up_progress": "Nyoba ngunggah...",
+    "success_dl_msg": "Berkas wis diundhuh menyang <code>{path}</code>.",
+    "fail_open": "😟 Nuwun sewu! Aku ora bisa mbukak file.",
+    "limit_dl": "Nuwun sewu, download dibatesi nganti 2GB kanggo nyuda flood. Sampeyan bisa ngowahi file dadi link luwih dhisik.",
+    "err_ssgen": "Gagal nggawe screenshoot.\n\n{exc}",
+    "up_msg": "☑️ Screenshot generasi kasil.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Digawe dening @{bot_uname} ",
+    "no_reply": "Bales menyang video utawa dokumen Telegram utawa gunakake link langsung sawise printah kanggo ngasilake screenshot saka media!",
+    "choose_no_ss": "Saiki pilih pira asil kanggo screenshot? 🥳.\n\nTotal durasi: `{td}` (`{dur} detik`)"
+}

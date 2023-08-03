@@ -1,0 +1,5 @@
+{
+  "language_changed_successfully": "Bahasa telah berhasil diubah.",
+  "language_changer_chat": "Di sini Anda dapat mengubah bahasa yang digunakan bot selama obrolan.\nJika bahasa Anda tidak ada di sini dan Anda ingin berkontribusi, Anda dapat membuka masalah di github saya. .",
+  "language_changer_private": "Di sini Anda dapat mengubah bahasa yang digunakan oleh bot dalam obrolan pribadi ini.\n\nJika Anda ingin mengubah bahasa grup Anda, buka perintah <code>/setchatlang</code>. \nJika bahasa Anda tidak ada di sini dan Anda ingin berkontribusi, buka repo misskaty di github."
+}

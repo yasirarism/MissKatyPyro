@@ -1,0 +1,14 @@
+{
+    "no_channel": "This feature not supported for channel or anonymous user.",
+    "no_query": "Please input a query..!",
+    "no_res": "No result found for `{kweri}`",
+    "dl_btn": "Download",
+    "back": "Back",
+    "yts_msg": "Published {pub}\n\n<b>❯ Duration:</b> {dur}\n<b>❯ Views:</b> {vi}\n<b>❯ Uploader:</b> <a href='{clink}'>{cname}</a>\n\n",
+    "invalid_link": "Please input a valid YT-DLP Supported URL",
+    "err_parse": "Failed parse URL, check logs..",
+    "wait": "Please wait..",
+    "unauth": "Not Your Task..",
+    "endlist": "That's the end of list",
+    "vip-btn": "Because some user abuse and my server cannot handle it, best video now only for bot owner."
+}

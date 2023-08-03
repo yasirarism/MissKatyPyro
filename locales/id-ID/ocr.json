@@ -1,0 +1,6 @@
+{
+    "no_photo": "Balas foto dengan perintah /{cmd} untuk memindai teks dari gambar.",
+    "read_ocr": "Memindai gambar Anda..",
+    "result_ocr": "Hasil OCR:\n<code>{result}</code>",
+    "ocr_helper": "/ocr [balas ke foto] - Baca Teks Dari Gambar"
+}

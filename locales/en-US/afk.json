@@ -1,0 +1,13 @@
+{
+    "no_channel": "This feature not supported for channel.",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] is back online and was away for {tm}\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] is back online and was away for {tm}\n\n**Reason:** `{reas}`\n\n",
+    "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] is AFK since {tm} ago.\n\n",
+    "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] is AFK since {tm} ago.\n\n**Reason:** {reas}\n\n",
+    "is_online": "**{usr}** [<code>{id}</code>] is back online",
+    "now_afk": "{usr} [<code>{id}</code>] is now AFK!.",
+    "afkdel_help": "**Usage:**\n/{cmd} [ENABLE|DISABLE] to enable or disable auto delete message.",
+    "afkdel_disable": "Disabled auto delete AFK message.",
+    "afkdel_enable": "Enabled auto delete AFK message in this chat.",
+    "is_afk": "{usr} [<code>{id}</code>] is AFK!."
+}

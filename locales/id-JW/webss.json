@@ -1,0 +1,6 @@
+{
+    "no_url": "Wenehana url kanggo njupuk screenshot.",
+    "wait_str": "Lagi njupuk gambar layar...",
+    "str_credit": "🌞 Screenshot digawe nganggo Puppeteer",
+    "ss_failed_str": "Gagal njupuk gambar. ERROR: {err}"
+}

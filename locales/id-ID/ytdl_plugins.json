@@ -1,0 +1,14 @@
+{
+    "no_channel": "Fitur ini tidak didukung untuk channel atau pengguna anonim.",
+    "no_query": "Silakan kirim link yang mau diunduh..!",
+    "no_res": "Tidak ada hasil yang ditemukan untuk `{kweri}`",
+    "dl_btn": "Unduh",
+    "kembali": "kembali",
+    "yts_msg": "Dipublikasikan {pub}\n\n<b>❯ Durasi:</b> {dur}\n<b>❯ Penayangan:</b> {vi}\n<b>❯ Pengunggah:</b> <a href='{clink}'>{cname}</a>\n\n",
+    "invalid_link": "Masukkan URL yang Didukung YT-DLP yang valid",
+    "err_parse": "Gagal menguraikan URL, periksa log..",
+    "tunggu": "Harap tunggu..",
+    "unauth": "Bukan Tugas Anda..",
+    "endlist": "Itu adalah akhir dari daftar",
+    "vip-btn": "Karena beberapa penyalahgunaan pengguna, video terbaik sekarang hanya untuk pemilik bot."
+}

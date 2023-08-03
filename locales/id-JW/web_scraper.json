@@ -1,0 +1,20 @@
+{
+    "no_result": "Nuwun sewu, kula mboten nemu kasil!",
+    "no_result_w_query": "Nuwun sewu, kula mboten saged manggihaken pitakon: {kueri}",
+    "get_data": "⏳ Mangga dienteni, lagi njupuk data saka web..",
+    "cl_btn": "❌ Tutup",
+    "back_btn": "↩️ Mbalik",
+    "dl_text": "⬇️ Unduh",
+    "cat_text": "💠 Kategori",
+    "kualitas": "Kwalitas",
+    "ex_data": "👇 Ekstrak Data ",
+    "unauth": "Tombol iki dudu kanggo sampeyan..",
+    "invalid_cb": "Data callback ora valid, kirim printah maneh..",
+    "res_scrape": "<b>Asil scrape saka</b> <kode>{link}</code>:\n\n{kl}",
+    "header_with_query": "<b>Asil Nggoleki #{web} Kanggo:</b> <code>{kueri}</code>\n\n",
+    "header_no_query": "<b>#{web} Paling anyar:</b>\n🌀 Gunakake /{cmd} [judhul] kanggo miwiti nggoleki kanthi judhul.\n\n",
+    "invalid_cmd_scrape": "Gunakake prentah /{cmd} <b>[link]</b> kanggo ngunduh pranala kethokan",
+    "err_getweb": "ERROR: Gagal njupuk data saka web amarga {err}.",
+    "err_getapi": "ERROR: Gagal njupuk data saka API",
+    "unsupport_dl_btn": "Sawetara asil ora bakal katon ing tombol ekstrak amarga pranala ora didhukung."
+}

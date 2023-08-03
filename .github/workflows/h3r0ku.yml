@@ -1,0 +1,36 @@
+name: H3r0ku Deployer
+
+on: workflow_dispatch
+
+env:
+  IMAGE_NAME: h3r0ku
+  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+  HEROKU_APP: ${{ secrets.HEROKU_APP }}
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build the image
+        run: docker build . --file Dockerfile --tag "${IMAGE_NAME}"
+
+      - name: Login into Heroku Container registry
+        run: heroku container:login
+
+      - name: Push the image to Heroku
+        run: heroku container:push "${IMAGE_NAME}" -a "${HEROKU_APP}"
+        
+      - name: Release image to Heroku
+        run: heroku container:release "${IMAGE_NAME}" -a "${HEROKU_APP}"
+
+      - name: Check ENV
+        run: |
+          API_KEY="$(heroku config:get HEROKU_API_KEY -a ${HEROKU_APP})"
+          APP_NAME="$(heroku config:get HEROKU_APP -a ${HEROKU_APP})"
+          if [[ -z "${API_KEY}" && -z "${APP_NAME}" ]]; then
+              heroku config:set HEROKU_API_KEY="${HEROKU_API_KEY}" \
+              HEROKU_APP="${HEROKU_APP}"
+          fi

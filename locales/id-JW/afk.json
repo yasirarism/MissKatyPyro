@@ -1,0 +1,13 @@
+{
+    "no_channel": "Fitur iki ora didhukung kanggo channel.",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana suwene {tm}\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] wis online maneh lan ora ana suwene {tm}\n\n**Alesan:** `{reas}`\n\n",
+    "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] iku AFK wiwit {tm} kepungkur.\n\n",
+    "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] iku AFK wiwit {tm} kepungkur.\n\n**Alesan:** {reas}\n\n" ,
+    "is_online": "**{usr}** [<code>{id}</code>] wis online maneh",
+    "now_afk": "{usr} [<code>{id}</code>] saiki dadi AFK!.",
+    "afkdel_help": "**Panganggone:**\n/{cmd} [ENABLE|DISABLE] kanggo ngaktifake utawa mateni pesen otomatis mbusak.",
+    "afkdel_disable": "Mbusak pesen AFK otomatis dipateni.",
+    "afkdel_enable": "Mbusak pesen AFK otomatis ing obrolan iki diaktifake.",
+    "is_afk": "{usr} [<code>{id}</code>] iku AFK!."
+}
