@@ -1,0 +1,17 @@
+{
+    "nmd_disabled": "Mode malam dinonaktifkan.",
+    "nmd_not_enabled": "Mode malam tidak diaktifkan di obrolan ini.",
+    "invalid_time_format": "Format waktu tidak sah. Gunakan format HH:MM.",
+    "invalid_lockdur": "Durasi waktu tidak valid. Gunakan format yang tepat.\nContoh: 6j (selama 6 jam), 10m selama 10 menit.",
+    "schedule_already_on": "Sudah ada jadwal yang berjalan di obrolan ini. Nonaktifkan menggunakan tanda `-d`.",
+    "nmd_enable_success": "Berhasil mengaktifkan mode malam dalam obrolan ini.\nGrup akan dikunci pada {st} dan akan dibuka setelah {lockdur} setiap hari.",
+    "nmd_cb": "🔖 Hai, Saya {bname} dibuat menggunakan Framework Pyrogram v{ver} dan Python v{pyver}.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+    "nmd_off_not_admin": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`, karena {bname} bukan admin di obrolan `{chat_id}`",
+    "nmd_off_not_present": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`, karena {bname} tidak ada di obrolan `{chat_id}`. Menghapus grup dari daftar.",
+    "nmd_off_err": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`\nERROR: `{e}`",
+    "nmd_off_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n☀️ Grup sedang dibuka.\nAkan ditutup pada {close_at}",
+    "nmd_on_not_admin": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`, karena {bname} bukan admin di obrolan `{chat_id}`",
+    "nmd_on_not_present": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`, karena {bname} tidak ada di obrolan `{chat_id}`. Grup dihapus dari daftar.",
+    "nmd_on_err": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`\nERROR: `{e}`",
+    "nmd_on_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n🌗 Grup ditutup.\nAkan dibuka pada {open_at}"
+}

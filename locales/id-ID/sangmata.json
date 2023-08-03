@@ -1,0 +1,13 @@
+{
+    "no_uname": "<code>Tanpa Username</code>",
+    "no_last_name": "<code>Tanpa Nama Belakang</code>",
+    "uname_change_msg": "✨ Mengubah username dari {bef} ➡️ {aft}.\n",
+    "lastname_change_msg": "✨ Mengubah nama belakang dari {bef} ➡️ {aft}.\n",
+    "firstname_change_msg": "✨ Mengubah nama depan dari {bef} ➡️ {aft}.\n",
+    "set_sangmata_help": "Gunakan <code>/{cmd} on</code>, untuk mengaktifkan sangmata. Jika Anda ingin menonaktifkan, Anda dapat menggunakan parameter off.",
+    "sangmata_already_on": "SangMata telah diaktifkan di grup Anda.",
+    "sangmata_enabled": "Sangmata diaktifkan di grup Anda.",
+    "sangmata_already_off": "SangMata telah dinonaktifkan di grup Anda.",
+    "sangmata_disabled": "Sangmata dinonaktifkan di grup Anda.",
+    "wrong_param": "Parameter tidak diketahui, gunakan hanya parameter hidup/mati."
+}

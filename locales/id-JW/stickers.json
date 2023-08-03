@@ -1,0 +1,19 @@
+{
+    "no_anim_stick": "Stiker animasi ora didhukung!",
+    "not_sticker": "Iki dudu stiker!",
+    "unkang_msg": "Nyoba nyopot saka pack..",
+    "unkang_success": "Stiker wis dibusak saka pack panjenengan",
+    "unkang_error": "Gagal mbusak stiker saka paket sampeyan.\n\nERR: {e}",
+    "unkang_help": "Mangga wangsulana stiker sing digawe {c} kanggo mbusak stiker saka paket sampeyan.",
+    "anon_warn": "Sampeyan anon admin, kang stiker ing pmku.",
+    "kang_msg": "Nyolong stiker sampeyan...",
+    "stick_no_name": "Stiker ora ana jeneng.",
+    "kang_help": "Arep tak tebak stikere? Mangga tag stiker.",
+    "exist_pack": "<code>Nganggo paket stiker sing ana...</code>",
+    "new_packs": "<b>Nggawe pak stiker anyar...</b>",
+    "please_start_msg": "Koyone sampeyan ora tau sesambungan karo aku ing obrolan pribadi, sampeyan kudu nglakoni dhisik..",
+    "click_me": "Klik Aku",
+    "pack_full": "Paket Stiker sampeyan kebak yen paket sampeyan ora ana ing tipe v1 /kang 1, yen ora ana ing Tipe v2 /kang 2 lan sapiturute.",
+    "viewpack": "👀 Deleng Paket",
+    "kang_success": "<b>Stiker kasil dicolong!</b>\n<b>Emoji:</b> {emot}"
+}

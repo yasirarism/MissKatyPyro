@@ -1,0 +1,13 @@
+{
+    "sudo_join_msg": "Wow, my cool owner just joined the group!",
+    "log_bot_added": "#New Group\nGroup = {ttl}(<code>{cid}</code>)\nNumber of Members = <code>{tot}</code>\nAdded by - {r_j}",
+    "support_btn": "Support",
+    "help_btn": "ℹ️ Help",
+    "update_btn": "📢 Updates",
+    "chat_not_allowed": "<b>CHAT NOT ALLOWED 🐞\n\nMy owner has banned me from working here! You can contact the owner of this bot..</b>",
+    "welcome_thanks": "<b>Thank you for adding me to {ttl} ❣️\n\nIf you have any problems or suggestions, you can contact me.</b>",
+    "capt_welc": "Hi {umention} [<code>{uid}</code>], Welcome to the {ttl} group.",
+    "combot_msg": "<b>#CAS Federation Ban</b>\nUser {umention} [<code>{uid}</code>] has been detected as a spambot and has been banned. Powered by <a href='https://api.cas.chat/check?user_id={u.id}'>Combot AntiSpam.</a>",
+    "spamwatch_msg": "<b>#SpamWatch Federation Ban</b>\nUser {umention} [<code>{uid}</code>] has been banned for <code>{reas}</code>.\n" ,
+    "welcpic_msg": "Welcome {userr} [{id}]"
+}

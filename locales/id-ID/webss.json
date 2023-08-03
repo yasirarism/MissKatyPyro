@@ -1,0 +1,6 @@
+{
+    "no_url": "Berikan url untuk mengambil tangkapan layar.",
+    "wait_str": "Mengambil tangkapan layar...",
+    "str_credit": "🌞 Screenshot dibuat dengan Puppeteer",
+    "ss_failed_str": "Gagal Mengambil Tangkapan Layar. ERROR: {err}"
+}

@@ -1,0 +1,14 @@
+{
+    "no_channel": "Fitur iki ora didhukung kanggo channel utawa pangguna anonim.",
+    "no_query": "Mangga lebokna url sing kepengen mbok unduh..!",
+    "no_res": "Ora ana asil kanggo `{kweri}`",
+    "dl_btn": "Ngunduh",
+    "back": "Mbalik",
+    "yts_msg": "Diterbitake {pub}\n\n<b>❯ Duration:</b> {dur}\n<b>❯ Ndeleng:</b> {vi}\n<b>❯ Uploader:</b> <a href='{clink}'>{cname}</a>\n\n",
+    "invalid_link": "Mangga lebokna URL Dhukungan YT-DLP sing valid",
+    "err_parse": "Gagal ngurai URL, mriksa log..",
+    "ngenteni": "Tulung ngenteni..",
+    "unauth": "Ora Tugasmu..",
+    "endlist": "Iku pungkasan dhaptar",
+    "vip-btn": "Amarga sawetara pangguna penyalahgunaan, video paling apik saiki mung sing nduwe bot iki."
+}

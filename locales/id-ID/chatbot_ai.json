@@ -1,0 +1,6 @@
+{
+    "no_question": "Harap gunakan perintah <code>/{cmd} [question]</code> untuk mengajukan pertanyaan Anda menggunakan AI.",
+    "find_answers_str": "Sedang mencari jawaban terbaik buat Anda..",
+    "dont_spam": "Tolong jangan melakukan spam, harap tunggu {tm} detik atau saya akan membanned Anda dari bot ini.",
+    "answers_too_long": "Pertanyaan untuk jawaban Anda telah melampaui batas teks TG, periksa tautan ini untuk melihatnya.\n\n{answerlink}"
+}

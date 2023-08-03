@@ -1,0 +1,13 @@
+{
+    "sudo_join_msg": "Waw, Pemilikku sing ganteng gabung menyang grup!",
+    "log_bot_added": "#GrupBaru\nGrup = {ttl}(<code>{cid}</code>)\nJumlah Anggota = <code>{tot}</code>\nDitambahake dening - {r_j}",
+    "support_btn": "Dukungan",
+    "help_btn": "ℹ️ Pitulungan",
+    "update_btn": "📢 Nganyari",
+    "chat_not_allowed": "<b>CHAT ORA DIIJINKE 🐞\n\nPemilik ku wes nglarang aku kerja neng kene! Sampeyan bisa hubungi pemilik bot iki..</b>",
+    "welcome_thanks": "<b>Terimakasih wis nambahi saya ing {ttl} ❣️\n\nYen ana kendal utawa saran bisa hubungi saya.</b>",
+    "capt_welc": "Hai {umention} [<code>{uid}</code>], sugeng rawuh ing grup {ttl}.",
+    "combot_msg": "<b>Larangan Federasi #CAS</b>\nPengguna {umention} [<kode>{uid}</code>] dideteksi minangka spambot lan wis dibusak. Powered by <a href='https://api.cas.chat/check?user_id={u.id}'>Combot AntiSpam.</a>",
+    "spamwatch_msg": "<b>Larangan Federasi #SpamWatch</b>\nPengguna {umention} [<code>{uid}</code>] wis dibusak amarga <code>{reas}</code>.\n" ,
+    "welcpic_msg": "Sugeng Rawuh {userr} [{id}]"
+}

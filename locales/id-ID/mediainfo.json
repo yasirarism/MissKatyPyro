@@ -1,0 +1,11 @@
+{
+    "processing_text": "`Memproses, total waktu didasarkan pada ukuran file Anda...`",
+    "wait_msg": "`Mohon tunggu sementara...`",
+    "err_link": "Sepertinya tautan yang Anda kirim tidak valid, pastikan tautan langsung dan bisa di unduh.",
+    "media_invalid": "Silakan balas ke media yang valid.",
+    "dl_limit_exceeded": "Maaf, unduh dibatasi hingga 2GB untuk mengurangi flood. Anda dapat mengonversi berkas Anda menjadi tautan.",
+    "dl_args_text": "Mencoba mengunduh..",
+    "mediainfo_help": "Gunakan perintah /{cmd} [tautan], atau balas telegram media dengan /{cmd}.",
+    "capt_media": "ℹ️ Hasil mediainfo anda..\n\n**Diminta Oleh:** {ment}",
+    "viweb": "💬 Buka di Web"
+}

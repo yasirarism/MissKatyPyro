@@ -1,0 +1,11 @@
+{
+    "already_up": "Its already up-to date!",
+    "up_and_rest": "<b>Updated with default branch, restarting now.</b>",
+    "cl_btn": "❌ Close",
+    "no_eval": "__No evaluate message!__",
+    "run_eval": "<i>Processing eval pyrogram..</i>",
+    "run_exec": "<i>Processing exec pyrogram..</i>",
+    "no_cmd": "No command to execute was given.",
+    "success": "Success",
+    "no_reply": "No Reply"
+}

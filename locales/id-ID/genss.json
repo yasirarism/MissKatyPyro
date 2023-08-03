@@ -1,0 +1,13 @@
+{
+    "wait_msg": "Beri saya waktu untuk memproses permintaan Anda!! 😴",
+    "wait_dl": "<code>Sedang diproses, harap tunggu..</code>",
+    "dl_progress": "Mencoba mengunduh, harap tunggu..",
+    "up_progress": "Mencoba mengunggah...",
+    "success_dl_msg": "Berkas telah diunduh ke <code>{path}</code>.",
+    "fail_open": "😟 Maaf! Saya tidak dapat membuka file.",
+    "limit_dl": "Maaf, unduh terbatas hingga 2GB untuk mengurangi flood. Anda dapat mengkonversi file Anda menjadi tautan.",
+    "err_ssgen": "Pembuatan screenshot gagal.\n\n{exc}",
+    "up_msg": "☑️ Pembuatan screenshot berhasil.\n\n{namma} (<code>{id}</code>)\n#️⃣ #ssgen #id{id}\n\nSS Dibuat oleh @{bot_uname} ",
+    "no_reply": "Balas video atau dokumen Telegram atau gunakan tautan langsung setelah perintah untuk membuat screenshot dari media!",
+    "choose_no_ss": "Sekarang pilih berapa hasil screenshot? 🥳.\n\nTotal durasi: `{td}` (`{dur} detik`)"
+}

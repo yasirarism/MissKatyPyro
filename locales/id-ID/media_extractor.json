@@ -1,0 +1,15 @@
+{
+    "sub_extr_help": "Harap gunakan perintah /{cmd} [tautan] untuk memeriksa teks film atau audio dalam berkas video.",
+    "conv_sub_help": "Gunakan perintah /{cmd} dengan membalas berkas .ass atau .vtt, untuk mengonversi teks film dari .ass atau .vtt ke srt.",
+    "progress_str": "⏳ Memproses permintaan Anda..",
+    "convert_str": "⏳ Mengkonversi...",
+    "unauth_cb": "⚠️ Akses Ditolak!",
+    "batal_btn": "❌ Batal",
+    "invalid_cb": "⚠️ JANGAN HAPUS PESAN ANDA!",
+    "up_str": "Mengunggah berkas..",
+    "press_btn_msg": "Tekan tombol di bawah untuk mengekstrak teks/audio. Saat ini hanya mendukung tautan langsung.\nDiproses dalam {timelog}",
+    "fail_extr_media": "Gagal mengekstrak media, pastikan tautan Anda tidak dilindungi oleh WAF atau mungkin tidak dapat diakses oleh bot.",
+    "fail_extr_sub": "Sub ekstrak gagal, Mungkin formatnya tidak didukung..\n\nTautan: {link}\nERR: {e}",
+    "capt_extr_sub": "<b>Nama file:</b> <kode>{nf}</code>\n\nDiekstrak oleh @{bot} dalam {timelog}",
+    "capt_conv_sub": "<code>{nf}.srt</code>\n\nDikonversi oleh @{bot}"
+}

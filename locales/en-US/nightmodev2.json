@@ -1,0 +1,17 @@
+{
+    "nmd_disabled": "Nightmode disabled.",
+    "nmd_not_enabled": "Nightmode isn't enabled in this chat.",
+    "invalid_time_format": "Invalid time format. Use HH:MM format.",
+    "invalid_lockdur": "Invalid time duration. Use proper format.\nExample: 6h (for 6 hours), 10m for 10 minutes.",
+    "schedule_already_on": "Already a schedule is running in this chat. Disable it using `-d` flag.",
+    "nmd_enable_success": "Successfully enabled nightmode in this chat.\nGroup will be locked at {st} and will be opened after {lockdur} everyday.",
+    "nmd_cb": "🔖 Hai, Aku {bname} dibuat menggunakan Framework Pyrogram v{ver} dan Python v{pyver}.\n\nMau buat bot seperti ini? Yuuk belajar di @botindonesia\nOwner: @YasirArisM",
+    "nmd_off_not_admin": "#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`, since {bname} is not an admin in chat `{chat_id}`",
+    "nmd_off_not_present": "#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`, since {bname} is not present in chat `{chat_id}`. Removed group from list.",
+    "nmd_off_err": "#NIGHTMODE_FAIL\nFailed to turn off nightmode at `{chat_id}`\nERROR: `{e}`",
+    "nmd_off_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n☀️ Group is Opening.\nWill be closed at {close_at}",
+    "nmd_on_not_admin": "#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`, since {bname} is not an admin in chat `{chat_id}`",
+    "nmd_on_not_present": "#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`, since {bname} is not present in chat `{chat_id}`. Removed group from list.",
+    "nmd_on_err": "#NIGHTMODE_FAIL\nFailed to enable nightmode at `{chat_id}`\nERROR: `{e}`",
+    "nmd_on_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n🌗 Group is closing.\nWill be opened at {open_at}"
+}

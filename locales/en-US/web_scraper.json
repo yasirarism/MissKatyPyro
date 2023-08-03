@@ -1,0 +1,20 @@
+{
+    "no_result": "Sorry, i couldn't find any results!",
+    "no_result_w_query": "Sorry, i could not find query: {kueri}",
+    "get_data": "⏳ Please wait, getting data from web..",
+    "cl_btn": "❌ Close",
+    "back_btn": "↩️ Back",
+    "dl_text": "⬇️ Download",
+    "cat_text": "Category",
+    "quality": "Quality",
+    "ex_data": "👇 Extract Data ",
+    "unauth": "This button is not for you..",
+    "invalid_cb": "Invalid callback data, please send command again..",
+    "res_scrape": "<b>Scrape result from</b> <code>{link}</code>:\n\n{kl}",
+    "header_with_query": "<b>#{web} Results For:</b> <code>{kueri}</code>\n\n",
+    "header_no_query": "<b>#{web} Latest:</b>\n🌀 Use /{cmd} [title] to start search with title.\n\n",
+    "invalid_cmd_scrape": "Use command /{cmd} <b>[link]</b> to scrape download link.",
+    "err_getweb": "ERROR: Failed getting data from web because {err}.",
+    "err_getapi": "ERROR: Failed getting data from API",
+    "unsupport_dl_btn": "Some result will not appear in extract button because unsupported link."
+}

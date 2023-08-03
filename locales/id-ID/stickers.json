@@ -1,0 +1,19 @@
+{
+    "no_anim_stick": "Stiker animasi tidak didukung!",
+    "not_sticker": "Ini bukan stiker!",
+    "unkang_msg": "Mencoba menghapus dari paket..",
+    "unkang_success": "Stiker telah dihapus dari paket Anda",
+    "unkang_error": "Gagal menghapus stiker dari paket Anda.\n\nERR: {e}",
+    "unkang_help": "Tolong balas stiker yang dibuat oleh {c} untuk menghapus stiker dari paket Anda.",
+    "anon_warn": "Anda adalah admin anon, stiker kang ada di pm saya.",
+    "kang_msg": "Mencoba mencuri stiker Anda...",
+    "stick_no_name": "Stiker tidak memiliki nama.",
+    "kang_help": "Ingin saya menebak stikernya? Harap tandai stiker.",
+    "exist_pack": "<code>Menggunakan paket stiker yang ada...</code>",
+    "new_packs": "<b>Membuat paket stiker baru...</b>",
+    "please_start_msg": "Tampaknya Anda belum pernah berinteraksi dengan saya dalam obrolan pribadi, Anda harus melakukannya dulu..",
+    "click_me": "Klik Saya",
+    "pack_full": "Paket Stiker Anda penuh jika paket Anda tidak dalam Tipe v1 /kang 1, jika tidak dalam Tipe v2 /kang 2 dan seterusnya.",
+    "viewpack": "👀 Lihat Paket",
+    "kang_success": "<b>Stiker berhasil dicuri!</b>\n<b>Emoji:</b> {emot}"
+}

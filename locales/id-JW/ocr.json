@@ -1,0 +1,6 @@
+{
+    "no_photo": "Bales foto nganggo printah /{cmd} kanggo mindhai teks saka gambar.",
+    "read_ocr": "Mindai gambar sampeyan..",
+    "result_ocr": "Hasil OCR:\n<kode>{result}</code>",
+    "ocr_helper": "/ocr [reply to photo] - Waca Teks Saka Gambar"
+}

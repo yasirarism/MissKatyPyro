@@ -1,0 +1,6 @@
+{
+    "no_question": "Tulung gunakake printah <code>/{cmd} [pitakon]</code> kanggo takon nganggo fitur AI.",
+    "find_answers_str": "Lagi goleki jawaban paling apik kanggo sampeyan..",
+    "dont_spam": "Aja spam, mangga ngenteni {tm} detik utawa aku bakal nglarang sampeyan saka bot iki.",
+    "answers_too_long": "Pitakonan kanggo jawaban sampeyan wis ngluwihi wates teks TG, priksa pranala iki kanggo ndeleng.\n\n{answerlink}"
+}

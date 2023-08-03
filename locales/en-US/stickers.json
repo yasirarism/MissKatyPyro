@@ -1,0 +1,19 @@
+{
+    "no_anim_stick": "Animated sticker is not supported!",
+    "not_sticker": "This is not a sticker!",
+    "unkang_msg": "Trying to remove from pack..",
+    "unkang_success": "Sticker has been removed from your pack",
+    "unkang_error": "Failed remove sticker from your pack.\n\nERR: {e}",
+    "unkang_help": "Please reply sticker that created by {c} to remove sticker from your pack.",
+    "anon_warn": "You are anon admin, kang stickers in my pm.",
+    "kang_msg": "Trying to steal your sticker...",
+    "stick_no_name": "The sticker has no name.",
+    "kang_help": "Want me to guess the sticker? Please tag a sticker.",
+    "exist_pack": "<code>Using existing sticker pack...</code>",
+    "new_packs": "<b>Creating a new sticker pack...</b>",
+    "please_start_msg": "It looks like you've never interacted with me in private chat, you need to do that first..",
+    "click_me": "Click Me",
+    "pack_full": "Your Sticker Pack is full if your pack is not in v1 Type /kang 1, if it is not in v2 Type /kang 2 and so on.",
+    "viewpack": "👀 View Your Pack",
+    "kang_success": "<b>Sticker successfully stolen!</b>\n<b>Emoji:</b> {emot}"
+}
