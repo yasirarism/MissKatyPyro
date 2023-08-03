@@ -16,11 +16,11 @@ from typing import Any, Optional, Tuple
 
 import aiohttp
 import cloudscraper
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
 from psutil import net_io_counters, virtual_memory
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
@@ -42,7 +42,7 @@ from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import http
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, AUTO_RESTART
+from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -543,9 +543,11 @@ async def shell_exec(code, treat=True):
         stdout = stdout.decode().strip()
     return stdout, process
 
+
 async def auto_restart():
     await shell_exec("python3 update.py")
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
+
 
 if AUTO_RESTART:
     scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")

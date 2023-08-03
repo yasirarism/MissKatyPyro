@@ -118,7 +118,10 @@ async def carbon_make(self: Client, ctx: Message):
         "https://carbon.yasirapi.eu.org/api/cook", json=json_data
     )
     if response.status_code != 200:
-        return await ctx.reply_photo(f"https://http.cat/{response.status_code}", caption="<b>🤧 Carbon API ERROR</b>")
+        return await ctx.reply_photo(
+            f"https://http.cat/{response.status_code}",
+            caption="<b>🤧 Carbon API ERROR</b>",
+        )
     fname = (
         f"carbonBY_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.title}.png"
     )
