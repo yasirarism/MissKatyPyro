@@ -3,7 +3,7 @@ name: H3r0ku Deployer
 on: workflow_dispatch
 
 env:
-  IMAGE_NAME: h3r0ku
+  IMAGE_NAME: misskatybotnew
   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
   HEROKU_APP: ${{ secrets.HEROKU_APP }}
 
