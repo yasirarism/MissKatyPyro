@@ -34,6 +34,7 @@ basicConfig(
 getLogger("pyrogram").setLevel(ERROR)
 getLogger("openai").setLevel(ERROR)
 getLogger("httpx").setLevel(ERROR)
+getLogger("iytdl").setLevel(ERROR)
 
 MOD_LOAD = []
 MOD_NOLOAD = ["subscene_dl"]
@@ -55,6 +56,7 @@ app = Client(
 user = Client(
     "YasirUBot",
     session_string=USER_SESSION,
+    mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
 )
 
 jobstores = {

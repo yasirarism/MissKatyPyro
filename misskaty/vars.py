@@ -42,6 +42,7 @@ SUDO = list(
     }
 )
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
+AUTO_RESTART = environ.get("AUTO_RESTART", False)
 OPENAI_API = getConfig("OPENAI_API")
 
 ## Config For AUtoForwarder

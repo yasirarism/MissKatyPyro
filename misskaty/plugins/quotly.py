@@ -254,7 +254,7 @@ def isArgInt(txt) -> list:
 @ratelimiter
 async def msg_quotly_cmd(self: Client, ctx: Message):
     is_reply = False
-    if ctx.command[0][1] == "r":
+    if ctx.command[0].endswith("r"):
         is_reply = True
     if len(ctx.text.split()) > 1:
         check_arg = isArgInt(ctx.command[1])
@@ -279,7 +279,7 @@ async def msg_quotly_cmd(self: Client, ctx: Message):
             try:
                 make_quotly = await pyrogram_to_quotly(messages, is_reply=is_reply)
                 bio_sticker = BytesIO(make_quotly)
-                bio_sticker.name = "biosticker.webp"
+                bio_sticker.name = "misskatyquote_sticker.webp"
                 return await ctx.reply_sticker(bio_sticker)
             except Exception:
                 return await ctx.reply_msg("🤷🏻‍♂️")
