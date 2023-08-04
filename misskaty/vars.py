@@ -23,7 +23,7 @@ try:
     API_HASH = getConfig("API_HASH")
     # MongoDB information
     DATABASE_URI = getConfig("DATABASE_URI")
-    LOG_CHANNEL = int(environ.get("LOG_CHANNEL"))
+    LOG_CHANNEL = environ.get("LOG_CHANNEL")
 except Exception as e:
     LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
     sys.exit(1)
