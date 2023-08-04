@@ -26,7 +26,7 @@ from pyrogram.types import (
 
 from misskaty import app
 from misskaty.core import pyro_cooldown
-from misskaty.core.decorator import capture_err, ratelimiter
+from misskaty.core.decorator import capture_err, ratelimiter, new_task
 from misskaty.helper.http import http
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
@@ -190,6 +190,7 @@ async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
 @ratelimiter
 @use_chat_lang()
+@new_task
 async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
     if not (cq.message.reply_to_message and cq.message.reply_to_message.from_user):
         return
