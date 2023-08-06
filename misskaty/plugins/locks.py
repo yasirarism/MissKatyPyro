@@ -24,7 +24,7 @@ SOFTWARE.
 import asyncio
 
 from pyrogram import filters
-from pyrogram.errors import ChatNotModified, FloodWait
+from pyrogram.errors import ChatNotModified, FloodWait, ChatAdminRequired
 from pyrogram.types import ChatPermissions
 
 from misskaty import app
@@ -120,7 +120,7 @@ async def tg_lock(message, permissions: list, perm: str, lock: bool):
 @adminsOnly("can_restrict_members")
 async def locks_func(_, message):
     if len(message.command) != 2:
-        return await message.reply_text(incorrect_parameters)
+        return await message.reply_msg(incorrect_parameters)
 
     chat_id = message.chat.id
     parameter = message.text.strip().split(None, 1)[1].lower()
@@ -134,24 +134,30 @@ async def locks_func(_, message):
     if parameter in data:
         await tg_lock(message, permissions, data[parameter], state == "lock")
     elif parameter == "all" and state == "lock":
-        await app.set_chat_permissions(chat_id, ChatPermissions())
-        await message.reply_text(f"Locked Everything in {message.chat.title}")
+        try:
+            await app.set_chat_permissions(chat_id, ChatPermissions())
+            await message.reply_text(f"Locked Everything in {message.chat.title}")
+        except ChatAdminRequired:
+            await message.reply_msg("Give me proper admin permission to use this command.")
 
     elif parameter == "all" and state == "unlock":
-        await app.set_chat_permissions(
-            chat_id,
-            ChatPermissions(
-                can_send_messages=True,
-                can_send_media_messages=True,
-                can_send_other_messages=True,
-                can_add_web_page_previews=True,
-                can_send_polls=True,
-                can_change_info=False,
-                can_invite_users=True,
-                can_pin_messages=False,
-            ),
-        )
-        await message.reply(f"Unlocked Everything in {message.chat.title}")
+        try:
+            await app.set_chat_permissions(
+                chat_id,
+                ChatPermissions(
+                    can_send_messages=True,
+                    can_send_media_messages=True,
+                    can_send_other_messages=True,
+                    can_add_web_page_previews=True,
+                    can_send_polls=True,
+                    can_change_info=False,
+                    can_invite_users=True,
+                    can_pin_messages=False,
+                ),
+            )
+            await message.reply(f"Unlocked Everything in {message.chat.title}")
+        except ChatAdminRequired:
+            await message.reply_msg("Give me full admin permission to use this command.")
 
 
 @app.on_message(filters.command("locks", COMMAND_HANDLER) & ~filters.private)

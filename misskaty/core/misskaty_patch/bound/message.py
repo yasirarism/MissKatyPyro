@@ -88,6 +88,7 @@ async def reply_text(
         await asleep(del_in)
         return bool(await msg.delete_msg())
     except FloodWait as e:
+        LOGGER.warning(f"Got floodwait in {self.chat.id} for {e.value}'s.")
         await asleep(e.value)
         return await reply_text(self, text, *args, **kwargs)
     except TopicClosed:
@@ -134,7 +135,7 @@ async def edit_text(
         await asleep(del_in)
         return bool(await msg.delete_msg())
     except FloodWait as e:
-        LOGGER.warning(str(e))
+        LOGGER.warning(f"Got floodwait in {self.chat.id} for {e.value}'s.")
         await asleep(e.value)
         return await edit_text(self, text, *args, **kwargs)
     except MessageNotModified:

@@ -28,7 +28,7 @@ from logging import getLogger
 from time import time
 
 from pyrogram import Client, enums, filters
-from pyrogram.errors import ChatAdminRequired, FloodWait, PeerIdInvalid
+from pyrogram.errors import ChatAdminRequired, FloodWait, PeerIdInvalid, UsernameNotOccupied
 from pyrogram.types import ChatPermissions, ChatPrivileges, Message
 
 from database.warn_db import add_warn, get_warn, remove_warns
@@ -573,7 +573,10 @@ async def unmute(_, message, strings):
 @ratelimiter
 @use_chat_lang()
 async def warn_user(client, message, strings):
-    user_id, reason = await extract_user_and_reason(message)
+    try:
+        user_id, reason = await extract_user_and_reason(message)
+    except UsernameNotOccupied:
+        return await message.reply_msg("Sorry, i didn't know that user.")
     chat_id = message.chat.id
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
