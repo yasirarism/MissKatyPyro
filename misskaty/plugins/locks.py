@@ -24,7 +24,7 @@ SOFTWARE.
 import asyncio
 
 from pyrogram import filters
-from pyrogram.errors import ChatNotModified, FloodWait, ChatAdminRequired
+from pyrogram.errors import ChatAdminRequired, ChatNotModified, FloodWait
 from pyrogram.types import ChatPermissions
 
 from misskaty import app
@@ -138,7 +138,9 @@ async def locks_func(_, message):
             await app.set_chat_permissions(chat_id, ChatPermissions())
             await message.reply_text(f"Locked Everything in {message.chat.title}")
         except ChatAdminRequired:
-            await message.reply_msg("Give me proper admin permission to use this command.")
+            await message.reply_msg(
+                "Give me proper admin permission to use this command."
+            )
 
     elif parameter == "all" and state == "unlock":
         try:
@@ -157,7 +159,9 @@ async def locks_func(_, message):
             )
             await message.reply(f"Unlocked Everything in {message.chat.title}")
         except ChatAdminRequired:
-            await message.reply_msg("Give me full admin permission to use this command.")
+            await message.reply_msg(
+                "Give me full admin permission to use this command."
+            )
 
 
 @app.on_message(filters.command("locks", COMMAND_HANDLER) & ~filters.private)
