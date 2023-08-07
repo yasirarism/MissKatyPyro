@@ -6,6 +6,7 @@
 """
 
 import asyncio
+import httpx
 import json
 import os
 import traceback
@@ -113,10 +114,12 @@ async def carbon_make(self: Client, ctx: Message):
         "code": text,
         "backgroundColor": "#1F816D",
     }
-
-    response = await http.post(
-        "https://carbon.yasirapi.eu.org/api/cook", json=json_data
-    )
+    try:
+        response = await http.post(
+            "https://carbon.yasirapi.eu.org/api/cook", json=json_data
+        )
+    except httpx.HTTPError as exc:
+        return await ctx.reply_msg(f"HTTP Exception for {exc.request.url} - {exc}")
     if response.status_code != 200:
         return await ctx.reply_photo(
             f"https://http.cat/{response.status_code}",
