@@ -337,7 +337,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         try:
             if query:
                 data = await http.get(
-                    f"{web['lendrive']}/?s={query}",
+                    f"{web['lendrive']}/?s={kueri}",
                     headers=headers,
                     follow_redirects=True,
                 )
