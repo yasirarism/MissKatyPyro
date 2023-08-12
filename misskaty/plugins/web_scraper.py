@@ -336,9 +336,15 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
             if query:
-                data = await http.get(f"{web['lendrive']}/?s={query}", headers=headers, follow_redirects=True)
+                data = await http.get(
+                    f"{web['lendrive']}/?s={query}",
+                    headers=headers,
+                    follow_redirects=True,
+                )
             else:
-                data = await http.get(web["lendrive"], headers=headers, follow_redirects=True)
+                data = await http.get(
+                    web["lendrive"], headers=headers, follow_redirects=True
+                )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, None
@@ -347,9 +353,19 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         for o in res.find_all(class_="bsx"):
             title = o.find("a")["title"]
             link = o.find("a")["href"]
-            status = o.find(class_="epx").text if o.find(class_="epx") else "Not Provided by BOT"
-            kualitas = o.find(class_="typez TV").text if o.find(class_="typez TV") else o.find(class_="typez BD")
-            lenddata.append({"judul": title, "link": link, "quality": kualitas, "status": status})
+            status = (
+                o.find(class_="epx").text
+                if o.find(class_="epx")
+                else "Not Provided by BOT"
+            )
+            kualitas = (
+                o.find(class_="typez TV").text
+                if o.find(class_="typez TV")
+                else o.find(class_="typez BD")
+            )
+            lenddata.append(
+                {"judul": title, "link": link, "quality": kualitas, "status": status}
+            )
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
