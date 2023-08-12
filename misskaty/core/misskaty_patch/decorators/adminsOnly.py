@@ -56,8 +56,8 @@ async def anonymous_admin_verification(
     ) not in set(ANON.keys()):
         try:
             await CallbackQuery.message.edit_text("Button has been Expired.")
-        except pyrogram.types.RPCError:
-            with contextlib.suppress(pyrogram.types.RPCError):
+        except pyrogram.errors.RPCError:
+            with contextlib.suppress(pyrogram.errors.RPCError):
                 await CallbackQuery.message.delete()
         return
     cb = ANON.pop(
