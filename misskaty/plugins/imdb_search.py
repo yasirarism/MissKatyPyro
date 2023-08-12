@@ -31,7 +31,6 @@ from pyrogram.types import (
 from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper import GENRES_EMOJI, Cache, get_random_string, http, search_jw
 from utils import demoji
 
@@ -64,29 +63,19 @@ async def imdb_choose(_, ctx: Message):
             return await imdb_search_id(kuery, ctx)
     buttons = InlineKeyboard()
     ranval = get_random_string(4)
-    LIST_CARI.add(ranval, kuery, timeout=180)
+    LIST_CARI.add(ranval, kuery, timeout=30)
     buttons.row(
         InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
         InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),
     )
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
-    msg = await ctx.reply_photo(
+    await ctx.reply_photo(
         "https://telegra.ph/file/270955ef0d1a8a16831a9.jpg",
         caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.",
         reply_markup=buttons,
         quote=True,
     )
-    try:
-        await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
-    except ListenerTimeout:
-        del LIST_CARI[ranval]
-        try:
-            await msg.edit_caption(
-                "😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!"
-            )
-        except MessageIdInvalid:
-            pass
 
 
 @app.on_cb("imdbset")
@@ -106,18 +95,9 @@ async def imdblangset(_, query: CallbackQuery):
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
         )
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
-    msg = await query.message.edit_caption(
+    await query.message.edit_caption(
         "<i>Please select available language below..</i>", reply_markup=buttons
     )
-    try:
-        await msg.wait_for_click(from_user_id=int(uid), timeout=30)
-    except ListenerTimeout:
-        try:
-            await msg.edit_caption(
-                "😶‍🌫️ Callback Query Timeout. Task Has Been Canceled!"
-            )
-        except MessageIdInvalid:
-            pass
 
 
 @app.on_cb("setimdb")
@@ -196,14 +176,7 @@ async def imdb_search_id(kueri, message):
             )
         )
         buttons.add(*BTN)
-        msg = await k.edit_caption(msg, reply_markup=buttons)
-        try:
-            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
-        except ListenerTimeout:
-            try:
-                await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
-            except MessageIdInvalid:
-                pass
+        await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
         await k.edit_caption(
             f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -260,14 +233,7 @@ async def imdb_search_en(kueri, message):
             )
         )
         buttons.add(*BTN)
-        msg = await k.edit_caption(msg, reply_markup=buttons)
-        try:
-            await msg.wait_for_click(from_user_id=message.from_user.id, timeout=30)
-        except ListenerTimeout:
-            try:
-                await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
-            except MessageIdInvalid:
-                pass
+        await k.edit_caption(msg, reply_markup=buttons)
     except Exception as err:
         await k.edit_caption(
             f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -326,16 +292,7 @@ async def imdbcari(_, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            try:
-                msg = await query.message.edit_caption(msg, reply_markup=buttons)
-                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
-            except ListenerTimeout:
-                try:
-                    await msg.edit_caption("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
-                except MessageIdInvalid:
-                    await msg.reply("😶‍🌫️ Waktu Habis. Task Telah Dibatalkan!")
-            except MessageIdInvalid:
-                pass
+            await query.message.edit_caption(msg, reply_markup=buttons)
         except Exception as err:
             await query.message.edit_caption(
                 f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -387,16 +344,7 @@ async def imdbcari(_, query: CallbackQuery):
                 )
             )
             buttons.add(*BTN)
-            try:
-                msg = await query.message.edit_caption(msg, reply_markup=buttons)
-                await msg.wait_for_click(from_user_id=int(uid), timeout=30)
-            except ListenerTimeout:
-                try:
-                    await msg.edit_caption("😶‍🌫️ Timeout. Task Has Been Cancelled!")
-                except MessageIdInvalid:
-                    await msg.reply("😶‍🌫️ Timeout. Task Has Been Cancelled!")
-            except MessageIdInvalid:
-                pass
+            await query.message.edit_caption(msg, reply_markup=buttons)
         except Exception as err:
             await query.message.edit_caption(
                 f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>"

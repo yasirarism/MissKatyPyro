@@ -178,7 +178,7 @@ async def locktypes(_, message):
 
 @app.on_message(filters.text & ~filters.private, group=69)
 async def url_detector(_, message):
-    user = message.from_user
+    user = message.from_user or message.sender_chat
     chat_id = message.chat.id
     text = message.text.lower().strip()
 

@@ -63,7 +63,12 @@ async def anonymous_admin_verification(
     cb = ANON.pop(
         int(f"{CallbackQuery.message.chat.id}{CallbackQuery.data.split('.')[1]}")
     )
-    member = await CallbackQuery.message.chat.get_member(CallbackQuery.from_user.id)
+    try:
+        member = await CallbackQuery.message.chat.get_member(CallbackQuery.from_user.id)
+    except pyrogram.errors.exceptions.forbidden_403.ChatAdminRequired:
+        return await CallbackQuery.message.edit_text(
+            "I must be admin to execute this task, or i will leave from this group.",
+        )
     if member.status not in (
         pyrogram.enums.ChatMemberStatus.OWNER,
         pyrogram.enums.ChatMemberStatus.ADMINISTRATOR,
@@ -99,7 +104,7 @@ async def anonymous_admin_verification(
         await cb[1](self, cb[0])
     except pyrogram.errors.exceptions.forbidden_403.ChatAdminRequired:
         return await CallbackQuery.message.edit_text(
-            "I must be admin to execute this Command",
+            "I must be admin to execute this task, or i will leave from this group.",
         )
     except BaseException as e:
         return await handle_error(e, CallbackQuery)

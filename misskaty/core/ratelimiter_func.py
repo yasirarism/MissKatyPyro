@@ -21,10 +21,10 @@ class RateLimiter:
         self.second_rate = RequestRate(1, Duration.SECOND)
 
         # 15 requests per minute.
-        self.minute_rate = RequestRate(15, Duration.MINUTE)
+        self.minute_rate = RequestRate(60, Duration.MINUTE)
 
         # 100 requests per hour
-        self.hourly_rate = RequestRate(100, Duration.HOUR)
+        self.hourly_rate = RequestRate(300, Duration.HOUR)
 
         # 500 requests per day
         self.daily_rate = RequestRate(500, Duration.DAY)
