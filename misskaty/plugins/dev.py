@@ -6,7 +6,6 @@ import json
 import os
 import pickle
 import re
-import requests
 import sys
 import traceback
 from datetime import datetime
@@ -17,6 +16,7 @@ from typing import Any, Optional, Tuple
 
 import aiohttp
 import cloudscraper
+import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
