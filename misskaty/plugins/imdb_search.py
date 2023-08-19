@@ -31,7 +31,7 @@ from pyrogram.types import (
 from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import GENRES_EMOJI, Cache, get_random_string, fetch, search_jw
+from misskaty.helper import GENRES_EMOJI, Cache, fetch, get_random_string, search_jw
 from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
@@ -127,6 +127,7 @@ async def imdbsetlang(_, query: CallbackQuery):
             )
     except (MessageIdInvalid, MessageNotModified):
         pass
+
 
 async def imdb_search_id(kueri, message):
     BTN = []
@@ -258,7 +259,9 @@ async def imdbcari(_, query: CallbackQuery):
         except KeyError:
             return await query.message.edit_caption("⚠️ Callback Query Sudah Expired!")
         try:
-            await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
+            await query.message.edit_caption(
+                "<i>🔎 Sedang mencari di Database IMDB..</i>"
+            )
         except (MessageIdInvalid, MessageNotModified):
             pass
         msg = ""
