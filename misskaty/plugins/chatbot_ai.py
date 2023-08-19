@@ -15,8 +15,7 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
-from misskaty.helper.http import fetch
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API

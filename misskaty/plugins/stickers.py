@@ -29,7 +29,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import fetch, use_chat_lang
+from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"
