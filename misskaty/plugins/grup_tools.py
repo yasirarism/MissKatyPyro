@@ -6,7 +6,12 @@ from logging import getLogger
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
-from pyrogram.errors import ChatAdminRequired, MessageTooLong, RPCError, ChatWriteForbidden
+from pyrogram.errors import (
+    ChatAdminRequired,
+    ChatWriteForbidden,
+    MessageTooLong,
+    RPCError,
+)
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.users_chats_db import db
