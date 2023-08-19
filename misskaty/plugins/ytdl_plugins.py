@@ -203,7 +203,8 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
         try:
             return await cq.answer(strings("vip-btn"), True)
         except QueryIdInvalid:
-            return
+            return await cq.delete()
+    await cq.edit_message_caption("Downloading..")
     async with iYTDL(
         log_group_id=LOG_CHANNEL,
         cache_path="cache",

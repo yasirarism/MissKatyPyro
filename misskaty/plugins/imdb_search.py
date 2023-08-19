@@ -92,9 +92,12 @@ async def imdblangset(_, query: CallbackQuery):
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
         )
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
-    await query.message.edit_caption(
-        "<i>Please select available language below..</i>", reply_markup=buttons
-    )
+    try:
+        await query.message.edit_caption(
+            "<i>Please select available language below..</i>", reply_markup=buttons
+        )
+    except (MessageIdInvalid, MessageNotModified):
+        pass
 
 
 @app.on_cb("setimdb")
@@ -106,22 +109,24 @@ async def imdbsetlang(_, query: CallbackQuery):
     _, langset = await is_imdbset(query.from_user.id)
     if langset == lang:
         return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
-    if lang == "eng":
-        await add_imdbset(query.from_user.id, lang)
-        await query.message.edit_caption(
-            "Language interface for IMDB has been changed to English."
-        )
-    elif lang == "ind":
-        await add_imdbset(query.from_user.id, lang)
-        await query.message.edit_caption(
-            "Bahasa tampilan IMDB sudah diubah ke Indonesia."
-        )
-    else:
-        await remove_imdbset(query.from_user.id)
-        await query.message.edit_caption(
-            "UserSetting for IMDB has been deleted from database."
-        )
-
+    try:
+        if lang == "eng":
+            await add_imdbset(query.from_user.id, lang)
+            await query.message.edit_caption(
+                "Language interface for IMDB has been changed to English."
+            )
+        elif lang == "ind":
+            await add_imdbset(query.from_user.id, lang)
+            await query.message.edit_caption(
+                "Bahasa tampilan IMDB sudah diubah ke Indonesia."
+            )
+        else:
+            await remove_imdbset(query.from_user.id)
+            await query.message.edit_caption(
+                "UserSetting for IMDB has been deleted from database."
+            )
+    except (MessageIdInvalid, MessageNotModified):
+        pass
 
 async def imdb_search_id(kueri, message):
     BTN = []
@@ -173,6 +178,8 @@ async def imdb_search_id(kueri, message):
         )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
+    except (MessageIdInvalid, MessageNotModified):
+        pass
     except Exception as err:
         await k.edit_caption(
             f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -229,6 +236,8 @@ async def imdb_search_en(kueri, message):
         )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
+    except (MessageIdInvalid, MessageNotModified):
+        pass
     except Exception as err:
         await k.edit_caption(
             f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -248,7 +257,10 @@ async def imdbcari(_, query: CallbackQuery):
             del LIST_CARI[msg]
         except KeyError:
             return await query.message.edit_caption("⚠️ Callback Query Sudah Expired!")
-        await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
+        try:
+            await query.message.edit_caption("<i>🔎 Sedang mencari di Database IMDB..</i>")
+        except (MessageIdInvalid, MessageNotModified):
+            pass
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
@@ -287,6 +299,8 @@ async def imdbcari(_, query: CallbackQuery):
             )
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
+        except (MessageIdInvalid, MessageNotModified):
+            pass
         except Exception as err:
             await query.message.edit_caption(
                 f"Ooppss, gagal mendapatkan daftar judul di IMDb. Mungkin terkena rate limit atau down.\n\n<b>ERROR:</b> <code>{err}</code>"
@@ -338,6 +352,8 @@ async def imdbcari(_, query: CallbackQuery):
             )
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
+        except (MessageIdInvalid, MessageNotModified):
+            pass
         except Exception as err:
             await query.message.edit_caption(
                 f"Failed when requesting movies title. Maybe got rate limit or down.\n\n<b>ERROR:</b> <code>{err}</code>"

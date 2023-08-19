@@ -417,7 +417,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "send": send,
             "stdout": out_buf,
             "traceback": traceback,
-            "http": http,
+            "http": fetch,
             "replied": ctx.reply_to_message,
             "requests": requests,
             "help": _help,
