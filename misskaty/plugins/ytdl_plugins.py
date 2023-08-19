@@ -27,7 +27,7 @@ from pyrogram.types import (
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task, ratelimiter
-from misskaty.helper.http import fetch, use_chat_lang
+from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
 LOGGER = getLogger(__name__)
