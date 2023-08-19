@@ -40,7 +40,9 @@ from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
 from misskaty.core.decorator import new_task
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
-from misskaty.helper import fetch, get_readable_file_size, get_readable_time, use_chat_lang
+from misskaty.helper.http import fetch
+from misskaty.helper.human_read import get_readable_file_size, get_readable_time
+from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
 __MODULE__ = "DevCommand"
