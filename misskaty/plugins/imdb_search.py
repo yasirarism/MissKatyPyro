@@ -31,7 +31,7 @@ from pyrogram.types import (
 from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import GENRES_EMOJI, Cache, get_random_string, fetch, search_jw
+from misskaty.helper import GENRES_EMOJI, Cache, fetch, get_random_string, search_jw
 from utils import demoji
 
 LOGGER = logging.getLogger(__name__)

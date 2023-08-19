@@ -6,7 +6,6 @@
 """
 
 import asyncio
-import httpx
 import json
 import os
 import traceback
@@ -14,6 +13,7 @@ from logging import getLogger
 from urllib.parse import quote
 
 import aiohttp
+import httpx
 from bs4 import BeautifulSoup
 from deep_translator import GoogleTranslator
 from gtts import gTTS
