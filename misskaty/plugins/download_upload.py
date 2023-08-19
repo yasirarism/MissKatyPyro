@@ -18,7 +18,7 @@ from pySmartDL import SmartDL
 from misskaty import app
 from misskaty.core.decorator import capture_err, new_task
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
@@ -60,7 +60,7 @@ async def upload(bot, message):
     try:
         files = {"file": open(fileku, "rb")}
         await m.edit("Uploading to Anonfile, Please Wait||")
-        callapi = await http.post("https://api.anonfiles.com/upload", files=files)
+        callapi = await fetch.post("https://api.anonfiles.com/upload", files=files)
         text = callapi.json()
         output = f'<u>File Uploaded to Anonfile</u>\n\n📂 File Name: {text["data"]["file"]["metadata"]["name"]}\n\n📦 File Size: {text["data"]["file"]["metadata"]["size"]["readable"]}\n\n📥 Download Link: {text["data"]["file"]["url"]["full"]}'
 
@@ -180,7 +180,7 @@ async def tiktokdl(_, message):
     msg = await message.reply("Trying download...")
     try:
         r = (
-            await http.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")
+            await fetch.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")
         ).json()
         await message.reply_video(
             r["hasil"]["download_mp4_hd"],
@@ -202,7 +202,7 @@ async def fbdl(_, message):
     link = message.command[1]
     msg = await message.reply("Trying download...")
     try:
-        resjson = (await http.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
+        resjson = (await fetch.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
         try:
             url = resjson["result"]["links"]["hd"].replace("&amp;", "&")
         except:

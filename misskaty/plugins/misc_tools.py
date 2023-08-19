@@ -35,7 +35,7 @@ from pyrogram.types import (
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
@@ -67,22 +67,11 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42"
-}
-
-
-async def get_content(url):
-    async with aiohttp.ClientSession() as session:
-        r = await session.get(url, headers=headers)
-        return await r.read()
-
-
 @app.on_cmd("kbbi")
 async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
         return await ctx.reply_msg("Please add keyword to search definition in kbbi")
-    r = (await http.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
+    r = (await fetch.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
     if nomsg := r.get("detail"):
         return await ctx.reply_msg(nomsg)
     kbbi_btn = InlineKeyboardMarkup(
@@ -115,7 +104,7 @@ async def carbon_make(self: Client, ctx: Message):
         "backgroundColor": "#1F816D",
     }
     try:
-        response = await http.post(
+        response = await fetch.post(
             "https://carbon.yasirapi.eu.org/api/cook", json=json_data
         )
     except httpx.HTTPError as exc:
@@ -144,7 +133,7 @@ async def readqr(c, m):
     foto = await m.reply_to_message.download()
     myfile = {"file": (foto, open(foto, "rb"), "application/octet-stream")}
     url = "http://api.qrserver.com/v1/read-qr-code/"
-    r = await http.post(url, files=myfile)
+    r = await fetch.post(url, files=myfile)
     os.remove(foto)
     if res := r.json()[0]["symbol"][0]["data"] is None:
         return await m.reply_msg(res)
@@ -177,7 +166,7 @@ async def stackoverflow(_, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in StackOverflow!")
     r = (
-        await http.get(
+        await fetch.get(
             f"https://api.stackexchange.com/2.3/search/excerpts?order=asc&sort=relevance&q={message.command[1]}&accepted=True&migrated=False¬ice=False&wiki=False&site=stackoverflow"
         )
     ).json()
@@ -210,9 +199,8 @@ async def gsearch(_, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        html = await http.get(
+        html = await fetch.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
-            headers=headers,
         )
         soup = BeautifulSoup(html.text, "lxml")
 
@@ -536,7 +524,7 @@ async def mdl_callback(_, query: CallbackQuery):
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
         try:
-            res = (await http.get(f"https://kuryana.vercel.app/id/{slug}")).json()
+            res = (await fetch.get(f"https://kuryana.vercel.app/id/{slug}")).json()
             result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
             result += (
                 f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"

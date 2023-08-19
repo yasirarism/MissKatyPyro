@@ -29,8 +29,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.http import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
 __MODULE__ = "Stickers"
@@ -217,7 +216,7 @@ async def kang_sticker(self: Client, ctx: Message, strings):
             await prog_msg.delete()
             return
         try:
-            r = await http.get(img_url)
+            r = await fetch.get(img_url)
             if r.status_code == 200:
                 with open(filename, mode="wb") as f:
                     f.write(r.read())

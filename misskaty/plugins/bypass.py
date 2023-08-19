@@ -17,7 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import get_readable_file_size, http, rentry
+from misskaty.helper import get_readable_file_size, fetch, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -43,7 +43,7 @@ async def pling_bypass(url):
     try:
         id_url = re.search(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url)[2]
         link = f"https://www.pling.com/p/{id_url}/loadFiles"
-        res = await http.get(link)
+        res = await fetch.get(link)
         json_dic_files = res.json().pop("files")
         msg = f"\n**Source Link** :\n`{url}`\n**Direct Link :**\n"
         msg += "\n".join(

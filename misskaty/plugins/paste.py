@@ -13,7 +13,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import http, post_to_telegraph, rentry
+from misskaty.helper import fetch, post_to_telegraph, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Paste"
@@ -217,7 +217,7 @@ async def wastepaste(_, message):
             "expire_at": 0,
             "expire_in": 0,
         }
-        response = await http.post("https://paste.yasir.eu.org/api/new", json=json_data)
+        response = await fetch.post("https://paste.yasir.eu.org/api/new", json=json_data)
         url = f"https://paste.yasir.eu.org/{response.json()['id']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
@@ -286,7 +286,7 @@ async def nekopaste(_, message):
 
     try:
         x = (
-            await http.post("https://nekobin.com/api/documents", json={"content": data})
+            await fetch.post("https://nekobin.com/api/documents", json={"content": data})
         ).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:
@@ -356,7 +356,7 @@ async def spacebinn(_, message):
 
     try:
         siteurl = "https://spaceb.in/api/v1/documents/"
-        response = await http.post(siteurl, data={"content": data, "extension": "txt"})
+        response = await fetch.post(siteurl, data={"content": data, "extension": "txt"})
         response = response.json()
         url = "https://spaceb.in/" + response["payload"]["id"]
     except Exception as e:
@@ -492,7 +492,7 @@ async def tempaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        req = await http.post(
+        req = await fetch.post(
             "https://tempaste.com/api/v1/create-paste/",
             data={
                 "api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t",

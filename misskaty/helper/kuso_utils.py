@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from telegraph.aio import Telegraph
 
 from misskaty import BOT_USERNAME
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 
 LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ async def kusonimeBypass(url: str, slug=None):
         noslug_url = "https://kusonime.com/{slug}"
         _url = noslug_url.format({"slug": slug})
     try:
-        page = await http.get(_url, headers=headers)
+        page = await fetch.get(_url, headers=headers)
         soup = BeautifulSoup(page.text, "lxml")
         thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
         data = []

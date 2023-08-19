@@ -8,7 +8,7 @@ from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 from misskaty.vars import CURRENCY_API
 
 __MODULE__ = "Currency"
@@ -42,7 +42,7 @@ async def currency(_, ctx: Message):
             f"pair/{currency_from}/{currency_to}/{amount}"
         )
         try:
-            res = await http.get(url)
+            res = await fetch.get(url)
             data = res.json()
             try:
                 conversion_rate = data["conversion_rate"]

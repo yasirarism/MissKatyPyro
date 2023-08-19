@@ -11,8 +11,8 @@ from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import Cache, http
-from misskaty.plugins.web_scraper import headers, split_arr
+from misskaty.helper import Cache, fetch
+from misskaty.plugins.web_scraper import split_arr
 from misskaty.vars import COMMAND_HANDLER
 
 PYPI_DICT = Cache(filename="pypi_cache.db", path="cache", in_memory=False)
@@ -20,7 +20,7 @@ PYPI_DICT = Cache(filename="pypi_cache.db", path="cache", in_memory=False)
 
 async def getDataPypi(msg, kueri, CurrentPage, user):
     if not PYPI_DICT.get(msg.id):
-        pypijson = (await http.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
+        pypijson = (await fetch.get(f"https://yasirapi.eu.org/pypi?q={kueri}")).json()
         if not pypijson.get("result"):
             await msg.edit_msg("Sorry could not find any matching results!", del_in=6)
             return None, 0, None
@@ -126,7 +126,7 @@ async def pypi_getdata(_, callback_query: CallbackQuery):
         InlineButton("❌ Close", f"close#{callback_query.from_user.id}"),
     )
     try:
-        html = await http.get(f"https://pypi.org/pypi/{pkgname}/json", headers=headers)
+        html = await fetch.get(f"https://pypi.org/pypi/{pkgname}/json")
         res = html.json()
         requirement = (
             "".join(f"{i}, " for i in res["info"].get("requires_dist"))

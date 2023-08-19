@@ -31,14 +31,11 @@ from pyrogram.types import (
 from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import GENRES_EMOJI, Cache, get_random_string, http, search_jw
+from misskaty.helper import GENRES_EMOJI, Cache, get_random_string, fetch, search_jw
 from utils import demoji
 
 LOGGER = logging.getLogger(__name__)
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
-headers = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/600.1.17 (KHTML, like Gecko) Version/7.1 Safari/537.85.10"
-}
 
 
 # IMDB Choose Language
@@ -136,9 +133,8 @@ async def imdb_search_id(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(
-            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
-            headers=headers,
+        r = await fetch.get(
+            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
         )
         res = r.json().get("d")
         if not res:
@@ -193,9 +189,8 @@ async def imdb_search_en(kueri, message):
     msg = ""
     buttons = InlineKeyboard(row_width=4)
     try:
-        r = await http.get(
-            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
-            headers=headers,
+        r = await fetch.get(
+            f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
         )
         res = r.json().get("d")
         if not res:
@@ -257,9 +252,8 @@ async def imdbcari(_, query: CallbackQuery):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(
-                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
-                headers=headers,
+            r = await fetch.get(
+                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
             )
             res = r.json().get("d")
             if not res:
@@ -309,9 +303,8 @@ async def imdbcari(_, query: CallbackQuery):
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         try:
-            r = await http.get(
-                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json",
-                headers=headers,
+            r = await fetch.get(
+                f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
             )
             res = r.json().get("d")
             if not res:
@@ -360,7 +353,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
     try:
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         imdb_url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(imdb_url, headers=headers)
+        resp = await fetch.get(imdb_url)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
             sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
@@ -519,7 +512,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
     try:
         await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
         imdb_url = f"https://www.imdb.com/title/tt{movie}/"
-        resp = await http.get(imdb_url, headers=headers)
+        resp = await fetch.get(imdb_url)
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
             sop.find("script", attrs={"type": "application/ld+json"}).contents[0]

@@ -27,8 +27,7 @@ from pyrogram.types import (
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task, ratelimiter
-from misskaty.helper.http import http
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.http import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
 LOGGER = getLogger(__name__)
@@ -318,7 +317,7 @@ async def get_ytthumb(videoid: str):
     thumb_link = "https://i.imgur.com/4LwPLai.png"
     for qualiy in thumb_quality:
         link = f"https://i.ytimg.com/vi/{videoid}/{qualiy}"
-        if (await http.get(link)).status_code == 200:
+        if (await fetch.get(link)).status_code == 200:
             thumb_link = link
             break
     return thumb_link

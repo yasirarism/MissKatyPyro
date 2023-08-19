@@ -3,12 +3,12 @@ from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 
 
 async def getData(chat_id, message_id, GetWord, CurrentPage):
     UDJson = (
-        await http.get(f"https://api.urbandictionary.com/v0/define?term={GetWord}")
+        await fetch.get(f"https://api.urbandictionary.com/v0/define?term={GetWord}")
     ).json()
 
     if "list" not in UDJson:

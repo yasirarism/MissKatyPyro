@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 import psutil
 
 from misskaty import BOT_NAME, UBOT_NAME, botStartTime
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins import ALL_MODULES
 
@@ -87,7 +87,7 @@ def get_random_string(length: int = 5):
 async def rentry(teks):
     # buat dapetin cookie
     cookie = SimpleCookie()
-    kuki = (await http.get("https://rentry.co")).cookies
+    kuki = (await fetch.get("https://rentry.co")).cookies
     cookie.load(kuki)
     kukidict = {key: value.value for key, value in cookie.items()}
     # headernya
@@ -95,7 +95,7 @@ async def rentry(teks):
     payload = {"csrfmiddlewaretoken": kukidict["csrftoken"], "text": teks}
     return (
         (
-            await http.post(
+            await fetch.post(
                 "https://rentry.co/api/new",
                 data=payload,
                 headers=header,
@@ -128,7 +128,7 @@ async def search_jw(movie_name: str, locale: str):
     m_t_ = ""
     try:
         response = (
-            await http.get(
+            await fetch.get(
                 f"https://yasirapi.eu.org/justwatch?q={movie_name}&locale={locale}"
             )
         ).json()

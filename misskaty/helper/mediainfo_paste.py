@@ -149,7 +149,7 @@ padding-top: 0.25rem;
 import json
 import re
 
-from .http import http
+from .http import fetch
 
 
 def html_builder(title: str, text: str) -> str:
@@ -220,7 +220,7 @@ def html_builder(title: str, text: str) -> str:
 async def mediainfo_paste(text: str, title: str) -> str:
     html_content = html_builder(title, text)
     URL = "https://mediainfo-1-y5870653.deta.app/api"
-    response = await http.post(URL, json={"content": html_content})
+    response = await fetch.post(URL, json={"content": html_content})
     return (
         f"https://mediainfo-1-y5870653.deta.app/{json.loads(response.content)['key']}"
     )

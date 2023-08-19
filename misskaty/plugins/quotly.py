@@ -9,7 +9,7 @@ from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 
 __MODULE__ = "Fun"
 __HELP__ = """
@@ -234,7 +234,7 @@ async def pyrogram_to_quotly(messages, is_reply):
         else:
             the_message_dict_to_append["replyMessage"] = {}
         payload["messages"].append(the_message_dict_to_append)
-    r = await http.post("https://bot.lyo.su/quote/generate.png", json=payload)
+    r = await fetch.post("https://bot.lyo.su/quote/generate.png", json=payload)
     if not r.is_error:
         return r.read()
     else:

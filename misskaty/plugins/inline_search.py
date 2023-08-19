@@ -26,9 +26,8 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app, user
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import GENRES_EMOJI, http, post_to_telegraph, search_jw
+from misskaty.helper import GENRES_EMOJI, fetch, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
-from misskaty.plugins.misc_tools import get_content
 from misskaty.vars import USER_SESSION
 from utils import demoji
 
@@ -117,13 +116,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         kueri = inline_query.query.split(None, 1)[1].strip()
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/61.0.3163.100 Safari/537.36"
-        }
-        jsonapi = await http.get(
+        jsonapi = await fetch.get(
             "https://github.com/PaulSonOfLars/telegram-bot-api-spec/raw/main/api.json",
-            headers=headers,
             follow_redirects=True,
         )
         parsemethod = jsonapi.json().get("methods")
@@ -229,7 +223,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(
+        search_results = await fetch.get(
             f"https://www.google.com/search?q={judul}&num=20"
         )
         soup = BeautifulSoup(search_results.text, "lxml")
@@ -375,7 +369,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         query = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(
+        search_results = await fetch.get(
             f"https://api.github.com/search/repositories?q={query}"
         )
         srch_results = json.loads(search_results.text)
@@ -421,7 +415,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         query = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(f"https://yasirapi.eu.org/pypi?q={query}")
+        search_results = await fetch.get(f"https://yasirapi.eu.org/pypi?q={query}")
         srch_results = search_results.json()
         data = []
         for sraeo in srch_results["result"]:
@@ -463,7 +457,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(
+        search_results = await fetch.get(
             f"https://api.abir-hasan.tk/youtube?query={judul}"
         )
         srch_results = json.loads(search_results.text)
@@ -519,7 +513,7 @@ async def inline_menu(_, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         movie_name = inline_query.query.split(None, 1)[1].strip()
-        search_results = await http.get(
+        search_results = await fetch.get(
             f"https://yasirapi.eu.org/imdb-search?q={movie_name}"
         )
         res = json.loads(search_results.text).get("result")
@@ -612,7 +606,7 @@ async def imdb_inl(_, query):
                 "⏳ <i>Permintaan kamu sedang diproses.. </i>"
             )
             url = f"https://www.imdb.com/title/{movie}/"
-            resp = await get_content(url)
+            resp = await fetch.get(url)
             sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
                 sop.find("script", attrs={"type": "application/ld+json"}).contents[0]

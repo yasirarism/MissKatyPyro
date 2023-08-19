@@ -17,9 +17,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import Cache, http
-from misskaty.helper.kuso_utils import Kusonime
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper import Cache, fetch, Kusonime, use_chat_lang
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -34,10 +32,6 @@ __HELP__ = """
 /gomov [query <optional>] - Scrape website data from GoMov.
 /samehadaku [query <optional>] - Scrape website data from Samehadaku.
 """
-
-headers = {
-    "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
-}
 
 LOGGER = logging.getLogger(__name__)
 SCRAP_DICT = Cache(filename="scraper_cache.db", path="cache", in_memory=False)
@@ -75,9 +69,9 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
             terbitjson = (
-                (await http.get(f"{web['yasirapi']}/terbit21?q={kueri}")).json()
+                (await fetch.get(f"{web['yasirapi']}/terbit21?q={kueri}")).json()
                 if kueri
-                else (await http.get("https://yasirapi.eu.org/terbit21")).json()
+                else (await fetch.get("https://yasirapi.eu.org/terbit21")).json()
             )
         except:
             await msg.edit_msg(strings("err_getapi"))
@@ -117,9 +111,9 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
             lk21json = (
-                (await http.get(f"{web['yasirapi']}/lk21?q={kueri}")).json()
+                (await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")).json()
                 if kueri
-                else (await http.get("https://yasirapi.eu.org/lk21")).json()
+                else (await fetch.get("https://yasirapi.eu.org/lk21")).json()
             )
         except:
             await msg.edit_msg(strings("err_getapi"))
@@ -156,7 +150,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
 async def getDataPahe(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
-            pahejson = (await http.get(f"{web['yasirapi']}/pahe?q={kueri}")).json()
+            pahejson = (await fetch.get(f"{web['yasirapi']}/pahe?q={kueri}")).json()
         except:
             await msg.edit_msg(strings("err_getapi"))
             return None, None
@@ -189,8 +183,8 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         try:
-            data = await http.get(
-                f"{web['kusonime']}/?s={kueri}", headers=headers, follow_redirects=True
+            data = await fetch.get(
+                f"{web['kusonime']}/?s={kueri}", follow_redirects=True
             )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
@@ -242,8 +236,8 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
         try:
-            data = await http.get(
-                f"{web['movieku']}/?s={kueri}", headers=headers, follow_redirects=True
+            data = await fetch.get(
+                f"{web['movieku']}/?s={kueri}", follow_redirects=True
             )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
@@ -283,9 +277,8 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         try:
-            data = await http.get(
+            data = await fetch.get(
                 f"{web['savefilm21']}/?s={kueri}",
-                headers=headers,
                 follow_redirects=True,
             )
         except Exception as err:
@@ -336,14 +329,13 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
             if query:
-                data = await http.get(
+                data = await fetch.get(
                     f"{web['lendrive']}/?s={kueri}",
-                    headers=headers,
                     follow_redirects=True,
                 )
             else:
-                data = await http.get(
-                    web["lendrive"], headers=headers, follow_redirects=True
+                data = await fetch.get(
+                    web["lendrive"], follow_redirects=True
                 )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
@@ -398,9 +390,8 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
-            data = await http.get(
+            data = await fetch.get(
                 f"{web['melongmovie']}/?s={kueri}",
-                headers=headers,
                 follow_redirects=True,
             )
         except Exception as err:
@@ -449,8 +440,8 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
-            gomovv = await http.get(
-                f"{web['gomov']}/?s={kueri}", headers=headers, follow_redirects=True
+            gomovv = await fetch.get(
+                f"{web['gomov']}/?s={kueri}", follow_redirects=True
             )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
@@ -505,9 +496,9 @@ async def getSame(msg, query, current_page, strings):
         cfse = cloudscraper.create_scraper()
         try:
             if query:
-                data = cfse.get(f"{web['samehadaku']}/?s={query}", headers=headers)
+                data = cfse.get(f"{web['samehadaku']}/?s={query}")
             else:
-                data = cfse.get(web["samehadaku"], headers=headers)
+                data = cfse.get(web["samehadaku"])
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, None
@@ -1278,7 +1269,7 @@ async def savefilm21_scrap(_, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        html = await http.get(link, headers=headers)
+        html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
@@ -1296,7 +1287,7 @@ async def savefilm21_scrap(_, callback_query, strings):
 async def muviku_scrap(_, message, strings):
     try:
         link = message.text.split(" ", maxsplit=1)[1]
-        html = await http.get(link, headers=headers)
+        html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="smokeurl")
         data = []
@@ -1344,7 +1335,7 @@ async def melong_scrap(_, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        html = await http.get(link, headers=headers)
+        html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
         rep = ""
         for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
@@ -1384,7 +1375,7 @@ async def gomov_dl(_, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        html = await http.get(link, headers=headers)
+        html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
         entry = soup.find(class_="gmr-download-wrap clearfix")
         hasil = soup.find(class_="title-download").text
@@ -1422,7 +1413,7 @@ async def lendrive_dl(_, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        hmm = await http.get(link, headers=headers)
+        hmm = await fetch.get(link)
         q = BeautifulSoup(hmm.text, "lxml")
         j = q.findAll("div", class_="soraurlx")
         kl = ""

@@ -15,7 +15,7 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph
-from misskaty.helper.http import http
+from misskaty.helper.http import fetch
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
 
@@ -32,7 +32,7 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await http.get(
+        req = await fetch.get(
             f"https://yasirapi.eu.org/bard?input={ctx.text.split(' ', 1)[1]}"
         )
         random_choice = random.choice(req.json().get("choices"))

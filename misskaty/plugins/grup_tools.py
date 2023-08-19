@@ -13,8 +13,7 @@ from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.http import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO, SUPPORT_CHAT
 from utils import temp
 
@@ -139,7 +138,7 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
         # Combot API Detection
         try:
             apicombot = (
-                await http.get(f"https://api.cas.chat/check?user_id={user.id}")
+                await fetch.get(f"https://api.cas.chat/check?user_id={user.id}")
             ).json()
             if apicombot.get("ok") == "true":
                 await app.ban_chat_member(
@@ -189,7 +188,7 @@ async def greet_group(bot, message, strings):
             # Combot API Detection
             try:
                 apicombot = (
-                    await http.get(f"https://api.cas.chat/check?user_id={u.id}")
+                    await fetch.get(f"https://api.cas.chat/check?user_id={u.id}")
                 ).json()
                 if apicombot.get("ok") == "true":
                     await app.ban_chat_member(

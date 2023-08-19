@@ -15,8 +15,7 @@ from telegraph.aio import Telegraph
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper.http import http
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.http import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "OCR"
@@ -48,7 +47,7 @@ async def ocr(_, ctx: Message, strings):
         response = await Telegraph().upload_file(file_path)
         url = f"https://telegra.ph{response[0]['src']}"
         req = (
-            await http.get(
+            await fetch.get(
                 f"https://script.google.com/macros/s/AKfycbwURISN0wjazeJTMHTPAtxkrZTWTpsWIef5kxqVGoXqnrzdLdIQIfLO7jsR5OQ5GO16/exec?url={url}",
                 follow_redirects=True,
             )
