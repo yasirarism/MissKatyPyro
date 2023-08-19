@@ -6,6 +6,7 @@ import json
 import os
 import pickle
 import re
+import requests
 import sys
 import traceback
 from datetime import datetime
@@ -364,12 +365,11 @@ async def shell_cmd(_, ctx: Message, strings):
     & filters.user(SUDO)
 )
 @app.on_edited_message(
-    (filters.command(["ev", "run", "myeval"]) | filters.regex(r"app.run\(\)$"))
+    (filters.command(["ev", "run", "meval"]) | filters.regex(r"app.run\(\)$"))
     & filters.user(SUDO)
 )
-@user.on_message(filters.command(["ev", "run", "myeval"], ".") & filters.me)
+@user.on_message(filters.command(["ev", "run", "meval"], ".") & filters.me)
 @use_chat_lang()
-@new_task
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
         return await edit_or_reply(ctx, text=strings("no_eval"))
@@ -419,6 +419,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "traceback": traceback,
             "http": http,
             "replied": ctx.reply_to_message,
+            "requests": requests,
             "help": _help,
         }
         eval_vars.update(var)
