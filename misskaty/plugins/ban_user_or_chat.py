@@ -8,16 +8,12 @@ from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 
 
-@app.on_message(filters.incoming, group=-5)
+@app.on_message(filters.incoming & filters.private, group=-5)
 async def ban_reply(_, ctx: Message):
     if not ctx.from_user:
         return
     ban = await db.get_ban_status(ctx.from_user.id)
-    if (ban.get("is_banned") and ctx.chat.type.value == "private") or (
-        ban.get("is_banned")
-        and ctx.chat.type.value == "supergroup"
-        and bool(ctx.command)
-    ):
+    if ban.get("is_banned"):
         await ctx.reply_msg(
             f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
         )
