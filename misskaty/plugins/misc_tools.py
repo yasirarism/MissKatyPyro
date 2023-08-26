@@ -208,7 +208,7 @@ async def gsearch(_, message):
         # collect data
         data = []
 
-        for result in soup.select(".tF2Cxc"):
+        for result in soup.select(".tF2Cxc"):hmm
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
             try:
@@ -219,16 +219,16 @@ async def gsearch(_, message):
             # appending data to an array
             data.append(
                 {
-                    "title": title,
+                    "title": html.escape(title),
                     "link": link,
-                    "snippet": snippet,
+                    "snippet": html.escape(snippet),
                 }
             )
         arr = json.dumps(data, indent=2, ensure_ascii=False)
         parse = json.loads(arr)
         total = len(parse)
         res = "".join(
-            f"<a href='{i['link']}'>{i['title']}</a>\n{html.escape(i['snippet'])}\n\n"
+            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n"
             for i in parse
         )
     except Exception:

@@ -8,6 +8,7 @@ import pickle
 import re
 import sys
 import traceback
+from bs4 import BeautifulSoup
 from datetime import datetime
 from inspect import getfullargspec
 from shutil import disk_usage
@@ -420,6 +421,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "fetch": fetch,
             "replied": ctx.reply_to_message,
             "requests": requests,
+            "soup": BeautifulSoup,
             "help": _help,
         }
         eval_vars.update(var)

@@ -236,8 +236,8 @@ async def inline_menu(_, inline_query: InlineQuery):
                 snippet = result.select_one("#rso .lyLwlc").text
             except:
                 snippet = "-"
-            message_text = f"<a href='{link}'>{title}</a>\n"
-            message_text += f"Deskription: {html.escape(snippet)}"
+            message_text = f"<a href='{link}'>{html.escape(title)}</a>\n"
+            message_text += f"Deskription: {html.escape(snippet)}\nGoogleSearch by @{self.me.username}"
             data.append(
                 InlineQueryResultArticle(
                     title=f"{title}",
