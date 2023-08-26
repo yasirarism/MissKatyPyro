@@ -52,7 +52,6 @@ app = Client(
     mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
     sleep_threshold=180,
     app_version="MissKatyPyro Stable",
-    max_concurrent_transmissions=5,
     workers=50,
 )
 
