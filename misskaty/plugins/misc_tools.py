@@ -208,7 +208,7 @@ async def gsearch(_, message):
         # collect data
         data = []
 
-        for result in soup.select(".tF2Cxc"):hmm
+        for result in soup.select(".tF2Cxc"):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
             try:
