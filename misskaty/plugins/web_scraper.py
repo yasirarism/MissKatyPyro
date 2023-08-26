@@ -17,7 +17,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.ratelimiter import ratelimiter
-from misskaty.helper import Cache, fetch, Kusonime, use_chat_lang
+from misskaty.helper import Cache, Kusonime, fetch, use_chat_lang
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -334,9 +334,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
                     follow_redirects=True,
                 )
             else:
-                data = await fetch.get(
-                    web["lendrive"], follow_redirects=True
-                )
+                data = await fetch.get(web["lendrive"], follow_redirects=True)
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, 0, None
