@@ -234,7 +234,7 @@ async def gsearch(_, message):
         exc = traceback.format_exc()
         return await msg.edit(exc)
     await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>Scraped by @{BOT_USERNAME}</b>",
+        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
         disable_web_page_preview=True,
     )
 

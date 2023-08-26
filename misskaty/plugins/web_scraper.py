@@ -339,7 +339,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
                 )
         except Exception as err:
             await msg.edit_msg(strings("err_getweb").format(err=err))
-            return None, None
+            return None, 0, None
         res = BeautifulSoup(data, "lxml")
         lenddata = []
         for o in res.find_all(class_="bsx"):
