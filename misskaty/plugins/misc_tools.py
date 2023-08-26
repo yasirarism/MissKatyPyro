@@ -200,10 +200,10 @@ async def gsearch(_, message):
     query = message.text.split(" ", maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        html = await fetch.get(
+        gs = await fetch.get(
             f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
         )
-        soup = BeautifulSoup(html.text, "lxml")
+        soup = BeautifulSoup(gs.text, "lxml")
 
         # collect data
         data = []

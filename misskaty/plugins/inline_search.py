@@ -49,7 +49,7 @@ LOGGER = getLogger()
 
 
 @app.on_inline_query()
-async def inline_menu(_, inline_query: InlineQuery):
+async def inline_menu(self, inline_query: InlineQuery):
     if inline_query.query.strip().lower().strip() == "":
         aspymon_ver = (await shell_exec("pip freeze | grep async-pymongo"))[0]
         buttons = InlineKeyboard(row_width=2)
