@@ -51,9 +51,7 @@ async def mediainfo(_, ctx: Message, strings):
                 progress_args=(strings("dl_args_text"), process, c_time, dc_id),
             )
         except FileNotFoundError:
-            return await process.edit_msg(
-                "ERROR: FileNotFound."
-            )
+            return await process.edit_msg("ERROR: FileNotFound.")
         file_path = path.join("downloads/", path.basename(dl))
         output_ = await runcmd(f'mediainfo "{file_path}"')
         out = output_[0] if len(output_) != 0 else None

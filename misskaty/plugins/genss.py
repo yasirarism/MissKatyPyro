@@ -150,9 +150,7 @@ async def genss(self: Client, ctx: Message, strings):
                 progress_args=(strings("dl_progress"), process, c_time, dc_id),
             )
         except FileNotFoundError:
-            return await process.edit_msg(
-                "ERROR: FileNotFound."
-            )
+            return await process.edit_msg("ERROR: FileNotFound.")
         the_real_download_location = os.path.join("downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
