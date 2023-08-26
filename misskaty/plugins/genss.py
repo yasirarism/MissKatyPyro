@@ -145,15 +145,15 @@ async def genss(self: Client, ctx: Message, strings):
         dc_id = FileId.decode(media.file_id).dc_id
         try:
             dl = await replied.download(
-                file_name="/downloads/",
+                file_name="downloads/",
                 progress=progress_for_pyrogram,
                 progress_args=(strings("dl_progress"), process, c_time, dc_id),
             )
         except FileNotFoundError:
             return await process.edit_msg(
-                "ERROR: FileNotFound, maybe you're spam bot with same file."
+                "ERROR: FileNotFound."
             )
-        the_real_download_location = os.path.join("/downloads/", os.path.basename(dl))
+        the_real_download_location = os.path.join("downloads/", os.path.basename(dl))
         if the_real_download_location is not None:
             try:
                 await process.edit_msg(

@@ -417,7 +417,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "send": send,
             "stdout": out_buf,
             "traceback": traceback,
-            "http": fetch,
+            "fetch": fetch,
             "replied": ctx.reply_to_message,
             "requests": requests,
             "help": _help,
@@ -482,7 +482,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     else:
         await edit_or_reply(
             ctx,
-            text=final_output,
+            text=f"<code>{final_output}</code>",
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 [

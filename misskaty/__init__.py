@@ -24,7 +24,7 @@ from misskaty.vars import (
 
 basicConfig(
     level=INFO,
-    format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
+    format="[%(levelname)s] - [%(asctime)s - %(name)s - %(message)s] -> [%(module)s:%(lineno)d]",
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
         handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),
@@ -41,7 +41,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.10.13 - Stable"
+misskaty_version = "v2.10.14 - Stable"
 
 # Pyrogram Bot Client
 app = Client(
@@ -50,6 +50,10 @@ app = Client(
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
     mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
+    sleep_threshold=180,
+    app_version="MissKatyPyro Stable",
+    max_concurrent_transmissions=5,
+    workers=50,
 )
 
 # Pyrogram UserBot Client
@@ -57,6 +61,7 @@ user = Client(
     "YasirUBot",
     session_string=USER_SESSION,
     mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
+    sleep_threshold=180,
 )
 
 jobstores = {

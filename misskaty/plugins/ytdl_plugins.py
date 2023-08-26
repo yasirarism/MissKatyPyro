@@ -218,7 +218,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
             else:
                 yt_url = True
                 video_link = f"{YT_VID_URL}{match[1]}"
-
+            LOGGER.info(f"User {cq.from_user.id} using YTDL -> {video_link}")
             media_type = "video" if match[3] == "v" else "audio"
             uid, _ = ytdl.get_choice_by_id(match[2], media_type, yt_url=yt_url)
             key = await ytdl.download(

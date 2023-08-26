@@ -6,6 +6,7 @@
 """
 
 import asyncio
+import html
 import httpx
 import json
 import os
@@ -207,13 +208,11 @@ async def gsearch(_, message):
         # collect data
         data = []
 
-        for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc"):
-            link = result.find("div", class_="yuRUbf").find("a").get("href")
-            title = result.find("div", class_="yuRUbf").find("h3").get_text()
+        for result in soup.select(".tF2Cxc"):
+            link = result.select_one(".yuRUbf a")["href"]
+            title = result.select_one(".DKV0Md").text
             try:
-                snippet = result.find(
-                    "div", class_="VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc lEBKkf"
-                ).get_text()
+                snippet = result.select_one("#rso .lyLwlc").text
             except:
                 snippet = "-"
 
@@ -229,7 +228,7 @@ async def gsearch(_, message):
         parse = json.loads(arr)
         total = len(parse)
         res = "".join(
-            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse
+            f"<a href='{i['link']}'>{i['title']}</a>\n{html.escape(i['snippet'])}\n\n" for i in parse
         )
     except Exception:
         exc = traceback.format_exc()

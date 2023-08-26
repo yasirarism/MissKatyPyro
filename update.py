@@ -12,7 +12,7 @@ if os.path.exists("MissKatyLogs.txt"):
 
 basicConfig(
     level=INFO,
-    format="[%(asctime)s - %(levelname)s] - %(name)s.%(funcName)s - %(message)s",
+    format="[%(levelname)s] - [%(asctime)s - %(name)s - %(message)s] -> [%(module)s:%(lineno)d]",
     datefmt="%d-%b-%y %H:%M:%S",
     handlers=[
         handlers.RotatingFileHandler("MissKatyLogs.txt", mode="w+", maxBytes=1000000),

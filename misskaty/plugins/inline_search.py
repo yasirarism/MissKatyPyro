@@ -2,6 +2,7 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
+import html
 import json
 import re
 import traceback
@@ -228,17 +229,15 @@ async def inline_menu(_, inline_query: InlineQuery):
         )
         soup = BeautifulSoup(search_results.text, "lxml")
         data = []
-        for result in soup.find_all("div", class_="kvH3mc BToiNc UK95Uc"):
-            link = result.find("div", class_="yuRUbf").find("a").get("href")
-            title = result.find("div", class_="yuRUbf").find("h3").get_text()
+        for result in soup.select(".tF2Cxc"):
+            link = result.select_one(".yuRUbf a")["href"]
+            title = result.select_one(".DKV0Md").text
             try:
-                snippet = result.find(
-                    "div", class_="VwiC3b yXK7lf MUxGbd yDYNvb lyLwlc lEBKkf"
-                ).get_text()
+                snippet = result.select_one("#rso .lyLwlc").text
             except:
                 snippet = "-"
             message_text = f"<a href='{link}'>{title}</a>\n"
-            message_text += f"Deskription: {snippet}"
+            message_text += f"Deskription: {html.escape(snippet)}"
             data.append(
                 InlineQueryResultArticle(
                     title=f"{title}",
