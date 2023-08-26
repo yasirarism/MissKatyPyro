@@ -228,8 +228,7 @@ async def gsearch(_, message):
         parse = json.loads(arr)
         total = len(parse)
         res = "".join(
-            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n"
-            for i in parse
+            f"<a href='{i['link']}'>{i['title']}</a>\n{i['snippet']}\n\n" for i in parse
         )
     except Exception:
         exc = traceback.format_exc()
