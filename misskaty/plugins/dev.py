@@ -8,7 +8,6 @@ import pickle
 import re
 import sys
 import traceback
-from bs4 import BeautifulSoup
 from datetime import datetime
 from inspect import getfullargspec
 from shutil import disk_usage
@@ -19,6 +18,7 @@ import aiohttp
 import cloudscraper
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
