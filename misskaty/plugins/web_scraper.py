@@ -33,7 +33,7 @@ __HELP__ = """
 /samehadaku [query <optional>] - Scrape website data from Samehadaku.
 """
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("MissKaty")
 SCRAP_DICT = Cache(filename="scraper_cache.db", path="cache", in_memory=False)
 data_kuso = Cache(filename="kuso_cache.db", path="cache", in_memory=False)
 webdb = dbname["web"]

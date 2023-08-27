@@ -19,7 +19,7 @@ from pyrogram.errors import (
 )
 from pyrogram.types import Message
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 Message.input = property(
     lambda m: m.text[m.text.find(m.command[0]) + len(m.command[0]) + 1 :]

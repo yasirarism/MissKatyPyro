@@ -16,7 +16,7 @@ __HELP__ = """
 /currency - Send structure message Telegram in JSON using Pyrogram Style.
 """
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("MissKaty")
 
 
 @app.on_cmd("currency")

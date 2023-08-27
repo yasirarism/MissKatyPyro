@@ -27,7 +27,7 @@ from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.vars import API_HASH, API_ID, COMMAND_HANDLER
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "SessionGen"
 __HELP__ = """

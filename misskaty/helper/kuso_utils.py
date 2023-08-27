@@ -9,7 +9,7 @@ from telegraph.aio import Telegraph
 from misskaty import BOT_USERNAME
 from misskaty.helper.http import fetch
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("MissKaty")
 
 headers = {
     "Accept": "*/*",

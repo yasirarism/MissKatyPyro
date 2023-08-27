@@ -24,7 +24,7 @@ from typing import Callable
 
 from pyrogram.sync import async_to_sync
 
-logger = getLogger(__name__)
+logger = getLogger("MissKaty")
 
 
 class PyromodConfig:

@@ -19,7 +19,7 @@ from misskaty.vars import COMMAND_HANDLER
 
 from .web_scraper import split_arr
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("MissKaty")
 SUB_TITLE_DICT = {}
 SUB_DL_DICT = {}
 

@@ -26,7 +26,7 @@ import pyrogram
 
 from misskaty.vars import LOG_CHANNEL
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("MissKaty")
 
 
 async def handle_error(

@@ -484,7 +484,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     else:
         await edit_or_reply(
             ctx,
-            text=f"<code>{final_output}</code>",
+            text=final_output,
             parse_mode=enums.ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 [

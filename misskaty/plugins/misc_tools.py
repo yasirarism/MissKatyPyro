@@ -41,7 +41,7 @@ from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "Misc"
 __HELP__ = """

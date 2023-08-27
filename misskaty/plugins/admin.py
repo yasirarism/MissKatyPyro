@@ -55,7 +55,7 @@ from misskaty.helper.functions import (
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "Admin"
 __HELP__ = """
@@ -403,12 +403,12 @@ async def deleteFunc(_, message, strings):
 async def promoteFunc(client, message, strings):
     try:
         user_id = await extract_user(message)
-        umention = (await app.get_users(user_id)).mention
+        umention = (await client.get_users(user_id)).mention
     except:
         return await message.reply(strings("invalid_id_uname"))
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
-    bot = await app.get_chat_member(message.chat.id, client.me.id)
+    bot = await client.get_chat_member(message.chat.id, client.me.id)
     if user_id == client.me.id:
         return await message.reply_text(strings("promote_self_err"))
     if not bot.privileges.can_promote_members:
@@ -460,21 +460,24 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("demote_self_err"))
     if user_id in SUDO:
         return await message.reply_text(strings("demote_sudo_err"))
-    await message.chat.promote_member(
-        user_id=user_id,
-        privileges=ChatPrivileges(
-            can_change_info=False,
-            can_invite_users=False,
-            can_delete_messages=False,
-            can_restrict_members=False,
-            can_pin_messages=False,
-            can_promote_members=False,
-            can_manage_chat=False,
-            can_manage_video_chats=False,
-        ),
-    )
-    umention = (await app.get_users(user_id)).mention
-    await message.reply_text(f"Demoted! {umention}")
+    try:
+        await message.chat.promote_member(
+            user_id=user_id,
+            privileges=ChatPrivileges(
+                can_change_info=False,
+                can_invite_users=False,
+                can_delete_messages=False,
+                can_restrict_members=False,
+                can_pin_messages=False,
+                can_promote_members=False,
+                can_manage_chat=False,
+                can_manage_video_chats=False,
+            ),
+        )
+        umention = (await app.get_users(user_id)).mention
+        await message.reply_text(f"Demoted! {umention}")
+    except ChatAdminRequired:
+        await message.reply()
 
 
 # Pin Messages

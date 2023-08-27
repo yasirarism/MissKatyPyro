@@ -22,7 +22,7 @@ from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO, SUPPORT_CHAT
 from utils import temp
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 
 def circle(pfp, size=(215, 215)):

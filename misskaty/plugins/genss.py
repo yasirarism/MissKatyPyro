@@ -24,7 +24,7 @@ from misskaty.helper import is_url, progress_for_pyrogram, take_ss
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import humanbytes
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "MediaTool"
 __HELP__ = """"

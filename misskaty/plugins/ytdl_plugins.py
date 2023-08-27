@@ -30,7 +30,7 @@ from misskaty.core.decorator import capture_err, new_task, ratelimiter
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 YT_REGEX = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
 YT_DB = {}
 

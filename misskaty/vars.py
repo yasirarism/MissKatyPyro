@@ -6,7 +6,7 @@ import sys
 from logging import getLogger
 from os import environ
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 
 def getConfig(name: str):

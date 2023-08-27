@@ -16,7 +16,7 @@ from misskaty.vars import (
     MINIMUM_FILE_SIZE,
 )
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 
 async def FilterMessage(message: Message):

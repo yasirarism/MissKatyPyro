@@ -20,7 +20,7 @@ basicConfig(
     ],
 )
 
-LOGGER = getLogger(__name__)
+LOGGER = getLogger("MissKaty")
 
 ENV_URL = os.environ.get("ENV_URL")
 try:
