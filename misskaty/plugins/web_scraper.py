@@ -454,14 +454,15 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
                     strings("no_result_w_query").format(kueri=kueri), del_in=5
                 )
             return None, 0, None
-        data = []
-        for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}" if genre != "" else "N/A"
-            judul = i.find(class_="entry-title").find("a").text
-            link = i.find(class_="entry-title").find("a").get("href")
-            data.append({"judul": judul, "link": link, "genre": genre})
-        SCRAP_DICT.add(msg.id, [split_arr(data, 6), kueri], timeout=1800)
+        else:
+            data = []
+            for i in entry:
+                genre = i.find(class_="gmr-movie-on").text
+                genre = f"{genre}" if genre != "" else "N/A"
+                judul = i.find(class_="entry-title").find("a").text
+                link = i.find(class_="entry-title").find("a").get("href")
+                data.append({"judul": judul, "link": link, "genre": genre})
+            SCRAP_DICT.add(msg.id, [split_arr(data, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
