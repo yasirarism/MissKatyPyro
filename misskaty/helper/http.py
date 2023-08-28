@@ -11,7 +11,7 @@ fetch = httpx.AsyncClient(
     http2=True,
     verify=False,
     headers={
-        "Accept-Language": "id-ID",
+        "Accept-Language": "id,en-US;q=0.7,en;q=0.3",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edge/107.0.1418.42",
     },
     timeout=httpx.Timeout(10),
