@@ -15,7 +15,7 @@
 # Table of Contents
 - [[1] About MissKaty](#1-about-misskaty)
 - [[2] Framework Tools And Server That Used To Build This Bot](#2-framework-tools-and-server-that-used-to-build-this-bot)
-- [[3] Donation](#3-donation)
+- [[3] Support Creator](#3-donation)
 - [[4] Notes](#4-notes)
 - [[5] Features](#5-features)
 - [[6] Variables](#6-variables)
