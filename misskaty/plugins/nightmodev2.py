@@ -14,6 +14,7 @@ from pyrogram.errors import (
     ChannelPrivate,
     ChatAdminRequired,
     ChatNotModified,
+    PeerIdInvalid,
 )
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -109,7 +110,7 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
                 chat_id=chat_id, bname=BOT_NAME
             ),
         )
-    except (ChannelInvalid, ChannelPrivate):
+    except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
@@ -151,7 +152,7 @@ async def mute_chat(chat_id: int):
                 chat_id=chat_id, bname=BOT_NAME
             ),
         )
-    except (ChannelInvalid, ChannelPrivate):
+    except (ChannelInvalid, ChannelPrivate, PeerIdInvalid):
         scheduler.remove_job(f"enable_nightmode_{chat_id}")
         scheduler.remove_job(f"disable_nightmode_{chat_id}")
         await app.send_message(
