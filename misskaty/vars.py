@@ -10,15 +10,15 @@ LOGGER = getLogger("MissKaty")
 
 
 # Required ENV
-TELEGRAM_API = environ.get("TELEGRAM_API", "")
-if not TELEGRAM_API:
-    LOGGER.error("TELEGRAM_API variable is missing! Exiting now")
+API_ID = environ.get("API_ID", "")
+if not API_ID:
+    LOGGER.error("API_ID variable is missing! Exiting now")
     sys.exit(1)
 else:
-    TELEGRAM_API = int(TELEGRAM_API)
-TELEGRAM_HASH = environ.get("TELEGRAM_HASH", "")
-if not TELEGRAM_HASH:
-    LOGGER.error("TELEGRAM_HASH variable is missing! Exiting now")
+    API_ID = int(API_ID)
+API_HASH = environ.get("API_HASH", "")
+if not API_HASH:
+    LOGGER.error("API_HASH variable is missing! Exiting now")
     sys.exit(1)
 BOT_TOKEN = environ.get("BOT_TOKEN", "")
 if not BOT_TOKEN:
