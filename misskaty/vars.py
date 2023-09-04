@@ -2,12 +2,14 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
+import dotenv
 import sys
 from logging import getLogger
 from os import environ
 
 LOGGER = getLogger("MissKaty")
 
+dotenv.load_dotenv("config.env", override=True)
 
 # Required ENV
 API_ID = environ.get("API_ID", "")
