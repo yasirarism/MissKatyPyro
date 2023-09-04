@@ -66,7 +66,7 @@ async def start_bot():
         LOGGER.error(str(e))
     scheduler.start()
     if "web" not in await dbname.list_collection_names():
-        webdb = dbname.web
+        webdb = dbname["web"]
         for key, value in web.items():
             await webdb.insert_one({key: value})
     if os.path.exists("restart.pickle"):
