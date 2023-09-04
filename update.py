@@ -38,7 +38,7 @@ try:
 except:
     pass
 
-dotenv.load_dotenv(".env", override=True)
+dotenv.load_dotenv("config.env", override=True)
 
 UPSTREAM_REPO_URL = os.environ.get("UPSTREAM_REPO_URL")
 UPSTREAM_REPO_BRANCH = os.environ.get("UPSTREAM_REPO_BRANCH")
