@@ -29,7 +29,7 @@ try:
     try:
         res = requests.get(ENV_URL)
         if res.status_code == 200:
-            with open(".env", "wb+") as f:
+            with open("config.env", "wb+") as f:
                 f.write(res.content)
         else:
             LOGGER.error(f"config.env err: {res.status_code}")

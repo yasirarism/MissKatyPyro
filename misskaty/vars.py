@@ -9,25 +9,33 @@ from os import environ
 LOGGER = getLogger("MissKaty")
 
 
-def getConfig(name: str):
-    try:
-        return environ[name]
-    except:
-        return ""
-
-
 # Required ENV
-try:
-    BOT_TOKEN = getConfig("BOT_TOKEN")
-    API_ID = getConfig("API_ID")
-    API_HASH = getConfig("API_HASH")
-    # MongoDB information
-    DATABASE_URI = getConfig("DATABASE_URI")
-    LOG_CHANNEL = int(environ.get("LOG_CHANNEL"))
-except Exception as e:
-    LOGGER.error(f"One or more env variables missing! Exiting now.\n{e}")
+TELEGRAM_API = environ.get("TELEGRAM_API", "")
+if not TELEGRAM_API:
+    LOGGER.error("TELEGRAM_API variable is missing! Exiting now")
     sys.exit(1)
+else:
+    TELEGRAM_API = int(TELEGRAM_API)
+TELEGRAM_HASH = environ.get("TELEGRAM_HASH", "")
+if not TELEGRAM_HASH:
+    LOGGER.error("TELEGRAM_HASH variable is missing! Exiting now")
+    sys.exit(1)
+BOT_TOKEN = environ.get("BOT_TOKEN", "")
+if not BOT_TOKEN:
+    LOGGER.error("BOT_TOKEN variable is missing! Exiting now")
+    sys.exit(1)
+DATABASE_URI = environ.get("DATABASE_URI", "")
+if not DATABASE_URI:
+    LOGGER.error("DATABASE_URI variable is missing! Exiting now")
+    sys.exit(1)
+LOG_CHANNEL = environ.get("LOG_CHANNEL", "")
+if not LOG_CHANNEL:
+    LOGGER.error("LOG_CHANNEL variable is missing! Exiting now")
+    sys.exit(1)
+else:
+    LOG_CHANNEL = int(LOG_CHANNEL)
 
+# Optional ENV
 USER_SESSION = environ.get("USER_SESSION")
 DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
@@ -43,7 +51,7 @@ SUDO = list(
 )
 SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
 AUTO_RESTART = environ.get("AUTO_RESTART", False)
-OPENAI_API = getConfig("OPENAI_API")
+OPENAI_API = environ.get("OPENAI_API")
 
 ## Config For AUtoForwarder
 # Forward From Chat ID
