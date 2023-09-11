@@ -18,18 +18,19 @@ class RateLimiter:
 
     def __init__(self) -> None:
         # 1 requests per seconds
-        self.second_rate = Rate(1, Duration.SECOND)
+        self.second_rate = Rate(2, Duration.SECOND)
 
         # 15 requests per minute.
-        self.minute_rate = Rate(60, Duration.MINUTE)
+        self.minute_rate = Rate(15, Duration.MINUTE)
 
         # 100 requests per hour
-        self.hourly_rate = Rate(300, Duration.HOUR)
+        self.hourly_rate = Rate(100, Duration.HOUR)
 
-        # 500 requests per day
-        self.daily_rate = Rate(500, Duration.DAY)
+        # 300 requests per day
+        self.daily_rate = Rate(300, Duration.DAY)
 
         self.limiter = Limiter([
+            self.second_rate,
             self.minute_rate,
             self.hourly_rate,
             self.daily_rate
