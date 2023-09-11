@@ -5,13 +5,10 @@ def get_readable_file_size(size_in_bytes) -> str:
     if size_in_bytes is None:
         return "0B"
     index = 0
-    while size_in_bytes >= 1024:
+    while size_in_bytes >= 1024 and index < len(SIZE_UNITS) - 1:
         size_in_bytes /= 1024
         index += 1
-    try:
-        return f"{round(size_in_bytes, 2)}{SIZE_UNITS[index]}"
-    except IndexError:
-        return "File too large"
+    return f"{size_in_bytes:.2f} {SIZE_UNITS[index]}" if index > 0 else f"{size_in_bytes}B"
 
 
 def get_readable_time(seconds: int) -> str:
