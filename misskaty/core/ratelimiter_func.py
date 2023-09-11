@@ -29,10 +29,11 @@ class RateLimiter:
         # 500 requests per day
         self.daily_rate = Rate(500, Duration.DAY)
 
-        self.limiter = Limiter(
+        self.limiter = Limiter([
             self.minute_rate,
             self.hourly_rate,
             self.daily_rate
+        ]
         )
 
     async def acquire(self, userid: Union[int, str]) -> bool:
