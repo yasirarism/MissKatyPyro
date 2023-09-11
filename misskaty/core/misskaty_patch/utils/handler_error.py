@@ -53,7 +53,7 @@ async def handle_error(
     f_errname = f"crash_{tgl_now.strftime('%d %B %Y')}.txt"
     LOGGER.error(traceback.format_exc())
     with open(f_errname, "w+", encoding="utf-8") as log:
-        log.write(traceback.format_exc())
+        log.write(f"✍️ message: {m.text or m.caption}\n\n{traceback.format_exc()}")
         log.close()
     if isinstance(m, pyrogram.types.Message):
         with contextlib.suppress(Exception):
