@@ -17,11 +17,16 @@ class RateLimiter:
     """
 
     def __init__(self) -> None:
+        # 1 requests per seconds
+        self.second_rate = Rate(2, Duration.SECOND)
+
         # 15 requests per minute.
         self.minute_rate = Rate(15, Duration.MINUTE)
 
-        self.limiter = Limiter(
-            self.minute_rate
+        self.limiter = Limiter([
+            self.second_rate,
+            self.minute_rate,
+        ]
         )
 
     async def acquire(self, userid: Union[int, str]) -> bool:
