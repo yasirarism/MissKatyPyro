@@ -4,7 +4,7 @@ from pyrate_limiter import (
     BucketFullException,
     Duration,
     Limiter,
-    MemoryListBucket,
+    InMemoryBucket,
     RequestRate,
 )
 
@@ -33,7 +33,7 @@ class RateLimiter:
             self.minute_rate,
             self.hourly_rate,
             self.daily_rate,
-            bucket_class=MemoryListBucket,
+            bucket_class=InMemoryBucket,
         )
 
     async def acquire(self, userid: Union[int, str]) -> bool:
