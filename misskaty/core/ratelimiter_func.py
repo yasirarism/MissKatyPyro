@@ -32,8 +32,7 @@ class RateLimiter:
         self.limiter = Limiter(
             self.minute_rate,
             self.hourly_rate,
-            self.daily_rate,
-            bucket_class=InMemoryBucket,
+            self.daily_rate
         )
 
     async def acquire(self, userid: Union[int, str]) -> bool:
