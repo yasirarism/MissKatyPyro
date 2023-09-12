@@ -204,10 +204,10 @@ async def fbdl(_, message):
     try:
         resjson = (await fetch.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
         try:
-            url = resjson["result"]["links"]["hd"].replace("&amp;", "&")
-        except:
-            url = resjson["result"]["links"]["sd"].replace("&amp;", "&")
-        obj = SmartDL(url, progress_bar=False, timeout=10)
+            url = resjson["result"]["hd"]
+        except KeyError:
+            url = resjson["result"]["sd"]
+        obj = SmartDL(url, progress_bar=False, timeout=15)
         obj.start()
         path = obj.get_dest()
         await message.reply_video(
