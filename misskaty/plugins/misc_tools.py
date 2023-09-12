@@ -106,7 +106,7 @@ async def carbon_make(self: Client, ctx: Message):
     }
     try:
         response = await fetch.post(
-            "https://carbon.yasirapi.eu.org/api/cook", json=json_data
+            "https://carbon.yasirapi.eu.org/api/cook", json=json_data, timeout=20
         )
     except httpx.HTTPError as exc:
         return await ctx.reply_msg(f"HTTP Exception for {exc.request.url} - {exc}")
