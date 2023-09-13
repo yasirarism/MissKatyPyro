@@ -207,7 +207,8 @@ async def instadl(_, message):
             is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
             if is_img:
                 await message.reply_photo(res, caption=fname)
-            await message.reply_video(res, caption=fname)
+            else:
+                await message.reply_video(res, caption=fname)
         await msg.delete()
     except Exception as e:
         await message.reply(f"Failed to download instagram video..\n\n<b>Reason:</b> {e}")
