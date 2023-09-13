@@ -245,7 +245,7 @@ async def twitter(_, message):
             "ts": "1691416179",
             "source": "form",
         }
-        post = await fetch.post(f"https://ssstwitter.com/id", data=data, headers=headers)
+        post = await fetch.post(f"https://ssstwitter.com/id", data=data, headers=headers, follow_redirects=True)
         if post.status_code not in [200, 401]:
             return await msg.edit_msg("Unknown error.")
         soup = BeautifulSoup(post.text, "lxml")
