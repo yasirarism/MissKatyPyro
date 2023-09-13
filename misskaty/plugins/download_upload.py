@@ -8,6 +8,7 @@ import math
 import os
 import re
 import time
+from bs4 import BeautifulSoup
 from cloudscraper import create_scraper
 from datetime import datetime
 from logging import getLogger
@@ -226,18 +227,42 @@ async def twitter(_, message):
         link = link.replace("x.com", "twitter.com")
     msg = await message.reply("Trying download...")
     try:
-        r = (
-            await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
-        ).json()
-        fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
-        filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
-        await message.reply_video(
-            r["links"][0]["a"],
-            caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-        )
+        headers = {
+            "Host": "ssstwitter.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "HX-Request": "true",
+            "Origin": "https://ssstwitter.com",
+            "Referer": "https://ssstwitter.com/id",
+            "Cache-Control": "no-cache",
+        }
+        data = {
+            "id": url,
+            "locale": "id",
+            "tt": "bc9841580b5d72e855e7d01bf3255278l",
+            "ts": "1691416179",
+            "source": "form",
+        }
+        post = await fetch.post(f"https://ssstwitter.com/id", data=data, headers=headers)
+        if post.status_code not in [200, 401]:
+            return await msg.edit_msg("Unknown error.")
+        soup = BeautifulSoup(post.text, "lxml")
+        cekdata = soup.find("a", {"pure-button pure-button-primary is-center u-bl dl-button download_link without_watermark vignette_active"})
+        if not cekdata:
+            return await message.reply("ERROR: Oops! It seems that this tweet doesn't have a video! Try later or check your link")
+        try:
+            obj = SmartDL(cekdata.get("href"), progress_bar=False, timeout=15)
+            obj.start()
+            path = obj.get_dest()
+            await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
+        except Exception as er:
+            LOGGING.error(f"ERROR: while fetching TwitterDL. {er}")
+            return await msg.edit_msg("ERROR: Got error while extracting link.")
         await msg.delete()
     except Exception as e:
-        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await message.reply(f"Failed to download twitter video..\n\n<b>Reason:</b> {e}")
         await msg.delete()
 
 
@@ -269,6 +294,7 @@ async def tiktokdl(_, message):
 
 @app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
 @capture_err
+@new_task
 async def fbdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
