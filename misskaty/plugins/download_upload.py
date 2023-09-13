@@ -253,10 +253,11 @@ async def twitter(_, message):
         if not cekdata:
             return await message.reply("ERROR: Oops! It seems that this tweet doesn't have a video! Try later or check your link")
         try:
+            fname = (await fetch.head(cekdata.get("href"))).headers.get("content-disposition", "").split("filename=")[1]
             obj = SmartDL(cekdata.get("href"), progress_bar=False, timeout=15)
             obj.start()
             path = obj.get_dest()
-            await message.reply_video(path, caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
+            await message.reply_video(path, caption=f"<code>{fname}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
         except Exception as er:
             LOGGING.error(f"ERROR: while fetching TwitterDL. {er}")
             return await msg.edit_msg("ERROR: Got error while extracting link.")
@@ -308,7 +309,7 @@ async def fbdl(_, message):
             url = resjson["result"]["hd"]
         except KeyError:
             url = resjson["result"]["sd"]
-        obj = SmartDL(url, progress_bar=False, timeout=15)
+        obj = SmartDL(url, progress_bar=False, timeout=15, verify=False)
         obj.start()
         path = obj.get_dest()
         await message.reply_video(
