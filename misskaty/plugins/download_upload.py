@@ -199,6 +199,7 @@ async def instadl(_, message):
         post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "id"}, headers=headers)
         if post.status_code not in [200, 401]:
             return await message.reply("Unknown error.")
+        res = post.json()
         if r := re.findall('href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
             res = r[0].replace("&amp;", "&")
             fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
