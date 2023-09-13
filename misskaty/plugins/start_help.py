@@ -7,6 +7,7 @@
 import re
 
 from pyrogram import Client, filters
+from pyrogram.errors import ChatSendPhotosForbidden, ChatWriteForbidden
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -72,11 +73,14 @@ keyboard = InlineKeyboardMarkup(
 async def start(_, ctx: Message, strings):
     if ctx.chat.type.value != "private":
         nama = ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title
-        return await ctx.reply_photo(
-            photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
-            caption=strings("start_msg").format(kamuh=nama),
-            reply_markup=keyboard,
-        )
+        try:
+            return await ctx.reply_photo(
+                photo="https://telegra.ph/file/90e9a448bc2f8b055b762.jpg",
+                caption=strings("start_msg").format(kamuh=nama),
+                reply_markup=keyboard,
+            )
+        except (ChatSendPhotosForbidden, ChatWriteForbidden):
+            return await ctx.chat.leave()
     if len(ctx.text.split()) > 1:
         name = (ctx.text.split(None, 1)[1]).lower()
         if "_" in name:

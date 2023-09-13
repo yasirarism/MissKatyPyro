@@ -7,6 +7,7 @@ import cloudscraper
 import math
 import os
 import time
+from cloudscraper import create_scraper
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
@@ -32,6 +33,8 @@ __HELP__ = """
 /tgraph_up [reply_to_TG_File] - Download TG File
 /tiktokdl [link] - Download TikTok Video, try use ytdown command if error.
 /fbdl [link] - Download Facebook Video.
+/instadl [link] - Download photo or video from instagram (Only first post).
+/twitterdl [link] - Dowload video from Twitter aka X.
 /anon [link] - Upload files to Anonfiles.
 /ytdown [YT-DLP Supported URL] - Downloading YT-DLP Supported Video and Audio.
 """
@@ -169,6 +172,73 @@ async def download(client, message):
         )
 
 
+@app.on_message(filters.command(["instadl"], COMMAND_HANDLER))
+@capture_err
+@ratelimiter
+async def instadl(_, message):
+    if len(message.command) == 1:
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download Instagram Photo or Video."
+        )
+    link = message.command[1]
+    msg = await message.reply("Trying download...")
+    try:
+        headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Length": "99",
+                "Origin": "https://saveig.app",
+                "Connection": "keep-alive",
+                "Referer": "https://saveig.app/id",
+            }
+        post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": url, "t": "media", "lang": "id"}, headers=headers)
+        if post.status_code not in [200, 401]:
+            return await message.reply("Unknown error.")
+        if r := findall('href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
+            res = r[0].replace("&amp;", "&")
+            fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
+            is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
+            if is_img:
+                return await message.reply_photo(res)
+            return await message.reply_video(res)
+        await msg.delete()
+    except Exception as e:
+        await message.reply(f"Failed to download instagram video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
+
+
+@app.on_message(filters.command(["twitterdl"], COMMAND_HANDLER))
+@capture_err
+@ratelimiter
+async def twitter(_, message):
+    if len(message.command) == 1:
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download Twitter video."
+        )
+    link = message.command[1]
+    if x.com in link:
+        link = link.replace("x.com", "twitter.com")
+    msg = await message.reply("Trying download...")
+    try:
+        r = (
+            await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
+        ).json()
+        fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
+        filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
+        await message.reply_video(
+            r["links"][0]["a"],
+            caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+        )
+        await msg.delete()
+    except Exception as e:
+        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
+
+
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
@@ -183,7 +253,6 @@ async def tiktokdl(_, message):
         r = (
             await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
         ).json()
-        LOGGER.info(r)
         fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
         filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
         await message.reply_video(
