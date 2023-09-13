@@ -222,9 +222,9 @@ async def twitter(_, message):
         return await message.reply(
             f"Use command /{message.command[0]} [link] to download Twitter video."
         )
-    link = message.command[1]
-    if "x.com" in link:
-        link = link.replace("x.com", "twitter.com")
+    url = message.command[1]
+    if "x.com" in url:
+        url = url.replace("x.com", "twitter.com")
     msg = await message.reply("Trying download...")
     try:
         headers = {
