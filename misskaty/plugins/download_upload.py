@@ -3,6 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
+import cloudscraper
 import math
 import os
 import time
@@ -180,11 +181,13 @@ async def tiktokdl(_, message):
     msg = await message.reply("Trying download...")
     try:
         r = (
-            await fetch.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")
+            await fetch.get(f"https://lovetik.com/api/ajax/search", data={"query": link})
         ).json()
+        fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
+        filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
         await message.reply_video(
-            r["hasil"]["download_mp4_hd"],
-            caption=f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            r["links"][0]["a"],
+            caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()
     except Exception as e:
