@@ -35,7 +35,7 @@ async def take_ss(_, ctx: Message, strings):
     msg = await ctx.reply_msg(strings("wait_str"))
     try:
         url = f"https://webss.yasirapi.eu.org/api?url={url}&width=1280&height=720"
-        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10)
+        downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10, verify=False)
         downloader.start(blocking=True)
         await gather(
             *[

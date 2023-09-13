@@ -14,6 +14,7 @@ from pyrogram.errors import (
     ChannelPrivate,
     ChatAdminRequired,
     ChatNotModified,
+    ChatRestricted,
     PeerIdInvalid,
 )
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
@@ -131,13 +132,17 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     else:
         job = scheduler.get_job(f"enable_nightmode_{chat_id}")
         close_at = job.next_run_time
-        await app.send_message(
-            chat_id,
-            langdict[getlang]["nightmodev2"]["nmd_off_success"].format(
-                dt=tglsekarang(), close_at=close_at
-            ),
-            reply_markup=reply_markup,
-        )
+        try:
+            await app.send_message(
+                chat_id,
+                langdict[getlang]["nightmodev2"]["nmd_off_success"].format(
+                    dt=tglsekarang(), close_at=close_at
+                ),
+                reply_markup=reply_markup,
+            )
+        except ChatRestricted:
+            scheduler.remove_job(f"enable_nightmode_{chat_id}")
+            scheduler.remove_job(f"disable_nightmode_{chat_id}")
 
 
 async def mute_chat(chat_id: int):

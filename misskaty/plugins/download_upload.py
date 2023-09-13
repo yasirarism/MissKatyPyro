@@ -3,9 +3,13 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
+import cloudscraper
 import math
 import os
+import re
 import time
+from bs4 import BeautifulSoup
+from cloudscraper import create_scraper
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
@@ -31,6 +35,8 @@ __HELP__ = """
 /tgraph_up [reply_to_TG_File] - Download TG File
 /tiktokdl [link] - Download TikTok Video, try use ytdown command if error.
 /fbdl [link] - Download Facebook Video.
+/instadl [link] - Download photo or video from instagram (Only first post).
+/twitterdl [link] - Dowload video from Twitter aka X.
 /anon [link] - Upload files to Anonfiles.
 /ytdown [YT-DLP Supported URL] - Downloading YT-DLP Supported Video and Audio.
 """
@@ -168,6 +174,99 @@ async def download(client, message):
         )
 
 
+@app.on_message(filters.command(["instadl"], COMMAND_HANDLER))
+@capture_err
+@ratelimiter
+async def instadl(_, message):
+    if len(message.command) == 1:
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download Instagram Photo or Video."
+        )
+    link = message.command[1]
+    msg = await message.reply("Trying download...")
+    try:
+        headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
+                "Accept": "*/*",
+                "Accept-Language": "en-US,en;q=0.5",
+                "Accept-Encoding": "gzip, deflate, br",
+                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                "X-Requested-With": "XMLHttpRequest",
+                "Content-Length": "99",
+                "Origin": "https://saveig.app",
+                "Connection": "keep-alive",
+                "Referer": "https://saveig.app/id",
+            }
+        post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "id"}, headers=headers)
+        if post.status_code not in [200, 401]:
+            return await message.reply("Unknown error.")
+        res = post.json()
+        if r := re.findall('href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
+            res = r[0].replace("&amp;", "&")
+            fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
+            is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
+            if is_img:
+                await message.reply_photo(res, caption=fname)
+            await message.reply_video(res, caption=fname)
+        await msg.delete()
+    except Exception as e:
+        await message.reply(f"Failed to download instagram video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
+
+
+@app.on_message(filters.command(["twitterdl"], COMMAND_HANDLER))
+@capture_err
+@ratelimiter
+async def twitter(_, message):
+    if len(message.command) == 1:
+        return await message.reply(
+            f"Use command /{message.command[0]} [link] to download Twitter video."
+        )
+    url = message.command[1]
+    if "x.com" in url:
+        url = url.replace("x.com", "twitter.com")
+    msg = await message.reply("Trying download...")
+    try:
+        headers = {
+            "Host": "ssstwitter.com",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "HX-Request": "true",
+            "Origin": "https://ssstwitter.com",
+            "Referer": "https://ssstwitter.com/id",
+            "Cache-Control": "no-cache",
+        }
+        data = {
+            "id": url,
+            "locale": "id",
+            "tt": "bc9841580b5d72e855e7d01bf3255278l",
+            "ts": "1691416179",
+            "source": "form",
+        }
+        post = await fetch.post(f"https://ssstwitter.com/id", data=data, headers=headers, follow_redirects=True)
+        if post.status_code not in [200, 401]:
+            return await msg.edit_msg("Unknown error.")
+        soup = BeautifulSoup(post.text, "lxml")
+        cekdata = soup.find("a", {"pure-button pure-button-primary is-center u-bl dl-button download_link without_watermark vignette_active"})
+        if not cekdata:
+            return await message.reply("ERROR: Oops! It seems that this tweet doesn't have a video! Try later or check your link")
+        try:
+            fname = (await fetch.head(cekdata.get("href"))).headers.get("content-disposition", "").split("filename=")[1]
+            obj = SmartDL(cekdata.get("href"), progress_bar=False, timeout=15)
+            obj.start()
+            path = obj.get_dest()
+            await message.reply_video(path, caption=f"<code>{fname}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
+        except Exception as er:
+            LOGGING.error(f"ERROR: while fetching TwitterDL. {er}")
+            return await msg.edit_msg("ERROR: Got error while extracting link.")
+        await msg.delete()
+    except Exception as e:
+        await message.reply(f"Failed to download twitter video..\n\n<b>Reason:</b> {e}")
+        await msg.delete()
+
+
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
 @ratelimiter
@@ -180,11 +279,13 @@ async def tiktokdl(_, message):
     msg = await message.reply("Trying download...")
     try:
         r = (
-            await fetch.get(f"https://apimu.my.id/downloader/tiktok3?link={link}")
+            await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
         ).json()
+        fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
+        filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
         await message.reply_video(
-            r["hasil"]["download_mp4_hd"],
-            caption=f"<b>Title:</b> <code>{r['hasil']['video_title']}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/@{r['hasil']['username']}'>{r['hasil']['name']}</a>\n👍: {r['hasil']['like']} 🔁: {r['hasil']['share']} 💬: {r['hasil']['comment']}\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            r["links"][0]["a"],
+            caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
         )
         await msg.delete()
     except Exception as e:
@@ -194,6 +295,7 @@ async def tiktokdl(_, message):
 
 @app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
 @capture_err
+@new_task
 async def fbdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
@@ -207,7 +309,7 @@ async def fbdl(_, message):
             url = resjson["result"]["hd"]
         except KeyError:
             url = resjson["result"]["sd"]
-        obj = SmartDL(url, progress_bar=False, timeout=15)
+        obj = SmartDL(url, progress_bar=False, timeout=15, verify=False)
         obj.start()
         path = obj.get_dest()
         await message.reply_video(
