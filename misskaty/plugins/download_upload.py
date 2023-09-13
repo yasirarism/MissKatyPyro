@@ -185,6 +185,7 @@ async def tiktokdl(_, message):
         ).json()
         fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
         filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
+        LOGGER.info(filename)
         await message.reply_video(
             r["links"][0]["a"],
             caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
