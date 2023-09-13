@@ -205,8 +205,8 @@ async def instadl(_, message):
             fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
             is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
             if is_img:
-                return await message.reply_photo(res)
-            return await message.reply_video(res)
+                await message.reply_photo(res, caption=fname)
+            await message.reply_video(res, caption=fname)
         await msg.delete()
     except Exception as e:
         await message.reply(f"Failed to download instagram video..\n\n<b>Reason:</b> {e}")
@@ -222,7 +222,7 @@ async def twitter(_, message):
             f"Use command /{message.command[0]} [link] to download Twitter video."
         )
     link = message.command[1]
-    if x.com in link:
+    if "x.com" in link:
         link = link.replace("x.com", "twitter.com")
     msg = await message.reply("Trying download...")
     try:
