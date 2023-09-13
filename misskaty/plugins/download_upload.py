@@ -195,7 +195,7 @@ async def instadl(_, message):
                 "Connection": "keep-alive",
                 "Referer": "https://saveig.app/id",
             }
-        post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": url, "t": "media", "lang": "id"}, headers=headers)
+        post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "id"}, headers=headers)
         if post.status_code not in [200, 401]:
             return await message.reply("Unknown error.")
         if r := findall('href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
