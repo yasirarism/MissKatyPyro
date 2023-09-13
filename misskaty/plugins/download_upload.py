@@ -181,7 +181,7 @@ async def tiktokdl(_, message):
     msg = await message.reply("Trying download...")
     try:
         r = (
-            await fetch.get(f"https://lovetik.com/api/ajax/search", data={"query": link})
+            await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
         ).json()
         fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
         filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
