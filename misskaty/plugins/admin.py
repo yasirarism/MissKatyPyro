@@ -111,7 +111,6 @@ async def admin_cache_func(_, cmu):
 # Purge CMD
 @app.on_cmd("purge")
 @app.adminsOnly("can_delete_messages")
-@ratelimiter
 @use_chat_lang()
 async def purge(_, ctx: Message, strings):
     try:
