@@ -38,27 +38,34 @@ __HELP__ = """
 Commands: /lock | /unlock | /locks [No Parameters Required]
 
 Parameters:
-    messages | stickers | gifs | media | games | polls
+    messages | sticker | gif | media | games | polls
 
-    inline  | url | group_info | user_add | pin
+    inline  | url | group_info | user_add | pin | photo
+
+    voice | video | audio | docs | plain
 
 You can only pass the "all" parameter with /lock, not with /unlock
 
 Example:
     /lock all
 """
-
 incorrect_parameters = "Incorrect Parameters, Check Locks Section In Help."
 # Using disable_preview as a switch for url checker
 # That way we won't need an additional db to check
 # If url lock is enabled/disabled for a chat
 data = {
     "messages": "can_send_messages",
-    "stickers": "can_send_other_messages",
-    "gifs": "can_send_other_messages",
+    "sticker": "can_send_stickers",
+    "gif": "can_send_gifs",
     "media": "can_send_media_messages",
-    "games": "can_send_other_messages",
-    "inline": "can_send_other_messages",
+    "games": "can_send_games",
+    "inline": "can_send_inline",
+    "photo": "can_send_photos",
+    "video": "can_send_videos",
+    "docs": "can_send_docs",
+    "voice": "can_send_voices",
+    "audio": "can_send_audios",
+    "plain": "can_send_plain",
     "url": "can_add_web_page_previews",
     "polls": "can_send_polls",
     "group_info": "can_change_info",
@@ -78,8 +85,28 @@ async def current_chat_permissions(chat_id):
         perms.append("can_send_messages")
     if perm.can_send_media_messages:
         perms.append("can_send_media_messages")
-    if perm.can_send_other_messages:
-        perms.append("can_send_other_messages")
+    if perm.can_send_audios:
+        perms.append("can_send_audios")
+    if perm.can_send_docs:
+        perms.append("can_send_docs")
+    if perm.can_send_games:
+        perms.append("can_send_games")
+    if perm.can_send_gifs:
+        perms.append("can_send_gifs")
+    if perm.can_send_inline:
+        perms.append("can_send_inline")
+    if perm.can_send_photos:
+        perms.append("can_send_photos")
+    if perm.can_send_plain:
+        perms.append("can_send_plain")
+    if perm.can_send_roundvideos:
+        perms.append("can_send_roundvideos")
+    if perm.can_send_stickers:
+        perms.append("can_send_stickers")
+    if perm.can_send_videos:
+        perms.append("can_send_videos")
+    if perm.can_send_voices:
+        perms.append("can_send_voices")
     if perm.can_add_web_page_previews:
         perms.append("can_add_web_page_previews")
     if perm.can_send_polls:
