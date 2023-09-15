@@ -4,12 +4,10 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["copy"], COMMAND_HANDLER))
-@ratelimiter
 async def copymsg(_, message):
     if len(message.command) == 1:
         if not message.reply_to_message:

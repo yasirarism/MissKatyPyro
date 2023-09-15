@@ -22,7 +22,6 @@ from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboard
 from database.locale_db import get_db_lang
 from misskaty import BOT_NAME, app, scheduler
 from misskaty.core.decorator.permissions import require_admin
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import langdict, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, TZ
 
@@ -256,7 +255,6 @@ async def nightmode_handler(_, msg, strings):
 
 
 @app.on_callback_query(filters.regex(r"^nightmd$"))
-@ratelimiter
 @use_chat_lang()
 async def callbackanightmd(c, q, strings):
     await q.answer(
@@ -264,4 +262,5 @@ async def callbackanightmd(c, q, strings):
             bname=c.me.first_name, ver=__version__, pyver=platform.python_version()
         ),
         show_alert=True,
+        cache_time=10,
     )

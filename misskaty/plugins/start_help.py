@@ -16,7 +16,6 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -105,7 +104,6 @@ async def start(_, ctx: Message, strings):
 
 
 @app.on_callback_query(filters.regex("bot_commands"))
-@ratelimiter
 async def commands_callbacc(_, cb: CallbackQuery):
     text, keyb = await help_parser(cb.from_user.mention)
     await app.send_message(
@@ -117,14 +115,12 @@ async def commands_callbacc(_, cb: CallbackQuery):
 
 
 @app.on_callback_query(filters.regex("stats_callback"))
-@ratelimiter
 async def stats_callbacc(_, cb: CallbackQuery):
     text = await bot_sys_stats()
     await app.answer_callback_query(cb.id, text, show_alert=True)
 
 
 @app.on_message(filters.command("help", COMMAND_HANDLER))
-@ratelimiter
 @use_chat_lang()
 async def help_command(_, ctx: Message, strings):
     if ctx.chat.type.value != "private":
@@ -189,7 +185,6 @@ If you want give coffee to my owner you can send /donate command for more info.
 
 
 @app.on_callback_query(filters.regex(r"help_(.*?)"))
-@ratelimiter
 @use_chat_lang()
 async def help_button(self: Client, query: CallbackQuery, strings):
     home_match = re.match(r"help_home\((.+?)\)", query.data)

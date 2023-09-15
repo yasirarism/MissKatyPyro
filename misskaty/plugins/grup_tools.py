@@ -17,7 +17,6 @@ from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboa
 from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUDO, SUPPORT_CHAT
 from utils import temp
@@ -265,7 +264,6 @@ async def gen_invite(bot, message):
 
 @app.on_message(filters.command(["adminlist"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def adminlist(_, message):
     if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("Perintah ini hanya untuk grup")
@@ -288,7 +286,6 @@ async def adminlist(_, message):
 
 @app.on_message(filters.command(["kickme"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def kickme(_, message):
     reason = None
     if len(message.text.split()) >= 2:

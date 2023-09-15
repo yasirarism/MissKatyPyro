@@ -44,7 +44,6 @@ from misskaty.core.decorator.permissions import (
     list_admins,
     member_permissions,
 )
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import (
     extract_user,
@@ -164,7 +163,6 @@ async def purge(_, ctx: Message, strings):
 # Kick members
 @app.on_cmd(["kick", "dkick"], self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
     user_id, reason = await extract_user_and_reason(ctx)
@@ -197,7 +195,6 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
 # Ban/DBan/TBan User
 @app.on_cmd(["ban", "dban", "tban"], self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def banFunc(client, message, strings):
     user_id, reason = await extract_user_and_reason(message, sender_chat=True)
@@ -257,7 +254,6 @@ async def banFunc(client, message, strings):
 # Unban members
 @app.on_cmd("unban", self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def unban_func(_, message, strings):
     # we don't need reasons for unban, also, we
@@ -289,7 +285,6 @@ async def unban_func(_, message, strings):
 @app.on_message(
     filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group
 )
-@ratelimiter
 @use_chat_lang()
 async def list_ban_(c, message, strings):
     userid, msglink_reason = await extract_user_and_reason(message)
@@ -344,7 +339,6 @@ async def list_ban_(c, message, strings):
 @app.on_message(
     filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group
 )
-@ratelimiter
 @use_chat_lang()
 async def list_unban(_, message, strings):
     userid, msglink = await extract_user_and_reason(message)
@@ -382,7 +376,6 @@ async def list_unban(_, message, strings):
 # Delete messages
 @app.on_cmd("del", group_only=True)
 @app.adminsOnly("can_delete_messages")
-@ratelimiter
 @use_chat_lang()
 async def deleteFunc(_, message, strings):
     if not message.reply_to_message:
@@ -397,7 +390,6 @@ async def deleteFunc(_, message, strings):
 # Promote Members
 @app.on_cmd(["promote", "fullpromote"], self_admin=True, group_only=True)
 @app.adminsOnly("can_promote_members")
-@ratelimiter
 @use_chat_lang()
 async def promoteFunc(client, message, strings):
     try:
@@ -449,7 +441,6 @@ async def promoteFunc(client, message, strings):
 # Demote Member
 @app.on_cmd("demote", self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def demote(client, message, strings):
     user_id = await extract_user(message)
@@ -482,7 +473,6 @@ async def demote(client, message, strings):
 # Pin Messages
 @app.on_cmd(["pin", "unpin"])
 @app.adminsOnly("can_pin_messages")
-@ratelimiter
 @use_chat_lang()
 async def pin(_, message, strings):
     if not message.reply_to_message:
@@ -510,7 +500,6 @@ async def pin(_, message, strings):
 # Mute members
 @app.on_cmd(["mute", "tmute"], self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def mute(client, message, strings):
     try:
@@ -561,7 +550,6 @@ async def mute(client, message, strings):
 # Unmute members
 @app.on_cmd("unmute", self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def unmute(_, message, strings):
     user_id = await extract_user(message)
@@ -577,7 +565,6 @@ async def unmute(_, message, strings):
 
 @app.on_cmd(["warn", "dwarn"], self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def warn_user(client, message, strings):
     try:
@@ -619,7 +606,6 @@ async def warn_user(client, message, strings):
 
 
 @app.on_callback_query(filters.regex("unwarn_"))
-@ratelimiter
 @use_chat_lang()
 async def remove_warning(client, cq, strings):
     from_user = cq.from_user
@@ -650,7 +636,6 @@ async def remove_warning(client, cq, strings):
 
 
 @app.on_callback_query(filters.regex("unmute_"))
-@ratelimiter
 @use_chat_lang()
 async def unmute_user(client, cq, strings):
     from_user = cq.from_user
@@ -671,7 +656,6 @@ async def unmute_user(client, cq, strings):
 
 
 @app.on_callback_query(filters.regex("unban_"))
-@ratelimiter
 @use_chat_lang()
 async def unban_user(client, cq, strings):
     from_user = cq.from_user
@@ -697,7 +681,6 @@ async def unban_user(client, cq, strings):
 # Remove Warn
 @app.on_cmd("rmwarn", self_admin=True, group_only=True)
 @app.adminsOnly("can_restrict_members")
-@ratelimiter
 @use_chat_lang()
 async def remove_warnings(_, message, strings):
     if not message.reply_to_message:
@@ -717,7 +700,6 @@ async def remove_warnings(_, message, strings):
 
 # Warns
 @app.on_cmd("warns", group_only=True)
-@ratelimiter
 @use_chat_lang()
 async def check_warns(_, message, strings):
     if not message.from_user:
@@ -745,7 +727,6 @@ async def check_warns(_, message, strings):
     & filters.group
 )
 @capture_err
-@ratelimiter
 @use_chat_lang()
 async def report_user(_, ctx: Message, strings) -> "Message":
     if not ctx.reply_to_message:

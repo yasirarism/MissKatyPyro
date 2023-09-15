@@ -29,7 +29,6 @@ from database.notes_db import delete_note, get_note, get_note_names, save_note
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb
 
@@ -46,7 +45,6 @@ __HELP__ = """/notes To Get All The Notes In The Chat.
 
 @app.on_message(filters.command(["addnote", "save"]) & ~filters.private)
 @adminsOnly("can_change_info")
-@ratelimiter
 async def save_notee(_, message):
     if len(message.command) < 2 or not message.reply_to_message:
         await message.reply(
@@ -73,7 +71,6 @@ async def save_notee(_, message):
 
 @app.on_message(filters.command("notes") & ~filters.private)
 @capture_err
-@ratelimiter
 async def get_notes(_, message):
     chat_id = message.chat.id
 
@@ -90,7 +87,6 @@ async def get_notes(_, message):
 
 @app.on_message(filters.regex(r"^#.+") & filters.text & ~filters.private)
 @capture_err
-@ratelimiter
 async def get_one_note(_, message):
     name = message.text.replace("#", "", 1)
     if not name:
@@ -115,7 +111,6 @@ async def get_one_note(_, message):
 
 @app.on_message(filters.command(["delnote", "clear"]) & ~filters.private)
 @adminsOnly("can_change_info")
-@ratelimiter
 async def del_note(_, message):
     if len(message.command) == 1:
         return await message.reply("**Usage**\n__/delnote [NOTE_NAME]__")

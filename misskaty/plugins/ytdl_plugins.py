@@ -26,7 +26,7 @@ from pyrogram.types import (
 
 from misskaty import app
 from misskaty.core import pyro_cooldown
-from misskaty.core.decorator import capture_err, new_task, ratelimiter
+from misskaty.core.decorator import capture_err, new_task
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
@@ -40,7 +40,6 @@ def rand_key():
 
 
 @app.on_cmd("ytsearch", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def ytsearch(_, ctx: Message, strings):
     if len(ctx.command) == 1:
@@ -91,7 +90,6 @@ async def ytsearch(_, ctx: Message, strings):
     & pyro_cooldown.wait(60)
 )
 @capture_err
-@ratelimiter
 @use_chat_lang()
 async def ytdownv2(_, ctx: Message, strings):
     if not ctx.from_user:
@@ -133,7 +131,6 @@ async def ytdownv2(_, ctx: Message, strings):
 
 
 @app.on_cb(filters.regex(r"^yt_listall"))
-@ratelimiter
 @use_chat_lang()
 async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
@@ -149,7 +146,6 @@ async def ytdl_listall_callback(_, cq: CallbackQuery, strings):
 
 
 @app.on_callback_query(filters.regex(r"^yt_extract_info"))
-@ratelimiter
 @use_chat_lang()
 async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
@@ -187,7 +183,6 @@ async def ytdl_extractinfo_callback(_, cq: CallbackQuery, strings):
 
 
 @app.on_callback_query(filters.regex(r"^yt_(gen|dl)"))
-@ratelimiter
 @use_chat_lang()
 @new_task
 async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
@@ -245,7 +240,6 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
 
 
 @app.on_callback_query(filters.regex(r"^yt_cancel"))
-@ratelimiter
 @use_chat_lang()
 async def ytdl_cancel_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:
@@ -264,7 +258,6 @@ async def ytdl_cancel_callback(_, cq: CallbackQuery, strings):
 
 
 @app.on_callback_query(filters.regex(r"^ytdl_scroll"))
-@ratelimiter
 @use_chat_lang()
 async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
     if cq.from_user.id != cq.message.reply_to_message.from_user.id:

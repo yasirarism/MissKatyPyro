@@ -34,7 +34,6 @@ from database.filters_db import (
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb
 
@@ -49,7 +48,6 @@ You can use markdown or html to save text too.
 
 @app.on_message(filters.command(["addfilter", "filter"]) & ~filters.private)
 @adminsOnly("can_change_info")
-@ratelimiter
 async def save_filters(_, m):
     if len(m.command) == 1 or not m.reply_to_message:
         return await m.reply_msg(
@@ -78,7 +76,6 @@ async def save_filters(_, m):
 
 @app.on_message(filters.command("filters") & ~filters.private)
 @capture_err
-@ratelimiter
 async def get_filterss(_, m):
     _filters = await get_filters_names(m.chat.id)
     if not _filters:
@@ -92,7 +89,6 @@ async def get_filterss(_, m):
 
 @app.on_message(filters.command(["stop", "stopfilter"]) & ~filters.private)
 @adminsOnly("can_change_info")
-@ratelimiter
 async def del_filter(_, m):
     if len(m.command) < 2:
         return await m.reply_msg("**Usage:**\n__/stopfilter [FILTER_NAME]__", del_in=6)

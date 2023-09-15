@@ -7,7 +7,6 @@ import logging
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import fetch
 from misskaty.vars import CURRENCY_API
 
@@ -20,7 +19,6 @@ LOGGER = logging.getLogger("MissKaty")
 
 
 @app.on_cmd("currency")
-@ratelimiter
 async def currency(_, ctx: Message):
     if CURRENCY_API is None:
         return await ctx.reply_msg(

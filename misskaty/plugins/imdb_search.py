@@ -30,7 +30,6 @@ from pyrogram.types import (
 
 from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, get_random_string, search_jw
 from utils import demoji
 
@@ -40,7 +39,6 @@ LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 
 # IMDB Choose Language
 @app.on_cmd("imdb")
-@ratelimiter
 async def imdb_choose(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
@@ -76,7 +74,6 @@ async def imdb_choose(_, ctx: Message):
 
 
 @app.on_cb("imdbset")
-@ratelimiter
 async def imdblangset(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -101,7 +98,6 @@ async def imdblangset(_, query: CallbackQuery):
 
 
 @app.on_cb("setimdb")
-@ratelimiter
 async def imdbsetlang(_, query: CallbackQuery):
     _, lang, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -246,7 +242,6 @@ async def imdb_search_en(kueri, message):
 
 
 @app.on_cb("imdbcari")
-@ratelimiter
 async def imdbcari(_, query: CallbackQuery):
     BTN = []
     _, lang, msg, uid = query.data.split("#")
@@ -364,7 +359,6 @@ async def imdbcari(_, query: CallbackQuery):
 
 
 @app.on_cb("imdbres_id")
-@ratelimiter
 async def imdb_id_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -523,7 +517,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
 
 
 @app.on_cb("imdbres_en")
-@ratelimiter
 async def imdb_en_callback(self: Client, query: CallbackQuery):
     i, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):

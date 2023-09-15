@@ -22,7 +22,6 @@ from pyrogram.types import (
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.localization import use_chat_lang
@@ -72,7 +71,6 @@ def get_subname(lang, url, ext):
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
-@ratelimiter
 @use_chat_lang()
 async def ceksub(_, ctx: Message, strings):
     if len(ctx.command) == 1:
@@ -128,7 +126,6 @@ async def ceksub(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["converttosrt", "converttoass"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 @use_chat_lang()
 async def convertsrt(self: Client, ctx: Message, strings):
     reply = ctx.reply_to_message
@@ -168,7 +165,6 @@ async def convertsrt(self: Client, ctx: Message, strings):
 
 
 @app.on_callback_query(filters.regex(r"^streamextract#"))
-@ratelimiter
 @use_chat_lang()
 async def stream_extract(self: Client, update: CallbackQuery, strings):
     cb_data = update.data

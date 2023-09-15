@@ -15,7 +15,6 @@ from database.sangmata_db import (
 )
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
@@ -97,7 +96,6 @@ async def cek_mataa(_, ctx: Message, strings):
     & ~filters.via_bot
 )
 @adminsOnly("can_change_info")
-@ratelimiter
 @use_chat_lang()
 async def set_mataa(_, ctx: Message, strings):
     if len(ctx.command) == 1:

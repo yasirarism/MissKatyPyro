@@ -10,7 +10,6 @@ from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import Cache, fetch
 from misskaty.plugins.web_scraper import split_arr
 from misskaty.vars import COMMAND_HANDLER
@@ -43,7 +42,6 @@ async def getDataPypi(msg, kueri, CurrentPage, user):
 
 
 @app.on_message(filters.command(["pypi"], COMMAND_HANDLER))
-@ratelimiter
 async def pypi_s(_, ctx: Message):
     kueri = " ".join(ctx.command[1:])
     if not kueri:
@@ -68,7 +66,6 @@ async def pypi_s(_, ctx: Message):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "page_pypi#" in query.data))
-@ratelimiter
 async def pypipage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -103,7 +100,6 @@ async def pypipage_callback(_, callback_query: CallbackQuery):
 
 
 @app.on_callback_query(filters.create(lambda _, __, query: "pypidata#" in query.data))
-@ratelimiter
 async def pypi_getdata(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)

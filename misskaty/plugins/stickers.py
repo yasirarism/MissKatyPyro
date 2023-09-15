@@ -28,7 +28,6 @@ from pyrogram.raw.types import (
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL
 
@@ -60,7 +59,6 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
 @app.on_cmd("getsticker")
-@ratelimiter
 @use_chat_lang()
 async def getsticker_(self: Client, ctx: Message, strings):
     if not ctx.reply_to_message or ctx.reply_to_message.sticker:
@@ -86,7 +84,6 @@ async def getsticker_(self: Client, ctx: Message, strings):
 
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)
-@ratelimiter
 async def getstickerid(_, ctx: Message):
     if ctx.reply_to_message.sticker:
         await ctx.reply_msg(
@@ -97,7 +94,6 @@ async def getstickerid(_, ctx: Message):
 
 
 @app.on_message(filters.command("unkang", COMMAND_HANDLER) & filters.reply)
-@ratelimiter
 @use_chat_lang()
 async def unkangs(self: Client, ctx: Message, strings):
     if not ctx.from_user:
@@ -122,7 +118,6 @@ async def unkangs(self: Client, ctx: Message, strings):
 
 
 @app.on_cmd(["curi", "kang"])
-@ratelimiter
 @use_chat_lang()
 async def kang_sticker(self: Client, ctx: Message, strings):
     if not ctx.from_user:

@@ -10,7 +10,6 @@ from pySmartDL import SmartDL
 
 from misskaty import app
 from misskaty.core.decorator import new_task
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
 
 __MODULE__ = "WebSS"
@@ -20,7 +19,6 @@ __HELP__ = """
 
 
 @app.on_cmd("webss")
-@ratelimiter
 @new_task
 @use_chat_lang()
 async def take_ss(_, ctx: Message, strings):

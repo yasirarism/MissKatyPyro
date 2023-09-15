@@ -7,7 +7,6 @@ from pyrogram import filters
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
@@ -150,7 +149,6 @@ async def draw_meme_text(image_path, text):
 
 @app.on_message(filters.command(["mmf"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def memify(_, message):
     if message.reply_to_message and (
         message.reply_to_message.sticker or message.reply_to_message.photo
@@ -184,3 +182,14 @@ async def memify(_, message):
 async def dice(c, m, strings):
     dices = await c.send_dice(m.chat.id, reply_to_message_id=m.id)
     await dices.reply_msg(strings("result").format(number=dices.dice.value), quote=True)
+
+
+@app.on_message(filters.command(["beri"], COMMAND_HANDLER))
+async def beriharapan(c, m):
+    reply = m.reply_to_message
+    if not reply and m.command == 1:
+        return m.reply("Harap berikan kalimat yang ingin diberi pada seseorang")
+    pesan = m.text.split(" ", 1)[1]
+    reply_name = reply.from_user.mention if reply.from_user else reply.sender_chat.title
+    sender_name = m.from_user.mention if m.from_user else m.sender_chat.title
+    await m.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")

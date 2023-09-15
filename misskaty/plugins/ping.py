@@ -15,13 +15,11 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from misskaty import app, botStartTime, misskaty_version
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.human_read import get_readable_time
 from misskaty.vars import COMMAND_HANDLER
 
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
-@ratelimiter
 async def ping(_, ctx: Message):
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
@@ -34,7 +32,6 @@ async def ping(_, ctx: Message):
 
 
 @app.on_message(filters.command(["ping_dc"], COMMAND_HANDLER))
-@ratelimiter
 async def ping_handler(_, ctx: Message):
     m = await ctx.reply_msg("Pinging datacenters...")
     async with Lock():

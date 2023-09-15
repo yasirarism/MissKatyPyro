@@ -12,7 +12,6 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import fetch, post_to_telegraph, rentry
 from misskaty.vars import COMMAND_HANDLER
 
@@ -66,7 +65,6 @@ pattern = compiles(r"^text/|json$|yaml$|xml$|toml$|x-sh$|x-shellscript$|x-subrip
 
 
 @app.on_message(filters.command(["tgraph"], COMMAND_HANDLER))
-@ratelimiter
 async def telegraph_paste(_, message):
     reply = message.reply_to_message
     if not reply and len(message.command) < 2:
@@ -166,7 +164,6 @@ async def telegraph_paste(_, message):
 
 # Default Paste to Wastebin using Deta
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
-@ratelimiter
 async def wastepaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -239,7 +236,6 @@ async def wastepaste(_, message):
 
 # Nekobin Paste
 @app.on_message(filters.command(["neko"], COMMAND_HANDLER))
-@ratelimiter
 async def nekopaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -309,7 +305,6 @@ async def nekopaste(_, message):
 
 # Paste as spacebin
 @app.on_message(filters.command(["sbin"], COMMAND_HANDLER))
-@ratelimiter
 async def spacebinn(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -379,7 +374,6 @@ async def spacebinn(_, message):
 
 # Rentry paste
 @app.on_message(filters.command(["rentry"], COMMAND_HANDLER))
-@ratelimiter
 async def rentrypaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]
@@ -446,7 +440,6 @@ async def rentrypaste(_, message):
 
 # Tempaste pastebin
 @app.on_message(filters.command(["temp_paste"], COMMAND_HANDLER))
-@ratelimiter
 async def tempaste(_, message):
     reply = message.reply_to_message
     target = str(message.command[0]).split("@", maxsplit=1)[0]

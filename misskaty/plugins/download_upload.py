@@ -21,7 +21,6 @@ from pySmartDL import SmartDL
 
 from misskaty import app
 from misskaty.core.decorator import capture_err, new_task
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import fetch
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER, SUDO
@@ -43,7 +42,6 @@ __HELP__ = """
 
 
 @app.on_message(filters.command(["anon"], COMMAND_HANDLER))
-@ratelimiter
 async def upload(bot, message):
     if not message.reply_to_message:
         return await message.reply("Please reply to media file.")
@@ -176,7 +174,6 @@ async def download(client, message):
 
 @app.on_message(filters.command(["instadl"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def instadl(_, message):
     if len(message.command) == 1:
         return await message.reply(
@@ -217,8 +214,7 @@ async def instadl(_, message):
 
 @app.on_message(filters.command(["twitterdl"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
-async def twitter(_, message):
+async def twitterdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
             f"Use command /{message.command[0]} [link] to download Twitter video."
@@ -270,7 +266,6 @@ async def twitter(_, message):
 
 @app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def tiktokdl(_, message):
     if len(message.command) == 1:
         return await message.reply(

@@ -8,7 +8,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import fetch
 
 __MODULE__ = "Fun"
@@ -251,7 +250,6 @@ def isArgInt(txt) -> list:
 
 
 @app.on_message(filters.command(["q", "qr"]) & filters.reply)
-@ratelimiter
 async def msg_quotly_cmd(self: Client, ctx: Message):
     is_reply = False
     if ctx.command[0].endswith("r"):

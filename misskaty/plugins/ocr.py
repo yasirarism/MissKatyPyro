@@ -14,7 +14,6 @@ from telegraph.aio import Telegraph
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
@@ -24,7 +23,6 @@ __HELP__ = "/ocr [reply to photo] - Read Text From Image"
 
 @app.on_message(filters.command(["ocr"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 @use_chat_lang()
 async def ocr(_, ctx: Message, strings):
     reply = ctx.reply_to_message

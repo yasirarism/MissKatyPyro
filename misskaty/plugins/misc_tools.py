@@ -35,7 +35,6 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import fetch
 from misskaty.helper.tools import rentry
 from misskaty.vars import COMMAND_HANDLER
@@ -125,7 +124,6 @@ async def carbon_make(self: Client, ctx: Message):
 
 
 @app.on_message(filters.command("readqr", COMMAND_HANDLER))
-@ratelimiter
 async def readqr(c, m):
     if not m.reply_to_message:
         return await m.reply("Please reply photo that contain valid QR Code.")
@@ -145,7 +143,6 @@ async def readqr(c, m):
 
 
 @app.on_message(filters.command("createqr", COMMAND_HANDLER))
-@ratelimiter
 async def makeqr(c, m):
     if m.reply_to_message and m.reply_to_message.text:
         teks = m.reply_to_message.text
@@ -193,7 +190,6 @@ async def stackoverflow(_, message):
 
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def gsearch(_, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
@@ -241,7 +237,6 @@ async def gsearch(_, message):
 
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def translate(_, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
@@ -273,7 +268,6 @@ async def translate(_, message):
 
 @app.on_message(filters.command(["tts"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def tts_convert(_, message):
     if message.reply_to_message and (
         message.reply_to_message.text or message.reply_to_message.caption
@@ -307,7 +301,6 @@ async def tts_convert(_, message):
 
 @app.on_message(filters.command(["tosticker"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def tostick(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.photo:
@@ -324,7 +317,6 @@ async def tostick(client, message):
 
 @app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def topho(client, message):
     try:
         if not message.reply_to_message or not message.reply_to_message.sticker:
@@ -352,7 +344,6 @@ async def topho(client, message):
 
 
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
-@ratelimiter
 async def showid(_, message):
     chat_type = message.chat.type.value
     if chat_type == "private":
@@ -392,7 +383,6 @@ async def showid(_, message):
 
 
 @app.on_message(filters.command(["info"], COMMAND_HANDLER))
-@ratelimiter
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     if message.sender_chat:
@@ -464,7 +454,6 @@ async def who_is(client, message):
 
 
 @app.on_callback_query(filters.regex("^close"))
-@ratelimiter
 async def close_callback(_, query: CallbackQuery):
     _, userid = query.data.split("#")
     if query.from_user.id != int(userid):
@@ -489,7 +478,6 @@ async def mdlapi(title):
 
 @app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def mdlsearch(_, message):
     if " " in message.text:
         _, title = message.text.split(None, 1)
@@ -516,7 +504,6 @@ async def mdlsearch(_, message):
 
 
 @app.on_callback_query(filters.regex("^mdls"))
-@ratelimiter
 async def mdl_callback(_, query: CallbackQuery):
     _, user, _, slug = query.data.split("#")
     if user == f"{query.from_user.id}":

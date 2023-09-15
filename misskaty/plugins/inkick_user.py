@@ -10,7 +10,6 @@ from pyrogram.errors.exceptions.bad_request_400 import (
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Inkick"
@@ -23,7 +22,6 @@ __HELP__ = """"
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER)
 )
-@ratelimiter
 @app.adminsOnly("can_restrict_members")
 async def inkick(_, message):
     if message.sender_chat:
@@ -81,7 +79,6 @@ async def inkick(_, message):
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER)
 )
-@ratelimiter
 @app.adminsOnly("can_restrict_members")
 async def uname(_, message):
     if message.sender_chat:
@@ -132,7 +129,6 @@ async def uname(_, message):
     & ~filters.private
     & filters.command(["ban_ghosts"], COMMAND_HANDLER)
 )
-@ratelimiter
 @app.adminsOnly("can_restrict_members")
 async def rm_delacc(_, message):
     if message.sender_chat:
@@ -178,7 +174,6 @@ async def rm_delacc(_, message):
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER)
 )
-@ratelimiter
 @app.adminsOnly("can_restrict_members")
 async def instatus(client, message):
     if message.sender_chat:

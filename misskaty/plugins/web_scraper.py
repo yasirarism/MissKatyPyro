@@ -16,7 +16,6 @@ from pyrogram.types import Message
 
 from database import dbname
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import Cache, Kusonime, fetch, use_chat_lang
 
 __MODULE__ = "WebScraper"
@@ -531,7 +530,6 @@ async def getSame(msg, query, current_page, strings):
 
 # SameHada CMD
 @app.on_cmd("samehadaku", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def same_search(_, msg, strings):
     query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
@@ -549,7 +547,6 @@ async def same_search(_, msg, strings):
 
 # Terbit21 CMD
 @app.on_cmd("terbit21", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def terbit21_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -574,7 +571,6 @@ async def terbit21_s(_, message, strings):
 
 # LK21 CMD
 @app.on_cmd("lk21", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def lk21_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -597,7 +593,6 @@ async def lk21_s(_, message, strings):
 
 # Pahe CMD
 @app.on_cmd("pahe", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def pahe_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -620,7 +615,6 @@ async def pahe_s(_, message, strings):
 
 # Gomov CMD
 @app.on_cmd("gomov", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def gomov_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -647,7 +641,6 @@ async def gomov_s(_, message, strings):
 
 # MelongMovie CMD
 @app.on_cmd("melongmovie", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def melong_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -681,7 +674,6 @@ async def melong_s(_, message, strings):
 
 # Savefilm21 CMD
 @app.on_cmd("savefilm21", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def savefilm_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -710,7 +702,6 @@ async def savefilm_s(_, message, strings):
 
 # Kusonime CMD
 @app.on_cmd("kusonime", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def kusonime_s(_, message, strings):
     kueri = " ".join(message.command[1:])
@@ -739,7 +730,6 @@ async def kusonime_s(_, message, strings):
 
 # Lendrive CMD
 @app.on_cmd("lendrive", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def lendrive_s(_, ctx: Message, strings):
     kueri = ctx.input
@@ -766,7 +756,6 @@ async def lendrive_s(_, ctx: Message, strings):
 
 # Movieku CMD
 @app.on_cmd("movieku", no_channel=True)
-@ratelimiter
 @use_chat_lang()
 async def movieku_s(_, ctx: Message, strings):
     kueri = ctx.input
@@ -791,7 +780,6 @@ async def movieku_s(_, ctx: Message, strings):
 
 # Savefillm21 Page Callback
 @app.on_cb("page_sf21#")
-@ratelimiter
 @use_chat_lang()
 async def sf21page_callback(_, callback_query, strings):
     try:
@@ -836,7 +824,6 @@ async def sf21page_callback(_, callback_query, strings):
 
 # Kuso Page Callback
 @app.on_cb("page_kuso#")
-@ratelimiter
 @use_chat_lang()
 async def kusopage_callback(_, callback_query, strings):
     try:
@@ -881,7 +868,6 @@ async def kusopage_callback(_, callback_query, strings):
 
 # Lendrive Page Callback
 @app.on_cb("page_lendrive#")
-@ratelimiter
 @use_chat_lang()
 async def lendrivepage_callback(_, callback_query, strings):
     try:
@@ -924,7 +910,6 @@ async def lendrivepage_callback(_, callback_query, strings):
 
 # Movieku Page Callback
 @app.on_cb("page_movieku#")
-@ratelimiter
 @use_chat_lang()
 async def moviekupage_callback(_, callback_query, strings):
     try:
@@ -961,7 +946,6 @@ async def moviekupage_callback(_, callback_query, strings):
 
 # Samehada Page Callback
 @app.on_cb("page_same#")
-@ratelimiter
 @use_chat_lang()
 async def samepg(_, query, strings):
     try:
@@ -993,7 +977,6 @@ async def samepg(_, query, strings):
 
 # Terbit21 Page Callback
 @app.on_cb("page_terbit21#")
-@ratelimiter
 @use_chat_lang()
 async def terbit21page_callback(_, callback_query, strings):
     try:
@@ -1030,7 +1013,6 @@ async def terbit21page_callback(_, callback_query, strings):
 
 # Page Callback Melong
 @app.on_cb("page_melong#")
-@ratelimiter
 @use_chat_lang()
 async def melongpage_callback(_, callback_query, strings):
     try:
@@ -1073,7 +1055,6 @@ async def melongpage_callback(_, callback_query, strings):
 
 # Lk21 Page Callback
 @app.on_cb("page_lk21#")
-@ratelimiter
 @use_chat_lang()
 async def lk21page_callback(_, callback_query, strings):
     try:
@@ -1110,7 +1091,6 @@ async def lk21page_callback(_, callback_query, strings):
 
 # Pahe Page Callback
 @app.on_cb("page_pahe#")
-@ratelimiter
 @use_chat_lang()
 async def pahepage_callback(_, callback_query, strings):
     try:
@@ -1147,7 +1127,6 @@ async def pahepage_callback(_, callback_query, strings):
 
 # Gomov Page Callback
 @app.on_cb("page_gomov#")
-@ratelimiter
 @use_chat_lang()
 async def gomovpage_callback(_, callback_query, strings):
     try:
@@ -1191,7 +1170,6 @@ async def gomovpage_callback(_, callback_query, strings):
 ### Scrape DDL Link From Web ###
 # Kusonime DDL
 @app.on_cb("kusoextract#")
-@ratelimiter
 @use_chat_lang()
 async def kusonime_scrap(client, callback_query, strings):
     try:
@@ -1244,7 +1222,6 @@ async def kusonime_scrap(client, callback_query, strings):
 
 # Savefilm21 DDL
 @app.on_cb("sf21extract#")
-@ratelimiter
 @use_chat_lang()
 async def savefilm21_scrap(_, callback_query, strings):
     try:
@@ -1281,7 +1258,6 @@ async def savefilm21_scrap(_, callback_query, strings):
 
 # Scrape Link Download Movieku.CC
 @app.on_cmd("movieku_scrap#")
-@ratelimiter
 @use_chat_lang()
 async def muviku_scrap(_, message, strings):
     try:
@@ -1310,7 +1286,6 @@ async def muviku_scrap(_, message, strings):
 
 # Scrape DDL Link Melongmovie
 @app.on_cb("melongextract#")
-@ratelimiter
 @use_chat_lang()
 async def melong_scrap(_, callback_query, strings):
     try:
@@ -1350,7 +1325,6 @@ async def melong_scrap(_, callback_query, strings):
 
 # Scrape DDL Link Gomov
 @app.on_cb("gomovextract#")
-@ratelimiter
 @use_chat_lang()
 async def gomov_dl(_, callback_query, strings):
     try:
@@ -1390,7 +1364,6 @@ async def gomov_dl(_, callback_query, strings):
 
 
 @app.on_cb("lendriveextract#")
-@ratelimiter
 @use_chat_lang()
 async def lendrive_dl(_, callback_query, strings):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):

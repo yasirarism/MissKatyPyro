@@ -19,7 +19,6 @@ from pyrogram.types import Message
 from database.afk_db import add_afk, cleanmode_off, cleanmode_on, is_afk, remove_afk
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
 from utils import put_cleanmode
@@ -33,7 +32,6 @@ Just type something in group to remove AFK Status."""
 
 # Handle set AFK Command
 @app.on_cmd("afk")
-@ratelimiter
 @use_chat_lang()
 async def active_afk(_, ctx: Message, strings):
     if ctx.sender_chat:
@@ -207,7 +205,6 @@ async def active_afk(_, ctx: Message, strings):
 
 
 @app.on_cmd("afkdel", group_only=True)
-@ratelimiter
 @adminsOnly("can_change_info")
 @use_chat_lang()
 async def afk_state(_, ctx: Message, strings):

@@ -13,7 +13,6 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.subscene_helper import down_page
 from misskaty.vars import COMMAND_HANDLER
 
@@ -114,7 +113,6 @@ async def getListSub(msg, link, CurrentPage, user):
 
 # Subscene CMD
 @app.on_message(filters.command(["subscene"], COMMAND_HANDLER))
-@ratelimiter
 async def subscene_cmd(_, ctx: Message):
     if not ctx.input:
         return await ctx.reply_msg(
@@ -147,7 +145,6 @@ async def subscene_cmd(_, ctx: Message):
 @app.on_callback_query(
     filters.create(lambda _, __, query: "subscenepage#" in query.data)
 )
-@ratelimiter
 async def subpage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
         return await callback_query.answer("Not yours..", True)
@@ -185,7 +182,6 @@ async def subpage_callback(_, callback_query: CallbackQuery):
 
 # Callback list title
 @app.on_callback_query(filters.create(lambda _, __, query: "sublist#" in query.data))
-@ratelimiter
 async def subdlpage_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
         return await callback_query.answer("Not yours..", True)
@@ -226,7 +222,6 @@ async def subdlpage_callback(_, callback_query: CallbackQuery):
 @app.on_callback_query(
     filters.create(lambda _, __, query: "extractsubs#" in query.data)
 )
-@ratelimiter
 async def dlsub_callback(_, callback_query: CallbackQuery):
     if callback_query.from_user.id != int(callback_query.data.split("#")[4]):
         return await callback_query.answer("Not yours..", True)

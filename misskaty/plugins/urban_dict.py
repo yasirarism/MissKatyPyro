@@ -2,7 +2,6 @@ from pykeyboard import InlineKeyboard
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper.http import fetch
 
 
@@ -40,7 +39,6 @@ async def getData(chat_id, message_id, GetWord, CurrentPage):
 
 
 @app.on_cmd("ud", no_channel=True)
-@ratelimiter
 async def urbanDictionary(_, ctx: Message):
     message_id = ctx.id
     chat_id = ctx.chat.id
@@ -61,7 +59,6 @@ async def urbanDictionary(_, ctx: Message):
 
 
 @app.on_cb("pagination_urban#")
-@ratelimiter
 async def ud_callback(_, callback_query: CallbackQuery):
     message_id = callback_query.message.id
     chat_id = callback_query.message.chat.id

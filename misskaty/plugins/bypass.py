@@ -16,7 +16,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import get_readable_file_size, fetch, rentry
 from misskaty.vars import COMMAND_HANDLER
 
@@ -24,6 +23,8 @@ LIST_LINK = """
 - Pling and all aliases.
 - Wetransfer
 - Other link soon...
+
+This feature is deprecated..
 """
 
 __MODULE__ = "Bypass"
@@ -94,7 +95,6 @@ def wetransfer_bypass(url: str) -> str:
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
 @capture_err
-@ratelimiter
 async def bypass(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(

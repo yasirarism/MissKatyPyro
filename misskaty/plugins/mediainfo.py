@@ -15,7 +15,6 @@ from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import post_to_telegraph, progress_for_pyrogram, runcmd
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.mediainfo_paste import mediainfo_paste
@@ -24,7 +23,6 @@ from utils import get_file_id
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
-@ratelimiter
 @use_chat_lang()
 async def mediainfo(_, ctx: Message, strings):
     if not ctx.from_user:

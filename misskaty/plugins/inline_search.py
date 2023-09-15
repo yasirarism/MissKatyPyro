@@ -26,7 +26,6 @@ from pyrogram.types import (
 )
 
 from misskaty import BOT_USERNAME, app, user
-from misskaty.core.decorator.ratelimiter import ratelimiter
 from misskaty.helper import GENRES_EMOJI, fetch, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
 from misskaty.vars import USER_SESSION
@@ -560,7 +559,6 @@ async def inline_menu(self, inline_query: InlineQuery):
 
 
 @app.on_callback_query(filters.regex(r"prvtmsg\((.+)\)"))
-@ratelimiter
 async def prvt_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
@@ -577,7 +575,6 @@ async def prvt_msg(_, c_q):
 
 
 @app.on_callback_query(filters.regex(r"destroy\((.+)\)"))
-@ratelimiter
 async def destroy_msg(_, c_q):
     msg_id = str(c_q.matches[0].group(1))
 
@@ -596,7 +593,6 @@ async def destroy_msg(_, c_q):
 
 
 @app.on_callback_query(filters.regex("^imdbinl#"))
-@ratelimiter
 async def imdb_inl(_, query):
     i, cbuser, movie = query.data.split("#")
     if cbuser == f"{query.from_user.id}":

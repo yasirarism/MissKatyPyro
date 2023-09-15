@@ -10,12 +10,10 @@ import os
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.core.decorator.ratelimiter import ratelimiter
 
 
 # View Structure Telegram Message As JSON
 @app.on_cmd("json")
-@ratelimiter
 async def jsonify(_, message: Message):
     the_real_message = None
     reply_to_id = None
