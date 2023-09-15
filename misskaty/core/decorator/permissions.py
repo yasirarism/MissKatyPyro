@@ -8,7 +8,7 @@ from pyrogram.errors import ChannelPrivate, ChatAdminRequired, ChatWriteForbidde
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
-from misskaty.helper import Cache
+from misskaty.helper.sqlite_helper import Cache
 from misskaty.vars import SUDO
 
 from ...helper.localization import (
