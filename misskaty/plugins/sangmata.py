@@ -86,7 +86,7 @@ async def cek_mataa(_, ctx: Message, strings):
             ctx.from_user.last_name,
         )
     if msg != "":
-        await ctx.reply_msg(msg, quote=True)
+        await ctx.reply_msg(msg, quote=False)
 
 
 @app.on_message(
