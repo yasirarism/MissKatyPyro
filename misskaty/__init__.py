@@ -53,6 +53,7 @@ app = Client(
     sleep_threshold=180,
     app_version="MissKatyPyro Stable",
     workers=50,
+    max_concurrent_transmissions=20,
 )
 
 # Pyrogram UserBot Client
