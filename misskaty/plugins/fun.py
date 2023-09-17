@@ -192,4 +192,4 @@ async def beriharapan(c, m):
     pesan = m.text.split(" ", 1)[1]
     reply_name = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     sender_name = m.from_user.mention if m.from_user else m.sender_chat.title
-    await m.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")
+    await reply.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")
