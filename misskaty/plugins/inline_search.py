@@ -116,7 +116,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                     title="Calculator",
                     description="New Calculator",
                     input_message_content=InputTextMessageContent(
-                        text=f"Made by @{self.me.username}",
+                        message_text=f"Made by @{self.me.username}",
                         disable_web_page_preview=True
                     ),
                     reply_markup=calc_btn(inline_query.from_user.id)
@@ -130,7 +130,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                     title="Answer",
                     description=f"Result: {result}",
                     input_message_content=InputTextMessageContent(
-                        text=f"{data} = {result}",
+                        message_text=f"{data} = {result}",
                         disable_web_page_preview=True
                     )
                 )
