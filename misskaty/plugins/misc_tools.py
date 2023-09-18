@@ -67,6 +67,71 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
+@app.on_message(filters.command(["calc", "calculate", "calculator"]))
+async def calculate_handler(self, ctx):
+    CALCULATE_BUTTONS = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("DEL", callback_data="calc.DEL"),
+                InlineKeyboardButton("AC", callback_data="calc.AC"),
+                InlineKeyboardButton("(", callback_data="calc.("),
+                InlineKeyboardButton(")", callback_data="calc.)")
+            ],
+            [
+                InlineKeyboardButton("7", callback_data="calc.7"),
+                InlineKeyboardButton("8", callback_data="calc.8"),
+                InlineKeyboardButton("9", callback_data="calc.9"),
+                InlineKeyboardButton("÷", callback_data="calc./")
+            ],
+            [
+                InlineKeyboardButton("4", callback_data="calc.4"),
+                InlineKeyboardButton("5", callback_data="calc.5"),
+                InlineKeyboardButton("6", callback_data="calc.6"),
+                InlineKeyboardButton("×", callback_data="calc.*")
+            ],
+            [
+                InlineKeyboardButton("1", callback_data="calc.1"),
+                InlineKeyboardButton("2", callback_data="calc.2"),
+                InlineKeyboardButton("3", callback_data="calc.3"),
+                InlineKeyboardButton("-", callback_data="calc.-"),
+            ],
+            [
+                InlineKeyboardButton(".", callback_data="calc.."),
+                InlineKeyboardButton("0", callback_data="calc.0"),
+                InlineKeyboardButton("=", callback_data="calc.="),
+                InlineKeyboardButton("+", callback_data="calc.+"),
+            ]
+        ]
+    )
+    await ctx.reply_text(
+        text=f"Made by @{self.me.username}",
+        reply_markup=CALCULATE_BUTTONS,
+        disable_web_page_preview=True,
+        quote=True
+    )
+
+@app.on_cb("calc")
+async def calc_cb(self, query):
+        _, data = query.data
+        try:
+            message_text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
+            text = '' if f"Made by @{self.me.username}" in message_text else message_text
+            if data == "=":
+                text = str(eval(text))
+            elif data == "DEL":
+                text = message_text[:-1]
+            elif data == "AC":
+                text = ""
+            else:
+                text = message_text + data
+            await query.message.edit_msg(
+                text=f"{text}\n\n{CALCULATE_TEXT}",
+                disable_web_page_preview=True,
+                reply_markup=CALCULATE_BUTTONS
+            )
+        except Exception as error:
+            LOGGER.error(error)
+
 @app.on_cmd("kbbi")
 async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
