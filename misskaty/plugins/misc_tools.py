@@ -67,45 +67,51 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
-@app.on_message(filters.command(["calc", "calculate", "calculator"]))
-async def calculate_handler(self, ctx):
+def calc_btn(uid):
     CALCULATE_BUTTONS = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("DEL", callback_data="calc.DEL"),
-                InlineKeyboardButton("AC", callback_data="calc.AC"),
-                InlineKeyboardButton("(", callback_data="calc.("),
-                InlineKeyboardButton(")", callback_data="calc.)")
+                InlineKeyboardButton("DEL", callback_data=f"calc|{uid}|DEL"),
+                InlineKeyboardButton("AC", callback_data=f"calc|{uid}|AC"),
+                InlineKeyboardButton("(", callback_data=f"calc|{uid}|("),
+                InlineKeyboardButton(")", callback_data=f"calc|{uid}|)")
             ],
             [
-                InlineKeyboardButton("7", callback_data="calc.7"),
-                InlineKeyboardButton("8", callback_data="calc.8"),
-                InlineKeyboardButton("9", callback_data="calc.9"),
-                InlineKeyboardButton("÷", callback_data="calc./")
+                InlineKeyboardButton("7", callback_data=f"calc|{uid}|7"),
+                InlineKeyboardButton("8", callback_data=f"calc|{uid}|8"),
+                InlineKeyboardButton("9", callback_data=f"calc|{uid}|9"),
+                InlineKeyboardButton("÷", callback_data=f"calc|{uid}|/")
             ],
             [
-                InlineKeyboardButton("4", callback_data="calc.4"),
-                InlineKeyboardButton("5", callback_data="calc.5"),
-                InlineKeyboardButton("6", callback_data="calc.6"),
-                InlineKeyboardButton("×", callback_data="calc.*")
+                InlineKeyboardButton("4", callback_data=f"calc|{uid}|4"),
+                InlineKeyboardButton("5", callback_data=f"calc|{uid}|5"),
+                InlineKeyboardButton("6", callback_data=f"calc|{uid}|6"),
+                InlineKeyboardButton("×", callback_data=f"calc|{uid}|*")
             ],
             [
-                InlineKeyboardButton("1", callback_data="calc.1"),
-                InlineKeyboardButton("2", callback_data="calc.2"),
-                InlineKeyboardButton("3", callback_data="calc.3"),
-                InlineKeyboardButton("-", callback_data="calc.-"),
+                InlineKeyboardButton("1", callback_data=f"calc|{uid}|1"),
+                InlineKeyboardButton("2", callback_data=f"calc|{uid}|2"),
+                InlineKeyboardButton("3", callback_data=f"calc|{uid}|3"),
+                InlineKeyboardButton("-", callback_data=f"calc|{uid}|-"),
             ],
             [
-                InlineKeyboardButton(".", callback_data="calc.."),
-                InlineKeyboardButton("0", callback_data="calc.0"),
-                InlineKeyboardButton("=", callback_data="calc.="),
-                InlineKeyboardButton("+", callback_data="calc.+"),
+                InlineKeyboardButton(".", callback_data=f"calc|{uid}|."),
+                InlineKeyboardButton("0", callback_data=f"calc|{uid}|0"),
+                InlineKeyboardButton("=", callback_data=f"calc|{uid}|="),
+                InlineKeyboardButton("+", callback_data=f"calc|{uid}|+"),
             ]
         ]
     )
+    return CALCULATE_BUTTONS
+
+
+@app.on_message(filters.command(["calc", "calculate", "calculator"]))
+async def calculate_handler(self, ctx):
+    if not ctx.from_user:
+        return
     await ctx.reply_text(
         text=f"Made by @{self.me.username}",
-        reply_markup=CALCULATE_BUTTONS,
+        reply_markup=calc_btn(ctx.from user.id),
         disable_web_page_preview=True,
         quote=True
     )
@@ -127,7 +133,7 @@ async def calc_cb(self, query):
             await query.message.edit_msg(
                 text=f"{text}\n\nMade by @{self.me.username}",
                 disable_web_page_preview=True,
-                reply_markup=CALCULATE_BUTTONS
+                reply_markup=calc_btn(query.from_user.id)
             )
         except Exception as error:
             LOGGER.error(error)
