@@ -9,6 +9,7 @@ import asyncio
 import html
 import json
 import os
+import re
 import traceback
 from logging import getLogger
 from urllib.parse import quote
@@ -68,6 +69,18 @@ def remove_html_tags(text):
     return re.sub(clean, "", text)
 
 
+def calcExpression(text):
+    try:
+        return float(eval(text))
+    except (SyntaxError, ZeroDivisionError):
+        return ""
+    except TypeError:
+        return float(eval(text.replace('(', '*(')))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return ""
+
+
 def calc_btn(uid):
     CALCULATE_BUTTONS = InlineKeyboardMarkup(
         [
@@ -123,20 +136,36 @@ async def calc_cb(self, query):
         if query.from_user.id != int(uid):
             return await query.answer("Who are you??", show_alert=True, cache_time=5)
         try:
-            message_text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
-            text = '' if f"Made by @{self.me.username}" in message_text else message_text
+            text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
+            text = '' if f"Made by @{self.me.username}" in text else text
+            inpt = text + query.data
             if data == "=":
-                text = str(eval(text))
+                result = calcExpression(text)
+                text = ""
             elif data == "DEL":
-                text = message_text[:-1]
+                text = text[:-1]
             elif data == "AC":
                 text = ""
             else:
-                LOGGER.info(message_text)
-                LOGGER.info(data)
+                dot_dot_check = re.findall(r"(\d*\.\.|\d*\.\d+\.)", inpt)
+                opcheck = re.findall(r"([*/\+-]{2,})", inpt)
+                if not dot_dot_check and not opcheck:
+                    strOperands = re.findall(r"(\.\d+|\d+\.\d+|\d+)", inpt)
+                    if strOperands:
+                        text += data
+                        result = calcExpression(text)
+
+            text = f"{text:<50}"
+            if result:
+                if text:
+                    text += f"\n{result:>50}"
+                else:
+                    text = result
+            text += "\n\nMade by @{self.me.username}"
+
                 text = text + data
             await query.message.edit_msg(
-                text=f"{text}\n\nMade by @{self.me.username}",
+                text=text,
                 disable_web_page_preview=True,
                 reply_markup=calc_btn(query.from_user.id)
             )
