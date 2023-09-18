@@ -112,7 +112,7 @@ async def calculate_handler(self, ctx):
 
 @app.on_cb("calc")
 async def calc_cb(self, query):
-        _, data = query.data
+        _, data = query.data.split(".")
         try:
             message_text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
             text = '' if f"Made by @{self.me.username}" in message_text else message_text
