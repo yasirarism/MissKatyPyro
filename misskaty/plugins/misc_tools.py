@@ -45,6 +45,7 @@ LOGGER = getLogger("MissKaty")
 __MODULE__ = "Misc"
 __HELP__ = """
 /carbon [text or reply to text or caption] - Make beautiful snippet code on carbon from text.
+/calc - Simple math calculator using inline buttons.
 /kbbi [keyword] - Search definition on KBBI (For Indonesian People)
 /sof [query] - Search your problem in StackOverflow.
 /google [query] - Search using Google Search.
@@ -111,7 +112,7 @@ async def calculate_handler(self, ctx):
         return
     await ctx.reply_text(
         text=f"Made by @{self.me.username}",
-        reply_markup=calc_btn(ctx.from user.id),
+        reply_markup=calc_btn(ctx.from_user.id),
         disable_web_page_preview=True,
         quote=True
     )
