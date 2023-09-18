@@ -132,6 +132,8 @@ async def calc_cb(self, query):
             elif data == "AC":
                 text = ""
             else:
+                LOGGER.info(message_text)
+                LOGGER.info(data)
                 text = message_text + data
             await query.message.edit_msg(
                 text=f"{text}\n\nMade by @{self.me.username}",
