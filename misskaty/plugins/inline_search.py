@@ -28,6 +28,7 @@ from pyrogram.types import (
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper import GENRES_EMOJI, fetch, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
+from misskaty.plugins.misc_tools import calc_btn
 from misskaty.vars import USER_SESSION
 from utils import demoji
 
@@ -41,7 +42,7 @@ To use this feature, just type bot username with following args below.
 ~ info [user id/username] - Check info about a user.
 """
 
-keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
+keywords_list = ["imdb", "pypi", "git", "google", "calc", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
@@ -108,6 +109,38 @@ async def inline_menu(self, inline_query: InlineQuery):
             ),
         ]
         await inline_query.answer(results=answerss)
+    elif inline_query.query.strip().lower().split()[0] == "calc":
+        if len(inline_query.query.strip().lower().split()) < 2:
+            answers = [
+                InlineQueryResultArticle(
+                    title="Calculator",
+                    description="New Calculator",
+                    input_message_content=InputTextMessageContent(
+                        text=f"Made by @{self.me.username}",
+                        disable_web_page_preview=True
+                    ),
+                    reply_markup=calc_btn(inline_query.from_user.id)
+                )
+            ]
+        else:
+            data = inline_query.query.replace("×", "*").replace("÷", "/")
+            result = str(eval(text))
+            answers = [
+                InlineQueryResultArticle(
+                    title="Answer",
+                    description=f"Result: {result}",
+                    input_message_content=InputTextMessageContent(
+                        text=f"{data} = {result}",
+                        disable_web_page_preview=True
+                    )
+                )
+            ]
+        await inline_query.answer(
+            results=answers,
+            is_gallery=False,
+            is_personal=False,
+            switch_pm_parameter="help",
+        )
     elif inline_query.query.strip().lower().split()[0] == "botapi":
         if len(inline_query.query.strip().lower().split()) < 2:
             return await inline_query.answer(
