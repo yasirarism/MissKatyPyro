@@ -135,6 +135,7 @@ async def calc_cb(self, query):
         _, uid, data = query.data.split("|")
         if query.from_user.id != int(uid):
             return await query.answer("Who are you??", show_alert=True, cache_time=5)
+        LOGGER.info(query.message)
         try:
             text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
             text = '' if f"Made by @{self.me.username}" in text else text
