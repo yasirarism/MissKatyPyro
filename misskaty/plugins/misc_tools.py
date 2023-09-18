@@ -162,8 +162,9 @@ async def calc_cb(self, query):
                     text += f"\n{result:>50}"
                 else:
                     text = result
+            LOGGER.info(data)
+            LOGGER.info(text)
             text += f"\n\nMade by @{self.me.username}"
-
             text = text + data
             await query.message.edit_msg(
                 text=text,
