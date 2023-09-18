@@ -380,7 +380,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         else await ctx.reply_msg(strings("run_eval"), quote=True)
     )
     code = (
-        ctx.text.split(" ", 1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
+        ctx.text.split(maxsplit=1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
     )
     out_buf = io.StringIO()
     out = ""

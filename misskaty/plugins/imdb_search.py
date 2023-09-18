@@ -49,7 +49,7 @@ async def imdb_choose(_, ctx: Message):
         return await ctx.reply_msg(
             "Cannot identify user, please use in private chat.", del_in=7
         )
-    kuery = ctx.text.split()[1]
+    kuery = ctx.text.split(None, 1)[1]
     is_imdb, lang = await is_imdbset(ctx.from_user.id)
     if is_imdb:
         if lang == "eng":

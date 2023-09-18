@@ -532,7 +532,7 @@ async def getSame(msg, query, current_page, strings):
 @app.on_cmd("samehadaku", no_channel=True)
 @use_chat_lang()
 async def same_search(_, msg, strings):
-    query = msg.text.split(" ", 1)[1] if len(msg.command) > 1 else None
+    query = msg.text.split(maxsplit=1)[1] if len(msg.command) > 1 else None
     bmsg = await msg.reply_msg(strings("get_data"), quote=True)
     sameres, PageLen = await getSame(bmsg, query, 1, strings)
     if not sameres:
@@ -1261,7 +1261,7 @@ async def savefilm21_scrap(_, callback_query, strings):
 @use_chat_lang()
 async def muviku_scrap(_, message, strings):
     try:
-        link = message.text.split(" ", maxsplit=1)[1]
+        link = message.text.split(maxsplit=1)[1]
         html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
         res = soup.find_all(class_="smokeurl")

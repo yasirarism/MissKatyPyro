@@ -167,7 +167,7 @@ def shorten(description, info="anilist.co"):
 
 @app.on_message(filters.command("anime", COMMAND_HANDLER))
 async def anime_search(_, mesg):
-    search = mesg.text.split(" ", 1)
+    search = mesg.text.split(None, 1)
     reply = await mesg.reply("⏳ <i>Please wait ...</i>", quote=True)
     if len(search) == 1:
         return await reply.edit("⚠️ <b>Give Anime name please.</b>")

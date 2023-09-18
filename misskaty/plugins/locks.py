@@ -83,6 +83,8 @@ async def current_chat_permissions(chat_id):
         perm = (await app.get_chat(chat_id)).permissions
     if perm.can_send_messages:
         perms.append("can_send_messages")
+    else:
+        LOGGER.info(f"debug perm: {perm}") # Temporary debug, idk why give error no object
     if perm.can_send_media_messages:
         perms.append("can_send_media_messages")
     if perm.can_send_audios:

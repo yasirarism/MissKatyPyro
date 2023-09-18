@@ -197,7 +197,10 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
 @app.adminsOnly("can_restrict_members")
 @use_chat_lang()
 async def banFunc(client, message, strings):
-    user_id, reason = await extract_user_and_reason(message, sender_chat=True)
+    try:
+        user_id, reason = await extract_user_and_reason(message, sender_chat=True)
+    except UsernameNotOccupied:
+        return await message.reply_msg("Sorry, i didn't know that user.") 
 
     if not user_id:
         return await message.reply_text(strings("user_not_found"))

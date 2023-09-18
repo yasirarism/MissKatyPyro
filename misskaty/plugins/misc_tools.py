@@ -193,7 +193,7 @@ async def stackoverflow(_, message):
 async def gsearch(_, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
-    query = message.text.split(" ", maxsplit=1)[1]
+    query = message.text.split(maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
         gs = await fetch.get(
