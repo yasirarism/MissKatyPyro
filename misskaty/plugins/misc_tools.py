@@ -118,7 +118,9 @@ async def calculate_handler(self, ctx):
 
 @app.on_cb("calc")
 async def calc_cb(self, query):
-        _, data = query.data.split(".")
+        _, uid, data = query.data.split("|")
+        if query.from_user.id != int(uid):
+            return await query.answer("Who are you??", show_alert=True, cache_time=5)
         try:
             message_text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
             text = '' if f"Made by @{self.me.username}" in message_text else message_text
