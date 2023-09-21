@@ -96,7 +96,6 @@ async def log_file(_, ctx: Message, strings):
                 "title": "MissKatyLogs"
             }
             pastelog = (await fetch.post("https://paste.yasirapi.eu.org/api/pastes", json=data)).json()
-            LOGGER.info(pastelog)
             await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
         except Exception as err:
             LOGGER.error(err)
@@ -114,7 +113,7 @@ async def log_file(_, ctx: Message, strings):
                     ]
                 ),
             )
-        await msg.delete_msg()
+            await msg.delete_msg()
     elif len(ctx.command) == 2:
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
