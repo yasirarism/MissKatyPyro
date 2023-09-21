@@ -8,7 +8,7 @@ import pickle
 import re
 import sys
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from inspect import getfullargspec
 from shutil import disk_usage
 from time import time
@@ -26,7 +26,7 @@ from psutil import net_io_counters, virtual_memory
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
-from pyrogram.errors import FloodWait, PeerIdInvalid
+from pyrogram.errors import FloodWait, MessageTooLong, PeerIdInvalid
 from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -82,25 +82,45 @@ async def log_file(_, ctx: Message, strings):
     """Send log file"""
     msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
     if len(ctx.command) == 1:
-        await ctx.reply_document(
-            "MissKatyLogs.txt",
-            caption="Log Bot MissKatyPyro",
-            reply_markup=InlineKeyboardMarkup(
-                [
+        try:
+            lfile = open("MissKatyLogs.txt", "r")
+            content = lfile.read()
+            lfile.close()
+            current_utc_datetime = datetime.utcnow()
+            exp_datetime = current_utc_datetime + timedelta(days=7)
+            data = {
+                "content": lfile,
+                "expire_dt": str(new_datetime),
+                "title": "MissKatyLogs"
+            }
+            pastelog = (await fetch.post("https://paste.yasirapi.eu.org", json=data)).json()
+            await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Yasir Paste</a>")
+        except:
+            await ctx.reply_document(
+                "MissKatyLogs.txt",
+                caption="Log Bot MissKatyPyro",
+                reply_markup=InlineKeyboardMarkup(
                     [
-                        InlineKeyboardButton(
-                            strings("cl_btn"),
-                            f"close#{ctx.from_user.id}",
-                        )
+                        [
+                            InlineKeyboardButton(
+                                strings("cl_btn"),
+                                f"close#{ctx.from_user.id}",
+                            )
+                        ]
                     ]
-                ]
-            ),
-        )
+                ),
+            )
         await msg.delete_msg()
     elif len(ctx.command) == 2:
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
-        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        try:
+            await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        except MessageTooLong:
+            with io.BytesIO(str.encode(tail[0])) as s:
+                s.name = "MissKatyLog-Tail.txt"
+                await ctx.reply_document(s)
+            await msg.delete()
     else:
         await msg.edit_msg("Unsupported parameter")
 
