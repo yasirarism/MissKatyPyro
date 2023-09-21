@@ -19,6 +19,7 @@ import cloudscraper
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bs4 import BeautifulSoup
+from logging import getLogger
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
@@ -68,6 +69,7 @@ __HELP__ = """
 
 var = {}
 teskode = {}
+LOGGER = getLogger("MissKaty")
 
 
 async def edit_or_reply(msg, **kwargs):
