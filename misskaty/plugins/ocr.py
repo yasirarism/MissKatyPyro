@@ -43,7 +43,7 @@ async def ocr(_, ctx: Message, strings):
                 f"ocr_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}.jpg"
             )
         response = await Telegraph().upload_file(file_path)
-        url = f"https://telegra.ph{response[0]['src']}"
+        url = f"https://telegraph.yasirweb.eu.org{response[0]['src']}"
         req = (
             await fetch.get(
                 f"https://script.google.com/macros/s/AKfycbwURISN0wjazeJTMHTPAtxkrZTWTpsWIef5kxqVGoXqnrzdLdIQIfLO7jsR5OQ5GO16/exec?url={url}",

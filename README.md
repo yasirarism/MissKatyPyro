@@ -188,7 +188,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. G
 [readme-ko-url]: README.id.md
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
-[qris-url]: https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg
+[qris-url]: https://telegraph.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
