@@ -91,7 +91,7 @@ async def log_file(_, ctx: Message, strings):
             current_utc_datetime = datetime.utcnow()
             exp_datetime = current_utc_datetime + timedelta(days=7)
             data = {
-                "content": lfile,
+                "content": str(lfile),
                 "expire_dt": str(exp_datetime),
                 "title": "MissKatyLogs"
             }
