@@ -95,7 +95,8 @@ async def log_file(_, ctx: Message, strings):
             }
             pastelog = (await fetch.post("https://paste.yasirapi.eu.org", json=data)).json()
             await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Yasir Paste</a>")
-        except:
+        except Exception as err:
+            LOGGER.error(err)
             await ctx.reply_document(
                 "MissKatyLogs.txt",
                 caption="Log Bot MissKatyPyro",
