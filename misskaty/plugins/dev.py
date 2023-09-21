@@ -92,13 +92,12 @@ async def log_file(_, ctx: Message, strings):
             data = {
                 "content": content,
                 "expire_dt": str(exp_datetime),
-                "title": "MissKatyLogs"
+                "title": "MissKatyLogs",
+                "highlighter-name": "python"
             }
             pastelog = (await fetch.post("https://paste.yasirapi.eu.org/api/pastes", json=data)).json()
-            LOGGER.info(pastelog)
             await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
-        except Exception as err:
-            LOGGER.error(err)
+        except Exception:
             await ctx.reply_document(
                 "MissKatyLogs.txt",
                 caption="Log Bot MissKatyPyro",
