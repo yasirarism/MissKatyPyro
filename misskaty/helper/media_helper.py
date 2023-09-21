@@ -15,7 +15,7 @@ async def post_to_telegraph(is_media: bool, title=None, content=None, media=None
     if is_media:
         # Create a Telegram Post Foto/Video
         response = await telegraph.upload_file(media)
-        return f"https://telegra.ph{response[0]['src']}"
+        return f"https://telegraph.yasirweb.eu.org{response[0]['src']}"
     # Create a Telegram Post using HTML Content
     response = await telegraph.create_page(
         title,

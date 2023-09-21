@@ -8,7 +8,7 @@ import pickle
 import re
 import sys
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from inspect import getfullargspec
 from shutil import disk_usage
 from time import time
@@ -19,6 +19,7 @@ import cloudscraper
 import requests
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bs4 import BeautifulSoup
+from logging import getLogger
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
@@ -26,7 +27,7 @@ from psutil import net_io_counters, virtual_memory
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
-from pyrogram.errors import FloodWait, PeerIdInvalid
+from pyrogram.errors import FloodWait, MessageTooLong, PeerIdInvalid
 from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -68,6 +69,7 @@ __HELP__ = """
 
 var = {}
 teskode = {}
+LOGGER = getLogger("MissKaty")
 
 
 async def edit_or_reply(msg, **kwargs):
@@ -80,27 +82,47 @@ async def edit_or_reply(msg, **kwargs):
 @use_chat_lang()
 async def log_file(_, ctx: Message, strings):
     """Send log file"""
-    msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
+    msg = await ctx.reply_msg("<b>Reading bot logs ...</b>", quote=True)
     if len(ctx.command) == 1:
-        await ctx.reply_document(
-            "MissKatyLogs.txt",
-            caption="Log Bot MissKatyPyro",
-            reply_markup=InlineKeyboardMarkup(
-                [
+        try:
+            with open("MissKatyLogs.txt", "r") as file:
+                content = file.read()
+            current_utc_datetime = datetime.utcnow()
+            exp_datetime = current_utc_datetime + timedelta(days=7)
+            data = {
+                "content": content,
+                "expire_dt": str(exp_datetime),
+                "title": "MissKatyLogs",
+                "highlighter-name": "python"
+            }
+            pastelog = (await fetch.post("https://paste.yasirapi.eu.org/api/pastes", json=data)).json()
+            await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
+        except Exception:
+            await ctx.reply_document(
+                "MissKatyLogs.txt",
+                caption="Log Bot MissKatyPyro",
+                reply_markup=InlineKeyboardMarkup(
                     [
-                        InlineKeyboardButton(
-                            strings("cl_btn"),
-                            f"close#{ctx.from_user.id}",
-                        )
+                        [
+                            InlineKeyboardButton(
+                                strings("cl_btn"),
+                                f"close#{ctx.from_user.id}",
+                            )
+                        ]
                     ]
-                ]
-            ),
-        )
-        await msg.delete_msg()
+                ),
+            )
+            await msg.delete_msg()
     elif len(ctx.command) == 2:
         val = ctx.text.split()
         tail = await shell_exec(f"tail -n {val[1]} -v MissKatyLogs.txt")
-        await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        try:
+            await msg.edit_msg(f"<pre language='bash'>{html.escape(tail[0])}</pre>")
+        except MessageTooLong:
+            with io.BytesIO(str.encode(tail[0])) as s:
+                s.name = "MissKatyLog-Tail.txt"
+                await ctx.reply_document(s)
+            await msg.delete()
     else:
         await msg.edit_msg("Unsupported parameter")
 
@@ -108,7 +130,7 @@ async def log_file(_, ctx: Message, strings):
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(_, ctx: Message):
     await ctx.reply_photo(
-        "https://telegra.ph/file/9427d61d6968b8ee4fb2f.jpg",
+        "https://telegraph.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg",
         caption=f"Hai {ctx.from_user.mention}, jika kamu merasa bot ini berguna kamu bisa melakukan donasi dengan scan QR menggunakan merchant yang support QRIS ya. Karena server bot ini menggunakan VPS dan tidaklah gratis. Terimakasih..\n\nHi {ctx.from_user.mention}, if you feel this bot is useful, you can make a donation via Paypal for international payment : https://paypal.me/yasirarism. Because this bot server is hosted in VPS and not free. Thank you..",
     )
 

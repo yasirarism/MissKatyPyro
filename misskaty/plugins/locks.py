@@ -81,10 +81,12 @@ async def current_chat_permissions(chat_id):
     except FloodWait as e:
         await asyncio.sleep(e.value)
         perm = (await app.get_chat(chat_id)).permissions
+    try:
+        perm.can_send_messages
+    except:
+        LOGGER.error(f"Got error in chat: {chat_id}, perm: {perm}") # For debug
     if perm.can_send_messages:
         perms.append("can_send_messages")
-    else:
-        LOGGER.info(f"debug perm: {perm}") # Temporary debug, idk why give error no object
     if perm.can_send_media_messages:
         perms.append("can_send_media_messages")
     if perm.can_send_audios:

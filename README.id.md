@@ -188,7 +188,7 @@ PERINGATAN: Menjual Kode Kepada Orang Lain Demi Uang *Dilarang Keras*. Tuhan sel
 [readme-ko-url]: README.md
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
-[qris-url]: https://telegra.ph/file/2acf7698f300ef3d9138f.jpg
+[qris-url]: https://telegraph.yasirweb.eu.org/file/2acf7698f300ef3d9138f.jpg
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn

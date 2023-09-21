@@ -42,7 +42,7 @@ To use this feature, just type bot username with following args below.
 ~ info [user id/username] - Check info about a user.
 """
 
-keywords_list = ["imdb", "pypi", "git", "google", "calc", "secretmsg", "info", "botapi"]
+keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
@@ -406,12 +406,12 @@ async def inline_menu(self, inline_query: InlineQuery):
         srch_results = json.loads(search_results.text)
         item = srch_results.get("items")
         data = []
-        for sraeo in item:
-            title = sraeo.get("full_name")
-            link = sraeo.get("html_url")
-            deskripsi = sraeo.get("description")
-            lang = sraeo.get("language")
-            message_text = f"🔗: {sraeo.get('html_url')}\n│\n└─🍴Forks: {sraeo.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
+        for result in item:
+            title = result.get("full_name")
+            link = result.get("html_url")
+            deskripsi = result.get("description")[:25] if len(result.get("description")) > 25 else result.get("description")
+            lang = result.get("language")
+            message_text = f"🔗: {result.get('html_url')}\n│\n└─🍴Forks: {result.get('forks')}    ┃┃    🌟Stars: {sraeo.get('stargazers_count')}\n\n"
             message_text += f"<b>Description:</b> {deskripsi}\n"
             message_text += f"<b>Language:</b> {lang}"
             data.append(
