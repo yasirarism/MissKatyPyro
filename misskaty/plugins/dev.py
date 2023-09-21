@@ -92,7 +92,7 @@ async def log_file(_, ctx: Message, strings):
             exp_datetime = current_utc_datetime + timedelta(days=7)
             data = {
                 "content": lfile,
-                "expire_dt": str(new_datetime),
+                "expire_dt": str(exp_datetime),
                 "title": "MissKatyLogs"
             }
             pastelog = (await fetch.post("https://paste.yasirapi.eu.org", json=data)).json()
