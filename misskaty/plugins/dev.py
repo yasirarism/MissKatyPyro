@@ -82,16 +82,15 @@ async def edit_or_reply(msg, **kwargs):
 @use_chat_lang()
 async def log_file(_, ctx: Message, strings):
     """Send log file"""
-    msg = await ctx.reply_msg("<b>Reading bot logs ...</b>")
+    msg = await ctx.reply_msg("<b>Reading bot logs ...</b>", quote=True)
     if len(ctx.command) == 1:
         try:
-            lfile = open("MissKatyLogs.txt", "r")
-            content = lfile.read()
-            lfile.close()
+            with open("MissKatyLogs.txt", "r") as file:
+                content = file.read()
             current_utc_datetime = datetime.utcnow()
             exp_datetime = current_utc_datetime + timedelta(days=7)
             data = {
-                "content": str(lfile),
+                "content": content,
                 "expire_dt": str(exp_datetime),
                 "title": "MissKatyLogs"
             }
