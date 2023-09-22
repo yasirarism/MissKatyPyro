@@ -1,9 +1,19 @@
-version: "3.3"
+version: "3.9"
 
 services:
-  app:
+  misskaty:
+    image: misskaty
+    container_name: misskaty
     build:
       context: .
       dockerfile: Dockerfile
     command: bash start.sh
+    environment:
+      CONFIG_FILE_URL: $CONFIG_FILE_URL
     restart: on-failure
+
+  restarter:
+    image: docker:cli
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    command: ["/bin/sh", "-c", "while true; do sleep 60; docker restart ${CONTAINER_NAME}; done"]
+    restart: ${RESTART}
