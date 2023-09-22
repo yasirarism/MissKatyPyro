@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import asyncio
+from logging import getLogger
 
 from pyrogram import filters
 from pyrogram.errors import ChatAdminRequired, ChatNotModified, FloodWait
@@ -32,6 +33,8 @@ from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly, list_admins
 from misskaty.helper.functions import get_urls_from_text
 from misskaty.vars import COMMAND_HANDLER, SUDO
+
+LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "Locks"
 __HELP__ = """
