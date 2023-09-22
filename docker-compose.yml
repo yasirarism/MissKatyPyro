@@ -11,9 +11,3 @@ services:
     environment:
       CONFIG_FILE_URL: $CONFIG_FILE_URL
     restart: on-failure
-
-  restarter:
-    image: docker:cli
-    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
-    command: ["/bin/sh", "-c", "while true; do sleep 60; docker restart ${CONTAINER_NAME}; done"]
-    restart: ${RESTART}
