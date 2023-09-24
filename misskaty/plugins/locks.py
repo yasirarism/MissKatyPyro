@@ -181,9 +181,16 @@ async def locks_func(_, message):
             await app.set_chat_permissions(
                 chat_id,
                 ChatPermissions(
-                    can_send_messages=True,
-                    can_send_media_messages=True,
+                    can_send_plain=True,
+                    can_send_docs=True,
                     can_send_inline=True,
+                    can_send_photos=True,
+                    can_send_videos=True,
+                    can_send_roundvideos=True,
+                    can_send_audios=True,
+                    can_send_voices=True,
+                    can_send_stickers=True,
+                    can_send_gifs=True,
                     can_send_stickers=True,
                     can_add_web_page_previews=True,
                     can_send_polls=True,

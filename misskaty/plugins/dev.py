@@ -131,7 +131,7 @@ async def log_file(_, ctx: Message, strings):
 async def donate(_, ctx: Message):
     await ctx.reply_photo(
         "https://img.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg",
-        caption=f"Hi {ctx.from_user.mention}, If you find this bot useful, you can make a donation to the account below. Because this bot server uses VPS and is not free. Thank You..\n\n<b>Indonesian Payment:</b>\n<b>QRIS:</b> https://img.yasirweb.eu.org/file/b1c86973ae4e55721983a.jpg (Yasir Store)\n<b>Mayar:</b> https://yasirarism.mayar.link/payme\n>b>Bank Jago:</b> 109641845083 (Yasir Aris M)\n\nFor international people can use PayPal to support me or via GitHub Sponsor:\nhttps://paypal.me/yasirarism\nhttps://github.com/sponsors/yasirarism\n\n<b>Source:</b> @BeriKopi",
+        caption=f"Hi {ctx.from_user.mention}, If you find this bot useful, you can make a donation to the account below. Because this bot server uses VPS and is not free. Thank You..\n\n<b>Indonesian Payment:</b>\n<b>QRIS:</b> https://img.yasirweb.eu.org/file/b1c86973ae4e55721983a.jpg (Yasir Store)\n<b>Mayar:</b> https://yasirarism.mayar.link/payme\n<b>Bank Jago:</b> 109641845083 (Yasir Aris M)\n\nFor international people can use PayPal to support me or via GitHub Sponsor:\nhttps://paypal.me/yasirarism\nhttps://github.com/sponsors/yasirarism\n\n<b>Source:</b> @BeriKopi",
     )
 
 
