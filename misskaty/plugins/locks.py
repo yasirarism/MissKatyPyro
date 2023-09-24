@@ -84,10 +84,6 @@ async def current_chat_permissions(chat_id):
     except FloodWait as e:
         await asyncio.sleep(e.value)
         perm = (await app.get_chat(chat_id)).permissions
-    try:
-        perm.can_send_messages
-    except:
-        LOGGER.error(f"Got error in chat: {chat_id}, perm: {perm}") # For debug
     if perm.can_send_messages:
         perms.append("can_send_messages")
     if perm.can_send_media_messages:
@@ -191,7 +187,6 @@ async def locks_func(_, message):
                     can_send_voices=True,
                     can_send_stickers=True,
                     can_send_gifs=True,
-                    can_send_stickers=True,
                     can_add_web_page_previews=True,
                     can_send_polls=True,
                     can_change_info=False,
