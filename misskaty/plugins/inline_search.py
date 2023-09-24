@@ -409,7 +409,8 @@ async def inline_menu(self, inline_query: InlineQuery):
         for result in item:
             title = result.get("full_name")
             link = result.get("html_url")
-            deskripsi = result.get("description")[:25] if len(result.get("description")) > 25 else result.get("description")
+            desc = result.get("description", "")
+            deskripsi = desc[:25] if len(desc) > 25 else desc
             lang = result.get("language")
             message_text = f"🔗: {result.get('html_url')}\n│\n└─🍴Forks: {result.get('forks')}    ┃┃    🌟Stars: {result.get('stargazers_count')}\n\n"
             message_text += f"<b>Description:</b> {deskripsi}\n"
