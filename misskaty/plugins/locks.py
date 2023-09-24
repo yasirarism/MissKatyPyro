@@ -183,7 +183,8 @@ async def locks_func(_, message):
                 ChatPermissions(
                     can_send_messages=True,
                     can_send_media_messages=True,
-                    can_send_other_messages=True,
+                    can_send_inline=True,
+                    can_send_stickers=True,
                     can_add_web_page_previews=True,
                     can_send_polls=True,
                     can_change_info=False,
@@ -210,7 +211,7 @@ async def locktypes(_, message):
     await message.reply_text(perms)
 
 
-@app.on_message(filters.text & ~filters.private, group=69)
+@app.on_message(filters.text & filters.group, group=69)
 async def url_detector(_, message):
     user = message.from_user or message.sender_chat
     chat_id = message.chat.id
