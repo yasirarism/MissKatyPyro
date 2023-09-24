@@ -178,6 +178,7 @@ async def locks_func(_, message):
                 chat_id,
                 ChatPermissions(
                     can_send_plain=True,
+                    can_send_media_messages=True,
                     can_send_docs=True,
                     can_send_inline=True,
                     can_send_photos=True,
