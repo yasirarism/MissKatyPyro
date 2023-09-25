@@ -1409,6 +1409,15 @@ async def nodrakorddl_scrap(_, callback_query, strings):
     try:
         html = await fetch.get(link)
         soup = BeautifulSoup(html.text, "lxml")
+        if "/tv/" in link:
+            result = soup.find("div", {"entry-content entry-content-single"}).find_all("p")
+            msg = ""
+            for i in result:
+                msg += str(f"{i}\n")
+            link = await post_to_telegraph(False, "MissKaty NoDrakor", msg)
+            return await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
+            )
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
         await callback_query.message.edit_msg(
