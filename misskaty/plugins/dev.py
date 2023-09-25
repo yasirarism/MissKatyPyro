@@ -92,8 +92,7 @@ async def log_file(_, ctx: Message, strings):
             }
             pastelog = await fetch.post("https://paste.yasirapi.eu.org/save", data=data, follow_redirects=True)
             await msg.edit_msg(f"<a href='{pastelog.url}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
-        except Exception as err:
-            LOGGER.info(err)
+        except Exception:
             await ctx.reply_document(
                 "MissKatyLogs.txt",
                 caption="Log Bot MissKatyPyro",
