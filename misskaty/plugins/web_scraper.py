@@ -16,7 +16,7 @@ from pyrogram.types import Message
 
 from database import dbname
 from misskaty import app
-from misskaty.helper import Cache, Kusonime, fetch, use_chat_lang
+from misskaty.helper import Cache, Kusonime, fetch, use_chat_lang, post_to_telegraph
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
