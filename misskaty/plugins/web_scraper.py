@@ -30,6 +30,7 @@ __HELP__ = """
 /lendrive [query <optional>] - Scrape website data from Lendrive
 /gomov [query <optional>] - Scrape website data from GoMov.
 /samehadaku [query <optional>] - Scrape website data from Samehadaku.
+/nodrakor [query <optional>] - Scrape website data from NoDrakor
 """
 
 LOGGER = logging.getLogger("MissKaty")
@@ -50,6 +51,7 @@ web = {
     "lendrive": "https://lendrive.web.id",
     "samehadaku": "https://samehadaku.bio",
     "oplovers": "https://oploverz.top",
+    "nodrakor": "https://no-drakor.xyz",
 }
 
 
@@ -269,6 +271,58 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)
         return None, None
+
+
+# NoDrakor GetData
+async def getDataNodrakor(msg, kueri, CurrentPage, strings):
+    if not SCRAP_DICT.get(msg.id):
+        nodrakordata = []
+        try:
+            data = await fetch.get(
+                f"{web['nodrakor']}/?s={kueri}",
+                follow_redirects=True,
+            )
+        except Exception as err:
+            await msg.edit_msg(strings("err_getweb").format(err=err))
+            return None, 0, None
+        text = BeautifulSoup(data, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if "Tidak Ditemukan" in entry[0].text:
+            if not kueri:
+                await msg.edit_msg(strings("no_result"), del_in=5)
+            else:
+                await msg.edit_msg(
+                    strings("no_result_w_query").format(kueri=kueri), del_in=5
+                )
+            return None, 0, None
+        for i in entry:
+            genre = i.find(class_="gmr-movie-on").text
+            genre = f"{genre}" if genre != "" else "N/A"
+            judul = i.find(class_="entry-title").find("a").text
+            link = i.find(class_="entry-title").find("a").get("href")
+            nodrakordata.append({"judul": judul, "link": link, "genre": genre})
+        SCRAP_DICT.add(msg.id, [split_arr(nodrakordata, 6), kueri], timeout=1800)
+    try:
+        index = int(CurrentPage - 1)
+        PageLen = len(SCRAP_DICT[msg.id][0])
+        extractbtn = []
+        nodrakorResult = (
+            strings("header_no_query").format(web="NoDrakor", cmd="nodrakor")
+            if kueri == ""
+            else strings("header_with_query").format(web="NoDrakor", kueri=kueri)
+        )
+        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+            sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+            extractbtn.append(
+                InlineButton(
+                    index * 6 + c, f"nodrakorextract#{CurrentPage}#{c}#{user}#{msg.id}"
+                )
+            )
+        nodrakorResult = "".join(i for i in nodrakorResultResult if i not in "[]")
+        return nodrakorResult, PageLen, extractbtn
+    except (IndexError, KeyError):
+        await msg.edit_msg(strings("no_result"), del_in=5)
+        return None, 0, None
 
 
 # Savefilm21 GetData
@@ -700,6 +754,34 @@ async def savefilm_s(_, message, strings):
     )
 
 
+# NoDrakor CMD
+@app.on_cmd("nodrakor", no_channel=True)
+@use_chat_lang()
+async def nodrakor_s(_, message, strings):
+    kueri = " ".join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply_msg(strings("get_data"), quote=True)
+    CurrentPage = 1
+    nodrakorres, PageLen, btn = await getDataNodrakor(
+        pesan, kueri, CurrentPage, message.from_user.id, strings
+    )
+    if not nodrakorres:
+        return
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_nodrakor#{number}" + f"#{pesan.id}#{message.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(*btn)
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
+    await pesan.edit_msg(
+        nodrakorres, disable_web_page_preview=True, reply_markup=keyboard
+    )
+
+
 # Kusonime CMD
 @app.on_cmd("kusonime", no_channel=True)
 @use_chat_lang()
@@ -819,6 +901,50 @@ async def sf21page_callback(_, callback_query, strings):
     )
     await callback_query.message.edit_msg(
         savefilmres, disable_web_page_preview=True, reply_markup=keyboard
+    )
+
+
+# Savefillm21 Page Callback
+@app.on_cb("page_nodrakor#")
+@use_chat_lang()
+async def nodrakorpage_cb(_, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        kueri = SCRAP_DICT[message_id][1]
+    except (IndexError, ValueError):
+        return
+    except KeyError:
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
+    except QueryIdInvalid:
+        return
+
+    try:
+        nodrakorres, PageLen, btn = await getDataNodrakor(
+            callback_query.message,
+            kueri,
+            CurrentPage,
+            callback_query.from_user.id,
+            strings,
+        )
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_nodrakor#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(*btn)
+    keyboard.row(
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
+    )
+    await callback_query.message.edit_msg(
+        nodrakorres, disable_web_page_preview=True, reply_markup=keyboard
     )
 
 
@@ -1257,7 +1383,7 @@ async def savefilm21_scrap(_, callback_query, strings):
 
 
 # Scrape Link Download Movieku.CC
-@app.on_cmd("movieku_scrap#")
+@app.on_cmd("movieku_scrap")
 @use_chat_lang()
 async def muviku_scrap(_, message, strings):
     try:
