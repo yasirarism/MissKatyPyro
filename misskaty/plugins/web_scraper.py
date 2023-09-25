@@ -274,7 +274,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
 
 
 # NoDrakor GetData
-async def getDataNodrakor(msg, kueri, CurrentPage, strings):
+async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         nodrakordata = []
         try:
