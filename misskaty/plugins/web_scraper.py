@@ -1382,6 +1382,42 @@ async def savefilm21_scrap(_, callback_query, strings):
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
+# NoDrakor DDL
+@app.on_cb("nodrakorextract#")
+@use_chat_lang()
+async def nodrakorddl_scrap(_, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
+    except KeyError:
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton(
+            strings("back_btn"),
+            f"page_nodrakor#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+        ),
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
+    )
+    try:
+        html = await fetch.get(link)
+        soup = BeautifulSoup(html.text, "lxml")
+        res = soup.find_all(class_="button button-shadow")
+        res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+        await callback_query.message.edit_msg(
+            strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
+        )
+    except Exception as err:
+        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+
+
 # Scrape Link Download Movieku.CC
 @app.on_cmd("movieku_scrap")
 @use_chat_lang()
