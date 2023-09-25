@@ -312,7 +312,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
             else strings("header_with_query").format(web="NoDrakor", kueri=kueri)
         )
         for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+            nodrakorResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
             extractbtn.append(
                 InlineButton(
                     index * 6 + c, f"nodrakorextract#{CurrentPage}#{c}#{user}#{msg.id}"
