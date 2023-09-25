@@ -318,7 +318,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
                     index * 6 + c, f"nodrakorextract#{CurrentPage}#{c}#{user}#{msg.id}"
                 )
             )
-        nodrakorResult = "".join(i for i in nodrakorResultResult if i not in "[]")
+        nodrakorResult = "".join(i for i in nodrakorResult if i not in "[]")
         return nodrakorResult, PageLen, extractbtn
     except (IndexError, KeyError):
         await msg.edit_msg(strings("no_result"), del_in=5)
