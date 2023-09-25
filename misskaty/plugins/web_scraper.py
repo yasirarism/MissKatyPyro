@@ -11,7 +11,7 @@ import traceback
 import cloudscraper
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram.errors import QueryIdInvalid
+from pyrogram.errors import QueryIdInvalid, MessageTooLong
 from pyrogram.types import Message
 
 from database import dbname
@@ -1420,9 +1420,16 @@ async def nodrakorddl_scrap(_, callback_query, strings):
             )
         res = soup.find_all(class_="button button-shadow")
         res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+        if len(res) > 3500:
+            link = await post_to_telegraph(False, "MissKaty NoDrakor", res)
+            return await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
+            )
         await callback_query.message.edit_msg(
             strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
         )
+    except MessageTooLong:
+
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
