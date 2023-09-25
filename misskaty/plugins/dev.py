@@ -8,7 +8,7 @@ import pickle
 import re
 import sys
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime
 from inspect import getfullargspec
 from shutil import disk_usage
 from time import time
@@ -87,16 +87,11 @@ async def log_file(_, ctx: Message, strings):
         try:
             with open("MissKatyLogs.txt", "r") as file:
                 content = file.read()
-            current_utc_datetime = datetime.utcnow()
-            exp_datetime = current_utc_datetime + timedelta(days=7)
             data = {
-                "content": content,
-                "expire_dt": str(exp_datetime),
-                "title": "MissKatyLogs",
-                "highlighter-name": "python"
+                "value": content,
             }
-            pastelog = (await fetch.post("https://paste.yasirapi.eu.org/api/pastes", json=data)).json()
-            await msg.edit_msg(f"<a href='https://paste.yasirapi.eu.org/{pastelog.get('paste_id')}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
+            pastelog = await fetch.post("https://paste.yasirapi.eu.org/save", data=data, follow_redirects=True)
+            await msg.edit_msg(f"<a href='{pastelog.url}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
         except Exception:
             await ctx.reply_document(
                 "MissKatyLogs.txt",
