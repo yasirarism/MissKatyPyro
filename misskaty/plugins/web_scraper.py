@@ -1310,30 +1310,16 @@ async def kusonime_scrap(client, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        init_url = data_kuso.get(link, None)
-        if init_url is not None:
-            ph = init_url.get("ph_url")
-            await callback_query.message.edit_msg(
-                strings("res_scrape").format(link=link, kl=ph),
-                reply_markup=keyboard,
-                disable_web_page_preview=False,
-            )
+        init_url = data_kuso.get(link, False)
+        if init_url:
+            await callback_query.message.edit_msg(init_url.get("ph_url"), reply_markup=keyboard)
         tgh = await kuso.telegraph(link, client.me.username)
-        if tgh["error"]:
-            return await callback_query.message.edit_msg(
-                f"ERROR: {tgh['error_message']}", reply_markup=keyboard
-            )
-    except Exception:
-        err = traceback.format_exc()
-        return await callback_query.message.edit_msg(
-            f"ERROR: {err}", reply_markup=keyboard
-        )
-    data_kuso[link] = {"ph_url": tgh["url"]}
-    await callback_query.message.edit_msg(
-        strings("res_scrape").format(link=link, kl=tgh["url"]),
-        reply_markup=keyboard,
-        disable_web_page_preview=False,
-    )
+        data_kuso[link] = {"ph_url": tgh}
+        return await callback_query.message.edit_msg(tgh, reply_markup=keyboard)
+    except Exception as e:
+        LOGGER.error(f"clases: {e.__class__}, moduleName: {e.__class__.__name__}")
+        if str(e).startswith("ERROR"):
+            return await callback_query.message.edit_msg(e, reply_markup=keyboard)
 
 
 # Savefilm21 DDL
