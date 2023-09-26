@@ -5,6 +5,7 @@ from html import escape
 import chevron
 from bs4 import BeautifulSoup
 from telegraph.aio import Telegraph
+from typing import Optional
 
 from misskaty import BOT_USERNAME
 from misskaty.helper.http import fetch
