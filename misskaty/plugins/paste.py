@@ -20,7 +20,7 @@ __HELP__ = """
 /paste [Text/Reply To Message] - Post text to My Pastebin.
 /sbin [Text/Reply To Message] - Post text to Spacebin.
 /neko [Text/Reply To Message] - Post text to Nekobin.
-/tgraph [Text/Reply To Message] - Post text/media to Telegra.ph.
+/tgraph [Text/Reply To Message] - Post text/media to Telegraph.
 /rentry [Text/Reply To Message] - Post text to Rentry using markdown style.
 /temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
 """

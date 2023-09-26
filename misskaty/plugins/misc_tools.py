@@ -350,7 +350,7 @@ async def translate(_, message):
     else:
         if len(message.command) < 3:
             return await message.reply_msg(
-                "Berikan Kode bahasa yang valid.\n[Available options](https://telegra.ph/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
+                "Berikan Kode bahasa yang valid.\n[Available options](https://tgraph.yasirweb.eu.org/Lang-Codes-11-08).\n<b>Usage:</b> <code>/tr en</code>",
             )
         target_lang = message.text.split(None, 2)[1]
         text = message.text.split(None, 2)[2]
