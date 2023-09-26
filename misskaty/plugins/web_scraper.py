@@ -412,6 +412,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
+        LOGGER.info(lenddata)
         SCRAP_DICT.add(msg.id, [split_arr(lenddata, 6), kueri], timeout=1800)
     try:
         index = int(CurrentPage - 1)
