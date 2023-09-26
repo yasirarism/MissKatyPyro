@@ -417,7 +417,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         savedict[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
+        PageLen = len(savedict[msg.id][0])
         extractbtn = []
 
         lenddataResult = (
@@ -425,7 +425,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
             if kueri == ""
             else strings("header_with_query").format(web="Lendrive", kueri=kueri)
         )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        for c, i in enumerate(savedict[msg.id][0][index], start=1):
             lenddataResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
             extractbtn.append(
                 InlineButton(
@@ -572,10 +572,10 @@ async def getSame(msg, query, current_page, strings):
         savedict[msg.id] = [split_arr(sdata, 10), query]
     try:
         index = int(current_page - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
+        PageLen = len(savedict[msg.id][0])
         sameresult = "".join(
             f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
-            for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1)
+            for c, i in enumerate(savedict[msg.id][0][index], start=1)
         )
         sameresult = "".join(i for i in sameresult if i not in "[]")
         return sameresult, PageLen
