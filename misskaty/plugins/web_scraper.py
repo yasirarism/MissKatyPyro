@@ -185,13 +185,12 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
-        try:
-            data = await fetch.get(
-                f"{web['kusonime']}/?s={kueri}", follow_redirects=True
-            )
-        except Exception as err:
+        data = await fetch.get(
+            f"{web['kusonime']}/?s={kueri}", follow_redirects=True
+        )
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
-            return None, None
+            return None, 0, None, None
         res = BeautifulSoup(data, "lxml").find_all("h2", {"class": "episodeye"})
         for i in res:
             ress = i.find_all("a")[0]
@@ -238,11 +237,10 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 async def getDataMovieku(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
-        try:
-            data = await fetch.get(
-                f"{web['movieku']}/?s={kueri}", follow_redirects=True
-            )
-        except Exception as err:
+        data = await fetch.get(
+            f"{web['movieku']}/?s={kueri}", follow_redirects=True
+        )
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, None
         r = BeautifulSoup(data, "lxml")
@@ -279,12 +277,10 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
 async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         nodrakordata = []
-        try:
-            data = await fetch.get(
-                f"{web['nodrakor']}/?s={kueri}",
-                follow_redirects=True,
-            )
-        except Exception as err:
+        data = await fetch.get(
+            f"{web['nodrakor']}/?s={kueri}", follow_redirects=True,
+        )
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, 0, None
         text = BeautifulSoup(data, "lxml")
@@ -331,12 +327,10 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
 async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
-        try:
-            data = await fetch.get(
-                f"{web['savefilm21']}/?s={kueri}",
-                follow_redirects=True,
-            )
-        except Exception as err:
+        data = await fetch.get(
+            f"{web['savefilm21']}/?s={kueri}", follow_redirects=True,
+        )
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, 0, None
         text = BeautifulSoup(data, "lxml")
@@ -382,15 +376,13 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            if kueri:
-                data = await fetch.get(
-                    f"{web['lendrive']}/?s={kueri}",
-                    follow_redirects=True,
-                )
-            else:
-                data = await fetch.get(web["lendrive"], follow_redirects=True)
-        except Exception as err:
+        if kueri:
+            data = await fetch.get(
+                f"{web['lendrive']}/?s={kueri}", follow_redirects=True,
+            )
+        else:
+            data = await fetch.get(web["lendrive"], follow_redirects=True)
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, 0, None
         res = BeautifulSoup(data, "lxml")
@@ -442,12 +434,10 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            data = await fetch.get(
-                f"{web['melongmovie']}/?s={kueri}",
-                follow_redirects=True,
-            )
-        except Exception as err:
+        data = await fetch.get(
+            f"{web['melongmovie']}/?s={kueri}", follow_redirects=True,
+        )
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, 0, None
         bs4 = BeautifulSoup(data, "lxml")
@@ -492,13 +482,12 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            gomovv = await fetch.get(
-                f"{web['gomov']}/?s={kueri}", follow_redirects=True
-            )
-        except Exception as err:
+        gomovv = await fetch.get(
+            f"{web['gomov']}/?s={kueri}", follow_redirects=True
+        )
+        if gomovv.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
-            return None, None
+            return None, 0, None
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
@@ -548,12 +537,11 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
 async def getSame(msg, query, current_page, strings):
     if not SCRAP_DICT.get(msg.id):
         cfse = cloudscraper.create_scraper()
-        try:
-            if query:
-                data = cfse.get(f"{web['samehadaku']}/?s={query}")
-            else:
-                data = cfse.get(web["samehadaku"])
-        except Exception as err:
+        if query:
+            data = cfse.get(f"{web['samehadaku']}/?s={query}")
+        else:
+            data = cfse.get(web["samehadaku"])
+        if data.status_code != 200:
             await msg.edit_msg(strings("err_getweb").format(err=err))
             return None, None
         res = BeautifulSoup(data.text, "lxml").find_all(class_="animposx")
