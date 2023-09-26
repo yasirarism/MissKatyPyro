@@ -1003,7 +1003,7 @@ async def lendrivepage_callback(_, callback_query, strings):
             return await callback_query.answer(strings("unauth"), True)
         message_id = int(callback_query.data.split("#")[2])
         CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
+        kueri = savedict[message_id][1]
     except QueryIdInvalid:
         return
     except KeyError:
@@ -1080,7 +1080,7 @@ async def samepg(_, query, strings):
         _, current_page, _id, user_id = query.data.split("#")
         if int(user_id) != query.from_user.id:
             return await query.answer(strings("unauth"), True)
-        lquery = SCRAP_DICT[int(_id)][1]
+        lquery = savedict[int(_id)][1]
     except QueryIdInvalid:
         return
     except KeyError:
@@ -1550,7 +1550,7 @@ async def lendrive_dl(_, callback_query, strings):
     message_id = int(callback_query.data.split("#")[4])
     CurrentPage = int(callback_query.data.split("#")[1])
     try:
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+        link = savedict[message_id][0][CurrentPage - 1][idlink - 1].get("link")
     except KeyError:
         return await callback_query.message.edit_msg(strings("invalid_cb"))
 
