@@ -407,7 +407,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
                 else o.find(class_="typez BD")
             )
             lenddata.append(
-                {"judul": title, "link": link, "quality": kualitas, "status": status}
+                {"judul": title, "link": link, "quality": kualitas or "N/A", "status": status}
             )
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
