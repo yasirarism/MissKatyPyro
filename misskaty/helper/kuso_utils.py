@@ -99,11 +99,9 @@ async def kusonimeBypass(url: str):
         if len(result) != 0:
             result.clear()
         err = traceback.format_exc()
-        page.close()
         LOGGER.error(f"class: {e.__class__.__name_}, {err}")
         raise Exception(f"ERROR: {err}")
     finally:
-        page.close()
         return result
 
 
