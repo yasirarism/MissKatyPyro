@@ -23,7 +23,7 @@ async def post_to_telegraph(is_media: bool, title=None, content=None, media=None
         author_url=f"https://t.me/{BOT_USERNAME}",
         author_name=BOT_USERNAME,
     )
-    return f"https://tgraph.yasirweb.eu.org/{response['path']}"
+    return f"https://graph.org/{response['path']}"
 
 
 async def run_subprocess(cmd):
