@@ -136,7 +136,7 @@ async def byPassPh(url: str, name: str) -> Optional[str]:
     plink = await post_to_telegraph(
         False, f"{kusonime.get('title')} By {escape(name)}", chevron.render(template, kusonime)
     )
-    return "https://telegra.ph/{}".format(plink)
+    return plink
 
 
 class Kusonime:
