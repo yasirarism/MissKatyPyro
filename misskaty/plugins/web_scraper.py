@@ -36,6 +36,7 @@ __HELP__ = """
 LOGGER = logging.getLogger("MissKaty")
 SCRAP_DICT = Cache(filename="scraper_cache.db", path="cache", in_memory=False)
 data_kuso = Cache(filename="kuso_cache.db", path="cache", in_memory=False)
+savedict = TTLCache(maxsize=1000, ttl=3600)
 webdb = dbname["web"]
 
 web = {
@@ -412,8 +413,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
         if not lenddata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
-        LOGGER.info(lenddata)
-        SCRAP_DICT.add(msg.id, [split_arr(lenddata, 6), kueri], timeout=1800)
+        savedict[msg.id] = [split_arr(lenddata, 6), kueri]
     try:
         index = int(CurrentPage - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
@@ -568,7 +568,7 @@ async def getSame(msg, query, current_page, strings):
         if not sdata:
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT.add(msg.id, [split_arr(sdata, 10), query], timeout=1800)
+        savedict[msg.id] = [split_arr(sdata, 10), query]
     try:
         index = int(current_page - 1)
         PageLen = len(SCRAP_DICT[msg.id][0])
