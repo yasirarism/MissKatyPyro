@@ -49,8 +49,8 @@ web = {
     "movieku": "https://107.152.37.223",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
-    "samehadaku": "https://samehadaku.bio",
-    "oplovers": "https://oploverz.top",
+    "samehadaku": "https://samehadaku.help",
+    "oplovers": "https://oploverz.red",
     "nodrakor": "https://no-drakor.xyz",
 }
 
@@ -381,7 +381,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         try:
-            if query:
+            if kueri:
                 data = await fetch.get(
                     f"{web['lendrive']}/?s={kueri}",
                     follow_redirects=True,
