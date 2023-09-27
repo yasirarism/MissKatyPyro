@@ -49,7 +49,7 @@ async def genss(self: Client, ctx: Message, strings):
         download_file_path = os.path.join("downloads/", file_name)
         downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10, verify=False)
         try:
-            downloader.start(blocking=False, verify=False)
+            downloader.start(blocking=False)
         except Exception as err:
             return await pesan.edit(str(err))
         c_time = time.time()

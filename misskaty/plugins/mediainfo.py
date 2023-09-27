@@ -68,7 +68,7 @@ DETAILS
             )
         except:
             try:
-                link = await post_to_telegraph(False, "MissKaty MediaInfo", body_text)
+                link = await post_to_telegraph(False, "MissKaty MediaInfo", f"<code>{body_text}</code>")
                 markup = InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
                 )
