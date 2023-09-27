@@ -253,9 +253,15 @@ async def generate_session(bot, msg, telethon=False, is_bot: bool = False):
                     reply_markup=InlineKeyboardMarkup(gen_button),
                 )
     elif telethon:
-        await client.start(bot_token=phone_number)
+        try:
+            await client.start(bot_token=phone_number)
+        except Exception as err:
+            return await msg.reply(err)
     else:
-        await client.sign_in_bot(phone_number)
+        try:
+            await client.sign_in_bot(phone_number)
+        except Exception as err:
+            return await msg.reply(err)
     if telethon:
         string_session = client.session.save()
     else:
