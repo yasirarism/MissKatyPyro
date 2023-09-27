@@ -17,7 +17,7 @@ def hhmmss(seconds):
 
 async def take_ss(video_file):
     out_put_file_name = f"genss-{str(time.time())}.png"
-    cmd = f"vcsi '{video_file}' -t -w 1340 -g 4x4 --timestamp-font assets/DejaVuSans.ttf --metadata-font assets/DejaVuSans-Bold.ttf --template misskaty/helper/ssgen_template.html --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o {out_put_file_name}"
+    cmd = f"vcsi '{video_file}' -t -w 1340 -g 4x4 --timestamp-font assets/DejaVuSans.ttf --metadata-font assets/DejaVuSans-Bold.ttf --template misskaty/helper/ssgen_template.html --quality 100 --end-delay-percent 20 --metadata-font-size 30 --timestamp-font-size 20 -o '{out_put_file_name}'"
     r = await shell_exec(cmd)
     LOGGER.info(r)
     return out_put_file_name if os.path.lexists(out_put_file_name) else None
