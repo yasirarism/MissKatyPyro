@@ -45,7 +45,7 @@ misskaty_version = "v2.11.2 - Stable"
 
 os.system("pip3 install uvloop")
 from uvloop import install
-install()
+# install()
 
 # Pyrogram Bot Client
 app = Client(
