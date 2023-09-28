@@ -2,7 +2,7 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import time
+import time, os
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from apscheduler.jobstores.mongodb import MongoDBJobStore
@@ -42,6 +42,10 @@ HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
 misskaty_version = "v2.11.2 - Stable"
+
+os.system("pip3 install uvloop")
+from uvloop import install
+install()
 
 # Pyrogram Bot Client
 app = Client(
