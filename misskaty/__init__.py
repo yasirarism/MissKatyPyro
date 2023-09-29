@@ -4,6 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 import time, os
 from asyncio import get_event_loop
+from faulthandler import enable as faulthandler_enable
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
 from apscheduler.jobstores.mongodb import MongoDBJobStore
@@ -47,6 +48,7 @@ misskaty_version = "v2.11.2 - Stable"
 os.system("pip3 install uvloop")
 from uvloop import install
 install()
+faulthandler_enable()
 
 # Pyrogram Bot Client
 app = Client(
