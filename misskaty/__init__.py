@@ -13,7 +13,6 @@ from async_pymongo import AsyncClient
 from pymongo import MongoClient
 from pyrogram import Client
 
-from misskaty.core import misskaty_patch
 from misskaty.vars import (
     API_HASH,
     API_ID,
@@ -49,6 +48,7 @@ os.system("pip3 install uvloop")
 from uvloop import install
 install()
 faulthandler_enable()
+from misskaty.core import misskaty_patch
 
 # Pyrogram Bot Client
 app = Client(
