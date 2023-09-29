@@ -2,7 +2,7 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import time, os
+import time, os, uvloop
 from asyncio import get_event_loop
 from faulthandler import enable as faulthandler_enable
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
@@ -44,9 +44,7 @@ cleanmode = {}
 botStartTime = time.time()
 misskaty_version = "v2.11.2 - Stable"
 
-os.system("pip3 install uvloop")
-from uvloop import install
-install()
+uvloop.install()
 faulthandler_enable()
 from misskaty.core import misskaty_patch
 
