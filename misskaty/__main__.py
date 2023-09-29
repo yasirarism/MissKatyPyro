@@ -15,14 +15,13 @@ from pyrogram import __version__, idle
 from pyrogram.raw.all import layer
 
 from database import dbname
-from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app, scheduler
+from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, UBOT_NAME, app, scheduler, get_event_loop
 from misskaty.plugins import ALL_MODULES
 from misskaty.plugins.web_scraper import web
 from misskaty.vars import SUDO, USER_SESSION
 from utils import auto_clean
 
 LOGGER = getLogger("MissKaty")
-loop = asyncio.get_event_loop()
 
 
 # Run Bot
@@ -84,7 +83,9 @@ async def start_bot():
 
 if __name__ == "__main__":
     try:
-        loop.run_until_complete(start_bot())
+        get_event_loop().run_until_complete(start_bot())
+        app.loop.run_forever()
+        # loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
         pass
     except Exception:
