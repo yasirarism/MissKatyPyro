@@ -10,7 +10,6 @@ from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from async_pymongo import AsyncClient
-from misskaty.helper.http import fetch
 from pymongo import MongoClient
 from pyrogram import Client
 
@@ -63,7 +62,6 @@ app = Client(
 )
 app.db = AsyncClient(DATABASE_URI)
 app.log = getLogger("MissKaty")
-app.fetch = fetch
 
 # Pyrogram UserBot Client
 user = Client(
