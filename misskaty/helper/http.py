@@ -1,7 +1,6 @@
 from asyncio import gather
 
 from httpx import AsyncClient, Timeout
-from misskaty import app
 from aiohttp import ClientSession
 
 # Aiohttp Async Client
@@ -17,7 +16,6 @@ fetch = AsyncClient(
     },
     timeout=Timeout(20),
 )
-app.fetch = fetch
 
 
 async def get(url: str, *args, **kwargs):

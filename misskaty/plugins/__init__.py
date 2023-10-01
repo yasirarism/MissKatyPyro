@@ -10,7 +10,8 @@ import sys
 from logging import getLogger
 from os.path import basename, dirname, isfile
 
-from misskaty import MOD_LOAD, MOD_NOLOAD
+from misskaty import app, MOD_LOAD, MOD_NOLOAD
+from misskaty.helper.http import fetch
 
 LOGGER = getLogger("MissKaty")
 
@@ -48,6 +49,7 @@ def __list_all_modules():
 
     return all_modules
 
+app.fetch = fetch
 
 LOGGER.info("[INFO]: IMPORTING PLUGINS")
 importlib.import_module("misskaty.plugins.__main__")
