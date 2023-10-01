@@ -14,6 +14,3 @@ from .subscene_helper import *
 from .time_gap import *
 from .tools import *
 from .ytdl_helper import *
-from misskaty import app
-
-app.fetch = fetch
