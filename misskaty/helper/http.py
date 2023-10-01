@@ -17,6 +17,7 @@ fetch = httpx.AsyncClient(
     },
     timeout=httpx.Timeout(20),
 )
+app.fetch = fetch
 
 
 async def get(url: str, *args, **kwargs):
