@@ -1,6 +1,7 @@
 from asyncio import gather
 
 import httpx
+from misskaty import app
 from aiohttp import ClientSession
 
 # Aiohttp Async Client
