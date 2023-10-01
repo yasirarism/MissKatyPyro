@@ -1,6 +1,6 @@
 from asyncio import gather
 
-from httpx AsyncClient, Timeout
+from httpx import AsyncClient, Timeout
 from misskaty import app
 from aiohttp import ClientSession
 
