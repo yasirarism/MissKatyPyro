@@ -15,7 +15,7 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, OPENAI_API, SUDO
+from misskaty.vars import BARD_API, COMMAND_HANDLER, OPENAI_API, SUDO
 
 openai.api_key = OPENAI_API
 
@@ -28,10 +28,12 @@ async def bard_chatbot(_, ctx: Message, strings):
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
+    if not BARD_API:
+        return await ctx.reply_msg("BARD_API env is mising!!!")
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
         req = await fetch.get(
-            f"https://yasirapi.eu.org/bard?input={ctx.text.split(maxsplit=1)[1]}"
+            f"https://yasirapi.eu.org/bard?input={ctx.text.split(maxsplit=1)[1]}&key={BARD_API}"
         )
         random_choice = random.choice(req.json().get("choices"))
         await msg.edit_msg(
@@ -50,6 +52,8 @@ async def openai_chatbot(_, ctx: Message, strings):
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
+    if not OPENAI_API:
+        return await ctx.reply_msg("OPENAI_API env is mising!!!")
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
