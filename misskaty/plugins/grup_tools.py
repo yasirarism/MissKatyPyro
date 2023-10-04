@@ -8,6 +8,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
 from pyrogram.errors import (
     ChatAdminRequired,
+    ChatSendPhotosForbidden,
     ChatWriteForbidden,
     MessageTooLong,
     RPCError,
@@ -205,7 +206,7 @@ async def greet_group(bot, message, strings):
                 LOGGER.error(f"ERROR in Combot API Detection. {err}")
             if userspammer != "":
                 await bot.send_message(message.chat.id, userspammer)
-        except ChatWriteForbidden:
+        except (ChatWriteForbidden, ChatSendPhotosForbidden):
             await message.chat.leave()
         except Exception as e:
             LOGGER.info(e)
