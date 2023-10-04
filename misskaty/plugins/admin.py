@@ -470,7 +470,7 @@ async def demote(client, message, strings):
         umention = (await app.get_users(user_id)).mention
         await message.reply_text(f"Demoted! {umention}")
     except ChatAdminRequired:
-        await message.reply()
+        await message.reply("Please give permission to demote members..")
 
 
 # Pin Messages

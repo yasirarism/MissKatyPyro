@@ -2,6 +2,7 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
+import httpx
 import json
 import logging
 import re
@@ -138,6 +139,7 @@ async def imdb_search_id(kueri, message):
         r = await fetch.get(
             f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
         )
+        r.raise_for_status()
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(
@@ -175,6 +177,8 @@ async def imdb_search_id(kueri, message):
         )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
+    except httpx.HTTPError as exc:
+        await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
     except (MessageIdInvalid, MessageNotModified):
         pass
     except Exception as err:
@@ -196,6 +200,7 @@ async def imdb_search_en(kueri, message):
         r = await fetch.get(
             f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
         )
+        r.raise_for_status()
         res = r.json().get("d")
         if not res:
             return await k.edit_caption(
@@ -233,6 +238,8 @@ async def imdb_search_en(kueri, message):
         )
         buttons.add(*BTN)
         await k.edit_caption(msg, reply_markup=buttons)
+    except httpx.HTTPError as exc:
+        await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
     except (MessageIdInvalid, MessageNotModified):
         pass
     except Exception as err:
@@ -265,6 +272,7 @@ async def imdbcari(_, query: CallbackQuery):
             r = await fetch.get(
                 f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
             )
+            r.raise_for_status()
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(
@@ -297,6 +305,8 @@ async def imdbcari(_, query: CallbackQuery):
             )
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
+        except httpx.HTTPError as exc:
+            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
         except (MessageIdInvalid, MessageNotModified):
             pass
         except Exception as err:
@@ -318,6 +328,7 @@ async def imdbcari(_, query: CallbackQuery):
             r = await fetch.get(
                 f"https://v3.sg.media-imdb.com/suggestion/titles/x/{quote_plus(kueri)}.json"
             )
+            r.raise_for_status()
             res = r.json().get("d")
             if not res:
                 return await query.message.edit_caption(
@@ -350,6 +361,8 @@ async def imdbcari(_, query: CallbackQuery):
             )
             buttons.add(*BTN)
             await query.message.edit_caption(msg, reply_markup=buttons)
+        except httpx.HTTPError as exc:
+            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
         except (MessageIdInvalid, MessageNotModified):
             pass
         except Exception as err:
@@ -367,6 +380,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
         await query.message.edit_caption("⏳ Permintaan kamu sedang diproses.. ")
         imdb_url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await fetch.get(imdb_url)
+        resp.raise_for_status()
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
             sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
@@ -510,6 +524,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except httpx.HTTPError as exc:
+        await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
     except AttributeError:
         await query.message.edit_caption("Maaf, gagal mendapatkan info data dari IMDB.")
     except (MessageNotModified, MessageIdInvalid):
@@ -525,6 +541,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
         await query.message.edit_caption("<i>⏳ Getting IMDb source..</i>")
         imdb_url = f"https://www.imdb.com/title/tt{movie}/"
         resp = await fetch.get(imdb_url)
+        resp.raise_for_status()
         sop = BeautifulSoup(resp, "lxml")
         r_json = json.loads(
             sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
@@ -670,6 +687,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             await query.message.edit_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
+    except httpx.HTTPError as exc:
+        await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
     except AttributeError:
         await query.message.edit_caption("Sorry, failed getting data from IMDB.")
     except (MessageNotModified, MessageIdInvalid):

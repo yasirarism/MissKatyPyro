@@ -42,7 +42,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.11.2 - Stable"
+misskaty_version = "v2.11.3 - Stable"
 
 uvloop.install()
 faulthandler_enable()
