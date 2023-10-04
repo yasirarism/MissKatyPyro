@@ -29,3 +29,5 @@ cachetools
 cloudscraper
 openai
 GitPython
+aiofiles
+uvloop
