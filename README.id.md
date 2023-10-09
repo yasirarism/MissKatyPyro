@@ -1,4 +1,7 @@
 # MissKatyPyro
+```diff 
+- Saya tidak akan memberikan dukungan apapun terhadap fork repo ini, jadi apapun yang terjadi adalah tanggungjawabmu. Jangan menghubungi saya karena kesalahanmu sendiri. Saya berhenti melalukan update repo ini, hanya beberapa perbaikan kecil yang akan saya lakukan.
+```
 
 <!--Badges-->
 ![MIT License][license-shield] ![Repository Size][repository-size-shield] ![Issue Closed][issue-closed-shield]
@@ -9,12 +12,12 @@
 </p>
 
 <!--Project Buttons-->
- [![Readme in Indonesian][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] [![Request feature][request-feature-shield]][request-feature-url]
+ [![Readme in Indonesian][readme-ko-shield]][readme-ko-url] [![View Demo][view-demo-shield]][view-demo-url] [![Report bug][report-bug-shield]][report-bug-url] <!-- [![Request feature][request-feature-shield]][request-feature-url] -->
 
 <!--Table of Contents-->
 # Table of Contents
-- [[1] About MissKaty](#1-about-misskaty)
-- [[2] Framework Tools And Server That Used To Build This Bot](#2-framework-tools-and-server-that-used-to-build-this-bot)
+- [[1] Tentang MissKaty](#1-about-misskaty)
+- [[2] Alat Kerangka Dan Server Yang Digunakan Untuk Membangun Bot Ini](#2-framework-tools-and-server-that-used-to-build-this-bot)
 - [[3] Donation](#3-donation)
 - [[4] Notes](#4-notes)
 - [[5] Features](#5-features)
@@ -26,20 +29,21 @@
 - [[8] Credits](#8-thanks-to)
 - [[9] Disclaimer](#8-disclaimer)
 
-# [1] About MissKaty
+# [1] Tentang MissKaty
 *MissKaty* adalah Bot Telegram yang dibuat menggunakan Python dan library Pyrogram. Banyak fitur yang berguna untuk kita gunakan. Saya berharap suatu saat jika project ini dihentikan, ada yang melanjutkan atau mengembangkannya lagi. Saya memberi nama MissKaty karena saya suka kucing, hewan lucu yang suka bermain dan bersahabat dengan manusia.
 
-## [2] Framework Tools And Server That Used To Build This Bot
- 🌱 PyroFork v2.x.x (Fork Pyrogram dengan Dukungan Topik dan Beberapa Patch)<br>
+## [2] Alat Kerangka Dan Server Yang Digunakan Untuk Membangun Bot Ini
+ 🌱 PyroFork v2.x.x (Fork Pyrogram dengan Dukungan Topik, Stories dan Beberapa Patch)<br>
  🌱 Dukungan Python 3.11<br>
  🌱 MongoDB sebagai Database<br>
  🌱 PyKeyboard for Building Pagination<br>
  🌱 VS Code<br>
- 🌱 VPS/Server With Docker Support (Recommended)<br>
+ 🌱 VPS/Server dengan Root dan Docker Support (Recommended)<br>
 
 ## [3] Donation
 *Khusus Indonesia Saja:*<br>
  🌱 [QRIS][qris-url]<br>
+ 🌱 [Mayar ID][mayar]<br>
 
 *Untuk Semua Negara:*<br>
  🌱 [Paypal][paypal-url]<br>
@@ -56,7 +60,7 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 | Downloader FB, TikTok and YT-DLP Support  |✔️|
 | MultiLanguage Support (Still Beta) |⚠️|
 | NightMode  |✔️|
-| ChatBot based on OpenAI |✔️|
+| ChatBot based on OpenAI, and Google Bard |✔️|
 | MissKaty Mata |✔️|
 | Inline Search  |✔️|
 | Sticker Tools  |✔️|
@@ -72,7 +76,7 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 * `BOT_TOKEN`: Buat bot menggunakan [@BotFather](https://t.me/BotFather), dan dapatkan token Telegram API.
 * `API_ID`: Dapatkan value ini dari [telegram.org](https://my.telegram.org/apps)
 * `API_HASH`: Dapatkan value ini dari [telegram.org](https://my.telegram.org/apps)
-* `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Dapatkan value ini dari [mongoDB](https://www.mongodb.com). Untuk bantuan lebih lanjut, tonton [video] ini(https://youtu.be/1G1XwEOnxxo)
+* `DATABASE_URI`: [mongoDB](https://www.mongodb.com) URI. Dapatkan value ini dari [mongoDB](https://www.mongodb.com).
 * `LOG_CHANNEL` : Channel untuk mencatat aktivitas bot. Pastikan bot adalah admin di channel.
 
 ### Variabel Opsional
@@ -81,6 +85,7 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 * `COMMAND_HANDLER`: Daftar perintah handler bot dipisahkan dengan spasi. Contoh: `. !` > jadi bot akan merespon dengan `.cmd` atau `!cmd`
 * `SUDO`: User ID yang memiliki akses ke bot, dipisahkan dengan spasi
 * `OPENAI_API`: Dapatkan dari Web OpenAI
+* `BARD_API`: Pelajari dari ini https://github.com/dsdanielpark/Bard-API untuk mendapatkan cookies dan set sebagai api key.
 * `CURRENCY_API`: Dapatkan API Key di https://app.exchangerate-api.com/sign-up
 
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
@@ -156,19 +161,21 @@ sudo docker-compose stop <pid>
 
 
 ## [8] Thanks to 
- - Terima kasih Kepada Allah Swt.
- - Terima kasih Kepada Dan [Pyrogram Library](https://github.com/pyrogram/pyrogram).
- - Terima kasih Kepada [The Hamker Cat](https://github.com/TheHamkerCat) Untuk Kode WilliamButcher.
- - Terima kasih Kepada [Team Yukki](https://github.com/TeamYukki) Untuk Kode AFK Bot.
- - Terima kasih Kepada [Wrench](https://github.com/EverythingSuckz) Untuk Beberapa Kode.
- - Terima kasih Kepada [AmanoTeam](https://github.com/AmanoTeam) Untuk Template MultiBahasa.
+ - Terimakasih Kepada Allah Swt.
+ - Terimakasih Kepada Dan [Pyrogram Library](https://github.com/pyrogram/pyrogram) sebagai base pyrofork.
+ - Terimakasih kepada Mayuri [Mayuri-Chan](https://github.com/Mayuri-Chan) sebagai pemilik library Pyrofork.
+ - Terimakasih kepada TeamDriveCok dan Secret Group TBK di Telegram.
+ - Terimakasih Kepada [The Hamker Cat](https://github.com/TheHamkerCat) Untuk Kode WilliamButcher.
+ - Terimakasih Kepada [Team Yukki](https://github.com/TeamYukki) Untuk Kode AFK Bot.
+ - Terimakasih Kepada [Wrench](https://github.com/EverythingSuckz) Untuk Beberapa Kode.
+ - Terimakasih Kepada [AmanoTeam](https://github.com/AmanoTeam) Untuk Template MultiBahasa.
  - Dan Semua Orang Yang Membantuku Dalam Hidupku...
 Jika kode Anda digunakan dalam repo ini dan ingin memberikan kredit, silakan buka masalah..
 
 ## [9] Disclaimer
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
 Dilisensikan di bawah [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
-PERINGATAN: Menjual Kode Kepada Orang Lain Demi Uang *Dilarang Keras*. Tuhan selalu melihatmu dimanapun kamu berada.
+PERINGATAN: *Dilarang Keras* Menjual Kode Kepada Orang Lain Demi Uang Tanpa Seijin Saya. Atau saya akan menghentikan project ini selamanyaa....
 
 <!--Url for Badges-->
 [license-shield]: https://img.shields.io/github/license/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=04B4AE
@@ -189,6 +196,7 @@ PERINGATAN: Menjual Kode Kepada Orang Lain Demi Uang *Dilarang Keras*. Tuhan sel
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
 [qris-url]: https://img.yasirweb.eu.org/file/2acf7698f300ef3d9138f.jpg
+[mayar]: https://yasirarism.mayar.link/payme
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
