@@ -91,7 +91,7 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
 #### Bangun Dan Jalankan Menggunakan Metode Lama
-- Pastikan versi python minimum adalah 3.8 untuk mencegah beberapa error. Periksa dengan perintah ini:
+- Pastikan versi python minimum adalah 3.8 dan maksimal python 3.11 untuk mencegah beberapa error. Periksa dengan perintah ini:
 ```
 python3 --version
 ```
@@ -106,7 +106,8 @@ pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-Install venv dari terminal server kamu
+python3 -m venv nama_venv
+source nama_venv/bin/activate
 pip3 install -r requirements.txt
 ```
 - Atur config environment saat menjalankan bot dan jangan lupa isi semua value yang wajib di isi.

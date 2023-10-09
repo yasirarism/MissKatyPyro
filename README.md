@@ -91,7 +91,7 @@ If you want help me fixing some error in my bot, you can make pull request to th
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
 #### Build And Run Using Legacy Method
-- Make sure minimum python version is 3.8 to prevent some errors. Check it with this command:
+- Make sure minimum python version is 3.8 and max python 3.11 to prevent some errors. Check it with this command:
 ```
 python3 --version
 ```
@@ -106,7 +106,8 @@ pip3 install -r requirements.txt
 ```
 *Python 3.11*
 ```
-Install venv from your terminal and activate it
+python3 -m venv nama_venv
+source nama_venv/bin/activate
 pip3 install -r requirements.txt 
 ```
 - Setting your config.env or via environment and dont forget fill all required value.
@@ -196,6 +197,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. O
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
 [qris-url]: https://img.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg
+[mayar]: https://yasirarism.mayar.link/payme
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
