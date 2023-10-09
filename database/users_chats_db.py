@@ -7,7 +7,7 @@ class UsersData:
     def __init__(self, uri, database_name):
         self._client = AsyncClient(uri)
         self.db = self._client[database_name]
-        self.col = self.db["users"]
+        self.col = self.db["userlist"]
         self.grp = self.db["groups"]
 
     @staticmethod

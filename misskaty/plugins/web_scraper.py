@@ -308,8 +308,8 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
                 )
             return None, 0, None
         for i in entry:
-            genre = i.find(class_="gmr-movie-on").text
-            genre = f"{genre}" if genre != "" else "N/A"
+            genre = i.find(class_="gmr-movie-on")
+            genre = f"{genre.text}" if genre != "" else "N/A"
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             nodrakordata.append({"judul": judul, "link": link, "genre": genre})
