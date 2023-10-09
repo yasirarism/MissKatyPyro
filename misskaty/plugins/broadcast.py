@@ -25,10 +25,10 @@ async def broadcast(_, ctx: Message):
     failed = 0
 
     success = 0
-    async for chat in userdb.find({}):
-        if chat["type"] == "user":
+    async for chat in userdb.find({"type": "user"}):
+        if chat["type"] != "user":
             continue
-        pti, sh = await broadcast_messages(int(chat["id"]), b_msg)
+        pti, sh = await broadcast_messages(int(chat["_id"]), b_msg)
         if pti:
             success += 1
         elif pti is False:
