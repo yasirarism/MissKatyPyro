@@ -87,28 +87,23 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
         SCRAP_DICT.add(
             msg.id, [split_arr(res["result"], 6), kueri], timeout=1800
         )
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-
-        if kueri:
-            TerbitRes = strings("header_with_query").format(web="Terbit21", kueri=kueri)
-        else:
-            TerbitRes = strings("header_no_query").format(
-                web="Terbit21", cmd="terbit21"
-            )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            TerbitRes += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
-            TerbitRes += (
-                "\n"
-                if re.search(r"Complete|Ongoing", i["kategori"])
-                else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
-            )
-        TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
-        return TerbitRes, PageLen
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, None
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    if kueri:
+        TerbitRes = strings("header_with_query").format(web="Terbit21", kueri=kueri)
+    else:
+        TerbitRes = strings("header_no_query").format(
+            web="Terbit21", cmd="terbit21"
+        )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        TerbitRes += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+        TerbitRes += (
+            "\n"
+            if re.search(r"Complete|Ongoing", i["kategori"])
+            else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
+        )
+    TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
+    return TerbitRes, PageLen
 
 
 # LK21 GetData
@@ -523,8 +518,8 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
         else:
             data = []
             for i in entry:
-                genre = i.find(class_="gmr-movie-on").text
-                genre = f"{genre}" if genre != "" else "N/A"
+                genre = i.find(class_="gmr-movie-on")
+                genre = f"{genre.text}" if genre else "N/A"
                 judul = i.find(class_="entry-title").find("a").text
                 link = i.find(class_="entry-title").find("a").get("href")
                 data.append({"judul": judul, "link": link, "genre": genre})
