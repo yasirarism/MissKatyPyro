@@ -464,7 +464,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
             return None, 0, None
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if entry[0].text.strip() == "Tidak Ditemukan":
             if not kueri:
                 await msg.edit_msg(strings("no_result"), del_in=5)
             else:
@@ -498,7 +498,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
                     index * 6 + c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"
                 )
             )
-        gomovResult += strings("unsupport_dl_btn")
+    gomovResult += strings("unsupport_dl_btn")
     return gomovResult, PageLen, extractbtn
 
 
