@@ -102,7 +102,6 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
             if re.search(r"Complete|Ongoing", i["kategori"])
             else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
         )
-    TerbitRes = "".join(i for i in TerbitRes if i not in "[]")
     return TerbitRes, PageLen
 
 
@@ -123,28 +122,22 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
         SCRAP_DICT.add(msg.id, [split_arr(res["result"], 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-
-        if kueri:
-            lkResult = strings("header_with_query").format(
-                web="Layarkaca21", kueri=kueri
-            )
-        else:
-            lkResult = strings("header_no_query").format(web="Layarkaca21", cmd="lk21")
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            lkResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
-            lkResult += (
-                "\n"
-                if re.search(r"Complete|Ongoing", i["kategori"])
-                else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
-            )
-        lkResult = "".join(i for i in lkResult if i not in "[]")
-        return lkResult, PageLen
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, None
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    if kueri:
+        lkResult = strings("header_with_query").format(
+            web="Layarkaca21", kueri=kueri
+        )
+    else:
+        lkResult = strings("header_no_query").format(web="Layarkaca21", cmd="lk21")
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        lkResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
+        lkResult += (
+            "\n"
+            if re.search(r"Complete|Ongoing", i["kategori"])
+            else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
+        )
+    return lkResult, PageLen
 
 
 # Pahe GetData
@@ -164,24 +157,18 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
         SCRAP_DICT.add(msg.id, [split_arr(res["result"], 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-
-        paheResult = (
-            strings("header_with_query").format(web="Pahe", kueri=kueri)
-            if kueri
-            else strings("header_no_query").format(web="Pahe", cmd="pahe")
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    paheResult = (
+        strings("header_with_query").format(web="Pahe", kueri=kueri)
+        if kueri
+        else strings("header_no_query").format(web="Pahe", cmd="pahe")
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        paheResult += (
+            f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
         )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            paheResult += (
-                f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n\n"
-            )
-        paheResult = "".join(i for i in paheResult if i not in "[]")
-        return paheResult, PageLen
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, None
+    return paheResult, PageLen
 
 
 # Kusonime GetData
@@ -206,36 +193,31 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None, None
         SCRAP_DICT.add(msg.id, [split_arr(kusodata, 10), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn1 = []
-        extractbtn2 = []
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn1 = []
+    extractbtn2 = []
 
-        kusoResult = (
-            strings("header_no_query").format(web="Kusonime", cmd="kusonime")
-            if kueri == ""
-            else strings("header_with_query").format(web="Kusonime", kueri=kueri)
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            kusoResult += f"<b>{index*6+c}</b>. {i['title']}\n{i['link']}\n\n"
-            if c < 6:
-                extractbtn1.append(
-                    InlineButton(
-                        index * 6 + c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                    )
+    kusoResult = (
+        strings("header_no_query").format(web="Kusonime", cmd="kusonime")
+        if kueri == ""
+        else strings("header_with_query").format(web="Kusonime", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        kusoResult += f"<b>{index*6+c}</b>. {i['title']}\n{i['link']}\n\n"
+        if c < 6:
+            extractbtn1.append(
+                InlineButton(
+                    index * 6 + c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"
                 )
-            else:
-                extractbtn2.append(
-                    InlineButton(
-                        index * 6 + c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                    )
+            )
+        else:
+            extractbtn2.append(
+                InlineButton(
+                    index * 6 + c, f"kusoextract#{CurrentPage}#{c}#{user}#{msg.id}"
                 )
-        kusoResult = "".join(i for i in kusoResult if i not in "[]")
-        return kusoResult, PageLen, extractbtn1, extractbtn2
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None, None
+            )
+    return kusoResult, PageLen, extractbtn1, extractbtn2
 
 
 # Movieku GetData
@@ -262,22 +244,17 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
         SCRAP_DICT.add(msg.id, [split_arr(moviekudata, 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
 
-        moviekuResult = (
-            strings("header_no_query").format(web="Movieku", cmd="movieku")
-            if kueri == ""
-            else strings("header_with_query").format(web="Movieku", kueri=kueri)
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            moviekuResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
-        moviekuResult = "".join(i for i in moviekuResult if i not in "[]")
-        return moviekuResult, PageLen
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, None
+    moviekuResult = (
+        strings("header_no_query").format(web="Movieku", cmd="movieku")
+        if kueri == ""
+        else strings("header_with_query").format(web="Movieku", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        moviekuResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}/Status:</b> {i['type']}\n<b>Extract:</b> <code>/movieku_scrap {i['link']}</code>\n\n"
+    return moviekuResult, PageLen
 
 
 # NoDrakor GetData
@@ -304,32 +281,27 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
             return None, 0, None
         for i in entry:
             genre = i.find(class_="gmr-movie-on")
-            genre = f"{genre.text}" if genre != "" else "N/A"
+            genre = f"{genre.text}" if genre else "N/A"
             judul = i.find(class_="entry-title").find("a").text
             link = i.find(class_="entry-title").find("a").get("href")
             nodrakordata.append({"judul": judul, "link": link, "genre": genre})
         SCRAP_DICT.add(msg.id, [split_arr(nodrakordata, 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
-        nodrakorResult = (
-            strings("header_no_query").format(web="NoDrakor", cmd="nodrakor")
-            if kueri == ""
-            else strings("header_with_query").format(web="NoDrakor", kueri=kueri)
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            nodrakorResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
-            extractbtn.append(
-                InlineButton(
-                    index * 6 + c, f"nodrakorextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                )
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
+    nodrakorResult = (
+        strings("header_no_query").format(web="NoDrakor", cmd="nodrakor")
+        if kueri == ""
+        else strings("header_with_query").format(web="NoDrakor", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        nodrakorResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+        extractbtn.append(
+            InlineButton(
+                index * 6 + c, f"nodrakorextract#{CurrentPage}#{c}#{user}#{msg.id}"
             )
-        nodrakorResult = "".join(i for i in nodrakorResult if i not in "[]")
-        return nodrakorResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None
+        )
+    return nodrakorResult, PageLen, extractbtn
 
 
 # Savefilm21 GetData
@@ -361,27 +333,22 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
             link = i.find(class_="entry-title").find("a").get("href")
             sfdata.append({"judul": judul, "link": link, "genre": genre})
         SCRAP_DICT.add(msg.id, [split_arr(sfdata, 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
-        sfResult = (
-            strings("header_no_query").format(web="Savefilm21", cmd="savefilm21")
-            if kueri == ""
-            else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
-            extractbtn.append(
-                InlineButton(
-                    index * 6 + c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}"
-                )
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
+    sfResult = (
+        strings("header_no_query").format(web="Savefilm21", cmd="savefilm21")
+        if kueri == ""
+        else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        sfResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> {i['genre']}\n\n"
+        extractbtn.append(
+            InlineButton(
+                index * 6 + c, f"sf21extract#{CurrentPage}#{c}#{user}#{msg.id}"
             )
-        sfResult = "".join(i for i in sfResult if i not in "[]")
-        return sfResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None
+        )
+    return sfResult, PageLen, extractbtn
 
 
 # Lendrive GetData
@@ -420,28 +387,23 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
         savedict[msg.id] = [split_arr(lenddata, 6), kueri]
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(savedict[msg.id][0])
-        extractbtn = []
+    index = int(CurrentPage - 1)
+    PageLen = len(savedict[msg.id][0])
+    extractbtn = []
 
-        lenddataResult = (
-            strings("header_no_query").format(web="Lendrive", cmd="lendrive")
-            if kueri == ""
-            else strings("header_with_query").format(web="Lendrive", kueri=kueri)
-        )
-        for c, i in enumerate(savedict[msg.id][0][index], start=1):
-            lenddataResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
-            extractbtn.append(
-                InlineButton(
-                    index * 6 + c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                )
+    lenddataResult = (
+        strings("header_no_query").format(web="Lendrive", cmd="lendrive")
+        if kueri == ""
+        else strings("header_with_query").format(web="Lendrive", kueri=kueri)
+    )
+    for c, i in enumerate(savedict[msg.id][0][index], start=1):
+        lenddataResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n<b>Status:</b> {i['status']}\n\n"
+        extractbtn.append(
+            InlineButton(
+                index * 6 + c, f"lendriveextract#{CurrentPage}#{c}#{user}#{msg.id}"
             )
-        lenddataResult = "".join(i for i in lenddataResult if i not in "[]")
-        return lenddataResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None
+        )
+    return lenddataResult, PageLen, extractbtn
 
 
 # MelongMovie GetData
@@ -470,28 +432,23 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, 0, None
         SCRAP_DICT.add(msg.id, [split_arr(melongdata, 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
 
-        melongResult = (
-            strings("header_no_query").format(web="Melongmovie", cmd="melongmovie")
-            if kueri == ""
-            else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            melongResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
-            extractbtn.append(
-                InlineButton(
-                    index * 6 + c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                )
+    melongResult = (
+        strings("header_no_query").format(web="Melongmovie", cmd="melongmovie")
+        if kueri == ""
+        else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        melongResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('quality')}:</b> {i['quality']}\n\n"
+        extractbtn.append(
+            InlineButton(
+                index * 6 + c, f"melongextract#{CurrentPage}#{c}#{user}#{msg.id}"
             )
-        melongResult = "".join(i for i in melongResult if i not in "[]")
-        return melongResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None
+        )
+    return melongResult, PageLen, extractbtn
 
 
 # GoMov GetData
@@ -524,30 +481,25 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
                 link = i.find(class_="entry-title").find("a").get("href")
                 data.append({"judul": judul, "link": link, "genre": genre})
             SCRAP_DICT.add(msg.id, [split_arr(data, 6), kueri], timeout=1800)
-    try:
-        index = int(CurrentPage - 1)
-        PageLen = len(SCRAP_DICT[msg.id][0])
-        extractbtn = []
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
 
-        gomovResult = (
-            strings("header_with_query").format(web="GoMov", kueri=kueri)
-            if kueri
-            else strings("header_no_query").format(web="GoMov", cmd="gomov")
-        )
-        for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
-            gomovResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
-            if not re.search(r"Series", i["genre"]):
-                extractbtn.append(
-                    InlineButton(
-                        index * 6 + c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"
-                    )
+    gomovResult = (
+        strings("header_with_query").format(web="GoMov", kueri=kueri)
+        if kueri
+        else strings("header_no_query").format(web="GoMov", cmd="gomov")
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        gomovResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
+        if not re.search(r"Series", i["genre"]):
+            extractbtn.append(
+                InlineButton(
+                    index * 6 + c, f"gomovextract#{CurrentPage}#{c}#{user}#{msg.id}"
                 )
+            )
         gomovResult += strings("unsupport_dl_btn")
-        gomovResult = "".join(i for i in gomovResult if i not in "[]")
-        return gomovResult, PageLen, extractbtn
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, 0, None
+    return gomovResult, PageLen, extractbtn
 
 
 # getData samehada
@@ -575,18 +527,13 @@ async def getSame(msg, query, current_page, strings):
             await msg.edit_msg(strings("no_result"), del_in=5)
             return None, None
         savedict[msg.id] = [split_arr(sdata, 10), query]
-    try:
-        index = int(current_page - 1)
-        PageLen = len(savedict[msg.id][0])
-        sameresult = "".join(
-            f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
+    index = int(current_page - 1)
+    PageLen = len(savedict[msg.id][0])
+    sameresult = "".join(
+        f"<b>{index * 6 + c}. <a href='{i['url']}'>{i['title']}</a>\n<b>Status:</b> {i['sta']}\n</b>Rating:</b> {i['rate']}\n\n"
             for c, i in enumerate(savedict[msg.id][0][index], start=1)
         )
-        sameresult = "".join(i for i in sameresult if i not in "[]")
-        return sameresult, PageLen
-    except (IndexError, KeyError):
-        await msg.edit_msg(strings("no_result"), del_in=5)
-        return None, None
+    return sameresult, PageLen
 
 
 # SameHada CMD
