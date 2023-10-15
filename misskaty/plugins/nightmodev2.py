@@ -149,7 +149,7 @@ async def mute_chat(chat_id: int):
     getlang = await get_db_lang(chat_id)
     getlang = getlang or "en-US"
     try:
-        await app.set_chat_permissions(chat_id, ChatPermissions())
+        await app.set_chat_permissions(chat_id, ChatPermissions(all_perms=False))
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
