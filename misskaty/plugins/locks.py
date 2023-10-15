@@ -165,7 +165,7 @@ async def locks_func(_, message):
         await tg_lock(message, permissions, data[parameter], state == "lock")
     elif parameter == "all" and state == "lock":
         try:
-            await app.set_chat_permissions(chat_id, ChatPermissions())
+            await app.set_chat_permissions(chat_id, ChatPermissions(all_perms=True))
             await message.reply_text(f"Locked Everything in {message.chat.title}")
         except ChatAdminRequired:
             await message.reply_msg(
@@ -177,24 +177,8 @@ async def locks_func(_, message):
             await app.set_chat_permissions(
                 chat_id,
                 ChatPermissions(
-                    can_send_messages=True,
-                    can_send_plain=True,
-                    can_send_media_messages=True,
-                    can_send_docs=True,
-                    can_send_inline=True,
-                    can_send_photos=True,
-                    can_send_videos=True,
-                    can_send_roundvideos=True,
-                    can_send_audios=True,
-                    can_send_voices=True,
-                    can_send_stickers=True,
-                    can_send_gifs=True,
-                    can_add_web_page_previews=True,
-                    can_send_polls=True,
-                    can_change_info=False,
-                    can_invite_users=True,
-                    can_pin_messages=False,
-                ),
+                    all_perms=True,
+                )
             )
             await message.reply(f"Unlocked Everything in {message.chat.title}")
         except ChatAdminRequired:

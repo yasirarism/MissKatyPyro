@@ -16,6 +16,7 @@ from pyrogram.errors import (
     ChatNotModified,
     ChatRestricted,
     PeerIdInvalid,
+    QueryIdInvalid
 )
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -257,10 +258,13 @@ async def nightmode_handler(_, msg, strings):
 @app.on_callback_query(filters.regex(r"^nightmd$"))
 @use_chat_lang()
 async def callbackanightmd(c, q, strings):
-    await q.answer(
-        strings("nmd_cb").format(
-            bname=c.me.first_name, ver=__version__, pyver=platform.python_version()
-        ),
-        show_alert=True,
-        cache_time=10,
-    )
+    try:
+        await q.answer(
+            strings("nmd_cb").format(
+                bname=c.me.first_name, ver=__version__, pyver=platform.python_version()
+            ),
+            show_alert=True,
+            cache_time=10,
+        )
+    except QueryIdInvalid:
+        pass

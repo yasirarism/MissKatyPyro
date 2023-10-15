@@ -271,7 +271,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
             return None, 0, None
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
-        if "Tidak Ditemukan" in entry[0].text:
+        if "Nothing Found" in entry[0].text:
             if not kueri:
                 await msg.edit_msg(strings("no_result"), del_in=5)
             else:

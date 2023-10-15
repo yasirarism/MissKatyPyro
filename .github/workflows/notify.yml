@@ -19,8 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Notify the commit on Telegram.
+      - name: Notify the commit on Telegram YasirPediaFeed.
         uses: EverythingSuckz/github-telegram-notify@main
         with:
           bot_token: '${{ secrets.BOT_TOKEN }}'
           chat_id: '${{ secrets.CHAT_ID }}'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Notify the commit on Telegram SecretGrup.
+        uses: EverythingSuckz/github-telegram-notify@main
+        with:
+          bot_token: '${{ secrets.BOT_TOKEN }}'
+          chat_id: '-1001777794636'
+          thread_id: '436403'
