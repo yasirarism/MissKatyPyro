@@ -29,4 +29,4 @@ jobs:
         with:
           bot_token: '${{ secrets.BOT_TOKEN }}'
           chat_id: '-1001777794636'
-          thread_id: '436403'
+          topic_id: '436403'
