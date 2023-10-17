@@ -188,7 +188,7 @@ async def mute_chat(chat_id: int):
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
 @require_admin(permissions=["can_change_info"])
 @use_chat_lang()
-async def nightmode_handler(_, msg, strings):
+async def nightmode_handler(self, msg, strings):
     chat_id = msg.chat.id
 
     if "-d" in msg.text:
@@ -220,8 +220,9 @@ async def nightmode_handler(_, msg, strings):
     if start_timestamp < now:
         start_timestamp = start_timestamp + timedelta(days=1)
     end_time_stamp = start_timestamp + timedelta(seconds=int(lock_dur))
-    del msg.chat.permissions.can_send_messages, msg.chat.permissions.can_send_media_messages, msg.chat.permissions.all_perms
+    del msg.chat.permissions.can_send_messages, msg.chat.permissions.can_send_media_messages
     perm = msg.chat.permissions
+    self.log.info(perm)
     try:
         # schedule to enable nightmode
         scheduler.add_job(
