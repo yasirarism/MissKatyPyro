@@ -5,6 +5,7 @@
 import platform
 import re
 from datetime import datetime, timedelta
+from attr import Attribute
 
 import pytz
 from apscheduler.jobstores.base import ConflictingIdError
@@ -105,6 +106,8 @@ async def un_mute_chat(chat_id: int, perm: ChatPermissions):
     getlang = getlang or "en-US"
     try:
         await app.set_chat_permissions(chat_id, perm)
+    except AttributeError:
+        await app.set_chat_permissions(chat_id, ChatPermissions(all_perms=True))
     except ChatAdminRequired:
         await app.send_message(
             LOG_CHANNEL,
