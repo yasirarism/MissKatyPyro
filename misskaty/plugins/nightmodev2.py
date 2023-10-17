@@ -220,6 +220,8 @@ async def nightmode_handler(_, msg, strings):
     if start_timestamp < now:
         start_timestamp = start_timestamp + timedelta(days=1)
     end_time_stamp = start_timestamp + timedelta(seconds=int(lock_dur))
+    del msg.chat.permissions.can_send_messages, msg.chat.permissions.can_send_media_messages, msg.chat.permissions.all_perms
+    perm = msg.chat.permissions
     try:
         # schedule to enable nightmode
         scheduler.add_job(
@@ -237,7 +239,7 @@ async def nightmode_handler(_, msg, strings):
         scheduler.add_job(
             un_mute_chat,
             "interval",
-            [chat_id, msg.chat.permissions],
+            [chat_id, perm],
             id=f"disable_nightmode_{chat_id}",
             days=1,
             next_run_time=end_time_stamp,
