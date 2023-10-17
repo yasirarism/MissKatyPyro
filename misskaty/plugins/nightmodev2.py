@@ -22,6 +22,7 @@ from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboard
 
 from database.locale_db import get_db_lang
 from misskaty import BOT_NAME, app, scheduler
+from misskaty.core.decorator import permissions
 from misskaty.core.decorator.permissions import require_admin
 from misskaty.helper.localization import langdict, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, TZ
@@ -220,9 +221,25 @@ async def nightmode_handler(self, msg, strings):
     if start_timestamp < now:
         start_timestamp = start_timestamp + timedelta(days=1)
     end_time_stamp = start_timestamp + timedelta(seconds=int(lock_dur))
-    del msg.chat.permissions.can_send_messages, msg.chat.permissions.can_send_media_messages
-    perm = msg.chat.permissions
-    self.log.info(perm)
+    perm = ChatPermissions(
+        can_send_polls=msg.chat.permissions.can_send_polls,
+        can_add_web_page_previews=msg.chat.permissions.can_add_web_page_previews,
+        can_change_info=msg.chat.permissions.can_change_info,
+        can_invite_users=msg.chat.permissions.can_invite_users,
+        can_pin_messages=msg.chat.permissions.can_pin_messages,
+        can_manage_topics=msg.chat.permissions.can_manage_topics,
+        can_send_audios=msg.chat.permissions.can_send_audios,
+        can_send_docs=msg.chat.permissions.can_send_docs,
+        can_send_games=msg.chat.permissions.can_send_games,
+        can_send_gifs=msg.chat.permissions.can_send_gifs,
+        can_send_inline=msg.chat.permissions.can_send_inline,
+        can_send_photos=msg.chat.permissions.can_send_photos,
+        can_send_plain=msg.chat.permissions.can_send_plain,
+        can_send_roundvideos=msg.chat.permissions.can_send_roundvideos,
+        can_send_stickers=msg.chat.permissions.can_send_stickers,
+        can_send_videos=msg.chat.permissions.can_send_videos,
+        can_send_voices=msg.chat.permissions.can_send_voices
+    )
     try:
         # schedule to enable nightmode
         scheduler.add_job(
