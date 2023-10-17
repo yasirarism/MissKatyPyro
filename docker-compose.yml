@@ -14,6 +14,7 @@ services:
 
   # restarter:
   #   image: docker:cli
+  #    container_name: misskaty_restarter
   #   volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
-  #   command: ["/bin/sh", "-c", "while true; do sleep 259200; docker restart ${CONTAINER_NAME}; done"]
-  #   restart: ${RESTART}
+  #   command: ["/bin/sh", "-c", "while true; do sleep 259200; docker restart misskatybot; done"]
+  #   restart: on-failure
