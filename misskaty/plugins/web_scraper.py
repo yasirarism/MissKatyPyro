@@ -4,9 +4,11 @@
  * @projectName   MissKatyPyro
  * Copyright @YasirPedia All rights reserved
 """
+import contextlib
 import httpx
 import logging
 import re
+import sys
 import traceback
 
 import cloudscraper
@@ -71,15 +73,16 @@ def split_arr(arr, size: 5):
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            if kueri:
-                terbitjson = await fetch.get(f"{web['yasirapi']}/terbit21?q={kueri}")
-            else:
-                terbitjson = await fetch.get(f"{web['yasirapi']}/terbit21")
-            terbitjson.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
-            return None, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                if kueri:
+                    terbitjson = await fetch.get(f"{web['yasirapi']}/terbit21?q={kueri}")
+                else:
+                    terbitjson = await fetch.get(f"{web['yasirapi']}/terbit21")
+                terbitjson.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
+                return None, None
         res = terbitjson.json()
         if not res.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
@@ -108,15 +111,16 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            if kueri:
-                lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
-            else:
-                lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
-            lk21json.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
-            return None, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                if kueri:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
+                else:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
+                lk21json.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
+                return None, None
         res = lk21json.json()
         if not res.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
@@ -143,15 +147,16 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
 # Pahe GetData
 async def getDataPahe(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            if kueri:
-                pahejson = await fetch.get(f"{web['yasirapi']}/pahe?q={kueri}")
-            else:
-                pahejson = await fetch.get(f"{web['yasirapi']}/pahe")
-            pahejson.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
-            return None, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                if kueri:
+                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe?q={kueri}")
+                else:
+                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe")
+                pahejson.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
+                return None, None
         res = pahejson.json()
         if not res.get("result"):
             await msg.edit_msg(strings("no_result"), del_in=5)
@@ -175,14 +180,15 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
-        try:
-            data = await fetch.get(
-                f"{web['kusonime']}/?s={kueri}", follow_redirects=True
-            )
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                data = await fetch.get(
+                    f"{web['kusonime']}/?s={kueri}", follow_redirects=True
+                )
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None, None
         res = BeautifulSoup(data, "lxml").find_all("h2", {"class": "episodeye"})
         for i in res:
             ress = i.find_all("a")[0]
@@ -224,14 +230,15 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 async def getDataMovieku(msg, kueri, CurrentPage, strings):
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
-        try:
-            data = await fetch.get(
-                f"{web['movieku']}/?s={kueri}", follow_redirects=True
-            )
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
-            return None, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                data = await fetch.get(
+                    f"{web['movieku']}/?s={kueri}", follow_redirects=True
+                )
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
+                return None, None
         r = BeautifulSoup(data, "lxml")
         res = r.find_all(class_="bx")
         for i in res:
@@ -261,14 +268,15 @@ async def getDataMovieku(msg, kueri, CurrentPage, strings):
 async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         nodrakordata = []
-        try:
-            data = await fetch.get(
-                f"{web['nodrakor']}/?s={kueri}", follow_redirects=True,
-            )
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                data = await fetch.get(
+                    f"{web['nodrakor']}/?s={kueri}", follow_redirects=True,
+                )
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
@@ -308,14 +316,15 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
 async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
-        try:
-            data = await fetch.get(
-                f"{web['savefilm21']}/?s={kueri}", follow_redirects=True,
-            )
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                data = await fetch.get(
+                    f"{web['savefilm21']}/?s={kueri}", follow_redirects=True,
+                )
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
         if "Tidak Ditemukan" in entry[0].text:
@@ -354,17 +363,18 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            if kueri:
-                data = await fetch.get(
-                    f"{web['lendrive']}/?s={kueri}", follow_redirects=True,
-                )
-            else:
-                data = await fetch.get(web["lendrive"], follow_redirects=True)
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                if kueri:
+                    data = await fetch.get(
+                        f"{web['lendrive']}/?s={kueri}", follow_redirects=True,
+                    )
+                else:
+                    data = await fetch.get(web["lendrive"], follow_redirects=True)
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None
         res = BeautifulSoup(data, "lxml")
         lenddata = []
         for o in res.find_all(class_="bsx"):
@@ -409,14 +419,15 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            data = await fetch.get(
-                f"{web['melongmovie']}/?s={kueri}", follow_redirects=True,
-            )
-            data.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                data = await fetch.get(
+                    f"{web['melongmovie']}/?s={kueri}", follow_redirects=True,
+                )
+                data.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None
         bs4 = BeautifulSoup(data, "lxml")
         melongdata = []
         for res in bs4.select(".box"):
@@ -454,14 +465,15 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
-        try:
-            gomovv = await fetch.get(
-                f"{web['gomov']}/?s={kueri}", follow_redirects=True
-            )
-            gomovv.raise_for_status()
-        except httpx.HTTPError as exc:
-            await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
-            return None, 0, None
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                gomovv = await fetch.get(
+                    f"{web['gomov']}/?s={kueri}", follow_redirects=True
+                )
+                gomovv.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>", disable_web_page_preview=True)
+                return None, 0, None
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Tidak Ditemukan":
@@ -1310,19 +1322,20 @@ async def savefilm21_scrap(_, callback_query, strings):
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
-    try:
-        html = await fetch.get(link)
-        html.raise_for_status()
-        soup = BeautifulSoup(html.text, "lxml")
-        res = soup.find_all(class_="button button-shadow")
-        res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
-        )
-    except httpx.HTTPError as exc:
-        await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            res = soup.find_all(class_="button button-shadow")
+            res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
+            )
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
+        except Exception as err:
+            await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
 # NoDrakor DDL
@@ -1349,64 +1362,66 @@ async def nodrakorddl_scrap(_, callback_query, strings):
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
-    try:
-        html = await fetch.get(link)
-        html.raise_for_status()
-        soup = BeautifulSoup(html.text, "lxml")
-        if "/tv/" in link:
-            result = soup.find("div", {"entry-content entry-content-single"}).find_all("p")
-            msg = ""
-            for i in result:
-                msg += str(f"{i}\n")
-            link = await post_to_telegraph(False, "MissKaty NoDrakor", msg)
-            return await callback_query.message.edit_msg(
-                strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            if "/tv/" in link:
+                result = soup.find("div", {"entry-content entry-content-single"}).find_all("p")
+                msg = ""
+                for i in result:
+                    msg += str(f"{i}\n")
+                link = await post_to_telegraph(False, "MissKaty NoDrakor", msg)
+                return await callback_query.message.edit_msg(
+                    strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
+                )
+            res = soup.find_all(class_="button button-shadow")
+            res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
+            if len(res) > 3500:
+                link = await post_to_telegraph(False, "MissKaty NoDrakor", res)
+                return await callback_query.message.edit_msg(
+                    strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
+                )
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
             )
-        res = soup.find_all(class_="button button-shadow")
-        res = "".join(f"{i.text}\n{i['href']}\n\n" for i in res)
-        if len(res) > 3500:
-            link = await post_to_telegraph(False, "MissKaty NoDrakor", res)
-            return await callback_query.message.edit_msg(
-                strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard
-            )
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
-        )
-    except httpx.HTTPError as exc:
-        await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
+        except Exception as err:
+            await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
 # Scrape Link Download Movieku.CC
 @app.on_cmd("movieku_scrap")
 @use_chat_lang()
 async def muviku_scrap(_, message, strings):
-    try:
-        link = message.text.split(maxsplit=1)[1]
-        html = await fetch.get(link)
-        html.raise_for_status()
-        soup = BeautifulSoup(html.text, "lxml")
-        res = soup.find_all(class_="smokeurl")
-        data = []
-        for i in res:
-            for b in range(len(i.find_all("a"))):
-                link = i.find_all("a")[b]["href"]
-                kualitas = i.find_all("a")[b].text
-                # print(f"{kualitas}\n{link
-                data.append({"link": link, "kualitas": kualitas})
-        if not data:
-            return await message.reply(strings("no_result"))
-        res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
-        await message.reply(res)
-    except IndexError:
-        return await message.reply(
-            strings("invalid_cmd_scrape").format(cmd=message.command[0])
-        )
-    except httpx.HTTPError as exc:
-        await message.reply(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>")
-    except Exception as e:
-        await message.reply(f"ERROR: {str(e)}")
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            link = message.text.split(maxsplit=1)[1]
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            res = soup.find_all(class_="smokeurl")
+            data = []
+            for i in res:
+                for b in range(len(i.find_all("a"))):
+                    link = i.find_all("a")[b]["href"]
+                    kualitas = i.find_all("a")[b].text
+                    # print(f"{kualitas}\n{link
+                    data.append({"link": link, "kualitas": kualitas})
+            if not data:
+                return await message.reply(strings("no_result"))
+            res = "".join(f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data)
+            await message.reply(res)
+        except IndexError:
+            return await message.reply(
+                strings("invalid_cmd_scrape").format(cmd=message.command[0])
+            )
+        except httpx.HTTPError as exc:
+            await message.reply(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>")
+        except Exception as e:
+            await message.reply(f"ERROR: {str(e)}")
 
 
 # Scrape DDL Link Melongmovie
@@ -1433,22 +1448,23 @@ async def melong_scrap(_, callback_query, strings):
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
-    try:
-        html = await fetch.get(link)
-        html.raise_for_status()
-        soup = BeautifulSoup(html.text, "lxml")
-        rep = ""
-        for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
-            hardsub = ep.findPrevious("div")
-            softsub = ep.findNext("div")
-            rep += f"{hardsub}\n{softsub}"
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard
-        )
-    except httpx.HTTPError as exc:
-        await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            rep = ""
+            for ep in soup.findAll(text=re.compile(r"(?i)episode\s+\d+|LINK DOWNLOAD")):
+                hardsub = ep.findPrevious("div")
+                softsub = ep.findNext("div")
+                rep += f"{hardsub}\n{softsub}"
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=rep), reply_markup=keyboard
+            )
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
+        except Exception as err:
+            await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
 # Scrape DDL Link Gomov
@@ -1475,23 +1491,24 @@ async def gomov_dl(_, callback_query, strings):
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
-    try:
-        html = await fetch.get(link)
-        html.raise_for_status()
-        soup = BeautifulSoup(html.text, "lxml")
-        entry = soup.find(class_="gmr-download-wrap clearfix")
-        hasil = soup.find(class_="title-download").text
-        for i in entry.find(class_="list-inline gmr-download-list clearfix"):
-            title = i.find("a").text
-            ddl = i.find("a")["href"]
-            hasil += f"\n{title}\n{ddl}\n"
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard
-        )
-    except httpx.HTTPError as exc:
-        await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            entry = soup.find(class_="gmr-download-wrap clearfix")
+            hasil = soup.find(class_="title-download").text
+            for i in entry.find(class_="list-inline gmr-download-list clearfix"):
+                title = i.find("a").text
+                ddl = i.find("a")["href"]
+                hasil += f"\n{title}\n{ddl}\n"
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=hasil), reply_markup=keyboard
+            )
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
+        except Exception as err:
+            await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
 
 
 @app.on_cb("lendriveextract#")
@@ -1515,23 +1532,24 @@ async def lendrive_dl(_, callback_query, strings):
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
-    try:
-        hmm = await fetch.get(link)
-        hmm.raise_for_status()
-        q = BeautifulSoup(hmm.text, "lxml")
-        j = q.findAll("div", class_="soraurlx")
-        kl = ""
-        for i in j:
-            if not i.find("a"):
-                continue
-            kl += f"{i.find('strong')}:\n"
-            kl += "".join(
-                f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a")
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            hmm = await fetch.get(link)
+            hmm.raise_for_status()
+            q = BeautifulSoup(hmm.text, "lxml")
+            j = q.findAll("div", class_="soraurlx")
+            kl = ""
+            for i in j:
+                if not i.find("a"):
+                    continue
+                kl += f"{i.find('strong')}:\n"
+                kl += "".join(
+                    f"[ <a href='{a.get('href')}'>{a.text}</a> ]\n" for a in i.findAll("a")
+                )
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=kl), reply_markup=keyboard
             )
-        await callback_query.message.edit_msg(
-            strings("res_scrape").format(link=link, kl=kl), reply_markup=keyboard
-        )
-    except httpx.HTTPError as exc:
-        await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
-    except Exception as err:
-        await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(f"HTTP Exception for {exc.request.url} - <code>{exc}</code>", reply_markup=keyboard)
+        except Exception as err:
+            await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
