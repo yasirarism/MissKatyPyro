@@ -44,12 +44,11 @@ class UsersData:
         return await self.col.count_documents({})
 
     async def remove_ban(self, id):
-        ban_status = dict(is_banned=False, ban_reason="")
-        await self.col.update_one({"id": id}, {"$set": {"ban_status": ban_status}})
+        await self.col.delete_one({"id": id})
 
     async def ban_user(self, user_id, ban_reason="No Reason"):
         ban_status = dict(is_banned=True, ban_reason=ban_reason)
-        await self.col.update_one({"id": user_id}, {"$set": {"ban_status": ban_status}})
+        await self.col.insert_one({"id": user_id}, {"$set": {"ban_status": ban_status}})
 
     async def get_ban_status(self, id):
         default = dict(is_banned=False, ban_reason="")
