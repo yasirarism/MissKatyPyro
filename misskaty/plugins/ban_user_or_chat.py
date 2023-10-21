@@ -1,3 +1,4 @@
+from curses.ascii import isblank
 from pyrogram import Client, filters
 from pyrogram.errors import ChannelPrivate, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -86,10 +87,10 @@ async def ban_a_user(bot, message):
     except Exception as e:
         return await message.reply(f"Error - {e}")
     else:
-        jar = await db.get_ban_status(k.id)
-        if jar["is_banned"]:
+        isban, alesan = await db.get_ban_status(k.id)
+        if isban:
             return await message.reply(
-                f"{k.mention} is already banned\nReason: {jar['ban_reason']}"
+                f"{k.mention} is already banned\nReason: {alesan['reason']}"
             )
         await db.ban_user(k.id, reason)
         await message.reply(f"Successfully banned user {k.mention}!! Reason: {reason}")
