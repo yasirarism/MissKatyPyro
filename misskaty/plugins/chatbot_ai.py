@@ -29,7 +29,7 @@ async def bard_chatbot(_, ctx: Message, strings):
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
     if not BARD_API:
-        return await ctx.reply_msg("BARD_API env is mising!!!")
+        return await ctx.reply_msg("BARD_API env is missing!!!")
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
         req = await fetch.get(

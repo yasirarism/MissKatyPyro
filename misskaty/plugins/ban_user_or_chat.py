@@ -90,10 +90,10 @@ async def ban_a_user(bot, message):
         isban, alesan = await db.get_ban_status(k.id)
         if isban:
             return await message.reply(
-                f"{k.mention} is already banned\nReason: {alesan['reason']}"
+                f"{k.mention} is already banned\n<b>Reason:</b> {alesan['reason']}"
             )
         await db.ban_user(k.id, reason)
-        await message.reply(f"Successfully banned user {k.mention}!! Reason: {reason}")
+        await message.reply(f"Successfully banned user {k.mention}!!\n<b>Reason:</b> {reason}")
 
 
 @app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))

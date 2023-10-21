@@ -71,7 +71,7 @@ async def save_filters(_, m):
     }
     await save_filter(chat_id, name, _filter)
     await m.reply_msg(f"__**Saved filter {name}.**__")
-    await m.stop_propagation()
+    m.stop_propagation()
 
 
 @app.on_message(filters.command("filters") & ~filters.private)
@@ -101,7 +101,7 @@ async def del_filter(_, m):
         await m.reply_msg(f"**Deleted filter {name}.**")
     else:
         await m.reply_msg("**No such filter.**")
-    await m.stop_propagation()
+    m.stop_propagation()
 
 
 @app.on_message(

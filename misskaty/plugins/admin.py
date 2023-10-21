@@ -254,9 +254,9 @@ async def banFunc(client, message, strings):
     keyboard = ikb({"🚨 Unban 🚨": f"unban_{user_id}"})
     try:
         await message.chat.ban_member(user_id)
-        await message.reply_text(msg, reply_markup=keyboard)
-    except Exception as err:
-        await message.reply(f"ERROR: {err}")
+        await message.reply_msg(msg, reply_markup=keyboard)
+    except ChatAdminRequired:
+        await message.reply("Please give me permission to banned members..!!!")
 
 
 # Unban members
@@ -287,6 +287,8 @@ async def unban_func(_, message, strings):
         await message.reply_msg(strings("unban_success").format(umention=umention))
     except PeerIdInvalid:
         await message.reply_msg(strings("unknown_id", context="general"))
+    except ChatAdminRequired:
+        await message.reply("Please give me permission to unban members..!!!")
 
 
 # Ban users listed in a message
