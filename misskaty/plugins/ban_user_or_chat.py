@@ -12,8 +12,8 @@ from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
 async def ban_reply(_, ctx: Message):
     if not ctx.from_user:
         return
-    ban = await db.get_ban_status(ctx.from_user.id)
-    if ban.get("is_banned"):
+    userban = await db.get_ban_status(ctx.from_user.id)
+    if userban:
         await ctx.reply_msg(
             f'I am sorry, You are banned to use Me. \nBan Reason: {ban["ban_reason"]}'
         )
