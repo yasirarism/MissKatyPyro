@@ -116,7 +116,6 @@ def adminsOnly(
     self,
     permission: typing.Union[str, list],
     TRUST_ANON_ADMINS: typing.Union[bool, bool] = False,
-    ALLOW_CHANNEL: typing.Union[bool, bool] = False,
 ):
     """
     # `tgEasy.tgClient.adminsOnly`
@@ -145,11 +144,11 @@ def adminsOnly(
     def wrapper(func):
         async def decorator(client, message):
             permissions = ""
-            if message.chat.type != pyrogram.enums.ChatType.SUPERGROUP and not ALLOW_CHANNEL:
+            if message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
                 return await message.reply_text(
                     "This command can be used in supergroups only.",
                 )
-            if message.sender_chat and (not TRUST_ANON_ADMINS or ALLOW_CHANNEL):
+            if message.sender_chat and not TRUST_ANON_ADMINS:
                 ANON[int(f"{message.chat.id}{message.id}")] = (
                     message,
                     func,

@@ -22,7 +22,7 @@ __HELP__ = """"
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["inkick"], COMMAND_HANDLER)
 )
-@app.adminsOnly("can_restrict_members", ALLOW_CHANNEL=True)
+@app.adminsOnly("can_restrict_members")
 async def inkick(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
@@ -77,7 +77,7 @@ async def inkick(_, message):
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["uname"], COMMAND_HANDLER)
 )
-@app.adminsOnly("can_restrict_members", ALLOW_CHANNEL=True)
+@app.adminsOnly("can_restrict_members")
 async def uname(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
@@ -125,7 +125,7 @@ async def uname(_, message):
     & ~filters.private
     & filters.command(["ban_ghosts"], COMMAND_HANDLER)
 )
-@app.adminsOnly("can_restrict_members", ALLOW_CHANNEL=True)
+@app.adminsOnly("can_restrict_members")
 async def rm_delacc(_, message):
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
@@ -168,7 +168,7 @@ async def rm_delacc(_, message):
 @app.on_message(
     filters.incoming & ~filters.private & filters.command(["instatus"], COMMAND_HANDLER)
 )
-@app.adminsOnly("can_restrict_members", ALLOW_CHANNEL=True)
+@app.adminsOnly("can_restrict_members")
 async def instatus(client, message):
     bstat = await app.get_chat_member(message.chat.id, client.me.id)
     if bstat.status.value != "administrator":
