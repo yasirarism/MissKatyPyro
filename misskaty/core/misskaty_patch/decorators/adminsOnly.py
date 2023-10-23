@@ -116,6 +116,7 @@ def adminsOnly(
     self,
     permission: typing.Union[str, list],
     TRUST_ANON_ADMINS: typing.Union[bool, bool] = False,
+    ALLOW_CHANNEL: typing.Union[bool, bool] = False,
 ):
     """
     # `tgEasy.tgClient.adminsOnly`
@@ -148,7 +149,7 @@ def adminsOnly(
                 return await message.reply_text(
                     "This command can be used in supergroups only.",
                 )
-            if message.sender_chat and not TRUST_ANON_ADMINS:
+            if message.sender_chat and (not TRUST_ANON_ADMINS or ALLOW_CHANNEL):
                 ANON[int(f"{message.chat.id}{message.id}")] = (
                     message,
                     func,
