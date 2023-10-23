@@ -145,7 +145,7 @@ def adminsOnly(
     def wrapper(func):
         async def decorator(client, message):
             permissions = ""
-            if message.chat.type != pyrogram.enums.ChatType.SUPERGROUP:
+            if message.chat.type != pyrogram.enums.ChatType.SUPERGROUP and not ALLOW_CHANNEL:
                 return await message.reply_text(
                     "This command can be used in supergroups only.",
                 )
