@@ -181,7 +181,7 @@ async def imdb_search_id(kueri, message):
             buttons.add(*BTN)
             await k.edit_caption(msg, reply_markup=buttons)
         except httpx.HTTPError as exc:
-            await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+            await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
         except (MessageIdInvalid, MessageNotModified):
             pass
         except Exception as err:
@@ -243,7 +243,7 @@ async def imdb_search_en(kueri, message):
             buttons.add(*BTN)
             await k.edit_caption(msg, reply_markup=buttons)
         except httpx.HTTPError as exc:
-            await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+            await k.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
         except (MessageIdInvalid, MessageNotModified):
             pass
         except Exception as err:
@@ -311,7 +311,7 @@ async def imdbcari(_, query: CallbackQuery):
                 buttons.add(*BTN)
                 await query.message.edit_caption(msg, reply_markup=buttons)
             except httpx.HTTPError as exc:
-                await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+                await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
             except (MessageIdInvalid, MessageNotModified):
                 pass
             except Exception as err:
@@ -368,7 +368,7 @@ async def imdbcari(_, query: CallbackQuery):
                 buttons.add(*BTN)
                 await query.message.edit_caption(msg, reply_markup=buttons)
             except httpx.HTTPError as exc:
-                await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+                await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
             except (MessageIdInvalid, MessageNotModified):
                 pass
             except Exception as err:
@@ -532,7 +532,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
         except httpx.HTTPError as exc:
-            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
         except AttributeError:
             await query.message.edit_caption("Maaf, gagal mendapatkan info data dari IMDB.")
         except (MessageNotModified, MessageIdInvalid):
@@ -696,7 +696,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
         except httpx.HTTPError as exc:
-            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>", disable_web_page_preview=True)
+            await query.message.edit_caption(f"HTTP Exception for IMDB Search - <code>{exc}</code>")
         except AttributeError:
             await query.message.edit_caption("Sorry, failed getting data from IMDB.")
         except (MessageNotModified, MessageIdInvalid):

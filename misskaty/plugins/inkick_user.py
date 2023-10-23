@@ -24,10 +24,6 @@ __HELP__ = """"
 )
 @app.adminsOnly("can_restrict_members")
 async def inkick(_, message):
-    if message.sender_chat:
-        return await message.reply_msg(
-            "This feature not available for channel.", del_in=4
-        )
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         if len(message.command) > 1:
@@ -56,6 +52,8 @@ async def inkick(_, message):
                         break
                     except FloodWait as e:
                         await sleep(e.value)
+                        await message.chat.ban_member(member.user.id)
+                        await message.chat.unban_member(member.user.id)
             try:
                 await sent_message.edit(
                     f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
@@ -81,10 +79,6 @@ async def inkick(_, message):
 )
 @app.adminsOnly("can_restrict_members")
 async def uname(_, message):
-    if message.sender_chat:
-        return await message.reply_msg(
-            "This feature not available for channel.", del_in=4
-        )
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         sent_message = await message.reply_text(
@@ -109,6 +103,8 @@ async def uname(_, message):
                     break
                 except FloodWait as e:
                     await sleep(e.value)
+                    await message.chat.ban_member(member.user.id)
+                    await message.chat.unban_member(member.user.id)
         try:
             await sent_message.edit(
                 f"✔️ **Berhasil menendang {count} pengguna berdasarkan argumen.**"
@@ -131,10 +127,6 @@ async def uname(_, message):
 )
 @app.adminsOnly("can_restrict_members")
 async def rm_delacc(_, message):
-    if message.sender_chat:
-        return await message.reply_msg(
-            "This feature not available for channel.", del_in=4
-        )
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
     if user.status.value in ("administrator", "owner"):
         sent_message = await message.reply_text(
@@ -158,6 +150,8 @@ async def rm_delacc(_, message):
                     break
                 except FloodWait as e:
                     await sleep(e.value)
+                    await message.chat.ban_member(member.user.id)
+                    await message.chat.unban_member(member.user.id)
         if count == 0:
             return await sent_message.edit_msg(
                 "There are no deleted accounts in this chat."
@@ -176,8 +170,6 @@ async def rm_delacc(_, message):
 )
 @app.adminsOnly("can_restrict_members")
 async def instatus(client, message):
-    if message.sender_chat:
-        return await message.reply_msg("Not supported channel.", del_in=4)
     bstat = await app.get_chat_member(message.chat.id, client.me.id)
     if bstat.status.value != "administrator":
         return await message.reply_msg(
