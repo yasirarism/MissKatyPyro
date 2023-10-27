@@ -125,7 +125,7 @@ def get_provider(url):
     return pretty(netloc.split("."))
 
 
-async def search_jw(movie_name: str, locale: str):
+async def search_jw(movie_name: str, locale: Union[str, None] = "ID"):
     m_t_ = ""
     try:
         response = (
