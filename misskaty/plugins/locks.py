@@ -165,7 +165,7 @@ async def locks_func(_, message):
         await tg_lock(message, permissions, data[parameter], state == "lock")
     elif parameter == "all" and state == "lock":
         try:
-            await app.set_chat_permissions(chat_id, ChatPermissions(all_perms=True))
+            await app.set_chat_permissions(chat_id, ChatPermissions(all_perms=False))
             await message.reply_text(f"Locked Everything in {message.chat.title}")
         except ChatAdminRequired:
             await message.reply_msg(
