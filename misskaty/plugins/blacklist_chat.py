@@ -22,10 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import re
-from time import time
+from datetime import datetime, timedelta
 
 from pyrogram import filters
 from pyrogram.types import ChatPermissions
+from pyrogram.errors import ChatAdminRequired
 
 from database.blacklist_db import (
     delete_blacklist_filter,
@@ -88,7 +89,7 @@ async def del_filter(_, message):
 
 @app.on_message(filters.text & ~filters.private, group=8)
 @capture_err
-async def blacklist_filters_re(_, message):
+async def blacklist_filters_re(self, message):
     text = message.text.lower().strip()
     if not text:
         return
@@ -105,14 +106,18 @@ async def blacklist_filters_re(_, message):
             if user.id in await list_admins(chat_id):
                 return
             try:
+                await message.delete_msg()
                 await message.chat.restrict_member(
                     user.id,
                     ChatPermissions(all_perms=False),
-                    until_date=int(time() + 3600),
+                    until_date=datetime.now() + timedelta(hours=1),
                 )
-            except Exception:
+            except ChatAdminRequired:
+                return await message.reply("Please give me admin permissions to blacklist user", quote=False)
+            except Exception as err:
+                self.log.info(f"ERROR Blacklist Chat: ID = {chat_id}, ERR = {err}")
                 return
-            return await app.send_message(
+            await app.send_message(
                 chat_id,
                 f"Muted {user.mention} [`{user.id}`] for 1 hour "
                 + f"due to a blacklist match on {word}.",

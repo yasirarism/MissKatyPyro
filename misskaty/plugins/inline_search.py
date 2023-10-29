@@ -640,7 +640,7 @@ async def imdb_inl(_, query):
             r_json = json.loads(
                 sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
             )
-            ott = await search_jw(r_json["name"], "en_ID")
+            ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
             res_str = ""
             typee = r_json.get("@type", "")
             tahun = (

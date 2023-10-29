@@ -392,7 +392,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             r_json = json.loads(
                 sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
             )
-            ott = await search_jw(r_json.get("name"), "ID")
+            ott = await search_jw(r_json.get("alternateName") or r_json.get("name"), "ID")
             typee = r_json.get("@type", "")
             res_str = ""
             tahun = (
@@ -554,7 +554,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             r_json = json.loads(
                 sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
             )
-            ott = await search_jw(r_json.get("name"), "US")
+            ott = await search_jw(r_json.get("alternateName") or r_json.get("name"), "US")
             typee = r_json.get("@type", "")
             res_str = ""
             tahun = (
