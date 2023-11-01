@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import re
 import string
 import time
 from http.cookies import SimpleCookie
@@ -151,3 +152,27 @@ async def search_jw(movie_name: str, locale: Union[str, None] = "ID"):
             m_t_ = m_t_[:-2].strip()
         break
     return m_t_
+
+
+def isValidURL(str):
+    # Regex to check valid URL 
+    regex = ("((http|https)://)(www.)?" +
+             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
+             "{2,256}\\.[a-z]" +
+             "{2,6}\\b([-a-zA-Z0-9@:%" +
+             "._\\+~#?&//=]*)")
+     
+    # Compile the ReGex
+    p = re.compile(regex)
+ 
+    # If the string is empty 
+    # return false
+    if (str == None):
+        return False
+ 
+    # Return if the string 
+    # matched the ReGex
+    if(re.search(p, str)):
+        return True
+    else:
+        return False

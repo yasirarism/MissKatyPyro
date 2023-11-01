@@ -725,20 +725,20 @@ async def imdb_inl(_, query):
                 summary = GoogleTranslator("auto", "id").translate(
                     r_json.get("description")
                 )
-                res_str += f"<b>📜 Plot: </b> <code>{summary}</code>\n\n"
+                res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
             if r_json.get("keywords"):
                 key_ = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
-                res_str += f"<b>🔥 Kata Kunci:</b> {key_[:-2]} \n"
+                res_str += f"<b>🔥 Kata Kunci:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
                     award[0]
                     .find(class_="ipc-metadata-list-item__list-content-item")
                     .text
                 )
-                res_str += f"<b>🏆 Penghargaan:</b> <code>{GoogleTranslator('auto', 'id').translate(awards)}</code>\n"
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{GoogleTranslator('auto', 'id').translate(awards)}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":

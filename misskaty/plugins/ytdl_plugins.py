@@ -27,7 +27,7 @@ from pyrogram.types import (
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task
-from misskaty.helper import fetch, use_chat_lang
+from misskaty.helper import fetch, use_chat_lang, isValidURL
 from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
 
 LOGGER = getLogger("MissKaty")
@@ -91,12 +91,15 @@ async def ytsearch(_, ctx: Message, strings):
 )
 @capture_err
 @use_chat_lang()
-async def ytdownv2(_, ctx: Message, strings):
+async def ytdownv2(self, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(strings("no_channel"))
     if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
-    url = ctx.input if ctx.command and len(ctx.command) > 1 else ctx.text
+    msg = ctx.caption if ctx.web_page_preview else ctx.text
+    url = msg.split()[1]
+    if not isValidURL(url):
+        return await ctx.reply_msg(strings("invalid_link"))
     async with iYTDL(log_group_id=0, cache_path="cache", silent=True) as ytdl:
         try:
             x = await ytdl.parse(url, extract=True)
