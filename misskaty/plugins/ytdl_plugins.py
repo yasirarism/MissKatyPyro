@@ -94,8 +94,6 @@ async def ytsearch(_, ctx: Message, strings):
 async def ytdownv2(self, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply_msg(strings("no_channel"))
-    if ctx.command and len(ctx.command) == 1:
-        return await ctx.reply_msg(strings("invalid_link"))
     url = ctx.command[1] if ctx.command and len(ctx.command) > 1 else ctx.text
     if not isValidURL(url):
         return await ctx.reply_msg(strings("invalid_link"))
