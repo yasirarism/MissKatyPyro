@@ -61,26 +61,26 @@ SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 @app.on_cmd("getsticker")
 @use_chat_lang()
 async def getsticker_(self: Client, ctx: Message, strings):
-    if not ctx.reply_to_message or ctx.reply_to_message.sticker:
-        await ctx.reply_msg(strings("not_sticker"))
-    else:
-        sticker = ctx.reply_to_message.sticker
-        if sticker.is_animated:
-            await ctx.reply_msg(strings("no_anim_stick"))
-        else:
-            with tempfile.TemporaryDirectory() as tempdir:
-                path = os.path.join(tempdir, "getsticker")
-            sticker_file = await self.download_media(
-                message=ctx.reply_to_message,
-                file_name=f"{path}/{sticker.set_name}.png",
-            )
-            await ctx.reply_to_message.reply_document(
-                document=sticker_file,
-                caption=f"<b>Emoji:</b> {sticker.emoji}\n"
-                f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n"
-                f"<b>Send by:</b> @{self.me.username}",
-            )
-            shutil.rmtree(tempdir, ignore_errors=True)
+    if not ctx.reply_to_message:
+        return await ctx.reply_msg(strings("not_sticker"))
+    sticker = ctx.reply_to_message.sticker
+    if not sticker:
+        return await ctx.reply_msg("Only support sticker..")
+    if sticker.is_animated:
+        return await ctx.reply_msg(strings("no_anim_stick"))
+    with tempfile.TemporaryDirectory() as tempdir:
+        path = os.path.join(tempdir, "getsticker")
+    sticker_file = await self.download_media(
+        message=ctx.reply_to_message,
+        file_name=f"{path}/{sticker.set_name}.png",
+    )
+    await ctx.reply_to_message.reply_document(
+        document=sticker_file,
+        caption=f"<b>Emoji:</b> {sticker.emoji}\n"
+        f"<b>Sticker ID:</b> <code>{sticker.file_id}</code>\n\n"
+        f"<b>Send by:</b> @{self.me.username}",
+    )
+    shutil.rmtree(tempdir, ignore_errors=True)
 
 
 @app.on_message(filters.command("stickerid", COMMAND_HANDLER) & filters.reply)

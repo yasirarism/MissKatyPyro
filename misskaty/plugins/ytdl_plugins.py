@@ -96,8 +96,7 @@ async def ytdownv2(self, ctx: Message, strings):
         return await ctx.reply_msg(strings("no_channel"))
     if ctx.command and len(ctx.command) == 1:
         return await ctx.reply_msg(strings("invalid_link"))
-    msg = ctx.caption if ctx.web_page_preview else ctx.text
-    url = msg.split()[1]
+    url = ctx.command[1] if ctx.command and len(ctx.command) > 1 else ctx.text
     if not isValidURL(url):
         return await ctx.reply_msg(strings("invalid_link"))
     async with iYTDL(log_group_id=0, cache_path="cache", silent=True) as ytdl:
