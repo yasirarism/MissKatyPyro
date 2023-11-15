@@ -519,9 +519,9 @@ async def who_is(client, message):
     message_out_str += f"<b>💠 Data Centre:</b> <code>{dc_id}</code>\n"
     if bio:
         message_out_str += f"<b>👨🏿‍💻 Bio:</b> <code>{bio}</code>\n"
-    message_out_str += f"<b>📸 Pictures:</b> {count_pic}"
-    message_out_str += f"<b>🧐 Restricted:</b> {message.from_user.is_restricted}"
-    message_out_str += f"<b>✅ Verified:</b> {message.from_user.is_verified}"
+    message_out_str += f"<b>📸 Pictures:</b> {count_pic}\n"
+    message_out_str += f"<b>🧐 Restricted:</b> {message.from_user.is_restricted}\n"
+    message_out_str += f"<b>✅ Verified:</b> {message.from_user.is_verified}\n"
     message_out_str += f"<b>🌐 Profile Link:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
     if message.chat.type.value in (("supergroup", "channel")):
         try:

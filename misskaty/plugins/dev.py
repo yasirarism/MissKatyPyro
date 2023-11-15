@@ -401,9 +401,8 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         if ctx.from_user.is_self
         else await ctx.reply_msg(strings("run_eval"), quote=True)
     )
-    msg = ctx.caption if ctx.web_page_preview else ctx.text
     code = (
-        msg.split(maxsplit=1)[1] if ctx.command else msg.split("\napp.run()")[0]
+        ctx.text.split(maxsplit=1)[1] if ctx.command else msg.split("\napp.run()")[0]
     )
     out_buf = io.StringIO()
     out = ""
