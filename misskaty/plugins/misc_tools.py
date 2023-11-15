@@ -506,15 +506,23 @@ async def who_is(client, message):
     if from_user is None:
         return await status_message.edit("no valid user_id / message specified")
     message_out_str = ""
-    message_out_str += f"<b>➲First Name:</b> {from_user.first_name}\n"
-    last_name = from_user.last_name or "<b>None</b>"
-    message_out_str += f"<b>➲Last Name:</b> {last_name}\n"
-    message_out_str += f"<b>➲Telegram ID:</b> <code>{from_user.id}</code>\n"
-    username = from_user.username or "<b>None</b>"
+    username = f"@{from_user.username}" or "<b>No Username</b>"
     dc_id = from_user.dc_id or "[User Doesn't Have Profile Pic]"
-    message_out_str += f"<b>➲Data Centre:</b> <code>{dc_id}</code>\n"
-    message_out_str += f"<b>➲User Name:</b> @{username}\n"
-    message_out_str += f"<b>➲User Link:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
+    last_name = from_user.last_name
+    bio = (await client.get_chat(message.from_user.id)).bio
+    count_pic = await client.get_chat_photos_count(message.from_user.id)
+    message_out_str += f"<b>🔸 First Name:</b> {from_user.first_name}\n"
+    if last_name:
+        message_out_str += f"<b>🔹 Last Name:</b> {last_name}\n"
+    message_out_str += f"<b>🆔 User ID:</b> <code>{from_user.id}</code>\n"
+    message_out_str += f"<b>✴️ User Name:</b> {username}\n"
+    message_out_str += f"<b>💠 Data Centre:</b> <code>{dc_id}</code>\n"
+    if bio:
+        message_out_str += f"<b>👨🏿‍💻 Bio:</b> <code>{bio}</code>\n"
+    message_out_str += f"<b>📸 Pictures:</b> {count_pic}"
+    message_out_str += f"<b>🧐 Restricted:</b> {message.from_user.is_restricted}"
+    message_out_str += f"<b>✅ Verified:</b> {message.from_user.is_verified}"
+    message_out_str += f"<b>🌐 Profile Link:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
     if message.chat.type.value in (("supergroup", "channel")):
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
