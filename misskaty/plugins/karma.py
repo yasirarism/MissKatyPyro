@@ -26,8 +26,8 @@ Give reputation to other people in group.
 karma_positive_group = 3
 karma_negative_group = 4
 
-regex_upvote = r"^(\+|\+\+|\+1|thx|tnx|ty|tq|thank you|thanx|thanks|pro|cool|good|agree|makasih|👍|\+\+ .+)$"
-regex_downvote = r"^(-|--|-1|not cool|disagree|worst|bad|👎|-- .+)$"
+regex_upvote = r"^(\++|\+1|thx||tnx|ty|tq|thank you|thanx|thanks|pro|cool|good|agree|makasih|👍|\+\+ .+)$"
+regex_downvote = r"^(-+|-1|not cool|disagree|worst|bad|👎|-- .+)$"
 
 n = "\n"
 w = " "

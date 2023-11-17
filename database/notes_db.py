@@ -42,3 +42,7 @@ async def save_note(chat_id: int, name: str, note: dict):
     await notesdb.update_one(
         {"chat_id": chat_id}, {"$set": {"notes": _notes}}, upsert=True
     )
+
+
+async def deleteall_notes(chat_id: int):
+    return await notesdb.delete_one({"chat_id": chat_id})

@@ -409,23 +409,25 @@ async def promoteFunc(client, message, strings):
         return await message.reply(strings("invalid_id_uname"))
     if not user_id:
         return await message.reply_text(strings("user_not_found"))
-    bot = await client.get_chat_member(message.chat.id, client.me.id)
+    bot = (await client.get_chat_member(message.chat.id, client.me.id)).privileges
     if user_id == client.me.id:
-        return await message.reply_text(strings("promote_self_err"))
-    if not bot.privileges.can_promote_members:
-        return await message.reply_text(strings("no_promote_perm"))
+        return await message.reply_msg(strings("promote_self_err"))
+    if not bot:
+        return await message.reply_msg("I'm not an admin in this chat.")
+    if not bot.can_promote_members:
+        return await message.reply_msg(strings("no_promote_perm"))
     if message.command[0][0] == "f":
         await message.chat.promote_member(
             user_id=user_id,
             privileges=ChatPrivileges(
-                can_change_info=bot.privileges.can_change_info,
-                can_invite_users=bot.privileges.can_invite_users,
-                can_delete_messages=bot.privileges.can_delete_messages,
-                can_restrict_members=bot.privileges.can_restrict_members,
-                can_pin_messages=bot.privileges.can_pin_messages,
-                can_promote_members=bot.privileges.can_promote_members,
-                can_manage_chat=bot.privileges.can_manage_chat,
-                can_manage_video_chats=bot.privileges.can_manage_video_chats,
+                can_change_info=bot.can_change_info,
+                can_invite_users=bot.can_invite_users,
+                can_delete_messages=bot.can_delete_messages,
+                can_restrict_members=bot.can_restrict_members,
+                can_pin_messages=bot.can_pin_messages,
+                can_promote_members=bot.can_promote_members,
+                can_manage_chat=bot.can_manage_chat,
+                can_manage_video_chats=bot.can_manage_video_chats,
             ),
         )
         return await message.reply_text(
@@ -436,16 +438,16 @@ async def promoteFunc(client, message, strings):
         user_id=user_id,
         privileges=ChatPrivileges(
             can_change_info=False,
-            can_invite_users=bot.privileges.can_invite_users,
-            can_delete_messages=bot.privileges.can_delete_messages,
-            can_restrict_members=bot.privileges.can_restrict_members,
-            can_pin_messages=bot.privileges.can_pin_messages,
+            can_invite_users=bot.can_invite_users,
+            can_delete_messages=bot.can_delete_messages,
+            can_restrict_members=bot.can_restrict_members,
+            can_pin_messages=bot.can_pin_messages,
             can_promote_members=False,
-            can_manage_chat=bot.privileges.can_manage_chat,
-            can_manage_video_chats=bot.privileges.can_manage_video_chats,
+            can_manage_chat=bot.can_manage_chat,
+            can_manage_video_chats=bot.can_manage_video_chats,
         ),
     )
-    await message.reply_text(strings("normal_promote").format(umention=umention))
+    await message.reply_msg(strings("normal_promote").format(umention=umention))
 
 
 # Demote Member

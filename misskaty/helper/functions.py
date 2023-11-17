@@ -16,6 +16,18 @@ def get_urls_from_text(text: str) -> bool:
     return [x[0] for x in findall(regex, text)]
 
 
+def extract_urls(reply_markup):
+    urls = []
+    if reply_markup.inline_keyboard:
+        buttons = reply_markup.inline_keyboard
+        for i, row in enumerate(buttons):
+            for j, button in enumerate(row):
+                if button.url:
+                    name = "\n~\nbutton" if i * len(row) + j + 1 == 1 else f"button{i * len(row) + j + 1}"
+                    urls.append((f"{name}", button.text, button.url))
+    return urls
+
+
 async def alpha_to_int(user_id_alphabet: str) -> int:
     alphabet = list(ascii_lowercase)[:10]
     user_id = ""

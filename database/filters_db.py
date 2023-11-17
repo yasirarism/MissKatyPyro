@@ -24,6 +24,10 @@ async def delete_filter(chat_id: int, name: str) -> bool:
     return False
 
 
+async def deleteall_filters(chat_id: int):
+    return await filtersdb.delete_one({"chat_id": chat_id})
+
+
 async def get_filter(chat_id: int, name: str) -> Union[bool, dict]:
     name = name.lower().strip()
     _filters = await _get_filters(chat_id)
