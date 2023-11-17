@@ -22,9 +22,8 @@ from pyrogram.types import Message
 LOGGER = getLogger("MissKaty")
 
 @property
-def parse_cmd(m):
-    msg = m.caption if m.web_page_preview else m.text
-    if len(m.command) > 1:
+def parse_cmd(msg):
+    if len(msg.command) > 1:
         return msg.split(None, 1)[1]
     return None
 
