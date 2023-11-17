@@ -10,7 +10,7 @@ aiohttp
 chevron
 gTTS
 regex
-apscheduler
+apscheduler==3.10.4
 pytz
 pykeyboard
 pySmartDL
@@ -27,7 +27,7 @@ telethon
 pyrate_limiter
 cachetools
 cloudscraper
-openai
+openai==1.3.2
 GitPython
 aiofiles
-uvloop
+uvloop==0.19.0

@@ -844,7 +844,7 @@ NUM = 4
 
 
 @app.on_message(filters.group & filters.command('mentionall', COMMAND_HANDLER))
-async def mention(app: Client, msg: types.Message):
+async def mentionall(app: Client, msg: types.Message):
     NUM = 4
     user = await msg.chat.get_member(msg.from_user.id)
     if user.status in (enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR):

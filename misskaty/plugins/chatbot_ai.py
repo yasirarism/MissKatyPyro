@@ -6,8 +6,7 @@ import asyncio
 import html
 import random
 
-import openai
-from aiohttp import ClientSession
+from openai import AsyncOpenAI, APIConnectionError, RateLimitError, APIStatusError
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
@@ -16,8 +15,6 @@ from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
 from misskaty.vars import BARD_API, COMMAND_HANDLER, OPENAI_API, SUDO
-
-openai.api_key = OPENAI_API
 
 
 # This only for testing things, since maybe in future it will got blocked
@@ -58,14 +55,14 @@ async def openai_chatbot(_, ctx: Message, strings):
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
-    openai.aiosession.set(ClientSession())
+    ai = AsyncOpenAI(api_key=OPENAI_API)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     num = 0
     answer = ""
     try:
-        response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo-0613",
+        response = await ai.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": pertanyaan}],
             temperature=0.7,
             stream=True,
@@ -88,6 +85,9 @@ async def openai_chatbot(_, ctx: Message, strings):
             strings("answers_too_long").format(answerlink=answerlink),
             disable_web_page_preview=True,
         )
-    except Exception as err:
-        await msg.edit_msg(f"ERROR: {str(err)}")
-    await openai.aiosession.get().close()
+    except APIConnectionError as e:
+        await msg.edit_msg(f"The server could not be reached because {e.__cause__}")
+    except RateLimitError as e:
+        await msg.edit_msg("A 429 status code was received; we should back off a bit.")
+    except APIStatusError as e:
+        await msg.edit_msg(f"Another {e.status_code} status code was received with response {e.response}")
