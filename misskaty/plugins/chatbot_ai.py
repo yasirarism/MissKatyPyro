@@ -68,7 +68,7 @@ async def openai_chatbot(_, ctx: Message, strings):
             stream=True,
         )
         async for chunk in response:
-            if not chunk.choices[0].delta or chunk.choices[0].delta.role:
+            if not chunk.choices[0].delta.content:
                 continue
             num += 1
             answer += chunk.choices[0].delta.content
