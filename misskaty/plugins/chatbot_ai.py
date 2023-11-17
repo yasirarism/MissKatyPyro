@@ -68,10 +68,10 @@ async def openai_chatbot(_, ctx: Message, strings):
             stream=True,
         )
         async for chunk in response:
-            if not chunk.choices[0].delta or chunk.choices[0].delta.get("role"):
+            if not chunk.choices[0].message or chunk.choices[0].message.get("role"):
                 continue
             num += 1
-            answer += chunk.choices[0].delta.content
+            answer += chunk.choices[0].message.content
             if num == 30:
                 await msg.edit_msg(answer)
                 await asyncio.sleep(1.5)
