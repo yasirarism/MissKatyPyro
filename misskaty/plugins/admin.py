@@ -835,3 +835,28 @@ async def set_chat_photo(_, ctx: Message):
     except Exception as err:
         await ctx.reply(f"Failed changed group photo. ERROR: {err}")
     os.remove(photo)
+
+
+from pyrogram import Client, types, filters, enums
+
+NUM = 4
+
+
+@app.on_message(filters.group & filters.command('mentionall', COMMAND_HANDLER))
+async def mention(app: Client, msg: types.Message):
+    NUM = 4
+    user = await msg.chat.get_member(msg.from_user.id)
+    if user.status in (enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR):
+        total = []
+        async for member in app.get_chat_members(msg.chat.id):
+            member: types.ChatMember
+            if member.user.username:
+                total.append(f'@{member.user.username}')
+            else:
+                total.append(member.user.mention())
+
+        for i in range(0, len(total), NUM):
+            message = ' '.join(total[i:i+NUM])
+            await app.send_message(msg.chat.id, message)
+    else:
+        await app.send_message(msg.chat.id, 'Admins only can do that !', reply_to_message_id=msg.id)
