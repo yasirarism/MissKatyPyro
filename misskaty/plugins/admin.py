@@ -85,6 +85,7 @@ __HELP__ = """
 /set_chat_title - Change The Name Of A Group/Channel.
 /set_chat_photo - Change The PFP Of A Group/Channel.
 /set_user_title - Change The Administrator Title Of An Admin.
+/mentionall - Mention all members in a groups.
 """
 
 
