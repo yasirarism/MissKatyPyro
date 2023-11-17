@@ -858,6 +858,6 @@ async def mention(app: Client, msg: types.Message):
 
         for i in range(0, len(total), NUM):
             message = ' '.join(total[i:i+NUM])
-            await app.send_message(msg.chat.id, message)
+            await app.send_message(msg.chat.id, message, message_thread_id=msg.message_thread_id)
     else:
         await app.send_message(msg.chat.id, 'Admins only can do that !', reply_to_message_id=msg.id)
