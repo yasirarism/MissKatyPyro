@@ -24,7 +24,7 @@ LOGGER = getLogger("MissKaty")
 @property
 def parse_cmd(msg):
     if len(msg.command) > 1:
-        return msg.split(None, 1)[1]
+        return msg.text.split(None, 1)[1]
     return None
 
 
