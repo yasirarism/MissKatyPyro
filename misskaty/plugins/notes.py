@@ -138,11 +138,12 @@ async def get_notes(_, message):
 
 @app.on_message(filters.regex(r"^#.+") & filters.text & ~filters.private)
 @capture_err
-async def get_one_note(_, message):
+async def get_one_note(self, message):
     name = message.text.replace("#", "", 1)
     if not name:
         return
     _note = await get_note(message.chat.id, name)
+    self.log.info(_note)
     if not _note:
         return
     type = _note["type"]
