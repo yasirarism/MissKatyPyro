@@ -34,7 +34,7 @@ from pyrogram.errors import (
     PeerIdInvalid,
     UsernameNotOccupied,
 )
-from pyrogram.types import ChatPermissions, ChatPrivileges, Message
+from pyrogram.types import ChatPermissions, ChatMember, ChatPrivileges, Message
 
 from database.warn_db import add_warn, get_warn, remove_warns
 from misskaty import app
@@ -276,7 +276,7 @@ async def unban_func(_, message, strings):
 
     if len(message.command) == 2:
         user = message.text.split(None, 1)[1]
-        if not user.startswith("@"):
+        if not user.isdigit():
             user = int(user)
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
@@ -417,38 +417,41 @@ async def promoteFunc(client, message, strings):
         return await message.reply_msg("I'm not an admin in this chat.")
     if not bot.can_promote_members:
         return await message.reply_msg(strings("no_promote_perm"))
-    if message.command[0][0] == "f":
+    try:
+        if message.command[0][0] == "f":
+            await message.chat.promote_member(
+                user_id=user_id,
+                privileges=ChatPrivileges(
+                    can_change_info=bot.can_change_info,
+                    can_invite_users=bot.can_invite_users,
+                    can_delete_messages=bot.can_delete_messages,
+                    can_restrict_members=bot.can_restrict_members,
+                    can_pin_messages=bot.can_pin_messages,
+                    can_promote_members=bot.can_promote_members,
+                    can_manage_chat=bot.can_manage_chat,
+                    can_manage_video_chats=bot.can_manage_video_chats,
+                ),
+            )
+            return await message.reply_text(
+                strings("full_promote").format(umention=umention)
+            )
+
         await message.chat.promote_member(
             user_id=user_id,
             privileges=ChatPrivileges(
-                can_change_info=bot.can_change_info,
+                can_change_info=False,
                 can_invite_users=bot.can_invite_users,
                 can_delete_messages=bot.can_delete_messages,
                 can_restrict_members=bot.can_restrict_members,
                 can_pin_messages=bot.can_pin_messages,
-                can_promote_members=bot.can_promote_members,
+                can_promote_members=False,
                 can_manage_chat=bot.can_manage_chat,
                 can_manage_video_chats=bot.can_manage_video_chats,
             ),
         )
-        return await message.reply_text(
-            strings("full_promote").format(umention=umention)
-        )
-
-    await message.chat.promote_member(
-        user_id=user_id,
-        privileges=ChatPrivileges(
-            can_change_info=False,
-            can_invite_users=bot.can_invite_users,
-            can_delete_messages=bot.can_delete_messages,
-            can_restrict_members=bot.can_restrict_members,
-            can_pin_messages=bot.can_pin_messages,
-            can_promote_members=False,
-            can_manage_chat=bot.can_manage_chat,
-            can_manage_video_chats=bot.can_manage_video_chats,
-        ),
-    )
-    await message.reply_msg(strings("normal_promote").format(umention=umention))
+        await message.reply_msg(strings("normal_promote").format(umention=umention))
+    except Exception as err:
+        await message.reply_msg(err)
 
 
 # Demote Member
@@ -838,19 +841,14 @@ async def set_chat_photo(_, ctx: Message):
     os.remove(photo)
 
 
-from pyrogram import Client, types, filters, enums
-
-NUM = 4
-
-
 @app.on_message(filters.group & filters.command('mentionall', COMMAND_HANDLER))
-async def mentionall(app: Client, msg: types.Message):
+async def mentionall(app: Client, msg: Message):
     NUM = 4
     user = await msg.chat.get_member(msg.from_user.id)
     if user.status in (enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR):
         total = []
         async for member in app.get_chat_members(msg.chat.id):
-            member: types.ChatMember
+            member: ChatMember
             if member.user.username:
                 total.append(f'@{member.user.username}')
             else:
