@@ -42,13 +42,13 @@ from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Filters"
 __HELP__ = """/filters To Get All The Filters In The Chat.
-/filter [FILTER_NAME] To Save A Filter(reply to a message).
+/filter [FILTER_NAME] or /addfilter [FILTER_NAME] To Save A Filter(reply to a message).
 
 Supported filter types are Text, Animation, Photo, Document, Video, video notes, Audio, Voice.
 
 To use more words in a filter use.
-`/filter Hey_there` To filter "Hey there".
-/stop [FILTER_NAME] To Stop A Filter.
+`/filter Hey_there` or `/addfilter Hey_there` To filter "Hey there".
+/stop [FILTER_NAME] or /stopfilter [FILTER_NAME] To Stop A Filter.
 /stopall To delete all the filters in a chat (permanently).
 
 You can use markdown or html to save text too.
@@ -161,7 +161,7 @@ async def del_filter(_, m):
 )
 async def filters_re(_, message):
     text = message.text.lower().strip()
-    if not text or (m.command and m.command[0].lower() in ["filter", "addfilter"]):
+    if not text or (message.command and message.command[0].lower() in ["filter", "addfilter"]):
         return
     chat_id = message.chat.id
     list_of_filters = await get_filters_names(chat_id)
