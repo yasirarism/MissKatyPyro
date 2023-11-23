@@ -150,10 +150,9 @@ async def del_filter(_, m):
     chat_id = m.chat.id
     deleted = await delete_filter(chat_id, name)
     if deleted:
-        await m.reply_msg(f"**Deleted filter {name}.**")
+        return await m.reply_msg(f"**Deleted filter {name}.**")
     else:
-        await m.reply_msg("**No such filter.**")
-    m.stop_propagation()
+        return await m.reply_msg("**No such filter.**")
 
 
 @app.on_message(
