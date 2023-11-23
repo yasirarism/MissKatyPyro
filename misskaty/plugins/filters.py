@@ -161,7 +161,7 @@ async def del_filter(_, m):
 )
 async def filters_re(_, message):
     text = message.text.lower().strip()
-    if not text:
+    if not text or (m.command and m.command[0].lower() in ["filter", "addfilter"]):
         return
     chat_id = message.chat.id
     list_of_filters = await get_filters_names(chat_id)
