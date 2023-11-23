@@ -157,7 +157,7 @@ async def del_filter(_, m):
 
 @app.on_message(
     filters.text & ~filters.private & ~filters.via_bot & ~filters.forwarded,
-    group=-3,
+    group=103,
 )
 async def filters_re(_, message):
     text = message.text.lower().strip()
