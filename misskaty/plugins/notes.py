@@ -146,9 +146,9 @@ async def get_one_note(self, message):
     self.log.info(_note)
     if not _note:
         return
-    type = _note["type"]
-    data = _note["data"]
-    file_id = _note["file_id"]
+    type_ = _note.get("type")
+    data = _note.get("data")
+    file_id = _note.get("file_id")
     keyb = None
     if data:       
         if findall(r"\[.+\,.+\]", data):
@@ -159,51 +159,51 @@ async def get_one_note(self, message):
     if replied_message:
         if replied_message.from_user.id != message.from_user.id:
             message = replied_message
-    if type == "text":
+    if type_ == "text":
         await message.reply_text(
             text=data,
             reply_markup=keyb,
             disable_web_page_preview=True,
         )
-    if type == "sticker":
+    if type_ == "sticker":
         await message.reply_sticker(
             sticker=file_id,
         )
-    if type == "animation":
+    if type_ == "animation":
         await message.reply_animation(
             animation=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type == "photo":
+    if type_ == "photo":
         await message.reply_photo(
             photo=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type == "document":
+    if type_ == "document":
         await message.reply_document(
             document=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type == "video":
+    if type_ == "video":
         await message.reply_video(
             video=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type == "video_note":
+    if type_ == "video_note":
         await message.reply_video_note(
             video_note=file_id,
         )
-    if type == "audio":
+    if type_ == "audio":
         await message.reply_audio(
             audio=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type == "voice":
+    if type_ == "voice":
         await message.reply_voice(
             voice=file_id,
             caption=data,

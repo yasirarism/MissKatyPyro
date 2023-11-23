@@ -169,9 +169,9 @@ async def filters_re(_, message):
         pattern = r"( |^|[^\w])" + re.escape(word) + r"( |$|[^\w])"
         if re.search(pattern, text, flags=re.IGNORECASE):
             _filter = await get_filter(chat_id, word)
-            data_type = _filter["type"]
-            data = _filter["data"]
-            file_id = _filter["file_id"]
+            data_type = _filter.get("type")
+            data = _filter.get("data")
+            file_id = _filter.get("file_id")
             keyb = None
             if data:
                 if re.findall(r"\[.+\,.+\]", data):
