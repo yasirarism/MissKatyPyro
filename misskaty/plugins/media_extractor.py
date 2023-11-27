@@ -13,6 +13,7 @@ from time import time
 from urllib.parse import unquote
 
 from pyrogram import Client, filters
+from pyrogram.errors import ListenerTimeout
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -22,7 +23,6 @@ from pyrogram.types import (
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.pyro_progress import progress_for_pyrogram
