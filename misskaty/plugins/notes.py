@@ -143,7 +143,6 @@ async def get_one_note(self, message):
     if not name:
         return
     _note = await get_note(message.chat.id, name)
-    self.log.info(_note)
     if not _note:
         return
     type_ = _note.get("type")
