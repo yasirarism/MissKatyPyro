@@ -4,6 +4,7 @@ from logging import getLogger
 from pyrogram import Client, filters
 from pyrogram.errors import (
     ApiIdInvalid,
+    ListenerTimeout,
     PasswordHashInvalid,
     PhoneCodeExpired,
     PhoneCodeInvalid,
@@ -23,7 +24,6 @@ from telethon.errors import (
 from telethon.sessions import StringSession
 
 from misskaty import app
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.vars import API_HASH, API_ID, COMMAND_HANDLER
 
 LOGGER = getLogger("MissKaty")
