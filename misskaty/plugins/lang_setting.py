@@ -3,6 +3,7 @@ from typing import Union
 
 from pyrogram import filters
 from pyrogram.enums import ChatType
+from pyrogram.errors import ListenerTimeout
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -12,7 +13,6 @@ from pyrogram.types import (
 
 from database.locale_db import set_db_lang
 from misskaty import app
-from misskaty.core.misskaty_patch.listen.listen import ListenerTimeout
 from misskaty.vars import COMMAND_HANDLER
 
 from ..core.decorator.permissions import require_admin
