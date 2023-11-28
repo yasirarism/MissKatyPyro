@@ -113,16 +113,14 @@ async def ceksub(_, ctx: Message, strings):
         buttons.append(
             [InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")]
         )
-        try:
-            msg = await pesan.edit_msg(
-              strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
-              reply_markup=InlineKeyboardMarkup(buttons),
-            )
-            await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
-        except ListenerTimeout:
-            await msg.edit_msg(strings("exp_task", context="general"))
+        await pesan.edit_msg(
+            strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
+            reply_markup=InlineKeyboardMarkup(buttons),
+        )
+        #    await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
+        # except ListenerTimeout:
+        #    await msg.edit_msg(strings("exp_task", context="general"))
     except Exception as e:
-        self.log.info(e)
         await pesan.edit_msg(strings("fail_extr_media"))
 
 
