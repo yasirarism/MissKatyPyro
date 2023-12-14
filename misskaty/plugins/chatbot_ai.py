@@ -7,7 +7,7 @@ import html
 import random
 
 from openai import AsyncOpenAI, APIConnectionError, RateLimitError, APIStatusError
-from pyrogram import filters, enums
+from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
@@ -73,10 +73,10 @@ async def openai_chatbot(_, ctx: Message, strings):
             num += 1
             answer += chunk.choices[0].delta.content
             if num == 30:
-                await msg.edit_msg(html.escape(answer), parse_mode=enums.ParseMode.HTML)
+                await msg.edit_msg(html.escape(answer))
                 await asyncio.sleep(1.5)
                 num = 0
-        await msg.edit_msg(html.escape(answer), parse_mode=enums.ParseMode.HTML)
+        await msg.edit_msg(html.escape(answer))
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
