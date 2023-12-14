@@ -7,7 +7,7 @@ import html
 import random
 
 from openai import AsyncOpenAI, APIConnectionError, RateLimitError, APIStatusError
-from pyrogram import filters
+from pyrogram import filters, enums
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
@@ -34,7 +34,7 @@ async def bard_chatbot(_, ctx: Message, strings):
         )
         random_choice = random.choice(req.json().get("choices"))
         await msg.edit_msg(
-            random_choice["content"][0]
+            html.escape(random_choice["content"][0])
             if req.json().get("content") != ""
             else "Failed getting data from Bard"
         )
@@ -50,7 +50,7 @@ async def openai_chatbot(_, ctx: Message, strings):
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
     if not OPENAI_API:
-        return await ctx.reply_msg("OPENAI_API env is mising!!!")
+        return await ctx.reply_msg("OPENAI_API env is missing!!!")
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
@@ -73,10 +73,10 @@ async def openai_chatbot(_, ctx: Message, strings):
             num += 1
             answer += chunk.choices[0].delta.content
             if num == 30:
-                await msg.edit_msg(answer)
+                await msg.edit_msg(html.escape(answer), parse_mode=enums.ParseMode.HTML)
                 await asyncio.sleep(1.5)
                 num = 0
-        await msg.edit_msg(answer)
+        await msg.edit_msg(html.escape(answer), parse_mode=enums.ParseMode.HTML)
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
@@ -91,3 +91,5 @@ async def openai_chatbot(_, ctx: Message, strings):
         await msg.edit_msg("A 429 status code was received; we should back off a bit.")
     except APIStatusError as e:
         await msg.edit_msg(f"Another {e.status_code} status code was received with response {e.response}")
+    except Exception as e:
+        await msg.edit_msg(f"ERROR: {e}")
