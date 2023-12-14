@@ -276,8 +276,6 @@ async def unban_func(_, message, strings):
 
     if len(message.command) == 2:
         user = message.text.split(None, 1)[1]
-        if not user.isdigit():
-            user = int(user)
     elif len(message.command) == 1 and reply:
         user = message.reply_to_message.from_user.id
     else:
