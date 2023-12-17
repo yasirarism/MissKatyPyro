@@ -114,7 +114,7 @@ async def ceksub(self, ctx: Message, strings):
             [InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")]
         )
         try:
-            await pesan.edit_msg(
+            msg = await pesan.edit_msg(
                strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
                reply_markup=InlineKeyboardMarkup(buttons),
             )
