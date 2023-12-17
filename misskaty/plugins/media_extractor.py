@@ -72,7 +72,7 @@ def get_subname(lang, url, ext):
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @use_chat_lang()
-async def ceksub(_, ctx: Message, strings):
+async def ceksub(self, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5
@@ -122,6 +122,7 @@ async def ceksub(_, ctx: Message, strings):
         except ListenerTimeout:
             await msg.edit_msg(strings("exp_task", context="general"))
     except Exception as e:
+        self.log.info(e)
         await pesan.edit_msg(strings("fail_extr_media"))
 
 
