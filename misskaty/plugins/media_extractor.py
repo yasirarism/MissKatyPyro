@@ -6,6 +6,7 @@
 """
 import json
 import os
+import traceback
 from logging import getLogger
 from re import I
 from re import split as ngesplit
@@ -122,7 +123,7 @@ async def ceksub(self, ctx: Message, strings):
         except ListenerTimeout:
             await msg.edit_msg(strings("exp_task", context="general"))
     except Exception as e:
-        self.log.info(e)
+        self.log.info(traceback.print_exc())
         await pesan.edit_msg(strings("fail_extr_media"))
 
 
