@@ -24,12 +24,14 @@ from .ytdl_plugins import YT_DB
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}
 
+# This modules is only working for my movies group to help collect a list of film requests by members.
 
-@app.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
+# @app.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
 async def salamregex(_, message):
     await message.reply_text(text=f"Wa'alaikumsalam {message.from_user.mention} 😇")
 
 
+# -1001255283935 is YMovieZ Group, and -1001575525902 is channel id which contains a collection of ddard member requests from the group.
 @app.on_message(
     filters.regex(r"#request|#req", re.I)
     & (filters.text | filters.photo)
@@ -143,10 +145,10 @@ async def clear_reqdict():
     shutil.rmtree("GensSS", ignore_errors=True)
 
 
-@app.on_message(
-    filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I)
-    & filters.chat(chat)
-)
+# @app.on_message(
+#     filters.regex(r"makasi|thank|terimakasih|terima kasih|mksh", re.I)
+#     & filters.chat(chat)
+# )
 async def thankregex(_, message):
     pesan = [
         f"Sama-sama {message.from_user.first_name}",
