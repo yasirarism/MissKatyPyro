@@ -79,7 +79,7 @@ async def imdb_choose(_, ctx: Message):
         try:
             await cl.wait_for_click(ctx.from_user.id, timeout=10)
         except ListenerTimeout:
-            await cl.message.edit("Task Timeout")
+            await cl.edit("Task Timeout")
         break
 
 
