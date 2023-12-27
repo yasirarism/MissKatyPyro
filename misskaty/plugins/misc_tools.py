@@ -422,34 +422,6 @@ async def tostick(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
-@capture_err
-async def topho(client, message):
-    try:
-        if not message.reply_to_message or not message.reply_to_message.sticker:
-            return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
-        if message.reply_to_message.sticker.is_animated:
-            return await message.reply_text(
-                "Ini sticker animasi, command ini hanya untuk sticker biasa."
-            )
-        photo = await message.reply_to_message.download()
-        im = Image.open(photo).convert("RGB")
-        filename = f"toimg_{message.from_user.id}.png"
-        im.save(filename, "png")
-        await asyncio.gather(
-            *[
-                message.reply_document(filename),
-                message.reply_photo(
-                    filename, caption=f"Sticker -> Image\n@{client.me.username}"
-                ),
-            ]
-        )
-        os.remove(photo)
-        os.remove(filename)
-    except Exception as e:
-        await message.reply_text(str(e))
-
-
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
 async def showid(_, message):
     chat_type = message.chat.type.value
