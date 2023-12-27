@@ -194,6 +194,8 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
         await ctx.chat.unban_member(user_id)
     except ChatAdminRequired:
         await ctx.reply_msg(strings("no_ban_permission"))
+    except Exception as e:
+        await ctx.reply_msg(str(e))
 
 
 # Ban/DBan/TBan User
@@ -258,6 +260,8 @@ async def banFunc(client, message, strings):
         await message.reply_msg(msg, reply_markup=keyboard)
     except ChatAdminRequired:
         await message.reply("Please give me permission to banned members..!!!")
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 # Unban members
@@ -288,6 +292,8 @@ async def unban_func(_, message, strings):
         await message.reply_msg(strings("unknown_id", context="general"))
     except ChatAdminRequired:
         await message.reply("Please give me permission to unban members..!!!")
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 # Ban users listed in a message
@@ -482,6 +488,8 @@ async def demote(client, message, strings):
         await message.reply_text(f"Demoted! {umention}")
     except ChatAdminRequired:
         await message.reply("Please give permission to demote members..")
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 # Pin Messages
@@ -509,6 +517,8 @@ async def pin(_, message, strings):
             strings("pin_no_perm"),
             disable_web_page_preview=True,
         )
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 # Mute members
@@ -557,8 +567,11 @@ async def mute(client, message, strings):
         return
     if reason:
         msg += strings("banned_reason").format(reas=reason)
-    await message.chat.restrict_member(user_id, permissions=ChatPermissions(all_perms=False))
-    await message.reply_text(msg, reply_markup=keyboard)
+    try:
+        await message.chat.restrict_member(user_id, permissions=ChatPermissions(all_perms=False))
+        await message.reply_text(msg, reply_markup=keyboard)
+    except Exception as e:
+        await message.reply_msg(str(e))
 
 
 # Unmute members
@@ -665,8 +678,11 @@ async def unmute_user(client, cq, strings):
     text = cq.message.text.markdown
     text = f"~~{text}~~\n\n"
     text += strings("rmmute_msg").format(mention=from_user.mention)
-    await cq.message.chat.unban_member(user_id)
-    await cq.message.edit(text)
+    try:
+        await cq.message.chat.unban_member(user_id)
+        await cq.message.edit(text)
+    except Exception as e:
+        await cq.answer(str(e))
 
 
 @app.on_callback_query(filters.regex("unban_"))
@@ -787,10 +803,13 @@ async def set_chat_title(_, ctx: Message):
         return await ctx.reply_text(f"**Usage:**\n/{ctx.command[0]} NEW NAME")
     old_title = ctx.chat.title
     new_title = ctx.text.split(None, 1)[1]
-    await ctx.chat.set_title(new_title)
-    await ctx.reply_text(
-        f"Successfully Changed Group Title From {old_title} To {new_title}"
-    )
+    try:
+        await ctx.chat.set_title(new_title)
+        await ctx.reply_text(
+            f"Successfully Changed Group Title From {old_title} To {new_title}"
+        )
+    except Exception as e:
+        await ctx.reply_msg(str(e))
 
 
 @app.on_cmd("set_user_title", self_admin=True, group_only=True)
@@ -807,10 +826,13 @@ async def set_user_title(_, ctx: Message):
             "**Usage:**\n/set_user_title NEW ADMINISTRATOR TITLE"
         )
     title = ctx.text.split(None, 1)[1]
-    await app.set_administrator_title(chat_id, from_user.id, title)
-    await ctx.reply_text(
-        f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
-    )
+    try:
+        await app.set_administrator_title(chat_id, from_user.id, title)
+        await ctx.reply_text(
+            f"Successfully Changed {from_user.mention}'s Admin Title To {title}"
+        )
+    except Exception as e:
+        await ctx.reply_msg(str(e))
 
 
 @app.on_cmd("set_chat_photo", self_admin=True, group_only=True)
