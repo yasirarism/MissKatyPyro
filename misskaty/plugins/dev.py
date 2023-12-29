@@ -546,6 +546,8 @@ async def updtebot(client, update, users, _):
             f"{'BLOCKED' if update.stopped else 'UNBLOCKED'} the bot at "
             f"{datetime.fromtimestamp(update.date)}",
         )
+    else:
+        client.log.info(update)
 
 
 async def aexec(code, c, m):
