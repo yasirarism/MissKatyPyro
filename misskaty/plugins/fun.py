@@ -4,6 +4,7 @@ from os import remove as hapus
 
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
+from pyrogram.errors import MessageIdInvalid, PeerIdInvalid
 
 from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
