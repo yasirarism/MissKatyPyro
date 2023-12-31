@@ -433,7 +433,7 @@ async def fed_chat(client, message):
         )
 
 
-@app.on_message(filters.command("fedinfo"))
+@app.on_message(filters.command("fedinfo", COMMAND_HANDLER))
 @capture_err
 async def fed_info(client, message):
     if len(message.command) < 2:
@@ -463,7 +463,7 @@ async def fed_info(client, message):
     await message.reply_text(reply_text)
 
 
-@app.on_message(filters.command("fedadmins"))
+@app.on_message(filters.command("fedadmins", COMMAND_HANDLER))
 @capture_err
 async def get_all_fadmins_mentions(client, message):
     if len(message.command) < 2:
@@ -783,7 +783,7 @@ __**New Federation UnBan**__
         )
 
 
-@app.on_message(filters.command("fedstat"), COMMAND_HANDLER)
+@app.on_message(filters.command("fedstat", COMMAND_HANDLER))
 async def fedstat(client, message):
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
@@ -820,7 +820,7 @@ async def fedstat(client, message):
             )
 
 
-@app.on_message(filters.command("fbroadcast"), COMMAND_HANDLER)
+@app.on_message(filters.command("fbroadcast", COMMAND_HANDLER))
 @capture_err
 async def fbroadcast_message(client, message):
     chat = message.chat
