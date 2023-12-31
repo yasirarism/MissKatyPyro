@@ -69,18 +69,12 @@ async def imdb_choose(_, ctx: Message):
     )
     buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
     buttons.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
-    while 1:
-        cl = await ctx.reply_photo(
-            "https://img.yasirweb.eu.org/file/270955ef0d1a8a16831a9.jpg",
-            caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.\n\nTimeout: 10s",
-            reply_markup=buttons,
-            quote=True,
-        )
-        try:
-            await cl.wait_for_click(ctx.from_user.id, timeout=10)
-        except ListenerTimeout:
-            await cl.edit("Task Timeout")
-        break
+    await ctx.reply_photo(
+        "https://img.yasirweb.eu.org/file/270955ef0d1a8a16831a9.jpg",
+        caption=f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.\n\nTimeout: 10s",
+        reply_markup=buttons,
+        quote=True,
+    )
 
 
 @app.on_cb("imdbset")
