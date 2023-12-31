@@ -168,8 +168,7 @@ async def memify(_, message):
                 pass
         except Exception as err:
             try:
-            
-            us(webp)
+                hapus(webp)
                 hapus(png)
             except:
                 pass
