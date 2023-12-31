@@ -145,7 +145,7 @@ async def chat_id_and_names_in_fed(fed_id):
 
 
 async def add_fban_user(fed_id, user_id, reason):
-    current_date = datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+    current_date = datetime.now(pytz.timezone("Asia/Jakarta")).strftime(
         "%Y-%m-%d %H:%M"
     )
     await fedsdb.update_one(
