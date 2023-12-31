@@ -5,7 +5,7 @@ from os import remove as hapus
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
 
-from misskaty import app
+from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
@@ -193,3 +193,20 @@ async def beriharapan(c, m):
     reply_name = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     sender_name = m.from_user.mention if m.from_user else m.sender_chat.title
     await reply.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")
+
+
+@app.on_message(filters.command("react", COMMAND_HANDLER))
+@user.on_message(filters.command("react", "."))
+async def givereact(c, m):
+    if len(m.command) == 1:
+        return await m.reply("Please add reaction after command, don't add space if you want give multiple reaction.")
+    if not m.reply_to_message:
+        return await m.reply("Please reply to the message you want to react to.")
+    try:
+        await m.reply_to_message.react(emoji=m.command[1].split())
+    except MessageIdInvalid:
+        await m.reply("Sorry, i couldn't react to other bots or without being as administrator.")
+    except PeerIdInvalid:
+        await m.reply("Sorry, i can't react chat without join that groups.")
+    except Exception as err:
+        await m.reply(str(err))
