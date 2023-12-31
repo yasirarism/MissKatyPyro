@@ -1,10 +1,11 @@
 import textwrap
+import regex
 from asyncio import gather
 from os import remove as hapus
 
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
-from pyrogram.errors import MessageIdInvalid, PeerIdInvalid
+from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
 
 from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
@@ -167,7 +168,8 @@ async def memify(_, message):
                 pass
         except Exception as err:
             try:
-                hapus(webp)
+            
+            us(webp)
                 hapus(png)
             except:
                 pass
@@ -200,11 +202,14 @@ async def beriharapan(c, m):
 @user.on_message(filters.command("react", "."))
 async def givereact(c, m):
     if len(m.command) == 1:
-        return await m.reply("Please add reaction after command, don't add space if you want give multiple reaction.")
+        return await m.reply("Please add reaction after command, you can give multiple reaction too.")
     if not m.reply_to_message:
         return await m.reply("Please reply to the message you want to react to.")
+    emot = [emoji for emoji in regex.findall(r'\p{Emoji}', m.reply_to_message.text)]
     try:
-        await m.reply_to_message.react(emoji=m.command[1].split())
+        await m.reply_to_message.react(emoji=emot)
+    except ReactionInvalid:
+        await m.reply("Please give valid reaction.")
     except MessageIdInvalid:
         await m.reply("Sorry, i couldn't react to other bots or without being as administrator.")
     except PeerIdInvalid:
