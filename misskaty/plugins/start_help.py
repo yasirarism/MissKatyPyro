@@ -20,6 +20,7 @@ from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
 
+
 home_keyboard_pm = InlineKeyboardMarkup(
     [
         [
@@ -66,6 +67,21 @@ keyboard = InlineKeyboardMarkup(
     ]
 )
 
+FED_MARKUP = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton("Fed Owner Commands", callback_data="fed_owner"),
+            InlineKeyboardButton("Fed Admin Commands", callback_data="fed_admin"),
+        ],
+        [
+            InlineKeyboardButton("User Commands", callback_data="fed_user"),
+        ],
+        [
+            InlineKeyboardButton("Back", callback_data="help_back"),
+        ],
+    ]
+)
+
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
 @use_chat_lang()
@@ -89,6 +105,18 @@ async def start(_, ctx: Message, strings):
                 + HELPABLE[module].__HELP__
             )
             await ctx.reply_msg(text, disable_web_page_preview=True)
+            if module == "federation":
+                return await ctx.reply(
+                    text=text,
+                    reply_markup=FED_MARKUP,
+                    disable_web_page_preview=True,
+                )
+            await ctx.reply(
+                text,
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("back", callback_data="help_back")]]
+                ),
+                disable_web_page_preview=True)
         elif name == "help":
             text, keyb = await help_parser(ctx.from_user.first_name)
             await ctx.reply_msg(
@@ -202,7 +230,12 @@ async def help_button(self: Client, query: CallbackQuery, strings):
             strings("help_name").format(mod=HELPABLE[module].__MODULE__)
             + HELPABLE[module].__HELP__
         )
-
+        if module == "federation":
+            return await query.message.edit(
+                text=text,
+                reply_markup=FED_MARKUP,
+                disable_web_page_preview=True,
+            )
         await query.message.edit_msg(
             text=text,
             reply_markup=InlineKeyboardMarkup(

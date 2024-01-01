@@ -6,6 +6,7 @@
 """
 import json
 import os
+import traceback
 from logging import getLogger
 from re import I
 from re import split as ngesplit
@@ -72,7 +73,7 @@ def get_subname(lang, url, ext):
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @use_chat_lang()
-async def ceksub(_, ctx: Message, strings):
+async def ceksub(self, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("sub_extr_help").format(cmd=ctx.command[0]), quote=True, del_in=5
@@ -117,10 +118,8 @@ async def ceksub(_, ctx: Message, strings):
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-        #    await msg.wait_for_click(from_user_id=ctx.from_user.id, timeout=30)
-        # except ListenerTimeout:
-        #    await msg.edit_msg(strings("exp_task", context="general"))
     except Exception as e:
+        self.log.info(traceback.print_exc())
         await pesan.edit_msg(strings("fail_extr_media"))
 
 

@@ -1,14 +1,16 @@
 import textwrap
+import regex
 from asyncio import gather
 from os import remove as hapus
 
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
+from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
 
-from misskaty import app
+from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER
+from misskaty.vars import COMMAND_HANDLER, SUDO
 
 
 async def draw_meme_text(image_path, text):
@@ -193,3 +195,23 @@ async def beriharapan(c, m):
     reply_name = reply.from_user.mention if reply.from_user else reply.sender_chat.title
     sender_name = m.from_user.mention if m.from_user else m.sender_chat.title
     await reply.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")
+
+
+@app.on_message(filters.command("react", COMMAND_HANDLER) & filters.user(SUDO))
+@user.on_message(filters.command("react", "."))
+async def givereact(c, m):
+    if len(m.command) == 1:
+        return await m.reply("Please add reaction after command, you can give multiple reaction too.")
+    if not m.reply_to_message:
+        return await m.reply("Please reply to the message you want to react to.")
+    emot = [emoji for emoji in regex.findall(r'\p{Emoji}', m.text)]
+    try:
+        await m.reply_to_message.react(emoji=emot)
+    except ReactionInvalid:
+        await m.reply("Please give valid reaction.")
+    except MessageIdInvalid:
+        await m.reply("Sorry, i couldn't react to other bots or without being as administrator.")
+    except PeerIdInvalid:
+        await m.reply("Sorry, i can't react chat without join that groups.")
+    except Exception as err:
+        await m.reply(str(err))

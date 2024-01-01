@@ -58,7 +58,7 @@ EMOJI_PATTERN = get_emoji_regex()
 SUPPORTED_TYPES = ["jpeg", "png", "webp"]
 
 
-@app.on_cmd("getsticker")
+@app.on_message(filters.command(["getsticker", "toimage"], COMMAND_HANDLER))
 @use_chat_lang()
 async def getsticker_(self: Client, ctx: Message, strings):
     if not ctx.reply_to_message:

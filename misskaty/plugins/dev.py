@@ -326,7 +326,7 @@ async def unban_globally(_, ctx: Message):
     filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
 )
 @app.on_edited_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
+    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO) & ~filters.react
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
@@ -389,7 +389,7 @@ async def shell_cmd(_, ctx: Message, strings):
 )
 @app.on_edited_message(
     (filters.command(["ev", "run", "meval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$"))
-    & filters.user(SUDO)
+    & filters.user(SUDO) & ~filters.react
 )
 @user.on_message(filters.command(["ev", "run", "meval"], ".") & filters.me)
 @use_chat_lang()
@@ -436,7 +436,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             "cloudscraper": cloudscraper,
             "json": json,
             "aiohttp": aiohttp,
-            "p": _print,
+            "print": _print,
             "send": send,
             "stdout": out_buf,
             "traceback": traceback,

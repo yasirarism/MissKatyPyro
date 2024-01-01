@@ -422,34 +422,6 @@ async def tostick(client, message):
         await message.reply_text(str(e))
 
 
-@app.on_message(filters.command(["toimage"], COMMAND_HANDLER))
-@capture_err
-async def topho(client, message):
-    try:
-        if not message.reply_to_message or not message.reply_to_message.sticker:
-            return await message.reply_text("Reply ke sticker untuk mengubah ke foto")
-        if message.reply_to_message.sticker.is_animated:
-            return await message.reply_text(
-                "Ini sticker animasi, command ini hanya untuk sticker biasa."
-            )
-        photo = await message.reply_to_message.download()
-        im = Image.open(photo).convert("RGB")
-        filename = f"toimg_{message.from_user.id}.png"
-        im.save(filename, "png")
-        await asyncio.gather(
-            *[
-                message.reply_document(filename),
-                message.reply_photo(
-                    filename, caption=f"Sticker -> Image\n@{client.me.username}"
-                ),
-            ]
-        )
-        os.remove(photo)
-        os.remove(filename)
-    except Exception as e:
-        await message.reply_text(str(e))
-
-
 @app.on_message(filters.command(["id"], COMMAND_HANDLER))
 async def showid(_, message):
     chat_type = message.chat.type.value
@@ -501,18 +473,16 @@ async def who_is(client, message):
     try:
         from_user = await client.get_users(from_user_id)
     except Exception as error:
-        await status_message.edit(str(error))
-        return
+        return await status_message.edit(str(error))
     if from_user is None:
-        return await status_message.edit("no valid user_id / message specified")
+        return await status_message.edit("No valid user_id / message specified")
     message_out_str = ""
     username = f"@{from_user.username}" or "<b>No Username</b>"
-    dc_id = from_user.dc_id or "[User Doesn't Have Profile Pic]"
-    last_name = from_user.last_name
-    bio = (await client.get_chat(message.from_user.id)).bio
-    count_pic = await client.get_chat_photos_count(message.from_user.id)
+    dc_id = from_user.dc_id or "<i>[User Doesn't Have Profile Pic]</i>"
+    bio = (await client.get_chat(from_user.id)).bio
+    count_pic = await client.get_chat_photos_count(from_user.id)
     message_out_str += f"<b>🔸 First Name:</b> {from_user.first_name}\n"
-    if last_name:
+    if last_name := from_user.last_name:
         message_out_str += f"<b>🔹 Last Name:</b> {last_name}\n"
     message_out_str += f"<b>🆔 User ID:</b> <code>{from_user.id}</code>\n"
     message_out_str += f"<b>✴️ User Name:</b> {username}\n"
@@ -520,8 +490,8 @@ async def who_is(client, message):
     if bio:
         message_out_str += f"<b>👨🏿‍💻 Bio:</b> <code>{bio}</code>\n"
     message_out_str += f"<b>📸 Pictures:</b> {count_pic}\n"
-    message_out_str += f"<b>🧐 Restricted:</b> {message.from_user.is_restricted}\n"
-    message_out_str += f"<b>✅ Verified:</b> {message.from_user.is_verified}\n"
+    message_out_str += f"<b>🧐 Restricted:</b> {from_user.is_restricted}\n"
+    message_out_str += f"<b>✅ Verified:</b> {from_user.is_verified}\n"
     message_out_str += f"<b>🌐 Profile Link:</b> <a href='tg://user?id={from_user.id}'><b>Click Here</b></a>\n"
     if message.chat.type.value in (("supergroup", "channel")):
         try:
