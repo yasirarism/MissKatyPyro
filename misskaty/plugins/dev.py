@@ -18,6 +18,7 @@ import aiohttp
 import contextlib
 import cloudscraper
 import requests
+import platform
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bs4 import BeautifulSoup
 from logging import getLogger
@@ -150,18 +151,6 @@ async def server_stats(_, ctx: Message) -> "Message":
     """
     Give system stats of the server.
     """
-    image = Image.open("assets/statsbg.jpg").convert("RGB")
-    IronFont = ImageFont.truetype("assets/IronFont.otf", 42)
-    draw = ImageDraw.Draw(image)
-
-    def draw_progressbar(coordinate, progress):
-        progress = 110 + (progress * 10.8)
-        draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
-        draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
-        draw.ellipse(
-            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
-        )
-
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
 
@@ -189,6 +178,9 @@ async def server_stats(_, ctx: Message) -> "Message":
 
     caption = f"<b>{BOT_NAME} {misskaty_version} is Up and Running successfully.</b>\n\n<code>{neofetch}</code>\n\n**OS Uptime:** <code>{osuptime}</code>\n<b>Bot Uptime:</b> <code>{currentTime}</code>\n**Bot Usage:** <code>{botusage}</code>\n\n**Total Space:** <code>{disk_total}</code>\n**Free Space:** <code>{disk_free}</code>\n\n**Download:** <code>{download}</code>\n**Upload:** <code>{upload}</code>\n\n<b>PyroFork Version</b>: <code>{pyrover}</code>\n<b>Python Version</b>: <code>{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]} {sys.version_info[3].title()}</code>"
 
+    if "oracle" in platform.uname().release:
+        return await ctx.reply_msg(caption, quote=True)
+        
     start = datetime.now()
     msg = await ctx.reply_photo(
         photo="https://te.legra.ph/file/30a82c22854971d0232c7.jpg",
@@ -197,6 +189,18 @@ async def server_stats(_, ctx: Message) -> "Message":
     )
     end = datetime.now()
 
+    image = Image.open("assets/statsbg.jpg").convert("RGB")
+    IronFont = ImageFont.truetype("assets/IronFont.otf", 42)
+    draw = ImageDraw.Draw(image)
+    
+    def draw_progressbar(coordinate, progress):
+        progress = 110 + (progress * 10.8)
+        draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
+        draw.rectangle((120, coordinate - 25, progress, coordinate), fill="#FFFFFF")
+        draw.ellipse(
+            (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
+        )
+    
     draw_progressbar(243, int(cpu_percentage))
     draw.text(
         (225, 153),
