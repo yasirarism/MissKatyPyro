@@ -29,7 +29,7 @@ from psutil import net_io_counters, virtual_memory
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
-from pyrogram.errors import ChatSendPhotosForbidden, FloodWait, MessageTooLong, PeerIdInvalid, ChatSendPlainForbidden
+from pyrogram.errors import ChatSendPhotosForbidden, FloodWait, MessageTooLong, PeerIdInvalid, ChatSendPlainForbidden, ReactionInvalid
 from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -126,6 +126,10 @@ async def log_file(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
+    try:
+        await ctx.react(emoji="❤️")
+    except ReactionInvalid:
+        pass
     try:
         await ctx.reply_photo(
             "https://img.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg",

@@ -35,7 +35,7 @@ from pyrogram.enums import ChatMemberStatus, ChatType, ParseMode
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty.helper.functions import extract_user, extract_user_and_reason
-from pyrogram.errors import FloodWait
+from pyrogram.errors import FloodWait, PeerIdInvalid
 from misskaty.core.decorator.errors import capture_err
 
 __MODULE__ = "Federation"
@@ -55,11 +55,11 @@ async def new_fed(self, message):
     chat = message.chat
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:
-        return await message.reply_text(
+        return await message.reply_msg(
             "Federations can only be created by privately messaging me."
         )
     if len(message.command) < 2:
-        return await message.reply_text("Please write the name of the federation!")
+        return await message.reply_msg("Please write the name of the federation!")
     fednam = message.text.split(None, 1)[1]
     if not fednam == "":
         fed_id = str(uuid.uuid4())
@@ -80,11 +80,11 @@ async def new_fed(self, message):
             upsert=True,
         )
         if not x:
-            return await message.reply_text(
+            return await message.reply_msg(
                 f"Can't federate! Please contact {SUPPORT_CHAT} if the problem persist."
             )
 
-        await message.reply_text(
+        await message.reply_msg(
             "**You have succeeded in creating a new federation!**"
             "\nName: `{}`"
             "\nID: `{}`"
@@ -597,8 +597,7 @@ async def fban_user(client, message):
     chat = message.chat
     from_user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
-        await message.reply_text("This command is specific to groups, not our pm!.")
-        return
+        return await message.reply_text("This command is specific to groups, not our pm!.")
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text("**This chat is not a part of any federation.")
@@ -617,7 +616,10 @@ async def fban_user(client, message):
             "**You needed to specify a user or reply to their message!**"
         )
     user_id, reason = await extract_user_and_reason(message)
-    user = await app.get_users(user_id)
+    try:
+        user = await app.get_users(user_id)
+    except PeerIdInvalid:
+        return await message.reply_msg("Sorry, i never meet this user. So i cannot fban.")
     if not user_id:
         return await message.reply_text("I can't find that user.")
     if user_id in all_admins or user_id in SUDO:
@@ -871,7 +873,7 @@ async def fbroadcast_message(client, message):
             sent += 1
             await asyncio.sleep(sleep_time)
         except FloodWait as e:
-            await asyncio.sleep(int(e.value))
+            await asyncio.sleep(e.value)
         except Exception:
             pass
     await m.edit(f"**Broadcasted Message In {sent} Chats.**")

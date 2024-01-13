@@ -168,7 +168,7 @@ async def kang_sticker(self: Client, ctx: Message, strings):
             elif not reply.sticker.file_name.endswith(".tgs"):
                 resize = True
         else:
-            return await prog_msg.edit_msg()
+            return await prog_msg.edit_msg("I cannot kang this type.")
 
         pack_prefix = "anim" if animated else "vid" if videos else "a"
         packname = f"{pack_prefix}_{ctx.from_user.id}_by_{self.me.username}"

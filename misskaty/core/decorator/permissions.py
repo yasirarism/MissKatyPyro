@@ -19,10 +19,10 @@ from ...helper.localization import (
 )
 
 
-async def member_permissions(chat_id: int, user_id: int, client):
+async def member_permissions(chat_id: int, user_id: int):
     perms = []
     try:
-        member = (await client.get_chat_member(chat_id, user_id)).privileges
+        member = (await app.get_chat_member(chat_id, user_id)).privileges
         if member.can_post_messages:
             perms.append("can_post_messages")
         if member.can_edit_messages:
@@ -164,7 +164,7 @@ def adminsOnly(permission):
                 return await unauthorised(message, permission, subFunc2)
             # For admins and sudo users
             userID = message.from_user.id
-            permissions = await member_permissions(chatID, userID, client)
+            permissions = await member_permissions(chatID, userID)
             if userID not in SUDO and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
             return await authorised(func, subFunc2, client, message, *args, **kwargs)
