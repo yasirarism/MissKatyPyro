@@ -67,8 +67,8 @@ async def openai_chatbot(_, ctx: Message, strings):
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
-    if not OPENAI_API:
-        return await ctx.reply_msg("OPENAI_API env is missing!!!")
+    if not OPENAI_KEY:
+        return await ctx.reply_msg("OPENAI_KEY env is missing!!!")
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
