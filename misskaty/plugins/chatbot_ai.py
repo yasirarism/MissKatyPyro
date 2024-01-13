@@ -14,30 +14,48 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
-from misskaty.vars import BARD_API, COMMAND_HANDLER, OPENAI_API, SUDO
+from misskaty.vars import GOOGLEAI_KEY, COMMAND_HANDLER, OPENAI_KEY, SUDO
 
 
-# This only for testing things, since maybe in future it will got blocked
-@app.on_message(filters.command("bard", COMMAND_HANDLER) & pyro_cooldown.wait(10))
+__MODULE__ = "ChatBot"
+__HELP__ = """
+/ai - Generate text response from AI using Gemini AI By Google.
+/ask - Generate text response from AI using OpenAI.
+"""
+
+
+@app.on_message(filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
-async def bard_chatbot(_, ctx: Message, strings):
+async def gemini_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
         )
-    if not BARD_API:
-        return await ctx.reply_msg("BARD_API env is missing!!!")
+    if not GOOGLEAI_KEY:
+        return await ctx.reply_msg("GOOGLEAI_KEY env is missing!!!")
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        req = await fetch.get(
-            f"https://yasirapi.eu.org/bard?input={ctx.text.split(maxsplit=1)[1]}&key={BARD_API}"
+        params = {
+            'key': GOOGLEAI_KEY,
+        }
+        json_data = {
+            'contents': [
+                {
+                    'parts': [
+                        {
+                            'text': ctx.text.split(maxsplit=1)[1],
+                        },
+                    ],
+                },
+            ],
+        }
+        response = await fetch.post(
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+            params=params,
+            json=json_data,
+            timeout=20.0,
         )
-        random_choice = random.choice(req.json().get("choices"))
-        await msg.edit_msg(
-            html.escape(random_choice["content"][0])
-            if req.json().get("content") != ""
-            else "Failed getting data from Bard"
-        )
+        await msg.edit_msg(response.json()["candidates"][0]["content"]["parts"][0]["text"])
     except Exception as e:
         await msg.edit_msg(str(e))
 
