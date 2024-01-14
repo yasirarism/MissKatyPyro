@@ -55,7 +55,9 @@ async def gemini_chatbot(_, ctx: Message, strings):
             json=json_data,
             timeout=20.0,
         )
-        await msg.edit_msg(response.json()["candidates"][0]["content"]["parts"][0]["text"])
+        if response.json().get("promptFeedback"):
+            return await msg.edit_msg("⚠️ Sorry, the prompt you sent contains a forbidden word that is not permitted by AI.")
+        await msg.edit_msg(html.escape(response.json()["candidates"][0]["content"]["parts"][0]["text"]))
     except Exception as e:
         await msg.edit_msg(str(e))
 
