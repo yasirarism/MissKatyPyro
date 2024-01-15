@@ -126,10 +126,8 @@ async def log_file(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
-    try:
+    with contextlib.suppress(ReactionInvalid):
         await ctx.react(emoji="❤️")
-    except ReactionInvalid:
-        pass
     try:
         await ctx.reply_photo(
             "https://img.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg",

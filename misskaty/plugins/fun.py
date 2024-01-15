@@ -204,7 +204,7 @@ async def givereact(c, m):
         return await m.reply("Please add reaction after command, you can give multiple reaction too.")
     if not m.reply_to_message:
         return await m.reply("Please reply to the message you want to react to.")
-    emot = [emoji for emoji in regex.findall(r'\p{Emoji}', m.text)]
+    emot = list(regex.findall(r'\p{Emoji}', m.text))
     try:
         await m.reply_to_message.react(emoji=emot)
     except ReactionInvalid:

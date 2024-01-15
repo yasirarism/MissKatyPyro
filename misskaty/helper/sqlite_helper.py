@@ -173,9 +173,7 @@ class Cache:
 
     @staticmethod
     def _exp_datetime(exp: float) -> Optional[datetime]:
-        if exp == -1.0:
-            return None
-        return datetime.utcfromtimestamp(exp)
+        return None if exp == -1.0 else datetime.utcfromtimestamp(exp)
 
     def _stream(self, value: Any) -> bytes:
         return pickle.dumps(value, protocol=self.PICKLE_PROTOCOL)
@@ -407,10 +405,7 @@ class Cache:
     def get_all(self) -> Dict[str, Any]:
         """Get all key-value pairs from the cache."""
         all_data = self._con.execute("SELECT key, value FROM cache;").fetchall()
-        results = {}
-        for key, value in all_data:
-            results[key] = self._unstream(value)
-        return results
+        return {key: self._unstream(value) for key, value in all_data}
 
     def clear(self) -> None:
         """Clear the cache from all values."""

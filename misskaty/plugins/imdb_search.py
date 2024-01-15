@@ -93,12 +93,10 @@ async def imdblangset(_, query: CallbackQuery):
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
         )
     buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
-    try:
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_caption(
             "<i>Please select available language below..</i>", reply_markup=buttons
         )
-    except (MessageIdInvalid, MessageNotModified):
-        pass
 
 
 @app.on_cb("setimdb")
@@ -109,7 +107,7 @@ async def imdbsetlang(_, query: CallbackQuery):
     _, langset = await is_imdbset(query.from_user.id)
     if langset == lang:
         return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
-    try:
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         if lang == "eng":
             await add_imdbset(query.from_user.id, lang)
             await query.message.edit_caption(
@@ -125,8 +123,6 @@ async def imdbsetlang(_, query: CallbackQuery):
             await query.message.edit_caption(
                 "UserSetting for IMDB has been deleted from database."
             )
-    except (MessageIdInvalid, MessageNotModified):
-        pass
 
 
 async def imdb_search_id(kueri, message):
@@ -265,12 +261,10 @@ async def imdbcari(_, query: CallbackQuery):
             del LIST_CARI[msg]
         except KeyError:
             return await query.message.edit_caption("⚠️ Callback Query Sudah Expired!")
-        try:
+        with contextlib.suppress(MessageIdInvalid, MessageNotModified):
             await query.message.edit_caption(
                 "<i>🔎 Sedang mencari di Database IMDB..</i>"
             )
-        except (MessageIdInvalid, MessageNotModified):
-            pass
         msg = ""
         buttons = InlineKeyboard(row_width=4)
         with contextlib.redirect_stdout(sys.stderr):

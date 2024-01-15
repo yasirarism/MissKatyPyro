@@ -12,13 +12,11 @@ LOGGER = getLogger("MissKaty")
 
 dotenv.load_dotenv("config.env", override=True)
 
-# Required ENV
-API_ID = environ.get("API_ID", "")
-if not API_ID:
+if API_ID := environ.get("API_ID", ""):
+    API_ID = int(API_ID)
+else:
     LOGGER.error("API_ID variable is missing! Exiting now")
     sys.exit(1)
-else:
-    API_ID = int(API_ID)
 API_HASH = environ.get("API_HASH", "")
 if not API_HASH:
     LOGGER.error("API_HASH variable is missing! Exiting now")
@@ -31,13 +29,12 @@ DATABASE_URI = environ.get("DATABASE_URI", "")
 if not DATABASE_URI:
     LOGGER.error("DATABASE_URI variable is missing! Exiting now")
     sys.exit(1)
-LOG_CHANNEL = environ.get("LOG_CHANNEL", "")
-if not LOG_CHANNEL:
-    LOGGER.error("LOG_CHANNEL variable is missing! Exiting now")
-    sys.exit(1)
-else:
+if LOG_CHANNEL := environ.get("LOG_CHANNEL", ""):
     LOG_CHANNEL = int(LOG_CHANNEL)
 
+else:
+    LOGGER.error("LOG_CHANNEL variable is missing! Exiting now")
+    sys.exit(1)
 # Optional ENV
 LOG_GROUP_ID = environ.get("LOG_GROUP_ID")
 USER_SESSION = environ.get("USER_SESSION")
