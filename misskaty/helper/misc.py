@@ -76,11 +76,12 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
             )
         ]
     else:
-        pairs = pairs[modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)] + [
-            (   
+        pairs = pairs[
+            modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)
+        ] + [
+            (
                 EqInlineKeyboardButton(
-                    "Back",
-                    callback_data="{}_home({})".format(prefix, modulo_page),
+                    "Back", callback_data=f"{prefix}_home({modulo_page})"
                 ),
             )
         ]

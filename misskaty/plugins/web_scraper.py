@@ -1286,8 +1286,7 @@ async def kusonime_scrap(client, callback_query, strings):
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
     try:
-        init_url = data_kuso.get(link, False)
-        if init_url:
+        if init_url := data_kuso.get(link, False):
             await callback_query.message.edit_msg(init_url.get("ph_url"), reply_markup=keyboard)
         tgh = await kuso.telegraph(link, client.me.username)
         data_kuso[link] = {"ph_url": tgh}
@@ -1369,9 +1368,7 @@ async def nodrakorddl_scrap(_, callback_query, strings):
             soup = BeautifulSoup(html.text, "lxml")
             if "/tv/" in link:
                 result = soup.find("div", {"entry-content entry-content-single"}).find_all("p")
-                msg = ""
-                for i in result:
-                    msg += str(f"{i}\n")
+                msg = "".join(str(f"{i}\n") for i in result)
                 link = await post_to_telegraph(False, "MissKaty NoDrakor", msg)
                 return await callback_query.message.edit_msg(
                     strings("res_scrape").format(link=link, kl=link), reply_markup=keyboard

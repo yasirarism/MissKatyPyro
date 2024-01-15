@@ -61,11 +61,11 @@ async def new_fed(self, message):
     if len(message.command) < 2:
         return await message.reply_msg("Please write the name of the federation!")
     fednam = message.text.split(None, 1)[1]
-    if not fednam == "":
+    if fednam != "":
         fed_id = str(uuid.uuid4())
         fed_name = fednam
         x = await fedsdb.update_one(
-            {"fed_id": str(fed_id)},
+            {"fed_id": fed_id},
             {
                 "$set": {
                     "fed_name": str(fed_name),
@@ -85,17 +85,13 @@ async def new_fed(self, message):
             )
 
         await message.reply_msg(
-            "**You have succeeded in creating a new federation!**"
-            "\nName: `{}`"
-            "\nID: `{}`"
-            "\n\nUse the command below to join the federation:"
-            "\n`/joinfed {}`".format(fed_name, fed_id, fed_id),
+            f"**You have succeeded in creating a new federation!**\nName: `{fed_name}`\nID: `{fed_id}`\n\nUse the command below to join the federation:\n`/joinfed {fed_id}`",
             parse_mode=ParseMode.MARKDOWN,
         )
         try:
             await app.send_message(
                 LOG_GROUP_ID,
-                "New Federation: <b>{}</b>\nID: <pre>{}</pre>".format(fed_name, fed_id),
+                f"New Federation: <b>{fed_name}</b>\nID: <pre>{fed_id}</pre>",
                 parse_mode=ParseMode.HTML,
             )
         except:
@@ -114,24 +110,21 @@ async def del_fed(client, message):
             "Federations can only be deleted by privately messaging me."
         )
     args = message.text.split(" ", 1)
-    if len(args) > 1:
-        is_fed_id = args[1].strip()
-        getinfo = await get_fed_info(is_fed_id)
-        if getinfo is False:
-            return await message.reply_text("This federation does not exist.")
-        if getinfo["owner_id"] == user.id or user.id not in SUDO:
-            fed_id = is_fed_id
-        else:
-            return await message.reply_text("Only federation owners can do this!")
-    else:
+    if len(args) <= 1:
         return await message.reply_text("What should I delete?")
+    is_fed_id = args[1].strip()
+    getinfo = await get_fed_info(is_fed_id)
+    if getinfo is False:
+        return await message.reply_text("This federation does not exist.")
+    if getinfo["owner_id"] == user.id or user.id not in SUDO:
+        fed_id = is_fed_id
+    else:
+        return await message.reply_text("Only federation owners can do this!")
     is_owner = await is_user_fed_owner(fed_id, user.id)
     if is_owner is False:
         return await message.reply_text("Only federation owners can do this!")
     await message.reply_text(
-        "You sure you want to delete your federation? This cannot be reverted, you will lose your entire ban list, and '{}' will be permanently lost.".format(
-            getinfo["fed_name"]
-        ),
+        f"""You sure you want to delete your federation? This cannot be reverted, you will lose your entire ban list, and '{getinfo["fed_name"]}' will be permanently lost.""",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
@@ -245,10 +238,10 @@ async def fed_log(client, message):
             "Send this command on the chat which you need to set as fed log channel."
         )
     member = await app.get_chat_member(chat.id, user.id)
-    if (
-        member.status == ChatMemberStatus.OWNER
-        or member.status == ChatMemberStatus.ADMINISTRATOR
-    ):
+    if member.status in [
+        ChatMemberStatus.OWNER,
+        ChatMemberStatus.ADMINISTRATOR,
+    ]:
         if len(message.command) < 2:
             return await message.reply_text(
                 "Please provide the Id of the federation with the command!"
@@ -258,10 +251,7 @@ async def fed_log(client, message):
         if info is False:
             return await message.reply_text("This federation does not exist.")
         if await is_user_fed_owner(fed_id, user.id):
-            if "/unsetfedlog" in message.text:
-                log_group_id = LOG_GROUP_ID
-            else:
-                log_group_id = chat.id
+            log_group_id = LOG_GROUP_ID if "/unsetfedlog" in message.text else chat.id
             loged = await set_log_chat(fed_id, log_group_id)
             if "/unsetfedlog" in message.text:
                 return await message.reply_text("log channel removed successfully.")
@@ -281,21 +271,17 @@ async def fed_chat(self, message):
     fed_id = await get_fed_id(chat.id)
 
     member = await self.get_chat_member(chat.id, user.id)
-    if (
-        member.status == ChatMemberStatus.OWNER
-        or member.status == ChatMemberStatus.ADMINISTRATOR
-    ):
-        pass
-    else:
+    if member.status not in [
+        ChatMemberStatus.OWNER,
+        ChatMemberStatus.ADMINISTRATOR,
+    ]:
         return await message.reply_text("You must be an admin to execute this command")
 
     if not fed_id:
         return await message.reply_text("This group is not in any federation!")
     info = await get_fed_info(fed_id)
 
-    text = "This group is part of the following federation:"
-    text += "\n{} (ID: <code>{}</code>)".format(info["fed_name"], fed_id)
-
+    text = f'This group is part of the following federation:\n{info["fed_name"]} (ID: <code>{fed_id}</code>)'
     await message.reply_text(text, parse_mode=ParseMode.HTML)
 
 
@@ -312,13 +298,10 @@ async def join_fed(self, message):
     member = await self.get_chat_member(chat.id, user.id)
     fed_id = await get_fed_id(int(chat.id))
 
-    if user.id in SUDO:
-        pass
-    else:
-        if member.status == ChatMemberStatus.OWNER:
-            pass
-        else:
-            return await message.reply_text("Only group creators can use this command!")
+    if (
+        user.id in SUDO or member.status != ChatMemberStatus.OWNER
+    ) and user.id not in SUDO:
+        return await message.reply_text("Only group creators can use this command!")
     if fed_id:
         return await message.reply_text("You cannot join two federations from one chat")
     args = message.text.split(" ", 1)
@@ -334,18 +317,15 @@ async def join_fed(self, message):
                 f"Failed to join federation! Please contact {SUPPORT_CHAT} if this problem persists!"
             )
 
-        get_fedlog = getfed["log_group_id"]
-        if get_fedlog:
+        if get_fedlog := getfed["log_group_id"]:
             await app.send_message(
                 get_fedlog,
-                "Chat **{}** has joined the federation **{}**".format(
-                    chat.title, getfed["fed_name"]
-                ),
+                f'Chat **{chat.title}** has joined the federation **{getfed["fed_name"]}**',
                 parse_mode=ParseMode.MARKDOWN,
             )
 
         await message.reply_text(
-            "This group has joined the federation: {}!".format(getfed["fed_name"])
+            f'This group has joined the federation: {getfed["fed_name"]}!'
         )
     else:
         await message.reply_text(
@@ -370,17 +350,14 @@ async def leave_fed(client, message):
     member = await app.get_chat_member(chat.id, user.id)
     if member.status == ChatMemberStatus.OWNER or user.id in SUDO:
         if await chat_leave_fed(int(chat.id)) is True:
-            get_fedlog = fed_info["log_group_id"]
-            if get_fedlog:
+            if get_fedlog := fed_info["log_group_id"]:
                 await app.send_message(
                     get_fedlog,
-                    "Chat **{}** has left the federation **{}**".format(
-                        chat.title, fed_info["fed_name"]
-                    ),
+                    f'Chat **{chat.title}** has left the federation **{fed_info["fed_name"]}**',
                     parse_mode=ParseMode.MARKDOWN,
                 )
             await message.reply_text(
-                "This group has left the federation {}!".format(fed_info["fed_name"]),
+                f'This group has left the federation {fed_info["fed_name"]}!'
             )
         else:
             await message.reply_text(
@@ -412,9 +389,7 @@ async def fed_chat(client, message):
         fed_owner = info["owner_id"]
         fed_admins = info["fadmins"]
         all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-        if user.id in all_admins or user.id in SUDO:
-            pass
-        else:
+        if user.id not in all_admins and user.id not in SUDO:
             return await message.reply_text(
                 "You need to be a Fed Admin to use this command"
             )
@@ -602,12 +577,10 @@ async def fban_user(client, message):
     if not fed_id:
         return await message.reply_text("**This chat is not a part of any federation.")
     info = await get_fed_info(fed_id)
-    fed_owner = info["owner_id"]
     fed_admins = info["fadmins"]
+    fed_owner = info["owner_id"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id in all_admins or from_user.id in SUDO:
-        pass
-    else:
+    if from_user.id not in all_admins and from_user.id not in SUDO:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )
@@ -660,8 +633,7 @@ async def fban_user(client, message):
     try:
         await app.send_message(
             user.id,
-            f"Hello, You have been fed banned by {from_user.mention},"
-            + " You can appeal for this ban by talking to him.",
+            f"Hello, You have been fed banned by {from_user.mention}, You can appeal for this ban by talking to him.",
         )
     except Exception:
         pass
@@ -702,12 +674,10 @@ async def funban_user(client, message):
     if not fed_id:
         return await message.reply_text("**This chat is not a part of any federation.")
     info = await get_fed_info(fed_id)
-    fed_owner = info["owner_id"]
     fed_admins = info["fadmins"]
+    fed_owner = info["owner_id"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id in all_admins or from_user.id in SUDO:
-        pass
-    else:
+    if from_user.id not in all_admins and from_user.id not in SUDO:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )
@@ -755,8 +725,7 @@ async def funban_user(client, message):
     try:
         await app.send_message(
             user.id,
-            f"Hello, You have been fed unbanned by {from_user.mention},"
-            + " You can thank him for his action.",
+            f"Hello, You have been fed unbanned by {from_user.mention}, You can thank him for his action.",
         )
     except Exception:
         pass
@@ -838,9 +807,7 @@ async def fbroadcast_message(client, message):
     fed_owner = info["owner_id"]
     fed_admins = info["fadmins"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id in all_admins or from_user.id in SUDO:
-        pass
-    else:
+    if from_user.id not in all_admins and from_user.id not in SUDO:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )
@@ -891,12 +858,9 @@ async def del_fed_button(client, cb):
 
     getfed = await get_fed_info(fed_id)
     if getfed:
-        delete = fedsdb.delete_one({"fed_id": str(fed_id)})
-        if delete:
+        if delete := fedsdb.delete_one({"fed_id": str(fed_id)}):
             await cb.message.edit_text(
-                "You have removed your Federation! Now all the Groups that are connected with `{}` do not have a Federation.".format(
-                    getfed["fed_name"]
-                ),
+                f'You have removed your Federation! Now all the Groups that are connected with `{getfed["fed_name"]}` do not have a Federation.',
                 parse_mode=ParseMode.MARKDOWN,
             )
 

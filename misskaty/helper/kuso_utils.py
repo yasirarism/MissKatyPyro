@@ -18,7 +18,7 @@ async def kusonimeBypass(url: str):
     result = {}
     page = await fetch.get(url)
     if page.status_code != 200:
-        raise Exception(f"ERROR: Hostname might be blocked by server!")
+        raise Exception("ERROR: Hostname might be blocked by server!")
     try:
         soup = BeautifulSoup(page.text, "lxml")
         thumb = soup.find("div", {"class": "post-thumb"}).find("img").get("src")
@@ -96,7 +96,7 @@ async def kusonimeBypass(url: str):
             num += 1
         result.update({"title": title, "thumb": thumb, "genre": genre, "genre_string": ", ".join(genre), "status_anime": status_anime, "season": season, "tipe": tipe, "ep": ep, "score": score, "duration": duration, "rilis": rilis, "data": data})
     except Exception as e:
-        if len(result) != 0:
+        if result:
             result.clear()
         err = traceback.format_exc()
         LOGGER.error(f"class: {e.__class__.__name_}, {err}")
@@ -133,10 +133,11 @@ async def byPassPh(url: str, name: str) -> Optional[str]:
     <br>
 {{/data}}
 """.strip()
-    plink = await post_to_telegraph(
-        False, f"{kusonime.get('title')} By {escape(name)}", chevron.render(template, kusonime)
+    return await post_to_telegraph(
+        False,
+        f"{kusonime.get('title')} By {escape(name)}",
+        chevron.render(template, kusonime),
     )
-    return plink
 
 
 class Kusonime:

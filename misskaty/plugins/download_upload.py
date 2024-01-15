@@ -242,7 +242,12 @@ async def twitterdl(_, message):
             "ts": "1691416179",
             "source": "form",
         }
-        post = await fetch.post(f"https://ssstwitter.com/id", data=data, headers=headers, follow_redirects=True)
+        post = await fetch.post(
+            "https://ssstwitter.com/id",
+            data=data,
+            headers=headers,
+            follow_redirects=True,
+        )
         if post.status_code not in [200, 401]:
             return await msg.edit_msg("Unknown error.")
         soup = BeautifulSoup(post.text, "lxml")
@@ -275,7 +280,9 @@ async def tiktokdl(_, message):
     msg = await message.reply("Trying download...")
     try:
         r = (
-            await fetch.post(f"https://lovetik.com/api/ajax/search", data={"query": link})
+            await fetch.post(
+                "https://lovetik.com/api/ajax/search", data={"query": link}
+            )
         ).json()
         fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
         filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])

@@ -24,7 +24,11 @@ def extract_urls(reply_markup):
         for i, row in enumerate(buttons):
             for j, button in enumerate(row):
                 if button.url:
-                    name = "\n~\nbutton" if i * len(row) + j + 1 == 1 else f"button{i * len(row) + j + 1}"
+                    name = (
+                        "\n~\nbutton"
+                        if i * len(row) + j == 0
+                        else f"button{i * len(row) + j + 1}"
+                    )
                     urls.append((f"{name}", button.text, button.url))
     return urls
 

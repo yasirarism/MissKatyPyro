@@ -863,7 +863,6 @@ async def set_chat_photo(_, ctx: Message):
 
 @app.on_message(filters.group & filters.command('mentionall', COMMAND_HANDLER))
 async def mentionall(app: Client, msg: Message):
-    NUM = 4
     user = await msg.chat.get_member(msg.from_user.id)
     if user.status in (enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR):
         total = []
@@ -874,6 +873,7 @@ async def mentionall(app: Client, msg: Message):
             else:
                 total.append(member.user.mention())
 
+        NUM = 4
         for i in range(0, len(total), NUM):
             message = ' '.join(total[i:i+NUM])
             await app.send_message(msg.chat.id, message, message_thread_id=msg.message_thread_id)

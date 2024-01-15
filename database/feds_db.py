@@ -9,9 +9,7 @@ fedsdb = dbname["federation"]
 
 def get_fed_info(fed_id):
     get = fedsdb.find_one({"fed_id": str(fed_id)})
-    if get is None:
-        return False
-    return get
+    return False if get is None else get
 
 
 async def get_fed_id(chat_id):
@@ -19,12 +17,14 @@ async def get_fed_id(chat_id):
 
     if get is None:
         return False
-    else:
-        for chat_info in get.get("chat_ids", []):
-            if chat_info["chat_id"] == int(chat_id):
-                return get["fed_id"]
-
-    return False
+    return next(
+        (
+            get["fed_id"]
+            for chat_info in get.get("chat_ids", [])
+            if chat_info["chat_id"] == int(chat_id)
+        ),
+        False,
+    )
 
 
 async def get_feds_by_owner(owner_id):
@@ -32,10 +32,9 @@ async def get_feds_by_owner(owner_id):
     feds = await cursor.to_list(length=None)
     if not feds:
         return False
-    federations = [
+    return [
         {"fed_id": fed["fed_id"], "fed_name": fed["fed_name"]} for fed in feds
     ]
-    return federations
 
 
 async def transfer_owner(fed_id, current_owner_id, new_owner_id):
@@ -58,10 +57,7 @@ async def set_log_chat(fed_id, log_group_id: int):
 
 async def get_fed_name(chat_id):
     get = await fedsdb.find_one(int(chat_id))
-    if get is None:
-        return False
-    else:
-        return get["fed_name"]
+    return False if get is None else get["fed_name"]
 
 
 async def is_user_fed_owner(fed_id, user_id: int):
@@ -69,19 +65,13 @@ async def is_user_fed_owner(fed_id, user_id: int):
     if not getfed:
         return False
     owner_id = getfed["owner_id"]
-    if user_id == owner_id or user_id not in SUDO:
-        return True
-    else:
-        return False
+    return user_id == owner_id or user_id not in SUDO
 
 
 async def search_fed_by_id(fed_id):
     get = await fedsdb.find_one({"fed_id": str(fed_id)})
 
-    if get is not None:
-        return get
-    else:
-        return False
+    return get if get is not None else False
 
 
 def chat_join_fed(fed_id, chat_name, chat_id):
@@ -96,41 +86,26 @@ async def chat_leave_fed(chat_id):
         {"chat_ids.chat_id": int(chat_id)},
         {"$pull": {"chat_ids": {"chat_id": int(chat_id)}}},
     )
-    if result.modified_count > 0:
-        return True
-    else:
-        return False
+    return result.modified_count > 0
 
 
 async def user_join_fed(fed_id, user_id):
     result = await fedsdb.update_one(
         {"fed_id": fed_id}, {"$addToSet": {"fadmins": int(user_id)}}, upsert=True
     )
-    if result.modified_count > 0:
-        return True
-    else:
-        return False
+    return result.modified_count > 0
 
 
 async def user_demote_fed(fed_id, user_id):
     result = await fedsdb.update_one(
         {"fed_id": fed_id}, {"$pull": {"fadmins": int(user_id)}}
     )
-    if result.modified_count > 0:
-        return True
-    else:
-        return False
+    return result.modified_count > 0
 
 
 async def search_user_in_fed(fed_id, user_id):
     getfed = await search_fed_by_id(fed_id)
-    if getfed is None:
-        return False
-    fadmins = getfed["fadmins"]
-    if user_id in fadmins:
-        return True
-    else:
-        return False
+    return False if getfed is None else user_id in getfed["fadmins"]
 
 
 async def chat_id_and_names_in_fed(fed_id):

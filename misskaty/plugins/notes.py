@@ -69,13 +69,12 @@ async def save_notee(_, message):
                 data = text[1].strip()
                 if replied_message.sticker or replied_message.video_note:
                     data = None
+            elif replied_message.sticker or replied_message.video_note:
+                data = None
+            elif not replied_message.text and not replied_message.caption:
+                data = None
             else:
-                if replied_message.sticker or replied_message.video_note:
-                    data = None
-                elif not replied_message.text and not replied_message.caption:
-                    data = None
-                else:
-                    data = replied_message.text.markdown if replied_message.text else replied_message.caption.markdown
+                data = replied_message.text.markdown if replied_message.text else replied_message.caption.markdown
             if replied_message.text:
                 _type = "text"
                 file_id = None
@@ -103,9 +102,8 @@ async def save_notee(_, message):
             if replied_message.voice:
                 _type = "voice"
                 file_id = replied_message.voice.file_id
-            if replied_message.reply_markup and not "~" in data:
-                urls = extract_urls(replied_message.reply_markup)
-                if urls:
+            if replied_message.reply_markup and "~" not in data:
+                if urls := extract_urls(replied_message.reply_markup):
                     response = "\n".join([f"{name}=[{text}, {url}]" for name, text, url in urls])
                     data = data + response
             note = {
@@ -149,13 +147,11 @@ async def get_one_note(self, message):
     data = _note.get("data")
     file_id = _note.get("file_id")
     keyb = None
-    if data:       
+    if data:   
         if findall(r"\[.+\,.+\]", data):
-            keyboard = extract_text_and_keyb(ikb, data)
-            if keyboard:
+            if keyboard := extract_text_and_keyb(ikb, data):
                 data, keyb = keyboard
-    replied_message = message.reply_to_message
-    if replied_message:
+    if replied_message := message.reply_to_message:
         if replied_message.from_user.id != message.from_user.id:
             message = replied_message
     if type_ == "text":
@@ -235,15 +231,14 @@ async def delete_all(_, message):
     _notes = await get_note_names(message.chat.id)
     if not _notes:
         return await message.reply_text("**No notes in this chat.**")
-    else:
-        keyboard = InlineKeyboardMarkup(
-            [
-                [InlineKeyboardButton("YES, DO IT", callback_data="delete_yes"), 
-                 InlineKeyboardButton("Cancel", callback_data="delete_no")
-                ]
+    keyboard = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("YES, DO IT", callback_data="delete_yes"), 
+             InlineKeyboardButton("Cancel", callback_data="delete_no")
             ]
-        )
-        await message.reply_text("**Are you sure you want to delete all the notes in this chat forever ?.**", reply_markup=keyboard)
+        ]
+    )
+    await message.reply_text("**Are you sure you want to delete all the notes in this chat forever ?.**", reply_markup=keyboard)
 
 
 @app.on_callback_query(filters.regex("delete_(.*)"))

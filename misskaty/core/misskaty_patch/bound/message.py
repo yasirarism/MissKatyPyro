@@ -24,9 +24,7 @@ LOGGER = getLogger("MissKaty")
 
 @property
 def parse_cmd(msg):
-    if len(msg.command) > 1:
-        return msg.text.split(None, 1)[1]
-    return None
+    return msg.text.split(None, 1)[1] if len(msg.command) > 1 else None
 
 
 async def reply_text(
