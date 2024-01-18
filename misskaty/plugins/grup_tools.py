@@ -94,6 +94,7 @@ def welcomepic(pic, user, chat, id, strings):
 )
 @use_chat_lang()
 async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
+    c.log.info(member)
     if not (
         member.new_chat_member
         and member.new_chat_member.status not in {CMS.BANNED}
