@@ -6,6 +6,7 @@ from logging import getLogger
 
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 from pyrogram import enums, filters
+from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors import (
     ChatAdminRequired,
     ChatSendPhotosForbidden,
@@ -90,11 +91,10 @@ def welcomepic(pic, user, chat, id, strings):
 
 
 @app.on_chat_member_updated(
-    filters.group & filters.chat([-1001128045651, -1001777794636])
+    filters.group & filters.chat([-1001128045651, -1001777794636]), group=6
 )
 @use_chat_lang()
 async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
-    c.log.info(member)
     if not (
         member.new_chat_member
         and member.new_chat_member.status not in {CMS.BANNED}
