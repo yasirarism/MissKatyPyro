@@ -164,8 +164,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
             pass
 
 
-@app.on_message(filters.new_chat_members & filters.group, group=4)
-@use_chat_lang()
+# @app.on_message(filters.new_chat_members & filters.group, group=4)
+# @use_chat_lang()
 async def greet_group(bot, message, strings):
     for u in message.new_chat_members:
         try:
