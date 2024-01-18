@@ -94,10 +94,10 @@ def welcomepic(pic, user, chat, id, strings):
 )
 @use_chat_lang()
 async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
-    if (
-        not member.new_chat_member
-        or member.new_chat_member.status in {"banned", "left", "restricted"}
-        or member.old_chat_member
+    if not (
+        member.new_chat_member
+        and member.new_chat_member.status not in {CMS.BANNED}
+        and not member.old_chat_member
     ):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
