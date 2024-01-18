@@ -6,7 +6,7 @@ from glob import glob
 from typing import Dict, List
 
 from pyrogram.enums import ChatType
-from pyrogram.types import CallbackQuery, InlineQuery, Message
+from pyrogram.types import CallbackQuery, ChatMemberUpdated, InlineQuery, Message
 
 from database.locale_db import get_db_lang
 
@@ -54,7 +54,7 @@ def get_locale_string(
 async def get_lang(message) -> str:
     if isinstance(message, CallbackQuery):
         chat = message.message.chat
-    elif isinstance(message, Message):
+    elif isinstance(message, Message) or isinstance(message, ChatMemberUpdated):
         chat = message.chat
     elif isinstance(message, InlineQuery):
         chat, chat.type = message.from_user, ChatType.PRIVATE
