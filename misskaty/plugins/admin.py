@@ -90,7 +90,7 @@ __HELP__ = """
 
 
 # Admin cache reload
-@app.on_chat_member_updated()
+@app.on_chat_member_updated(filters.group, group=5)
 async def admin_cache_func(_, cmu):
     if cmu.old_chat_member and cmu.old_chat_member.promoted_by:
         try:
