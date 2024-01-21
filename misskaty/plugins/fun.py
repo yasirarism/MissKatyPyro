@@ -217,7 +217,7 @@ async def givereact(c, m):
         await m.reply(str(err))
 
 
-@app.on_message_reaction_count_updated(filters.chat(-1001201566570), group=10)
+@app.on_message_reaction_updated(filters.chat(-1001201566570))
 @capture_err
-async def reaction_update(_, ctx):
+async def reaction_update(self, ctx):
     await self.send_message(ctx.chat.id, message_thread_id=ctx.message_thread_id, text=ctx)
