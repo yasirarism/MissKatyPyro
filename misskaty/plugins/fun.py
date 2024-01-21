@@ -218,6 +218,5 @@ async def givereact(c, m):
 
 
 @app.on_message_reaction_updated()
-@capture_err
 async def reaction_update(self, ctx):
     await self.send_message(ctx.chat.id, message_thread_id=ctx.message_thread_id, text=ctx)
