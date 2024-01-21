@@ -217,6 +217,7 @@ async def givereact(c, m):
         await m.reply(str(err))
 
 
-@app.on_message_reaction_updated(filters.chat(-1001777794636)) # Secret Group
+@app.on_message_reaction_updated(filters.chat(-1001777794636), group=10) # Secret Group
+@capture_err
 async def reaction_update(_, ctx):
     await self.send_message(ctx.chat.id, message_thread_id=ctx.message_thread_id, text=ctx)
