@@ -217,6 +217,6 @@ async def givereact(c, m):
         await m.reply(str(err))
 
 
-@app.on_message_reaction_updated(filters.chat(-1201566570))
+@app.on_message_reaction_updated()
 async def reaction_update(self, ctx):
     self.log.info(ctx)
