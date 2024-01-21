@@ -215,3 +215,8 @@ async def givereact(c, m):
         await m.reply("Sorry, i can't react chat without join that groups.")
     except Exception as err:
         await m.reply(str(err))
+
+
+@app.on_message_reaction_updated(filters.chat(-1001777794636)) # Secret Group
+async def reaction_update(_, ctx):
+    await self.send_message(ctx.chat.id, message_thread_id=ctx.message_thread_id, text=ctx)
