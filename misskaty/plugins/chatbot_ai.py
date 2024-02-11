@@ -105,7 +105,7 @@ async def openai_chatbot(_, ctx: Message, strings):
             strings("answers_too_long").format(answerlink=answerlink),
             disable_web_page_preview=True,
         )
-    except APIConnectionError as e:
+    except APIConnectionError as str(e):
         await msg.edit_msg(f"The server could not be reached because {e.__cause__}")
     except RateLimitError as e:
         if "billing details" in e:
