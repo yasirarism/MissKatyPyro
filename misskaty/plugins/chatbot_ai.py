@@ -105,10 +105,10 @@ async def openai_chatbot(_, ctx: Message, strings):
             strings("answers_too_long").format(answerlink=answerlink),
             disable_web_page_preview=True,
         )
-    except APIConnectionError as str(e):
+    except APIConnectionError as e:
         await msg.edit_msg(f"The server could not be reached because {e.__cause__}")
     except RateLimitError as e:
-        if "billing details" in e:
+        if "billing details" in str(e):
             return await msg.edit_msg("This openai key from this bot has expired, please give openai key donation for bot owner.")
         await msg.edit_msg("You're got rate limit, please try again later.")
     except APIStatusError as e:
