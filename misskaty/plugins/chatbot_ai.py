@@ -108,7 +108,9 @@ async def openai_chatbot(_, ctx: Message, strings):
     except APIConnectionError as e:
         await msg.edit_msg(f"The server could not be reached because {e.__cause__}")
     except RateLimitError as e:
-        await msg.edit_msg("A 429 status code was received; we should back off a bit.")
+        if "billing details" in e:
+            return await msg.edit_msg("This openai key from this bot has expired, please give openai key donation for bot owner.")
+        await msg.edit_msg("You're got rate limit, please try again later.")
     except APIStatusError as e:
         await msg.edit_msg(f"Another {e.status_code} status code was received with response {e.response}")
     except Exception as e:
