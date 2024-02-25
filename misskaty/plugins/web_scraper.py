@@ -45,8 +45,8 @@ webdb = dbname["web"]
 
 web = {
     "yasirapi": "https://yasirapi.eu.org",
-    "pahe": "https://pahe.ink",
-    "savefilm21": "https://savefilm21.digital",
+    "pahe": "pahe.ink",
+    "savefilm21": "https://sf1.savefilm21.digital",
     "melongmovie": "https://melongmovie.site",
     "terbit21": "https://terbit21.gold",
     "lk21": "https://tv1.lk21official.pro",
