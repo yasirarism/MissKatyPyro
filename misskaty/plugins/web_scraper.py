@@ -45,7 +45,7 @@ webdb = dbname["web"]
 
 web = {
     "yasirapi": "https://yasirapi.eu.org",
-    "pahe": "https://pahe.me",
+    "pahe": "https://pahe.ink",
     "savefilm21": "https://savefilm21.digital",
     "melongmovie": "https://melongmovie.site",
     "terbit21": "https://terbit21.gold",
@@ -150,9 +150,9 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
         with contextlib.redirect_stdout(sys.stderr):
             try:
                 if kueri:
-                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe?q={kueri}")
+                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe?q={kueri}&domain={web['pahe']}")
                 else:
-                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe")
+                    pahejson = await fetch.get(f"{web['yasirapi']}/pahe?domain={web['pahe']}")
                 pahejson.raise_for_status()
             except httpx.HTTPError as exc:
                 await msg.edit_msg(f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>")
