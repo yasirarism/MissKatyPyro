@@ -58,7 +58,7 @@ app = Client(
     sleep_threshold=180,
     app_version="MissKatyPyro Stable",
     workers=50,
-    max_concurrent_transmissions=20,
+    max_concurrent_transmissions=4,
 )
 app.db = AsyncClient(DATABASE_URI)
 app.log = getLogger("MissKaty")
