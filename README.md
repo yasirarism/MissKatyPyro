@@ -43,7 +43,6 @@
 ## [3] Donation and Support
 *For Indonesian Only and some supported country:*<br>
  🌱 [QRIS][qris-url]<br>
- 🌱 [Mayar ID][mayar]<br>
 
 *For International Payment:*<br>
  🌱 [Paypal][paypal-url]<br>
@@ -186,7 +185,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. O
 <!--Url for Buttons-->
 [readme-ko-shield]: https://img.shields.io/badge/-readme%20in%20Indonesian-2E2E2E?style=for-the-badge
 [view-demo-shield]: https://img.shields.io/badge/-%F0%9F%98%8E%20view%20demo-F3F781?style=for-the-badge
-[view-demo-url]: https://t.me/MissKatyPyro
+[view-demo-url]: https://t.me/MissKatyBot
 [report-bug-shield]: https://img.shields.io/badge/-%F0%9F%90%9E%20report%20bug-F5A9A9?style=for-the-badge
 [report-bug-url]: https://github.com/yasirarism/MissKatyPyro/issues
 [request-feature-shield]: https://img.shields.io/badge/-%E2%9C%A8%20request%20feature-A9D0F5?style=for-the-badge
