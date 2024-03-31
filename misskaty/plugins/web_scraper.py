@@ -634,9 +634,9 @@ async def pahe_s(_, message, strings):
 
 
 # Gomov CMD
-@app.on_cmd("gomov", no_channel=True)
+@app.on_cmd(["gomov","klikxxi"], no_channel=True)
 @use_chat_lang()
-async def gomov_s(_, message, strings):
+async def gomov_s(self, message, strings):
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -653,7 +653,7 @@ async def gomov_s(_, message, strings):
         CurrentPage,
         "page_gomov#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
     await pesan.edit_msg(gomovres, disable_web_page_preview=True, reply_markup=keyboard)
@@ -662,7 +662,7 @@ async def gomov_s(_, message, strings):
 # MelongMovie CMD
 @app.on_cmd("melongmovie", no_channel=True)
 @use_chat_lang()
-async def melong_s(_, message, strings):
+async def melong_s(self, message, strings):
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -679,7 +679,7 @@ async def melong_s(_, message, strings):
         CurrentPage,
         "page_melong#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
     try:
@@ -695,7 +695,7 @@ async def melong_s(_, message, strings):
 # Savefilm21 CMD
 @app.on_cmd("savefilm21", no_channel=True)
 @use_chat_lang()
-async def savefilm_s(_, message, strings):
+async def savefilm_s(self, message, strings):
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -712,7 +712,7 @@ async def savefilm_s(_, message, strings):
         CurrentPage,
         "page_sf21#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
     await pesan.edit_msg(
@@ -723,7 +723,7 @@ async def savefilm_s(_, message, strings):
 # NoDrakor CMD
 @app.on_cmd("nodrakor", no_channel=True)
 @use_chat_lang()
-async def nodrakor_s(_, message, strings):
+async def nodrakor_s(self, message, strings):
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -740,7 +740,7 @@ async def nodrakor_s(_, message, strings):
         CurrentPage,
         "page_nodrakor#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
     await pesan.edit_msg(
@@ -751,7 +751,7 @@ async def nodrakor_s(_, message, strings):
 # Kusonime CMD
 @app.on_cmd("kusonime", no_channel=True)
 @use_chat_lang()
-async def kusonime_s(_, message, strings):
+async def kusonime_s(self, message, strings):
     kueri = " ".join(message.command[1:])
     if not kueri:
         kueri = ""
@@ -768,7 +768,7 @@ async def kusonime_s(_, message, strings):
         CurrentPage,
         "page_kuso#{number}" + f"#{pesan.id}#{message.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=message.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn1)
     if btn2:
         keyboard.row(*btn2)
@@ -779,7 +779,7 @@ async def kusonime_s(_, message, strings):
 # Lendrive CMD
 @app.on_cmd("lendrive", no_channel=True)
 @use_chat_lang()
-async def lendrive_s(_, ctx: Message, strings):
+async def lendrive_s(self, ctx: Message, strings):
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -796,7 +796,7 @@ async def lendrive_s(_, ctx: Message, strings):
         CurrentPage,
         "page_lendrive#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=ctx.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
     await pesan.edit_msg(lendres, disable_web_page_preview=True, reply_markup=keyboard)
@@ -805,7 +805,7 @@ async def lendrive_s(_, ctx: Message, strings):
 # Movieku CMD
 @app.on_cmd("movieku", no_channel=True)
 @use_chat_lang()
-async def movieku_s(_, ctx: Message, strings):
+async def movieku_s(self, ctx: Message, strings):
     kueri = ctx.input
     if not kueri:
         kueri = ""
@@ -829,7 +829,7 @@ async def movieku_s(_, ctx: Message, strings):
 # Savefillm21 Page Callback
 @app.on_cb("page_sf21#")
 @use_chat_lang()
-async def sf21page_callback(_, callback_query, strings):
+async def sf21page_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -860,7 +860,7 @@ async def sf21page_callback(_, callback_query, strings):
         CurrentPage,
         "page_sf21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
@@ -870,10 +870,10 @@ async def sf21page_callback(_, callback_query, strings):
     )
 
 
-# Savefillm21 Page Callback
+# NoDrakor Page Callback
 @app.on_cb("page_nodrakor#")
 @use_chat_lang()
-async def nodrakorpage_cb(_, callback_query, strings):
+async def nodrakorpage_cb(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -904,7 +904,7 @@ async def nodrakorpage_cb(_, callback_query, strings):
         CurrentPage,
         "page_nodrakor#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
@@ -917,7 +917,7 @@ async def nodrakorpage_cb(_, callback_query, strings):
 # Kuso Page Callback
 @app.on_cb("page_kuso#")
 @use_chat_lang()
-async def kusopage_callback(_, callback_query, strings):
+async def kusopage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -946,7 +946,7 @@ async def kusopage_callback(_, callback_query, strings):
         CurrentPage,
         "page_kuso#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn1)
     if btn2:
         keyboard.row(*btn2)
@@ -961,7 +961,7 @@ async def kusopage_callback(_, callback_query, strings):
 # Lendrive Page Callback
 @app.on_cb("page_lendrive#")
 @use_chat_lang()
-async def lendrivepage_callback(_, callback_query, strings):
+async def lendrivepage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -990,7 +990,7 @@ async def lendrivepage_callback(_, callback_query, strings):
         CurrentPage,
         "page_lendrive#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
@@ -1106,7 +1106,7 @@ async def terbit21page_callback(_, callback_query, strings):
 # Page Callback Melong
 @app.on_cb("page_melong#")
 @use_chat_lang()
-async def melongpage_callback(_, callback_query, strings):
+async def melongpage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -1135,7 +1135,7 @@ async def melongpage_callback(_, callback_query, strings):
         CurrentPage,
         "page_melong#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
@@ -1220,7 +1220,7 @@ async def pahepage_callback(_, callback_query, strings):
 # Gomov Page Callback
 @app.on_cb("page_gomov#")
 @use_chat_lang()
-async def gomovpage_callback(_, callback_query, strings):
+async def gomovpage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -1249,7 +1249,7 @@ async def gomovpage_callback(_, callback_query, strings):
         CurrentPage,
         "page_gomov#{number}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=callback_query.from_user.id))
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
     keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
