@@ -313,7 +313,7 @@ async def gsearch(_, message):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
             try:
-                snippet = result.select_one("#rso .lyLwlc").text
+                snippet = result.find(class_="kb0PBd cvP2Ce A9Y9g").get_text()
             except:
                 snippet = "-"
 
