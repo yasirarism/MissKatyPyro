@@ -25,6 +25,7 @@ __HELP__ = """
 
 
 @app.on_message(filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10))
+@app.on_bot_business_message(filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
 async def gemini_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
@@ -56,10 +57,13 @@ async def gemini_chatbot(_, ctx: Message, strings):
             timeout=20.0,
         )
         if not response.json().get("candidates"):
-            return await msg.edit_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
-        await msg.edit_msg(html.escape(response.json()["candidates"][0]["content"]["parts"][0]["text"]))
+            await ctx.reply_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
+        else:
+            await ctx.reply_msg(html.escape(response.json()["candidates"][0]["content"]["parts"][0]["text"]))
+        await msg.delete()
     except Exception as e:
-        await msg.edit_msg(str(e))
+        await ctx.reply_msg(str(e))
+        await msg.delete()
 
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
