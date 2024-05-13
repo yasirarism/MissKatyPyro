@@ -36,8 +36,11 @@ async def gemini_chatbot(_, ctx: Message, strings):
         return await ctx.reply_msg("GOOGLEAI_KEY env is missing!!!")
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        response = await fetch.get(
-            f'https://yasirapi.eu.org/gemini?query={ctx.text.split(maxsplit=1)[1]}'
+        data = {
+            "query": ctx.text.split(maxsplit=1)[1],
+        }
+        response = await fetch.post(
+            "https://yasirapi.eu.org/gemini", data=data
         )
         if not response.json().get("candidates"):
             await ctx.reply_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
