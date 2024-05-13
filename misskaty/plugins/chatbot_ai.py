@@ -37,7 +37,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
         response = await fetch.get(
-            f'https://yasirapi.eu.org/gemini?query={ctx.text.split(maxsplit=1)}'
+            f'https://yasirapi.eu.org/gemini?query={ctx.text.split(maxsplit=1)[1]}'
         )
         if not response.json().get("candidates"):
             await ctx.reply_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
