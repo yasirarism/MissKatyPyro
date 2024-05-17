@@ -32,7 +32,7 @@ __HELP__ = """
 /movieku [query <optional>] - Scrape website data from Movieku.cc
 /kusonime [query <optional>] - Scrape website data from Kusonime
 /lendrive [query <optional>] - Scrape website data from Lendrive
-/gomov [query <optional>] - Scrape website data from GoMov.
+/klikxxi [query <optional>] - Scrape website data from Klikxxi aka GoMov.
 /samehadaku [query <optional>] - Scrape website data from Samehadaku.
 /nodrakor [query <optional>] - Scrape website data from NoDrakor
 """
@@ -476,7 +476,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Tidak Ditemukan":
+        if entry[0].text.strip() == "Nothing Found":
             if not kueri:
                 await msg.edit_msg(strings("no_result"), del_in=5)
             else:
