@@ -25,8 +25,6 @@ from utils import get_file_id
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
 @use_chat_lang()
 async def mediainfo(_, ctx: Message, strings):
-    if not ctx.from_user:
-        return
     if ctx.reply_to_message and ctx.reply_to_message.media:
         process = await ctx.reply_msg(strings("processing_text"), quote=True)
         file_info = get_file_id(ctx.reply_to_message)
@@ -78,7 +76,7 @@ DETAILS
             out_file.name = "MissKaty_Mediainfo.txt"
             await ctx.reply_document(
                 out_file,
-                caption=strings("capt_media").format(ment=ctx.from_user.mention),
+                caption=strings("capt_media").format(ment=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title),
                 thumb="assets/thumb.jpg",
                 reply_markup=markup,
             )
@@ -121,7 +119,7 @@ DETAILS
                 out_file.name = "MissKaty_Mediainfo.txt"
                 await ctx.reply_document(
                     out_file,
-                    caption=strings("capt_media").format(ment=ctx.from_user.mention),
+                    caption=strings("capt_media").format(ment=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title),
                     thumb="assets/thumb.jpg",
                     reply_markup=markup,
                 )
