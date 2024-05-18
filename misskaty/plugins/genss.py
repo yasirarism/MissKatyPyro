@@ -37,8 +37,6 @@ __HELP__ = """"
 @new_task
 @use_chat_lang()
 async def genss(self: Client, ctx: Message, strings):
-    if not ctx.from_user:
-        return
     replied = ctx.reply_to_message
     if len(ctx.command) == 2 and is_url(ctx.command[1]):
         pesan = await ctx.reply_msg(strings("wait_dl"), quote=True)
@@ -113,8 +111,8 @@ async def genss(self: Client, ctx: Message, strings):
                     )
                 await ctx.reply_msg(
                     strings("up_msg").format(
-                        namma=ctx.from_user.mention,
-                        id=ctx.from_user.id,
+                        namma=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title,
+                        id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.title,
                         bot_uname=self.me.username,
                     ),
                     reply_to_message_id=ctx.id,
@@ -180,8 +178,8 @@ async def genss(self: Client, ctx: Message, strings):
                     )
                 await ctx.reply_msg(
                     strings("up_msg").format(
-                        namma=ctx.from_user.mention,
-                        id=ctx.from_user.id,
+                        namma=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title,
+                        id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.id,
                         bot_uname=self.me.username,
                     ),
                     reply_to_message_id=ctx.id,
