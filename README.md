@@ -34,7 +34,7 @@
 
 ## [2] Framework Tools And Server That Used To Build This Bot
  🌱 PyroFork v2.x.x (Fork of Pyrogram with Topics, Stories Support and Some Patch)<br>
- 🌱 Python 3.11 Support<br>
+ 🌱 Python 3.12 Support<br>
  🌱 MongoDB as Database<br>
  🌱 PyKeyboard for Building Pagination<br>
  🌱 VS Code<br>
@@ -90,7 +90,7 @@ If you want help me fixing some error in my bot, you can make pull request to th
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
 #### Build And Run Using Legacy Method
-- Make sure minimum python version is 3.8 and max python 3.11 to prevent some errors. Check it with this command:
+- Make sure minimum python version is 3.8 and max python 3.12 to prevent some errors. Check it with this command:
 ```
 python3 --version
 ```
@@ -98,12 +98,12 @@ python3 --version
 ```
 apt update -y & apt install libjpeg-dev zlib1g-dev libwebp-dev python3-pip python3-lxml git wget curl ffmpeg locales tzdata neofetch mediainfo speedtest-cli -y
 ```
-- Install requirements.txt, if using python 3.11, you need use venv when install pip package.<br/>
+- Install requirements.txt, if using python => 3.11, you need use venv when install pip package.<br/>
 *Python < 3.10*
 ```
 pip3 install -r requirements.txt
 ```
-*Python 3.11*
+*Python => 3.11*
 ```
 python3 -m venv nama_venv
 source nama_venv/bin/activate
@@ -195,7 +195,7 @@ WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. O
 [readme-ko-url]: README.id.md
 [kofi-url]: https://ko-fi.com/yasirarism
 [paypal-url]: https://paypal.me/yasirarism
-[qris-url]: https://img.yasirweb.eu.org/file/9427d61d6968b8ee4fb2f.jpg
+[qris-url]: https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg
 [mayar]: https://yasirarism.mayar.link/payme
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
