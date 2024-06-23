@@ -6,11 +6,11 @@
 """
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
-from pyrogram.errors import QueryIdInvalid
+from pyrogram.errors import MessageTooLong, QueryIdInvalid
 from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
-from misskaty.helper import Cache, fetch
+from misskaty.helper import Cache, fetch, post_to_telegraph
 from misskaty.plugins.web_scraper import split_arr
 from misskaty.vars import COMMAND_HANDLER
 
@@ -148,6 +148,10 @@ async def pypi_getdata(_, callback_query: CallbackQuery):
             f"<b>Pip Command:</b> pip3 install {res['info'].get('name', 'Unknown')}\n"
         )
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
-        await callback_query.message.edit_msg(msg, reply_markup=keyboard)
+        try:
+           await callback_query.message.edit_msg(msg, reply_markup=keyboard)
+        except MessageToolong:
+           url = await post_to_telegraph(False, f"{pkgname}-detail", msg)
+           await callback_query.message.edit_msg(f"Result is too long:\n{url}")
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
