@@ -175,14 +175,17 @@ async def calc_cb(self, query):
 async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
         return await ctx.reply_msg("Please add keyword to search definition in kbbi")
-    r = (await fetch.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")).json()
-    if nomsg := r.get("detail"):
+    r = await fetch.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")
+    if r.status_code != 200:
+        return await ctx.reply("Maaf, makna kata tersebut tidak ditemukan.")
+    parse = r.json()
+    if nomsg := parse.get("detail"):
         return await ctx.reply_msg(nomsg)
     kbbi_btn = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(text="Open in Web", url=r.get("link"))]]
+        [[InlineKeyboardButton(text="Open in Web", url=parse.get("link"))]]
     )
     res = "<b>Definisi:</b>\n"
-    for _, a in enumerate(r.get("result"), start=1):
+    for _, a in enumerate(parse.get("result"), start=1):
         submakna = "".join(f"{a}, " for a in a["makna"][0]["submakna"])[:-2]
         contoh = "".join(f"{a}, " for a in a["makna"][0]["contoh"])[:-2]
         kt_dasar = "".join(f"{a}, " for a in a["kata_dasar"])[:-2]
