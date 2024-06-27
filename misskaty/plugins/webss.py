@@ -32,7 +32,7 @@ async def take_ss(_, ctx: Message, strings):
     download_file_path = os.path.join("downloads/", f"webSS_{ctx.from_user.id}.png")
     msg = await ctx.reply_msg(strings("wait_str"))
     try:
-        url = f"https://webss.yasirweb.eu.org/api/screenshot?resX=1280&resY=900&outFormat=jpg&waitTime=100&isFullPage=false&dismissModals=false&url={url}"
+        url = f"https://webss.yasirweb.eu.org/api/screenshot?resX=1280&resY=900&outFormat=jpg&waitTime=1000&isFullPage=false&dismissModals=false&url={url}"
         downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=15, verify=False)
         downloader.start(blocking=True)
         await gather(
