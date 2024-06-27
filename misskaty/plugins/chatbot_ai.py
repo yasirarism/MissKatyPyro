@@ -65,14 +65,14 @@ async def openai_chatbot(_, ctx: Message, strings):
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
-    ai = AsyncOpenAI(api_key=OPENAI_KEY)
+    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://api.aimlapi.com")
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     num = 0
     answer = ""
     try:
         response = await ai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[{"role": "user", "content": pertanyaan}],
             temperature=0.7,
             stream=True,
