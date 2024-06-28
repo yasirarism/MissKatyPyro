@@ -198,7 +198,7 @@ async def instadl(_, message):
         if post.status_code not in [200, 401]:
             return await message.reply("Unknown error.")
         res = post.json()
-        if r := re.findall('href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
+        if r := re.findall(r'href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
             res = r[0].replace("&amp;", "&")
             fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
             is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
