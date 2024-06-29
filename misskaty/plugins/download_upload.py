@@ -261,7 +261,7 @@ async def twitterdl(_, message):
             path = obj.get_dest()
             await message.reply_video(path, caption=f"<code>{fname}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
         except Exception as er:
-            LOGGING.error(f"ERROR: while fetching TwitterDL. {er}")
+            LOGGER.error("ERROR: while fetching TwitterDL. %s", er)
             return await msg.edit_msg("ERROR: Got error while extracting link.")
         await msg.delete()
     except Exception as e:
