@@ -149,9 +149,9 @@ async def pypi_getdata(_, callback_query: CallbackQuery):
         )
         msg += f"<b>Keywords:</b> {res['info'].get('keywords', 'Unknown')}\n"
         try:
-           await callback_query.message.edit_msg(msg, reply_markup=keyboard)
+            await callback_query.message.edit_msg(msg, reply_markup=keyboard)
         except MessageTooLong:
-           url = await post_to_telegraph(False, f"{pkgname}-detail", msg)
-           await callback_query.message.edit_msg(f"Result is too long:\n{url}")
+            url = await post_to_telegraph(False, f"{pkgname}-detail", msg)
+            await callback_query.message.edit_msg(f"Result is too long:\n{url}")
     except Exception as err:
         await callback_query.message.edit_msg(f"ERROR: {err}", reply_markup=keyboard)
