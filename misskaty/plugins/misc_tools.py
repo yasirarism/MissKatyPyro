@@ -79,7 +79,7 @@ def calcExpression(text):
     except TypeError:
         return float(eval(text.replace('(', '*(')))
     except Exception as e:
-        logger.error(e, exc_info=True)
+        LOGGER.error(e, exc_info=True)
         return ""
 
 
