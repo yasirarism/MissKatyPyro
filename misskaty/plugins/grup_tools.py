@@ -165,7 +165,8 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
             pass
 
 
-@app.on_message(filters.command("toggle_welcome") & filters.group)
+@app.on_cmd(["toggle_welcome"], self_admin=True, group_only=True)
+@app.adminsOnly("can_change_info")
 async def welcome_toggle_handler(client, message):
     chat_id = message.chat.id
     is_enabled = await toggle_welcome(chat_id)
