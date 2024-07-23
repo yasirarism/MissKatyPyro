@@ -540,7 +540,7 @@ async def update_restart(_, ctx: Message, strings):
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 
-@app.on_poll(filters.chat(-1001777794636))
+@app.on_poll(filters.chat(-1001777794636), group=-5)
 async def tespoll(self, msg):
     await ctx.reply(msg)
 
