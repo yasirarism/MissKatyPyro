@@ -1,0 +1,57 @@
+{
+    "name": "MissKaty RoBot",
+    "description": "Multi Function Telegram Bot, made in python using Pyrofork.",
+    "logo": "https://img.yasirweb.eu.org/file/2136400c0c5505d1b41e4.jpg",
+    "keywords": [
+        "pyrogram",
+        "pyrofork",
+        "telegram",
+        "userbot",
+        "python",
+        "group-management"
+    ],
+    "repository": "https://git.yasirweb.eu.org/yasirarism/MissKatyPyro",
+    "website": "https://yasirpedia.eu.orh",
+    "success_url": "https://t.me/YasirPediaChannel",
+    "stack": "container",
+    "env": {
+        "API_ID": {
+            "description": "Your api id, from my.telegram.org or @ScrapperRoBot.",
+            "value": "", 
+            "required": false
+        },
+        "API_HASH": {
+            "description": "Your api hash, from my.telegram.org or @ScrapperRoBot.",
+            "value": "",
+            "required": false
+        },
+        "USER_SESSION": {
+            "description": "Session String (pyrogram) for your telegram user account. The userbot will NOT work without a session string!!",
+            "value": ""
+        },
+        "DATABASE_URI": {
+            "description": "Mongodb URL",
+            "value": ""
+        },
+        "SUDO": {
+            "description": "Allowed user in to use sudo command.",
+            "value": ""
+        },
+        "GOOGLE_AI_KEY": {
+            "description": "Your Gemini AI Key",
+            "value": "",
+            "required": false
+        },
+        "DATABASE_NAME": {
+            "description": "Your database name.",
+            "value": "",
+            "required": false
+        }
+    },
+    "formation": {
+        "misskaty": {
+            "quantity": 1,
+            "size": "basic"
+        }
+    }
+}
