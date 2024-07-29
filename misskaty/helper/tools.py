@@ -205,7 +205,7 @@ async def gen_trans_image(msg, path):
 
     # put mask into alpha channel
     result = img.copy()
-    result = cv2.cvtColor(result, cv2.COLOR_BGR2BGRA))
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2BGRA)
     result[:, :, 3] = mask
 
     # save resulting masked image
