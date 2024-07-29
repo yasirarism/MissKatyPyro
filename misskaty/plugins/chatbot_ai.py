@@ -47,7 +47,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
         if not response.json().get("candidates"):
             await ctx.reply_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
         else:
-            await ctx.reply_msg(html.escape(f'{response.json()["candidates"][0]["content"]["parts"][0]["text"]}\n\n<b>Powered by:</b> <code>Gemini Flash 1.5</code>'))
+            await ctx.reply_msg(html.escape(response.json()["candidates"][0]["content"]["parts"][0]["text"])+'\n<b>Powered by:</b> <code>Gemini Flash 1.5</code>')
         await msg.delete()
     except Exception as e:
         await ctx.reply_msg(str(e))
