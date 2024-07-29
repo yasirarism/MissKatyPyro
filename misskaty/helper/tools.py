@@ -182,7 +182,7 @@ async def gen_trans_image(msg, path):
     img = cv2.imread(dl)
 
     # convert to graky
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # threshold input image as mask
     mask = cv2.threshold(gray, 250, 255, cv2.THRESH_BINARY)[1]
