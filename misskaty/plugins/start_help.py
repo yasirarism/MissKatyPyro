@@ -85,7 +85,7 @@ FED_MARKUP = InlineKeyboardMarkup(
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
 @use_chat_lang()
-async def start(_, ctx: Message, strings):
+async def start(self, ctx: Message, strings):
     if ctx.chat.type.value != "private":
         nama = ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title
         try:
