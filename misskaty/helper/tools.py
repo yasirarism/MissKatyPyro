@@ -7,7 +7,7 @@ import time
 import cv2
 import numpy as np
 from http.cookies import SimpleCookie
-from pyrogram import utils
+from misskaty.core.decorator import asyncify
 from re import match as re_match
 from typing import Union
 from urllib.parse import urlparse
@@ -173,18 +173,19 @@ def isValidURL(str):
     return False if str is None else bool((re.search(p, str)))
 
 
+@asyncify
 async def gen_trans_image(msg, path):
     # Download image
     dl = await msg.download()
 
     # load image
-    img = await utils.run_sync(cv2.imread(dl))
+    img = cv2.imread(dl)
 
     # convert to graky
-    gray = await utils.run_sync(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY))
 
     # threshold input image as mask
-    mask = await utils.run_sync(cv2.threshold(gray, 250, 255, cv2.THRESH_BINARY)[1])
+    mask = cv2.threshold(gray, 250, 255, cv2.THRESH_BINARY)[1]
 
     # negate mask
     mask = 255 - mask
@@ -192,22 +193,22 @@ async def gen_trans_image(msg, path):
     # apply morphology to remove isolated extraneous noise
     # use borderconstant of black since foreground touches the edges
     kernel = np.ones((3,3), np.uint8)
-    mask = await utils.run_sync(cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel))
-    mask = await utils.run_sync(cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
     # anti-alias the mask -- blur then stretch
     # blur alpha channel
-    mask = await utils.run_sync(cv2.GaussianBlur(mask, (0,0), sigmaX=2, sigmaY=2, borderType = cv2.BORDER_DEFAULT))
+    mask = cv2.GaussianBlur(mask, (0,0), sigmaX=2, sigmaY=2, borderType = cv2.BORDER_DEFAULT)
 
     # linear stretch so that 127.5 goes to 0, but 255 stays 255
     mask = (2*(mask.astype(np.float32))-255.0).clip(0,255).astype(np.uint8)
 
     # put mask into alpha channel
     result = img.copy()
-    result = await utils.run_sync(cv2.cvtColor(result, cv2.COLOR_BGR2BGRA))
+    result = cv2.cvtColor(result, cv2.COLOR_BGR2BGRA))
     result[:, :, 3] = mask
 
     # save resulting masked image
-    await utils.run_sync(cv2.imwrite(path, result))
+    cv2.imwrite(path, result)
     os.remove(dl)
     return path
