@@ -8,6 +8,7 @@ requests
 beautifulsoup4
 aiohttp
 chevron
+cv-3
 gTTS
 regex
 apscheduler==3.10.4

@@ -39,7 +39,7 @@ from pyrogram.types import (
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import fetch
-from misskaty.helper.tools import rentry
+from misskaty.helper.tools import rentry, gen_trans_image
 from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
 
@@ -48,6 +48,7 @@ LOGGER = getLogger("MissKaty")
 __MODULE__ = "Misc"
 __HELP__ = """
 /carbon [text or reply to text or caption] - Make beautiful snippet code on carbon from text.
+/removebg [Reply to image] - Remove background from image.
 /calc - Simple math calculator using inline buttons.
 /kbbi [keyword] - Search definition on KBBI (For Indonesian People)
 /sof [query] - Search your problem in StackOverflow.
@@ -170,6 +171,18 @@ async def calc_cb(self, query):
         )
     except Exception as error:
         LOGGER.error(error)
+
+
+@app.on_cmd("removebg")
+async def removebg(_, ctx: Client):
+    if not ctx.reply_to_message:
+        return await ctx.reply_msg("Please reply image.")
+    if not ctx.reply_to_message.photo:
+        return await ctx.reply_msg("Only support photo for remove background.")
+    await gen_trans_image(ctx.reply_to_message, f"transp_bckgrnd-{ctx.from_user.id}.png")
+    await ctx.reply_photo(f"transp_bckgrnd-{ctx.from_user.id}.png")
+    os.remove(f"transp_bckgrnd-{ctx.from_user.id}.png")
+
 
 @app.on_cmd("kbbi")
 async def kbbi_search(_, ctx: Client):

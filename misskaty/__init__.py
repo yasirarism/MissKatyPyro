@@ -42,7 +42,7 @@ MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.13"
+misskaty_version = "v2.14"
 
 uvloop.install()
 faulthandler_enable()
@@ -54,7 +54,7 @@ app = Client(
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN,
-    mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
+    mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=True),
     sleep_threshold=180,
     app_version="MissKatyPyro Stable",
     workers=50,
@@ -69,6 +69,7 @@ user = Client(
     session_string=USER_SESSION,
     mongodb=dict(connection=AsyncClient(DATABASE_URI), remove_peers=False),
     sleep_threshold=180,
+    app_version="MissKaty Ubot",
 )
 
 jobstores = {

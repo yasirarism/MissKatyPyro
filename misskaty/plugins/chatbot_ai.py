@@ -13,7 +13,7 @@ from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core import pyro_cooldown
-from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
+from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang,
 from misskaty.vars import GOOGLEAI_KEY, COMMAND_HANDLER, OPENAI_KEY, SUDO
 
 
@@ -38,14 +38,16 @@ async def gemini_chatbot(_, ctx: Message, strings):
     try:
         data = {
             "query": ctx.text.split(maxsplit=1)[1],
+            "key": GOOGLEAI_KEY
         }
+        # Fetch from API beacuse my VPS is not supported
         response = await fetch.post(
             "https://yasirapi.eu.org/gemini", data=data
         )
         if not response.json().get("candidates"):
             await ctx.reply_msg("⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI.")
         else:
-            await ctx.reply_msg(html.escape(response.json()["candidates"][0]["content"]["parts"][0]["text"]))
+            await ctx.reply_msg(html.escape(f'{response.json()["candidates"][0]["content"]["parts"][0]["text"]}\n\n<b>Powered by:</b> <code>Gemini Flash 1.5</code>'))
         await msg.delete()
     except Exception as e:
         await ctx.reply_msg(str(e))
