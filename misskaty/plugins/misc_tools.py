@@ -179,9 +179,11 @@ async def removebg(_, ctx: Client):
         return await ctx.reply_msg("Please reply image.")
     if not ctx.reply_to_message.photo:
         return await ctx.reply_msg("Only support photo for remove background.")
+    prg = await ctx.reply("Processing...")
     source = await ctx.reply_to_message.download()
     await gen_trans_image(ctx.reply_to_message, f"transp_bckgrnd-{ctx.from_user.id}.png")
     await ctx.reply_photo(f"transp_bckgrnd-{ctx.from_user.id}.png")
+    await prg.delete_msg()
     os.remove(source)
     os.remove(f"transp_bckgrnd-{ctx.from_user.id}.png")
 

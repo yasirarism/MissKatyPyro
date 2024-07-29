@@ -176,7 +176,7 @@ def isValidURL(str):
 @asyncify
 def gen_trans_image(source, path):
     # load image
-    img = cv2.imread(spurce)
+    img = cv2.imread(source)
 
     # convert to graky
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
