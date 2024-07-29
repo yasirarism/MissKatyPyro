@@ -127,10 +127,12 @@ async def start(_, ctx: Message, strings):
                 message_effect_id=5104841245755180586
             )
     else:
-        await ctx.reply_photo(
+        await self.send_photo(
+            ctx.chat.id,
             photo="https://img.yasirweb.eu.org/file/90e9a448bc2f8b055b762.jpg",
             caption=home_text_pm,
             reply_markup=home_keyboard_pm,
+            reply_to_message_id=ctx.id,
             message_effect_id=5104841245755180586
         )
 
