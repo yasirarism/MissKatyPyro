@@ -182,7 +182,7 @@ async def removebg(_, ctx: Client):
     prg = await ctx.reply("Processing...")
     source = await ctx.reply_to_message.download()
     await gen_trans_image(source, f"transp_bckgrnd-{ctx.from_user.id}.png")
-    await ctx.reply_photo(f"transp_bckgrnd-{ctx.from_user.id}.png")
+    await ctx.reply_document(f"transp_bckgrnd-{ctx.from_user.id}.png")
     await prg.delete_msg()
     os.remove(source)
     os.remove(f"transp_bckgrnd-{ctx.from_user.id}.png")
