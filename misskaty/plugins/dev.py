@@ -127,9 +127,11 @@ async def log_file(_, ctx: Message, strings):
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
     try:
-        await ctx.reply_photo(
+        await self.send_photo(
+            ctx.chat.id,
             "https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg",
             caption="Hi, If you find this bot useful, you can make a donation to the account below. Because this bot server uses VPS and is not free. Thank You..\n\n<b>Indonesian Payment:</b>\n<b>QRIS:</b> https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg (Yasir Store)\n<b>Bank Jago:</b> 109641845083 (Yasir Aris M)\n\nFor international people can use PayPal to support me or via GitHub Sponsor:\nhttps://paypal.me/yasirarism\nhttps://github.com/sponsors/yasirarism\n\n<b>Source:</b> @BeriKopi",
+            reply_to_message_id=ctx.id,
             message_effect_id=5159385139981059251 if ctx.chat.type.value == "private" else None
         )
     except (ChatSendPlainForbidden, ChatSendPhotosForbidden):
