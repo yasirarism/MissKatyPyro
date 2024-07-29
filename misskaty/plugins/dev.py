@@ -126,12 +126,11 @@ async def log_file(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
-    with contextlib.suppress(ReactionInvalid):
-        await ctx.react(emoji="❤️")
     try:
         await ctx.reply_photo(
             "https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg",
             caption="Hi, If you find this bot useful, you can make a donation to the account below. Because this bot server uses VPS and is not free. Thank You..\n\n<b>Indonesian Payment:</b>\n<b>QRIS:</b> https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg (Yasir Store)\n<b>Bank Jago:</b> 109641845083 (Yasir Aris M)\n\nFor international people can use PayPal to support me or via GitHub Sponsor:\nhttps://paypal.me/yasirarism\nhttps://github.com/sponsors/yasirarism\n\n<b>Source:</b> @BeriKopi",
+            message_effect_id=5159385139981059251 if ctx.chat.type.value == "private" else None
         )
     except (ChatSendPlainForbidden, ChatSendPhotosForbidden):
         await self.send_message(LOG_CHANNEL, f"❗️ <b>WARNING</b>\nI'm leaving from {ctx.chat.id} since i didn't have sufficient admin permissions.")
