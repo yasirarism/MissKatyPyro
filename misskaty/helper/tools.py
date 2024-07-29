@@ -174,12 +174,9 @@ def isValidURL(str):
 
 
 @asyncify
-async def gen_trans_image(msg, path):
-    # Download image
-    dl = await msg.download()
-
+def gen_trans_image(source, path):
     # load image
-    img = cv2.imread(dl)
+    img = cv2.imread(spurce)
 
     # convert to graky
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -210,5 +207,4 @@ async def gen_trans_image(msg, path):
 
     # save resulting masked image
     cv2.imwrite(path, result)
-    os.remove(dl)
     return path
