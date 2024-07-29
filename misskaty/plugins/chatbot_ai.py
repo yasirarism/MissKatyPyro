@@ -13,7 +13,7 @@ from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core import pyro_cooldown
-from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang,
+from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
 from misskaty.vars import GOOGLEAI_KEY, COMMAND_HANDLER, OPENAI_KEY, SUDO
 
 
