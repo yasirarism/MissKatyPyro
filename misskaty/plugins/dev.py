@@ -74,8 +74,8 @@ teskode = {}
 LOGGER = getLogger("MissKaty")
 
 
-async def edit_or_reply(msg, **kwargs):
-    func = msg.edit if msg.from_user.is_self else msg.reply
+async def edit_or_reply(self, msg, **kwargs):
+    func = msg.edit if not self.me.is_bot else msg.reply
     spec = getfullargspec(func.__wrapped__).args
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
@@ -339,7 +339,7 @@ async def unban_globally(_, ctx: Message):
 @use_chat_lang()
 async def shell_cmd(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
-        return await edit_or_reply(ctx, text=strings("no_cmd"))
+        return await edit_or_reply(self, ctx, text=strings("no_cmd"))
     msg = (
         await ctx.edit_msg(strings("run_exec"))
         if not self.me.is_bot
@@ -367,6 +367,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
             await msg.delete_msg()
     elif len(shell) != 0:
         await edit_or_reply(
+            self,
             ctx,
             text=html.escape(shell),
             parse_mode=enums.ParseMode.HTML,
@@ -402,7 +403,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
-        return await edit_or_reply(ctx, text=strings("no_eval"))
+        return await edit_or_reply(self, ctx, text=strings("no_eval"))
     status_message = (
         await ctx.edit_msg(strings("run_eval"))
         if not self.me.is_bot
@@ -512,6 +513,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
             await status_message.delete_msg()
     else:
         await edit_or_reply(
+            self,
             ctx,
             text=final_output,
             parse_mode=enums.ParseMode.HTML,
