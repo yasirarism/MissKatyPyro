@@ -54,7 +54,7 @@ def get_locale_string(
 async def get_lang(message) -> str:
     if isinstance(message, CallbackQuery):
         chat = message.message.chat
-    elif isinstance(message, Message) or isinstance(message, ChatMemberUpdated):
+    elif isinstance(message, (Message, ChatMemberUpdated)):
         chat = message.chat
     elif isinstance(message, InlineQuery):
         chat, chat.type = message.from_user, ChatType.PRIVATE
