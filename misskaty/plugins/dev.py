@@ -97,7 +97,7 @@ async def star_donation(self: Client, ctx: Message):
 
 @app.on_pre_checkout_query()
 async def pre_checkout_query_handler(_: Client, query: PreCheckoutQuery):
-    await query.answer("stars", success=True)
+    await query.answer(success=True)
 
 
 @app.on_message(filters.private, group=3)
