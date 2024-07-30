@@ -350,8 +350,8 @@ async def spacebinn(_, message):
         uname = message.sender_chat.title
 
     try:
-        siteurl = "https://spaceb.in/api/v1/documents/"
-        response = await fetch.post(siteurl, data={"content": data, "extension": "txt"})
+        siteurl = "https://spaceb.in/api/"
+        response = await fetch.post(siteurl, json={"content": data, "extension": "txt"})
         response = response.json()
         url = "https://spaceb.in/" + response["payload"]["id"]
     except Exception as e:
