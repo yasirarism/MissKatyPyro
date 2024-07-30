@@ -1,8 +1,8 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
+* @author        yasir <yasiramunandar@gmail.com>
+* @date          2022-12-01 09:12:27
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
 """
 
 import asyncio
@@ -39,7 +39,7 @@ from pyrogram.types import (
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.http import fetch
-from misskaty.helper.tools import rentry, gen_trans_image
+from misskaty.helper.tools import gen_trans_image, rentry
 from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
 
@@ -66,7 +66,6 @@ __HELP__ = """
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
-    import re
 
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
@@ -78,7 +77,7 @@ def calcExpression(text):
     except (SyntaxError, ZeroDivisionError):
         return ""
     except TypeError:
-        return float(eval(text.replace('(', '*(')))
+        return float(eval(text.replace("(", "*(")))
     except Exception as e:
         LOGGER.error(e, exc_info=True)
         return ""
@@ -129,8 +128,9 @@ async def calculate_handler(self, ctx):
         text=f"Made by @{self.me.username}",
         reply_markup=calc_btn(ctx.from_user.id),
         disable_web_page_preview=True,
-        quote=True
+        quote=True,
     )
+
 
 @app.on_callback_query(filters.regex("^calc"))
 async def calc_cb(self, query):
@@ -139,7 +139,7 @@ async def calc_cb(self, query):
         return await query.answer("Who are you??", show_alert=True, cache_time=5)
     try:
         text = query.message.text.split("\n")[0].strip().split("=")[0].strip()
-        text = '' if f"Made by @{self.me.username}" in text else text
+        text = "" if f"Made by @{self.me.username}" in text else text
         inpt = text + query.data
         result = ""
         if data == "=":
@@ -167,7 +167,7 @@ async def calc_cb(self, query):
         await query.message.edit_msg(
             text=text,
             disable_web_page_preview=True,
-            reply_markup=calc_btn(query.from_user.id)
+            reply_markup=calc_btn(query.from_user.id),
         )
     except Exception as error:
         LOGGER.error(error)

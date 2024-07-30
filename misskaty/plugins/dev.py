@@ -5,23 +5,22 @@ import io
 import json
 import os
 import pickle
+import platform
 import re
 import sys
 import traceback
 from datetime import datetime
 from inspect import getfullargspec
+from logging import getLogger
 from shutil import disk_usage
 from time import time
 from typing import Any, Optional, Tuple
 
 import aiohttp
-import contextlib
 import cloudscraper
 import requests
-import platform
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from bs4 import BeautifulSoup
-from logging import getLogger
 from PIL import Image, ImageDraw, ImageFont
 from psutil import Process, boot_time, cpu_count, cpu_percent
 from psutil import disk_usage as disk_usage_percent
@@ -29,15 +28,22 @@ from psutil import net_io_counters, virtual_memory
 from pyrogram import Client
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
-from pyrogram.errors import ChatSendPhotosForbidden, FloodWait, MessageTooLong, PeerIdInvalid, ChatSendPlainForbidden, ReactionInvalid
+from pyrogram.errors import (
+    ChatSendPhotosForbidden,
+    ChatSendPlainForbidden,
+    FloodWait,
+    MessageTooLong,
+    PeerIdInvalid,
+    ReactionInvalid,
+)
 from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     InputMediaPhoto,
     LabeledPrice,
-    PreCheckoutQuery,
     Message,
+    PreCheckoutQuery,
 )
 
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
@@ -86,13 +92,13 @@ async def edit_or_reply(self, msg, **kwargs):
 async def star_donation(self: Client, ctx: Message):
     amount = ctx.command[1] if len(ctx.command) == 2 and ctx.command[1].isdigit() else 5
     await self.send_invoice(
-        ctx.chat.id, 
+        ctx.chat.id,
         title="MissKaty Donate",
-        description="You can give me donation via star", 
+        description="You can give me donation via star",
         currency="XTR",
         prices=[LabeledPrice(label="Donation", amount=amount)],
         message_thread_id=ctx.message_thread_id,
-        payload="stars"
+        payload="stars",
     )
 
 
@@ -104,17 +110,23 @@ async def pre_checkout_query_handler(_: Client, query: PreCheckoutQuery):
 @app.on_message(filters.private, group=3)
 async def successful_payment_handler(_: Client, message: Message):
     if message.successful_payment:
-        await message.reply(f"Thanks for support for <b>{message.successful_payment.total_amount} {message.successful_payment.currency}</b>! Your transaction ID is : <code>{message.successful_payment.telegram_payment_charge_id}</code>")
+        await message.reply(
+            f"Thanks for support for <b>{message.successful_payment.total_amount} {message.successful_payment.currency}</b>! Your transaction ID is : <code>{message.successful_payment.telegram_payment_charge_id}</code>"
+        )
 
 
 @app.on_message(filters.command(["refund_star"], COMMAND_HANDLER))
 async def refund_star_payment(client: Client, message: Message):
     if len(message.command) == 1:
-        return await message.reply_msg("Please input telegram_payment_charge_id after command.")
+        return await message.reply_msg(
+            "Please input telegram_payment_charge_id after command."
+        )
     trx_id = message.command[1]
     try:
         await client.refund_star_payment(message.from_user.id, trx_id)
-        await message.reply_msg(f"Great {message.from_user.mention}, your stars has been refunded to your balance.")
+        await message.reply_msg(
+            f"Great {message.from_user.mention}, your stars has been refunded to your balance."
+        )
     except Exception as e:
         await message.reply_msg(e)
 
@@ -131,8 +143,12 @@ async def log_file(_, ctx: Message, strings):
             data = {
                 "value": content,
             }
-            pastelog = await fetch.post("https://paste.yasirapi.eu.org/save", data=data, follow_redirects=True)
-            await msg.edit_msg(f"<a href='{pastelog.url}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}")
+            pastelog = await fetch.post(
+                "https://paste.yasirapi.eu.org/save", data=data, follow_redirects=True
+            )
+            await msg.edit_msg(
+                f"<a href='{pastelog.url}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
+            )
         except Exception:
             await ctx.reply_document(
                 "MissKatyLogs.txt",
@@ -171,10 +187,15 @@ async def donate(self: Client, ctx: Message):
             "https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg",
             caption="Hi, If you find this bot useful, you can make a donation to the account below. Because this bot server uses VPS and is not free. Thank You..\n\n<b>Indonesian Payment:</b>\n<b>QRIS:</b> https://img.yasirweb.eu.org/file/ee74ce527fb8264b54691.jpg (Yasir Store)\n<b>Bank Jago:</b> 109641845083 (Yasir Aris M)\n\nFor international people can use PayPal to support me or via GitHub Sponsor:\nhttps://paypal.me/yasirarism\nhttps://github.com/sponsors/yasirarism\n\n<b>Source:</b> @BeriKopi",
             reply_to_message_id=ctx.id,
-            message_effect_id=5159385139981059251 if ctx.chat.type.value == "private" else None
+            message_effect_id=5159385139981059251
+            if ctx.chat.type.value == "private"
+            else None,
         )
     except (ChatSendPlainForbidden, ChatSendPhotosForbidden):
-        await self.send_message(LOG_CHANNEL, f"❗️ <b>WARNING</b>\nI'm leaving from {ctx.chat.id} since i didn't have sufficient admin permissions.")
+        await self.send_message(
+            LOG_CHANNEL,
+            f"❗️ <b>WARNING</b>\nI'm leaving from {ctx.chat.id} since i didn't have sufficient admin permissions.",
+        )
         await ctx.chat.leave()
 
 
@@ -222,7 +243,7 @@ async def server_stats(_, ctx: Message) -> "Message":
 
     if "oracle" in platform.uname().release:
         return await ctx.reply_msg(caption, quote=True)
-        
+
     start = datetime.now()
     msg = await ctx.reply_photo(
         photo="https://te.legra.ph/file/30a82c22854971d0232c7.jpg",
@@ -234,7 +255,7 @@ async def server_stats(_, ctx: Message) -> "Message":
     image = Image.open("assets/statsbg.jpg").convert("RGB")
     IronFont = ImageFont.truetype("assets/IronFont.otf", 42)
     draw = ImageDraw.Draw(image)
-    
+
     def draw_progressbar(coordinate, progress):
         progress = 110 + (progress * 10.8)
         draw.ellipse((105, coordinate - 25, 127, coordinate), fill="#FFFFFF")
@@ -242,7 +263,7 @@ async def server_stats(_, ctx: Message) -> "Message":
         draw.ellipse(
             (progress - 7, coordinate - 25, progress + 15, coordinate), fill="#FFFFFF"
         )
-    
+
     draw_progressbar(243, int(cpu_percentage))
     draw.text(
         (225, 153),
@@ -372,7 +393,9 @@ async def unban_globally(_, ctx: Message):
     filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
 )
 @app.on_edited_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO) & ~filters.react
+    filters.command(["shell", "sh", "term"], COMMAND_HANDLER)
+    & filters.user(SUDO)
+    & ~filters.react
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
@@ -435,8 +458,12 @@ async def shell_cmd(self: Client, ctx: Message, strings):
     & filters.user(SUDO)
 )
 @app.on_edited_message(
-    (filters.command(["ev", "run", "meval"], COMMAND_HANDLER) | filters.regex(r"app.run\(\)$"))
-    & filters.user(SUDO) & ~filters.react
+    (
+        filters.command(["ev", "run", "meval"], COMMAND_HANDLER)
+        | filters.regex(r"app.run\(\)$")
+    )
+    & filters.user(SUDO)
+    & ~filters.react
 )
 @user.on_message(filters.command(["ev", "run", "meval"], ".") & filters.me)
 @use_chat_lang()
@@ -449,7 +476,9 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         else await ctx.reply_msg(strings("run_eval"), quote=True)
     )
     code = (
-        ctx.text.split(maxsplit=1)[1] if ctx.command else ctx.text.split("\napp.run()")[0]
+        ctx.text.split(maxsplit=1)[1]
+        if ctx.command
+        else ctx.text.split("\napp.run()")[0]
     )
     out_buf = io.StringIO()
     out = ""
@@ -585,6 +614,7 @@ async def update_restart(_, ctx: Message, strings):
 @app.on_poll(filters.chat(-1001777794636), group=-5)
 async def tespoll(self, msg):
     await ctx.reply(msg)
+
 
 @app.on_raw_update(group=-99)
 async def updtebot(client, update, users, _):
