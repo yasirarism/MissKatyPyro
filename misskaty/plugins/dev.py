@@ -358,7 +358,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                         [
                             InlineKeyboardButton(
                                 text=strings("cl_btn"),
-                                callback_data=f"close#{ctx.from_user.id}",
+                                callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
                             )
                         ]
                     ]
@@ -376,7 +376,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                     [
                         InlineKeyboardButton(
                             text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id}",
+                            callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
                         )
                     ]
                 ]
@@ -504,7 +504,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                         [
                             InlineKeyboardButton(
                                 text=strings("cl_btn"),
-                                callback_data=f"close#{ctx.from_user.id}",
+                                callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
                             )
                         ]
                     ]
@@ -522,7 +522,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                     [
                         InlineKeyboardButton(
                             text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id}",
+                            callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
                         )
                     ]
                 ]
