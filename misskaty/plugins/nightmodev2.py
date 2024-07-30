@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 
 import pytz
 from apscheduler.jobstores.base import ConflictingIdError
-from attr import Attribute
 from pyrogram import __version__, filters
 from pyrogram.errors import (
     ChannelInvalid,

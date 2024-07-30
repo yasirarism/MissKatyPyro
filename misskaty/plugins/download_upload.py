@@ -10,8 +10,6 @@ import time
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
-
-import cloudscraper
 from bs4 import BeautifulSoup
 from cloudscraper import create_scraper
 from pyrogram import filters
