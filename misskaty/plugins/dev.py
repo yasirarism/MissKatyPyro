@@ -337,12 +337,12 @@ async def unban_globally(_, ctx: Message):
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
 @use_chat_lang()
-async def shell_cmd(_, ctx: Message, strings):
+async def shell_cmd(self: Client, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await edit_or_reply(ctx, text=strings("no_cmd"))
     msg = (
         await ctx.edit_msg(strings("run_exec"))
-        if ctx.from_user.is_self
+        if not self.me.is_bot
         else await ctx.reply_msg(strings("run_exec"))
     )
     shell = (await shell_exec(ctx.input))[0]
@@ -405,7 +405,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         return await edit_or_reply(ctx, text=strings("no_eval"))
     status_message = (
         await ctx.edit_msg(strings("run_eval"))
-        if ctx.from_user.is_self
+        if not self.me.is_bot
         else await ctx.reply_msg(strings("run_eval"), quote=True)
     )
     code = (
