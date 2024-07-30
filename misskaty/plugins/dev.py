@@ -36,6 +36,7 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     InputMediaPhoto,
     LabeledPrice,
+    PreCheckoutQuery,
     Message,
 )
 
