@@ -108,7 +108,7 @@ async def successful_payment_handler(_: Client, message: Message):
 
 
 @app.on_message(filters.command(["refund_star"], COMMAND_HANDLER))
-async def refund_star_payment(client: Client, message: Message)
+async def refund_star_payment(client: Client, message: Message):
     if len(message.command) == 1:
         return await message.reply_msg("Please input telegram_payment_charge_id after command.")
     trx_id = message.command[1]
