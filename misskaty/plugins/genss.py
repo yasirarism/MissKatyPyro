@@ -1,9 +1,10 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
+* @author        yasir <yasiramunandar@gmail.com>
+* @date          2022-12-01 09:12:27
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
 """
+
 import math
 import os
 import time
@@ -46,7 +47,9 @@ async def genss(self: Client, ctx: Message, strings):
         file_name = os.path.basename(url)
         download_file_path = os.path.join("downloads/", file_name)
         try:
-            downloader = SmartDL(url, download_file_path, progress_bar=False, timeout=10, verify=False)
+            downloader = SmartDL(
+                url, download_file_path, progress_bar=False, timeout=10, verify=False
+            )
             downloader.start(blocking=False)
         except Exception as err:
             return await pesan.edit(str(err))
@@ -111,7 +114,9 @@ async def genss(self: Client, ctx: Message, strings):
                     )
                 await ctx.reply_msg(
                     strings("up_msg").format(
-                        namma=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title,
+                        namma=ctx.from_user.mention
+                        if ctx.from_user
+                        else ctx.sender_chat.title,
                         id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.title,
                         bot_uname=self.me.username,
                     ),
@@ -178,7 +183,9 @@ async def genss(self: Client, ctx: Message, strings):
                     )
                 await ctx.reply_msg(
                     strings("up_msg").format(
-                        namma=ctx.from_user.mention if ctx.from_user else ctx.sender_chat.title,
+                        namma=ctx.from_user.mention
+                        if ctx.from_user
+                        else ctx.sender_chat.title,
                         id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.id,
                         bot_uname=self.me.username,
                     ),

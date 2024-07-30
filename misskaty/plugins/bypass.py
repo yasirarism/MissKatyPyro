@@ -1,10 +1,11 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @lastModified  2022-12-01 09:32:31
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
+* @author        yasir <yasiramunandar@gmail.com>
+* @date          2022-12-01 09:12:27
+* @lastModified  2022-12-01 09:32:31
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
 """
+
 import re
 import urllib.parse
 from urllib.parse import unquote
@@ -16,7 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper import get_readable_file_size, fetch, rentry
+from misskaty.helper import fetch, get_readable_file_size, rentry
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -37,9 +38,8 @@ Supported Link:
 Credit: <a href='https://github.com/sanjit-sinha/PyBypass'>PyBypass</a>
 """
 
+
 # Stopped development for this plugin since always changed time by time.
-
-
 async def pling_bypass(url):
     try:
         id_url = re.search(r"https?://(store.kde.org|www.pling.com)\/p\/(\d+)", url)[2]

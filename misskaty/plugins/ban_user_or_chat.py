@@ -1,4 +1,5 @@
 from curses.ascii import isblank
+
 from pyrogram import Client, filters
 from pyrogram.errors import ChannelPrivate, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -93,7 +94,9 @@ async def ban_a_user(bot, message):
                 f"{k.mention} is already banned\n<b>Reason:</b> {alesan['reason']}"
             )
         await db.ban_user(k.id, reason)
-        await message.reply(f"Successfully banned user {k.mention}!!\n<b>Reason:</b> {reason}")
+        await message.reply(
+            f"Successfully banned user {k.mention}!!\n<b>Reason:</b> {reason}"
+        )
 
 
 @app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))

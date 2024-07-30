@@ -4,17 +4,17 @@ import random
 import re
 import string
 import time
-import cv2
-import numpy as np
 from http.cookies import SimpleCookie
-from misskaty.core.decorator import asyncify
 from re import match as re_match
 from typing import Union
 from urllib.parse import urlparse
 
+import cv2
+import numpy as np
 import psutil
 
 from misskaty import BOT_NAME, UBOT_NAME, botStartTime
+from misskaty.core.decorator import asyncify
 from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_time
 from misskaty.plugins import ALL_MODULES
@@ -144,13 +144,13 @@ async def search_jw(movie_name: str, locale: Union[str, None] = "ID"):
         return m_t_
     for item in response["results"]["data"]["popularTitles"]["edges"]:
         if item["node"]["content"]["title"] == movie_name:
-           t_m_ = []
-           for offer in item["node"].get("offers", []):
-             url = offer["standardWebURL"]
-             if url not in t_m_:
-                 p_o = get_provider(url)
-                 m_t_ += f"<a href='{url}'>{p_o}</a> | "
-             t_m_.append(url)
+            t_m_ = []
+            for offer in item["node"].get("offers", []):
+                url = offer["standardWebURL"]
+                if url not in t_m_:
+                    p_o = get_provider(url)
+                    m_t_ += f"<a href='{url}'>{p_o}</a> | "
+                t_m_.append(url)
         if m_t_ != "":
             m_t_ = m_t_[:-2].strip()
         break
@@ -158,17 +158,19 @@ async def search_jw(movie_name: str, locale: Union[str, None] = "ID"):
 
 
 def isValidURL(str):
-    # Regex to check valid URL 
-    regex = ("((http|https)://)(www.)?" +
-             "[a-zA-Z0-9@:%._\\+~#?&//=]" +
-             "{2,256}\\.[a-z]" +
-             "{2,6}\\b([-a-zA-Z0-9@:%" +
-             "._\\+~#?&//=]*)")
+    # Regex to check valid URL
+    regex = (
+        "((http|https)://)(www.)?"
+        + "[a-zA-Z0-9@:%._\\+~#?&//=]"
+        + "{2,256}\\.[a-z]"
+        + "{2,6}\\b([-a-zA-Z0-9@:%"
+        + "._\\+~#?&//=]*)"
+    )
 
     # Compile the ReGex
     p = re.compile(regex)
 
-    # If the string is empty 
+    # If the string is empty
     # return false
     return False if str is None else bool((re.search(p, str)))
 
@@ -189,16 +191,18 @@ def gen_trans_image(source, path):
 
     # apply morphology to remove isolated extraneous noise
     # use borderconstant of black since foreground touches the edges
-    kernel = np.ones((3,3), np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
     # anti-alias the mask -- blur then stretch
     # blur alpha channel
-    mask = cv2.GaussianBlur(mask, (0,0), sigmaX=2, sigmaY=2, borderType = cv2.BORDER_DEFAULT)
+    mask = cv2.GaussianBlur(
+        mask, (0, 0), sigmaX=2, sigmaY=2, borderType=cv2.BORDER_DEFAULT
+    )
 
     # linear stretch so that 127.5 goes to 0, but 255 stays 255
-    mask = (2*(mask.astype(np.float32))-255.0).clip(0,255).astype(np.uint8)
+    mask = (2 * (mask.astype(np.float32)) - 255.0).clip(0, 255).astype(np.uint8)
 
     # put mask into alpha channel
     result = img.copy()

@@ -23,7 +23,7 @@ import pyrogram
 
 
 async def get_user(
-    m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
+    m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery],
 ) -> pyrogram.types.User or bool:
     """
     ### `tgEasy.get_user`
@@ -75,7 +75,7 @@ async def get_user(
 
 
 async def get_user_adv(
-    m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery]
+    m: typing.Union[pyrogram.types.Message, pyrogram.types.CallbackQuery],
 ) -> pyrogram.types.User or bool:
     """
     ### `tgEasy.get_user_adv`

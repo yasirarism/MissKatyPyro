@@ -12,7 +12,7 @@ async def edit_message_text(
     text: str,
     del_in: int = 0,
     *args,
-    **kwargs
+    **kwargs,
 ) -> Union["Message", bool]:
     """\nExample:
             message.edit_text("hello")

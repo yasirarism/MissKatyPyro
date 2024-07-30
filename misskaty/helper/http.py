@@ -1,7 +1,7 @@
 from asyncio import gather
 
-from httpx import AsyncClient, Timeout
 from aiohttp import ClientSession
+from httpx import AsyncClient, Timeout
 
 # Aiohttp Async Client
 session = ClientSession()

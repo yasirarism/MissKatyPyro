@@ -1,11 +1,11 @@
 import logging
 import traceback
 from html import escape
+from typing import Optional
 
 import chevron
 from bs4 import BeautifulSoup
 from telegraph.aio import Telegraph
-from typing import Optional
 
 from misskaty import BOT_USERNAME
 from misskaty.helper.http import fetch
@@ -26,23 +26,85 @@ async def kusonimeBypass(url: str):
         # title = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > p:nth-child(3) > strong")[0].text.strip()
         try:
             title = soup.find("h1", {"class": "jdlz"}).text  # fix title njing haha
-            season = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)")[0].text.split(":").pop().strip()
-            tipe = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)")[0].text.split(":").pop().strip()
-            status_anime = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)")[0].text.split(":").pop().strip()
-            ep = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)")[0].text.split(":").pop().strip()
-            score = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)")[0].text.split(":").pop().strip()
-            duration = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)")[0].text.split(":").pop().strip()
-            rilis = soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)")[0].text.split(":").pop().strip()
+            season = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(3)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            tipe = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(5)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            status_anime = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(6)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            ep = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(7)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            score = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(8)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            duration = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(9)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
+            rilis = (
+                soup.select(
+                    "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(10)"
+                )[0]
+                .text.split(":")
+                .pop()
+                .strip()
+            )
         except Exception:
             e = traceback.format_exc()
             LOGGER.error(e)
-            title, season, tipe, status_anime, ep, score, duration, rilis = "None", "None", "None", "None", 0, 0, 0, "None"
+            title, season, tipe, status_anime, ep, score, duration, rilis = (
+                "None",
+                "None",
+                "None",
+                "None",
+                0,
+                0,
+                0,
+                "None",
+            )
         num = 1
         genre = []
-        for _genre in soup.select("#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"):
+        for _genre in soup.select(
+            "#venkonten > div.vezone > div.venser > div.venutama > div.lexot > div.info > p:nth-child(2)"
+        ):
             gen = _genre.text.split(":").pop().strip().split(", ")
             genre = gen
-        for smokedl in soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddlrh"}):
+        for smokedl in soup.find("div", {"class": "dlbodz"}).find_all(
+            "div", {"class": "smokeddlrh"}
+        ):
             if not smokedl:
                 continue
             mendata = {"name": title, "links": []}
@@ -68,7 +130,9 @@ async def kusonimeBypass(url: str):
                 mendata["links"].append({"quality": quality, "link_download": links})
             data.append(mendata)
             num += 1
-        for smokedl in soup.find("div", {"class": "dlbodz"}).find_all("div", {"class": "smokeddl"}):
+        for smokedl in soup.find("div", {"class": "dlbodz"}).find_all(
+            "div", {"class": "smokeddl"}
+        ):
             if not smokedl:
                 continue
             mendata = {"name": title, "links": []}
@@ -94,7 +158,22 @@ async def kusonimeBypass(url: str):
                 mendata["links"].append({"quality": quality, "link_download": links})
             data.append(mendata)
             num += 1
-        result.update({"title": title, "thumb": thumb, "genre": genre, "genre_string": ", ".join(genre), "status_anime": status_anime, "season": season, "tipe": tipe, "ep": ep, "score": score, "duration": duration, "rilis": rilis, "data": data})
+        result.update(
+            {
+                "title": title,
+                "thumb": thumb,
+                "genre": genre,
+                "genre_string": ", ".join(genre),
+                "status_anime": status_anime,
+                "season": season,
+                "tipe": tipe,
+                "ep": ep,
+                "score": score,
+                "duration": duration,
+                "rilis": rilis,
+                "data": data,
+            }
+        )
     except Exception as e:
         if result:
             result.clear()

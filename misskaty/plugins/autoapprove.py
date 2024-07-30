@@ -1,5 +1,3 @@
-from database import dbname
-
 from pyrogram import filters
 from pyrogram.types import (
     CallbackQuery,
@@ -9,9 +7,10 @@ from pyrogram.types import (
     Message,
 )
 
+from database import dbname
 from misskaty import app
-from misskaty.vars import SUDO, COMMAND_HANDLER
 from misskaty.core.decorator.permissions import adminsOnly, member_permissions
+from misskaty.vars import COMMAND_HANDLER, SUDO
 
 approvaldb = dbname["autoapprove"]
 
@@ -67,13 +66,7 @@ async def approval_cb(_, cb: CallbackQuery):
         if await approvaldb.count_documents({"chat_id": chat_id}) == 0:
             approvaldb.insert_one({"chat_id": chat_id})
             keyboard_off = InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "Turn OFF", callback_data="approval_off"
-                        )
-                    ]
-                ]
+                [[InlineKeyboardButton("Turn OFF", callback_data="approval_off")]]
             )
             await cb.edit_message_text(
                 "**Autoapproval for this chat: Enabled.**",
@@ -83,13 +76,7 @@ async def approval_cb(_, cb: CallbackQuery):
         if await approvaldb.count_documents({"chat_id": chat_id}) > 0:
             approvaldb.delete_one({"chat_id": chat_id})
             keyboard_on = InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            "Turn ON", callback_data="approval_on"
-                        )
-                    ]
-                ]
+                [[InlineKeyboardButton("Turn ON", callback_data="approval_on")]]
             )
             await cb.edit_message_text(
                 "**Autoapproval for this chat: Disabled.**",

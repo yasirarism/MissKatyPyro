@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 import re
 
 from pyrogram import filters
@@ -55,7 +56,9 @@ You can use markdown or html to save text too.
 """
 
 
-@app.on_message(filters.command(["addfilter", "filter"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["addfilter", "filter"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_change_info")
 async def save_filters(_, message):
     try:
@@ -80,7 +83,11 @@ async def save_filters(_, message):
         elif not replied_message.text and not replied_message.caption:
             data = None
         else:
-            data = replied_message.text.markdown if replied_message.text else replied_message.caption.markdown
+            data = (
+                replied_message.text.markdown
+                if replied_message.text
+                else replied_message.caption.markdown
+            )
         if replied_message.text:
             _type = "text"
             file_id = None
@@ -110,7 +117,9 @@ async def save_filters(_, message):
             file_id = replied_message.voice.file_id
         if replied_message.reply_markup and "~" not in data:
             if urls := extract_urls(replied_message.reply_markup):
-                response = "\n".join([f"{name}=[{text}, {url}]" for name, text, url in urls])
+                response = "\n".join(
+                    [f"{name}=[{text}, {url}]" for name, text, url in urls]
+                )
                 data = data + response
         name = name.replace("_", " ")
         _filter = {
@@ -121,7 +130,9 @@ async def save_filters(_, message):
         await save_filter(chat_id, name, _filter)
         return await message.reply_text(f"__**Saved filter {name}.**__")
     except UnboundLocalError:
-        return await message.reply_text("**Replied message is inaccessible.\n`Forward the message and try again`**")
+        return await message.reply_text(
+            "**Replied message is inaccessible.\n`Forward the message and try again`**"
+        )
 
 
 @app.on_message(filters.command("filters", COMMAND_HANDLER) & ~filters.private)
@@ -137,7 +148,9 @@ async def get_filterss(_, m):
     await m.reply_msg(msg)
 
 
-@app.on_message(filters.command(["stop", "stopfilter"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["stop", "stopfilter"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_change_info")
 async def del_filter(_, m):
     if len(m.command) < 2:
@@ -159,7 +172,9 @@ async def del_filter(_, m):
 )
 async def filters_re(_, message):
     text = message.text.lower().strip()
-    if not text or (message.command and message.command[0].lower() in ["filter", "addfilter"]):
+    if not text or (
+        message.command and message.command[0].lower() in ["filter", "addfilter"]
+    ):
         return
     chat_id = message.chat.id
     list_of_filters = await get_filters_names(chat_id)
@@ -242,12 +257,16 @@ async def stop_all(_, message):
     else:
         keyboard = InlineKeyboardMarkup(
             [
-                [InlineKeyboardButton("YES, DO IT", callback_data="stop_yes"), 
-                 InlineKeyboardButton("Cancel", callback_data="stop_no")
+                [
+                    InlineKeyboardButton("YES, DO IT", callback_data="stop_yes"),
+                    InlineKeyboardButton("Cancel", callback_data="stop_no"),
                 ]
             ]
         )
-        await message.reply_text("**Are you sure you want to delete all the filters in this chat forever ?.**", reply_markup=keyboard)
+        await message.reply_text(
+            "**Are you sure you want to delete all the filters in this chat forever ?.**",
+            reply_markup=keyboard,
+        )
 
 
 @app.on_callback_query(filters.regex("stop_(.*)"))
@@ -257,12 +276,17 @@ async def stop_all_cb(_, cb):
     permissions = await member_permissions(chat_id, from_user.id)
     permission = "can_change_info"
     if permission not in permissions:
-        return await cb.answer(f"You don't have the required permission.\n Permission: {permission}", show_alert=True)
+        return await cb.answer(
+            f"You don't have the required permission.\n Permission: {permission}",
+            show_alert=True,
+        )
     input = cb.data.split("_", 1)[1]
     if input == "yes":
         stoped_all = await deleteall_filters(chat_id)
         if stoped_all:
-            return await cb.message.edit("**Successfully deleted all filters on this chat.**")
+            return await cb.message.edit(
+                "**Successfully deleted all filters on this chat.**"
+            )
     if input == "no":
         await cb.message.reply_to_message.delete()
         await cb.message.delete()

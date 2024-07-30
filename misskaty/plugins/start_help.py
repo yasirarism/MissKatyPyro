@@ -1,9 +1,10 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
- """
+* @author        yasir <yasiramunandar@gmail.com>
+* @date          2022-12-01 09:12:27
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
+"""
+
 import re
 
 from pyrogram import Client, filters
@@ -19,7 +20,6 @@ from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, app
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
-
 
 home_keyboard_pm = InlineKeyboardMarkup(
     [
@@ -104,13 +104,17 @@ async def start(self, ctx: Message, strings):
                 strings("help_name").format(mod=HELPABLE[module].__MODULE__)
                 + HELPABLE[module].__HELP__
             )
-            await ctx.reply_msg(text, disable_web_page_preview=True, message_effect_id=5104841245755180586)
+            await ctx.reply_msg(
+                text,
+                disable_web_page_preview=True,
+                message_effect_id=5104841245755180586,
+            )
             if module == "federation":
                 return await ctx.reply(
                     text=text,
                     reply_markup=FED_MARKUP,
                     disable_web_page_preview=True,
-                    message_effect_id=5104841245755180586
+                    message_effect_id=5104841245755180586,
                 )
             await ctx.reply(
                 text,
@@ -118,13 +122,12 @@ async def start(self, ctx: Message, strings):
                     [[InlineKeyboardButton("back", callback_data="help_back")]]
                 ),
                 disable_web_page_preview=True,
-                message_effect_id=5104841245755180586)
+                message_effect_id=5104841245755180586,
+            )
         elif name == "help":
             text, keyb = await help_parser(ctx.from_user.first_name)
             await ctx.reply_msg(
-                text,
-                reply_markup=keyb,
-                message_effect_id=5104841245755180586
+                text, reply_markup=keyb, message_effect_id=5104841245755180586
             )
     else:
         await self.send_photo(
@@ -133,7 +136,7 @@ async def start(self, ctx: Message, strings):
             caption=home_text_pm,
             reply_markup=home_keyboard_pm,
             reply_to_message_id=ctx.id,
-            message_effect_id=5104841245755180586
+            message_effect_id=5104841245755180586,
         )
 
 
@@ -144,7 +147,7 @@ async def commands_callbacc(_, cb: CallbackQuery):
         cb.message.chat.id,
         text=text,
         reply_markup=keyb,
-        message_effect_id=5104841245755180586
+        message_effect_id=5104841245755180586,
     )
     await cb.message.delete_msg()
 
@@ -187,19 +190,26 @@ async def help_command(_, ctx: Message, strings):
                 strings("help_name").format(mod=HELPABLE[name].__MODULE__)
                 + HELPABLE[name].__HELP__
             )
-            await ctx.reply_msg(text, disable_web_page_preview=True, message_effect_id=5104841245755180586)
+            await ctx.reply_msg(
+                text,
+                disable_web_page_preview=True,
+                message_effect_id=5104841245755180586,
+            )
         else:
             text, help_keyboard = await help_parser(ctx.from_user.first_name)
             await ctx.reply_msg(
                 text,
                 reply_markup=help_keyboard,
                 disable_web_page_preview=True,
-                message_effect_id=5104841245755180586
+                message_effect_id=5104841245755180586,
             )
     else:
         text, help_keyboard = await help_parser(ctx.from_user.first_name)
         await ctx.reply_msg(
-            text, reply_markup=help_keyboard, disable_web_page_preview=True, message_effect_id=5104841245755180586
+            text,
+            reply_markup=help_keyboard,
+            disable_web_page_preview=True,
+            message_effect_id=5104841245755180586,
         )
 
 

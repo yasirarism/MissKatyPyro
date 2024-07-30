@@ -1,8 +1,9 @@
-import pytz
 from datetime import datetime
-from misskaty.vars import SUDO
-from database import dbname
 
+import pytz
+
+from database import dbname
+from misskaty.vars import SUDO
 
 fedsdb = dbname["federation"]
 
@@ -32,9 +33,7 @@ async def get_feds_by_owner(owner_id):
     feds = await cursor.to_list(length=None)
     if not feds:
         return False
-    return [
-        {"fed_id": fed["fed_id"], "fed_name": fed["fed_name"]} for fed in feds
-    ]
+    return [{"fed_id": fed["fed_id"], "fed_name": fed["fed_name"]} for fed in feds]
 
 
 async def transfer_owner(fed_id, current_owner_id, new_owner_id):

@@ -2,11 +2,11 @@ import asyncio
 import datetime
 import time
 
+from async_pymongo import AsyncClient
 from pyrogram import filters
 from pyrogram.types import Message
 
-from async_pymongo import AsyncClient
-from misskaty import app, DATABASE_URI
+from misskaty import DATABASE_URI, app
 from misskaty.vars import SUDO
 from utils import broadcast_messages
 
