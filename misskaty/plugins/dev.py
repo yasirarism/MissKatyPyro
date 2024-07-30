@@ -84,12 +84,13 @@ async def edit_or_reply(self, msg, **kwargs):
 
 @app.on_message(filters.command(["stars"], COMMAND_HANDLER))
 async def star_donation(self: Client, ctx: Message):
+    amount = ctx.command[1] if len(ctx.command) == 2 and ctx.command[1].isdigit() else 5
     await self.send_invoice(
         ctx.chat.id, 
         title="MissKaty Donate",
         description="You can give me donation via star", 
         currency="XTR",
-        prices=[LabeledPrice(label="Donation", amount=1)],
+        prices=[LabeledPrice(label="Donation", amount=amount)],
         message_thread_id=ctx.message_thread_id,
         payload="stars"
     )
@@ -101,10 +102,21 @@ async def pre_checkout_query_handler(_: Client, query: PreCheckoutQuery):
 
 
 @app.on_message(filters.private, group=3)
-async def successful_payment_handler(client: Client, message: Message):
+async def successful_payment_handler(_: Client, message: Message):
     if message.successful_payment:
-        await message.reply("Thanks for support! But I don't need stars for now! Take it back!")
-        await client.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+        await message.reply(f"Thanks for support for <b>{message.successful_payment.total_amount} {message.successful_payment.currency}</b>! Your transaction ID is : <code>{message.successful_payment.telegram_payment_charge_id}</code>")
+
+
+@app.on_message(filters.command(["refund_star"], COMMAND_HANDLER))
+async def refund_star_payment(client: Client, message: Message)
+    if len(message.command) == 1:
+        return await message.reply_msg("Please input telegram_payment_charge_id after command.")
+    trx_id = message.command[1]
+    try:
+        await client.refund_star_payment(message.from_user.id, trx_id)
+        await message.reply_msg(f"Great {message.from_user.mention}, your stars has been refunded to your balance.")
+    except Exception as e:
+        await message.reply_msg(e)
 
 
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
