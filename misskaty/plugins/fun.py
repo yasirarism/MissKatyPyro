@@ -1,8 +1,8 @@
 import textwrap
-import regex
 from asyncio import gather
 from os import remove as hapus
 
+import regex
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
 from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
@@ -201,16 +201,20 @@ async def beriharapan(c, m):
 @user.on_message(filters.command("react", "."))
 async def givereact(c, m):
     if len(m.command) == 1:
-        return await m.reply("Please add reaction after command, you can give multiple reaction too.")
+        return await m.reply(
+            "Please add reaction after command, you can give multiple reaction too."
+        )
     if not m.reply_to_message:
         return await m.reply("Please reply to the message you want to react to.")
-    emot = list(regex.findall(r'\p{Emoji}', m.text))
+    emot = list(regex.findall(r"\p{Emoji}", m.text))
     try:
         await m.reply_to_message.react(emoji=emot)
     except ReactionInvalid:
         await m.reply("Please give valid reaction.")
     except MessageIdInvalid:
-        await m.reply("Sorry, i couldn't react to other bots or without being as administrator.")
+        await m.reply(
+            "Sorry, i couldn't react to other bots or without being as administrator."
+        )
     except PeerIdInvalid:
         await m.reply("Sorry, i can't react chat without join that groups.")
     except Exception as err:

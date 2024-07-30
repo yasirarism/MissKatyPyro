@@ -66,7 +66,9 @@ async def anonymous_admin_verification(
     try:
         member = await CallbackQuery.message.chat.get_member(CallbackQuery.from_user.id)
     except pyrogram.errors.exceptions.bad_request_400.UserNotParticipant:
-        return await CallbackQuery.answer("You're not member of this group.", show_alert=True)
+        return await CallbackQuery.answer(
+            "You're not member of this group.", show_alert=True
+        )
     except pyrogram.errors.exceptions.forbidden_403.ChatAdminRequired:
         return await CallbackQuery.message.edit_text(
             "I must be admin to execute this task, or i will leave from this group.",

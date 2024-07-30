@@ -5,7 +5,6 @@
 import platform
 import re
 from datetime import datetime, timedelta
-from attr import Attribute
 
 import pytz
 from apscheduler.jobstores.base import ConflictingIdError
@@ -17,7 +16,7 @@ from pyrogram.errors import (
     ChatNotModified,
     ChatRestricted,
     PeerIdInvalid,
-    QueryIdInvalid
+    QueryIdInvalid,
 )
 from pyrogram.types import ChatPermissions, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -241,7 +240,7 @@ async def nightmode_handler(self, msg, strings):
         can_send_roundvideos=msg.chat.permissions.can_send_roundvideos,
         can_send_stickers=msg.chat.permissions.can_send_stickers,
         can_send_videos=msg.chat.permissions.can_send_videos,
-        can_send_voices=msg.chat.permissions.can_send_voices
+        can_send_voices=msg.chat.permissions.can_send_voices,
     )
     try:
         # schedule to enable nightmode

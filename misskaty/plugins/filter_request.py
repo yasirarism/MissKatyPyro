@@ -24,7 +24,9 @@ from .ytdl_plugins import YT_DB
 chat = [-1001128045651, -1001255283935, -1001455886928]
 REQUEST_DB = {}
 
+
 # This modules is only working for my movies group to help collect a list of film requests by members.
+
 
 # @app.on_message(filters.regex(r"alamu'?ala[iy]ku+m", re.I) & filters.chat(chat))
 async def salamregex(_, message):
@@ -186,7 +188,8 @@ async def callbackreq(c, q):
                         [
                             [
                                 InlineKeyboardButton(
-                                    text="✅ Request Completed", callback_data="reqcompl"
+                                    text="✅ Request Completed",
+                                    callback_data="reqcompl",
                                 )
                             ]
                         ]
@@ -199,7 +202,8 @@ async def callbackreq(c, q):
                         [
                             [
                                 InlineKeyboardButton(
-                                    text="✅ Request Completed", callback_data="reqcompl"
+                                    text="✅ Request Completed",
+                                    callback_data="reqcompl",
                                 )
                             ]
                         ]
@@ -300,7 +304,8 @@ async def callbackreject(c, q):
                         [
                             [
                                 InlineKeyboardButton(
-                                    text="🚫 Request Rejected", callback_data="reqreject"
+                                    text="🚫 Request Rejected",
+                                    callback_data="reqreject",
                                 )
                             ]
                         ]
@@ -313,7 +318,8 @@ async def callbackreject(c, q):
                         [
                             [
                                 InlineKeyboardButton(
-                                    text="🚫 Request Rejected", callback_data="reqreject"
+                                    text="🚫 Request Rejected",
+                                    callback_data="reqreject",
                                 )
                             ]
                         ]
@@ -428,7 +434,8 @@ async def callbackaft_unav(_, q):
 @app.on_callback_query(filters.regex(r"^reqavailable$"))
 async def callbackaft_dahada(_, q):
     await q.answer(
-        "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", show_alert=True
+        "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..",
+        show_alert=True,
     )
 
 

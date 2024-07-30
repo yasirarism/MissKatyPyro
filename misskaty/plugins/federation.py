@@ -23,20 +23,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import uuid
 import asyncio
-from database.feds_db import *
-
-from misskaty import app, BOT_ID
-from misskaty.vars import SUDO, LOG_GROUP_ID, COMMAND_HANDLER
+import uuid
 
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus, ChatType, ParseMode
+from pyrogram.errors import FloodWait, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from misskaty.helper.functions import extract_user, extract_user_and_reason
-from pyrogram.errors import FloodWait, PeerIdInvalid
+from database.feds_db import *
+from misskaty import BOT_ID, app
 from misskaty.core.decorator.errors import capture_err
+from misskaty.helper.functions import extract_user, extract_user_and_reason
+from misskaty.vars import COMMAND_HANDLER, LOG_GROUP_ID, SUDO
 
 __MODULE__ = "Federation"
 __HELP__ = """
@@ -451,7 +450,9 @@ async def get_all_fadmins_mentions(client, message):
 
     fadmin_ids = fed_info.get("fadmins", [])
     if not fadmin_ids:
-        return await message.reply_text(f"**Owner: {fed_info['owner_mention']}\n\nNo fadmins found in the federation.")
+        return await message.reply_text(
+            f"**Owner: {fed_info['owner_mention']}\n\nNo fadmins found in the federation."
+        )
 
     user_mentions = []
     for user_id in fadmin_ids:
@@ -460,7 +461,10 @@ async def get_all_fadmins_mentions(client, message):
             user_mentions.append(f"● {user.mention}[`{user.id}`]")
         except Exception:
             user_mentions.append(f"● `Admin🥷`[`{user_id}`]")
-    reply_text = f"**Owner: {fed_info['owner_mention']}\n\nList of fadmins:**\n" + "\n".join(user_mentions)
+    reply_text = (
+        f"**Owner: {fed_info['owner_mention']}\n\nList of fadmins:**\n"
+        + "\n".join(user_mentions)
+    )
     await message.reply_text(reply_text)
 
 
@@ -572,7 +576,9 @@ async def fban_user(client, message):
     chat = message.chat
     from_user = message.from_user
     if message.chat.type == ChatType.PRIVATE:
-        return await message.reply_text("This command is specific to groups, not our pm!.")
+        return await message.reply_text(
+            "This command is specific to groups, not our pm!."
+        )
     fed_id = await get_fed_id(chat.id)
     if not fed_id:
         return await message.reply_text("**This chat is not a part of any federation.")
@@ -592,7 +598,9 @@ async def fban_user(client, message):
     try:
         user = await app.get_users(user_id)
     except PeerIdInvalid:
-        return await message.reply_msg("Sorry, i never meet this user. So i cannot fban.")
+        return await message.reply_msg(
+            "Sorry, i never meet this user. So i cannot fban."
+        )
     if not user_id:
         return await message.reply_text("I can't find that user.")
     if user_id in all_admins or user_id in SUDO:

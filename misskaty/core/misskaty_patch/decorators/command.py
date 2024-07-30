@@ -21,7 +21,7 @@ def command(
     handler: typing.Optional[list] = None,
     filtercmd: typing.Union[pyrogram.filters.Filter] = None,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """
     ### `tgClient.command`

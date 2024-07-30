@@ -1,9 +1,10 @@
 """
- * @author        Yasir Aris M <yasiramunandar@gmail.com>
- * @created       2022-12-01 09:12:27
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
+* @author        Yasir Aris M <yasiramunandar@gmail.com>
+* @created       2022-12-01 09:12:27
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
 """
+
 from json import loads as json_loads
 from os import remove
 from re import compile as compiles
@@ -214,7 +215,9 @@ async def wastepaste(_, message):
             "expire_at": 0,
             "expire_in": 0,
         }
-        response = await fetch.post("https://paste.yasir.eu.org/api/new", json=json_data)
+        response = await fetch.post(
+            "https://paste.yasir.eu.org/api/new", json=json_data
+        )
         url = f"https://paste.yasir.eu.org/{response.json()['id']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
@@ -282,7 +285,9 @@ async def nekopaste(_, message):
 
     try:
         x = (
-            await fetch.post("https://nekobin.com/api/documents", json={"content": data})
+            await fetch.post(
+                "https://nekobin.com/api/documents", json={"content": data}
+            )
         ).json()
         url = f"https://nekobin.com/{x['result']['key']}"
     except Exception as e:

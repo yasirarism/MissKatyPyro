@@ -117,9 +117,9 @@ async def inline_menu(self, inline_query: InlineQuery):
                     description="New Calculator",
                     input_message_content=InputTextMessageContent(
                         message_text=f"Made by @{self.me.username}",
-                        disable_web_page_preview=True
+                        disable_web_page_preview=True,
                     ),
-                    reply_markup=calc_btn(inline_query.from_user.id)
+                    reply_markup=calc_btn(inline_query.from_user.id),
                 )
             ]
         else:
@@ -130,9 +130,8 @@ async def inline_menu(self, inline_query: InlineQuery):
                     title="Answer",
                     description=f"Result: {result}",
                     input_message_content=InputTextMessageContent(
-                        message_text=f"{data} = {result}",
-                        disable_web_page_preview=True
-                    )
+                        message_text=f"{data} = {result}", disable_web_page_preview=True
+                    ),
                 )
             ]
         await inline_query.answer(
@@ -731,7 +730,9 @@ async def imdb_inl(_, query):
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
-                res_str += f"<b>🔥 Kata Kunci:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
+                res_str += (
+                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
+                )
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
                     award[0]

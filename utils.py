@@ -128,7 +128,11 @@ def extract_user(message: Message) -> Union[int, str]:
         user_first_name = message.reply_to_message.from_user.first_name
 
     elif len(message.command) > 1:
-        if message.entities and len(message.entities) > 1 and message.entities[1].type.value == "text_mention":
+        if (
+            message.entities
+            and len(message.entities) > 1
+            and message.entities[1].type.value == "text_mention"
+        ):
             required_entity = message.entities[1]
             user_id = required_entity.user.id
             user_first_name = required_entity.user.first_name

@@ -16,8 +16,8 @@ from pyrogram.errors import (
 )
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 
-from database.users_chats_db import db
 from database.greetings_db import is_welcome, toggle_welcome
+from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
 from misskaty.helper import fetch, use_chat_lang
@@ -169,7 +169,9 @@ async def member_has_joined(c: app, member: ChatMemberUpdated, strings):
 @app.adminsOnly("can_change_info")
 async def welcome_toggle_handler(client, message):
     is_enabled = await toggle_welcome(message.chat.id)
-    await message.reply_msg(f"Welcome messages are now {'enabled' if is_enabled else 'disabled'}.")
+    await message.reply_msg(
+        f"Welcome messages are now {'enabled' if is_enabled else 'disabled'}."
+    )
 
 
 # ToDo with ChatMemberUpdated

@@ -3,17 +3,16 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
-import cloudscraper
 import math
 import os
 import re
 import time
-from bs4 import BeautifulSoup
-from cloudscraper import create_scraper
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
 
+from bs4 import BeautifulSoup
+from cloudscraper import create_scraper
 from pyrogram import filters
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -183,32 +182,46 @@ async def instadl(_, message):
     msg = await message.reply("Trying download...")
     try:
         headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
-                "Accept": "*/*",
-                "Accept-Language": "en-US,en;q=0.5",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                "X-Requested-With": "XMLHttpRequest",
-                "Content-Length": "99",
-                "Origin": "https://saveig.app",
-                "Connection": "keep-alive",
-                "Referer": "https://saveig.app/id",
-            }
-        post = create_scraper().post("https://saveig.app/api/ajaxSearch", data={"q": link, "t": "media", "lang": "id"}, headers=headers)
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Length": "99",
+            "Origin": "https://saveig.app",
+            "Connection": "keep-alive",
+            "Referer": "https://saveig.app/id",
+        }
+        post = create_scraper().post(
+            "https://saveig.app/api/ajaxSearch",
+            data={"q": link, "t": "media", "lang": "id"},
+            headers=headers,
+        )
         if post.status_code not in [200, 401]:
             return await message.reply("Unknown error.")
         res = post.json()
-        if r := re.findall(r'href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]):
+        if r := re.findall(
+            r'href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]
+        ):
             res = r[0].replace("&amp;", "&")
-            fname = (await fetch.head(res)).headers.get("content-disposition", "").split("filename=")[1]
-            is_img = (await fetch.head(res)).headers.get("content-type").startswith("image")
+            fname = (
+                (await fetch.head(res))
+                .headers.get("content-disposition", "")
+                .split("filename=")[1]
+            )
+            is_img = (
+                (await fetch.head(res)).headers.get("content-type").startswith("image")
+            )
             if is_img:
                 await message.reply_photo(res, caption=fname)
             else:
                 await message.reply_video(res, caption=fname)
         await msg.delete()
     except Exception as e:
-        await message.reply(f"Failed to download instagram video..\n\n<b>Reason:</b> {e}")
+        await message.reply(
+            f"Failed to download instagram video..\n\n<b>Reason:</b> {e}"
+        )
         await msg.delete()
 
 
@@ -251,15 +264,29 @@ async def twitterdl(_, message):
         if post.status_code not in [200, 401]:
             return await msg.edit_msg("Unknown error.")
         soup = BeautifulSoup(post.text, "lxml")
-        cekdata = soup.find("a", {"pure-button pure-button-primary is-center u-bl dl-button download_link without_watermark vignette_active"})
+        cekdata = soup.find(
+            "a",
+            {
+                "pure-button pure-button-primary is-center u-bl dl-button download_link without_watermark vignette_active"
+            },
+        )
         if not cekdata:
-            return await message.reply("ERROR: Oops! It seems that this tweet doesn't have a video! Try later or check your link")
+            return await message.reply(
+                "ERROR: Oops! It seems that this tweet doesn't have a video! Try later or check your link"
+            )
         try:
-            fname = (await fetch.head(cekdata.get("href"))).headers.get("content-disposition", "").split("filename=")[1]
+            fname = (
+                (await fetch.head(cekdata.get("href")))
+                .headers.get("content-disposition", "")
+                .split("filename=")[1]
+            )
             obj = SmartDL(cekdata.get("href"), progress_bar=False, timeout=15)
             obj.start()
             path = obj.get_dest()
-            await message.reply_video(path, caption=f"<code>{fname}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",)
+            await message.reply_video(
+                path,
+                caption=f"<code>{fname}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
+            )
         except Exception as er:
             LOGGER.error("ERROR: while fetching TwitterDL. %s", er)
             return await msg.edit_msg("ERROR: Got error while extracting link.")
@@ -284,8 +311,10 @@ async def tiktokdl(_, message):
                 "https://lovetik.com/api/ajax/search", data={"query": link}
             )
         ).json()
-        fname = (await fetch.head(r["links"][0]["a"])).headers.get("content-disposition", "")
-        filename = unquote(fname.split('filename=')[1].strip('"').split('"')[0])
+        fname = (await fetch.head(r["links"][0]["a"])).headers.get(
+            "content-disposition", ""
+        )
+        filename = unquote(fname.split("filename=")[1].strip('"').split('"')[0])
         await message.reply_video(
             r["links"][0]["a"],
             caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",

@@ -21,19 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 from re import findall
 
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from database.notes_db import delete_note, get_note, get_note_names, save_note, deleteall_notes
+from database.notes_db import (
+    delete_note,
+    deleteall_notes,
+    get_note,
+    get_note_names,
+    save_note,
+)
 from misskaty import app
-from misskaty.vars import COMMAND_HANDLER
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly, member_permissions
 from misskaty.core.keyboard import ikb
 from misskaty.helper.functions import extract_text_and_keyb, extract_urls
-
+from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Notes"
 __HELP__ = """/notes To Get All The Notes In The Chat.
@@ -51,12 +57,16 @@ To change caption of any files use.\n/save [NOTE_NAME] or /addnote [NOTE_NAME] [
 """
 
 
-@app.on_message(filters.command(["addnote", "save"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["addnote", "save"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_change_info")
 async def save_notee(_, message):
     try:
         if len(message.command) < 2 or not message.reply_to_message:
-            await message.reply_msg("**Usage:**\nReply to a message with /save [NOTE_NAME] to save a new note.")
+            await message.reply_msg(
+                "**Usage:**\nReply to a message with /save [NOTE_NAME] to save a new note."
+            )
         else:
             text = message.text.markdown
             name = text.split(None, 1)[1].strip()
@@ -74,7 +84,11 @@ async def save_notee(_, message):
             elif not replied_message.text and not replied_message.caption:
                 data = None
             else:
-                data = replied_message.text.markdown if replied_message.text else replied_message.caption.markdown
+                data = (
+                    replied_message.text.markdown
+                    if replied_message.text
+                    else replied_message.caption.markdown
+                )
             if replied_message.text:
                 _type = "text"
                 file_id = None
@@ -104,7 +118,9 @@ async def save_notee(_, message):
                 file_id = replied_message.voice.file_id
             if replied_message.reply_markup and "~" not in data:
                 if urls := extract_urls(replied_message.reply_markup):
-                    response = "\n".join([f"{name}=[{text}, {url}]" for name, text, url in urls])
+                    response = "\n".join(
+                        [f"{name}=[{text}, {url}]" for name, text, url in urls]
+                    )
                     data = data + response
             note = {
                 "type": _type,
@@ -116,7 +132,9 @@ async def save_notee(_, message):
             await save_note(chat_id, name, note)
             await message.reply_msg(f"__**Saved note {name}.**__")
     except UnboundLocalError:
-        return await message.reply_text("**Replied message is inaccessible.\n`Forward the message and try again`**")
+        return await message.reply_text(
+            "**Replied message is inaccessible.\n`Forward the message and try again`**"
+        )
 
 
 @app.on_message(filters.command("notes", COMMAND_HANDLER) & ~filters.private)
@@ -147,7 +165,7 @@ async def get_one_note(self, message):
     data = _note.get("data")
     file_id = _note.get("file_id")
     keyb = None
-    if data:   
+    if data:
         if findall(r"\[.+\,.+\]", data):
             if keyboard := extract_text_and_keyb(ikb, data):
                 data, keyb = keyboard
@@ -206,7 +224,9 @@ async def get_one_note(self, message):
         )
 
 
-@app.on_message(filters.command(["delnote", "clear"], COMMAND_HANDLER) & ~filters.private)
+@app.on_message(
+    filters.command(["delnote", "clear"], COMMAND_HANDLER) & ~filters.private
+)
 @adminsOnly("can_change_info")
 async def del_note(_, message):
     if len(message.command) < 2:
@@ -233,12 +253,16 @@ async def delete_all(_, message):
         return await message.reply_text("**No notes in this chat.**")
     keyboard = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("YES, DO IT", callback_data="delete_yes"), 
-             InlineKeyboardButton("Cancel", callback_data="delete_no")
+            [
+                InlineKeyboardButton("YES, DO IT", callback_data="delete_yes"),
+                InlineKeyboardButton("Cancel", callback_data="delete_no"),
             ]
         ]
     )
-    await message.reply_text("**Are you sure you want to delete all the notes in this chat forever ?.**", reply_markup=keyboard)
+    await message.reply_text(
+        "**Are you sure you want to delete all the notes in this chat forever ?.**",
+        reply_markup=keyboard,
+    )
 
 
 @app.on_callback_query(filters.regex("delete_(.*)"))
@@ -248,9 +272,14 @@ async def delete_all_cb(_, cb):
     permissions = await member_permissions(chat_id, from_user.id)
     permission = "can_change_info"
     if permission not in permissions:
-        return await cb.answer(f"You don't have the required permission.\n Permission: {permission}", show_alert=True)
+        return await cb.answer(
+            f"You don't have the required permission.\n Permission: {permission}",
+            show_alert=True,
+        )
     input = cb.data.split("_", 1)[1]
     if input == "yes":
         stoped_all = await deleteall_notes(chat_id)
         if stoped_all:
-            return await cb.message.edit("**Successfully deleted all notes on this chat.**")
+            return await cb.message.edit(
+                "**Successfully deleted all notes on this chat.**"
+            )

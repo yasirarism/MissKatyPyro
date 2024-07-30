@@ -1,9 +1,10 @@
 """
- * @author        yasir <yasiramunandar@gmail.com>
- * @date          2022-12-01 09:12:27
- * @projectName   MissKatyPyro
- * Copyright @YasirPedia All rights reserved
+* @author        yasir <yasiramunandar@gmail.com>
+* @date          2022-12-01 09:12:27
+* @projectName   MissKatyPyro
+* Copyright @YasirPedia All rights reserved
 """
+
 import platform
 import time
 from asyncio import Lock
@@ -18,8 +19,8 @@ from misskaty import app, botStartTime, misskaty_version
 from misskaty.helper.human_read import get_readable_time
 from misskaty.vars import COMMAND_HANDLER
 
-
 PING_LOCK = Lock()
+
 
 @app.on_message(filters.command(["ping"], COMMAND_HANDLER))
 async def ping(_, ctx: Message):
