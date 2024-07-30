@@ -4,6 +4,7 @@
 * @projectName   MissKatyPyro
 * Copyright @YasirPedia All rights reserved
 """
+import ast
 
 import asyncio
 import contextlib
@@ -66,7 +67,6 @@ __HELP__ = """
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
-    import re
 
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
@@ -74,11 +74,11 @@ def remove_html_tags(text):
 
 def calcExpression(text):
     try:
-        return float(eval(text))
+        return float(ast.literal_eval(text))
     except (SyntaxError, ZeroDivisionError):
         return ""
     except TypeError:
-        return float(eval(text.replace("(", "*(")))
+        return float(ast.literal_eval(text.replace("(", "*(")))
     except Exception as e:
         LOGGER.error(e, exc_info=True)
         return ""
