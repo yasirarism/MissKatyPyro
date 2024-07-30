@@ -80,6 +80,31 @@ async def edit_or_reply(self, msg, **kwargs):
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
+@app.on_message(filters.command(["stars"], COMMAND_HANDLER))
+async def star_donation(self: Client, ctx: Message):
+    await self.send_invoice(
+        ctx.chat.id, 
+        title="MissKaty Donate",
+        description="You can give me donation via star", 
+        currency="XTR",
+        prices=[LabeledPrice(label="Donation", amount=1)],
+        message_thread_id=ctx.message_thread_id,
+        payload="stars"
+    )
+
+
+@app.on_pre_checkout_query()
+async def pre_checkout_query_handler(_: Client, query: PreCheckoutQuery):
+    await query.answer("stars", success=True)
+
+
+@app.on_message(filters.private, group=3)
+async def successful_payment_handler(client: Client, message: Message):
+    if message.successful_payment:
+        await message.reply("Thanks for support! But I don't need stars for now! Take it back!")
+        await client.refund_star_payment(message.from_user.id, message.successful_payment.telegram_payment_charge_id)
+
+
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
 @use_chat_lang()
 async def log_file(_, ctx: Message, strings):
@@ -382,7 +407,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                 ]
             ),
         )
-        if not ctx.from_user.is_self:
+        if self.me.is_bot:
             await msg.delete_msg()
     else:
         await ctx.reply_msg(strings("no_reply"), del_in=5)
@@ -528,7 +553,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                 ]
             ),
         )
-        if not ctx.from_user.is_self:
+        if self.me.is_bot:
             await status_message.delete_msg()
 
 
