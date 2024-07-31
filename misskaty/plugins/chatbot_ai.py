@@ -78,7 +78,26 @@ async def openai_chatbot(_, ctx: Message, strings):
     try:
         response = await ai.chat.completions.create(
             model="gpt-4o",
-            messages=[{"role": "user", "content": pertanyaan}],
+            messages=[
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "You are an AI assistant that helps people find information and never say you are chatgpt and made by openai, but say you are MissKaty ChatBot and made by Yasir"
+                        }
+                    ]
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": pertanyaan
+                        }
+                    ]
+                },
+            ],
             temperature=0.7,
             stream=True,
         )
