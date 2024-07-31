@@ -93,7 +93,7 @@ async def openai_chatbot(_, ctx: Message, strings):
                 await msg.edit_msg(html.escape(answer))
                 await asyncio.sleep(1.5)
                 num = 0
-        await msg.edit_msg(html.escape(f"{answer}\n\n<b>Powered by:</b> <code>GPT 4o</code>"))
+        await msg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
