@@ -6,7 +6,7 @@ import asyncio
 import html
 import random
 
-from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
+from openai import APIConnectionError, APIStatusError, AsyncAzureOpenAI, RateLimitError
 from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
@@ -70,7 +70,7 @@ async def openai_chatbot(_, ctx: Message, strings):
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
-    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://api.aimlapi.com")
+    ai = AsyncAzureOpenAI(api_key=OPENAI_KEY, azure_endpoint="https://yasirainew.openai.azure.com", api_version="2024-02-15-preview",)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     num = 0
