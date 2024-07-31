@@ -85,13 +85,15 @@ async def openai_chatbot(_, ctx: Message, strings):
         async for chunk in response:
             if not chunk.choices:
                 continue
+            if not chunk.choices[0].delta.content:
+                continue
             num += 1
             answer += chunk.choices[0].delta.content
             if num == 30:
                 await msg.edit_msg(html.escape(answer))
                 await asyncio.sleep(1.5)
                 num = 0
-        await msg.edit_msg(html.escape(f"{answer}\n\nPowered by: <code>GPT 4o</code>"))
+        await msg.edit_msg(html.escape(f"{answer}\n\n<b>Powered by:</b> <code>GPT 4o</code>"))
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
