@@ -87,6 +87,12 @@ async def edit_or_reply(self, msg, **kwargs):
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
+@app.on_message(filters.command(["privacy"], COMMAND_HANDLER))
+@use_chat_lang()
+async def privacy_policy(self: Client, ctx: Message, strings):
+    await ctx.reply_msg(strings("privacy_policy").format(botname=self.me.first_name))
+
+
 @app.on_message(filters.command(["stars"], COMMAND_HANDLER))
 async def star_donation(self: Client, ctx: Message):
     amount = ctx.command[1] if len(ctx.command) == 2 and ctx.command[1].isdigit() else 5
