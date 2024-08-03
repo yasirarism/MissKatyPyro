@@ -5,7 +5,7 @@
 
 # Base Docker Using Ubuntu 24.04, Python 3.12 and Built In Pip
 ## With Built in Pip Package
-FROM ghcr.io/yasirarism/misskaty-docker:py3.12
+FROM yasirarism/misskaty-docker:py3.12
 ## Without Built in Pip Package
 # FROM yasirarism/misskaty-docker:free
 
