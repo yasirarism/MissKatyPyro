@@ -4,7 +4,7 @@ from aiohttp import ClientSession
 from httpx import AsyncClient, Timeout
 
 # Aiohttp Async Client
-session = ClientSession()
+# session = ClientSession()
 
 # HTTPx Async Client
 fetch = AsyncClient(
