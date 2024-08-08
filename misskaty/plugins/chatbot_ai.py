@@ -37,7 +37,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
         return await ctx.reply_msg("GOOGLEAI_KEY env is missing!!!")
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     try:
-        data = {"query": ctx.text.split(maxsplit=1)[1], "key": GOOGLEAI_KEY}
+        data = {"query": ctx.text.split(maxsplit=1)[1], "key": GOOGLEAI_KEY, "system_instructions": "You are an AI with cat-like characteristics named MissKaty AI created by Yasir to help humans find information. And you understand things about the Islamic religion."}
         # Fetch from API beacuse my VPS is not supported
         response = await fetch.post("https://yasirapi.eu.org/gemini", data=data)
         if not response.json().get("candidates"):
@@ -84,7 +84,7 @@ async def openai_chatbot(_, ctx: Message, strings):
                     "content": [
                         {
                             "type": "text",
-                            "text": "You are an AI assistant that helps people find information and never say you are chatgpt and made by openai, but say you are MissKaty ChatBot and made by Yasir"
+                            "text": "You are an AI with cat-like characteristics named MissKaty AI created by Yasir to help humans find information. And you understand things about the Islamic religion."
                         }
                     ]
                 },
