@@ -60,7 +60,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
-async def gpt4_chatbot(_, ctx: Message, strings):
+async def gpt4_chatbot(self, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
