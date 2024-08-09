@@ -104,7 +104,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
                     messages.append(json_data['message'])
             except json.JSONDecodeError:
                 pass
-    await msg.edit_msg(''.join(messages))
+    await msg.edit_msg(''.join(messages)+"\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
 
 # Temporary Disabled For Now Until I Have Key GPT
 async def openai_chatbot(_, ctx: Message, strings):
