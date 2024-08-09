@@ -4,6 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
 import html
+import json
 import random
 
 from openai import APIConnectionError, APIStatusError, AsyncAzureOpenAI, RateLimitError
@@ -59,6 +60,50 @@ async def gemini_chatbot(_, ctx: Message, strings):
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
+async def gpt4_chatbot(_, ctx: Message, strings):
+    if len(ctx.command) == 1:
+        return await ctx.reply_msg(
+            strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
+        )
+    pertanyaan = ctx.input
+    msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
+    headers = {
+        "accept": "text/event-stream",
+        "accept-language": "en-US,en;q=0.9,id-ID;q=0.8,id;q=0.7",
+        "content-type": "application/json",
+        "priority": "u=1, i",
+        "sec-ch-ua": "\"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        "x-vqd-4": "4-111489714419629003567772394641099021881",
+        "cookie": "dcm=3",
+        "Referer": "https://duckduckgo.com/",
+        "Referrer-Policy": "origin"
+    }
+    
+    data = {
+        "model": "gpt-4o-mini",
+        "messages": [
+            {"role": "assistant", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."},
+            {"role": "user", "content": pertanyaan}
+        ]
+    }
+    response = await fetch.post("https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
+    messages = []
+    for line in response.text.splitlines():
+        if line.startswith('data:'):
+            try:
+                json_data = json.loads(line[5:])
+                if 'message' in json_data:
+                    messages.append(json_data['message'])
+            except json.JSONDecodeError:
+                pass
+    await msg.edit_msg(''.join(messages))
+
+# Temporary Disabled For Now Until I Have Key GPT
 async def openai_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
