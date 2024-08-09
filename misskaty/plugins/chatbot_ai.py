@@ -92,7 +92,9 @@ async def gpt4_chatbot(_, ctx: Message, strings):
         ]
     }
     response = await fetch.post("https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
+    self.log.info(response.text)
     messages = []
+    self.log.info(messages)
     for line in response.text.splitlines():
         if line.startswith('data:'):
             try:
