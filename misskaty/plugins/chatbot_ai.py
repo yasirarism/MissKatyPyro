@@ -87,15 +87,13 @@ async def gpt4_chatbot(self, ctx: Message, strings):
     data = {
         "model": "gpt-4o-mini",
         "messages": [
-            {"role": "user", "content": "Siapa nama kamu"},
-            {"role": "assistant", "content": "Saya adalah model bahasa AI dan tidak memiliki nama seperti manusia. Anda bisa memanggil saya AI atau asisten. Ada yang bisa saya bantu?"},
+            {"role": "user", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."},
+            {"role": "assistant", "content": "Halo! Saya MissKaty AI, kucing yang siap membantu kamu mencari informasi. Apa yang bisa saya bantu hari ini?"},
             {"role": "user", "content": pertanyaan}
         ]
     }
     response = await fetch.post("https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
-    self.log.info(response.text)
     messages = []
-    self.log.info(messages)
     for line in response.text.splitlines():
         if line.startswith('data:'):
             try:
