@@ -87,7 +87,8 @@ async def gpt4_chatbot(self, ctx: Message, strings):
     data = {
         "model": "gpt-4o-mini",
         "messages": [
-            {"role": "assistant", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."},
+            {"role": "user", "content": "Siapa nama kamu"},
+            {"role": "assistant", "content": "Saya adalah model bahasa AI dan tidak memiliki nama seperti manusia. Anda bisa memanggil saya AI atau asisten. Ada yang bisa saya bantu?"},
             {"role": "user", "content": pertanyaan}
         ]
     }
