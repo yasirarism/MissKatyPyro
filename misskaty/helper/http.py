@@ -3,7 +3,7 @@ from httpx import AsyncClient, Timeout
 
 # HTTPx Async Client
 fetch = AsyncClient(
-    https2=True
+    https2=True,
     verify=False,
     headers={
         "Accept-Language": "en-US,en;q=0.9,id-ID;q=0.8,id;q=0.7",
