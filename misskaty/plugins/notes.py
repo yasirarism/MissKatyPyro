@@ -154,69 +154,80 @@ async def get_notes(_, message):
 
 @app.on_message(filters.regex(r"^#.+") & filters.text & ~filters.private)
 @capture_err
-async def get_one_note(self, message):
+async def get_one_note(_, message):
+    from_user = message.from_user if message.from_user else message.sender_chat
+    chat_id = message.chat.id
     name = message.text.replace("#", "", 1)
     if not name:
         return
-    _note = await get_note(message.chat.id, name)
+    _note = await get_note(chat_id, name)
     if not _note:
         return
-    type_ = _note.get("type")
+    type = _note("type")
     data = _note.get("data")
     file_id = _note.get("file_id")
     keyb = None
     if data:
+        if "{chat}" in data:
+            data = data.replace("{chat}", message.chat.title)
+        if "{name}" in data:
+            data = data.replace(
+                "{name}", (from_user.mention if message.from_user else from_user.title)
+            )
         if findall(r"\[.+\,.+\]", data):
-            if keyboard := extract_text_and_keyb(ikb, data):
+            keyboard = extract_text_and_keyb(ikb, data)
+            if keyboard:
                 data, keyb = keyboard
-    if replied_message := message.reply_to_message:
-        if replied_message.from_user.id != message.from_user.id:
+    replied_message = message.reply_to_message
+    if replied_message:
+        replied_user = replied_message.from_user if replied_message.from_user else replied_message.sender_chat
+        if replied_user.id != from_user.id:
             message = replied_message
-    if type_ == "text":
+    if type == "text":
         await message.reply_text(
             text=data,
             reply_markup=keyb,
             disable_web_page_preview=True,
         )
-    if type_ == "sticker":
+    if type == "sticker":
         await message.reply_sticker(
             sticker=file_id,
         )
-    if type_ == "animation":
+    if type == "animation":
         await message.reply_animation(
             animation=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type_ == "photo":
+    if type == "photo":
         await message.reply_photo(
             photo=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type_ == "document":
+    if type == "document":
         await message.reply_document(
             document=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type_ == "video":
+    if type == "video":
         await message.reply_video(
             video=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type_ == "video_note":
+    if type == "video_note":
         await message.reply_video_note(
             video_note=file_id,
         )
-    if type_ == "audio":
+    if type == "audio":
         await message.reply_audio(
             audio=file_id,
             caption=data,
             reply_markup=keyb,
         )
-    if type_ == "voice":
+    if type == "voice":
         await message.reply_voice(
             voice=file_id,
             caption=data,
