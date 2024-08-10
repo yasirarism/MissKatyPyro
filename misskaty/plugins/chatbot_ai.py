@@ -6,9 +6,10 @@ import asyncio
 import html
 import json
 import random
+import requests
 
 from openai import APIConnectionError, APIStatusError, AsyncAzureOpenAI, RateLimitError
-from pyrogram import filters
+from pyrogram import filters, utils
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
@@ -101,7 +102,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
             }
         ]
     }
-    response = await fetch.post("https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
+    response = await utils.run_sync(requests.post, "https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
     if response.status_code != 200:
         self.log.info(response.text)
         return await msg.edit_msg(f"ERROR: Status Code {response.status_code}")
