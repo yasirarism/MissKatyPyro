@@ -163,7 +163,7 @@ async def get_one_note(_, message):
     _note = await get_note(chat_id, name)
     if not _note:
         return
-    type = _note("type")
+    type = _note.get("type")
     data = _note.get("data")
     file_id = _note.get("file_id")
     keyb = None
