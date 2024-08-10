@@ -167,7 +167,7 @@ async def del_filter(_, m):
 
 
 @app.on_message(
-    filters.text & ~filters.private & ~filters.via_bot & ~filters.forwarded,
+    filters.text & ~filters.private & ~filters.channel & ~filters.via_bot & ~filters.forwarded,
     group=103,
 )
 async def filters_re(self, message):
