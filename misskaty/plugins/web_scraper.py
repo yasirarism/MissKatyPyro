@@ -52,7 +52,7 @@ web = {
     "terbit21": "https://terbit21.gold",
     "lk21": "https://tv1.lk21official.pro",
     "gomov": "https://klikxxi.com",
-    "movieku": "https://107.152.37.223",
+    "movieku": "https://movieku.cloud",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
     "samehadaku": "https://samehadaku.help",
