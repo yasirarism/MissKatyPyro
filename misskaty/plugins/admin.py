@@ -762,9 +762,9 @@ async def check_warns(_, message, strings):
 @capture_err
 @use_chat_lang()
 async def report_user(_, ctx: Message, strings) -> "Message":
-    if not ctx.reply_to_message:
+    if len(ctx.text.split()) <= 1 and not ctx.reply_to_message:
         return await ctx.reply_msg(strings("report_no_reply"))
-    reply = ctx.reply_to_message
+    reply = ctx.reply_to_message if ctx.reply_to_message else ctx
     reply_id = reply.from_user.id if reply.from_user else reply.sender_chat.id
     user_id = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     if reply_id == user_id:
@@ -796,7 +796,7 @@ async def report_user(_, ctx: Message, strings) -> "Message":
             # return bots or deleted admins
             continue
         text += f"<a href='tg://user?id={admin.user.id}'>\u2063</a>"
-    await ctx.reply_msg(text, reply_to_message_id=ctx.reply_to_message.id)
+    await reply.reply_msg(text)
 
 
 @app.on_cmd("set_chat_title", self_admin=True, group_only=True)
