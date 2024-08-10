@@ -78,7 +78,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
         "sec-fetch-site": "same-origin",
-        "x-vqd-4": "4-198357088945086646073357605381970333191",
+        "x-vqd-4": "4-60030990993852006047168268752130930617",
         "cookie": "dcm=3",
         "Referer": "https://duckduckgo.com/",
         "Referrer-Policy": "origin"
