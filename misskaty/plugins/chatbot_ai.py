@@ -103,6 +103,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
     }
     response = await fetch.post("https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
     if response.status_code != 200:
+        self.log.info(response.text)
         return await msg.edit_msg(f"ERROR: Status Code {response.status_code}")
     messages = []
     for line in response.text.splitlines():
