@@ -171,6 +171,9 @@ async def del_filter(_, m):
     group=103,
 )
 async def filters_re(_, message):
+    from_user = message.from_user if message.from_user else message.sender_chat
+    user_id = from_user.id
+    chat_id = message.chat.id
     text = message.text.lower().strip()
     if not text or (
         message.command and message.command[0].lower() in ["filter", "addfilter"]
@@ -182,18 +185,29 @@ async def filters_re(_, message):
         pattern = r"( |^|[^\w])" + re.escape(word) + r"( |$|[^\w])"
         if re.search(pattern, text, flags=re.IGNORECASE):
             _filter = await get_filter(chat_id, word)
-            data_type = _filter.get("type")
+            data_type = _filter["type"]
             data = _filter.get("data")
             file_id = _filter.get("file_id")
             keyb = None
             if data:
+                if "{chat}" in data:
+                    data = data.replace(
+                        "{chat}", message.chat.title
+                    )
+                if "{name}" in data:
+                    data = data.replace(
+                        "{name}", (from_user.mention if message.from_user else from_user.title)
+                    )
                 if re.findall(r"\[.+\,.+\]", data):
-                    if keyboard := extract_text_and_keyb(ikb, data):
+                    keyboard = extract_text_and_keyb(ikb, data)
+                    if keyboard:
                         data, keyb = keyboard
-            if replied_message := message.reply_to_message:
+            replied_message = message.reply_to_message
+            if replied_message:
+                replied_user = replied_message.from_user if replied_message.from_user else replied_message.sender_chat
                 if text.startswith("~"):
                     await message.delete()
-                if replied_message.from_user.id != message.from_user.id:
+                if replied_user.id != from_user.id:
                     message = replied_message
 
             if data_type == "text":
@@ -202,6 +216,9 @@ async def filters_re(_, message):
                     reply_markup=keyb,
                     disable_web_page_preview=True,
                 )
+            else:
+                if not file_id:
+                    continue
             if data_type == "sticker":
                 await message.reply_sticker(
                     sticker=file_id,
@@ -246,6 +263,7 @@ async def filters_re(_, message):
                     caption=data,
                     reply_markup=keyb,
                 )
+            return
 
 
 @app.on_message(filters.command("stopall", COMMAND_HANDLER) & ~filters.private)
