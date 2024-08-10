@@ -170,9 +170,12 @@ async def del_filter(_, m):
     filters.text & ~filters.private & ~filters.via_bot & ~filters.forwarded,
     group=103,
 )
-async def filters_re(_, message):
-    from_user = message.from_user if message.from_user else message.sender_chat
-    user_id = from_user.id
+async def filters_re(self, message):
+    try:
+        from_user = message.from_user if message.from_user else message.sender_chat
+        user_id = from_user.id
+    except AttributeError:
+        self.log.info(message)
     chat_id = message.chat.id
     text = message.text.lower().strip()
     if not text or (
