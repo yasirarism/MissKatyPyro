@@ -79,11 +79,12 @@ If you want help me fixing some error in my bot, you can make pull request to th
 * `LOG_CHANNEL` : A channel to log the activities of bot. Make sure bot is an admin in the channel.
 
 ### Optional Variables
+* `YT_COOKIES` : Get YT cookies using https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1 and save cookies value on github gist. Copy raw url and fill in this vars.
 * `USER_SESSION` : Session string for Userbot.
 * `DATABASE_NAME`: Name of the database in MongoDB
 * `COMMAND_HANDLER`: List of handler bot command splitted by space. Ex: `. !` > so bot will respond with `.cmd` or `!cmd`
 * `SUDO`: User ID that have access to bot, split by space
-* `SHUTTLEAI_KEY`: Get api key from https://shuttleai.app/keys
+* `OPENAI_API`: Get it from OpenAI Web (Deprecated Temporary)
 * `GOOGLEAI_KEY`: Learn how to get api key from this https://ai.google.dev/tutorials/python_quickstart?hl=en.
 * `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
 

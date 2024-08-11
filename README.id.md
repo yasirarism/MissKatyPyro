@@ -80,12 +80,13 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 * `LOG_CHANNEL` : Channel untuk mencatat aktivitas bot. Pastikan bot adalah admin di channel.
 
 ### Variabel Opsional
+* `YT_COOKIES` : Dapatkan cookies Youtube menggunakan https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1 dan simpan isi file di github gist. Salin raw url dan isi di vars ini.
 * `USER_SESSION` : String session untuk Userbot.
 * `DATABASE_NAME`: Nama database di MongoDB
 * `COMMAND_HANDLER`: Daftar perintah handler bot dipisahkan dengan spasi. Contoh: `. !` > jadi bot akan merespon dengan `.cmd` atau `!cmd`
 * `SUDO`: User ID yang memiliki akses ke bot, dipisahkan dengan spasi
-* `OPENAI_API`: Dapatkan dari Web OpenAI
-* `BARD_API`: Pelajari dari ini https://github.com/dsdanielpark/Bard-API untuk mendapatkan cookies dan set sebagai api key.
+* `OPENAI_API`: Dapatkan dari Web OpenAI (Deprecated Temporary)
+* `GOOGLE_API`: Pelajari dari ini https://github.com/dsdanielpark/Bard-API untuk mendapatkan cookies dan set sebagai api key.
 * `CURRENCY_API`: Dapatkan API Key di https://app.exchangerate-api.com/sign-up
 
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
