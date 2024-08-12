@@ -76,7 +76,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
     if response.status_code != 200:
         return await msg.edit_msg(f"ERROR: Status Code {response.json()}")
     try:
-        await msg.edit_msg(f"{response.json()['choices'][0]['message']['content'].replace('undefined', '')}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+        await msg.edit_msg(f"{response.json()['choices'][0]['message']['content']}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
     except Exception as err:
         await msg.edit_msg(f"ERROR: {err}")
 
