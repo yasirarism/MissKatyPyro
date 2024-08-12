@@ -70,20 +70,7 @@ async def gpt4_chatbot(self, ctx: Message, strings):
         
     data = {
         "model": "gpt-4o-mini",
-        "messages": [
-            {
-                "role": "user",
-                "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."
-            },
-            {
-                "role": "assistant",
-                "content": "Halo! Saya MissKaty AI, kucing yang siap membantu kamu mencari informasi. Apa yang bisa saya bantu hari ini?"
-            },
-            {
-                "role": "user",
-                "content": pertanyaan
-            }
-        ]
+        "messages": [{"role": "user", "content": pertanyaan}]
     }
     response = await fetch.post("https://duckai.yasirapi.eu.org/v1/chat/completions", json=data)
     if response.status_code != 200:
