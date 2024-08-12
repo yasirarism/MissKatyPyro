@@ -6,7 +6,6 @@ import asyncio
 import html
 import json
 import random
-import requests
 
 from openai import APIConnectionError, APIStatusError, AsyncAzureOpenAI, RateLimitError
 from pyrogram import filters, utils
@@ -68,22 +67,6 @@ async def gpt4_chatbot(self, ctx: Message, strings):
         )
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    headers = {
-        "accept": "text/event-stream",
-        "accept-language": "en-US,en;q=0.9,id-ID;q=0.8,id;q=0.7",
-        "content-type": "application/json",
-        "priority": "u=1, i",
-        "sec-ch-ua": "\"Not)A;Brand\";v=\"99\", \"Google Chrome\";v=\"127\", \"Chromium\";v=\"127\"",
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": "\"Windows\"",
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        "x-vqd-4": "4-186729560407685385991058226123563527271",
-        "cookie": "dcm=3",
-        "Referer": "https://duckduckgo.com/",
-        "Referrer-Policy": "origin"
-    }
         
     data = {
         "model": "gpt-4o-mini",
@@ -102,20 +85,13 @@ async def gpt4_chatbot(self, ctx: Message, strings):
             }
         ]
     }
-    response = await utils.run_sync(requests.post, "https://duckduckgo.com/duckchat/v1/chat", headers=headers, json=data)
+    response = await fetch.post("https://duckai.yasirapi.eu.org/v1/chat/completions", json=data)
     if response.status_code != 200:
-        self.log.info(response.text)
-        return await msg.edit_msg(f"ERROR: Status Code {response.status_code}")
-    messages = []
-    for line in response.text.splitlines():
-        if line.startswith('data:'):
-            try:
-                json_data = json.loads(line[5:])
-                if 'message' in json_data:
-                    messages.append(json_data['message'])
-            except json.JSONDecodeError:
-                pass
-    await msg.edit_msg(''.join(messages)+"\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+        return await msg.edit_msg(f"ERROR: Status Code {response.json()}")
+    try:
+        await msg.edit_msg(f"{response.json()['choices'][0]['message']['content'].replace('undefined', '')}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+    except Exception as err:
+        await msg.edit_msg(f"ERROR: {err}")
 
 # Temporary Disabled For Now Until I Have Key GPT
 async def openai_chatbot(_, ctx: Message, strings):
