@@ -60,7 +60,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
-async def openai_chatbot(_, ctx: Message, strings):
+async def openai_chatbot(self, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
             strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
@@ -79,20 +79,11 @@ async def openai_chatbot(_, ctx: Message, strings):
     try:
         response = await ai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": pertanyaan
-                        }
-                    ]
-                },
-            ],
+            messages=[{"role": "user", "content": pertanyaan}]
             temperature=0.7,
             stream=True,
         )
+        self.log.info
         async for chunk in response:
             if not chunk.choices or not chunk.choices[0].delta.content:
                 continue
