@@ -7,7 +7,7 @@ import html
 import json
 import random
 
-from openai import APIConnectionError, APIStatusError, AsyncAzureOpenAI, RateLimitError
+from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
 from pyrogram import filters, utils
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
@@ -60,27 +60,6 @@ async def gemini_chatbot(_, ctx: Message, strings):
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
-async def gpt4_chatbot(self, ctx: Message, strings):
-    if len(ctx.command) == 1:
-        return await ctx.reply_msg(
-            strings("no_question").format(cmd=ctx.command[0]), quote=True, del_in=5
-        )
-    pertanyaan = ctx.input
-    msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-        
-    data = {
-        "model": "gpt-4o-mini",
-        "messages": [{"role": "user", "content": pertanyaan}]
-    }
-    response = await fetch.post("https://duckai.yasirapi.eu.org/v1/chat/completions", json=data)
-    if response.status_code != 200:
-        return await msg.edit_msg(f"ERROR: Status Code {response.json()}")
-    try:
-        await msg.edit_msg(f"{response.json()['choices'][0]['message']['content']}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
-    except Exception as err:
-        await msg.edit_msg(f"ERROR: {err}")
-
-# Temporary Disabled For Now Until I Have Key GPT
 async def openai_chatbot(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply_msg(
@@ -92,24 +71,15 @@ async def openai_chatbot(_, ctx: Message, strings):
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
-    ai = AsyncAzureOpenAI(api_key=OPENAI_KEY, azure_endpoint="https://yasirainew.openai.azure.com", api_version="2024-02-15-preview",)
+    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://duckai.yasirapi.eu.org/v1")
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
     num = 0
     answer = ""
     try:
         response = await ai.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4o-mini",
             messages=[
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."
-                        }
-                    ]
-                },
                 {
                     "role": "user",
                     "content": [
@@ -124,9 +94,7 @@ async def openai_chatbot(_, ctx: Message, strings):
             stream=True,
         )
         async for chunk in response:
-            if not chunk.choices:
-                continue
-            if not chunk.choices[0].delta.content:
+            if not chunk.choices or not chunk.choices[0].delta.content:
                 continue
             num += 1
             answer += chunk.choices[0].delta.content
@@ -134,7 +102,7 @@ async def openai_chatbot(_, ctx: Message, strings):
                 await msg.edit_msg(html.escape(answer))
                 await asyncio.sleep(1.5)
                 num = 0
-        await msg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
+        await msg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
