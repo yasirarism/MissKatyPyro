@@ -83,7 +83,6 @@ async def openai_chatbot(self, ctx: Message, strings):
             temperature=0.7,
             stream=True,
         )
-        self.log.info
         async for chunk in response:
             if not chunk.choices or not chunk.choices[0].delta.content:
                 continue
