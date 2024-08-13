@@ -79,7 +79,7 @@ async def openai_chatbot(self, ctx: Message, strings):
     try:
         response = await ai.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "user", "content": pertanyaan}]
+            messages=[{"role": "user", "content": pertanyaan}],
             temperature=0.7,
             stream=True,
         )
