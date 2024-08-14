@@ -7,6 +7,7 @@ import html
 import json
 import random
 
+from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
 from pyrogram import filters, utils
 from pyrogram.errors import MessageTooLong
@@ -22,6 +23,57 @@ __HELP__ = """
 /ai - Generate text response from AI using Gemini AI By Google.
 /ask - Generate text response from AI using OpenAI.
 """
+
+user_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
+
+async def get_openai_stream_response(messages, bmsg):
+    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://duckai.yasirapi.eu.org/v1")
+    response = await ai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        temperature=0.7,
+        stream=True,
+    )
+    answer = ""
+    num = 0
+    try:
+        async for chunk in response:
+            if not chunk.choices or not chunk.choices[0].delta.content:
+                continue
+            num += 1
+            answer += chunk.choices[0].delta.content
+            if num == 30:
+                await bmsg.edit_msg(html.escape(answer))
+                await asyncio.sleep(1.5)
+                num = 0
+            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+    except MessageTooLong:
+        answerlink = await post_to_telegraph(
+            False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
+        )
+        await bmsg.edit_msg(
+            strings("answers_too_long").format(answerlink=answerlink),
+            disable_web_page_preview=True,
+        )
+    except APIConnectionError as e:
+        await bmsg.edit_msg(f"The server could not be reached because {e.__cause__}")
+        return None
+    except RateLimitError as e:
+        if "billing details" in str(e):
+            return await bmsg.edit_msg(
+                "This openai key from this bot has expired, please give openai key donation for bot owner."
+            )
+        await bmsg.edit_msg("You're got rate limit, please try again later.")
+        return None
+    except APIStatusError as e:
+        await bmsg.edit_msg(
+            f"Another {e.status_code} status code was received with response {e.response}"
+        )
+        return None
+    except Exception as e:
+        await bmsg.edit_msg(f"ERROR: {e}")
+        return None
+    return answer
 
 
 @app.on_message(filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10))
@@ -71,47 +123,15 @@ async def openai_chatbot(self, ctx: Message, strings):
     is_in_gap, _ = await check_time_gap(uid)
     if is_in_gap and (uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
-    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://duckai.yasirapi.eu.org/v1")
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    num = 0
-    answer = ""
-    try:
-        response = await ai.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": pertanyaan}],
-            temperature=0.7,
-            stream=True,
-        )
-        async for chunk in response:
-            if not chunk.choices or not chunk.choices[0].delta.content:
-                continue
-            num += 1
-            answer += chunk.choices[0].delta.content
-            if num == 30:
-                await msg.edit_msg(html.escape(answer))
-                await asyncio.sleep(1.5)
-                num = 0
-        await msg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
-    except MessageTooLong:
-        answerlink = await post_to_telegraph(
-            False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
-        )
-        await msg.edit_msg(
-            strings("answers_too_long").format(answerlink=answerlink),
-            disable_web_page_preview=True,
-        )
-    except APIConnectionError as e:
-        await msg.edit_msg(f"The server could not be reached because {e.__cause__}")
-    except RateLimitError as e:
-        if "billing details" in str(e):
-            return await msg.edit_msg(
-                "This openai key from this bot has expired, please give openai key donation for bot owner."
-            )
-        await msg.edit_msg("You're got rate limit, please try again later.")
-    except APIStatusError as e:
-        await msg.edit_msg(
-            f"Another {e.status_code} status code was received with response {e.response}"
-        )
-    except Exception as e:
-        await msg.edit_msg(f"ERROR: {e}")
+    if uid not in user_conversations:
+        user_conversations[uid] = [{"role": "user", "content": pertanyaan}]
+    else:
+        user_conversations[uid].append({"role": "user", "content": pertanyaan})
+    ai_response = await get_openai_stream_response(user_conversations[uid], bmsg)
+    if not ai_response:
+        user_conversations[user_id].pop()
+        if len(user_conversations[user_id]) == 1:
+            user_conversations.pop(user_id)
+    user_conversations[uid].append({"role": "assistant", "content": ai_response})
