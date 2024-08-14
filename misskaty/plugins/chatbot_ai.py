@@ -129,9 +129,10 @@ async def openai_chatbot(self, ctx: Message, strings):
         user_conversations[uid] = [{"role": "user", "content": pertanyaan}]
     else:
         user_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(user_conversations[uid], bmsg)
+    ai_response = await get_openai_stream_response(user_conversations[uid], msg)
     if not ai_response:
         user_conversations[user_id].pop()
         if len(user_conversations[user_id]) == 1:
             user_conversations.pop(user_id)
+        return
     user_conversations[uid].append({"role": "assistant", "content": ai_response})
