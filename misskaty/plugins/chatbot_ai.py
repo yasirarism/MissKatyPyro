@@ -46,7 +46,7 @@ async def get_openai_stream_response(messages, bmsg):
                 await bmsg.edit_msg(html.escape(answer))
                 await asyncio.sleep(1.5)
                 num = 0
-            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+        await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
