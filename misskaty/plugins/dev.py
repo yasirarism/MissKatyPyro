@@ -616,11 +616,6 @@ async def update_restart(_, ctx: Message, strings):
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 
-@app.on_poll(filters.chat(-1001777794636), group=-5)
-async def tespoll(self, msg):
-    await ctx.reply(msg)
-
-
 @app.on_raw_update(group=-99)
 async def updtebot(client, update, users, _):
     if isinstance(update, UpdateBotStopped):
