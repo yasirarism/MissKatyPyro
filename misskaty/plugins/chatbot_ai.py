@@ -24,29 +24,42 @@ __HELP__ = """
 /ask - Generate text response from AI using OpenAI.
 """
 
-user_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
+duckai_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
+gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
-async def get_openai_stream_response(messages, bmsg):
-    ai = AsyncOpenAI(api_key=OPENAI_KEY, base_url="https://duckai.yasirapi.eu.org/v1")
-    response = await ai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=messages,
-        temperature=0.7,
-        stream=True,
-    )
+async def get_openai_stream_response(is_stream, key, base_url, model, messages, bmsg, strings):
+    ai = AsyncOpenAI(api_key=key, base_url=base_url)
+    if is_stream:
+        response = await ai.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.7,
+            stream=True,
+        )
+    else:
+        response = await ai.chat.completions.create(
+            extra_body={"model":model},
+            model=model,
+            messages=messages,
+            temperature=0.7,
+        )
     answer = ""
     num = 0
     try:
-        async for chunk in response:
-            if not chunk.choices or not chunk.choices[0].delta.content:
-                continue
-            num += 1
-            answer += chunk.choices[0].delta.content
-            if num == 30:
-                await bmsg.edit_msg(html.escape(answer))
-                await asyncio.sleep(1.5)
-                num = 0
-        await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+        if is_stream:
+            await bmsg.edit_msg(f"{response.choices[0].message.content}\n\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
+            answer += response.choices[0].message.content
+        else:
+            async for chunk in response:
+                if not chunk.choices or not chunk.choices[0].delta.content:
+                    continue
+                num += 1
+                answer += chunk.choices[0].delta.content
+                if num == 30:
+                    await bmsg.edit_msg(html.escape(answer))
+                    await asyncio.sleep(1.5)
+                    num = 0
+            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
@@ -88,27 +101,19 @@ async def gemini_chatbot(_, ctx: Message, strings):
         )
     if not GOOGLEAI_KEY:
         return await ctx.reply_msg("GOOGLEAI_KEY env is missing!!!")
+    uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    try:
-        data = {"query": ctx.text.split(maxsplit=1)[1], "key": GOOGLEAI_KEY, "system_instructions": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}
-        # Fetch from API beacuse my VPS is not supported
-        response = await fetch.post("https://yasirapi.eu.org/gemini", data=data)
-        if not response.json().get("candidates"):
-            await ctx.reply_msg(
-                "⚠️ Sorry, the prompt you sent maybe contains a forbidden word that is not permitted by AI."
-            )
-        else:
-            await ctx.reply_msg(
-                html.escape(
-                    response.json()["candidates"][0]["content"]["parts"][0]["text"]
-                )
-                + "\n<b>Powered by:</b> <code>Gemini Flash 1.5</code>"
-            )
-        await msg.delete()
-    except Exception as e:
-        await ctx.reply_msg(str(e))
-        await msg.delete()
-
+    if uid not in gemini_conversations:
+        gemini_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": ctx.input}]
+    else:
+        gemini_conversations[uid].append({"role": "user", "content": ctx.input})
+    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://gemini.yasirapi.eu.org/v1", "gemini-1.5-flash", gemini_conversations[uid], msg, strings)
+    if not ai_response:
+        gemini_conversations[uid].pop()
+        if len(gemini_conversations[uid]) == 1:
+            gemini_conversations.pop(uid)
+        return
+    gemini_conversations[uid].append({"role": "assistant", "content": ai_response})
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
 @use_chat_lang()
@@ -125,14 +130,14 @@ async def openai_chatbot(self, ctx: Message, strings):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    if uid not in user_conversations:
-        user_conversations[uid] = [{"role": "user", "content": pertanyaan}]
+    if uid not in duckai_conversations:
+        duckai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": pertanyaan}]
     else:
-        user_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(user_conversations[uid], msg)
+        duckai_conversations[uid].append({"role": "user", "content": pertanyaan})
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://duckai.yasirapi.eu.org/v1", "gpt-4o-mini", duckai_conversations[uid], msg, strings)
     if not ai_response:
-        user_conversations[user_id].pop()
-        if len(user_conversations[user_id]) == 1:
-            user_conversations.pop(user_id)
+        duckai_conversations[uid].pop()
+        if len(duckai_conversations[uid]) == 1:
+            duckai_conversations.pop(uid)
         return
-    user_conversations[uid].append({"role": "assistant", "content": ai_response})
+    duckai_conversations[uid].append({"role": "assistant", "content": ai_response})
