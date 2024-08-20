@@ -46,7 +46,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
     answer = ""
     num = 0
     try:
-        if is_stream:
+        if not is_stream:
             await bmsg.edit_msg(f"{response.choices[0].message.content}\n\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
             answer += response.choices[0].message.content
         else:
