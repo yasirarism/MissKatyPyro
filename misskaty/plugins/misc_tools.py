@@ -193,7 +193,10 @@ async def removebg(_, ctx: Client):
 async def kbbi_search(_, ctx: Client):
     if len(ctx.command) == 1:
         return await ctx.reply_msg("Please add keyword to search definition in kbbi")
-    r = await fetch.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")
+    try:
+        r = await fetch.get(f"https://yasirapi.eu.org/kbbi?kata={ctx.input}")
+    except httpx.HTTPError as e:
+        return await ctx.reply_msg(f"HTTP error occured: {e}")
     if r.status_code != 200:
         return await ctx.reply("Maaf, makna kata tersebut tidak ditemukan.")
     parse = r.json()
