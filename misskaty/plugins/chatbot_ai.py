@@ -4,18 +4,16 @@
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
 import html
-import json
-import random
 
 from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
-from pyrogram import filters, utils
+from pyrogram import filters
 from pyrogram.errors import MessageTooLong
 from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.core import pyro_cooldown
-from misskaty.helper import check_time_gap, fetch, post_to_telegraph, use_chat_lang
+from misskaty.helper import check_time_gap, post_to_telegraph, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, SUDO
 
 __MODULE__ = "ChatBot"
@@ -29,25 +27,17 @@ gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
 async def get_openai_stream_response(is_stream, key, base_url, model, messages, bmsg, strings):
     ai = AsyncOpenAI(api_key=key, base_url=base_url)
-    if is_stream:
-        response = await ai.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.7,
-            stream=True,
-        )
-    else:
-        response = await ai.chat.completions.create(
-            extra_body={"model":model},
-            model=model,
-            messages=messages,
-            temperature=0.7,
-        )
+    response = await ai.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=0.7,
+        stream=is_stream,
+    )
     answer = ""
     num = 0
     try:
         if not is_stream:
-            await bmsg.edit_msg(f"{response.choices[0].message.content}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
+            await bmsg.edit_msg(f"{html.escape(response.choices[0].message.content)}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
             answer += response.choices[0].message.content
         else:
             async for chunk in response:
