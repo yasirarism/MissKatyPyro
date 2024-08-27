@@ -88,10 +88,10 @@ async def ban_a_user(bot, message):
     except Exception as e:
         return await message.reply(f"Error - {e}")
     else:
-        isban, alesan = await db.get_ban_status(k.id)
+        isban = await db.get_ban_status(k.id)
         if isban:
             return await message.reply(
-                f"{k.mention} is already banned\n<b>Reason:</b> {alesan['reason']}"
+                f"{k.mention} is already banned\n<b>Reason:</b> {reason}"
             )
         await db.ban_user(k.id, reason)
         await message.reply(
