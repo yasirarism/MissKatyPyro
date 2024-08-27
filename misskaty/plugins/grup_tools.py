@@ -102,7 +102,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
         and not member.old_chat_member
     ):
         return
-    if not await is_welcome(message.chat.id):
+    if not await is_welcome(member.chat.id):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
     if user.id in SUDO:
