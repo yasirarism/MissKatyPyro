@@ -92,7 +92,7 @@ def welcomepic(pic, user, chat, id, strings):
 
 
 @app.on_chat_member_updated(
-    filters.group & filters.chat([-1001128045651, -1001777794636]), group=6
+    filters.group, group=6
 )
 @use_chat_lang()
 async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
@@ -101,6 +101,8 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
         and member.new_chat_member.status not in {CMS.BANNED}
         and not member.old_chat_member
     ):
+        return
+    if not await is_welcome(message.chat.id):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
     if user.id in SUDO:
@@ -137,7 +139,9 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
             temp.MELCOW[f"welcome-{member.chat.id}"] = await c.send_photo(
                 member.chat.id,
                 photo=welcomeimg,
-                caption=f"Hai {mention}, Selamat datang digrup {member.chat.title} harap baca rules di pinned message terlebih dahulu.\n\n<b>Nama :<b> <code>{first_name}</code>\n<b>ID :<b> <code>{id}</code>\n<b>DC ID :<b> <code>{dc}</code>\n<b>Tanggal Join :<b> <code>{joined_date}</code>",
+                caption=strings("capt_welc").format(
+                    umention=mention, uid=u.id, ttl=message.chat.title
+                ),
             )
         except Exception as e:
             LOGGER.info(e)
@@ -155,7 +159,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
                     umention=user.mention, uid=user.id
                 )
         except Exception as err:
-            LOGGER.error(f"ERROR in Combot API Detection. {err}")
+            LOGGER.error(f"ERROR: {err}")
         if userspammer != "":
             await c.send_message(member.chat.id, userspammer)
         try:
@@ -172,63 +176,6 @@ async def welcome_toggle_handler(client, message):
     await message.reply_msg(
         f"Welcome messages are now {'enabled' if is_enabled else 'disabled'}."
     )
-
-
-# ToDo with ChatMemberUpdated
-@app.on_message(filters.new_chat_members & filters.group, group=4)
-@use_chat_lang()
-async def greet_group(bot, message, strings):
-    if not await is_welcome(message.chat.id):
-        return
-    for u in message.new_chat_members:
-        try:
-            pic = await app.download_media(
-                u.photo.big_file_id, file_name=f"pp{u.id}.png"
-            )
-        except AttributeError:
-            pic = "assets/profilepic.png"
-        if (temp.MELCOW).get(f"welcome-{message.chat.id}") is not None:
-            try:
-                await temp.MELCOW[f"welcome-{message.chat.id}"].delete()
-            except:
-                pass
-        try:
-            welcomeimg = await welcomepic(
-                pic, u.first_name, message.chat.title, u.id, strings
-            )
-            temp.MELCOW[f"welcome-{message.chat.id}"] = await app.send_photo(
-                message.chat.id,
-                photo=welcomeimg,
-                caption=strings("capt_welc").format(
-                    umention=u.mention, uid=u.id, ttl=message.chat.title
-                ),
-            )
-            userspammer = ""
-            # Combot API Detection
-            try:
-                apicombot = (
-                    await fetch.get(f"https://api.cas.chat/check?user_id={u.id}")
-                ).json()
-                if apicombot.get("ok") == "true":
-                    await app.ban_chat_member(
-                        message.chat.id, u.id, datetime.now() + timedelta(seconds=30)
-                    )
-                    userspammer += strings("combot_msg").format(
-                        umention=u.mention, uid=u.id
-                    )
-            except Exception as err:
-                LOGGER.error(f"ERROR in Combot API Detection. {err}")
-            if userspammer != "":
-                await bot.send_message(message.chat.id, userspammer)
-        except (ChatWriteForbidden, ChatSendPhotosForbidden):
-            await message.chat.leave()
-        except Exception as e:
-            LOGGER.info(e)
-        try:
-            os.remove(f"downloads/welcome#{u.id}.png")
-            os.remove(f"downloads/pp{u.id}.png")
-        except Exception:
-            pass
 
 
 @app.on_message(filters.command("leave") & filters.user(SUDO))
