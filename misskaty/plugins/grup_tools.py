@@ -98,7 +98,7 @@ def welcomepic(pic, user, chat, id, strings):
 async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
     if not (
         member.new_chat_member
-        and member.new_chat_member.status not in {CMS.BANNED}
+        and member.new_chat_member.status not in {CMS.RESTRICTED}
         and not member.old_chat_member
     ):
         return
@@ -140,7 +140,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
                 member.chat.id,
                 photo=welcomeimg,
                 caption=strings("capt_welc").format(
-                    umention=mention, uid=u.id, ttl=message.chat.title
+                    umention=mention, uid=user.id, ttl=message.chat.title
                 ),
             )
         except Exception as e:
