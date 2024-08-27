@@ -97,9 +97,9 @@ def welcomepic(pic, user, chat, id, strings):
 @use_chat_lang()
 async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
     if not (
-        user.new_chat_member
-        and user.new_chat_member.status not in {CMS.RESTRICTED}
-        and not user.old_chat_member
+        member.new_chat_member
+        and member.new_chat_member.status not in {CMS.RESTRICTED}
+        and not member.old_chat_member
     ):
         return
     if not await is_welcome(member.chat.id):
