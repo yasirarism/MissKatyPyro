@@ -140,7 +140,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
                 member.chat.id,
                 photo=welcomeimg,
                 caption=strings("capt_welc").format(
-                    umention=mention, uid=user.id, ttl=message.chat.title
+                    umention=mention, uid=user.id, ttl=member.chat.title
                 ),
             )
         except Exception as e:
