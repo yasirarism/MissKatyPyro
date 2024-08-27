@@ -121,7 +121,7 @@ async def unban_a_user(bot, message):
         return await message.reply(f"Error - {e}")
     else:
         jar = await db.get_ban_status(k.id)
-        if not jar["is_banned"]:
+        if not jar:
             return await message.reply(f"{k.mention} is not yet banned.")
         await db.remove_ban(k.id)
         await message.reply(f"Successfully unbanned user {k.mention}!!!")

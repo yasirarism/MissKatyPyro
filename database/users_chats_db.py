@@ -51,7 +51,7 @@ class UsersData:
 
     async def get_ban_status(self, id):
         user = await self.col.find_one({"_id": int(id)})
-        return (True, user) if user else (False, None)
+        return user if user else False
 
     async def get_all_users(self):
         return self.col.find({})
