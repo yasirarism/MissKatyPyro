@@ -1,0 +1,13 @@
+{
+    "no_uname": "<code>Нет Юзернейма</code>",
+    "no_last_name": "<code>Нет Фамилии</code>",
+    "uname_change_msg": "✨ Изменил Юзернейм: {bef} ➡️ {aft}.\n",
+    "lastname_change_msg": "✨ Изменил Фамилию: {bef} ➡️ {aft}.\n",
+    "firstname_change_msg": "✨ Изменил Имя: {bef} ➡️ {aft}.\n",
+    "set_sangmata_help": "Используйте <code>/{cmd} on</code>, чтобы включить СангМату. Если Вы хотите выключить, используйте параметр off.",
+    "sangmata_already_on": "СангМата уже включена в Ваших группах.",
+    "sangmata_enabled": "СангМата включена в Ваших группах.",
+    "sangmata_already_off": "СангМата уже выключена в Ваших группах.",
+    "sangmata_disabled": "СангМата выключена в Ваших группах.",
+    "wrong_param": "Неизвестный параметр, используйте только параметры on/off."
+}

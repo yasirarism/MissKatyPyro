@@ -15,6 +15,7 @@ enabled_locales: List[str] = [
     "en-US",  # English (United States)
     "id-ID",  # Indonesian
     "id-JW",  # Javanese
+    "ru-RU", # Russian
 ]
 
 default_language: str = "en-US"
