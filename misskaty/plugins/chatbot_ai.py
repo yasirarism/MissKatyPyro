@@ -27,15 +27,15 @@ gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
 async def get_openai_stream_response(is_stream, key, base_url, model, messages, bmsg, strings):
     ai = AsyncOpenAI(api_key=key, base_url=base_url)
-    response = await ai.chat.completions.create(
-        model=model,
-        messages=messages,
-        temperature=0.7,
-        stream=is_stream,
-    )
     answer = ""
     num = 0
     try:
+        response = await ai.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0.7,
+            stream=is_stream,
+        )
         if not is_stream:
             await bmsg.edit_msg(f"{html.escape(response.choices[0].message.content)}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
             answer += response.choices[0].message.content
@@ -124,7 +124,7 @@ async def openai_chatbot(self, ctx: Message, strings):
         gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": pertanyaan}]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-4o" if uid in SUDO else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com" if uid in SUDO else "https://duckai.yasirapi.eu.org", "gpt-4o" if uid in SUDO else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(_conversations[uid]) == 1:
