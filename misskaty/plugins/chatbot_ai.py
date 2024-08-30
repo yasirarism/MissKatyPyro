@@ -22,7 +22,7 @@ __HELP__ = """
 /ask - Generate text response from AI using OpenAI.
 """
 
-duckai_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
+gptai_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
 async def get_openai_stream_response(is_stream, key, base_url, model, messages, bmsg, strings):
@@ -49,7 +49,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     await bmsg.edit_msg(html.escape(answer))
                     await asyncio.sleep(1.5)
                     num = 0
-            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o Mini</code>")
+            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
     except MessageTooLong:
         answerlink = await post_to_telegraph(
             False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
@@ -120,14 +120,14 @@ async def openai_chatbot(self, ctx: Message, strings):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
-    if uid not in duckai_conversations:
-        duckai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": pertanyaan}]
+    if uid not in gptai_conversations:
+        gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": pertanyaan}]
     else:
-        duckai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://duckai.yasirapi.eu.org/v1", "gpt-4o-mini", duckai_conversations[uid], msg, strings)
+        gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-4o", gptai_conversations[uid], msg, strings)
     if not ai_response:
-        duckai_conversations[uid].pop()
-        if len(duckai_conversations[uid]) == 1:
-            duckai_conversations.pop(uid)
+        gptai_conversations[uid].pop()
+        if len(_conversations[uid]) == 1:
+            gptai_conversations.pop(uid)
         return
-    duckai_conversations[uid].append({"role": "assistant", "content": ai_response})
+    gptai_conversations[uid].append({"role": "assistant", "content": ai_response})
