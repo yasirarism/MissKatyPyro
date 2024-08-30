@@ -84,7 +84,7 @@ If you want help me fixing some error in my bot, you can make pull request to th
 * `DATABASE_NAME`: Name of the database in MongoDB
 * `COMMAND_HANDLER`: List of handler bot command splitted by space. Ex: `. !` > so bot will respond with `.cmd` or `!cmd`
 * `SUDO`: User ID that have access to bot, split by space
-* `OPENAI_API`: Get it from OpenAI Web (Deprecated Temporary)
+* `OPENAI_API`: Create personal access token from github, and set as this env. Make sure you have access to Github Model.
 * `GOOGLEAI_KEY`: Learn how to get api key from this https://ai.google.dev/tutorials/python_quickstart?hl=en.
 * `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
 
