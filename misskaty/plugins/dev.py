@@ -6,6 +6,7 @@ import json
 import os
 import pickle
 import platform
+import privatebinapi
 import re
 import sys
 import traceback
@@ -145,14 +146,9 @@ async def log_file(_, ctx: Message, strings):
         try:
             with open("MissKatyLogs.txt", "r") as file:
                 content = file.read()
-            data = {
-                "value": content,
-            }
-            pastelog = await fetch.post(
-                "https://paste.yasirapi.eu.org/save", data=data, follow_redirects=True
-            )
+            pastelog = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=content, expiration="1week", formatting="sourcecode")
             await msg.edit_msg(
-                f"<a href='{pastelog.url}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
+                f"<a href='{pastelog['full_url']}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
             )
         except Exception:
             await ctx.reply_document(
