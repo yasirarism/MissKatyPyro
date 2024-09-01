@@ -38,25 +38,33 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
             stream=is_stream,
         )
         if not is_stream:
-            await bmsg.edit_msg(f"{html.escape(response.choices[0].message.content)}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
             answer += response.choices[0].message.content
+            if len(answer) > 4000:
+                answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
+                await bmsg.edit_msg(
+                    strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
+                    disable_web_page_preview=True,
+                )
+            else:
+                await bmsg.edit_msg(f"{html.escape(answer)}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
         else:
             async for chunk in response:
                 if not chunk.choices or not chunk.choices[0].delta.content:
                     continue
                 num += 1
                 answer += chunk.choices[0].delta.content
-                if num == 30:
+                if num == 30 and len(answer) < 4000:
                     await bmsg.edit_msg(html.escape(answer))
                     await asyncio.sleep(1.5)
                     num = 0
-            await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
-    except MessageTooLong:
-        answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
-        await bmsg.edit_msg(
-            strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
-            disable_web_page_preview=True,
-        )
+            if len(answer) > 4000:
+                answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
+                await bmsg.edit_msg(
+                    strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
+                    disable_web_page_preview=True,
+                )
+            else:
+                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
     except APIConnectionError as e:
         await bmsg.edit_msg(f"The server could not be reached because {e.__cause__}")
         return None
