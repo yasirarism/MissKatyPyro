@@ -20,6 +20,7 @@ python-dateutil
 telegraph
 hachoir
 Pillow==10.4.0
+PrivateBinAPI
 httpx[http2]
 git+https://github.com/yasirarism/vcsi
 git+https://github.com/yasirarism/iytdl

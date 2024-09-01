@@ -286,10 +286,10 @@ async def nekopaste(_, message):
     try:
         x = (
             await fetch.post(
-                "https://nekobin.com/api/documents", json={"content": data}
+                "https://bin.mayuri.my.id/api/documents", json={"content": data}
             )
         ).json()
-        url = f"https://nekobin.com/{x['result']['key']}"
+        url = f"https://bin.mayuri.my.id/{x['result']['key']}"
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
 

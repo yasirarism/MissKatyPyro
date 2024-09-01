@@ -4,6 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
 import html
+import privatebinapi
 
 from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
@@ -51,11 +52,9 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     num = 0
             await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
     except MessageTooLong:
-        answerlink = await post_to_telegraph(
-            False, "MissKaty ChatBot ", html.escape(f"<code>{answer}</code>")
-        )
+        answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=html.escape(f"<code>{answer}</code>"), expiration="1week", formatting="markdown")
         await bmsg.edit_msg(
-            strings("answers_too_long").format(answerlink=answerlink),
+            strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
             disable_web_page_preview=True,
         )
     except APIConnectionError as e:
@@ -127,7 +126,7 @@ async def openai_chatbot(self, ctx: Message, strings):
     ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com" if uid in SUDO else "https://duckai.yasirapi.eu.org/v1", "gpt-4o" if uid in SUDO else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
-        if len(_conversations[uid]) == 1:
+        if len(gptai_conversations[uid]) == 1:
             gptai_conversations.pop(uid)
         return
     gptai_conversations[uid].append({"role": "assistant", "content": ai_response})
