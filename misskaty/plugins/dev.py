@@ -146,7 +146,7 @@ async def log_file(_, ctx: Message, strings):
         try:
             with open("MissKatyLogs.txt", "r") as file:
                 content = file.read()
-            pastelog = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=content, expiration="1week", formatting="sourcecode")
+            pastelog = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=content, expiration="1week", formatting="syntaxhighlighting")
             await msg.edit_msg(
                 f"<a href='{pastelog['full_url']}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
             )

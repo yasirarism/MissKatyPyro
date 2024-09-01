@@ -52,7 +52,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     num = 0
             await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
     except MessageTooLong:
-        answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=html.escape(f"<code>{answer}</code>"), expiration="1week", formatting="markdown")
+        answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
         await bmsg.edit_msg(
             strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
             disable_web_page_preview=True,
