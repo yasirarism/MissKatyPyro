@@ -10,7 +10,7 @@ FROM yasirarism/misskaty-docker:py3.12
 # FROM yasirarism/misskaty-docker:free
 
 # Set Hostname
-ENV HOSTNAME yasir-server
+ENV HOSTNAME=yasir-server
 # Copy Files
 COPY . .
 # Instal pip package
