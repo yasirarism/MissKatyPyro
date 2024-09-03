@@ -233,7 +233,7 @@ async def pyrogram_to_quotly(messages, is_reply):
         else:
             the_message_dict_to_append["replyMessage"] = {}
         payload["messages"].append(the_message_dict_to_append)
-    r = await fetch.post("https://quote.yasirapi.eu.org/quote/generate.png", json=payload)
+    r = await fetch.post("https://quote.yasirapi.eu.org/quote/generate", json=payload)
     if not r.is_error:
         return r.read()
     else:
