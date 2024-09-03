@@ -4,7 +4,7 @@
 * @projectName   MissKatyPyro
 * Copyright @YasirPedia All rights reserved
 """
-
+import privatebinapi
 from json import loads as json_loads
 from os import remove
 from re import compile as compiles
@@ -23,7 +23,7 @@ __HELP__ = """
 /neko [Text/Reply To Message] - Post text to Nekobin.
 /tgraph [Text/Reply To Message] - Post text/media to Telegraph.
 /rentry [Text/Reply To Message] - Post text to Rentry using markdown style.
-/temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style.
+/temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style. (Deprecated)
 """
 
 
@@ -163,7 +163,6 @@ async def telegraph_paste(_, message):
     await msg.edit_msg(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
-# Default Paste to Wastebin using Deta
 @app.on_message(filters.command(["paste"], COMMAND_HANDLER))
 async def wastepaste(_, message):
     reply = message.reply_to_message
@@ -208,27 +207,17 @@ async def wastepaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        json_data = {
-            "content": data,
-            "highlighting_language": "auto",
-            "ephemeral": False,
-            "expire_at": 0,
-            "expire_in": 0,
-        }
-        response = await fetch.post(
-            "https://paste.yasir.eu.org/api/new", json=json_data
-        )
-        url = f"https://paste.yasir.eu.org/{response.json()['id']}"
+        url = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=data, expiration="1week", formatting="markdown")
     except Exception as e:
         return await msg.edit_msg(f"ERROR: {e}")
 
     if not url:
         return await msg.edit_msg("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url["full_url"])],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url['full_url']}"
             )
         ],
     ]
