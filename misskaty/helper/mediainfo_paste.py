@@ -72,7 +72,7 @@ def html_builder(title: str, text: str) -> str:
 async def mediainfo_paste(text: str, title: str) -> str:
     html_content = html_builder(title, text)
     URL = "https://yasirr.eu.org/mediainfo"
-    response = await fetch.post(URL, data={'text': html_content})
+    response = await fetch.post(URL, data={"content": html_content})
     return (
         f"https://yasirr.eu.org/mediainfo-{json.loads(response.content)['key']}"
     )
