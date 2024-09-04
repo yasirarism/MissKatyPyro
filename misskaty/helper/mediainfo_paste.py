@@ -219,8 +219,8 @@ def html_builder(title: str, text: str) -> str:
 
 async def mediainfo_paste(text: str, title: str) -> str:
     html_content = html_builder(title, text)
-    URL = "https://mediainfo-1-y5870653.deta.app/api"
-    response = await fetch.post(URL, json={"content": html_content})
+    URL = "https://yasirr.eu.org/mediainfo"
+    response = await fetch.post(URL, data={'text': html_content, "title": title})
     return (
-        f"https://mediainfo-1-y5870653.deta.app/{json.loads(response.content)['key']}"
+        f"https://yasirr.eu.org/mediainfo-{json.loads(response.content)['saved_id']}"
     )
