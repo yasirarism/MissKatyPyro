@@ -21,9 +21,9 @@ __HELP__ = """
 /paste [Text/Reply To Message] - Post text to My Pastebin.
 /sbin [Text/Reply To Message] - Post text to Spacebin.
 /neko [Text/Reply To Message] - Post text to Nekobin.
-/tgraph [Text/Reply To Message] - Post text/media to Telegraph.
+/tgraph [Text/Reply To Message] - Post text to Telegraph.
+/imgbb [Images] - Upload image to ImgBB.
 /rentry [Text/Reply To Message] - Post text to Rentry using markdown style.
-/temp_paste [Text/Reply To Message] - Post text to tempaste.com using html style. (Deprecated)
 """
 
 
@@ -82,29 +82,6 @@ async def telegraph_paste(_, message):
     else:
         uname = message.sender_chat.title
     msg = await message.reply_msg("`Pasting to Telegraph...`")
-    if reply and (reply.photo or reply.animation):
-        file = await reply.download()
-        try:
-            url = await post_to_telegraph(True, media=file)
-        except Exception as err:
-            remove(file)
-            return msg.edit_msg(f"Failed to upload. ERR: {err}")
-        button = [
-            [InlineKeyboardButton("Open Link", url=url)],
-            [
-                InlineKeyboardButton(
-                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
-                )
-            ],
-        ]
-
-        pasted = f"**Successfully upload your media to Telegraph<a href='{url}'>.</a>\n\nUpload by {uname}**"
-        remove(file)
-        return await msg.edit_msg(
-            pasted,
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(button),
-        )
     data = ""
     limit = 1024 * 1024
     if reply and reply.document:
@@ -432,42 +409,17 @@ async def rentrypaste(_, message):
     await msg.edit_msg(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
-# Tempaste pastebin
-@app.on_message(filters.command(["temp_paste"], COMMAND_HANDLER))
-async def tempaste(_, message):
+# ImgBB Upload
+@app.on_message(filters.command(["imgbb"], COMMAND_HANDLER))
+async def imgbb_upload(_, message):
     reply = message.reply_to_message
-    target = str(message.command[0]).split("@", maxsplit=1)[0]
-    if not reply and len(message.command) < 2:
+    if not reply and len(message.command) == 1:
         return await message.edit_msg(
-            f"**Reply To A Message With /{target} or with command**", del_in=6
+            f"**Reply to a photo with /{message.command[0]} command to upload image on ImgBB.**", del_in=6
         )
-
-    msg = await message.reply_msg("`Pasting to TempPaste...`")
-    data = ""
-    limit = 1024 * 1024
-    if reply and reply.document:
-        if reply.document.file_size > limit:
-            return await msg.edit_msg(
-                f"**You can only paste files smaller than {humanbytes(limit)}.**"
-            )
-        if not pattern.search(reply.document.mime_type):
-            return await msg.edit_msg("**Only text files can be pasted.**")
-        file = await reply.download()
-        try:
-            with open(file, "r") as text:
-                data = text.read()
-            remove(file)
-        except UnicodeDecodeError:
-            try:
-                remove(file)
-            except:
-                pass
-            return await msg.edit_msg("`File Not Supported !`")
-    elif reply and (reply.text or reply.caption):
-        data = reply.text.html or reply.caption.html
-    elif not reply and len(message.command) >= 2:
-        data = message.text.split(None, 1)[1]
-
+    if not reply.photo or not reply.document.mime_type.startswith("image"):
+        return await messsage.reply_msg("This command only support upload photo")
+    msg = await message.reply_msg("`Uploading image to ImgBB...`")
     if message.from_user:
         if message.from_user.username:
             uname = f"@{message.from_user.username}"
@@ -479,31 +431,21 @@ async def tempaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        req = await fetch.post(
-            "https://tempaste.com/api/v1/create-paste/",
-            data={
-                "api_key": "xnwuzXubxk3kCUz9Q2pjMVR8xeTO4t",
-                "title": "MissKaty Paste",
-                "paste_content": data,
-                "visibility": "public",
-                "expiry_date_type": "months",
-                "expiry_date": 1,
-            },
-        )
-        url = f"https://tempaste.com/{json_loads(req.text)['url']}"
+        data = {"type": "file", "action": "upload"}
+        files = {"source": (path, open(path, "rb"), "images/jpeg")}
+        headers = {"origin": "https://imgbb.com", "referer": "https://imgbb.com/upload", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42"}
+        res = await fetch.post("https://imgbb.com/json", files=files, data=data, headers=headers)
+        url = res.json()["image"]["url"]
+        button = [
+            [InlineKeyboardButton("Open Link", url=url)],
+            [
+                InlineKeyboardButton(
+                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                )
+            ],
+        ]
+    
+        pasted = f"**Successfully pasted your images to ImgBB<a href='{url}'>.</a>\n\nPaste by {uname}**"
+        await msg.edit_msg(pasted, reply_markup=InlineKeyboardMarkup(button))
     except Exception as e:
-        return await msg.edit_msg(f"`{e}`")
-
-    if not url:
-        return await msg.edit_msg("Text Too Short Or File Problems")
-    button = [
-        [InlineKeyboardButton("Open Link", url=url)],
-        [
-            InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
-            )
-        ],
-    ]
-
-    pasted = f"**Successfully pasted your data to Tempaste<a href='{url}'>.</a>\n\nPaste by {uname}**"
-    await msg.edit_msg(pasted, reply_markup=InlineKeyboardMarkup(button))
+        await msg.edit_msg(f"ERROR: {e}")
