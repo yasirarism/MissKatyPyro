@@ -417,8 +417,8 @@ async def imgbb_upload(_, message):
         return await message.edit_msg(
             f"**Reply to a photo with /{message.command[0]} command to upload image on ImgBB.**", del_in=6
         )
-    if not reply.photo or not reply.document.mime_type.startswith("image"):
-        return await messsage.reply_msg("This command only support upload photo")
+    if not reply.photo and not reply.document.mime_type.startswith("image"):
+        return await message.reply_msg("This command only support upload photo")
     msg = await message.reply_msg("`Uploading image to ImgBB...`")
     if message.from_user:
         if message.from_user.username:
