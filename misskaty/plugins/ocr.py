@@ -41,8 +41,11 @@ async def ocr(_, ctx: Message, strings):
             file_path = await reply.download(
                 f"ocr_{ctx.from_user.id if ctx.from_user else ctx.sender_chat.id}.jpg"
             )
-        response = await Telegraph().upload_file(file_path)
-        url = f"https://img.yasirweb.eu.org{response[0]['src']}"
+        data = {"type": "file", "action": "upload"}
+        files = {"source": (file_path, open(file_path, "rb"), "images/jpeg")}
+        headers = {"origin": "https://imgbb.com", "referer": "https://imgbb.com/upload", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42"}
+        response = await fetch.post("https://imgbb.com/json", files=files, data=data, headers=headers)
+        url = response.json()['image']['url']
         req = (
             await fetch.get(
                 f"https://script.google.com/macros/s/AKfycbwURISN0wjazeJTMHTPAtxkrZTWTpsWIef5kxqVGoXqnrzdLdIQIfLO7jsR5OQ5GO16/exec?url={url}",
