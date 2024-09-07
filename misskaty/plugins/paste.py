@@ -84,6 +84,8 @@ async def telegraph_paste(_, message):
     msg = await message.reply_msg("`Pasting to Telegraph...`")
     data = ""
     limit = 1024 * 1024
+    if reply and not (reply.text or reply.document):
+        return await msg.edit_msg("**Reply to a text message or file to paste to Telegraph.**")
     if reply and reply.document:
         if reply.document.file_size > limit:
             return await msg.edit_msg(
