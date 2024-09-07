@@ -437,7 +437,7 @@ async def imgbb_upload(_, message):
         headers = {"origin": "https://imgbb.com", "referer": "https://imgbb.com/upload", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.42"}
         res = await fetch.post("https://imgbb.com/json", files=files, data=data, headers=headers)
         remove(path)
-        url = res.json()["image"]["url"]
+        url = f"https://ibb.co.com/{res.json()['image']['id_encoded']}"
         button = [
             [InlineKeyboardButton("Open Link", url=url)],
             [
