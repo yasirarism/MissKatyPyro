@@ -88,10 +88,16 @@ BOT_ID = app.me.id
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.me.username
 if USER_SESSION:
-    user.start()
-    UBOT_ID = user.me.id
-    UBOT_NAME = user.me.first_name
-    UBOT_USERNAME = user.me.username
+    try:
+        user.start()
+        UBOT_ID = user.me.id
+        UBOT_NAME = user.me.first_name
+        UBOT_USERNAME = user.me.username
+    except Exception as e:
+        app.log.error(f"Error while starting UBot: {e}")
+        UBOT_ID = None
+        UBOT_NAME = None
+        UBOT_USERNAME = None
 else:
     UBOT_ID = None
     UBOT_NAME = None
