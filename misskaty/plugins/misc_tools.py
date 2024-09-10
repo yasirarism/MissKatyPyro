@@ -322,6 +322,10 @@ async def stackoverflow(_, message):
 async def gsearch(self, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
+    def shorten_text(text):
+        if len(text) > 30:
+            return text[:30] + "..."
+        return text
     query = message.text.split(maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
@@ -342,12 +346,11 @@ async def gsearch(self, message):
                 snippet = snippet.get_text()
             else:
                 snippet = "-"
-            # appending data to an array
             data.append(
                 {
                     "title": html.escape(title),
                     "link": link,
-                    "snippet": html.escape(snippet),
+                    "snippet": shorten_text(html.escape(snippet)),
                 }
             )
         arr = json.dumps(data, indent=2, ensure_ascii=False)
@@ -359,12 +362,10 @@ async def gsearch(self, message):
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
-    if len(res.encode()) > 4000:
-        await msg.reply_msg(
-            text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
-            disable_web_page_preview=True,
-        )
-        await msg.delete_msg()
+    await msg.reply_msg(
+        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
+        disable_web_page_preview=True,
+    )
 
 
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
