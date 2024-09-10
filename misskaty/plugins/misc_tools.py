@@ -326,7 +326,7 @@ async def gsearch(_, message):
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
         gs = await fetch.get(
-            f"https://www.google.com/search?q={query}&gl=id&hl=id&num=17",
+            f"https://www.google.com/search?q={query}&gl=id&hl=id&num=16",
         )
         soup = BeautifulSoup(gs.text, "lxml")
 
