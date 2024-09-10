@@ -323,8 +323,8 @@ async def gsearch(self, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
     def shorten_text(text):
-        if len(text) > 30:
-            return text[:30] + "..."
+        if len(text) > 150:
+            return text[:150] + "..."
         return text
     query = message.text.split(maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
@@ -362,7 +362,7 @@ async def gsearch(self, message):
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
-    await msg.reply_msg(
+    await msg.edit_msg(
         text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
         disable_web_page_preview=True,
     )
