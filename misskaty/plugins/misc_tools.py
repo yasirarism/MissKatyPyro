@@ -336,10 +336,7 @@ async def gsearch(_, message):
         for result in soup.select(".tF2Cxc"):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
-            try:
-                snippet = result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b").get_text()
-            except:
-                snippet = "-"
+            snippet = result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b").get_text() if result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b") else "-"
 
             # appending data to an array
             data.append(
