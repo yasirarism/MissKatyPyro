@@ -319,7 +319,7 @@ async def stackoverflow(_, message):
 
 @app.on_message(filters.command(["google"], COMMAND_HANDLER))
 @capture_err
-async def gsearch(_, message):
+async def gsearch(self, message):
     if len(message.command) == 1:
         return await message.reply("Give a query to search in Google!")
     query = message.text.split(maxsplit=1)[1]
@@ -336,8 +336,9 @@ async def gsearch(_, message):
         for result in soup.select(".tF2Cxc"):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
+            self.log.info(result)
             snippet = result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b").get_text() if result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b") else "-"
-
+            self.log.info(snippet)
             # appending data to an array
             data.append(
                 {
