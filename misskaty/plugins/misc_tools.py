@@ -359,10 +359,12 @@ async def gsearch(self, message):
     except Exception:
         exc = traceback.format_exc()
         return await msg.edit(exc)
-    await msg.edit(
-        text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
-        disable_web_page_preview=True,
-    )
+    if len(res.encode()) > 4000:
+        await msg.reply_msg(
+            text=f"<b>Ada {total} Hasil Pencarian dari {query}:</b>\n{res}<b>GoogleSearch by @{BOT_USERNAME}</b>",
+            disable_web_page_preview=True,
+        )
+        await msg.delete_msg()
 
 
 @app.on_message(filters.command(["tr", "trans", "translate"], COMMAND_HANDLER))
