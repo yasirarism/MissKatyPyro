@@ -338,7 +338,7 @@ async def gsearch(self, message):
             title = result.select_one(".DKV0Md").text
             if snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b"):
                 snippet = snippet.get_text()
-            elif snippet := result.find(class_="LEwnzc Sqrs4e"):
+            elif snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb"):
                 snippet = snippet.get_text()
             else:
                 snippet = "-"
