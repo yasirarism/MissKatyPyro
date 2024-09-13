@@ -4,11 +4,11 @@
 * @projectName   MissKatyPyro
 * Copyright @YasirPedia All rights reserved
 """
-
+import contextlib
 import re
 
 from pyrogram import Client, filters
-from pyrogram.errors import ChatSendPhotosForbidden, ChatWriteForbidden
+from pyrogram.errors import ChatSendPhotosForbidden, ChatWriteForbidden, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -155,7 +155,8 @@ async def commands_callbacc(_, cb: CallbackQuery):
 @app.on_callback_query(filters.regex("stats_callback"))
 async def stats_callbacc(_, cb: CallbackQuery):
     text = await bot_sys_stats()
-    await app.answer_callback_query(cb.id, text, show_alert=True)
+    with contextlib.suppress(QueryIdInvalid):
+        await app.answer_callback_query(cb.id, text, show_alert=True)
 
 
 @app.on_message(filters.command("help", COMMAND_HANDLER))

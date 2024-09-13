@@ -63,13 +63,13 @@ You can use markdown or html to save text too.
 async def save_filters(_, message):
     try:
         if len(message.command) < 2 or not message.reply_to_message:
-            return await message.reply_text(
+            return await message.reply_msg(
                 "**Usage:**\nReply to a message with /filter [FILTER_NAME] To set a new filter."
             )
         text = message.text.markdown
         name = text.split(None, 1)[1].strip()
         if not name:
-            return await message.reply_text("**Usage:**\n__/filter [FILTER_NAME]__")
+            return await message.reply_msg("**Usage:**\n__/filter [FILTER_NAME]__")
         chat_id = message.chat.id
         replied_message = message.reply_to_message
         text = name.split(" ", 1)
@@ -128,9 +128,9 @@ async def save_filters(_, message):
             "file_id": file_id,
         }
         await save_filter(chat_id, name, _filter)
-        return await message.reply_text(f"__**Saved filter {name}.**__")
+        return await message.reply_msg(f"__**Saved filter {name}.**__")
     except UnboundLocalError:
-        return await message.reply_text(
+        return await message.reply_msg(
             "**Replied message is inaccessible.\n`Forward the message and try again`**"
         )
 
@@ -214,7 +214,7 @@ async def filters_re(self, message):
                     message = replied_message
 
             if data_type == "text":
-                await message.reply_text(
+                await message.reply_msg(
                     text=data,
                     reply_markup=keyb,
                     disable_web_page_preview=True,
@@ -274,7 +274,7 @@ async def filters_re(self, message):
 async def stop_all(_, message):
     _filters = await get_filters_names(message.chat.id)
     if not _filters:
-        await message.reply_text("**No filters in this chat.**")
+        await message.reply_msg("**No filters in this chat.**")
     else:
         keyboard = InlineKeyboardMarkup(
             [
@@ -284,7 +284,7 @@ async def stop_all(_, message):
                 ]
             ]
         )
-        await message.reply_text(
+        await message.reply_msg(
             "**Are you sure you want to delete all the filters in this chat forever ?.**",
             reply_markup=keyboard,
         )

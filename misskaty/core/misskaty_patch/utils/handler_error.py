@@ -52,12 +52,12 @@ async def handle_error(
     cap_day = f"{day.strftime('%A')}, {tgl_now.strftime('%d %B %Y %H:%M:%S')}"
     f_errname = f"crash_{tgl_now.strftime('%d %B %Y')}.txt"
     LOGGER.error(traceback.format_exc())
-    with open(f_errname, "w+", encoding="utf-8") as log:
-        log.write(
-            f"✍️ Message: {m.text or m.caption}\n👱‍♂️ User: {m.from_user.id if m.from_user else m.sender_chat.id}\n\n{traceback.format_exc()}"
-        )
-        log.close()
     if isinstance(m, pyrogram.types.Message):
+        with open(f_errname, "w+", encoding="utf-8") as log:
+            log.write(
+                f"✍️ Message: {m.text or m.caption}\n👱‍♂️ User: {m.from_user.id if m.from_user else m.sender_chat.id}\n\n{traceback.format_exc()}"
+            )
+            log.close()
         with contextlib.suppress(Exception):
             try:
                 await m.reply_photo(
@@ -74,6 +74,11 @@ async def handle_error(
                 caption=f"Crash Report of this Bot\n{cap_day}",
             )
     if isinstance(m, pyrogram.types.CallbackQuery):
+        with open(f_errname, "w+", encoding="utf-8") as log:
+            log.write(
+                f"✍️ Message: {m.message.text or m.message.caption}\n👱‍♂️ User: {m.from_user.id if m.from_user else m.sender_chat.id}\n\n{traceback.format_exc()}"
+            )
+            log.close()
         with contextlib.suppress(Exception):
             await m.message.delete()
             try:

@@ -568,7 +568,7 @@ async def close_callback(_, query: CallbackQuery):
     if query.from_user.id != int(userid):
         with contextlib.suppress(QueryIdInvalid):
             return await query.answer("⚠️ Access Denied!", True)
-    with contextlib.redirect_stdout(Exception):
+    with contextlib.suppress(Exception):
         await query.answer("Deleting this message in 5 seconds.")
         await asyncio.sleep(5)
         await query.message.delete_msg()

@@ -406,7 +406,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
     msg = (
         await ctx.edit_msg(strings("run_exec"))
         if not self.me.is_bot
-        else await ctx.reply_msg(strings("run_exec"))
+        else await ctx.reply_msg(strings("run_exec"), quote=True)
     )
     shell = (await shell_exec(ctx.input))[0]
     if len(shell) > 3000:
@@ -426,6 +426,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                         ]
                     ]
                 ),
+                quote=True,
             )
             await msg.delete_msg()
     elif len(shell) != 0:
@@ -444,6 +445,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                     ]
                 ]
             ),
+            quote=True,
         )
         if self.me.is_bot:
             await msg.delete_msg()
@@ -578,6 +580,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                         ]
                     ]
                 ),
+                quote=True,
             )
             await status_message.delete_msg()
     else:
@@ -596,6 +599,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                     ]
                 ]
             ),
+            quote=True,
         )
         if self.me.is_bot:
             await status_message.delete_msg()
