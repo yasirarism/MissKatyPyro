@@ -182,7 +182,7 @@ async def log_file(_, ctx: Message, strings):
         await msg.edit_msg("Unsupported parameter")
 
 @app.on_message(filters.command(["payment"], COMMAND_HANDLER))
-async def payment(self: Client, message: Message):
+async def payment(client: Client, message: Message):
     # ToDO Add DB Intgration
     api_url = 'https://api.paydisini.co.id/v1/'
     api_key = PAYDISINI_KEY
