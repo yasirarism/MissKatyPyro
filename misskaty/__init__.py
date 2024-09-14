@@ -21,6 +21,7 @@ from misskaty.vars import (
     BOT_TOKEN,
     DATABASE_NAME,
     DATABASE_URI,
+    PORT,
     TZ,
     USER_SESSION,
 )
@@ -84,7 +85,7 @@ jobstores = {
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 async def run_wsgi():
-    config = uvicorn.Config(app, host="0.0.0.0", port=int(BASE_URL_PORT))
+    config = uvicorn.Config(app, host="0.0.0.0", port=int(PORT))
     server = uvicorn.Server(config)
     await server.serve()
 
