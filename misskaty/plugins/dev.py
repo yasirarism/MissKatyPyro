@@ -205,7 +205,7 @@ async def payment(client: Client, message: Message):
         'type_fee': '1',
         'payment_guide': True,
         'signature': hashlib.md5((api_key + unique_id + service_id + amount + valid_time + 'NewTransaction').encode()).hexdigest(),
-        'return_url': f'https://t.me/{client.me.username}'
+        'return_url': f'https://t.me/{client.me.username}?start'
     }
     # if id_ in user_data and user_data[id_].get("is_auth"):
     #    return await message.reply("Already Authorized!")

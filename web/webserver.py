@@ -48,7 +48,7 @@ async def autopay(request: Request):
     status = data['status']
     exp_date = (datetime.now(jkt) + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
     r = await DbManger().get_autopay(unique_code)
-    msg = f"╭────〔 <b>TRANSAKSI SUKSES🎉</b> 〕──\n│・ <b>Transaksi ID :</b> {unique_code}\n│・ <b>Product :</b> VIP Bot Subscription by {config_dict['BY']}\n│・ <b>Durasi :</b> 30 hari\n│・ <b>Total Dibayar :</b> {r.get('amount')}\n│・ Langganan Berakhir: {exp_date}\n╰─────────"
+    msg = f"╭────〔 <b>TRANSAKSI SUKSES🎉</b> 〕──\n│・ <b>Transaksi ID :</b> {unique_code}\n│・ <b>Product :</b> MissKaty Support by YS Dev\n│・ <b>Durasi :</b> 30 hari\n│・ <b>Total Dibayar :</b> {r.get('amount')}\n│・ Langganan Berakhir: {exp_date}\n╰─────────"
     if not r:
         return JSONResponse({"status": false, "data": "Data not found on DB"}, 404)
     if status == "Success":
