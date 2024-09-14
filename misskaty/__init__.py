@@ -8,12 +8,13 @@ from asyncio import get_event_loop
 from faulthandler import enable as faulthandler_enable
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
-import uvloop
+import uvloop, uvicorn
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from async_pymongo import AsyncClient
 from pymongo import MongoClient
 from pyrogram import Client
+from web.webserver import api
 
 from misskaty.vars import (
     API_HASH,
@@ -21,6 +22,7 @@ from misskaty.vars import (
     BOT_TOKEN,
     DATABASE_NAME,
     DATABASE_URI,
+    PORT,
     TZ,
     USER_SESSION,
 )
@@ -82,6 +84,11 @@ jobstores = {
     )
 }
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
+
+async def run_wsgi():
+    config = uvicorn.Config(api, host="0.0.0.0", port=int(PORT))
+    server = uvicorn.Server(config)
+    await server.serve()
 
 app.start()
 BOT_ID = app.me.id

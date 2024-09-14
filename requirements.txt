@@ -34,3 +34,6 @@ GitPython
 aiofiles
 uvloop==0.19.0
 lxml_html_clean
+fastapi
+uvicorn
+python-multipart

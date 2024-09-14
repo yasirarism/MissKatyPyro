@@ -13,7 +13,7 @@ FROM yasirarism/misskaty-docker:py3.12
 ENV HOSTNAME=yasir-server
 # Copy Files
 COPY . .
-# Instal pip package
+# Instal pip package if you use free depedencies
 # RUN pip3 install --no-cache-dir -r requirements.txt
 # Set CMD Bot
 CMD ["bash", "start.sh"]
