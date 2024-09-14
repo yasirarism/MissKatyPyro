@@ -1,4 +1,4 @@
-from logging import INFO, StreamHandler, basicConfig, getLogger, ERROR, StreamHandler
+from logging import INFO, StreamHandler, basicConfig, getLogger, ERROR, handlers
 from os import path
 from time import time
 from datetime import datetime, timedelta
