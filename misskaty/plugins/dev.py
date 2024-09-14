@@ -200,7 +200,7 @@ async def payment(client: Client, message: Message):
         'unique_code': unique_id,
         'service': service_id,
         'amount': amount,
-        'note': f'VIP Bot Subscription by YS Dev',
+        'note': f'MissKaty Support by YS Dev',
         'valid_time': valid_time,
         'type_fee': '1',
         'payment_guide': True,
