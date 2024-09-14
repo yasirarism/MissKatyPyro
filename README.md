@@ -82,6 +82,8 @@ If you want help me fixing some error in my bot, you can make pull request to th
 * `YT_COOKIES` : Get YT cookies using https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1 and save cookies value on github gist. Copy raw url and fill in this vars.
 * `USER_SESSION` : Session string for Userbot.
 * `DATABASE_NAME`: Name of the database in MongoDB
+* `PAYDISINI_KEY`: Api Key PayDisini
+* `PAYDISINI_CHANNEL_ID`: Channel ID QRIS paydisini
 * `COMMAND_HANDLER`: List of handler bot command splitted by space. Ex: `. !` > so bot will respond with `.cmd` or `!cmd`
 * `SUDO`: User ID that have access to bot, split by space
 * `OPENAI_API`: Create personal access token from github, and set as this env. Make sure you have access to Github Model.
