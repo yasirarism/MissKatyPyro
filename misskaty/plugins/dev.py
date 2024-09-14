@@ -47,6 +47,7 @@ from pyrogram.types import (
     LabeledPrice,
     Message,
     PreCheckoutQuery,
+    WebAppInfo,
 )
 
 from database.gban_db import add_gban_user, is_gbanned_user, remove_gban_user
