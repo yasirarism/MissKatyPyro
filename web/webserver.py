@@ -23,14 +23,13 @@ getLogger("fastapi").setLevel(ERROR)
 
 @app.post("/callback")
 async def autopay(request: Request):
-    from bot import bot, config_dict, jkt
-    from bot.helper.ext_utils.db_handler import DbManger
-    from bot.helper.ext_utils.bot_utils import update_user_ldata
+    from misskaty import app
+    from misskaty.vars import PAYDISINI_KEY, OWNER_ID
     data = await request.form()
     client_ip = request.client.host
-    if config_dict["PAYDISINI_KEY"] != data["key"] and client_ip != "84.247.150.90":
+    if PAYDISINI_KEY != data["key"] and client_ip != "84.247.150.90":
         raise HTTPException(status_code=403, detail="Access forbidden")
-    signature_data = f"{config_dict['PAYDISINI_KEY']}{data['unique_code']}CallbackStatus"
+    signature_data = f"{PAYDISINI_KEY}{data['unique_code']}CallbackStatus"
     gen_signature = hashlib.md5(signature_data.encode()).hexdigest()
     if gen_signature != data["signature"]:
         raise HTTPException(status_code=403, detail="Invalid Signature")
@@ -47,7 +46,7 @@ async def autopay(request: Request):
             await bot.send_message(r.get("user_id"), f"{msg}\n\nJika ada pertanyaan silahkan hubungi pemilik bot ini.")
             await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
         await DbManger().update_user_data(r.get("user_id"))
-        await bot.send_message(config_dict["OWNER_ID"], msg)
+        await bot.send_message(OWNER_ID, msg)
         return JSONResponse({"status": status, "msg": "Pesanan berhasil dibayar oleh customer."}, 200)
     else:
         with suppress(Exception):
