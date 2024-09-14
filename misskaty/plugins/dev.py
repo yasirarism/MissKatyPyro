@@ -190,7 +190,7 @@ async def payment(client: Client, message: Message):
     api_key = PAYDISINI_KEY
     unique_id = f"VIP-{secrets.token_hex(5)}"
     amount = "10000"
-    id_ = message.from_user.id
+    id_ = message.from_user.id if message.chat.id != message.from_user.id else message.chat.id
     valid_time = str(5*60)
     service_id = PAYDISINI_CHANNEL_ID
 
@@ -207,8 +207,6 @@ async def payment(client: Client, message: Message):
         'signature': hashlib.md5((api_key + unique_id + service_id + amount + valid_time + 'NewTransaction').encode()).hexdigest(),
         'return_url': f'https://t.me/{client.me.username}'
     }
-    if message.chat.type.value != "private":
-        return await message.reply("Please use this command on DM.")
     # if id_ in user_data and user_data[id_].get("is_auth"):
     #    return await message.reply("Already Authorized!")
     rget = await fetch.post(api_url, data=params)
