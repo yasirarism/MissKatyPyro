@@ -57,7 +57,6 @@ async def start_bot():
     LOGGER.info(bot_modules)
     LOGGER.info("+===============+===============+===============+===============+")
     LOGGER.info("[INFO]: BOT STARTED AS @%s!", BOT_USERNAME)
-    asyncio.create_task(run_wsgi())
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         for i in SUDO:
@@ -74,6 +73,7 @@ async def start_bot():
     except Exception as e:
         LOGGER.error(str(e))
     scheduler.start()
+    # asyncio.create_task(run_wsgi())
     if "web" not in await dbname.list_collection_names():
         webdb = dbname["web"]
         for key, value in web.items():

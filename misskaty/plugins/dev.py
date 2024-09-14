@@ -8,6 +8,7 @@ import pickle
 import platform
 import privatebinapi
 import re
+import secrets
 import sys
 import traceback
 from datetime import datetime
