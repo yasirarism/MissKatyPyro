@@ -32,8 +32,8 @@ getLogger("fastapi").setLevel(ERROR)
 
 @api.post("/callback")
 async def autopay(request: Request):
-    # ToDO Add Database Integration
     from misskaty import app
+    from database.payment_db import delete_autopay, get_autopay
     from misskaty.vars import PAYDISINI_KEY, OWNER_ID
     data = await request.form()
     client_ip = request.client.host
@@ -43,11 +43,10 @@ async def autopay(request: Request):
     gen_signature = hashlib.md5(signature_data.encode()).hexdigest()
     if gen_signature != data["signature"]:
         raise HTTPException(status_code=403, detail="Invalid Signature")
-    return data
     unique_code = data['unique_code']
     status = data['status']
     exp_date = (datetime.now(jkt) + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
-    r = await DbManger().get_autopay(unique_code)
+    r = await get_autopay(unique_code)
     msg = f"╭────〔 <b>TRANSAKSI SUKSES🎉</b> 〕──\n│・ <b>Transaksi ID :</b> {unique_code}\n│・ <b>Product :</b> MissKaty Support by YS Dev\n│・ <b>Durasi :</b> 30 hari\n│・ <b>Total Dibayar :</b> {r.get('amount')}\n│・ Langganan Berakhir: {exp_date}\n╰─────────"
     if not r:
         return JSONResponse({"status": false, "data": "Data not found on DB"}, 404)
@@ -56,11 +55,13 @@ async def autopay(request: Request):
             await bot.send_message(r.get("user_id"), f"{msg}\n\nJika ada pertanyaan silahkan hubungi pemilik bot ini.")
             await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
         await bot.send_message(OWNER_ID, msg)
+        await delete_autopay(unique_code)
         return JSONResponse({"status": status, "msg": "Pesanan berhasil dibayar oleh customer."}, 200)
     else:
         with suppress(Exception):
             await bot.send_message(r.get("user_id"), "QRIS Telah Expired, Silahkan Buat Transaksi Baru.")
             await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
+        await delete_autopay(unique_code)
         return JSONResponse({"status": status, "msg": "Pesanan telah dibatalkan/gagal dibayar."}, 403)
 
 @api.get("/status")

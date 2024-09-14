@@ -59,6 +59,7 @@ from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
+from database.payment_db import autopay_update
 from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
 
 __MODULE__ = "DevCommand"
@@ -185,11 +186,10 @@ async def log_file(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["payment"], COMMAND_HANDLER))
 async def payment(client: Client, message: Message):
-    # ToDO Add DB Intgration
     api_url = 'https://api.paydisini.co.id/v1/'
     api_key = PAYDISINI_KEY
     unique_id = f"VIP-{secrets.token_hex(5)}"
-    amount = "10000"
+    amount = "10000" if len(message.command) == 1 else str(message.command[1])
     id_ = message.from_user.id if message.chat.id != message.from_user.id else message.chat.id
     valid_time = str(5*60)
     service_id = PAYDISINI_CHANNEL_ID
@@ -222,8 +222,7 @@ async def payment(client: Client, message: Message):
         msg = await message.reply_photo(qr_photo, caption=capt+payment_guide, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Payment Web", url=res["data"]["checkout_url_v2"])]]), quote=True)
     else:
         msg = await message.reply_photo(qr_photo, caption=capt+payment_guide, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Payment Web", web_app=WebAppInfo(url=res["data"]["checkout_url_v2"]))]]), quote=True)
-    # if DATABASE_URL:
-    #    await DbManger().autopay_update(msg.id, res["data"]["note"], id_, res['data']['amount'], res['data']['status'], res['data']['unique_code'], res['data']['created_at'])
+    await autopay_update(msg.id, res["data"]["note"], id_, res['data']['amount'], res['data']['status'], res['data']['unique_code'], res['data']['created_at'])
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
