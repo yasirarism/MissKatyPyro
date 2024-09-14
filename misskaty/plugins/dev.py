@@ -182,6 +182,7 @@ async def log_file(_, ctx: Message, strings):
 
 @app.on_message(filters.command(["payment"], COMMAND_HANDLER))
 async def payment(self: Client, message: Message):
+    # ToDO Add DB Intgration
     api_url = 'https://api.paydisini.co.id/v1/'
     api_key = PAYDISINI_KEY
     unique_id = f"VIP-{secrets.token_hex(5)}"
@@ -196,7 +197,7 @@ async def payment(self: Client, message: Message):
         'unique_code': unique_id,
         'service': service_id,
         'amount': amount,
-        'note': f'VIP Bot Subscription by {config_dict["BY"]}',
+        'note': f'VIP Bot Subscription by YS Dev',
         'valid_time': valid_time,
         'type_fee': '1',
         'payment_guide': True,
@@ -205,8 +206,8 @@ async def payment(self: Client, message: Message):
     }
     if message.chat.type.value != "private":
         return await message.reply("Please use this command on DM.")
-    if id_ in user_data and user_data[id_].get("is_auth"):
-        return await message.reply("Already Authorized!")
+    # if id_ in user_data and user_data[id_].get("is_auth"):
+    #    return await message.reply("Already Authorized!")
     rget = await fetch.post(api_url, data=params)
     if rget.status_code != 200:
         return await message.reply("ERROR: Maybe your IP is not whitelisted or have another error from api.")
