@@ -4,6 +4,7 @@ import html
 import io
 import json
 import os
+import hashlib
 import pickle
 import platform
 import privatebinapi
