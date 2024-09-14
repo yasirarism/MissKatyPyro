@@ -24,6 +24,7 @@ from misskaty import (
     app,
     get_event_loop,
     scheduler,
+    run_wsgi
 )
 from misskaty.plugins import ALL_MODULES
 from misskaty.plugins.web_scraper import web
@@ -56,7 +57,7 @@ async def start_bot():
     LOGGER.info(bot_modules)
     LOGGER.info("+===============+===============+===============+===============+")
     LOGGER.info("[INFO]: BOT STARTED AS @%s!", BOT_USERNAME)
-
+    asyncio.create_task(run_wsgi())
     try:
         LOGGER.info("[INFO]: SENDING ONLINE STATUS")
         for i in SUDO:

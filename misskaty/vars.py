@@ -50,6 +50,7 @@ LOG_GROUP_ID = environ.get("LOG_GROUP_ID")
 USER_SESSION = environ.get("USER_SESSION")
 DATABASE_NAME = environ.get("DATABASE_NAME", "MissKatyDB")
 TZ = environ.get("TZ", "Asia/Jakarta")
+PORT = environ.get("PORT", 80)
 COMMAND_HANDLER = environ.get("COMMAND_HANDLER", "! /").split()
 SUDO = list(
     {
@@ -64,6 +65,8 @@ SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
 AUTO_RESTART = environ.get("AUTO_RESTART", False)
 OPENAI_KEY = environ.get("OPENAI_KEY")
 GOOGLEAI_KEY = environ.get("GOOGLEAI_KEY")
+PAYDISINI_KEY = environ.get("PAYDISINI_KEY")
+PAYDISINI_CHANNEL_ID = environ.get("PAYDISINI_CHANNEL_ID", "17")
 
 ## Config For AUtoForwarder
 # Forward From Chat ID
