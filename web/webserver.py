@@ -12,7 +12,7 @@ from asyncio import to_thread, subprocess, create_subprocess_shell
 from apscheduler.triggers.date import DateTrigger
 import hashlib
 
-app = FastAPI()
+api = FastAPI()
 
 basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", handlers=[FileHandler("log.txt"), StreamHandler()], level=INFO)
 
@@ -21,7 +21,7 @@ botStartTime = time()
 LOGGER = getLogger(__name__)
 getLogger("fastapi").setLevel(ERROR)
 
-@app.post("/callback")
+@api.post("/callback")
 async def autopay(request: Request):
     from misskaty import app
     from misskaty.vars import PAYDISINI_KEY, OWNER_ID
@@ -54,7 +54,7 @@ async def autopay(request: Request):
             await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
         return JSONResponse({"status": status, "msg": "Pesanan telah dibatalkan/gagal dibayar."}, 403)
 
-@app.get("/status")
+@api.get("/status")
 async def status():
     from misskaty.helper.human_read import get_readable_file_size, get_readable_time
     bot_uptime = get_readable_time(time() - botStartTime)
@@ -78,11 +78,11 @@ async def status():
     }
 
 
-@app.api_route("/")
+@api.api_route("/")
 async def homepage():
     return "Hello World"
 
 
-@app.exception_handler(HTTPException)
+@api.exception_handler(HTTPException)
 async def page_not_found(request: Request, exc: HTTPException):
     return f"Error: {exc}</h1>"

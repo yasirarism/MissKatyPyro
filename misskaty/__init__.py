@@ -14,6 +14,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from async_pymongo import AsyncClient
 from pymongo import MongoClient
 from pyrogram import Client
+from web.webserver import api
 
 from misskaty.vars import (
     API_HASH,
@@ -85,7 +86,7 @@ jobstores = {
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
 async def run_wsgi():
-    config = uvicorn.Config(app, host="0.0.0.0", port=int(PORT))
+    config = uvicorn.Config(api, host="0.0.0.0", port=int(PORT))
     server = uvicorn.Server(config)
     await server.serve()
 
