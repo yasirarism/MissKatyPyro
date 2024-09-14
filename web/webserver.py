@@ -85,4 +85,4 @@ async def homepage():
 
 @api.exception_handler(HTTPException)
 async def page_not_found(request: Request, exc: HTTPException):
-    return f"Error: {exc}</h1>"
+    return HTMLResponse(content=f"<h1>Error: {exc}</h1>", status_code=exc.status_code)
