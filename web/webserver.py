@@ -1,4 +1,4 @@
-from logging import INFO, FileHandler, StreamHandler, basicConfig, getLogger, ERROR
+from logging import INFO, StreamHandler, basicConfig, getLogger, ERROR, StreamHandler
 from os import path
 from time import time
 from datetime import datetime, timedelta
@@ -14,8 +14,17 @@ import hashlib
 
 api = FastAPI()
 
-basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", handlers=[FileHandler("log.txt"), StreamHandler()], level=INFO)
-
+basicConfig(
+    level=INFO,
+    format="[%(levelname)s] - [%(asctime)s - %(name)s - %(message)s] -> [%(module)s:%(lineno)d]",
+    datefmt="%d-%b-%y %H:%M:%S",
+    handlers=[
+        handlers.RotatingFileHandler(
+            "MissKatyLogs.txt", mode="w+", maxBytes=5242880, backupCount=1
+        ),
+        StreamHandler(),
+    ],
+)
 botStartTime = time()
 
 LOGGER = getLogger(__name__)
