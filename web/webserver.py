@@ -23,6 +23,7 @@ getLogger("fastapi").setLevel(ERROR)
 
 @api.post("/callback")
 async def autopay(request: Request):
+    # ToDO Add Database Integration
     from misskaty import app
     from misskaty.vars import PAYDISINI_KEY, OWNER_ID
     data = await request.form()
@@ -45,7 +46,6 @@ async def autopay(request: Request):
         with suppress(Exception):
             await bot.send_message(r.get("user_id"), f"{msg}\n\nJika ada pertanyaan silahkan hubungi pemilik bot ini.")
             await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
-        await DbManger().update_user_data(r.get("user_id"))
         await bot.send_message(OWNER_ID, msg)
         return JSONResponse({"status": status, "msg": "Pesanan berhasil dibayar oleh customer."}, 200)
     else:

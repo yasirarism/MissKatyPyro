@@ -55,7 +55,7 @@ from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO
+from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -179,6 +179,45 @@ async def log_file(_, ctx: Message, strings):
     else:
         await msg.edit_msg("Unsupported parameter")
 
+@app.on_message(filters.command(["payment"], COMMAND_HANDLER))
+async def payment(self: Client, message: Message):
+    api_url = 'https://api.paydisini.co.id/v1/'
+    api_key = PAYDISINI_KEY
+    unique_id = f"VIP-{secrets.token_hex(5)}"
+    amount = "10000"
+    id_ = message.from_user.id
+    valid_time = str(5*60)
+    service_id = PAYDISINI_CHANNEL_ID
+
+    params = {
+        'key': api_key,
+        'request': 'new',
+        'unique_code': unique_id,
+        'service': service_id,
+        'amount': amount,
+        'note': f'VIP Bot Subscription by {config_dict["BY"]}',
+        'valid_time': valid_time,
+        'type_fee': '1',
+        'payment_guide': True,
+        'signature': hashlib.md5((api_key + unique_id + service_id + amount + valid_time + 'NewTransaction').encode()).hexdigest(),
+        'return_url': f'https://t.me/{client.me.username}'
+    }
+    if message.chat.type.value != "private":
+        return await message.reply("Please use this command on DM.")
+    if id_ in user_data and user_data[id_].get("is_auth"):
+        return await message.reply("Already Authorized!")
+    rget = await fetch.post(api_url, data=params)
+    if rget.status_code != 200:
+        return await message.reply("ERROR: Maybe your IP is not whitelisted or have another error from api.")
+    res = rget.json()
+    if not res.get("success"):
+        return await message.reply(res["msg"])
+    qr_photo = f"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={quote(res['data']['qr_content'])}"
+    capt = f"𝗠𝗲𝗻𝘂𝗻𝗴𝗴𝘂 𝗽𝗲𝗺𝗯𝗮𝘆𝗮𝗿𝗮𝗻\nKode: {res['data']['unique_code']}\nNote: {res['data']['note']}\nHarga: {res['data']['amount']}\nFee: {res['data']['fee']}\nExpired: {res['data']['expired']}\n\n"
+    payment_guide = f"<b>{res['payment_guide'][0]['title']}:</b>\n" + "\n".join(f"{i+1}. {step}" for i, step in enumerate(res["payment_guide"][0]['content']))
+    msg = await message.reply_photo(qr_photo, caption=capt+payment_guide, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Payment Web", web_app=WebAppInfo(url=res["data"]["checkout_url_v2"]))]]), quote=True)
+    # if DATABASE_URL:
+    #    await DbManger().autopay_update(msg.id, res["data"]["note"], id_, res['data']['amount'], res['data']['status'], res['data']['unique_code'], res['data']['created_at'])
 
 @app.on_message(filters.command(["donate"], COMMAND_HANDLER))
 async def donate(self: Client, ctx: Message):
