@@ -249,7 +249,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
                 await msg.edit_msg(
                     f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>"
                 )
-                return None, None
+                return None, 0, None
         r = BeautifulSoup(data, "lxml")
         res = r.find_all(class_="bx")
         for i in res:
@@ -260,7 +260,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
             moviekudata.append({"judul": judul, "link": link, "type": typee})
         if not moviekudata:
             await msg.edit_msg(strings("no_result"), del_in=5)
-            return None, None
+            return None, 0, None
         SCRAP_DICT.add(msg.id, [split_arr(moviekudata, 6), kueri], timeout=1800)
     index = int(CurrentPage - 1)
     PageLen = len(SCRAP_DICT[msg.id][0])
