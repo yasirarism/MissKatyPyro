@@ -16,7 +16,7 @@ import httpx
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram.errors import MessageTooLong, QueryIdInvalid
+from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import Message
 
 from database import dbname
@@ -1450,28 +1450,37 @@ async def muviku_scrap(_, message, strings):
             html = await fetch.get(link)
             html.raise_for_status()
             soup = BeautifulSoup(html.text, "lxml")
-            res = soup.find_all(class_="smokeurl")
-            data = []
-            for div in res:
-                paragraphs = div.find_all('p')
-                for p in paragraphs:
-                    resolution = p.find('strong').text
-                    links = p.find_all('a')
-                    for link in links:
-                        href = link.get('href')
-                        title = link.text
-                        data.append({
-                            "resolusi": resolution,
-                            "link": href,
-                            "title": title,
-                        })
+            data = {}
+            output = []
+            total_links = 0
+            valid_resolutions = {'1080p', '720p', '480p', '360p'}
+            current_title = None
+
+            for element in soup.find_all(['h3', 'p']):
+                if element.name == 'h3' and 'smokettl' in element.get('class', []):
+                    current_title = element.text.strip()
+                    if current_title not in data:
+                        data[current_title] = []
+                elif element.name == 'p' and current_title:
+                    strong_tag = element.find('strong')
+                    if strong_tag:
+                        resolution = strong_tag.text.strip()
+                        if resolution in valid_resolutions:
+                            links = ', '.join([f'<a href="{a["href"]}">{a.text.strip()}</a>' for a in element.find_all('a')])
+                            data[current_title].append(f"{resolution} {links}")
+
+            for title, resolutions in data.items():
+                output.append(title)
+                output.extend(resolutions)
+                output.append('')
+                for res in resolutions:
+                    total_links += res.count('<a href=')
             if not data:
                 return await message.reply(strings("no_result"))
-            res = "".join(f"<b>Host: <a href='{i['link']}'>{i['resolusi']} {i['title']}</a></b>\n\n" for i in data)
-            await message.reply_msg(res)
-        except MessageTooLong:
-            url = await post_to_telegraph(False, link, res.replace("\n", "<br>"))
-            await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
+            if len(total_links) > 70:
+                url = await post_to_telegraph(False, link, "<br>".join(output))
+                return await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
+            await message.reply_msg("\n".join(output))
         except IndexError:
             return await message.reply(
                 strings("invalid_cmd_scrape").format(cmd=message.command[0])
