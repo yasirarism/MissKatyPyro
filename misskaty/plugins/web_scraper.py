@@ -16,7 +16,7 @@ import httpx
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram.errors import QueryIdInvalid
+from pyrogram.errors import MessageTooLong, QueryIdInvalid
 from pyrogram.types import Message
 
 from database import dbname
@@ -1463,7 +1463,10 @@ async def muviku_scrap(_, message, strings):
             res = "".join(
                 f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data
             )
-            await message.reply(res)
+            await message.reply_msg(res)
+        except MessageTooLong:
+            url = await post_to_telegraph(False, link, res)
+            await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
         except IndexError:
             return await message.reply(
                 strings("invalid_cmd_scrape").format(cmd=message.command[0])
