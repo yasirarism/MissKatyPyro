@@ -1506,7 +1506,7 @@ async def movieku_scrap(_, callback_query, strings):
             if total_links > 70:
                 url = await post_to_telegraph(False, link, "<br>".join(output))
                 return await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=f"Your result is too long, i have pasted your result on Telegraph:\n{url}"), reply_markup=keyboard)
-            if output == "":
+            if "\n".join(output) == "":
                 output = "\nOpen link in browser, click on episode page and use /movieku_scrap [page link] commands for extract download link"
             await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl="\n".join(output)), reply_markup=keyboard)
         except httpx.HTTPError as exc:
