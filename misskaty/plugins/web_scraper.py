@@ -1460,12 +1460,10 @@ async def muviku_scrap(_, message, strings):
                     data.append({"link": link, "kualitas": kualitas})
             if not data:
                 return await message.reply(strings("no_result"))
-            res = "".join(
-                f"<b>Host: {i['kualitas']}</b>\n{i['link']}\n\n" for i in data
-            )
+            res = "".join(f"<b>Host: <a href='{i['link']}'>{i['kualitas']}</a></b>\n\n" for i in data)
             await message.reply_msg(res)
         except MessageTooLong:
-            url = await post_to_telegraph(False, link, res)
+            url = await post_to_telegraph(False, link, res.replace("\n", "<br>")
             await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
         except IndexError:
             return await message.reply(
