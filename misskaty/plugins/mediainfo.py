@@ -55,10 +55,10 @@ async def mediainfo(_, ctx: Message, strings):
         body_text = f"""
 MissKatyBot MediaInfo
 JSON
-{file_info}.type
+<pre>{file_info}.type</pre>
     
 DETAILS
-{out or 'Not Supported'}
+<pre>{out or 'Not Supported'}</pre>
     """
         try:
             link = await mediainfo_paste(out, "MissKaty Mediainfo")
@@ -104,7 +104,7 @@ DETAILS
                 return await process.edit_msg(strings("err_link"))
             body_text = f"""
             MissKatyBot MediaInfo
-            {output}
+            <pre>{output}</pre>
             """
             # link = await post_to_telegraph(False, title, body_text)
             try:
