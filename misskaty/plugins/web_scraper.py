@@ -1452,15 +1452,22 @@ async def muviku_scrap(_, message, strings):
             soup = BeautifulSoup(html.text, "lxml")
             res = soup.find_all(class_="smokeurl")
             data = []
-            for i in res:
-                for b in range(len(i.find_all("a"))):
-                    link = i.find_all("a")[b]["href"]
-                    kualitas = i.find_all("a")[b].text
-                    # print(f"{kualitas}\n{link
-                    data.append({"link": link, "kualitas": kualitas})
+            for div in res:
+                paragraphs = div.find_all('p')
+                for p in paragraphs:
+                    resolution = p.find('strong').text
+                    links = p.find_all('a')
+                    for link in links:
+                        href = link.get('href')
+                        title = link.text
+                        data.append({
+                            "resolusi": resolution,
+                            "link": href,
+                            "title": title,
+                        })
             if not data:
                 return await message.reply(strings("no_result"))
-            res = "".join(f"<b>Host: <a href='{i['link']}'>{i['kualitas']}</a></b>\n\n" for i in data)
+            res = "".join(f"<b>Host: <a href='{i['link']}'>{i['resolusi']} {i['title']}</a></b>\n\n" for i in data)
             await message.reply_msg(res)
         except MessageTooLong:
             url = await post_to_telegraph(False, link, res.replace("\n", "<br>"))
