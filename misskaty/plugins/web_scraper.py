@@ -1477,7 +1477,7 @@ async def muviku_scrap(_, message, strings):
                     total_links += res.count('<a href=')
             if not data:
                 return await message.reply(strings("no_result"))
-            if len(total_links) > 70:
+            if total_links > 70:
                 url = await post_to_telegraph(False, link, "<br>".join(output))
                 return await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
             await message.reply_msg("\n".join(output))
