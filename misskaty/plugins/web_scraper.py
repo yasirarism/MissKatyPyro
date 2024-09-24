@@ -1506,6 +1506,8 @@ async def movieku_scrap(_, callback_query, strings):
             if total_links > 70:
                 url = await post_to_telegraph(False, link, "<br>".join(output))
                 return await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl=f"Your result is too long, i have pasted your result on Telegraph:\n{url}"), reply_markup=keyboard)
+            if output == "":
+                output = "\nOpen link in browser, click on episode page and use /movieku_scrap [page link] commands for extract download link"
             await callback_query.message.edit_msg(strings("res_scrape").format(link=link, kl="\n".join(output)), reply_markup=keyboard)
         except httpx.HTTPError as exc:
             await callback_query.message.edit_msg(
@@ -1663,3 +1665,55 @@ async def lendrive_dl(_, callback_query, strings):
             await callback_query.message.edit_msg(
                 f"ERROR: {err}", reply_markup=keyboard
             )
+
+# Manual Scrape DDL Movieku.CC incase cannot auto scrape from button
+@app.on_cmd("movieku_scrap")
+@use_chat_lang()
+async def muviku_scrap(_, message, strings):
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            link = message.text.split(maxsplit=1)[1]
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            data = {}
+            output = []
+            total_links = 0
+            valid_resolutions = {'1080p', '720p', '480p', '360p'}
+            current_title = None
+
+            for element in soup.find_all(['h3', 'p']):
+                if element.name == 'h3' and 'smokettl' in element.get('class', []):
+                    current_title = element.text.strip()
+                    if current_title not in data:
+                        data[current_title] = []
+                elif element.name == 'p' and current_title:
+                    strong_tag = element.find('strong')
+                    if strong_tag:
+                        resolution = strong_tag.text.strip()
+                        if resolution in valid_resolutions:
+                            links = ', '.join([f'<a href="{a["href"]}">{a.text.strip()}</a>' for a in element.find_all('a')])
+                            data[current_title].append(f"{resolution} {links}")
+
+            for title, resolutions in data.items():
+                output.append(title)
+                output.extend(resolutions)
+                output.append('')
+                for res in resolutions:
+                    total_links += res.count('<a href=')
+            if not data:
+                return await message.reply(strings("no_result"))
+            if total_links > 70:
+                url = await post_to_telegraph(False, link, "<br>".join(output))
+                return await message.reply_msg(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
+            await message.reply_msg("\n".join(output))
+        except IndexError:
+            return await message.reply(
+                strings("invalid_cmd_scrape").format(cmd=message.command[0])
+            )
+        except httpx.HTTPError as exc:
+            await message.reply(
+                f"HTTP Exception for {exc.request.url} - <code>{exc}</code>"
+            )
+        except Exception as e:
+            await message.reply(f"ERROR: {str(e)}")
