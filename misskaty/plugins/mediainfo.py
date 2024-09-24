@@ -108,7 +108,7 @@ DETAILS
             """
             # link = await post_to_telegraph(False, title, body_text)
             try:
-                link = await mediainfo_paste(out, "MissKaty Mediainfo")
+                link = await mediainfo_paste(output, "MissKaty Mediainfo")
                 markup = InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
                 )
