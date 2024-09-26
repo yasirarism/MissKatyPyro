@@ -60,7 +60,7 @@ from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
 from database.payment_db import autopay_update
-from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
+from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID, PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
