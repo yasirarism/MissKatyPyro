@@ -187,7 +187,6 @@ async def log_file(_, ctx: Message, strings):
 @app.on_message(filters.command(["payment"], COMMAND_HANDLER))
 async def payment(client: Client, message: Message):
     api_url = 'https://api.paydisini.co.id/v1/'
-    api_key = PAYDISINI_KEY
     unique_id = f"VIP-{secrets.token_hex(5)}"
     amount = "10000" if len(message.command) == 1 else str(message.command[1])
     id_ = message.from_user.id if message.chat.id != message.from_user.id else message.chat.id
@@ -195,7 +194,7 @@ async def payment(client: Client, message: Message):
     service_id = PAYDISINI_CHANNEL_ID
 
     params = {
-        'key': api_key,
+        'key': PAYDISINI_KEY,
         'request': 'new',
         'unique_code': unique_id,
         'service': service_id,
@@ -204,11 +203,11 @@ async def payment(client: Client, message: Message):
         'valid_time': valid_time,
         'type_fee': '1',
         'payment_guide': True,
-        'signature': hashlib.md5((api_key + unique_id + service_id + amount + valid_time + 'NewTransaction').encode()).hexdigest(),
+        'signature': hashlib.md5((PAYDISINI_KEY + unique_id + service_id + amount + valid_time + 'NewTransaction').encode()).hexdigest(),
         'return_url': f'https://t.me/{client.me.username}?start'
     }
-    # if id_ in user_data and user_data[id_].get("is_auth"):
-    #    return await message.reply("Already Authorized!")
+    if not PAYDISINI_KEY:
+       return await message.reply("Missing API Key, Please set PAYDISINI_KEY in env!")
     rget = await fetch.post(api_url, data=params)
     if rget.status_code != 200:
         return await message.reply("ERROR: Maybe your IP is not whitelisted or have another error from api.")
