@@ -10,7 +10,7 @@ from pyrogram.types import (
 from database import dbname
 from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly, member_permissions
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, SUDO, OWNER_ID
 
 approvaldb = dbname["autoapprove"]
 
@@ -53,7 +53,7 @@ async def approval_cb(_, cb: CallbackQuery):
     permissions = await member_permissions(chat_id, from_user.id)
     permission = "can_restrict_members"
     if permission not in permissions:
-        if from_user.id not in SUDO:
+        if from_user.id not in SUDO or from_user.id != OWNER_ID:
             return await cb.answer(
                 f"You don't have the required permission.\n Permission: {permission}",
                 show_alert=True,

@@ -53,7 +53,7 @@ from misskaty.helper.functions import (
     time_converter,
 )
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, SUDO, OWNER_ID
 
 LOGGER = getLogger("MissKaty")
 
@@ -172,7 +172,7 @@ async def kickFunc(client: Client, ctx: Message, strings) -> "Message":
         return await ctx.reply_msg(strings("user_not_found"))
     if user_id == client.me.id:
         return await ctx.reply_msg(strings("kick_self_err"))
-    if user_id in SUDO:
+    if user_id in SUDO or user_id == OWNER_ID:
         return await ctx.reply_msg(strings("kick_sudo_err"))
     if user_id in (await list_admins(ctx.chat.id)):
         return await ctx.reply_msg(strings("kick_admin_err"))
@@ -213,7 +213,7 @@ async def banFunc(client, message, strings):
         return await message.reply_text(strings("user_not_found"))
     if user_id == client.me.id:
         return await message.reply_text(strings("ban_self_err"))
-    if user_id in SUDO:
+    if user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text(strings("ban_sudo_err"))
     if user_id in (await list_admins(message.chat.id)):
         return await message.reply_text(strings("ban_admin_err"))
@@ -299,7 +299,7 @@ async def unban_func(_, message, strings):
 
 # Ban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listban", COMMAND_HANDLER) & filters.group
+    (filters.user(SUDO) | filters.user(OWNER_ID)) & filters.command("listban", COMMAND_HANDLER) & filters.group
 )
 @use_chat_lang()
 async def list_ban_(c, message, strings):
@@ -319,7 +319,7 @@ async def list_ban_(c, message, strings):
 
     if userid == c.me.id:
         return await message.reply_text(strings("ban_self_err"))
-    if userid in SUDO:
+    if userid in SUDO or user_id == OWNER_ID:
         return await message.reply_text(strings("ban_sudo_err"))
     splitted = messagelink.split("/")
     uname, mid = splitted[-2], int(splitted[-1])
@@ -353,7 +353,7 @@ async def list_ban_(c, message, strings):
 
 # Unban users listed in a message
 @app.on_message(
-    filters.user(SUDO) & filters.command("listunban", COMMAND_HANDLER) & filters.group
+    (filters.user(SUDO) | filters.user(OWNER_ID)) & filters.command("listunban", COMMAND_HANDLER) & filters.group
 )
 @use_chat_lang()
 async def list_unban(_, message, strings):
@@ -469,7 +469,7 @@ async def demote(client, message, strings):
         return await message.reply_text(strings("user_not_found"))
     if user_id == client.me.id:
         return await message.reply_text(strings("demote_self_err"))
-    if user_id in SUDO:
+    if user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text(strings("demote_sudo_err"))
     try:
         await message.chat.promote_member(
@@ -535,7 +535,7 @@ async def mute(client, message, strings):
         return await message.reply_text(strings("user_not_found"))
     if user_id == client.me.id:
         return await message.reply_text(strings("mute_self_err"))
-    if user_id in SUDO:
+    if user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text(strings("mute_sudo_err"))
     if user_id in (await list_admins(message.chat.id)):
         return await message.reply_text(strings("mute_admin_err"))
@@ -606,7 +606,7 @@ async def warn_user(client, message, strings):
         return await message.reply_text(strings("user_not_found"))
     if user_id == client.me.id:
         return await message.reply_text(strings("warn_self_err"))
-    if user_id in SUDO:
+    if user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text(strings("warn_sudo_err"))
     if user_id in (await list_admins(chat_id)):
         return await message.reply_text(strings("warn_admin_err"))

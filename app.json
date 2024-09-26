@@ -37,6 +37,10 @@
             "description": "Allowed user in to use sudo command.",
             "value": ""
         },
+        "OWNER_ID": {
+            "description": "OWNER OF THIS BOT.",
+            "value": ""
+        },
         "GOOGLE_AI_KEY": {
             "description": "Your Gemini AI Key",
             "value": "",

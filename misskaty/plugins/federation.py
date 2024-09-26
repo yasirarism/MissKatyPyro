@@ -35,7 +35,7 @@ from database.feds_db import *
 from misskaty import BOT_ID, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.functions import extract_user, extract_user_and_reason
-from misskaty.vars import COMMAND_HANDLER, LOG_GROUP_ID, SUDO
+from misskaty.vars import COMMAND_HANDLER, LOG_GROUP_ID, SUDO, OWNER_ID
 
 __MODULE__ = "Federation"
 __HELP__ = """
@@ -115,7 +115,7 @@ async def del_fed(client, message):
     getinfo = await get_fed_info(is_fed_id)
     if getinfo is False:
         return await message.reply_text("This federation does not exist.")
-    if getinfo["owner_id"] == user.id or user.id not in SUDO:
+    if getinfo["owner_id"] == user.id or user.id not in SUDO or user.id != OWNER_ID:
         fed_id = is_fed_id
     else:
         return await message.reply_text("Only federation owners can do this!")
@@ -298,8 +298,8 @@ async def join_fed(self, message):
     fed_id = await get_fed_id(int(chat.id))
 
     if (
-        user.id in SUDO or member.status != ChatMemberStatus.OWNER
-    ) and user.id not in SUDO:
+        user.id in SUDO or user.id == OWNER_ID or member.status != ChatMemberStatus.OWNER
+    ) and user.id not in SUDO and user.id != OWNER_ID:
         return await message.reply_text("Only group creators can use this command!")
     if fed_id:
         return await message.reply_text("You cannot join two federations from one chat")
@@ -347,7 +347,7 @@ async def leave_fed(client, message):
     fed_info = await get_fed_info(fed_id)
 
     member = await app.get_chat_member(chat.id, user.id)
-    if member.status == ChatMemberStatus.OWNER or user.id in SUDO:
+    if member.status == ChatMemberStatus.OWNER or user.id in SUDO or user.id == OWNER_ID:
         if await chat_leave_fed(int(chat.id)) is True:
             if get_fedlog := fed_info["log_group_id"]:
                 await app.send_message(
@@ -388,7 +388,7 @@ async def fed_chat(client, message):
         fed_owner = info["owner_id"]
         fed_admins = info["fadmins"]
         all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-        if user.id not in all_admins and user.id not in SUDO:
+        if user.id not in all_admins and user.id not in SUDO and user.id != OWNER_ID:
             return await message.reply_text(
                 "You need to be a Fed Admin to use this command"
             )
@@ -486,7 +486,7 @@ async def fpromote(client, message):
             "You need to add a federation to this chat first!"
         )
 
-    if await is_user_fed_owner(fed_id, user.id) or user.id in SUDO:
+    if await is_user_fed_owner(fed_id, user.id) or user.id in SUDO or user.id == OWNER_ID:
         user_id = await extract_user(msg)
 
         if user_id is None:
@@ -545,7 +545,7 @@ async def fdemote(client, message):
             "You need to add a federation to this chat first!"
         )
 
-    if await is_user_fed_owner(fed_id, user.id) or user.id in SUDO:
+    if await is_user_fed_owner(fed_id, user.id) or user.id in SUDO or user.id == OWNER_ID:
         user_id = await extract_user(msg)
 
         if user_id is None:
@@ -586,7 +586,7 @@ async def fban_user(client, message):
     fed_admins = info["fadmins"]
     fed_owner = info["owner_id"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id not in all_admins and from_user.id not in SUDO:
+    if from_user.id not in all_admins and from_user.id not in SUDO and from_user.id != OWNER_ID:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )
@@ -603,7 +603,7 @@ async def fban_user(client, message):
         )
     if not user_id:
         return await message.reply_text("I can't find that user.")
-    if user_id in all_admins or user_id in SUDO:
+    if user_id in all_admins or user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text("I can't ban that user.")
     check_user = await check_banned_user(fed_id, user_id)
     if check_user:
@@ -685,7 +685,7 @@ async def funban_user(client, message):
     fed_admins = info["fadmins"]
     fed_owner = info["owner_id"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id not in all_admins and from_user.id not in SUDO:
+    if from_user.id not in all_admins and from_user.id not in SUDO or from_user.id != OWNER_ID:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )
@@ -697,7 +697,7 @@ async def funban_user(client, message):
     user = await app.get_users(user_id)
     if not user_id:
         return await message.reply_text("I can't find that user.")
-    if user_id in all_admins or user_id in SUDO:
+    if user_id in all_admins or user_id in SUDO or user_id == OWNER_ID:
         return await message.reply_text("**How can an admin ever be banned!.**")
     check_user = await check_banned_user(fed_id, user_id)
     if not check_user:
@@ -815,7 +815,7 @@ async def fbroadcast_message(client, message):
     fed_owner = info["owner_id"]
     fed_admins = info["fadmins"]
     all_admins = [fed_owner] + fed_admins + [int(BOT_ID)]
-    if from_user.id not in all_admins and from_user.id not in SUDO:
+    if from_user.id not in all_admins and from_user.id not in SUDO and from_user != OWNER_ID:
         return await message.reply_text(
             "You need to be a Fed Admin to use this command"
         )

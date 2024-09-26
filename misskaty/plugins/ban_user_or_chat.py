@@ -7,7 +7,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, SUPPORT_CHAT
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID, SUPPORT_CHAT
 
 
 @app.on_message(filters.incoming & filters.private, group=-5)
@@ -62,7 +62,7 @@ async def grp_bd(self: Client, ctx: Message, strings):
         await ctx.stop_propagation()
 
 
-@app.on_message(filters.command("banuser", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("banuser", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def ban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a user id / username")
@@ -99,7 +99,7 @@ async def ban_a_user(bot, message):
         )
 
 
-@app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("unbanuser", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def unban_a_user(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a user id / username")
@@ -127,7 +127,7 @@ async def unban_a_user(bot, message):
         await message.reply(f"Successfully unbanned user {k.mention}!!!")
 
 
-@app.on_message(filters.command("disablechat", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("disablechat", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def disable_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -166,7 +166,7 @@ async def disable_chat(bot, message):
         await message.reply(f"Error - {e}")
 
 
-@app.on_message(filters.command("enablechat", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("enablechat", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def re_enable_chat(_, ctx: Message):
     if len(ctx.command) == 1:
         return await ctx.reply("Give me a chat id")

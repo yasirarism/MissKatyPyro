@@ -9,7 +9,7 @@ from pyrogram.types import CallbackQuery, Message
 
 from misskaty import app
 from misskaty.helper.sqlite_helper import Cache
-from misskaty.vars import SUDO
+from misskaty.vars import SUDO, OWNER_ID
 
 from ...helper.localization import (
     default_language,
@@ -165,7 +165,7 @@ def adminsOnly(permission):
             # For admins and sudo users
             userID = message.from_user.id
             permissions = await member_permissions(chatID, userID)
-            if userID not in SUDO and permission not in permissions:
+            if userID not in SUDO or userID != OWNER_ID and permission not in permissions:
                 return await unauthorised(message, permission, subFunc2)
             return await authorised(func, subFunc2, client, message, *args, **kwargs)
 

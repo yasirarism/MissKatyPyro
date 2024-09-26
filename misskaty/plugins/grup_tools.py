@@ -21,7 +21,7 @@ from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
 from misskaty.helper import fetch, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, SUDO, SUPPORT_CHAT
+from misskaty.vars import COMMAND_HANDLER, SUPPORT_CHAT, OWNER_ID
 from utils import temp
 
 LOGGER = getLogger("MissKaty")
@@ -105,7 +105,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
     if not await is_welcome(member.chat.id):
         return
     user = member.new_chat_member.user if member.new_chat_member else member.from_user
-    if user.id in SUDO:
+    if user.id == OWNER_ID:
         await c.send_message(
             member.chat.id,
             strings("sudo_join_msg"),
@@ -178,7 +178,7 @@ async def welcome_toggle_handler(client, message):
     )
 
 
-@app.on_message(filters.command("leave") & filters.user(SUDO))
+@app.on_message(filters.command("leave") & filters.user(OWNER_ID))
 async def leave_a_chat(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -204,7 +204,7 @@ async def leave_a_chat(bot, message):
 
 
 # Not to be used
-# @app.on_message(filters.command('invite') & filters.user(SUDO))
+# @app.on_message(filters.command('invite') & filters.user(OWNER_ID))
 async def gen_invite(bot, message):
     if len(message.command) == 1:
         return await message.reply("Give me a chat id")
@@ -266,7 +266,7 @@ async def kickme(_, message):
         await message.reply(f"ERROR: {err}")
 
 
-@app.on_message(filters.command("users") & filters.user(SUDO))
+@app.on_message(filters.command("users") & filters.user(OWNER_ID))
 async def list_users(_, message):
     # https://t.me/GetTGLink/4184
     msg = await message.reply("Getting List Of Users")
@@ -286,7 +286,7 @@ async def list_users(_, message):
         await msg.delete_msg()
 
 
-@app.on_message(filters.command("chats") & filters.user(SUDO))
+@app.on_message(filters.command("chats") & filters.user(OWNER_ID))
 async def list_chats(_, message):
     msg = await message.reply("Getting List Of chats")
     chats = await db.get_all_chats()

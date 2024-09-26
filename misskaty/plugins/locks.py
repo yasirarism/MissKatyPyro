@@ -33,7 +33,7 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly, list_admins
 from misskaty.helper.functions import get_urls_from_text
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, SUDO, OWNER_ID
 
 LOGGER = getLogger("MissKaty")
 
@@ -209,7 +209,7 @@ async def url_detector(_, message):
     if not text or not user:
         return
     mods = await list_admins(chat_id)
-    if user.id in mods or user.id in SUDO:
+    if user.id in mods or user.id in SUDO or user.id == OWNER_ID:
         return
 
     if get_urls_from_text(text):

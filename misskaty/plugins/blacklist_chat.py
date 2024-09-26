@@ -37,7 +37,7 @@ from database.blacklist_db import (
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import adminsOnly, list_admins
-from misskaty.vars import SUDO
+from misskaty.vars import SUDO, OWNER_ID
 
 __MODULE__ = "Blacklist"
 __HELP__ = """
@@ -98,7 +98,7 @@ async def blacklist_filters_re(self, message):
     user = message.from_user
     if not user:
         return
-    if user.id in SUDO:
+    if user.id in SUDO or user.id == OWNER_ID:
         return
     list_of_filters = await get_blacklisted_words(chat_id)
     for word in list_of_filters:

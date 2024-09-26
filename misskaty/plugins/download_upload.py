@@ -22,13 +22,13 @@ from misskaty import app
 from misskaty.core.decorator import capture_err, new_task
 from misskaty.helper.http import fetch
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, OWNER_ID
 
 LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "Download/Upload"
 __HELP__ = """
-/download [url] - Download file from URL (Sudo Only)
+/download [url] - Download file from URL (OWNER Only)
 /download [reply_to_TG_File] - Download TG File
 /tgraph_up [reply_to_TG_File] - Download TG File
 /tiktokdl [link] - Download TikTok Video, try use ytdown command if error.
@@ -82,7 +82,7 @@ async def upload(bot, message):
     os.remove(fileku)
 
 
-@app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["download"], COMMAND_HANDLER) & filters.user(OWNER_ID))
 @capture_err
 @new_task
 async def download(client, message):

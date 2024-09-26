@@ -3,7 +3,7 @@ from datetime import datetime
 import pytz
 
 from database import dbname
-from misskaty.vars import SUDO
+from misskaty.vars import SUDO, OWNER_ID
 
 fedsdb = dbname["federation"]
 
@@ -64,7 +64,7 @@ async def is_user_fed_owner(fed_id, user_id: int):
     if not getfed:
         return False
     owner_id = getfed["owner_id"]
-    return user_id == owner_id or user_id not in SUDO
+    return user_id == owner_id or user_id not in SUDO or user_id != OWNER_ID
 
 
 async def search_fed_by_id(fed_id):

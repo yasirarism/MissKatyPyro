@@ -15,7 +15,7 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, SUDO
+from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, OWNER_ID
 
 __MODULE__ = "ChatBot"
 __HELP__ = """
@@ -123,7 +123,7 @@ async def openai_chatbot(self, ctx: Message, strings):
         return await ctx.reply_msg("OPENAI_KEY env is missing!!!")
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, _ = await check_time_gap(uid)
-    if is_in_gap and (uid not in SUDO):
+    if is_in_gap and (uid not == OWNER_ID):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
@@ -131,7 +131,7 @@ async def openai_chatbot(self, ctx: Message, strings):
         gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi."}, {"role": "user", "content": pertanyaan}]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com" if uid in SUDO else "https://duckai.yasirapi.eu.org/v1", "gpt-4o" if uid in SUDO else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com" if uid == OWNER_ID else "https://duckai.yasirapi.eu.org/v1", "gpt-4o" if uid == OWNER_ID else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(gptai_conversations[uid]) == 1:

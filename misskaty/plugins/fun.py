@@ -10,7 +10,7 @@ from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
 from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.localization import use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, SUDO
+from misskaty.vars import COMMAND_HANDLER, SUDO, OWNER_ID
 
 
 async def draw_meme_text(image_path, text):
@@ -197,7 +197,7 @@ async def beriharapan(c, m):
     await reply.reply(f"{sender_name} memberikan {pesan} pada {reply_name}")
 
 
-@app.on_message(filters.command("react", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("react", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 @user.on_message(filters.command("react", "."))
 async def givereact(c, m):
     if len(m.command) == 1:

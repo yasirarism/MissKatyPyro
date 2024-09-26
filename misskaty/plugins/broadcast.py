@@ -7,11 +7,11 @@ from pyrogram import filters
 from pyrogram.types import Message
 
 from misskaty import DATABASE_URI, app
-from misskaty.vars import SUDO
+from misskaty.vars import OWNER_ID
 from utils import broadcast_messages
 
 
-@app.on_message(filters.command("broadcast") & filters.user(SUDO) & filters.reply)
+@app.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply)
 async def broadcast(_, ctx: Message):
     mongo = AsyncClient(DATABASE_URI)
     userdb = mongo["MissKatyBot"]["peers"]

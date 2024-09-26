@@ -60,7 +60,7 @@ from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
 from database.payment_db import autopay_update
-from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
+from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
 
 __MODULE__ = "DevCommand"
 __HELP__ = """
@@ -142,7 +142,7 @@ async def refund_star_payment(client: Client, message: Message):
         await message.reply_msg(e)
 
 
-@app.on_message(filters.command(["logs"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["logs"], COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 @use_chat_lang()
 async def log_file(_, ctx: Message, strings):
     """Send log file"""
@@ -244,7 +244,7 @@ async def donate(self: Client, ctx: Message):
 
 
 @app.on_message(
-    filters.command(["balas"], COMMAND_HANDLER) & filters.user(SUDO) & filters.reply
+    filters.command(["balas"], COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)) & filters.reply
 )
 async def balas(_, ctx: Message) -> "str":
     pesan = ctx.input
@@ -346,7 +346,7 @@ async def server_stats(_, ctx: Message) -> "Message":
 
 
 # Gban
-@app.on_message(filters.command("gban", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("gban", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def ban_globally(self: Client, ctx: Message):
     user_id, reason = await extract_user_and_reason(ctx)
     if not user_id:
@@ -364,7 +364,7 @@ async def ban_globally(self: Client, ctx: Message):
 
     from_user = ctx.from_user
 
-    if user_id in [from_user.id, self.me.id] or user_id in SUDO:
+    if user_id in [from_user.id, self.me.id] or user_id in SUDO or user_id == OWNER_ID:
         return await ctx.reply_text("I can't ban that user.")
     served_chats = await db.get_all_chats()
     m = await ctx.reply_text(
@@ -412,7 +412,7 @@ __**New Global Ban**__
 
 
 # Ungban
-@app.on_message(filters.command("ungban", COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command("ungban", COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 async def unban_globally(_, ctx: Message):
     user_id = await extract_user(ctx)
     if not user_id:
@@ -434,11 +434,11 @@ async def unban_globally(_, ctx: Message):
 
 
 @app.on_message(
-    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(SUDO)
+    filters.command(["shell", "sh", "term"], COMMAND_HANDLER) & filters.user(OWNER_ID)
 )
 @app.on_edited_message(
     filters.command(["shell", "sh", "term"], COMMAND_HANDLER)
-    & filters.user(SUDO)
+    & filters.user(OWNER_ID)
     & ~filters.react
 )
 @user.on_message(filters.command(["shell", "sh", "term"], ".") & filters.me)
@@ -501,14 +501,14 @@ async def shell_cmd(self: Client, ctx: Message, strings):
         filters.command(["ev", "run", "myeval"], COMMAND_HANDLER)
         | filters.regex(r"app.run\(\)$")
     )
-    & filters.user(SUDO)
+    & filters.user(OWNER_ID)
 )
 @app.on_edited_message(
     (
         filters.command(["ev", "run", "meval"], COMMAND_HANDLER)
         | filters.regex(r"app.run\(\)$")
     )
-    & filters.user(SUDO)
+    & filters.user(OWNER_ID)
     & ~filters.react
 )
 @user.on_message(filters.command(["ev", "run", "meval"], ".") & filters.me)
@@ -649,7 +649,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
 
 
 # Update and restart bot
-@app.on_message(filters.command(["restart"], COMMAND_HANDLER) & filters.user(SUDO))
+@app.on_message(filters.command(["restart"], COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 @use_chat_lang()
 async def update_restart(_, ctx: Message, strings):
     msg = await ctx.reply_msg(strings("up_and_rest"))

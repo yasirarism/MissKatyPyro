@@ -28,7 +28,7 @@ from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task
 from misskaty.helper import fetch, isValidURL, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO
+from misskaty.vars import COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID
 
 LOGGER = getLogger("MissKaty")
 YT_REGEX = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})"
@@ -198,7 +198,7 @@ async def ytdl_gendl_callback(self: Client, cq: CallbackQuery, strings):
             return await cq.answer(strings("unauth"), True)
         except QueryIdInvalid:
             return
-    if match[2] in ["mkv", "mp4"] and cq.from_user.id not in SUDO:
+    if match[2] in ["mkv", "mp4"] and cq.from_user.id not in SUDO and and cq.from_user.id == OWNER_ID:
         try:
             return await cq.answer(strings("vip-btn"), True)
         except QueryIdInvalid:
