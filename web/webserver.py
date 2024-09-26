@@ -52,15 +52,15 @@ async def autopay(request: Request):
         return JSONResponse({"status": false, "data": "Data not found on DB"}, 404)
     if status == "Success":
         with suppress(Exception):
-            await bot.send_message(r.get("user_id"), f"{msg}\n\nJika ada pertanyaan silahkan hubungi pemilik bot ini.")
-            await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
-        await bot.send_message(OWNER_ID, msg)
+            await app.send_message(r.get("user_id"), f"{msg}\n\nJika ada pertanyaan silahkan hubungi pemilik bot ini.")
+            await app.delete_messages(r.get("user_id"), r.get("msg_id"))
+        await app.send_message(OWNER_ID, msg)
         await delete_autopay(unique_code)
         return JSONResponse({"status": status, "msg": "Pesanan berhasil dibayar oleh customer."}, 200)
     else:
         with suppress(Exception):
-            await bot.send_message(r.get("user_id"), "QRIS Telah Expired, Silahkan Buat Transaksi Baru.")
-            await bot.delete_messages(r.get("user_id"), r.get("msg_id"))
+            await app.send_message(r.get("user_id"), "QRIS Telah Expired, Silahkan Buat Transaksi Baru.")
+            await app.delete_messages(r.get("user_id"), r.get("msg_id"))
         await delete_autopay(unique_code)
         return JSONResponse({"status": status, "msg": "Pesanan telah dibatalkan/gagal dibayar."}, 403)
 
