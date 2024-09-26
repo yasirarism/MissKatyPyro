@@ -10,6 +10,7 @@ from psutil import boot_time, disk_usage, net_io_counters
 from contextlib import suppress
 from asyncio import to_thread, subprocess, create_subprocess_shell
 from apscheduler.triggers.date import DateTrigger
+from pytz import timezone as zones
 import hashlib
 
 api = FastAPI()
@@ -45,7 +46,7 @@ async def autopay(request: Request):
         raise HTTPException(status_code=403, detail="Invalid Signature")
     unique_code = data['unique_code']
     status = data['status']
-    exp_date = (datetime.now(jkt) + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+    exp_date = (datetime.now(zones("Asia/Jakarta")) + timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
     r = await get_autopay(unique_code)
     msg = f"╭────〔 <b>TRANSAKSI SUKSES🎉</b> 〕──\n│・ <b>Transaksi ID :</b> {unique_code}\n│・ <b>Product :</b> MissKaty Support by YS Dev\n│・ <b>Durasi :</b> 30 hari\n│・ <b>Total Dibayar :</b> {r.get('amount')}\n│・ Langganan Berakhir: {exp_date}\n╰─────────"
     if not r:
