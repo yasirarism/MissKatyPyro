@@ -64,6 +64,11 @@ async def start_bot():
                 OWNER_ID,
                 f"USERBOT AND BOT STARTED with Pyrogram v{__version__}..\nUserBot: {UBOT_NAME}\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
             )
+        else:
+            await app.send_message(
+                OWNER_ID,
+                f"BOT STARTED with Pyrogram v{__version__}..\nBot: {BOT_NAME}\n\nwith Pyrogram v{__version__} (Layer {layer}) started on @{BOT_USERNAME}.\n\n<code>{bot_modules}</code>",
+            )
     except Exception as e:
         LOGGER.error(str(e))
     scheduler.start()
