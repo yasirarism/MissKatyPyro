@@ -15,7 +15,7 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, post_to_telegraph, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, OWNER_ID
+from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, OWNER_ID, SUDO
 
 __MODULE__ = "ChatBot"
 __HELP__ = """
@@ -123,7 +123,7 @@ async def openai_chatbot(self, ctx: Message, strings):
         return await ctx.reply_msg("OPENAI_KEY env is missing!!!")
     uid = ctx.from_user.id if ctx.from_user else ctx.sender_chat.id
     is_in_gap, _ = await check_time_gap(uid)
-    if is_in_gap and (uid not == OWNER_ID):
+    if is_in_gap and (uid != OWNER_ID or uid not in SUDO):
         return await ctx.reply_msg(strings("dont_spam"), del_in=5)
     pertanyaan = ctx.input
     msg = await ctx.reply_msg(strings("find_answers_str"), quote=True)
