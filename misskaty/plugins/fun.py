@@ -248,8 +248,6 @@ async def tebak_gambar(client, message):
             if response.text.lower() == correct_answer.lower():
                 await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
                 break
-            else:
-                await response.reply_text("Jawaban salah, coba lagi!")
         except ListenerTimeout:
             await message.reply_text(f"Waktu habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
             break
@@ -270,8 +268,6 @@ async def tebak_lontong(client, message):
             if response.text.lower() == correct_answer.lower():
                 await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
                 break
-            else:
-                await response.reply_text("Jawaban salah, coba lagi!")
         except ListenerTimeout:
             await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>, alasan: <b>{deskripsi}</b>")
             break
@@ -291,8 +287,6 @@ async def tebak_kata(client, message):
             if response.text.lower() == correct_answer.lower():
                 await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer}</b>")
                 break
-            else:
-                await response.reply_text("Jawaban salah, coba lagi!")
         except ListenerTimeout:
             await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer}</b>")
             break
@@ -312,8 +306,6 @@ async def tebaktebakan(client, message):
             if response.text.lower() == correct_answer.lower():
                 await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
                 break
-            else:
-                await response.reply_text("Jawaban salah, coba lagi!")
         except ListenerTimeout:
             await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
             break
