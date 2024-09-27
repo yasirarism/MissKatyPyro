@@ -9,9 +9,19 @@ from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
 
 from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.localization import use_chat_lang
+from misskaty.helper import use_chat_lang, fetch
 from misskaty.vars import COMMAND_HANDLER, SUDO, OWNER_ID
 
+
+__MODULE__ = "Fun"
+__HELP__ = """
+/q [int] - Generate quotly from message
+/memify [text] - Reply to sticker to give text on sticker.
+/react [emoji | list of emoji] - React to any message (Sudo and Owner only)
+/beri [pesan] - Giving false hope to someone hehehe
+/dice - Randomly roll the dice
+/tebakgambar - Play "Tebak Gambar" in any room chat
+"""
 
 async def draw_meme_text(image_path, text):
     img = Image.open(image_path)
@@ -220,7 +230,23 @@ async def givereact(c, m):
     except Exception as err:
         await m.reply(str(err))
 
-
-# @app.on_message_reaction_updated(filters.chat(-1001777794636))
-async def reaction_update(self, ctx):
-    self.log.info(ctx)
+@app.on_message(filters.command("tebakgambar"))
+async def tebak_gambar(client, message):
+    getdata = await fetch.get("https://yasirapi.eu.org/tebakgambar")
+    if getdata.status_code != 200:
+        return await message.reply_msg("Gagak Mendapatkan data tebak gambar.")
+    result = getdata.json()
+    image_url = result['data']['result']['image']
+    correct_answer = result['data']['result']['answer']
+    await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 30 detik untuk menjawab.")
+    while True:
+        try:
+            response = await client.listen(message.chat.id, filters=filters.text, timeout=30)
+            if response.text.lower() == correct_answer.lower():
+                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
+                break
+            else:
+                await response.reply_text("Jawaban salah, coba lagi!")
+        except TimeoutError:
+            await message.reply_text(f"Waktu habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
+            break

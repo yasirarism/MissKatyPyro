@@ -10,12 +10,6 @@ from pyrogram.types import Message
 from misskaty import app
 from misskaty.helper.http import fetch
 
-__MODULE__ = "Fun"
-__HELP__ = """
-/q [int] - Generate quotly from message
-/memify [text] - Reply to sticker to give text on sticker.
-"""
-
 
 class QuotlyException(Exception):
     pass
