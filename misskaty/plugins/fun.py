@@ -267,11 +267,6 @@ game_modes = {
 # Fungsi utama untuk semua permainan
 async def play_game(client, message, game_mode):
     mode_data = game_modes[game_mode]
-
-    if message.chat.id in game_status and game_status[message.chat.id]['active']:
-        await message.reply_text("Kamu sedang dalam permainan! Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
-        return
-
     # Fetch data dari API
     getdata = await fetch.get(mode_data["url"])
     if getdata.status_code != 200:
@@ -295,12 +290,12 @@ async def play_game(client, message, game_mode):
         try:
             response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
 
-            if response.text.lower() == "/next":
+            if response.text.lower() in ["/next", f"/next@{client.me.username}"]:
                 await message.reply_text("Lanjut ke soal berikutnya!")
                 game_status[message.chat.id]['active'] = False
                 return await play_game(client, message, game_mode)  # Kirim soal berikutnya
 
-            if response.text.lower() == "/stop":
+            if response.text.lower() in ["/stop", f"/stop@{client.me.username}"]:
                 await message.reply_text("Permainan dihentikan.")
                 game_status[message.chat.id]['active'] = False
                 break
