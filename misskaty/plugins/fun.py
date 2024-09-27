@@ -233,79 +233,100 @@ async def givereact(c, m):
     except Exception as err:
         await m.reply(str(err))
 
-@app.on_message(filters.command("tebakgambar"))
-async def tebak_gambar(client, message):
-    getdata = await fetch.get("https://yasirapi.eu.org/tebakgambar")
+game_status = {}
+
+# Dictionary untuk memetakan perintah ke API dan parameter terkait
+game_modes = {
+    "tebakgambar": {
+        "url": "https://yasirapi.eu.org/tebakgambar",
+        "type": "image",
+        "response_key": "img",
+        "answer_key": "jawaban"
+    },
+    "tebaklontong": {
+        "url": "https://yasirapi.eu.org/tebaklontong",
+        "type": "text",
+        "response_key": "soal",
+        "answer_key": "jawaban",
+        "description_key": "deskripsi"
+    },
+    "tebakkata": {
+        "url": "https://yasirapi.eu.org/tebakkata",
+        "type": "text",
+        "response_key": "soal",
+        "answer_key": "jawaban"
+    },
+    "tebaktebakan": {
+        "url": "https://yasirapi.eu.org/tebaktebakan",
+        "type": "text",
+        "response_key": "soal",
+        "answer_key": "jawaban"
+    }
+}
+
+# Fungsi utama untuk semua permainan
+async def play_game(client, message, game_mode):
+    mode_data = game_modes[game_mode]
+
+    if message.chat.id in game_status and game_status[message.chat.id]['active']:
+        await message.reply_text("Kamu sedang dalam permainan! Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
+        return
+
+    # Fetch data dari API
+    getdata = await fetch.get(mode_data["url"])
     if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak gambar.")
+        return await message.reply_text(f"Gagal mendapatkan data dari {game_mode}.")
+
     result = getdata.json()
-    image_url = result['img']
-    correct_answer = result['jawaban']
-    await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 45 detik untuk menjawab.")
+    correct_answer = result[mode_data["answer_key"]]
+
+    game_status[message.chat.id] = {'correct_answer': correct_answer, 'active': True}
+
+    # Kirim soal atau gambar berdasarkan mode
+    if mode_data["type"] == "image":
+        image_url = result[mode_data["response_key"]]
+        await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
+    else:
+        soal = result[mode_data["response_key"]]
+        await message.reply_text(f"{soal}\n\nKamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
+
+    # Handle jawaban
     while True:
         try:
             response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
-            if response.text.lower() == correct_answer.lower():
-                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
+
+            if response.text.lower() == "/next":
+                await message.reply_text("Lanjut ke soal berikutnya!")
+                game_status[message.chat.id]['active'] = False
+                return await play_game(client, message, game_mode)  # Kirim soal berikutnya
+
+            if response.text.lower() == "/stop":
+                await message.reply_text("Permainan dihentikan.")
+                game_status[message.chat.id]['active'] = False
                 break
+
+            if response.text.lower() == correct_answer.lower():
+                reply_message = f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>"
+
+                # Jika ada deskripsi tambahan untuk tebak lontong
+                if "description_key" in mode_data and mode_data["description_key"] in result:
+                    deskripsi = result[mode_data["description_key"]]
+                    reply_message += f"\nAlasan: {deskripsi}"
+
+                await response.reply_text(reply_message)
+                game_status[message.chat.id]['active'] = False
+                break        
         except ListenerTimeout:
-            await message.reply_text(f"Waktu habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
+            reply_message = f"Waktu habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>"
+            # Tambahkan deskripsi jika ada (untuk tebak lontong)
+            if "description_key" in mode_data and mode_data["description_key"] in result:
+                deskripsi = result[mode_data["description_key"]]
+                reply_message += f"\nAlasan: {deskripsi}"
+            await message.reply_text(reply_message)
+            game_status[message.chat.id]['active'] = False
             break
 
-@app.on_message(filters.command("tebaklontong"))
-async def tebak_lontong(client, message):
-    getdata = await fetch.get("https://yasirapi.eu.org/tebaklontong")
-    if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
-    result = getdata.json()
-    soal = result['soal']
-    correct_answer = result['jawaban']
-    deskripsi = result['deskripsi']
-    await message.reply_msg(f"{soal}? Kamu punya 45 detik untuk menjawab.")
-    while True:
-        try:
-            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
-            if response.text.lower() == correct_answer.lower():
-                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
-                break
-        except ListenerTimeout:
-            await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>, alasan: <b>{deskripsi}</b>")
-            break
-
-@app.on_message(filters.command("tebakkata"))
-async def tebak_kata(client, message):
-    getdata = await fetch.get("https://yasirapi.eu.org/tebakkata")
-    if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak kata.")
-    result = getdata.json()
-    soal = result['soal']
-    correct_answer = result['jawaban']
-    await message.reply_msg(f"{soal}, kira-kira apa hayoo?\n\nKamu punya 45 detik untuk menjawab.")
-    while True:
-        try:
-            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
-            if response.text.lower() == correct_answer.lower():
-                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer}</b>")
-                break
-        except ListenerTimeout:
-            await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer}</b>")
-            break
-
-@app.on_message(filters.command("tebaktebakan"))
-async def tebaktebakan(client, message):
-    getdata = await fetch.get("https://yasirapi.eu.org/tebaktebakan")
-    if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak tebakan.")
-    result = getdata.json()
-    soal = result['soal']
-    correct_answer = result['jawaban']
-    await message.reply_msg(f"{soal}\n\nKamu punya 45 detik untuk menjawab.")
-    while True:
-        try:
-            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
-            if response.text.lower() == correct_answer.lower():
-                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
-                break
-        except ListenerTimeout:
-            await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
-            break
+# Handler untuk semua perintah permainan
+@app.on_message(filters.command(["tebakgambar", "tebaklontong", "tebakkata", "tebaktebakan"]))
+async def handle_game_command(client, message):
+    await play_game(client, message, message.command[0])
