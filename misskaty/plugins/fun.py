@@ -5,7 +5,7 @@ from os import remove as hapus
 import regex
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import filters
-from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid
+from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid, ListenerTimeout
 
 from misskaty import app, user
 from misskaty.core.decorator.errors import capture_err
@@ -247,6 +247,6 @@ async def tebak_gambar(client, message):
                 break
             else:
                 await response.reply_text("Jawaban salah, coba lagi!")
-        except TimeoutError:
+        except ListenerTimeout:
             await message.reply_text(f"Waktu habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
             break
