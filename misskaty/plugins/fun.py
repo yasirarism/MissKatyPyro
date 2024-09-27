@@ -280,22 +280,22 @@ async def play_game(client, message, game_mode):
     # Kirim soal atau gambar berdasarkan mode
     if mode_data["type"] == "image":
         image_url = result[mode_data["response_key"]]
-        await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
+        await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stopgame untuk berhenti.")
     else:
         soal = result[mode_data["response_key"]]
-        await message.reply_text(f"{soal}\n\nKamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stop untuk berhenti.")
+        await message.reply_text(f"{soal}\n\nKamu punya 45 detik untuk menjawab. Kirim /next untuk lanjut ke soal berikutnya atau /stopgame untuk berhenti.")
 
     # Handle jawaban
     while True:
         try:
             response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
 
-            if response.text.lower() in ["/next", f"/next@{client.me.username}"]:
+            if response.text.lower() in ["/next", f"/next@{client.me.username.lower()}"]:
                 await message.reply_text("Lanjut ke soal berikutnya!")
                 game_status[message.chat.id]['active'] = False
                 return await play_game(client, message, game_mode)  # Kirim soal berikutnya
 
-            if response.text.lower() in ["/stop", f"/stop@{client.me.username}"]:
+            if response.text.lower() in ["/stopgame", f"/stopgame@{client.me.username.lower()}"]:
                 await message.reply_text("Permainan dihentikan.")
                 game_status[message.chat.id]['active'] = False
                 break
