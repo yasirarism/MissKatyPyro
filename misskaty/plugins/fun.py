@@ -241,7 +241,7 @@ async def tebak_gambar(client, message):
     await message.reply_photo(photo=image_url, caption="Tebak gambar ini! Kamu punya 30 detik untuk menjawab.")
     while True:
         try:
-            response = await client.listen(message.chat.id, filters=filters.text, timeout=30)
+            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=30)
             if response.text.lower() == correct_answer.lower():
                 await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
                 break
