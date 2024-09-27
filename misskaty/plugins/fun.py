@@ -22,6 +22,8 @@ __HELP__ = """
 /dice - Randomly roll the dice
 /tebakgambar - Play "Tebak Gambar" in any room chat
 /tebaklontong - Play "Tebak Lontong" in any room chat
+/tebakkata - Play "Tebak Kata" in any room chat
+/tebaktebakan - Play "Tebak Tebakan" in any room chat
 """
 
 async def draw_meme_text(image_path, text):
@@ -258,7 +260,7 @@ async def tebak_lontong(client, message):
     if getdata.status_code != 200:
         return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
     result = getdata.json()
-    image_url = result['soal']
+    soal = result['soal']
     correct_answer = result['jawaban']
     deskripsi = result['deskripsi']
     await message.reply_msg(f"{soal}? Kamu punya 45 detik untuk menjawab.")
@@ -272,4 +274,46 @@ async def tebak_lontong(client, message):
                 await response.reply_text("Jawaban salah, coba lagi!")
         except ListenerTimeout:
             await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>, alasan: <b>{deskripsi}</b>")
+            break
+
+@app.on_message(filters.command("tebakkata"))
+async def tebak_kata(client, message):
+    getdata = await fetch.get("https://yasirapi.eu.org/tebakkata")
+    if getdata.status_code != 200:
+        return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
+    result = getdata.json()
+    soal = result['soal']
+    correct_answer = result['jawaban']
+    await message.reply_msg(f"{soal}, kira-kira apa hayoo?\n\nKamu punya 45 detik untuk menjawab.")
+    while True:
+        try:
+            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
+            if response.text.lower() == correct_answer.lower():
+                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer}</b>")
+                break
+            else:
+                await response.reply_text("Jawaban salah, coba lagi!")
+        except ListenerTimeout:
+            await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer}</b>")
+            break
+
+@app.on_message(filters.command("tebaktebakan"))
+async def tebaktebakan(client, message):
+    getdata = await fetch.get("https://yasirapi.eu.org/tebaktebakan")
+    if getdata.status_code != 200:
+        return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
+    result = getdata.json()
+    soal = result['soal']
+    correct_answer = result['jawaban']
+    await message.reply_msg(f"{soal}\n\nKamu punya 45 detik untuk menjawab.")
+    while True:
+        try:
+            response = await client.listen(chat_id=message.chat.id, filters=filters.text, timeout=45)
+            if response.text.lower() == correct_answer.lower():
+                await response.reply_text(f"Selamat! Jawaban kamu benar: <b>{correct_answer.upper()}</b>")
+                break
+            else:
+                await response.reply_text("Jawaban salah, coba lagi!")
+        except ListenerTimeout:
+            await message.reply_text(f"Yahh, waktunya habis! Jawaban yang benar adalah: <b>{correct_answer.upper()}</b>")
             break
