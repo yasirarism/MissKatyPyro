@@ -38,7 +38,7 @@ async def autopay(request: Request):
     from misskaty.vars import PAYDISINI_KEY, OWNER_ID
     data = await request.form()
     client_ip = request.client.host
-    if PAYDISINI_KEY != data["key"] and client_ip != "84.247.150.90":
+    if PAYDISINI_KEY != data["key"] and client_ip != "194.233.92.170":
         raise HTTPException(status_code=403, detail="Access forbidden")
     signature_data = f"{PAYDISINI_KEY}{data['unique_code']}CallbackStatus"
     gen_signature = hashlib.md5(signature_data.encode()).hexdigest()
