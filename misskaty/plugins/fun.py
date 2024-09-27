@@ -280,7 +280,7 @@ async def tebak_lontong(client, message):
 async def tebak_kata(client, message):
     getdata = await fetch.get("https://yasirapi.eu.org/tebakkata")
     if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
+        return await message.reply_msg("Gagal Mendapatkan data tebak kata.")
     result = getdata.json()
     soal = result['soal']
     correct_answer = result['jawaban']
@@ -301,7 +301,7 @@ async def tebak_kata(client, message):
 async def tebaktebakan(client, message):
     getdata = await fetch.get("https://yasirapi.eu.org/tebaktebakan")
     if getdata.status_code != 200:
-        return await message.reply_msg("Gagal Mendapatkan data tebak lontong.")
+        return await message.reply_msg("Gagal Mendapatkan data tebak tebakan.")
     result = getdata.json()
     soal = result['soal']
     correct_answer = result['jawaban']
