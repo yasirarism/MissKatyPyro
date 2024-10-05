@@ -263,9 +263,11 @@ async def inline_menu(self, inline_query: InlineQuery):
         for result in soup.select(".tF2Cxc"):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
-            try:
-                snippet = result.find(class_="kb0PBd cvP2Ce A9Y9g").get_text()
-            except:
+            if snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b"):
+                snippet = snippet.get_text()
+            elif snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb"):
+                snippet = snippet.get_text()
+            else:
                 snippet = "-"
             message_text = f"<a href='{link}'>{html.escape(title)}</a>\n"
             message_text += f"Deskription: {html.escape(snippet)}\n\nGoogleSearch by @{self.me.username}"
