@@ -11,7 +11,7 @@ chevron
 cv-3
 gTTS
 regex
-apscheduler==3.10.4
+apscheduler
 pytz
 pykeyboard
 pySmartDL
@@ -19,8 +19,8 @@ psutil
 python-dateutil
 telegraph
 hachoir
-Pillow==10.4.0
-PrivateBinAPI
+Pillow
+git+https://github.com/yasirarism/privatebin-api
 httpx[http2]
 git+https://github.com/yasirarism/vcsi
 git+https://github.com/yasirarism/iytdl
