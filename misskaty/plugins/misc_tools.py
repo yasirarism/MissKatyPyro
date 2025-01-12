@@ -340,7 +340,7 @@ async def gsearch(self, message):
         for result in soup.select(".tF2Cxc"):
             link = result.select_one(".yuRUbf a")["href"]
             title = result.select_one(".DKV0Md").text
-            if snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b"):
+            if snippet := result.find(class_="VwiC3b yXK7lf p4wth r025kc hJNv6b"):
                 snippet = snippet.get_text()
             elif snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb"):
                 snippet = snippet.get_text()
