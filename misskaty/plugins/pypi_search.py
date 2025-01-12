@@ -50,7 +50,7 @@ async def pypi_s(_, ctx: Message):
             "Please add query after command. Ex: <code>/pypi pyrogram</code>", del_in=6
         )
     pesan = await ctx.reply_msg("⏳ Please wait, getting data from pypi..", quote=True)
-    html = await fetch.get(f"https://pypi.org/pypi/{pkgname}/json")
+    html = await fetch.get(f"https://pypi.org/pypi/{kueri}/json")
     if html.status_code != 200:
         return await pesan.edit_msg("Failed connect fo pypi server")
     res = html.json()
