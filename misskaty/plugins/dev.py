@@ -665,11 +665,8 @@ async def update_restart(_, ctx: Message, strings):
 async def error_handlers(_: "Client", __: "Update", error: "Exception") -> None:
     if isinstance(error, (FloodWait, SlowmodeWait)):
         await asyncio.sleep(error.value)
-    # else:
-    #     if config.DEBUG_MODE:
-    #        LOGGER.error(repr(error))
-    #     else:
-    #        return None
+    else:
+        LOGGER.error(repr(error))
 
 
 @app.on_raw_update(group=-99)
