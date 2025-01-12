@@ -83,7 +83,7 @@ async def pypi_s(_, ctx: Message):
     try:
         await pesan.edit_msg(msg, reply_markup=keyboard)
     except MessageTooLong:
-        url = await post_to_telegraph(False, f"{pkgname}-detail", msg)
+        url = await post_to_telegraph(False, f"{res['info'].get('name')} {res['info'].get('version', None)}-detail", msg)
         await pesan.edit_msg(f"Result is too long:\n{url}", reply_markup=keyboard)
 
 
