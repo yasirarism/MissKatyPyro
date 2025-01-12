@@ -81,7 +81,7 @@ async def pypi_s(_, ctx: Message):
     keyboard = InlineKeyboard()
     keyboard.row(InlineButton("❌ Close", f"close#{ctx.from_user.id}"))
     try:
-        await pesan.edit_msg(pypires, reply_markup=keyboard)
+        await pesan.edit_msg(msg, reply_markup=keyboard)
     except MessageTooLong:
         url = await post_to_telegraph(False, f"{pkgname}-detail", msg)
         await pesan.edit_msg(f"Result is too long:\n{url}", reply_markup=keyboard)
