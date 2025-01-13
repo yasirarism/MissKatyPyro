@@ -661,7 +661,7 @@ async def update_restart(_, ctx: Message, strings):
     os.execvp(sys.executable, [sys.executable, "-m", "misskaty"])
 
 
-@app.on_error(errors=(Exception, FloodWait, RPCError, SlowmodeWait))
+@app.on_error(errors=(FloodWait, RPCError, SlowmodeWait))
 async def error_handlers(_: "Client", __: "Update", error: "Exception") -> None:
     if isinstance(error, (FloodWait, SlowmodeWait)):
         await asyncio.sleep(error.value)
