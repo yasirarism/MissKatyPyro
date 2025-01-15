@@ -620,9 +620,12 @@ async def warn_user(client, message, strings):
     if message.command[0][0] == "d":
         await message.reply_to_message.delete()
     if warns >= 2:
-        await message.chat.ban_member(user_id)
-        await message.reply_text(strings("exceed_warn_msg").format(mention=mention))
-        await remove_warns(chat_id, await int_to_alpha(user_id))
+        try:
+            await message.chat.ban_member(user_id)
+            await message.reply_msg(strings("exceed_warn_msg").format(mention=mention))
+            await remove_warns(chat_id, await int_to_alpha(user_id))
+        except ChatAdminRequired:
+            await message.reply_msg(strings("no_ban_permission"))
     else:
         warn = {"warns": warns + 1}
         msg = strings("warn_msg").format(
@@ -631,7 +634,7 @@ async def warn_user(client, message, strings):
             reas=reason or "No Reason Provided.",
             twarn=warns + 1,
         )
-        await message.reply_text(msg, reply_markup=keyboard)
+        await message.reply_msg(msg, reply_markup=keyboard)
         await add_warn(chat_id, await int_to_alpha(user_id), warn)
 
 
