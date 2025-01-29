@@ -113,6 +113,9 @@ async def gemini_chatbot(_, ctx: Message, strings):
     gemini_conversations[uid].append({"role": "assistant", "content": ai_response})
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
+@app.on_bot_business_message(
+    filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10)
+)
 @use_chat_lang()
 async def openai_chatbot(self, ctx: Message, strings):
     if len(ctx.command) == 1:
@@ -131,7 +134,7 @@ async def openai_chatbot(self, ctx: Message, strings):
         gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi dan gunakan bahasa sesuai yang saya katakan."}, {"role": "user", "content": pertanyaan}]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com" if uid == OWNER_ID else "https://duckai.yasirapi.eu.org/v1", "gpt-4o" if uid == OWNER_ID else "gpt-4o-mini", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-4o-mini", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(gptai_conversations[uid]) == 1:
