@@ -6,6 +6,7 @@ import string
 import time
 from http.cookies import SimpleCookie
 from re import match as re_match
+from googletrans import Translator
 from typing import Union
 from urllib.parse import urlparse
 
@@ -46,6 +47,12 @@ GENRES_EMOJI = {
     "Thriller": random.choice(["🥶", "🔪", "🤯"]),
 }
 
+
+async def gtranslate(text, source="auto", target="id"):
+    async with Translator() as translator:
+         result = await translator.translate(text, source, target)
+         return result
+        
 
 def is_url(url):
     url = re_match(URL_REGEX, url)
