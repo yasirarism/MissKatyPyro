@@ -24,7 +24,7 @@ git+https://github.com/yasirarism/privatebin-api
 httpx[http2]
 git+https://github.com/yasirarism/vcsi
 git+https://github.com/yasirarism/iytdl
-deep-translator
+googletrans
 telethon
 pyrate_limiter
 cachetools
