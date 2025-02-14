@@ -50,7 +50,7 @@ GENRES_EMOJI = {
 
 async def gtranslate(text, source="auto", target="id"):
     async with Translator() as translator:
-         result = await translator.translate(text, source, target)
+         result = await translator.translate(text, src=source, dest=target)
          return result
         
 
