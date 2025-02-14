@@ -20,7 +20,6 @@ from urllib.parse import quote
 import aiohttp
 import httpx
 from bs4 import BeautifulSoup
-from deep_translator import GoogleTranslator
 from gtts import gTTS
 from PIL import Image
 from pyrogram import Client, filters
@@ -39,8 +38,7 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper.http import fetch
-from misskaty.helper.tools import gen_trans_image, rentry
+from misskaty.helper import fetch, gtranslate, gen_trans_image, rentry
 from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
 
@@ -385,10 +383,10 @@ async def translate(_, message):
         text = message.text.split(None, 2)[2]
     msg = await message.reply_msg("Menerjemahkan...")
     try:
-        my_translator = GoogleTranslator(source="auto", target=target_lang)
-        result = my_translator.translate(text=text)
+        my_translator = await gtranslate(text, source="auto", target=target_lang)
+        result = my_translator.text
         await msg.edit_msg(
-            f"Translation using source = {my_translator.source} and target = {my_translator.target}\n\n-> {result}"
+            f"Translation using source = {my_translator.src} and target = {my_translator.dest}\n\n-> {result}"
         )
     except MessageTooLong:
         url = await rentry(result)
