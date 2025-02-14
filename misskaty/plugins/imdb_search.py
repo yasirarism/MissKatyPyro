@@ -48,7 +48,7 @@ async def libretranslate(text, source="auto", target="id"):
         "format": "text",
         "alternatives": 3
     }
-    response = await fetch.post(url, json=payload)
+    response = await fetch.post("https://translate.yasirweb.eu.org/translate", json=payload)
     return response.json()["translatedText"]
 
 # IMDB Choose Language
