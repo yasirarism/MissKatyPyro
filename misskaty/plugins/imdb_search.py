@@ -40,6 +40,16 @@ from utils import demoji
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 
+async def libretranslate(text, source="auto", target="id"):
+    payload = {
+        "q": text,
+        "source": source,
+        "target": target,
+        "format": "text",
+        "alternatives": 3
+    }
+    response = await fetch.post(url, json=payload)
+    return response.json()["translatedText"]
 
 # IMDB Choose Language
 @app.on_cmd("imdb")
@@ -420,7 +430,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__content-container")
                     .text
                 )
-                res_str += f"<b>Durasi:</b> <code>{GoogleTranslator('auto', 'id').translate(durasi)}</code>\n"
+                res_str += f"<b>Durasi:</b> <code>{await libretranslate(durasi, "auto", "id")}</code>\n"
             if kategori := r_json.get("contentRating"):
                 res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
             if rating := r_json.get("aggregateRating"):
@@ -480,7 +490,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 )
                 res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
             if deskripsi := r_json.get("description"):
-                summary = GoogleTranslator("auto", "id").translate(deskripsi)
+                summary = await libretranslate(deskripsi, "auto", "id")
                 res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
             if keywd := r_json.get("keywords"):
                 key_ = "".join(
@@ -496,7 +506,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__list-content-item")
                     .text
                 )
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{GoogleTranslator('auto', 'id').translate(awards)}</code></blockquote>\n"
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{await libretranslate(awards, "auto", "id")}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
