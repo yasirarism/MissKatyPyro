@@ -1732,7 +1732,7 @@ async def dutamovie_ddl(_, callback_query, strings):
             download_links = {link['title']: link['href'] for link in links}
             res = f"<b>Judul</b>: {title}\n\n<b>Link Download:</b>\n"
             for label, link in download_links.items():
-                res += f"{label}: {link}"
+                res += f"{label}: {link}\n\n"
             await callback_query.message.edit_msg(
                 strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
             )
