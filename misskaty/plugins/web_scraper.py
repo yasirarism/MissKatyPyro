@@ -37,6 +37,7 @@ __HELP__ = """
 /samehadaku [query <optional>] - Scrape website data from Samehadaku.
 /nodrakor [query <optional>] - Scrape website data from NoDrakor
 /nunadrama [query <optional>] - Scrape website data from NunaDrama
+/dutamovie [query <optional>] - Scrape website data from DutaMovie
 """
 
 LOGGER = logging.getLogger("MissKaty")
@@ -61,6 +62,7 @@ web = {
     "oplovers": "https://oploverz.red",
     "nodrakor": "https://no-drakor.xyz",
     "nunadrama": "https://tv.nunadrama.store",
+    "dutamovie": "https://yborfilmfestival.com",
 }
 
 
@@ -442,6 +444,61 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
     return nunaResult, PageLen, extractbtn
 
 
+# DutaMovie GetData
+async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
+    if not SCRAP_DICT.get(msg.id):
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                nunafetch = await fetch.get(
+                    f"{web['dutamovie']}/?s={kueri}", follow_redirects=True
+                )
+                nunafetch.raise_for_status()
+            except httpx.HTTPError as exc:
+                await msg.edit_msg(
+                    f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>",
+                    disable_web_page_preview=True,
+                )
+                return None, 0, None
+        text = BeautifulSoup(nunafetch, "lxml")
+        entry = text.find_all(class_="entry-header")
+        if entry[0].text.strip() == "Nothing Found":
+            if not kueri:
+                await msg.edit_msg(strings("no_result"), del_in=5)
+            else:
+                await msg.edit_msg(
+                    strings("no_result_w_query").format(kueri=kueri), del_in=5
+                )
+            return None, 0, None
+        else:
+            data = []
+            for i in entry:
+                genre = i.find(class_="gmr-movie-on")
+                genre = f"{genre.text}" if genre else "N/A"
+                judul = i.find(class_="entry-title").find("a").text
+                link = i.find(class_="entry-title").find("a").get("href")
+                data.append({"judul": judul, "link": link, "genre": genre})
+            SCRAP_DICT.add(msg.id, [split_arr(data, 6), kueri], timeout=1800)
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
+
+    dutaResult = (
+        strings("header_with_query").format(web="DutaMovie", kueri=kueri)
+        if kueri
+        else strings("header_no_query").format(web="DutaMovie", cmd="dutamovie")
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        dutaResult += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>Genre:</b> <code>{i['genre']}</code>\n\n"
+        if not re.search(r"Series", i["genre"]):
+            extractbtn.append(
+                InlineButton(
+                    index * 6 + c, f"dutaextract#{CurrentPage}#{c}#{user}#{msg.id}"
+                )
+            )
+    dutaResult += strings("unsupport_dl_btn")
+    return dutaResult, PageLen, extractbtn
+
+
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
@@ -818,6 +875,34 @@ async def nunadrama_s(self, message, strings):
     )
 
 
+# DutaMovie CMD
+@app.on_cmd("dutamovie", no_channel=True)
+@use_chat_lang()
+async def dutamovie_s(self, message, strings):
+    kueri = " ".join(message.command[1:])
+    if not kueri:
+        kueri = ""
+    pesan = await message.reply_msg(strings("get_data"), quote=True)
+    CurrentPage = 1
+    dutares, PageLen, btn = await getDataDutaMovie(
+        pesan, kueri, CurrentPage, message.from_user.id, strings
+    )
+    if not dutares:
+        return
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_nuna#{number}" + f"#{pesan.id}#{message.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
+    keyboard.row(*btn)
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
+    await pesan.edit_msg(
+        dutares, disable_web_page_preview=True, reply_markup=keyboard
+    )
+
+
 # Savefilm21 CMD
 @app.on_cmd("savefilm21", no_channel=True)
 @use_chat_lang()
@@ -1039,6 +1124,50 @@ async def sf21page_callback(self, callback_query, strings):
     )
     await callback_query.message.edit_msg(
         nunares, disable_web_page_preview=True, reply_markup=keyboard
+    )
+
+
+# DutaMovie Page Callback
+@app.on_cb("page_duta#")
+@use_chat_lang()
+async def sf21page_callback(self, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        kueri = SCRAP_DICT[message_id][1]
+    except (IndexError, ValueError):
+        return
+    except KeyError:
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
+    except QueryIdInvalid:
+        return
+
+    try:
+        dutares, PageLen, btn = await getDataDutaMovie(
+            callback_query.message,
+            kueri,
+            CurrentPage,
+            callback_query.from_user.id,
+            strings,
+        )
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_duta#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
+    keyboard.row(*btn)
+    keyboard.row(
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
+    )
+    await callback_query.message.edit_msg(
+        dutares, disable_web_page_preview=True, reply_markup=keyboard
     )
 
 
@@ -1554,6 +1683,56 @@ async def nunadrama_ddl(_, callback_query, strings):
             res = f"<b>Judul</b>: {title}\n\n<b>Link Download:</b>\n"
             for label, link in download_links.items():
                 res += f"{label}: <a href='{link}'>{link}</a>\n"
+            await callback_query.message.edit_msg(
+                strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
+            )
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit_msg(
+                f"HTTP Exception for {exc.request.url} - <code>{exc}</code>",
+                reply_markup=keyboard,
+            )
+        except Exception as err:
+            await callback_query.message.edit_msg(
+                f"ERROR: {err}", reply_markup=keyboard
+            )
+
+
+# DutaMovie DDL
+@app.on_cb("dutaextract#")
+@use_chat_lang()
+async def dutamovie_ddl(_, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
+    except KeyError:
+        return await callback_query.message.edit_msg(strings("invalid_cb"))
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton(
+            strings("back_btn"),
+            f"page_duta#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+        ),
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
+    )
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(link)
+            html.raise_for_status()
+            soup = BeautifulSoup(html.text, "lxml")
+            download_section = soup.find("div", id="gmr-id-download")
+            title = download_section.find("h3", class_="title-download").text.strip()
+            links = download_section.find_all("a", href=True)
+            download_links = {link['title']: link['href'] for link in links}
+            res = f"<b>Judul</b>: {title}\n\n<b>Link Download:</b>\n"
+            for label, link in download_links.items():
+                print(f"{label}: {link}")
             await callback_query.message.edit_msg(
                 strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
             )
