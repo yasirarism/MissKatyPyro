@@ -392,17 +392,17 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
-                gomovv = await fetch.get(
+                nunafetch = await fetch.get(
                     f"{web['nunadrama']}/?s={kueri}", follow_redirects=True
                 )
-                gomovv.raise_for_status()
+                nunafetch.raise_for_status()
             except httpx.HTTPError as exc:
                 await msg.edit_msg(
                     f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>",
                     disable_web_page_preview=True,
                 )
                 return None, 0, None
-        text = BeautifulSoup(gomovv, "lxml")
+        text = BeautifulSoup(nunafetch, "lxml")
         entry = text.find_all(class_="entry-header")
         if entry[0].text.strip() == "Nothing Found":
             if not kueri:
@@ -425,7 +425,7 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
     PageLen = len(SCRAP_DICT[msg.id][0])
     extractbtn = []
 
-    gomovResult = (
+    nunaResult = (
         strings("header_with_query").format(web="NunaDrama", kueri=kueri)
         if kueri
         else strings("header_no_query").format(web="NunaDrama", cmd="nunadrama")
