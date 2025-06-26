@@ -25,17 +25,11 @@ home_keyboard_pm = InlineKeyboardMarkup(
     [
         [
             InlineKeyboardButton(text="Commands ❓", callback_data="bot_commands"),
-            InlineKeyboardButton(
-                text="Source Code 🛠",
-                url="https://github.com/yasirarism/MissKatyPyro",
-            ),
-        ],
-        [
-            InlineKeyboardButton(
+             InlineKeyboardButton(
                 text="System Stats 🖥",
                 callback_data="stats_callback",
             ),
-            InlineKeyboardButton(text="Dev 👨", url="https://t.me/YasirArisM"),
+            InlineKeyboardButton(text="Dev 👨", url="https://t.me/Offline11_bot"),
         ],
         [
             InlineKeyboardButton(
@@ -52,12 +46,6 @@ keyboard = InlineKeyboardMarkup(
     [
         [
             InlineKeyboardButton(text="Help ❓", url=f"t.me/{BOT_USERNAME}?start=help"),
-            InlineKeyboardButton(
-                text="Source Code �",
-                url="https://github.com/yasirarism/MissKatyPyro",
-            ),
-        ],
-        [
             InlineKeyboardButton(
                 text="System Stats 💻",
                 callback_data="stats_callback",
@@ -132,7 +120,7 @@ async def start(self, ctx: Message, strings):
     else:
         await self.send_photo(
             ctx.chat.id,
-            photo="https://img.yasirweb.eu.org/file/90e9a448bc2f8b055b762.jpg",
+            photo="https://graph.org/file/020097a843c54483a5eb3-96ce20683c8ddb7869.jpg",
             caption=home_text_pm,
             reply_markup=home_keyboard_pm,
             reply_to_message_id=ctx.id,
