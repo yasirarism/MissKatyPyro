@@ -1,0 +1,13 @@
+{
+    "no_channel": "এই ফিচারটি চ্যানেলের জন্য সমর্থিত নয়।",
+    "on_afk_msg_no_r": "**{usr}** [<code>{id}</code>] অনলাইনে ফিরে এসেছে এবং {tm} সময়ের জন্য অনুপস্থিত ছিল\n\n",
+    "on_afk_msg_with_r": "**{usr}** [<code>{id}</code>] অনলাইনে ফিরে এসেছে এবং {tm} সময়ের জন্য অনুপস্থিত ছিল\n\n**কারণ:** `{reas}`\n\n",
+    "is_afk_msg_no_r": "**{usr}** [<code>{id}</code>] {tm} সময় আগে থেকে AFK আছে।\n\n",
+    "is_afk_msg_with_r": "**{usr}** [<code>{id}</code>] {tm} সময় আগে থেকে AFK আছে।\n\n**কারণ:** {reas}\n\n",
+    "is_online": "**{usr}** [<code>{id}</code>] অনলাইনে ফিরে এসেছে",
+    "now_afk": "{usr} [<code>{id}</code>] এখন AFK!",
+    "afkdel_help": "**ব্যবহার:**\n/{cmd} [ENABLE|DISABLE] স্বয়ংক্রিয় বার্তা মুছে ফেলা সক্ষম বা অক্ষম করতে।",
+    "afkdel_disable": "AFK বার্তার স্বয়ংক্রিয় মুছে ফেলা অক্ষম করা হয়েছে।",
+    "afkdel_enable": "এই চ্যাটে AFK বার্তার স্বয়ংক্রিয় মুছে ফেলা সক্ষম করা হয়েছে।",
+    "is_afk": "{usr} [<code>{id}</code>] AFK আছে!"
+}
