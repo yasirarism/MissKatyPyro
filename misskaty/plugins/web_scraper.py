@@ -122,9 +122,9 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         with contextlib.redirect_stdout(sys.stderr):
             try:
                 if kueri:
-                    lk21json = await fetch.get(f"{web['yasirapi_v2']}/lk21?q={kueri}")
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
                 else:
-                    lk21json = await fetch.get(f"{web['yasirapi_v2']}/lk21")
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
                 lk21json.raise_for_status()
             except httpx.HTTPError as exc:
                 await msg.edit_msg(
@@ -2293,5 +2293,6 @@ async def muviku_scrap(_, message, strings):
             )
         except Exception as e:
             await message.reply(f"ERROR: {str(e)}")
+
 
 
