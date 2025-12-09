@@ -51,12 +51,12 @@ web = {
     "yasirapi": "https://yasirapi.eu.org",
     "yasirapi_v2": "https://v2.yasirapi.eu.org",
     "pahe": "pahe.ink",
-    "savefilm21": "https://new11.savefilm21info.com",
-    "melongmovie": "https://tv11.melongmovies.com",
+    "savefilm21": "https://new13.savefilm21info.com",
+    "melongmovie": "https://tv12.melongmovies.com",
     "terbit21": "https://terbit21official.site",
     "lk21": "https://tv6.lk21official.cc",
     "gomov": "https://klikxxi.com",
-    "movieku": "https://movieku.ink",
+    "movieku": "https://movieku.fit",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
     "samehadaku": "https://samehadaku.help",
@@ -64,7 +64,7 @@ web = {
     "nodrakor": "https://no-drakor.xyz",
     "nunadrama": "https://tvnunadrama.store",
     "dutamovie": "https://yborfilmfestival.com",
-    "pusatfilm": "https://drama.pusatmovie21.work"
+    "pusatfilm": "http://217.76.53.139"
 }
 
 
@@ -2293,6 +2293,7 @@ async def muviku_scrap(_, message, strings):
             )
         except Exception as e:
             await message.reply(f"ERROR: {str(e)}")
+
 
 
 
