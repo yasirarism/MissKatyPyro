@@ -62,7 +62,7 @@ web = {
     "samehadaku": "https://samehadaku.help",
     "oplovers": "https://oploverz.red",
     "nodrakor": "https://no-drakor.xyz",
-    "nunadrama": "https://tvnunadrama.store",
+    "nunadrama": "https://s1.nunadrama.live",
     "dutamovie": "https://yborfilmfestival.com",
     "pusatfilm": "http://217.76.53.139"
 }
@@ -2293,6 +2293,7 @@ async def muviku_scrap(_, message, strings):
             )
         except Exception as e:
             await message.reply(f"ERROR: {str(e)}")
+
 
 
 
