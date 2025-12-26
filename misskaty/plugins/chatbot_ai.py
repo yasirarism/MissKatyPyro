@@ -46,7 +46,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     disable_web_page_preview=True,
                 )
             else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n<b>Powered by:</b> <code>Gemini 1.5 Flash</code>")
+                await bmsg.edit_msg(f"{html.escape(answer)}\n<b>Powered by:</b> <code>Gemini 3 Flash</code>")
         else:
             async for chunk in response:
                 if not chunk.choices or not chunk.choices[0].delta.content:
@@ -64,7 +64,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     disable_web_page_preview=True,
                 )
             else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 4o</code>")
+                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 5</code>")
     except APIConnectionError as e:
         await bmsg.edit_msg(f"The server could not be reached because {e.__cause__}")
         return None
@@ -104,7 +104,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
         gemini_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi dan gunakan bahasa sesuai yang saya katakan."}, {"role": "user", "content": ctx.input}]
     else:
         gemini_conversations[uid].append({"role": "user", "content": ctx.input})
-    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://gemini.yasirapi.eu.org/v1", "gemini-1.5-flash", gemini_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://gemini.yasirapi.eu.org/v1", "gemini-3-flash-preview", gemini_conversations[uid], msg, strings)
     if not ai_response:
         gemini_conversations[uid].pop()
         if len(gemini_conversations[uid]) == 1:
@@ -134,10 +134,11 @@ async def openai_chatbot(self, ctx: Message, strings):
         gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi dan gunakan bahasa sesuai yang saya katakan."}, {"role": "user", "content": pertanyaan}]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-4o-mini", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-5", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(gptai_conversations[uid]) == 1:
             gptai_conversations.pop(uid)
         return
     gptai_conversations[uid].append({"role": "assistant", "content": ai_response})
+
