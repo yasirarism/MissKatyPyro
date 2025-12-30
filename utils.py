@@ -69,17 +69,17 @@ def demoji(teks):
 
 async def broadcast_messages(user_id, message):
     try:
-        await message.copy(chat_id=user_id)
+        await message.forward(chat_id=user_id)
         return True, "Succes"
     except FloodWait as e:
         await asyncio.sleep(e.value)
         return await broadcast_messages(user_id, message)
     except InputUserDeactivated:
         await db.delete_user(int(user_id))
-        LOGGER.info(f"{user_id}-Removed from Database, since deleted account.")
+        LOGGER.info(f"{user_id} - Removed from Database, since deleted account.")
         return False, "Deleted"
     except UserIsBlocked:
-        LOGGER.info(f"{user_id} -Blocked the bot.")
+        LOGGER.info(f"{user_id} - Blocked the bot.")
         return False, "Blocked"
     except PeerIdInvalid:
         await db.delete_user(int(user_id))
