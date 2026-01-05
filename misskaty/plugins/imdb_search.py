@@ -18,9 +18,11 @@ from pyrogram.errors import (
     ListenerTimeout,
     MediaCaptionTooLong,
     MediaEmpty,
+    MessageEntityInvalid,
     MessageIdInvalid,
     MessageNotModified,
     PhotoInvalidDimensions,
+    RPCError,
     WebpageCurlFailed,
     WebpageMediaEmpty,
 )
@@ -94,21 +96,24 @@ def _apply_template(template: str, data: dict) -> str:
 
 
 def _build_default_caption(language: str, data: dict) -> str:
+    def _line(label, value):
+        return f"{label}: {value}" if value else f"{label}: N/A"
+
     if language == "id":
         lines = [
             f"📹 Judul: {data['title']} [{data['year']}] ({data['type']})",
-            f"Durasi: {data['runtime']}",
-            f"Kategori: {data['content_rating']}",
-            f"Peringkat: {data['rating']}⭐️ dari {data['votes']} pengguna",
-            f"Rilis: {data['release']}",
-            f"Genre: {data['genres']}",
-            f"Negara: {data['countries']}",
-            f"Bahasa: {data['languages']}",
+            _line("Durasi", data["runtime"]),
+            _line("Kategori", data["content_rating"]),
+            _line("Peringkat", f"{data['rating']}⭐️ dari {data['votes']} pengguna"),
+            _line("Rilis", data["release"]),
+            _line("Genre", data["genres"]),
+            _line("Negara", data["countries"]),
+            _line("Bahasa", data["languages"]),
             "",
             "🙎 Info Cast:",
-            f"Sutradara: {data['directors']}",
-            f"Penulis: {data['writers']}",
-            f"Pemeran: {data['actors']}",
+            _line("Sutradara", data["directors"]),
+            _line("Penulis", data["writers"]),
+            _line("Pemeran", data["actors"]),
             "",
             "📜 Plot:",
             data["plot"],
@@ -694,7 +699,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "plot": html.escape(summary or "N/A"),
                 "keywords": html.escape(keywords_block or ""),
                 "awards": html.escape(awards_text or ""),
-                "ott": html.escape(ott or ""),
+                "ott": ott or "",
                 "bot_username": html.escape(self.me.username),
             }
             cast_info_block = "\n<b>🙎 Info Cast:</b>\n"
@@ -810,6 +815,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 if template_text
                 else _build_default_caption("id", default_caption_data)
             )
+            caption_mode = enums.ParseMode.HTML if template_text or "<a" in caption_text else None
             markup = (
                 InlineKeyboardMarkup(
                     [
@@ -831,17 +837,17 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         InputMediaPhoto(
                             thumb,
                             caption=caption_text,
-                            parse_mode=enums.ParseMode.HTML,
+                            parse_mode=caption_mode,
                         ),
                         reply_markup=markup,
                     )
-                except (PhotoInvalidDimensions, WebpageMediaEmpty):
+                except (PhotoInvalidDimensions, WebpageMediaEmpty, MessageEntityInvalid, RPCError):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                     await query.message.edit_media(
                         InputMediaPhoto(
                             poster,
                             caption=caption_text,
-                            parse_mode=enums.ParseMode.HTML,
+                            parse_mode=caption_mode,
                         ),
                         reply_markup=markup,
                     )
@@ -850,9 +856,10 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     MediaCaptionTooLong,
                     WebpageCurlFailed,
                     MessageNotModified,
+                    MessageEntityInvalid,
                 ):
                     await query.message.reply(
-                        caption_text, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                        caption_text, parse_mode=caption_mode, reply_markup=markup
                     )
                 except Exception as err:
                     LOGGER.error(
@@ -1150,6 +1157,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if template_text
                 else _build_default_caption("en", default_caption_data)
             )
+            caption_mode = enums.ParseMode.HTML if template_text or "<a" in caption_text else None
             markup = (
                 InlineKeyboardMarkup(
                     [
@@ -1171,17 +1179,17 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         InputMediaPhoto(
                             thumb,
                             caption=caption_text,
-                            parse_mode=enums.ParseMode.HTML,
+                            parse_mode=caption_mode,
                         ),
                         reply_markup=markup,
                     )
-                except (PhotoInvalidDimensions, WebpageMediaEmpty):
+                except (PhotoInvalidDimensions, WebpageMediaEmpty, MessageEntityInvalid, RPCError):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                     await query.message.edit_media(
                         InputMediaPhoto(
                             poster,
                             caption=caption_text,
-                            parse_mode=enums.ParseMode.HTML,
+                            parse_mode=caption_mode,
                         ),
                         reply_markup=markup,
                     )
@@ -1190,9 +1198,10 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     WebpageCurlFailed,
                     MediaEmpty,
                     MessageNotModified,
+                    MessageEntityInvalid,
                 ):
                     await query.message.reply(
-                        caption_text, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                        caption_text, parse_mode=caption_mode, reply_markup=markup
                     )
                 except Exception as err:
                     LOGGER.error(f"Error while displaying IMDB Data. ERROR: {err}")
