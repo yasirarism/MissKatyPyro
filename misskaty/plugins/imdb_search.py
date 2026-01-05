@@ -3,6 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import contextlib
+import html
 import json
 import logging
 import re
@@ -90,6 +91,63 @@ def _apply_template(template: str, data: dict) -> str:
     for placeholder, value in data.items():
         result = result.replace(placeholder, value)
     return result
+
+
+def _build_default_caption(language: str, data: dict) -> str:
+    if language == "id":
+        lines = [
+            f"📹 Judul: {data['title']} [{data['year']}] ({data['type']})",
+            f"Durasi: {data['runtime']}",
+            f"Kategori: {data['content_rating']}",
+            f"Peringkat: {data['rating']}⭐️ dari {data['votes']} pengguna",
+            f"Rilis: {data['release']}",
+            f"Genre: {data['genres']}",
+            f"Negara: {data['countries']}",
+            f"Bahasa: {data['languages']}",
+            "",
+            "🙎 Info Cast:",
+            f"Sutradara: {data['directors']}",
+            f"Penulis: {data['writers']}",
+            f"Pemeran: {data['actors']}",
+            "",
+            "📜 Plot:",
+            data["plot"],
+        ]
+        if data["keywords"]:
+            lines.extend(["", "🔥 Kata Kunci:", data["keywords"]])
+        if data["awards"]:
+            lines.extend(["🏆 Penghargaan:", data["awards"]])
+        if data["ott"]:
+            lines.extend(["Tersedia di:", data["ott"]])
+        lines.append(f"©️ IMDb by @{data['bot_username']}")
+        return "\n".join(lines)
+    else:
+        lines = [
+            f"📹 Title: {data['title']} [{data['year']}] ({data['type']})",
+            f"Duration: {data['runtime']}",
+            f"Category: {data['content_rating']}",
+            f"Rating: {data['rating']}⭐️ from {data['votes']} users",
+            f"Release: {data['release']}",
+            f"Genre: {data['genres']}",
+            f"Country: {data['countries']}",
+            f"Language: {data['languages']}",
+            "",
+            "🙎 Cast Info:",
+            f"Director: {data['directors']}",
+            f"Writer: {data['writers']}",
+            f"Stars: {data['actors']}",
+            "",
+            "📜 Summary:",
+            data["plot"],
+        ]
+        if data["keywords"]:
+            lines.extend(["", "🔥 Keywords:", data["keywords"]])
+        if data["awards"]:
+            lines.extend(["🏆 Awards:", data["awards"]])
+        if data["ott"]:
+            lines.extend(["Available On:", data["ott"]])
+        lines.append(f"©️ IMDb by @{data['bot_username']}")
+        return "\n".join(lines)
 
 
 # IMDB Choose Language
@@ -618,6 +676,27 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 )[:-2]
             trailer_url = r_json.get("trailer", {}).get("url", "")
             poster = r_json.get("image", "")
+            default_caption_data = {
+                "title": html.escape(title),
+                "year": html.escape(tahun),
+                "type": html.escape(typee),
+                "runtime": html.escape(runtime_display),
+                "content_rating": html.escape(content_rating or "N/A"),
+                "rating": html.escape(rating_value),
+                "votes": html.escape(votes_text),
+                "release": html.escape(rilis or "N/A"),
+                "genres": html.escape(genres_hash or genres_plain or "N/A"),
+                "countries": html.escape(country_hash or country_plain or "N/A"),
+                "languages": html.escape(language_hash or language_plain or "N/A"),
+                "directors": html.escape(director_names or "N/A"),
+                "writers": html.escape(writer_names or "N/A"),
+                "actors": html.escape(actor_names or "N/A"),
+                "plot": html.escape(summary or "N/A"),
+                "keywords": html.escape(keywords_block or ""),
+                "awards": html.escape(awards_text or ""),
+                "ott": html.escape(ott or ""),
+                "bot_username": html.escape(self.me.username),
+            }
             cast_info_block = "\n<b>🙎 Info Cast:</b>\n"
             if director_links:
                 cast_info_block += f"<b>Sutradara:</b> {director_links}\n"
@@ -729,7 +808,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             caption_text = (
                 _apply_template(template_text, template_data)
                 if template_text
-                else res_str
+                else _build_default_caption("id", default_caption_data)
             )
             markup = (
                 InlineKeyboardMarkup(
@@ -937,6 +1016,27 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 )[:-2]
             trailer_url = r_json.get("trailer", {}).get("url", "")
             poster = r_json.get("image", "")
+            default_caption_data = {
+                "title": html.escape(title),
+                "year": html.escape(tahun),
+                "type": html.escape(typee),
+                "runtime": html.escape(runtime_display),
+                "content_rating": html.escape(content_rating or "N/A"),
+                "rating": html.escape(rating_value),
+                "votes": html.escape(votes_text),
+                "release": html.escape(rilis or "N/A"),
+                "genres": html.escape(genres_hash or genres_plain or "N/A"),
+                "countries": html.escape(country_hash or country_plain or "N/A"),
+                "languages": html.escape(language_hash or language_plain or "N/A"),
+                "directors": html.escape(director_names or "N/A"),
+                "writers": html.escape(writer_names or "N/A"),
+                "actors": html.escape(actor_names or "N/A"),
+                "plot": html.escape(summary or "N/A"),
+                "keywords": html.escape(keywords_block or ""),
+                "awards": html.escape(awards_text or ""),
+                "ott": html.escape(ott or ""),
+                "bot_username": html.escape(self.me.username),
+            }
             cast_info_block = "\n<b>🙎 Cast Info:</b>\n"
             if director_links:
                 cast_info_block += f"<b>Director:</b> {director_links}\n"
@@ -1048,7 +1148,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             caption_text = (
                 _apply_template(template_text, template_data)
                 if template_text
-                else res_str
+                else _build_default_caption("en", default_caption_data)
             )
             markup = (
                 InlineKeyboardMarkup(
