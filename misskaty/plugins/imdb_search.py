@@ -18,7 +18,6 @@ from pyrogram.errors import (
     ListenerTimeout,
     MediaCaptionTooLong,
     MediaEmpty,
-    MessageEntityInvalid,
     MessageIdInvalid,
     MessageNotModified,
     PhotoInvalidDimensions,
@@ -841,7 +840,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         ),
                         reply_markup=markup,
                     )
-                except (PhotoInvalidDimensions, WebpageMediaEmpty, MessageEntityInvalid, RPCError):
+                except (PhotoInvalidDimensions, WebpageMediaEmpty, RPCError):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                     await query.message.edit_media(
                         InputMediaPhoto(
@@ -856,7 +855,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     MediaCaptionTooLong,
                     WebpageCurlFailed,
                     MessageNotModified,
-                    MessageEntityInvalid,
+                    RPCError,
                 ):
                     await query.message.reply(
                         caption_text, parse_mode=caption_mode, reply_markup=markup
@@ -1183,7 +1182,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         ),
                         reply_markup=markup,
                     )
-                except (PhotoInvalidDimensions, WebpageMediaEmpty, MessageEntityInvalid, RPCError):
+                except (PhotoInvalidDimensions, WebpageMediaEmpty, RPCError):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
                     await query.message.edit_media(
                         InputMediaPhoto(
@@ -1198,7 +1197,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     WebpageCurlFailed,
                     MediaEmpty,
                     MessageNotModified,
-                    MessageEntityInvalid,
+                    RPCError,
                 ):
                     await query.message.reply(
                         caption_text, parse_mode=caption_mode, reply_markup=markup
