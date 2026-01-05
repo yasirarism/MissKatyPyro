@@ -64,7 +64,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     disable_web_page_preview=True,
                 )
             else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>GPT 5</code>")
+                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>DeepSeek</code>")
     except APIConnectionError as e:
         await bmsg.edit_msg(f"The server could not be reached because {e.__cause__}")
         return None
@@ -134,12 +134,13 @@ async def openai_chatbot(self, ctx: Message, strings):
         gptai_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi dan gunakan bahasa sesuai yang saya katakan."}, {"role": "user", "content": pertanyaan}]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://models.inference.ai.azure.com", "gpt-5-mini", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(True, OPENAI_KEY, "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-0528:free", gptai_conversations[uid], msg, strings)
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(gptai_conversations[uid]) == 1:
             gptai_conversations.pop(uid)
         return
     gptai_conversations[uid].append({"role": "assistant", "content": ai_response})
+
 
 
