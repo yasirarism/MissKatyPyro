@@ -10,6 +10,7 @@ import re
 import sys
 from urllib.parse import quote_plus
 
+import emoji
 import httpx
 from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
@@ -48,15 +49,10 @@ from utils import demoji
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 SUPPORTED_TEMPLATE_TAGS = (
-    "#AKA {aka} #TITLE {title} #YEAR {year} #RATING {rating} #EUSERRATINGS "
-    "#NUMUSERRATINGS #ONLYRATING #VOTES {votes} #MARINTG #DURATION #DURATION_IN_SECONDS "
-    "#DURATION_IN_MINUTES {runtime} #RELEASE_INFO #GENRE {genres} #IMDB_URL {url} "
-    "#IMDB_ID {imdb_id} #IMDB_IV #LANGUAGE #COUNTRY_OF_ORIGIN {languages} {countries} "
-    "#STORY_LINE {plot} #IMDb_TITLE_TYPE {kind} #IMDb_SHORT_DESC #READ_MORE #IMG_HIDDEN_IMG "
-    "#IMG_POSTER {poster} #TRAILER #CAST_INFO_ #DIRECTORS_ #WRITERS_ #ACTORS_ #CAST_INFO {cast} "
-    "#DIRECTORS #WRITERS #ACTORS {director} {writer} {actor} #AWARDS #OTT_UPDATES "
-    "#OTT_UPDATES_more #HIGH_RES_MEDIA_VIEWER #LETTERBOX_RATING #LETTERBOX_USERRATINGS "
-    "{preview:disabled} {preview:large} {preview:small} {preview:top}"
+    "#TITLE {title} #TYPE {type} #DURATION {duration} #CATEGORY {category} "
+    "#RATING {rating} #USER_RATING {user_rating} #RELEASE_DATE {release_date} "
+    "#GENRE {genre} #COUNTRY {country} #LANGUAGE {language} #CAST_INFO {cast_info} "
+    "#SINOPSIS {sinopsis} #KEYWORD {keyword} #AWARDS {awards} #OTT {ott}"
 )
 
 
@@ -87,6 +83,35 @@ def _parse_duration(duration_iso, fallback_text=None):
     return duration_text, str(total_seconds or ""), str(total_minutes or ""), fallback_text or duration_text
 
 
+def _format_country_name(raw_text: str):
+    country_text = emoji.replace_emoji(raw_text or "", replace="").strip()
+    country_text = country_text or raw_text.strip()
+    flag = demoji(country_text) if country_text else ""
+    if flag.startswith(":") and flag.endswith(":"):
+        flag = ""
+    display = f"{flag} {country_text}".strip() if country_text else "N/A"
+    return country_text, display
+
+
+def _build_cast_summary(language: str, directors: str, writers: str, actors: str) -> str:
+    parts = []
+    if language == "id":
+        if directors:
+            parts.append(f"<b>Sutradara:</b> {directors}")
+        if writers:
+            parts.append(f"<b>Penulis:</b> {writers}")
+        if actors:
+            parts.append(f"<b>Pemeran:</b> {actors}")
+    else:
+        if directors:
+            parts.append(f"<b>Director:</b> {directors}")
+        if writers:
+            parts.append(f"<b>Writer:</b> {writers}")
+        if actors:
+            parts.append(f"<b>Stars:</b> {actors}")
+    return "\n".join(parts) or "N/A"
+
+
 def _apply_template(template: str, data: dict) -> str:
     result = template
     for placeholder, value in data.items():
@@ -95,62 +120,57 @@ def _apply_template(template: str, data: dict) -> str:
 
 
 def _build_default_caption(language: str, data: dict) -> str:
-    def _line(label, value):
-        return f"{label}: {value}" if value else f"{label}: N/A"
-
     if language == "id":
         lines = [
-            f"📹 Judul: {data['title']} [{data['year']}] ({data['type']})",
-            _line("Durasi", data["runtime"]),
-            _line("Kategori", data["content_rating"]),
-            _line("Peringkat", f"{data['rating']}⭐️ dari {data['votes']} pengguna"),
-            _line("Rilis", data["release"]),
-            _line("Genre", data["genres"]),
-            _line("Negara", data["countries"]),
-            _line("Bahasa", data["languages"]),
+            f"<b>📹 Judul:</b> {data['title']} [{data['year']}]",
+            f"<b>Tipe:</b> {data['type']}",
+            f"<b>Durasi:</b> {data['runtime']}",
+            f"<b>Kategori:</b> {data['content_rating']}",
+            f"<b>Rating:</b> {data['rating']}⭐️",
+            f"<b>Penilaian Pengguna:</b> {data['votes']}",
+            f"<b>Tanggal Rilis:</b> {data['release']}",
+            f"<b>Genre:</b> {data['genres']}",
+            f"<b>Negara:</b> {data['countries']}",
+            f"<b>Bahasa:</b> {data['languages']}",
             "",
-            "🙎 Info Cast:",
-            _line("Sutradara", data["directors"]),
-            _line("Penulis", data["writers"]),
-            _line("Pemeran", data["actors"]),
+            f"<b>🙎 Info Cast:</b>\n{data['cast_info']}",
             "",
-            "📜 Plot:",
+            "<b>📜 Sinopsis:</b>",
             data["plot"],
         ]
         if data["keywords"]:
-            lines.extend(["", "🔥 Kata Kunci:", data["keywords"]])
+            lines.extend(["", "<b>🔥 Kata Kunci:</b>", data["keywords"]])
         if data["awards"]:
-            lines.extend(["🏆 Penghargaan:", data["awards"]])
+            lines.extend(["<b>🏆 Penghargaan:</b>", data["awards"]])
         if data["ott"]:
-            lines.extend(["Tersedia di:", data["ott"]])
-        lines.append(f"©️ IMDb by @{data['bot_username']}")
+            lines.extend(["<b>Tersedia di:</b>", data["ott"]])
+        lines.append(f"<b>©️ IMDb by</b> @{data['bot_username']}")
         return "\n".join(lines)
     else:
         lines = [
-            f"📹 Title: {data['title']} [{data['year']}] ({data['type']})",
-            f"Duration: {data['runtime']}",
-            f"Category: {data['content_rating']}",
-            f"Rating: {data['rating']}⭐️ from {data['votes']} users",
-            f"Release: {data['release']}",
-            f"Genre: {data['genres']}",
-            f"Country: {data['countries']}",
-            f"Language: {data['languages']}",
+            f"<b>📹 Title:</b> {data['title']} [{data['year']}]",
+            f"<b>Type:</b> {data['type']}",
+            f"<b>Duration:</b> {data['runtime']}",
+            f"<b>Category:</b> {data['content_rating']}",
+            f"<b>Rating:</b> {data['rating']}⭐️",
+            f"<b>User Rating:</b> {data['votes']}",
+            f"<b>Release Date:</b> {data['release']}",
+            f"<b>Genre:</b> {data['genres']}",
+            f"<b>Country:</b> {data['countries']}",
+            f"<b>Language:</b> {data['languages']}",
             "",
-            "🙎 Cast Info:",
-            f"Director: {data['directors']}",
-            f"Writer: {data['writers']}",
-            f"Stars: {data['actors']}",
+            f"<b>🙎 Cast Info:</b>\n{data['cast_info']}",
             "",
-            "📜 Summary:",
+            "<b>📜 Synopsis:</b>",
             data["plot"],
         ]
         if data["keywords"]:
-            lines.extend(["", "🔥 Keywords:", data["keywords"]])
+            lines.extend(["", "<b>🔥 Keywords:</b>", data["keywords"]])
         if data["awards"]:
-            lines.extend(["🏆 Awards:", data["awards"]])
+            lines.extend(["<b>🏆 Awards:</b>", data["awards"]])
         if data["ott"]:
-            lines.extend(["Available On:", data["ott"]])
-        lines.append(f"©️ IMDb by @{data['bot_username']}")
+            lines.extend(["<b>Available On:</b>", data["ott"]])
+        lines.append(f"<b>©️ IMDb by</b> @{data['bot_username']}")
         return "\n".join(lines)
 
 
@@ -201,8 +221,8 @@ async def set_imdb_custom_template(_, message: Message):
         info_text = (
             "you can now set custom template for @IMDbOT posts!\n"
             "Usage:\n"
-            "<code>/set_custom_template &lt;b&gt;#TITLE&lt;/b&gt; | #IMDb_TITLE_TYPE</code>\n"
-            "<code>&lt;i&gt;#DURATION&lt;/i&gt; ⭐️&lt;b&gt;#RATING&lt;/b&gt; | &lt;a href=\"#IMDB_URL\"&gt;IMDb&lt;/a&gt;</code>\n\n"
+            "<code>/set_custom_template &lt;b&gt;#TITLE&lt;/b&gt; | #TYPE</code>\n"
+            "<code>&lt;i&gt;#DURATION&lt;/i&gt; ⭐️&lt;b&gt;#RATING&lt;/b&gt; | #USER_RATING</code>\n\n"
             "Send <code>/set_custom_template reset</code> to remove your custom template.\n\n"
             f"Supported Tags:\n{SUPPORTED_TEMPLATE_TAGS}"
         )
@@ -611,15 +631,23 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             country_plain = "N/A"
             country_hash = ""
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                countries = [
-                    demoji(country.text)
-                    for country in negara[0].findAll(
-                        class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                countries_text = []
+                countries_display = []
+                for country in negara[0].findAll(
+                    class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                ):
+                    clean_country, display_country = _format_country_name(country.text)
+                    if clean_country:
+                        countries_text.append(clean_country)
+                    if display_country:
+                        countries_display.append(display_country)
+                country_plain = ", ".join(countries_display) if countries_display else "N/A"
+                country_hash = (
+                    ", ".join(
+                        f"#{country.replace(' ', '_').replace('-', '_')}" for country in countries_text
                     )
-                ]
-                country_plain = ", ".join(countries)
-                country_hash = ", ".join(
-                    f"#{country.replace(' ', '_').replace('-', '_')}" for country in countries
+                    if countries_text
+                    else ""
                 )
             language_plain = "N/A"
             language_hash = ""
@@ -673,13 +701,23 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 )
                 awards_text = (await gtranslate(awards, "auto", "id")).text
             keywords_block = ""
+            keywords_plain_text = ""
             if keywd := r_json.get("keywords"):
-                keywords_block = "".join(
-                    f"#{i.replace(' ', '_').replace('-', '_')}, "
-                    for i in keywd.split(",")
-                )[:-2]
+                keywords_list = [i.strip() for i in keywd.split(",") if i.strip()]
+                keywords_block = (
+                    "".join(
+                        f"#{i.replace(' ', '_').replace('-', '_')}, "
+                        for i in keywords_list
+                    )[:-2]
+                    if keywords_list
+                    else ""
+                )
+                keywords_plain_text = ", ".join(keywords_list)
             trailer_url = r_json.get("trailer", {}).get("url", "")
             poster = r_json.get("image", "")
+            cast_summary = _build_cast_summary(
+                "id", html.escape(director_names or ""), html.escape(writer_names or ""), html.escape(actor_names or "")
+            )
             default_caption_data = {
                 "title": html.escape(title),
                 "year": html.escape(tahun),
@@ -689,14 +727,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "rating": html.escape(rating_value),
                 "votes": html.escape(votes_text),
                 "release": html.escape(rilis or "N/A"),
-                "genres": html.escape(genres_hash or genres_plain or "N/A"),
-                "countries": html.escape(country_hash or country_plain or "N/A"),
-                "languages": html.escape(language_hash or language_plain or "N/A"),
-                "directors": html.escape(director_names or "N/A"),
-                "writers": html.escape(writer_names or "N/A"),
-                "actors": html.escape(actor_names or "N/A"),
+                "genres": html.escape(genres_plain or "N/A"),
+                "countries": html.escape(country_plain or "N/A"),
+                "languages": html.escape(language_plain or "N/A"),
+                "cast_info": cast_summary,
                 "plot": html.escape(summary or "N/A"),
-                "keywords": html.escape(keywords_block or ""),
+                "keywords": html.escape(keywords_plain_text or ""),
                 "awards": html.escape(awards_text or ""),
                 "ott": ott or "",
                 "bot_username": html.escape(self.me.username),
@@ -708,6 +744,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 cast_info_block += f"<b>Penulis:</b> {writer_links}\n"
             if actor_links:
                 cast_info_block += f"<b>Pemeran:</b> {actor_links}\n"
+            if cast_info_block.strip() == "<b>🙎 Info Cast:</b>":
+                cast_info_block += "N/A\n"
             plot_block = ""
             if summary:
                 plot_block = f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
@@ -748,10 +786,14 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "{aka}": aka,
                 "#TITLE": title,
                 "{title}": title,
+                "#TYPE": typee,
+                "{type}": typee,
                 "#YEAR": tahun,
                 "{year}": tahun,
                 "#RATING": rating_value,
                 "{rating}": rating_value,
+                "#USER_RATING": votes_text,
+                "{user_rating}": votes_text,
                 "#EUSERRATINGS": f"{votes_text} IMDb users",
                 "#NUMUSERRATINGS": votes_text,
                 "#ONLYRATING": rating_value,
@@ -759,27 +801,38 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "{votes}": votes_text,
                 "#MARINTG": content_rating or "N/A",
                 "#DURATION": runtime_display,
+                "{duration}": runtime_display,
                 "#DURATION_IN_SECONDS": duration_seconds,
                 "#DURATION_IN_MINUTES": duration_minutes,
                 "{runtime}": runtime_display,
                 "#RELEASE_INFO": f"<a href='https://www.imdb.com{rilis_url}'>{rilis}</a>"
                 if rilis
                 else "N/A",
+                "#RELEASE_DATE": rilis or "N/A",
+                "{release_date}": rilis or "N/A",
                 "#GENRE": genres_hash or genres_plain,
                 "{genres}": genres_plain,
+                "{genre}": genres_plain,
                 "#IMDB_URL": imdb_url,
                 "{url}": imdb_url,
                 "#IMDB_ID": imdb_id,
                 "{imdb_id}": imdb_id,
                 "#IMDB_IV": f"<a href='{poster}'>&#8205;</a>" if poster else "",
-                "#LANGUAGE": language_hash or language_plain,
-                "#COUNTRY_OF_ORIGIN": country_hash or country_plain,
+                "#LANGUAGE": language_plain,
+                "#COUNTRY_OF_ORIGIN": country_plain,
+                "#LANG": language_plain,
+                "#COUNTRY": country_plain,
                 "{languages}": language_plain,
+                "{language}": language_plain,
                 "{countries}": country_plain,
+                "{country}": country_plain,
                 "#STORY_LINE": summary or "N/A",
                 "{plot}": summary or "N/A",
+                "{sinopsis}": summary or "N/A",
                 "#IMDb_TITLE_TYPE": typee,
                 "{kind}": typee,
+                "#CATEGORY": content_rating or "N/A",
+                "{category}": content_rating or "N/A",
                 "#IMDb_SHORT_DESC": short_desc or summary or "N/A",
                 "#READ_MORE": f"<a href='{imdb_url}'>Read more</a>",
                 "#IMG_HIDDEN_IMG": f"<a href='{poster}'>&#8205;</a>" if poster else "",
@@ -792,6 +845,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "#ACTORS_": f"<b>Pemeran:</b> {actor_links}" if actor_links else "",
                 "#CAST_INFO": cast_info_block.strip(),
                 "{cast}": actor_links or actor_names,
+                "{cast_info}": cast_summary,
                 "#DIRECTORS": director_links or director_names,
                 "{director}": director_links or director_names,
                 "#WRITERS": writer_links or writer_names,
@@ -799,6 +853,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 "#ACTORS": actor_links or actor_names,
                 "{actor}": actor_links or actor_names,
                 "#AWARDS": awards_text or "N/A",
+                "{awards}": awards_text or "N/A",
+                "#KEYWORD": keywords_plain_text or "N/A",
+                "{keyword}": keywords_plain_text or "N/A",
+                "{keywords}": keywords_block or "",
+                "#OTT": ott or "N/A",
+                "{ott}": ott or "N/A",
                 "#OTT_UPDATES": ott,
                 "#OTT_UPDATES_more": ott,
                 "#HIGH_RES_MEDIA_VIEWER": poster or imdb_url,
@@ -814,7 +874,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 if template_text
                 else _build_default_caption("id", default_caption_data)
             )
-            caption_mode = enums.ParseMode.HTML if template_text or "<a" in caption_text else None
+            caption_mode = enums.ParseMode.HTML
             markup = (
                 InlineKeyboardMarkup(
                     [
@@ -956,15 +1016,23 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             country_plain = "N/A"
             country_hash = ""
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                countries = [
-                    demoji(country.text)
-                    for country in negara[0].findAll(
-                        class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                countries_text = []
+                countries_display = []
+                for country in negara[0].findAll(
+                    class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
+                ):
+                    clean_country, display_country = _format_country_name(country.text)
+                    if clean_country:
+                        countries_text.append(clean_country)
+                    if display_country:
+                        countries_display.append(display_country)
+                country_plain = ", ".join(countries_display) if countries_display else "N/A"
+                country_hash = (
+                    ", ".join(
+                        f"#{country.replace(' ', '_').replace('-', '_')}" for country in countries_text
                     )
-                ]
-                country_plain = ", ".join(countries)
-                country_hash = ", ".join(
-                    f"#{country.replace(' ', '_').replace('-', '_')}" for country in countries
+                    if countries_text
+                    else ""
                 )
             language_plain = "N/A"
             language_hash = ""
@@ -1015,13 +1083,23 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 )
                 awards_text = awards
             keywords_block = ""
+            keywords_plain_text = ""
             if r_json.get("keywords"):
-                keywords_block = "".join(
-                    f"#{i.replace(' ', '_').replace('-', '_')}, "
-                    for i in r_json["keywords"].split(",")
-                )[:-2]
+                keywords_list = [i.strip() for i in r_json["keywords"].split(",") if i.strip()]
+                keywords_block = (
+                    "".join(
+                        f"#{i.replace(' ', '_').replace('-', '_')}, "
+                        for i in keywords_list
+                    )[:-2]
+                    if keywords_list
+                    else ""
+                )
+                keywords_plain_text = ", ".join(keywords_list)
             trailer_url = r_json.get("trailer", {}).get("url", "")
             poster = r_json.get("image", "")
+            cast_summary = _build_cast_summary(
+                "en", html.escape(director_names or ""), html.escape(writer_names or ""), html.escape(actor_names or "")
+            )
             default_caption_data = {
                 "title": html.escape(title),
                 "year": html.escape(tahun),
@@ -1031,16 +1109,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 "rating": html.escape(rating_value),
                 "votes": html.escape(votes_text),
                 "release": html.escape(rilis or "N/A"),
-                "genres": html.escape(genres_hash or genres_plain or "N/A"),
-                "countries": html.escape(country_hash or country_plain or "N/A"),
-                "languages": html.escape(language_hash or language_plain or "N/A"),
-                "directors": html.escape(director_names or "N/A"),
-                "writers": html.escape(writer_names or "N/A"),
-                "actors": html.escape(actor_names or "N/A"),
+                "genres": html.escape(genres_plain or "N/A"),
+                "countries": html.escape(country_plain or "N/A"),
+                "languages": html.escape(language_plain or "N/A"),
+                "cast_info": cast_summary,
                 "plot": html.escape(summary or "N/A"),
-                "keywords": html.escape(keywords_block or ""),
+                "keywords": html.escape(keywords_plain_text or ""),
                 "awards": html.escape(awards_text or ""),
-                "ott": html.escape(ott or ""),
+                "ott": ott or "",
                 "bot_username": html.escape(self.me.username),
             }
             cast_info_block = "\n<b>🙎 Cast Info:</b>\n"
@@ -1050,6 +1126,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 cast_info_block += f"<b>Writer:</b> {writer_links}\n"
             if actor_links:
                 cast_info_block += f"<b>Stars:</b> {actor_links}\n"
+            if cast_info_block.strip() == "<b>🙎 Cast Info:</b>":
+                cast_info_block += "N/A\n"
             plot_block = ""
             if summary:
                 plot_block = f"<b>📜 Summary:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
@@ -1090,10 +1168,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 "{aka}": aka,
                 "#TITLE": title,
                 "{title}": title,
+                "#TYPE": typee,
+                "{type}": typee,
                 "#YEAR": tahun,
                 "{year}": tahun,
                 "#RATING": rating_value,
                 "{rating}": rating_value,
+                "#USER_RATING": votes_text,
+                "{user_rating}": votes_text,
                 "#EUSERRATINGS": f"{votes_text} IMDb users",
                 "#NUMUSERRATINGS": votes_text,
                 "#ONLYRATING": rating_value,
@@ -1101,27 +1183,38 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 "{votes}": votes_text,
                 "#MARINTG": content_rating or "N/A",
                 "#DURATION": runtime_display,
+                "{duration}": runtime_display,
                 "#DURATION_IN_SECONDS": duration_seconds,
                 "#DURATION_IN_MINUTES": duration_minutes,
                 "{runtime}": runtime_display,
                 "#RELEASE_INFO": f"<a href='https://www.imdb.com{rilis_url}'>{rilis}</a>"
                 if rilis
                 else "N/A",
+                "#RELEASE_DATE": rilis or "N/A",
+                "{release_date}": rilis or "N/A",
                 "#GENRE": genres_hash or genres_plain,
                 "{genres}": genres_plain,
+                "{genre}": genres_plain,
                 "#IMDB_URL": imdb_url,
                 "{url}": imdb_url,
                 "#IMDB_ID": imdb_id,
                 "{imdb_id}": imdb_id,
                 "#IMDB_IV": f"<a href='{poster}'>&#8205;</a>" if poster else "",
-                "#LANGUAGE": language_hash or language_plain,
-                "#COUNTRY_OF_ORIGIN": country_hash or country_plain,
+                "#LANGUAGE": language_plain,
+                "#COUNTRY_OF_ORIGIN": country_plain,
+                "#LANG": language_plain,
+                "#COUNTRY": country_plain,
                 "{languages}": language_plain,
+                "{language}": language_plain,
                 "{countries}": country_plain,
+                "{country}": country_plain,
                 "#STORY_LINE": summary or "N/A",
                 "{plot}": summary or "N/A",
+                "{sinopsis}": summary or "N/A",
                 "#IMDb_TITLE_TYPE": typee,
                 "{kind}": typee,
+                "#CATEGORY": content_rating or "N/A",
+                "{category}": content_rating or "N/A",
                 "#IMDb_SHORT_DESC": short_desc or summary or "N/A",
                 "#READ_MORE": f"<a href='{imdb_url}'>Read more</a>",
                 "#IMG_HIDDEN_IMG": f"<a href='{poster}'>&#8205;</a>" if poster else "",
@@ -1134,6 +1227,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 "#ACTORS_": f"<b>Stars:</b> {actor_links}" if actor_links else "",
                 "#CAST_INFO": cast_info_block.strip(),
                 "{cast}": actor_links or actor_names,
+                "{cast_info}": cast_summary,
                 "#DIRECTORS": director_links or director_names,
                 "{director}": director_links or director_names,
                 "#WRITERS": writer_links or writer_names,
@@ -1141,6 +1235,12 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 "#ACTORS": actor_links or actor_names,
                 "{actor}": actor_links or actor_names,
                 "#AWARDS": awards_text or "N/A",
+                "{awards}": awards_text or "N/A",
+                "#KEYWORD": keywords_plain_text or "N/A",
+                "{keyword}": keywords_plain_text or "N/A",
+                "{keywords}": keywords_block or "",
+                "#OTT": ott or "N/A",
+                "{ott}": ott or "N/A",
                 "#OTT_UPDATES": ott,
                 "#OTT_UPDATES_more": ott,
                 "#HIGH_RES_MEDIA_VIEWER": poster or imdb_url,
@@ -1156,7 +1256,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if template_text
                 else _build_default_caption("en", default_caption_data)
             )
-            caption_mode = enums.ParseMode.HTML if template_text or "<a" in caption_text else None
+            caption_mode = enums.ParseMode.HTML
             markup = (
                 InlineKeyboardMarkup(
                     [
