@@ -46,7 +46,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
                     disable_web_page_preview=True,
                 )
             else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>Gemini 3 Flash</code>")
+                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>Gemini 2.5 Flash</code>")
         else:
             async for chunk in response:
                 if not chunk.choices or not chunk.choices[0].delta.content:
@@ -104,7 +104,7 @@ async def gemini_chatbot(_, ctx: Message, strings):
         gemini_conversations[uid] = [{"role": "system", "content": "Kamu adalah AI dengan karakter mirip kucing bernama MissKaty AI yang diciptakan oleh Yasir untuk membantu manusia mencari informasi dan gunakan bahasa sesuai yang saya katakan."}, {"role": "user", "content": ctx.input}]
     else:
         gemini_conversations[uid].append({"role": "user", "content": ctx.input})
-    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://generativelanguage.googleapis.com/v1beta", "gemini-3-flash-preview", gemini_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://generativelanguage.googleapis.com/v1beta", "gemini-2.5-flash", gemini_conversations[uid], msg, strings)
     if not ai_response:
         gemini_conversations[uid].pop()
         if len(gemini_conversations[uid]) == 1:
@@ -141,6 +141,7 @@ async def openai_chatbot(self, ctx: Message, strings):
             gptai_conversations.pop(uid)
         return
     gptai_conversations[uid].append({"role": "assistant", "content": ai_response})
+
 
 
 
