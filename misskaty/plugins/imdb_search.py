@@ -139,7 +139,7 @@ def _layout_fields():
 
 
 def _layout_field_label(field_key: str, enabled: bool) -> str:
-    return f\"{'✅' if enabled else '❌'} {dict(_layout_fields()).get(field_key, field_key)}\"
+    return f"{'✅' if enabled else '❌'} {dict(_layout_fields()).get(field_key, field_key)}"
 
 
 async def _get_hidden_layout_fields(user_id: int):
@@ -775,7 +775,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
                 else "N/A"
             )
-            res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+            res_str += f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
             if aka := r_json.get("alternateName"):
                 res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
             else:
@@ -805,7 +805,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
                 release_date_text = rilis or "-"
-                res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
+                res_str += f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n"
             if genre := r_json.get("genre"):
                 genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
@@ -871,14 +871,14 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             if deskripsi := r_json.get("description"):
                 summary = (await gtranslate(deskripsi, "auto", "id")).text
                 storyline_text = summary or "-"
-                res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
+                res_str += f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
             if keywd := r_json.get("keywords"):
                 keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in keywd.split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
+                    f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
@@ -889,7 +889,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     .text
                 )
                 awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n"
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
@@ -936,7 +936,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     )
                 if "release_date" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
                         "",
                     )
                 if "genre" in hidden_fields:
@@ -952,17 +952,17 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
                 if "storyline" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
                         "",
                     )
                 if "keyword" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
                         "",
                     )
                 if "awards" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
                         "",
                     )
                 if "ott" in hidden_fields:
@@ -1073,7 +1073,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
                 else "N/A"
             )
-            res_str += f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
+            res_str += f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
             if aka := r_json.get("alternateName"):
                 res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
             else:
@@ -1103,7 +1103,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
                 release_date_text = rilis or "-"
-                res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
+                res_str += f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n"
             if genre := r_json.get("genre"):
                 genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
@@ -1170,14 +1170,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             if description := r_json.get("description"):
                 storyline_text = description or "-"
                 summary = description
-                res_str += f"<b>📜 Summary:</b>\n<blockquote><code>{description}</code></blockquote>\n\n"
+                res_str += f"<b>📜 Summary:</b>\n<blockquote expandable><code>{description}</code></blockquote>\n\n"
             if r_json.get("keywords"):
                 keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Keywords:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
+                    f"<b>🔥 Keywords:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
@@ -1188,7 +1188,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     .text
                 )
                 awards_text = awards or "-"
-                res_str += f"<b>🏆 Awards:</b>\n<blockquote><code>{awards}</code></blockquote>\n"
+                res_str += f"<b>🏆 Awards:</b>\n<blockquote expandable><code>{awards}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
@@ -1234,7 +1234,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     )
                 if "release_date" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
                         "",
                     )
                 if "genre" in hidden_fields:
@@ -1250,17 +1250,17 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     res_str = res_str.replace(f"<b>Stars:</b> {cast_text}\n\n", "")
                 if "storyline" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📜 Summary:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        f"<b>📜 Summary:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
                         "",
                     )
                 if "keyword" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🔥 Keywords:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        f"<b>🔥 Keywords:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
                         "",
                     )
                 if "awards" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🏆 Awards:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        f"<b>🏆 Awards:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
                         "",
                     )
                 if "ott" in hidden_fields:

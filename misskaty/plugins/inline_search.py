@@ -688,7 +688,7 @@ async def imdb_inl(_, query):
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
                 else "N/A"
             )
-            res_str += f"<b>📹 Judul:</b> <a href='{url}'>{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
+            res_str += f"<b>📹 Judul:</b> <a href=\"{url}\">{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += (
                     f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
@@ -720,7 +720,7 @@ async def imdb_inl(_, query):
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
                 release_date_text = rilis or "-"
-                res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
+                res_str += f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n"
             if r_json.get("genre"):
                 genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
@@ -782,14 +782,14 @@ async def imdb_inl(_, query):
             if r_json.get("description"):
                 summary = (await gtranslate(r_json.get("description"), "auto", "id")).text
                 storyline_text = summary or "-"
-                res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
+                res_str += f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
             if r_json.get("keywords"):
                 keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
+                    f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
@@ -800,7 +800,7 @@ async def imdb_inl(_, query):
                     .text
                 )
                 awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n"
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
@@ -852,7 +852,7 @@ async def imdb_inl(_, query):
                     )
                 if "release_date" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
                         "",
                     )
                 if "genre" in hidden_fields:
@@ -868,17 +868,17 @@ async def imdb_inl(_, query):
                     res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
                 if "storyline" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
                         "",
                     )
                 if "keyword" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
                         "",
                     )
                 if "awards" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
                         "",
                     )
                 if "ott" in hidden_fields:
