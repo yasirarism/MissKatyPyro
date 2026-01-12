@@ -34,10 +34,15 @@ from pyrogram.types import (
 
 from database.imdb_db import (
     add_imdbset,
+    get_imdb_by,
+    get_imdb_layout,
     get_imdb_template,
     is_imdbset,
+    remove_imdb_by,
     remove_imdb_template,
     remove_imdbset,
+    set_imdb_by,
+    set_imdb_layout,
     set_imdb_template,
 )
 from misskaty import app
@@ -56,10 +61,46 @@ class _ImdbTemplateDefaults(dict):
 def render_imdb_template(template: str, payload: dict) -> Optional[str]:
     try:
         normalized = template.replace("\\n", "\n")
-        return normalized.format_map(_ImdbTemplateDefaults(payload))
+        rendered = normalized.format_map(_ImdbTemplateDefaults(payload))
+        return re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"<a href='\2'>\1</a>", rendered)
     except Exception as err:
         LOGGER.warning(f"Failed rendering IMDB template: {err}")
         return None
+
+
+def _imdb_settings_caption(template_enabled: bool, layout_enabled: bool, imdb_by: str):
+    status = "Sudah diatur ✅" if template_enabled else "Belum diatur ❌"
+    layout_status = "On ✅" if layout_enabled else "Off ❌"
+    return (
+        "<b>Pengaturan IMDb</b>\n\n"
+        f"• Custom Layout IMDb: <b>{status}</b>\n"
+        f"• Layout bawaan: <b>{layout_status}</b>\n"
+        f"• IMDb by: <code>{imdb_by}</code>\n\n"
+        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
+    )
+
+
+def _imdb_settings_keyboard(uid: int, layout_enabled: bool, template_enabled: bool):
+    buttons = InlineKeyboard()
+    buttons.row(
+        InlineButton("🌐 Language", f"imdbsetlang#{uid}"),
+        InlineButton(
+            f"🎛 Layout {'On' if layout_enabled else 'Off'}",
+            f"imdblayout#{uid}",
+        ),
+    )
+    buttons.row(
+        InlineButton(
+            "🧩 Custom Layout",
+            f"imdbtemplatemenu#{uid}",
+        ),
+        InlineButton(
+            "✍️ Edit IMDb by",
+            f"imdby#{uid}",
+        ),
+    )
+    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
+    return buttons
 
 
 # IMDB Choose Language
@@ -109,7 +150,7 @@ async def imdb_template(_, ctx: Message):
         placeholders = (
             "{title}, {link}, {movie_type}, {duration}, {category}, {release_date}, "
             "{genre}, {country}, {language}, {director}, {writer}, {cast}, {cast_info}, "
-            "{storyline}, {keyword}, {awards}, {ott}"
+            "{storyline}, {keyword}, {awards}, {ott}, {imdb_by}"
         )
         if template:
             return await ctx.reply_msg(
@@ -122,18 +163,83 @@ async def imdb_template(_, ctx: Message):
             "Set a custom IMDb template:\n"
             "<code>/imdbtemplate Title: {title}\\nType: {movie_type}</code>\n\n"
             f"Available placeholders:\n<code>{placeholders}</code>\n\n"
-            "Remove template with <code>/imdbtemplate reset</code>."
+            "Remove template with <code>/imdbtemplate remove</code>.\n"
+            "Format tombol: <code>[Label](https://contoh.com)</code>."
         )
     template_arg = ctx.text.split(None, 1)[1].strip()
-    if template_arg.lower() in {"reset", "remove", "delete", "default"}:
+    lowered = template_arg.lower()
+    if lowered in {"reset", "remove", "delete", "default"}:
         await remove_imdb_template(ctx.from_user.id)
         return await ctx.reply_msg("✅ IMDb template removed.")
+    if lowered.startswith("set"):
+        template_value = template_arg[3:].strip()
+        if not template_value and ctx.reply_to_message:
+            template_value = ctx.reply_to_message.text or ctx.reply_to_message.caption
+        if not template_value:
+            return await ctx.reply_msg(
+                "⚠️ Please provide a template after <code>/imdbtemplate set</code> "
+                "or reply to a message containing the template."
+            )
+        await set_imdb_template(ctx.from_user.id, template_value)
+        return await ctx.reply_msg("✅ IMDb template updated.")
     await set_imdb_template(ctx.from_user.id, template_arg)
     await ctx.reply_msg("✅ IMDb template updated.")
 
 
+@app.on_cmd("imdbby")
+async def imdb_by_cmd(_, ctx: Message):
+    if ctx.sender_chat:
+        return await ctx.reply_msg(
+            "Cannot identify user, please use in private chat.", del_in=7
+        )
+    if len(ctx.command) == 1:
+        current = await get_imdb_by(ctx.from_user.id)
+        return await ctx.reply_msg(
+            "Set IMDb by text:\n"
+            "<code>/imdbby YourTextHere</code>\n"
+            "Remove with <code>/imdbby remove</code>.\n\n"
+            f"Current: <code>{current or f'@{app.me.username}'}</code>"
+        )
+    value = ctx.text.split(None, 1)[1].strip()
+    if value.lower() in {"remove", "reset", "delete"}:
+        await remove_imdb_by(ctx.from_user.id)
+        return await ctx.reply_msg("✅ IMDb by removed.")
+    await set_imdb_by(ctx.from_user.id, value)
+    await ctx.reply_msg("✅ IMDb by updated.")
+
+
+@app.on_cmd("imdbset")
+async def imdb_settings_cmd(_, ctx: Message):
+    if ctx.sender_chat:
+        return await ctx.reply_msg(
+            "Cannot identify user, please use in private chat.", del_in=7
+        )
+    template = await get_imdb_template(ctx.from_user.id)
+    layout_enabled = await get_imdb_layout(ctx.from_user.id)
+    imdb_by = await get_imdb_by(ctx.from_user.id) or f"@{app.me.username}"
+    caption = _imdb_settings_caption(bool(template), layout_enabled, imdb_by)
+    buttons = _imdb_settings_keyboard(ctx.from_user.id, layout_enabled, bool(template))
+    await ctx.reply_msg(caption, reply_markup=buttons)
+
+
 @app.on_cb("imdbset")
 async def imdblangset(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    template = await get_imdb_template(query.from_user.id)
+    layout_enabled = await get_imdb_layout(query.from_user.id)
+    imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
+    buttons = _imdb_settings_keyboard(
+        query.from_user.id, layout_enabled, bool(template)
+    )
+    caption = _imdb_settings_caption(bool(template), layout_enabled, imdb_by)
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(caption, reply_markup=buttons)
+
+
+@app.on_cb("imdbsetlang")
+async def imdb_lang_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
@@ -147,11 +253,66 @@ async def imdblangset(_, query: CallbackQuery):
         buttons.row(
             InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
         )
-    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
+    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_caption(
             "<i>Please select available language below..</i>", reply_markup=buttons
         )
+
+
+@app.on_cb("imdblayout")
+async def imdb_layout_toggle(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    current = await get_imdb_layout(query.from_user.id)
+    await set_imdb_layout(query.from_user.id, not current)
+    template = await get_imdb_template(query.from_user.id)
+    imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
+    caption = _imdb_settings_caption(bool(template), not current, imdb_by)
+    buttons = _imdb_settings_keyboard(query.from_user.id, not current, bool(template))
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(caption, reply_markup=buttons)
+
+
+@app.on_cb("imdbtemplatemenu")
+async def imdb_template_menu(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    template = await get_imdb_template(query.from_user.id)
+    status = "Sudah diatur ✅" if template else "Belum diatur ❌"
+    text = (
+        f"<b>Custom Layout IMDb</b>\nStatus: {status}\n\n"
+        "• Pakai <code>/imdbtemplate set</code> lalu balas pesan yang berisi template "
+        "HTML kamu atau tulis templatenya setelah perintah.\n"
+        "• Hapus dengan <code>/imdbtemplate remove</code>.\n"
+        "• Format tombol: <code>[Label](https://contoh.com)</code>.\n\n"
+        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
+    )
+    buttons = InlineKeyboard()
+    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(text, reply_markup=buttons)
+
+
+@app.on_cb("imdby")
+async def imdb_by_menu(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    current = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
+    text = (
+        "<b>Edit IMDb by</b>\n"
+        "Gunakan perintah:\n"
+        "<code>/imdbby Teks_kamu</code>\n"
+        "Hapus dengan <code>/imdbby remove</code>.\n\n"
+        f"Current: <code>{current}</code>"
+    )
+    buttons = InlineKeyboard()
+    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(text, reply_markup=buttons)
 
 
 @app.on_cb("setimdb")
@@ -459,6 +620,8 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             )
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
+            layout_enabled = await get_imdb_layout(query.from_user.id)
+            imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
             duration_text = "-"
             category_text = "-"
@@ -599,7 +762,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             ott_text = ott
             if not ott_text:
                 ott_text = "-"
-            res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
+            res_str += f"<b>©️ IMDb by</b> {imdb_by}"
             if template:
                 payload = {
                     "title": r_json.get("name") or "-",
@@ -619,10 +782,17 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     "keyword": keyword_text,
                     "awards": awards_text,
                     "ott": ott_text,
+                    "imdb_by": imdb_by,
                 }
                 rendered = render_imdb_template(template, payload)
                 if rendered:
                     res_str = rendered
+            elif not layout_enabled:
+                res_str = (
+                    f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a>\n"
+                    f"<b>Type:</b> <code>{typee or '-'}</code>\n"
+                    f"<b>©️ IMDb by</b> {imdb_by}"
+                )
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
                 markup = InlineKeyboardMarkup(
@@ -702,6 +872,8 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             )
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
+            layout_enabled = await get_imdb_layout(query.from_user.id)
+            imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
             duration_text = "-"
             category_text = "-"
@@ -841,7 +1013,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 res_str += f"Available On:\n{ott}\n"
             if not ott:
                 ott = "-"
-            res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
+            res_str += f"<b>©️ IMDb by</b> {imdb_by}"
             if template:
                 payload = {
                     "title": r_json.get("name") or "-",
@@ -861,10 +1033,17 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     "keyword": keyword_text,
                     "awards": awards_text,
                     "ott": ott,
+                    "imdb_by": imdb_by,
                 }
                 rendered = render_imdb_template(template, payload)
                 if rendered:
                     res_str = rendered
+            elif not layout_enabled:
+                res_str = (
+                    f"<b>📹 Title:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a>\n"
+                    f"<b>Type:</b> <code>{typee or '-'}</code>\n"
+                    f"<b>©️ IMDb by</b> {imdb_by}"
+                )
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
                 markup = InlineKeyboardMarkup(
