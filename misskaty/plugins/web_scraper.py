@@ -100,7 +100,8 @@ async def save_web_config():
 
 def build_web_buttons(uid: int):
     buttons = InlineKeyboard(row_width=2)
-    for key in sorted(web):
+    keys = sorted(set(DEFAULT_WEB) | set(web))
+    for key in keys:
         buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
     buttons.row(InlineButton("❌ Close", f"close#{uid}"))
     return buttons
@@ -128,6 +129,8 @@ async def webdomain_edit(_, query, strings):
     if query.from_user.id != OWNER_ID:
         return await query.answer("⚠️ Access Denied!", True)
     await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
     if key not in web:
         return await query.answer("⚠️ Domain tidak ditemukan.", True)
     await query.message.edit_msg(
