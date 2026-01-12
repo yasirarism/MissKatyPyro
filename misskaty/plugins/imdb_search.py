@@ -7,6 +7,7 @@ import json
 import logging
 import re
 import sys
+from typing import Optional
 from urllib.parse import quote_plus
 
 import httpx
@@ -31,13 +32,33 @@ from pyrogram.types import (
     Message,
 )
 
-from database.imdb_db import add_imdbset, is_imdbset, remove_imdbset
+from database.imdb_db import (
+    add_imdbset,
+    get_imdb_template,
+    is_imdbset,
+    remove_imdb_template,
+    remove_imdbset,
+    set_imdb_template,
+)
 from misskaty import app
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, search_jw
 from utils import demoji
 
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
+
+
+class _ImdbTemplateDefaults(dict):
+    def __missing__(self, key):
+        return ""
+
+
+def render_imdb_template(template: str, payload: dict) -> Optional[str]:
+    try:
+        return template.format_map(_ImdbTemplateDefaults(payload))
+    except Exception as err:
+        LOGGER.warning(f"Failed rendering IMDB template: {err}")
+        return None
 
 
 # IMDB Choose Language
@@ -74,6 +95,40 @@ async def imdb_choose(_, ctx: Message):
         reply_markup=buttons,
         quote=True,
     )
+
+
+@app.on_cmd("imdbtemplate")
+async def imdb_template(_, ctx: Message):
+    if ctx.sender_chat:
+        return await ctx.reply_msg(
+            "Cannot identify user, please use in private chat.", del_in=7
+        )
+    if len(ctx.command) == 1:
+        template = await get_imdb_template(ctx.from_user.id)
+        placeholders = (
+            "{title}, {link}, {movie_type}, {duration}, {category}, {release_date}, "
+            "{genre}, {country}, {language}, {cast_info}, {storyline}, {keyword}, "
+            "{awards}, {ott}"
+        )
+        if template:
+            return await ctx.reply_msg(
+                "✅ Current IMDb template:\n"
+                f"<blockquote><code>{template}</code></blockquote>\n"
+                "Use <code>/imdbtemplate reset</code> to remove it.\n\n"
+                f"Available placeholders:\n<code>{placeholders}</code>"
+            )
+        return await ctx.reply_msg(
+            "Set a custom IMDb template:\n"
+            "<code>/imdbtemplate Title: {title}\\nType: {movie_type}</code>\n\n"
+            f"Available placeholders:\n<code>{placeholders}</code>\n\n"
+            "Remove template with <code>/imdbtemplate reset</code>."
+        )
+    template_arg = ctx.text.split(None, 1)[1].strip()
+    if template_arg.lower() in {"reset", "remove", "delete", "default"}:
+        await remove_imdb_template(ctx.from_user.id)
+        return await ctx.reply_msg("✅ IMDb template removed.")
+    await set_imdb_template(ctx.from_user.id, template_arg)
+    await ctx.reply_msg("✅ IMDb template updated.")
 
 
 @app.on_cb("imdbset")
@@ -402,7 +457,18 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 r_json.get("alternateName") or r_json.get("name"), "ID"
             )
             typee = r_json.get("@type", "")
+            template = await get_imdb_template(query.from_user.id)
             res_str = ""
+            duration_text = ""
+            category_text = ""
+            release_date_text = ""
+            genre_text = ""
+            country_text = ""
+            language_text = ""
+            cast_info = ""
+            storyline_text = ""
+            keyword_text = ""
+            awards_text = ""
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -419,8 +485,10 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__content-container")
                     .text
                 )
-                res_str += f"<b>Durasi:</b> <code>{(await gtranslate(durasi, "auto", "id")).text}</code>\n"
+                duration_text = (await gtranslate(durasi, "auto", "id")).text
+                res_str += f"<b>Durasi:</b> <code>{duration_text}</code>\n"
             if kategori := r_json.get("contentRating"):
+                category_text = kategori
                 res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
             if rating := r_json.get("aggregateRating"):
                 res_str += f"<b>Peringkat:</b> <code>{rating['ratingValue']}⭐️ dari {rating['ratingCount']} pengguna</code>\n"
@@ -435,36 +503,39 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 rilis_url = release[0].find(
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
+                release_date_text = rilis
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if genre := r_json.get("genre"):
-                genre = "".join(
+                genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
                     if i in GENRES_EMOJI
                     else f"#{i.replace('-', '_').replace(' ', '_')}, "
                     for i in r_json["genre"]
                 )
-                res_str += f"<b>Genre:</b> {genre[:-2]}\n"
+                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(
+                country_text = "".join(
                     f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                     for country in negara[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Negara:</b> {country[:-2]}\n"
+                res_str += f"<b>Negara:</b> {country_text[:-2]}\n"
             if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(
+                language_text = "".join(
                     f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
                     for lang in bahasa[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Bahasa:</b> {language[:-2]}\n"
+                res_str += f"<b>Bahasa:</b> {language_text[:-2]}\n"
             res_str += "\n<b>🙎 Info Cast:</b>\n"
+            cast_lines = []
             if directors := r_json.get("director"):
                 director = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, " for i in directors
                 )
+                cast_lines.append(f"Sutradara: {director[:-2]}")
                 res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
             if creators := r_json.get("creator"):
                 creator = "".join(
@@ -472,22 +543,26 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     for i in creators
                     if i["@type"] == "Person"
                 )
+                cast_lines.append(f"Penulis: {creator[:-2]}")
                 res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
             if actors := r_json.get("actor"):
                 actor = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors
                 )
+                cast_lines.append(f"Pemeran: {actor[:-2]}")
                 res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
+            cast_info = "\n".join(cast_lines)
             if deskripsi := r_json.get("description"):
                 summary = (await gtranslate(deskripsi, "auto", "id")).text
+                storyline_text = summary
                 res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
             if keywd := r_json.get("keywords"):
-                key_ = "".join(
+                keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in keywd.split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
+                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
                 )
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
@@ -495,12 +570,35 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__list-content-item")
                     .text
                 )
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{(await gtranslate(awards, "auto", "id")).text}</code></blockquote>\n"
+                awards_text = (await gtranslate(awards, "auto", "id")).text
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
                 res_str += f"Tersedia di:\n{ott}\n"
+            ott_text = ott
             res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
+            if template:
+                payload = {
+                    "title": r_json.get("name", ""),
+                    "link": imdb_url,
+                    "movie_type": typee,
+                    "duration": duration_text,
+                    "category": category_text,
+                    "release_date": release_date_text,
+                    "genre": genre_text[:-2] if genre_text else "",
+                    "country": country_text[:-2] if country_text else "",
+                    "language": language_text[:-2] if language_text else "",
+                    "cast_info": cast_info,
+                    "vast_info": cast_info,
+                    "storyline": storyline_text,
+                    "keyword": keyword_text[:-2] if keyword_text else "",
+                    "awards": awards_text,
+                    "ott": ott_text,
+                }
+                rendered = render_imdb_template(template, payload)
+                if rendered:
+                    res_str = rendered
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
                 markup = InlineKeyboardMarkup(
@@ -579,7 +677,18 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 r_json.get("alternateName") or r_json.get("name"), "US"
             )
             typee = r_json.get("@type", "")
+            template = await get_imdb_template(query.from_user.id)
             res_str = ""
+            duration_text = ""
+            category_text = ""
+            release_date_text = ""
+            genre_text = ""
+            country_text = ""
+            language_text = ""
+            cast_info = ""
+            storyline_text = ""
+            keyword_text = ""
+            awards_text = ""
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -596,8 +705,10 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__content-container")
                     .text
                 )
+                duration_text = durasi
                 res_str += f"<b>Duration:</b> <code>{durasi}</code>\n"
             if kategori := r_json.get("contentRating"):
+                category_text = kategori
                 res_str += f"<b>Category:</b> <code>{kategori}</code> \n"
             if rating := r_json.get("aggregateRating"):
                 res_str += f"<b>Rating:</b> <code>{rating['ratingValue']}⭐️ from {rating['ratingCount']} users</code>\n"
@@ -612,37 +723,40 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 rilis_url = release[0].find(
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
+                release_date_text = rilis
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if genre := r_json.get("genre"):
-                genre = "".join(
+                genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
                     if i in GENRES_EMOJI
                     else f"#{i.replace('-', '_').replace(' ', '_')}, "
                     for i in r_json["genre"]
                 )
-                res_str += f"<b>Genre:</b> {genre[:-2]}\n"
+                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(
+                country_text = "".join(
                     f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                     for country in negara[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Country:</b> {country[:-2]}\n"
+                res_str += f"<b>Country:</b> {country_text[:-2]}\n"
             if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(
+                language_text = "".join(
                     f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
                     for lang in bahasa[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Language:</b> {language[:-2]}\n"
+                res_str += f"<b>Language:</b> {language_text[:-2]}\n"
             res_str += "\n<b>🙎 Cast Info:</b>\n"
+            cast_lines = []
             if r_json.get("director"):
                 director = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, "
                     for i in r_json["director"]
                 )
+                cast_lines.append(f"Director: {director[:-2]}")
                 res_str += f"<b>Director:</b> {director[:-2]}\n"
             if r_json.get("creator"):
                 creator = "".join(
@@ -650,21 +764,25 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     for i in r_json["creator"]
                     if i["@type"] == "Person"
                 )
+                cast_lines.append(f"Writer: {creator[:-2]}")
                 res_str += f"<b>Writer:</b> {creator[:-2]}\n"
             if r_json.get("actor"):
                 actors = actors = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
                 )
+                cast_lines.append(f"Stars: {actors[:-2]}")
                 res_str += f"<b>Stars:</b> {actors[:-2]}\n\n"
+            cast_info = "\n".join(cast_lines)
             if description := r_json.get("description"):
+                storyline_text = description
                 res_str += f"<b>📜 Summary:</b>\n<blockquote><code>{description}</code></blockquote>\n\n"
             if r_json.get("keywords"):
-                key_ = "".join(
+                keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Keywords:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
+                    f"<b>🔥 Keywords:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
                 )
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
@@ -672,12 +790,34 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     .find(class_="ipc-metadata-list-item__list-content-item")
                     .text
                 )
+                awards_text = awards
                 res_str += f"<b>🏆 Awards:</b>\n<blockquote><code>{awards}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
                 res_str += f"Available On:\n{ott}\n"
             res_str += f"<b>©️ IMDb by</b> @{self.me.username}"
+            if template:
+                payload = {
+                    "title": r_json.get("name", ""),
+                    "link": imdb_url,
+                    "movie_type": typee,
+                    "duration": duration_text,
+                    "category": category_text,
+                    "release_date": release_date_text,
+                    "genre": genre_text[:-2] if genre_text else "",
+                    "country": country_text[:-2] if country_text else "",
+                    "language": language_text[:-2] if language_text else "",
+                    "cast_info": cast_info,
+                    "vast_info": cast_info,
+                    "storyline": storyline_text,
+                    "keyword": keyword_text[:-2] if keyword_text else "",
+                    "awards": awards_text,
+                    "ott": ott,
+                }
+                rendered = render_imdb_template(template, payload)
+                if rendered:
+                    res_str = rendered
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
                 markup = InlineKeyboardMarkup(
