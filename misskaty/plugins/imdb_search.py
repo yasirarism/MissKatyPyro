@@ -22,6 +22,7 @@ from pyrogram.errors import (
     MessageIdInvalid,
     MessageNotModified,
     PhotoInvalidDimensions,
+    QueryIdInvalid,
     WebpageCurlFailed,
     WebpageMediaEmpty,
 )
