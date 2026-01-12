@@ -100,9 +100,20 @@ async def save_web_config():
 
 def build_web_buttons(uid: int):
     buttons = InlineKeyboard(row_width=2)
-    keys = sorted(set(DEFAULT_WEB) | set(web))
-    for key in keys:
+    for key in sorted(DEFAULT_WEB):
         buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
+    extra_keys = sorted(set(web) - set(DEFAULT_WEB))
+    for key in extra_keys:
+        buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
+    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
+    return buttons
+
+
+def build_web_domain_menu(uid: int, key: str):
+    buttons = InlineKeyboard(row_width=2)
+    buttons.add(InlineButton("👁 View", f"webdomainview#{key}#{uid}"))
+    buttons.add(InlineButton("✏️ Edit", f"webdomainedit#{key}#{uid}"))
+    buttons.row(InlineButton("↩️ Back", f"webdomainback#{uid}"))
     buttons.row(InlineButton("❌ Close", f"close#{uid}"))
     return buttons
 
@@ -133,6 +144,53 @@ async def webdomain_edit(_, query, strings):
         web[key] = DEFAULT_WEB[key]
     if key not in web:
         return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    text = (
+        "<b>Web Domain Editor</b>\n"
+        f"<b>Nama:</b> <code>{key}</code>\n"
+        f"<b>Saat ini:</b> <code>{web[key]}</code>\n\n"
+        "Pilih aksi di bawah."
+    )
+    await query.message.edit_msg(
+        text, reply_markup=build_web_domain_menu(query.from_user.id, key)
+    )
+
+
+@app.on_cb("webdomainview#")
+@use_chat_lang()
+async def webdomain_view(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    text = (
+        "<b>Web Domain</b>\n"
+        f"<b>Nama:</b> <code>{key}</code>\n"
+        f"<b>Domain:</b> <code>{web[key]}</code>"
+    )
+    await query.message.edit_msg(
+        text, reply_markup=build_web_domain_menu(query.from_user.id, key)
+    )
+
+
+@app.on_cb("webdomainedit#")
+@use_chat_lang()
+async def webdomain_edit_value(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
     await query.message.edit_msg(
         f"Kirim domain baru untuk <b>{key}</b>.\n"
         f"Saat ini: <code>{web[key]}</code>\n"
@@ -152,8 +210,22 @@ async def webdomain_edit(_, query, strings):
     await save_web_config()
     await query.message.edit_msg(
         f"✅ Domain <b>{key}</b> diperbarui menjadi:\n<code>{web[key]}</code>",
-        reply_markup=build_web_buttons(query.from_user.id),
+        reply_markup=build_web_domain_menu(query.from_user.id, key),
     )
+
+
+@app.on_cb("webdomainback#")
+@use_chat_lang()
+async def webdomain_back(_, query, strings):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    text = "<b>Web Domain Editor</b>\nPilih domain yang ingin kamu ubah."
+    keyboard = build_web_buttons(query.from_user.id)
+    await query.message.edit_msg(text, reply_markup=keyboard)
 
 
 def split_arr(arr, size: 5):
