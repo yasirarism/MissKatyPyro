@@ -16,12 +16,14 @@ import httpx
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
+from pyrogram import filters
 from pyrogram.errors import QueryIdInvalid
-from pyrogram.types import Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database import dbname
 from misskaty import app
 from misskaty.helper import Cache, Kusonime, fetch, post_to_telegraph, use_chat_lang
+from misskaty.vars import OWNER_ID
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -39,6 +41,7 @@ __HELP__ = """
 /nunadrama [query <optional>] - Scrape website data from NunaDrama
 /dutamovie [query <optional>] - Scrape website data from DutaMovie
 /pusatfilm [query <optional>] - Scrape website data from Pusatfilm21
+/webdomain - Edit scraper domains via interactive buttons (OWNER only).
 """
 
 LOGGER = logging.getLogger("MissKaty")
@@ -47,7 +50,7 @@ data_kuso = Cache(filename="kuso_cache.db", path="cache", in_memory=False)
 savedict = TTLCache(maxsize=1000, ttl=3600)
 webdb = dbname["web"]
 
-web = {
+DEFAULT_WEB = {
     "yasirapi": "https://yasirapi.eu.org",
     "yasirapi_v2": "https://v2.yasirapi.eu.org",
     "pahe": "pahe.ink",
@@ -66,6 +69,185 @@ web = {
     "dutamovie": "https://yborfilmfestival.com",
     "pusatfilm": "http://217.76.53.139"
 }
+web = DEFAULT_WEB.copy()
+WEB_CONFIG_LOADED = False
+
+
+async def ensure_web_config():
+    global WEB_CONFIG_LOADED
+    if WEB_CONFIG_LOADED:
+        return
+    web.clear()
+    web.update(DEFAULT_WEB)
+    doc = await webdb.find_one({"_id": "domains"})
+    if doc and doc.get("values"):
+        web.update(doc["values"])
+        WEB_CONFIG_LOADED = True
+        return
+    async for entry in webdb.find({}):
+        for key, value in entry.items():
+            if key == "_id":
+                continue
+            web[key] = value
+    WEB_CONFIG_LOADED = True
+
+
+async def save_web_config():
+    await webdb.update_one(
+        {"_id": "domains"}, {"$set": {"values": web}}, upsert=True
+    )
+
+
+def build_web_buttons(uid: int):
+    rows = []
+    row = []
+    keys = list(sorted(DEFAULT_WEB)) + sorted(set(web) - set(DEFAULT_WEB))
+    for index, key in enumerate(keys, start=1):
+        row.append(InlineKeyboardButton(key, callback_data=f"webdomain#{key}#{uid}"))
+        if index % 2 == 0:
+            rows.append(row)
+            row = []
+    if row:
+        rows.append(row)
+    rows.append([InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")])
+    return InlineKeyboardMarkup(rows)
+
+
+def build_web_domain_menu(uid: int, key: str):
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "👁 View", callback_data=f"webdomainview#{key}#{uid}"
+                ),
+                InlineKeyboardButton(
+                    "✏️ Edit", callback_data=f"webdomainedit#{key}#{uid}"
+                ),
+            ],
+            [InlineKeyboardButton("↩️ Back", callback_data=f"webdomainback#{uid}")],
+            [InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")],
+        ]
+    )
+
+
+@app.on_cmd("webdomain", no_channel=True)
+@use_chat_lang()
+async def webdomain_cmd(_, message, strings):
+    if not message.from_user:
+        return
+    if message.from_user.id != OWNER_ID:
+        return await message.reply_msg("⚠️ Access Denied!", del_in=5)
+    await ensure_web_config()
+    text = "<b>Web Domain Editor</b>\nPilih domain yang ingin kamu ubah."
+    keyboard = build_web_buttons(message.from_user.id)
+    await message.reply_msg(text, reply_markup=keyboard)
+
+
+@app.on_cb("webdomain#")
+@use_chat_lang()
+async def webdomain_edit(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    text = (
+        "<b>Web Domain Editor</b>\n"
+        f"<b>Nama:</b> <code>{key}</code>\n"
+        f"<b>Saat ini:</b> <code>{web[key]}</code>\n\n"
+        "Pilih aksi di bawah."
+    )
+    await query.message.edit_msg(
+        text, reply_markup=build_web_domain_menu(query.from_user.id, key)
+    )
+
+
+@app.on_cb("webdomainview#")
+@use_chat_lang()
+async def webdomain_view(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    text = (
+        "<b>Web Domain</b>\n"
+        f"<b>Nama:</b> <code>{key}</code>\n"
+        f"<b>Domain:</b> <code>{web[key]}</code>"
+    )
+    await query.message.edit_msg(
+        text, reply_markup=build_web_domain_menu(query.from_user.id, key)
+    )
+
+
+@app.on_cb("webdomainedit#")
+@use_chat_lang()
+async def webdomain_edit_value(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web and key in DEFAULT_WEB:
+        web[key] = DEFAULT_WEB[key]
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    await query.message.edit_msg(
+        f"Kirim domain baru untuk <b>{key}</b>.\n"
+        f"Saat ini: <code>{web[key]}</code>\n"
+        "Ketik <code>/cancel</code> untuk batal."
+    )
+    try:
+        response = await query.message.chat.ask(
+            "Masukkan domain baru:", filters=filters.text, timeout=60
+        )
+    except Exception:
+        return await query.message.edit_msg("⚠️ Waktu habis.")
+    if response.text.strip().lower() == "/cancel":
+        with contextlib.suppress(Exception):
+            await response.delete()
+        with contextlib.suppress(Exception):
+            if response.reply_to_message:
+                await response.reply_to_message.delete()
+        return await query.message.edit_msg(
+            "Dibatalkan.", reply_markup=build_web_buttons(query.from_user.id)
+        )
+    web[key] = response.text.strip()
+    await save_web_config()
+    with contextlib.suppress(Exception):
+        await response.delete()
+    with contextlib.suppress(Exception):
+        if response.reply_to_message:
+            await response.reply_to_message.delete()
+    await query.message.edit_msg(
+        f"✅ Domain <b>{key}</b> diperbarui menjadi:\n<code>{web[key]}</code>",
+        reply_markup=build_web_domain_menu(query.from_user.id, key),
+    )
+
+
+@app.on_cb("webdomainback#")
+@use_chat_lang()
+async def webdomain_back(_, query, strings):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    text = "<b>Web Domain Editor</b>\nPilih domain yang ingin kamu ubah."
+    keyboard = build_web_buttons(query.from_user.id)
+    await query.message.edit_msg(text, reply_markup=keyboard)
 
 
 def split_arr(arr, size: 5):
@@ -80,6 +262,7 @@ def split_arr(arr, size: 5):
 
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -118,6 +301,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
 
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -154,6 +338,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
 
 # Pahe GetData
 async def getDataPahe(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -190,6 +375,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 
 # Kusonime GetData
 async def getDataKuso(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -243,6 +429,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -289,6 +476,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
 
 # NoDrakor GetData
 async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         nodrakordata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -341,6 +529,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
 
 # Savefilm21 GetData
 async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -393,6 +582,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
 
 # NunaDrama GetData
 async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -448,6 +638,7 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
 
 # PusatFilm21 GetData
 async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -503,6 +694,7 @@ async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
 
 # DutaMovie GetData
 async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -558,6 +750,7 @@ async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
 
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -623,6 +816,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -673,6 +867,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -728,6 +923,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
 
 # getData samehada
 async def getSame(msg, query, current_page, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         cfse = cloudscraper.create_scraper()
         if query:
