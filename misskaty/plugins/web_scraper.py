@@ -18,7 +18,7 @@ from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 from pyrogram.errors import QueryIdInvalid
-from pyrogram.types import Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database import dbname
 from misskaty import app
@@ -99,23 +99,35 @@ async def save_web_config():
 
 
 def build_web_buttons(uid: int):
-    buttons = InlineKeyboard(row_width=2)
-    for key in sorted(DEFAULT_WEB):
-        buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
-    extra_keys = sorted(set(web) - set(DEFAULT_WEB))
-    for key in extra_keys:
-        buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
-    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
-    return buttons
+    rows = []
+    row = []
+    keys = list(sorted(DEFAULT_WEB)) + sorted(set(web) - set(DEFAULT_WEB))
+    for index, key in enumerate(keys, start=1):
+        row.append(InlineKeyboardButton(key, callback_data=f"webdomain#{key}#{uid}"))
+        if index % 2 == 0:
+            rows.append(row)
+            row = []
+    if row:
+        rows.append(row)
+    rows.append([InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")])
+    return InlineKeyboardMarkup(rows)
 
 
 def build_web_domain_menu(uid: int, key: str):
-    buttons = InlineKeyboard(row_width=2)
-    buttons.add(InlineButton("👁 View", f"webdomainview#{key}#{uid}"))
-    buttons.add(InlineButton("✏️ Edit", f"webdomainedit#{key}#{uid}"))
-    buttons.row(InlineButton("↩️ Back", f"webdomainback#{uid}"))
-    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
-    return buttons
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "👁 View", callback_data=f"webdomainview#{key}#{uid}"
+                ),
+                InlineKeyboardButton(
+                    "✏️ Edit", callback_data=f"webdomainedit#{key}#{uid}"
+                ),
+            ],
+            [InlineKeyboardButton("↩️ Back", callback_data=f"webdomainback#{uid}")],
+            [InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")],
+        ]
+    )
 
 
 @app.on_cmd("webdomain", no_channel=True)
@@ -203,11 +215,21 @@ async def webdomain_edit_value(_, query, strings):
     except Exception:
         return await query.message.edit_msg("⚠️ Waktu habis.")
     if response.text.strip().lower() == "/cancel":
+        with contextlib.suppress(Exception):
+            await response.delete()
+        with contextlib.suppress(Exception):
+            if response.reply_to_message:
+                await response.reply_to_message.delete()
         return await query.message.edit_msg(
             "Dibatalkan.", reply_markup=build_web_buttons(query.from_user.id)
         )
     web[key] = response.text.strip()
     await save_web_config()
+    with contextlib.suppress(Exception):
+        await response.delete()
+    with contextlib.suppress(Exception):
+        if response.reply_to_message:
+            await response.reply_to_message.delete()
     await query.message.edit_msg(
         f"✅ Domain <b>{key}</b> diperbarui menjadi:\n<code>{web[key]}</code>",
         reply_markup=build_web_domain_menu(query.from_user.id, key),
