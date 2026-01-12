@@ -50,6 +50,21 @@ async def set_imdb_layout(user_id: int, enabled: bool):
     )
 
 
+async def get_imdb_layout_fields(user_id: int):
+    user = await imbd_db.find_one({"user_id": user_id})
+    return user.get("layout_fields") if user else None
+
+
+async def set_imdb_layout_fields(user_id: int, fields):
+    await imbd_db.update_one(
+        {"user_id": user_id}, {"$set": {"layout_fields": fields}}, upsert=True
+    )
+
+
+async def reset_imdb_layout_fields(user_id: int):
+    await imbd_db.update_one({"user_id": user_id}, {"$unset": {"layout_fields": ""}})
+
+
 async def get_imdb_by(user_id: int):
     user = await imbd_db.find_one({"user_id": user_id})
     return user.get("imdb_by") if user else None

@@ -36,13 +36,16 @@ from database.imdb_db import (
     add_imdbset,
     get_imdb_by,
     get_imdb_layout,
+    get_imdb_layout_fields,
     get_imdb_template,
     is_imdbset,
     remove_imdb_by,
     remove_imdb_template,
     remove_imdbset,
+    reset_imdb_layout_fields,
     set_imdb_by,
     set_imdb_layout,
+    set_imdb_layout_fields,
     set_imdb_template,
 )
 from misskaty import app
@@ -80,6 +83,19 @@ def _imdb_settings_caption(template_enabled: bool, layout_enabled: bool, imdb_by
     )
 
 
+def _imdb_layout_caption(template_enabled: bool):
+    return (
+        "<b>Edit Layout IMDb</b>\n\n"
+        "Klik tombol untuk menonaktifkan/menyalakan bagian layout bawaan.\n"
+        "Gunakan tombol reset untuk kembali ke default.\n\n"
+        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
+        if template_enabled
+        else "<b>Edit Layout IMDb</b>\n\n"
+        "Klik tombol untuk menonaktifkan/menyalakan bagian layout bawaan.\n"
+        "Gunakan tombol reset untuk kembali ke default."
+    )
+
+
 def _imdb_settings_keyboard(uid: int, layout_enabled: bool, template_enabled: bool):
     buttons = InlineKeyboard()
     buttons.row(
@@ -99,8 +115,46 @@ def _imdb_settings_keyboard(uid: int, layout_enabled: bool, template_enabled: bo
             f"imdby#{uid}",
         ),
     )
+    buttons.row(InlineButton("⚙️ Edit Layout", f"imdblayoutmenu#{uid}"))
     buttons.row(InlineButton("❌ Close", f"close#{uid}"))
     return buttons
+
+
+def _layout_fields():
+    return [
+        ("title", "Title"),
+        ("release_date", "Release"),
+        ("genre", "Genre"),
+        ("country", "Country"),
+        ("language", "Language"),
+        ("cast", "Cast"),
+        ("storyline", "Storyline"),
+        ("keyword", "Keyword"),
+        ("awards", "Awards"),
+        ("ott", "OTT"),
+        ("imdb_by", "IMDb by"),
+        ("open_imdb", "Open IMDb"),
+        ("trailer", "Trailer"),
+    ]
+
+
+def _layout_field_label(field_key: str, enabled: bool) -> str:
+    return f\"{'✅' if enabled else '❌'} {dict(_layout_fields()).get(field_key, field_key)}\"
+
+
+async def _get_hidden_layout_fields(user_id: int):
+    stored = await get_imdb_layout_fields(user_id)
+    return set(stored or [])
+
+
+async def _toggle_layout_field(user_id: int, field_key: str):
+    hidden = await _get_hidden_layout_fields(user_id)
+    if field_key in hidden:
+        hidden.remove(field_key)
+    else:
+        hidden.add(field_key)
+    await set_imdb_layout_fields(user_id, list(hidden))
+    return hidden
 
 
 # IMDB Choose Language
@@ -273,6 +327,83 @@ async def imdb_layout_toggle(_, query: CallbackQuery):
     buttons = _imdb_settings_keyboard(query.from_user.id, not current, bool(template))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_caption(caption, reply_markup=buttons)
+
+
+@app.on_cb("imdblayoutmenu")
+async def imdb_layout_menu(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    template = await get_imdb_template(query.from_user.id)
+    hidden = await _get_hidden_layout_fields(query.from_user.id)
+    buttons = InlineKeyboard(row_width=2)
+    for key, _label in _layout_fields():
+        enabled = key not in hidden
+        buttons.add(
+            InlineButton(
+                _layout_field_label(key, enabled),
+                f"imdblayouttoggle#{key}#{query.from_user.id}",
+            )
+        )
+    buttons.row(
+        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
+        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
+    )
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(
+            _imdb_layout_caption(bool(template)), reply_markup=buttons
+        )
+
+
+@app.on_cb("imdblayouttoggle")
+async def imdb_layout_toggle_field(_, query: CallbackQuery):
+    _, field_key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    hidden = await _toggle_layout_field(query.from_user.id, field_key)
+    buttons = InlineKeyboard(row_width=2)
+    for key, _label in _layout_fields():
+        enabled = key not in hidden
+        buttons.add(
+            InlineButton(
+                _layout_field_label(key, enabled),
+                f"imdblayouttoggle#{key}#{query.from_user.id}",
+            )
+        )
+    buttons.row(
+        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
+        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
+    )
+    template = await get_imdb_template(query.from_user.id)
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(
+            _imdb_layout_caption(bool(template)), reply_markup=buttons
+        )
+
+
+@app.on_cb("imdblayoutreset")
+async def imdb_layout_reset(_, query: CallbackQuery):
+    _, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    await reset_imdb_layout_fields(query.from_user.id)
+    buttons = InlineKeyboard(row_width=2)
+    for key, _label in _layout_fields():
+        buttons.add(
+            InlineButton(
+                _layout_field_label(key, True),
+                f"imdblayouttoggle#{key}#{query.from_user.id}",
+            )
+        )
+    buttons.row(
+        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
+        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
+    )
+    template = await get_imdb_template(query.from_user.id)
+    with contextlib.suppress(MessageIdInvalid, MessageNotModified):
+        await query.message.edit_caption(
+            _imdb_layout_caption(bool(template)), reply_markup=buttons
+        )
 
 
 @app.on_cb("imdbtemplatemenu")
@@ -621,6 +752,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
             layout_enabled = await get_imdb_layout(query.from_user.id)
+            hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
             duration_text = "-"
@@ -635,6 +767,9 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             storyline_text = "-"
             keyword_text = "-"
             awards_text = "-"
+            rilis = "-"
+            rilis_url = ""
+            summary = ""
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -793,20 +928,62 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     f"<b>Type:</b> <code>{typee or '-'}</code>\n"
                     f"<b>©️ IMDb by</b> {imdb_by}"
                 )
+            else:
+                if "title" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        "",
+                    )
+                if "release_date" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        "",
+                    )
+                if "genre" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Genre:</b> {genre_text}\n", "")
+                if "country" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Negara:</b> {country_text}\n", "")
+                if "language" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Bahasa:</b> {language_text}\n", "")
+                if "cast" in hidden_fields:
+                    res_str = res_str.replace("\n<b>🙎 Info Cast:</b>\n", "")
+                    res_str = res_str.replace(f"<b>Sutradara:</b> {director_text}\n", "")
+                    res_str = res_str.replace(f"<b>Penulis:</b> {writer_text}\n", "")
+                    res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
+                if "storyline" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        "",
+                    )
+                if "keyword" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        "",
+                    )
+                if "awards" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        "",
+                    )
+                if "ott" in hidden_fields:
+                    res_str = res_str.replace(f"Tersedia di:\n{ott}\n", "")
+                if "imdb_by" in hidden_fields:
+                    res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
-                markup = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton("🎬 Open IMDB", url=imdb_url),
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url),
-                        ]
-                    ]
-                )
+                buttons = []
+                if "open_imdb" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+                if "trailer" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
+                markup = InlineKeyboardMarkup([buttons]) if buttons else None
             else:
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                )
+                if "open_imdb" in hidden_fields:
+                    markup = None
+                else:
+                    markup = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                    )
             if thumb := r_json.get("image"):
                 try:
                     await query.message.edit_media(
@@ -873,6 +1050,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
             layout_enabled = await get_imdb_layout(query.from_user.id)
+            hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
             duration_text = "-"
@@ -887,6 +1065,9 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             storyline_text = "-"
             keyword_text = "-"
             awards_text = "-"
+            rilis = "-"
+            rilis_url = ""
+            summary = ""
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -988,6 +1169,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             cast_info = "\n".join(cast_lines) if cast_lines else "-"
             if description := r_json.get("description"):
                 storyline_text = description or "-"
+                summary = description
                 res_str += f"<b>📜 Summary:</b>\n<blockquote><code>{description}</code></blockquote>\n\n"
             if r_json.get("keywords"):
                 keyword_text = "".join(
@@ -1044,20 +1226,62 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     f"<b>Type:</b> <code>{typee or '-'}</code>\n"
                     f"<b>©️ IMDb by</b> {imdb_by}"
                 )
+            else:
+                if "title" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        "",
+                    )
+                if "release_date" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        "",
+                    )
+                if "genre" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Genre:</b> {genre_text}\n", "")
+                if "country" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Country:</b> {country_text}\n", "")
+                if "language" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Language:</b> {language_text}\n", "")
+                if "cast" in hidden_fields:
+                    res_str = res_str.replace("\n<b>🙎 Cast Info:</b>\n", "")
+                    res_str = res_str.replace(f"<b>Director:</b> {director_text}\n", "")
+                    res_str = res_str.replace(f"<b>Writer:</b> {writer_text}\n", "")
+                    res_str = res_str.replace(f"<b>Stars:</b> {cast_text}\n\n", "")
+                if "storyline" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📜 Summary:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        "",
+                    )
+                if "keyword" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🔥 Keywords:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        "",
+                    )
+                if "awards" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🏆 Awards:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        "",
+                    )
+                if "ott" in hidden_fields:
+                    res_str = res_str.replace(f"Available On:\n{ott}\n", "")
+                if "imdb_by" in hidden_fields:
+                    res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
             if trailer := r_json.get("trailer"):
                 trailer_url = trailer["url"]
-                markup = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton("🎬 Open IMDB", url=imdb_url),
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url),
-                        ]
-                    ]
-                )
+                buttons = []
+                if "open_imdb" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+                if "trailer" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
+                markup = InlineKeyboardMarkup([buttons]) if buttons else None
             else:
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                )
+                if "open_imdb" in hidden_fields:
+                    markup = None
+                else:
+                    markup = InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                    )
             if thumb := r_json.get("image"):
                 try:
                     await query.message.edit_media(

@@ -24,7 +24,12 @@ from pyrogram.types import (
     InputTextMessageContent,
 )
 
-from database.imdb_db import get_imdb_by, get_imdb_layout, get_imdb_template
+from database.imdb_db import (
+    get_imdb_by,
+    get_imdb_layout,
+    get_imdb_layout_fields,
+    get_imdb_template,
+)
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper import GENRES_EMOJI, fetch, gtranslate, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
@@ -659,6 +664,7 @@ async def imdb_inl(_, query):
             ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
             template = await get_imdb_template(query.from_user.id)
             layout_enabled = await get_imdb_layout(query.from_user.id)
+            hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
             res_str = ""
             typee = r_json.get("@type", "")
@@ -674,6 +680,9 @@ async def imdb_inl(_, query):
             storyline_text = "-"
             keyword_text = "-"
             awards_text = "-"
+            rilis = "-"
+            rilis_url = ""
+            summary = ""
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -835,30 +844,69 @@ async def imdb_inl(_, query):
                     f"<b>Type:</b> <code>{typee or '-'}</code>\n"
                     f"<b>©️ IMDb by</b> {imdb_by}"
                 )
+            else:
+                if "title" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        "",
+                    )
+                if "release_date" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n",
+                        "",
+                    )
+                if "genre" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Genre:</b> {genre_text}\n", "")
+                if "country" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Negara:</b> {country_text}\n", "")
+                if "language" in hidden_fields:
+                    res_str = res_str.replace(f"<b>Bahasa:</b> {language_text}\n", "")
+                if "cast" in hidden_fields:
+                    res_str = res_str.replace("\n<b>🙎 Info Cast:</b>\n", "")
+                    res_str = res_str.replace(f"<b>Sutradara:</b> {director_text}\n", "")
+                    res_str = res_str.replace(f"<b>Penulis:</b> {writer_text}\n", "")
+                    res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
+                if "storyline" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n",
+                        "",
+                    )
+                if "keyword" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text}</blockquote>\n",
+                        "",
+                    )
+                if "awards" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n",
+                        "",
+                    )
+                if "ott" in hidden_fields:
+                    res_str = res_str.replace(f"Available On:\n{ott}\n", "")
+                if "imdb_by" in hidden_fields:
+                    res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
-                markup = InlineKeyboardMarkup(
-                    [
-                        [
-                            InlineKeyboardButton(
-                                "🎬 Buka IMDB",
-                                url=url,
-                            ),
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url),
-                        ]
-                    ]
-                )
+                buttons = []
+                if "open_imdb" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("🎬 Buka IMDB", url=url))
+                if "trailer" not in hidden_fields:
+                    buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
+                markup = InlineKeyboardMarkup([buttons]) if buttons else None
             else:
-                markup = InlineKeyboardMarkup(
-                    [
+                if "open_imdb" in hidden_fields:
+                    markup = None
+                else:
+                    markup = InlineKeyboardMarkup(
                         [
-                            InlineKeyboardButton(
-                                "🎬 Open IMDB",
-                                url=url,
-                            )
+                            [
+                                InlineKeyboardButton(
+                                    "🎬 Open IMDB",
+                                    url=url,
+                                )
+                            ]
                         ]
-                    ]
-                )
+                    )
             await query.edit_message_caption(
                 res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
             )
