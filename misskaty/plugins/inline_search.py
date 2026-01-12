@@ -53,6 +53,27 @@ class _ImdbTemplateDefaults(dict):
         return "-"
 
 
+def _render_template_buttons(template: str, payload: dict):
+    buttons = []
+
+    def _replace(match: re.Match) -> str:
+        label = match.group(1)
+        url = match.group(2)
+        try:
+            label = label.format_map(_ImdbTemplateDefaults(payload))
+            url = url.format_map(_ImdbTemplateDefaults(payload))
+        except Exception:
+            return ""
+        if url.startswith("http"):
+            buttons.append(InlineKeyboardButton(label, url=url))
+        return ""
+
+    template_without_buttons = re.sub(
+        r"\[([^\]]+)\]\((https?://[^)]+)\)", _replace, template
+    )
+    return template_without_buttons, buttons
+
+
 def render_imdb_template(template: str, payload: dict) -> str | None:
     try:
         normalized = template.replace("\\n", "\n")
@@ -63,6 +84,19 @@ def render_imdb_template(template: str, payload: dict) -> str | None:
     except Exception as err:
         LOGGER.warning(f"Failed rendering IMDB template: {err}")
         return None
+
+
+def render_imdb_template_with_buttons(template: str, payload: dict):
+    try:
+        normalized = template.replace("\\n", "\n")
+        template_without_buttons, buttons = _render_template_buttons(
+            normalized, payload
+        )
+        rendered = template_without_buttons.format_map(_ImdbTemplateDefaults(payload))
+        return rendered, buttons
+    except Exception as err:
+        LOGGER.warning(f"Failed rendering IMDB template with buttons: {err}")
+        return None, []
 
 
 def _with_html_placeholders(payload: dict) -> dict:
@@ -915,9 +949,14 @@ async def imdb_inl(_, query):
                     "storyline": storyline_text,
                     "keyword": keyword_text,
                 }
-                rendered = render_imdb_template(template, _with_html_placeholders(payload))
+                template_markup = None
+                rendered, template_buttons = render_imdb_template_with_buttons(
+                    template, _with_html_placeholders(payload)
+                )
                 if rendered:
                     res_str = rendered
+                    if template_buttons:
+                        template_markup = InlineKeyboardMarkup([template_buttons])
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
@@ -959,7 +998,9 @@ async def imdb_inl(_, query):
                     res_str = res_str.replace(f"Available On:\n{ott}\n", "")
                 if "imdb_by" in hidden_fields:
                     res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
-            if r_json.get("trailer"):
+            if template:
+                markup = template_markup
+            elif r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 buttons = []
                 if "open_imdb" not in hidden_fields:

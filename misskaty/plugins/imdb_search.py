@@ -62,6 +62,27 @@ class _ImdbTemplateDefaults(dict):
         return "-"
 
 
+def _render_template_buttons(template: str, payload: dict):
+    buttons = []
+
+    def _replace(match: re.Match) -> str:
+        label = match.group(1)
+        url = match.group(2)
+        try:
+            label = label.format_map(_ImdbTemplateDefaults(payload))
+            url = url.format_map(_ImdbTemplateDefaults(payload))
+        except Exception:
+            return ""
+        if url.startswith("http"):
+            buttons.append(InlineKeyboardButton(label, url=url))
+        return ""
+
+    template_without_buttons = re.sub(
+        r"\[([^\]]+)\]\((https?://[^)]+)\)", _replace, template
+    )
+    return template_without_buttons, buttons
+
+
 def render_imdb_template(template: str, payload: dict) -> Optional[str]:
     try:
         normalized = template.replace("\\n", "\n")
@@ -82,6 +103,19 @@ def _with_html_placeholders(payload: dict) -> dict:
         if isinstance(value, str):
             enriched[f"{key}_html"] = html.escape(value)
     return enriched
+
+
+def render_imdb_template_with_buttons(template: str, payload: dict):
+    try:
+        normalized = template.replace("\\n", "\n")
+        template_without_buttons, buttons = _render_template_buttons(
+            normalized, payload
+        )
+        rendered = template_without_buttons.format_map(_ImdbTemplateDefaults(payload))
+        return rendered, buttons
+    except Exception as err:
+        LOGGER.warning(f"Failed rendering IMDB template with buttons: {err}")
+        return None, []
 
 
 def _imdb_settings_caption(name: str):
@@ -139,6 +173,7 @@ def _layout_fields():
         ("imdb_by", "IMDb by"),
         ("open_imdb", "Open IMDb"),
         ("trailer", "Trailer"),
+        ("send_as_photo", "Send as Photo"),
     ]
 
 
@@ -1050,9 +1085,14 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     "storyline": storyline_text,
                     "keyword": keyword_text,
                 }
-                rendered = render_imdb_template(template, _with_html_placeholders(payload))
+                template_markup = None
+                rendered, template_buttons = render_imdb_template_with_buttons(
+                    template, _with_html_placeholders(payload)
+                )
                 if rendered:
                     res_str = rendered
+                    if template_buttons:
+                        template_markup = InlineKeyboardMarkup([template_buttons])
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
@@ -1109,22 +1149,35 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     res_str = res_str.replace(f"Tersedia di:\n{ott}\n", "")
                 if "imdb_by" in hidden_fields:
                     res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
-            if trailer := r_json.get("trailer"):
-                trailer_url = trailer["url"]
-                buttons = []
-                if "open_imdb" not in hidden_fields:
-                    buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
-                if "trailer" not in hidden_fields:
-                    buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
-                markup = InlineKeyboardMarkup([buttons]) if buttons else None
+            if template:
+                markup = template_markup
             else:
-                if "open_imdb" in hidden_fields:
-                    markup = None
+                if trailer := r_json.get("trailer"):
+                    trailer_url = trailer["url"]
+                    buttons = []
+                    if "open_imdb" not in hidden_fields:
+                        buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+                    if "trailer" not in hidden_fields:
+                        buttons.append(
+                            InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                        )
+                    markup = InlineKeyboardMarkup([buttons]) if buttons else None
                 else:
-                    markup = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                    )
-            if thumb := r_json.get("image"):
+                    if "open_imdb" in hidden_fields:
+                        markup = None
+                    else:
+                        markup = InlineKeyboardMarkup(
+                            [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                        )
+            send_as_photo = "send_as_photo" not in hidden_fields
+            if not send_as_photo:
+                new_msg = await query.message.reply(
+                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                )
+                with contextlib.suppress(Exception):
+                    await query.message.delete_msg()
+                query.message = new_msg
+            elif thumb := r_json.get("image"):
                 try:
                     await query.message.edit_media(
                         InputMediaPhoto(
@@ -1429,9 +1482,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     "storyline": storyline_text,
                     "keyword": keyword_text,
                 }
-                rendered = render_imdb_template(template, _with_html_placeholders(payload))
+                template_markup = None
+                rendered, template_buttons = render_imdb_template_with_buttons(
+                    template, _with_html_placeholders(payload)
+                )
                 if rendered:
                     res_str = rendered
+                    if template_buttons:
+                        template_markup = InlineKeyboardMarkup([template_buttons])
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
@@ -1488,22 +1546,35 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     res_str = res_str.replace(f"Available On:\n{ott}\n", "")
                 if "imdb_by" in hidden_fields:
                     res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
-            if trailer := r_json.get("trailer"):
-                trailer_url = trailer["url"]
-                buttons = []
-                if "open_imdb" not in hidden_fields:
-                    buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
-                if "trailer" not in hidden_fields:
-                    buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
-                markup = InlineKeyboardMarkup([buttons]) if buttons else None
+            if template:
+                markup = template_markup
             else:
-                if "open_imdb" in hidden_fields:
-                    markup = None
+                if trailer := r_json.get("trailer"):
+                    trailer_url = trailer["url"]
+                    buttons = []
+                    if "open_imdb" not in hidden_fields:
+                        buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+                    if "trailer" not in hidden_fields:
+                        buttons.append(
+                            InlineKeyboardButton("▶️ Trailer", url=trailer_url)
+                        )
+                    markup = InlineKeyboardMarkup([buttons]) if buttons else None
                 else:
-                    markup = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                    )
-            if thumb := r_json.get("image"):
+                    if "open_imdb" in hidden_fields:
+                        markup = None
+                    else:
+                        markup = InlineKeyboardMarkup(
+                            [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                        )
+            send_as_photo = "send_as_photo" not in hidden_fields
+            if not send_as_photo:
+                new_msg = await query.message.reply(
+                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                )
+                with contextlib.suppress(Exception):
+                    await query.message.delete_msg()
+                query.message = new_msg
+            elif thumb := r_json.get("image"):
                 try:
                     await query.message.edit_media(
                         InputMediaPhoto(
