@@ -23,7 +23,7 @@ from pyrogram.types import Message
 from database import dbname
 from misskaty import app
 from misskaty.helper import Cache, Kusonime, fetch, post_to_telegraph, use_chat_lang
-from misskaty.vars import OWNER_ID, SUDO
+from misskaty.vars import OWNER_ID
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -41,7 +41,7 @@ __HELP__ = """
 /nunadrama [query <optional>] - Scrape website data from NunaDrama
 /dutamovie [query <optional>] - Scrape website data from DutaMovie
 /pusatfilm [query <optional>] - Scrape website data from Pusatfilm21
-/webdomain - Edit scraper domains via interactive buttons (SUDO/OWNER only).
+/webdomain - Edit scraper domains via interactive buttons (OWNER only).
 """
 
 LOGGER = logging.getLogger("MissKaty")
@@ -111,7 +111,7 @@ def build_web_buttons(uid: int):
 async def webdomain_cmd(_, message, strings):
     if not message.from_user:
         return
-    if message.from_user.id not in SUDO and message.from_user.id != OWNER_ID:
+    if message.from_user.id != OWNER_ID:
         return await message.reply_msg("⚠️ Access Denied!", del_in=5)
     await ensure_web_config()
     text = "<b>Web Domain Editor</b>\nPilih domain yang ingin kamu ubah."
@@ -124,6 +124,8 @@ async def webdomain_cmd(_, message, strings):
 async def webdomain_edit(_, query, strings):
     _, key, uid = query.data.split("#")
     if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    if query.from_user.id != OWNER_ID:
         return await query.answer("⚠️ Access Denied!", True)
     await ensure_web_config()
     if key not in web:
