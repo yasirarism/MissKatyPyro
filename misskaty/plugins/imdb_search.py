@@ -84,51 +84,35 @@ def _with_html_placeholders(payload: dict) -> dict:
     return enriched
 
 
-def _imdb_settings_caption(template_enabled: bool, layout_enabled: bool, imdb_by: str):
-    status = "Sudah diatur ✅" if template_enabled else "Belum diatur ❌"
-    layout_status = "On ✅" if layout_enabled else "Off ❌"
+def _imdb_settings_caption():
     return (
-        "<b>Pengaturan IMDb</b>\n\n"
-        f"• Custom Layout IMDb: <b>{status}</b>\n"
-        f"• Layout bawaan: <b>{layout_status}</b>\n"
-        f"• IMDb by: <code>{imdb_by}</code>\n\n"
-        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
+        "Halo Yasir | Ready TelePrem, CapCut, Canva, Netflix, dll!\n"
+        "Kelola preferensi IMDb Search kamu di sini.\n\n"
+        "• 🎛 Edit Layout → pilih informasi apa saja yang tampil di hasil detail.\n"
+        "• 🧩 Custom Layout → pakai template HTML sendiri.\n"
+        "• 📝 IMDb By → atur nama/username yang muncul di kredit.\n"
+        "• 🚩 Language → set bahasa default saat memakai /imdb.\n\n"
+        "Sentuh salah satu tombol di bawah untuk memulai."
     )
 
 
-def _imdb_layout_caption(template_enabled: bool):
+def _imdb_layout_caption():
     return (
-        "<b>Edit Layout IMDb</b>\n\n"
-        "Klik tombol untuk menonaktifkan/menyalakan bagian layout bawaan.\n"
-        "Gunakan tombol reset untuk kembali ke default.\n\n"
-        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
-        if template_enabled
-        else "<b>Edit Layout IMDb</b>\n\n"
-        "Klik tombol untuk menonaktifkan/menyalakan bagian layout bawaan.\n"
-        "Gunakan tombol reset untuk kembali ke default."
+        "<b>Edit Layout IMDb</b>\n"
+        "Silahkan edit layout IMDb anda, tekan reset untuk kembali ke default."
     )
 
 
-def _imdb_settings_keyboard(uid: int, layout_enabled: bool, template_enabled: bool):
+def _imdb_settings_keyboard(uid: int):
     buttons = InlineKeyboard()
     buttons.row(
-        InlineButton("🌐 Language", f"imdbsetlang#{uid}"),
-        InlineButton(
-            f"🎛 Layout {'On' if layout_enabled else 'Off'}",
-            f"imdblayout#{uid}",
-        ),
+        InlineButton("🎛 Edit Layout", f"imdblayoutmenu#{uid}"),
+        InlineButton("📝 IMDb By", f"imdby#{uid}"),
     )
     buttons.row(
-        InlineButton(
-            "🧩 Custom Layout",
-            f"imdbtemplatemenu#{uid}",
-        ),
-        InlineButton(
-            "✍️ Edit IMDb by",
-            f"imdby#{uid}",
-        ),
+        InlineButton("🧩 Custom Layout", f"imdbtemplatemenu#{uid}"),
+        InlineButton("🚩 Language", f"imdbsetlang#{uid}"),
     )
-    buttons.row(InlineButton("⚙️ Edit Layout", f"imdblayoutmenu#{uid}"))
     buttons.row(InlineButton("❌ Close", f"close#{uid}"))
     return buttons
 
@@ -293,11 +277,8 @@ async def imdb_settings_cmd(_, ctx: Message):
         return await ctx.reply_msg(
             "Cannot identify user, please use in private chat.", del_in=7
         )
-    template = await get_imdb_template(ctx.from_user.id)
-    layout_enabled = await get_imdb_layout(ctx.from_user.id)
-    imdb_by = await get_imdb_by(ctx.from_user.id) or f"@{app.me.username}"
-    caption = _imdb_settings_caption(bool(template), layout_enabled, imdb_by)
-    buttons = _imdb_settings_keyboard(ctx.from_user.id, layout_enabled, bool(template))
+    caption = _imdb_settings_caption()
+    buttons = _imdb_settings_keyboard(ctx.from_user.id)
     await ctx.reply_msg(caption, reply_markup=buttons)
 
 
@@ -306,15 +287,10 @@ async def imdblangset(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
-    template = await get_imdb_template(query.from_user.id)
-    layout_enabled = await get_imdb_layout(query.from_user.id)
-    imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
-    buttons = _imdb_settings_keyboard(
-        query.from_user.id, layout_enabled, bool(template)
-    )
-    caption = _imdb_settings_caption(bool(template), layout_enabled, imdb_by)
+    buttons = _imdb_settings_keyboard(query.from_user.id)
+    caption = _imdb_settings_caption()
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(caption, reply_markup=buttons)
+        await query.message.edit_msg(caption, reply_markup=buttons)
 
 
 @app.on_cb("imdbsetlang")
@@ -334,7 +310,7 @@ async def imdb_lang_menu(_, query: CallbackQuery):
         )
     buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(
+        await query.message.edit_msg(
             "<i>Please select available language below..</i>", reply_markup=buttons
         )
 
@@ -346,12 +322,10 @@ async def imdb_layout_toggle(_, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     current = await get_imdb_layout(query.from_user.id)
     await set_imdb_layout(query.from_user.id, not current)
-    template = await get_imdb_template(query.from_user.id)
-    imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
-    caption = _imdb_settings_caption(bool(template), not current, imdb_by)
-    buttons = _imdb_settings_keyboard(query.from_user.id, not current, bool(template))
+    caption = _imdb_settings_caption()
+    buttons = _imdb_settings_keyboard(query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(caption, reply_markup=buttons)
+        await query.message.edit_msg(caption, reply_markup=buttons)
 
 
 @app.on_cb("imdblayoutmenu")
@@ -359,7 +333,6 @@ async def imdb_layout_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
-    template = await get_imdb_template(query.from_user.id)
     hidden = await _get_hidden_layout_fields(query.from_user.id)
     buttons = InlineKeyboard(row_width=2)
     for key, _label in _layout_fields():
@@ -374,10 +347,9 @@ async def imdb_layout_menu(_, query: CallbackQuery):
         InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
         InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
     )
+    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(
-            _imdb_layout_caption(bool(template)), reply_markup=buttons
-        )
+        await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
 @app.on_cb("imdblayouttoggle")
@@ -399,11 +371,9 @@ async def imdb_layout_toggle_field(_, query: CallbackQuery):
         InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
         InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
     )
-    template = await get_imdb_template(query.from_user.id)
+    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(
-            _imdb_layout_caption(bool(template)), reply_markup=buttons
-        )
+        await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
 @app.on_cb("imdblayoutreset")
@@ -424,11 +394,9 @@ async def imdb_layout_reset(_, query: CallbackQuery):
         InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
         InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
     )
-    template = await get_imdb_template(query.from_user.id)
+    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(
-            _imdb_layout_caption(bool(template)), reply_markup=buttons
-        )
+        await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
 @app.on_cb("imdbtemplatemenu")
@@ -488,9 +456,12 @@ async def imdb_template_menu(_, query: CallbackQuery):
         "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
     )
     buttons = InlineKeyboard()
-    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
+    buttons.row(
+        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
+        InlineButton("❌ Close", f"close#{query.from_user.id}"),
+    )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(text, reply_markup=buttons)
+        await query.message.edit_msg(text, reply_markup=buttons)
 
 
 @app.on_cb("imdby")
@@ -509,7 +480,7 @@ async def imdb_by_menu(_, query: CallbackQuery):
     buttons = InlineKeyboard()
     buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        await query.message.edit_caption(text, reply_markup=buttons)
+        await query.message.edit_msg(text, reply_markup=buttons)
 
 
 @app.on_cb("setimdb")
@@ -523,17 +494,17 @@ async def imdbsetlang(_, query: CallbackQuery):
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         if lang == "eng":
             await add_imdbset(query.from_user.id, lang)
-            await query.message.edit_caption(
+            await query.message.edit_msg(
                 "Language interface for IMDB has been changed to English."
             )
         elif lang == "ind":
             await add_imdbset(query.from_user.id, lang)
-            await query.message.edit_caption(
+            await query.message.edit_msg(
                 "Bahasa tampilan IMDB sudah diubah ke Indonesia."
             )
         else:
             await remove_imdbset(query.from_user.id)
-            await query.message.edit_caption(
+            await query.message.edit_msg(
                 "UserSetting for IMDB has been deleted from database."
             )
 
