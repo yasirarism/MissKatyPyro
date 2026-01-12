@@ -84,9 +84,9 @@ def _with_html_placeholders(payload: dict) -> dict:
     return enriched
 
 
-def _imdb_settings_caption():
+def _imdb_settings_caption(name: str):
     return (
-        "Halo Yasir | Ready TelePrem, CapCut, Canva, Netflix, dll!\n"
+        f"Halo {name} | Ready TelePrem, CapCut, Canva, Netflix, dll!\n"
         "Kelola preferensi IMDb Search kamu di sini.\n\n"
         "• 🎛 Edit Layout → pilih informasi apa saja yang tampil di hasil detail.\n"
         "• 🧩 Custom Layout → pakai template HTML sendiri.\n"
@@ -277,23 +277,23 @@ async def imdb_settings_cmd(_, ctx: Message):
         return await ctx.reply_msg(
             "Cannot identify user, please use in private chat.", del_in=7
         )
-    caption = _imdb_settings_caption()
+    caption = _imdb_settings_caption(ctx.from_user.first_name)
     buttons = _imdb_settings_keyboard(ctx.from_user.id)
     await ctx.reply_msg(caption, reply_markup=buttons)
 
 
-@app.on_cb("imdbset")
+@app.on_cb("imdbset#")
 async def imdblangset(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     buttons = _imdb_settings_keyboard(query.from_user.id)
-    caption = _imdb_settings_caption()
+    caption = _imdb_settings_caption(query.from_user.first_name)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(caption, reply_markup=buttons)
 
 
-@app.on_cb("imdbsetlang")
+@app.on_cb("imdbsetlang#")
 async def imdb_lang_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -315,20 +315,20 @@ async def imdb_lang_menu(_, query: CallbackQuery):
         )
 
 
-@app.on_cb("imdblayout")
+@app.on_cb("imdblayout#")
 async def imdb_layout_toggle(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     current = await get_imdb_layout(query.from_user.id)
     await set_imdb_layout(query.from_user.id, not current)
-    caption = _imdb_settings_caption()
+    caption = _imdb_settings_caption(query.from_user.first_name)
     buttons = _imdb_settings_keyboard(query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(caption, reply_markup=buttons)
 
 
-@app.on_cb("imdblayoutmenu")
+@app.on_cb("imdblayoutmenu#")
 async def imdb_layout_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -352,7 +352,7 @@ async def imdb_layout_menu(_, query: CallbackQuery):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
-@app.on_cb("imdblayouttoggle")
+@app.on_cb("imdblayouttoggle#")
 async def imdb_layout_toggle_field(_, query: CallbackQuery):
     _, field_key, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -376,7 +376,7 @@ async def imdb_layout_toggle_field(_, query: CallbackQuery):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
-@app.on_cb("imdblayoutreset")
+@app.on_cb("imdblayoutreset#")
 async def imdb_layout_reset(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -399,7 +399,7 @@ async def imdb_layout_reset(_, query: CallbackQuery):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
 
-@app.on_cb("imdbtemplatemenu")
+@app.on_cb("imdbtemplatemenu#")
 async def imdb_template_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
@@ -464,7 +464,7 @@ async def imdb_template_menu(_, query: CallbackQuery):
         await query.message.edit_msg(text, reply_markup=buttons)
 
 
-@app.on_cb("imdby")
+@app.on_cb("imdby#")
 async def imdb_by_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
