@@ -24,6 +24,7 @@ from pyrogram.types import (
     InputTextMessageContent,
 )
 
+from database.imdb_db import get_imdb_template
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper import GENRES_EMOJI, fetch, gtranslate, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
@@ -45,6 +46,20 @@ keywords_list = ["imdb", "pypi", "git", "google", "secretmsg", "info", "botapi"]
 
 PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
+
+
+class _ImdbTemplateDefaults(dict):
+    def __missing__(self, key):
+        return "-"
+
+
+def render_imdb_template(template: str, payload: dict) -> str | None:
+    try:
+        normalized = template.replace("\\n", "\n")
+        return normalized.format_map(_ImdbTemplateDefaults(payload))
+    except Exception as err:
+        LOGGER.warning(f"Failed rendering IMDB template: {err}")
+        return None
 
 
 @app.on_inline_query()
@@ -641,8 +656,21 @@ async def imdb_inl(_, query):
                 sop.find("script", attrs={"type": "application/ld+json"}).contents[0]
             )
             ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
+            template = await get_imdb_template(query.from_user.id)
             res_str = ""
             typee = r_json.get("@type", "")
+            duration_text = "-"
+            category_text = "-"
+            release_date_text = "-"
+            genre_text = "-"
+            country_text = "-"
+            language_text = "-"
+            director_text = "-"
+            writer_text = "-"
+            cast_text = "-"
+            storyline_text = "-"
+            keyword_text = "-"
+            awards_text = "-"
             tahun = (
                 re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)[0]
                 if re.findall(r"\d{4}\W\d{4}|\d{4}-?", sop.title.text)
@@ -661,8 +689,10 @@ async def imdb_inl(_, query):
                     .find(class_="ipc-metadata-list-item__content-container")
                     .text
                 )
-                res_str += f"<b>Durasi:</b> <code>{(await gtranslate(durasi, 'auto', 'id')).text}</code>\n"
+                duration_text = (await gtranslate(durasi, "auto", "id")).text
+                res_str += f"<b>Durasi:</b> <code>{duration_text}</code>\n"
             if r_json.get("contentRating"):
+                category_text = r_json["contentRating"] or "-"
                 res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
                 res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
@@ -677,37 +707,51 @@ async def imdb_inl(_, query):
                 rilis_url = release[0].find(
                     class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                 )["href"]
+                release_date_text = rilis or "-"
                 res_str += f"<b>Rilis:</b> <a href='https://www.imdb.com{rilis_url}'>{rilis}</a>\n"
             if r_json.get("genre"):
-                genre = "".join(
+                genre_text = "".join(
                     f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
                     if i in GENRES_EMOJI
                     else f"#{i.replace('-', '_').replace(' ', '_')}, "
                     for i in r_json["genre"]
                 )
-                res_str += f"<b>Genre:</b> {genre[:-2]}\n"
+                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
+            if genre_text == "-":
+                genre_text = "-"
+            else:
+                genre_text = genre_text[:-2]
             if negara := sop.select('li[data-testid="title-details-origin"]'):
-                country = "".join(
+                country_text = "".join(
                     f"{demoji(country.text)} #{country.text.replace(' ', '_').replace('-', '_')}, "
                     for country in negara[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Negara:</b> {country[:-2]}\n"
+                res_str += f"<b>Negara:</b> {country_text[:-2]}\n"
+            if country_text == "-":
+                country_text = "-"
+            else:
+                country_text = country_text[:-2]
             if bahasa := sop.select('li[data-testid="title-details-languages"]'):
-                language = "".join(
+                language_text = "".join(
                     f"#{lang.text.replace(' ', '_').replace('-', '_')}, "
                     for lang in bahasa[0].findAll(
                         class_="ipc-metadata-list-item__list-content-item ipc-metadata-list-item__list-content-item--link"
                     )
                 )
-                res_str += f"<b>Bahasa:</b> {language[:-2]}\n"
+                res_str += f"<b>Bahasa:</b> {language_text[:-2]}\n"
+            if language_text == "-":
+                language_text = "-"
+            else:
+                language_text = language_text[:-2]
             res_str += "\n<b>🙎 Info Cast:</b>\n"
             if r_json.get("director"):
                 director = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, "
                     for i in r_json["director"]
                 )
+                director_text = director[:-2] if director else "-"
                 res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
             if r_json.get("creator"):
                 creator = "".join(
@@ -715,35 +759,72 @@ async def imdb_inl(_, query):
                     for i in r_json["creator"]
                     if i["@type"] == "Person"
                 )
+                writer_text = creator[:-2] if creator else "-"
                 res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
             if r_json.get("actor"):
                 actors = "".join(
                     f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
                 )
+                cast_text = actors[:-2] if actors else "-"
                 res_str += f"<b>Pemeran:</b> {actors[:-2]}\n\n"
             if r_json.get("description"):
                 summary = (await gtranslate(r_json.get("description"), "auto", "id")).text
+                storyline_text = summary or "-"
                 res_str += f"<b>📜 Plot:</b>\n<blockquote><code>{summary}</code></blockquote>\n\n"
             if r_json.get("keywords"):
-                key_ = "".join(
+                keyword_text = "".join(
                     f"#{i.replace(' ', '_').replace('-', '_')}, "
                     for i in r_json["keywords"].split(",")
                 )
                 res_str += (
-                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{key_[:-2]}</blockquote>\n"
+                    f"<b>🔥 Kata Kunci:</b>\n<blockquote>{keyword_text[:-2]}</blockquote>\n"
                 )
+            if keyword_text != "-":
+                keyword_text = keyword_text[:-2]
             if award := sop.select('li[data-testid="award_information"]'):
                 awards = (
                     award[0]
                     .find(class_="ipc-metadata-list-item__list-content-item")
                     .text
                 )
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{(await gtranslate(awards, 'auto', 'id')).text}</code></blockquote>\n"
+                awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
+                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote><code>{awards_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
                 res_str += f"Available On:\n{ott}\n"
+            if not ott:
+                ott = "-"
             res_str += "<b>©️ IMDb by</b> @MissKatyRoBot"
+            if template:
+                payload = {
+                    "title": r_json.get("name") or "-",
+                    "link": url,
+                    "movie_type": typee or "-",
+                    "duration": duration_text,
+                    "category": category_text,
+                    "release_date": release_date_text,
+                    "genre": genre_text,
+                    "country": country_text,
+                    "language": language_text,
+                    "director": director_text,
+                    "writer": writer_text,
+                    "cast": cast_text,
+                    "cast_info": "\n".join(
+                        [
+                            f"Sutradara: {director_text}",
+                            f"Penulis: {writer_text}",
+                            f"Pemeran: {cast_text}",
+                        ]
+                    ),
+                    "storyline": storyline_text,
+                    "keyword": keyword_text,
+                    "awards": awards_text,
+                    "ott": ott,
+                }
+                rendered = render_imdb_template(template, payload)
+                if rendered:
+                    res_str = rendered
             if r_json.get("trailer"):
                 trailer_url = r_json["trailer"]["url"]
                 markup = InlineKeyboardMarkup(
