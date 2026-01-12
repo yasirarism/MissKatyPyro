@@ -16,12 +16,14 @@ import httpx
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
+from pyrogram import filters
 from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import Message
 
 from database import dbname
 from misskaty import app
 from misskaty.helper import Cache, Kusonime, fetch, post_to_telegraph, use_chat_lang
+from misskaty.vars import OWNER_ID, SUDO
 
 __MODULE__ = "WebScraper"
 __HELP__ = """
@@ -39,6 +41,7 @@ __HELP__ = """
 /nunadrama [query <optional>] - Scrape website data from NunaDrama
 /dutamovie [query <optional>] - Scrape website data from DutaMovie
 /pusatfilm [query <optional>] - Scrape website data from Pusatfilm21
+/webdomain - Edit scraper domains via interactive buttons (SUDO/OWNER only).
 """
 
 LOGGER = logging.getLogger("MissKaty")
@@ -47,7 +50,7 @@ data_kuso = Cache(filename="kuso_cache.db", path="cache", in_memory=False)
 savedict = TTLCache(maxsize=1000, ttl=3600)
 webdb = dbname["web"]
 
-web = {
+DEFAULT_WEB = {
     "yasirapi": "https://yasirapi.eu.org",
     "yasirapi_v2": "https://v2.yasirapi.eu.org",
     "pahe": "pahe.ink",
@@ -66,6 +69,84 @@ web = {
     "dutamovie": "https://yborfilmfestival.com",
     "pusatfilm": "http://217.76.53.139"
 }
+web = DEFAULT_WEB.copy()
+WEB_CONFIG_LOADED = False
+
+
+async def ensure_web_config():
+    global WEB_CONFIG_LOADED
+    if WEB_CONFIG_LOADED:
+        return
+    doc = await webdb.find_one({"_id": "domains"})
+    if doc and doc.get("values"):
+        web.update(doc["values"])
+        WEB_CONFIG_LOADED = True
+        return
+    async for entry in webdb.find({}):
+        for key, value in entry.items():
+            if key == "_id":
+                continue
+            web[key] = value
+    WEB_CONFIG_LOADED = True
+
+
+async def save_web_config():
+    await webdb.update_one(
+        {"_id": "domains"}, {"$set": {"values": web}}, upsert=True
+    )
+
+
+def build_web_buttons(uid: int):
+    buttons = InlineKeyboard(row_width=2)
+    for key in sorted(web):
+        buttons.add(InlineButton(key, f"webdomain#{key}#{uid}"))
+    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
+    return buttons
+
+
+@app.on_cmd("webdomain", no_channel=True)
+@use_chat_lang()
+async def webdomain_cmd(_, message, strings):
+    if not message.from_user:
+        return
+    if message.from_user.id not in SUDO and message.from_user.id != OWNER_ID:
+        return await message.reply_msg("⚠️ Access Denied!", del_in=5)
+    await ensure_web_config()
+    text = "<b>Web Domain Editor</b>\nPilih domain yang ingin kamu ubah."
+    keyboard = build_web_buttons(message.from_user.id)
+    await message.reply_msg(text, reply_markup=keyboard)
+
+
+@app.on_cb("webdomain#")
+@use_chat_lang()
+async def webdomain_edit(_, query, strings):
+    _, key, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        return await query.answer("⚠️ Access Denied!", True)
+    await ensure_web_config()
+    if key not in web:
+        return await query.answer("⚠️ Domain tidak ditemukan.", True)
+    await query.message.edit_msg(
+        f"Kirim domain baru untuk <b>{key}</b>.\n"
+        f"Saat ini: <code>{web[key]}</code>\n"
+        "Ketik <code>/cancel</code> untuk batal."
+    )
+    try:
+        response = await query.message.chat.ask(
+            "Masukkan domain baru:", filters=filters.text, timeout=60
+        )
+    except Exception:
+        return await query.message.edit_msg("⚠️ Waktu habis.")
+    if response.text.strip().lower() == "/cancel":
+        return await query.message.edit_msg(
+            "Dibatalkan.", reply_markup=build_web_buttons(query.from_user.id)
+        )
+    web[key] = response.text.strip()
+    await save_web_config()
+    await query.message.edit_msg(
+        f"✅ Domain <b>{key}</b> diperbarui menjadi:\n<code>{web[key]}</code>",
+        reply_markup=build_web_buttons(query.from_user.id),
+    )
 
 
 def split_arr(arr, size: 5):
@@ -80,6 +161,7 @@ def split_arr(arr, size: 5):
 
 # Terbit21 GetData
 async def getDataTerbit21(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -118,6 +200,7 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
 
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -154,6 +237,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
 
 # Pahe GetData
 async def getDataPahe(msg, kueri, CurrentPage, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -190,6 +274,7 @@ async def getDataPahe(msg, kueri, CurrentPage, strings):
 
 # Kusonime GetData
 async def getDataKuso(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         kusodata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -243,6 +328,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         moviekudata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -289,6 +375,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
 
 # NoDrakor GetData
 async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         nodrakordata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -341,6 +428,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
 
 # Savefilm21 GetData
 async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         sfdata = []
         with contextlib.redirect_stdout(sys.stderr):
@@ -393,6 +481,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
 
 # NunaDrama GetData
 async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -448,6 +537,7 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
 
 # PusatFilm21 GetData
 async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -503,6 +593,7 @@ async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
 
 # DutaMovie GetData
 async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -558,6 +649,7 @@ async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
 
 # Lendrive GetData
 async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -623,6 +715,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 
 # MelongMovie GetData
 async def getDataMelong(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -673,6 +766,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 
 # GoMov GetData
 async def getDataGomov(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
@@ -728,6 +822,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
 
 # getData samehada
 async def getSame(msg, query, current_page, strings):
+    await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
         cfse = cloudscraper.create_scraper()
         if query:

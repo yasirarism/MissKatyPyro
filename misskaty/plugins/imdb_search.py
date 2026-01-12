@@ -364,6 +364,8 @@ async def imdb_layout_toggle(_, query: CallbackQuery):
         return await query.answer("⚠️ Access Denied!", True)
     current = await get_imdb_layout(query.from_user.id)
     await set_imdb_layout(query.from_user.id, not current)
+    with contextlib.suppress(QueryIdInvalid):
+        await query.answer("✅ Layout diperbarui.")
     caption = _imdb_settings_caption(query.from_user.first_name)
     buttons = _imdb_settings_keyboard(query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
@@ -386,6 +388,8 @@ async def imdb_layout_toggle_field(_, query: CallbackQuery):
     _, field_key, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
+    with contextlib.suppress(QueryIdInvalid):
+        await query.answer("✅ Layout diperbarui.")
     hidden = await _toggle_layout_field(query.from_user.id, field_key)
     buttons = _layout_keyboard(hidden, query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
@@ -397,6 +401,8 @@ async def imdb_layout_reset(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
+    with contextlib.suppress(QueryIdInvalid):
+        await query.answer("✅ Layout direset.")
     await reset_imdb_layout_fields(query.from_user.id)
     buttons = _layout_keyboard(set(), query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
