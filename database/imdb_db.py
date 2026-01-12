@@ -5,7 +5,9 @@ imbd_db = dbname["imdb"]
 
 async def is_imdbset(user_id: int) -> bool:
     user = await imbd_db.find_one({"user_id": user_id})
-    return (True, user["lang"]) if user else (False, {})
+    if not user or "lang" not in user:
+        return False, {}
+    return True, user["lang"]
 
 
 async def add_imdbset(user_id: int, lang):
