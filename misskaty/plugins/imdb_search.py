@@ -501,22 +501,26 @@ async def imdbsetlang(_, query: CallbackQuery):
     _, langset = await is_imdbset(query.from_user.id)
     if langset == lang:
         return await query.answer(f"⚠️ Your Setting Already in ({langset})!", True)
+    if lang == "eng":
+        await add_imdbset(query.from_user.id, lang)
+        msg_text = "Language interface for IMDB has been changed to English."
+    elif lang == "ind":
+        await add_imdbset(query.from_user.id, lang)
+        msg_text = "Bahasa tampilan IMDB sudah diubah ke Indonesia."
+    else:
+        await remove_imdbset(query.from_user.id)
+        msg_text = "UserSetting for IMDB has been deleted from database."
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "↩️ Back", callback_data=f"imdbset#{query.from_user.id}"
+                )
+            ]
+        ]
+    )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
-        if lang == "eng":
-            await add_imdbset(query.from_user.id, lang)
-            await query.message.edit_msg(
-                "Language interface for IMDB has been changed to English."
-            )
-        elif lang == "ind":
-            await add_imdbset(query.from_user.id, lang)
-            await query.message.edit_msg(
-                "Bahasa tampilan IMDB sudah diubah ke Indonesia."
-            )
-        else:
-            await remove_imdbset(query.from_user.id)
-            await query.message.edit_msg(
-                "UserSetting for IMDB has been deleted from database."
-            )
+        await query.message.edit_msg(msg_text, reply_markup=buttons)
 
 
 async def imdb_search_id(kueri, message):
