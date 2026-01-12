@@ -77,6 +77,8 @@ async def ensure_web_config():
     global WEB_CONFIG_LOADED
     if WEB_CONFIG_LOADED:
         return
+    web.clear()
+    web.update(DEFAULT_WEB)
     doc = await webdb.find_one({"_id": "domains"})
     if doc and doc.get("values"):
         web.update(doc["values"])
