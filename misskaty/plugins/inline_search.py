@@ -24,12 +24,7 @@ from pyrogram.types import (
     InputTextMessageContent,
 )
 
-from database.imdb_db import (
-    get_imdb_by,
-    get_imdb_layout,
-    get_imdb_layout_fields,
-    get_imdb_template,
-)
+from database.imdb_db import get_imdb_by, get_imdb_layout_fields, get_imdb_template
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper import GENRES_EMOJI, fetch, gtranslate, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
@@ -675,7 +670,6 @@ async def imdb_inl(_, query):
             )
             ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
             template = await get_imdb_template(query.from_user.id)
-            layout_enabled = await get_imdb_layout(query.from_user.id)
             hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
             res_str = ""
@@ -924,16 +918,10 @@ async def imdb_inl(_, query):
                 rendered = render_imdb_template(template, _with_html_placeholders(payload))
                 if rendered:
                     res_str = rendered
-            elif not layout_enabled:
-                res_str = (
-                    f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a>\n"
-                    f"<b>Type:</b> <code>{typee or '-'}</code>\n"
-                    f"<b>©️ IMDb by</b> {imdb_by}"
-                )
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href='{url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        f"<b>📹 Judul:</b> <a href=\"{url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
                         "",
                     )
                 if "release_date" in hidden_fields:

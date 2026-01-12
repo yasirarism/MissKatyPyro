@@ -788,7 +788,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             )
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
-            layout_enabled = await get_imdb_layout(query.from_user.id)
             hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
@@ -1030,16 +1029,10 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 rendered = render_imdb_template(template, _with_html_placeholders(payload))
                 if rendered:
                     res_str = rendered
-            elif not layout_enabled:
-                res_str = (
-                    f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a>\n"
-                    f"<b>Type:</b> <code>{typee or '-'}</code>\n"
-                    f"<b>©️ IMDb by</b> {imdb_by}"
-                )
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
                         "",
                     )
                 if "release_date" in hidden_fields:
@@ -1157,7 +1150,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             )
             typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
-            layout_enabled = await get_imdb_layout(query.from_user.id)
             hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
@@ -1397,16 +1389,10 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 rendered = render_imdb_template(template, _with_html_placeholders(payload))
                 if rendered:
                     res_str = rendered
-            elif not layout_enabled:
-                res_str = (
-                    f"<b>📹 Title:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a>\n"
-                    f"<b>Type:</b> <code>{typee or '-'}</code>\n"
-                    f"<b>©️ IMDb by</b> {imdb_by}"
-                )
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href='{imdb_url}'>{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
                         "",
                     )
                 if "release_date" in hidden_fields:
