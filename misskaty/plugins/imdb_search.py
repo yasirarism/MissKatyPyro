@@ -104,22 +104,29 @@ def _imdb_layout_caption():
 
 
 def _imdb_settings_keyboard(uid: int):
-    buttons = InlineKeyboard()
-    buttons.row(
-        InlineButton("🎛 Edit Layout", f"imdblayoutmenu#{uid}"),
-        InlineButton("📝 IMDb By", f"imdby#{uid}"),
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("🎛 Edit Layout", callback_data=f"imdblayoutmenu#{uid}"),
+                InlineKeyboardButton("📝 IMDb By", callback_data=f"imdby#{uid}"),
+            ],
+            [
+                InlineKeyboardButton(
+                    "🧩 Custom Layout", callback_data=f"imdbtemplatemenu#{uid}"
+                ),
+                InlineKeyboardButton("🚩 Language", callback_data=f"imdbsetlang#{uid}"),
+            ],
+            [InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")],
+        ]
     )
-    buttons.row(
-        InlineButton("🧩 Custom Layout", f"imdbtemplatemenu#{uid}"),
-        InlineButton("🚩 Language", f"imdbsetlang#{uid}"),
-    )
-    buttons.row(InlineButton("❌ Close", f"close#{uid}"))
-    return buttons
 
 
 def _layout_fields():
     return [
         ("title", "Title"),
+        ("duration", "Duration"),
+        ("category", "Category"),
+        ("rating", "Rating"),
         ("release_date", "Release"),
         ("genre", "Genre"),
         ("country", "Country"),
@@ -137,6 +144,32 @@ def _layout_fields():
 
 def _layout_field_label(field_key: str, enabled: bool) -> str:
     return f"{'✅' if enabled else '❌'} {dict(_layout_fields()).get(field_key, field_key)}"
+
+
+def _layout_keyboard(hidden_fields: set, uid: int):
+    rows = []
+    row = []
+    for index, (key, _) in enumerate(_layout_fields(), start=1):
+        enabled = key not in hidden_fields
+        row.append(
+            InlineKeyboardButton(
+                _layout_field_label(key, enabled),
+                callback_data=f"imdblayouttoggle#{key}#{uid}",
+            )
+        )
+        if index % 2 == 0:
+            rows.append(row)
+            row = []
+    if row:
+        rows.append(row)
+    rows.append(
+        [
+            InlineKeyboardButton("🔄 Reset", callback_data=f"imdblayoutreset#{uid}"),
+            InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{uid}"),
+        ]
+    )
+    rows.append([InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")])
+    return InlineKeyboardMarkup(rows)
 
 
 async def _get_hidden_layout_fields(user_id: int):
@@ -298,17 +331,26 @@ async def imdb_lang_menu(_, query: CallbackQuery):
     _, uid = query.data.split("#")
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
-    buttons = InlineKeyboard()
-    buttons.row(
-        InlineButton("🇺🇸 English", f"setimdb#eng#{query.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"setimdb#ind#{query.from_user.id}"),
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("🇺🇸 English", callback_data=f"setimdb#eng#{query.from_user.id}"),
+                InlineKeyboardButton("🇮🇩 Indonesia", callback_data=f"setimdb#ind#{query.from_user.id}"),
+            ]
+        ]
     )
     is_imdb, _ = await is_imdbset(query.from_user.id)
     if is_imdb:
-        buttons.row(
-            InlineButton("🗑 Remove UserSetting", f"setimdb#rm#{query.from_user.id}")
+        buttons.inline_keyboard.append(
+            [
+                InlineKeyboardButton(
+                    "🗑 Remove UserSetting", callback_data=f"setimdb#rm#{query.from_user.id}"
+                )
+            ]
         )
-    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
+    buttons.inline_keyboard.append(
+        [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}")]
+    )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(
             "<i>Please select available language below..</i>", reply_markup=buttons
@@ -334,20 +376,7 @@ async def imdb_layout_menu(_, query: CallbackQuery):
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     hidden = await _get_hidden_layout_fields(query.from_user.id)
-    buttons = InlineKeyboard(row_width=2)
-    for key, _label in _layout_fields():
-        enabled = key not in hidden
-        buttons.add(
-            InlineButton(
-                _layout_field_label(key, enabled),
-                f"imdblayouttoggle#{key}#{query.from_user.id}",
-            )
-        )
-    buttons.row(
-        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
-        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
-    )
-    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
+    buttons = _layout_keyboard(hidden, query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
@@ -358,20 +387,7 @@ async def imdb_layout_toggle_field(_, query: CallbackQuery):
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     hidden = await _toggle_layout_field(query.from_user.id, field_key)
-    buttons = InlineKeyboard(row_width=2)
-    for key, _label in _layout_fields():
-        enabled = key not in hidden
-        buttons.add(
-            InlineButton(
-                _layout_field_label(key, enabled),
-                f"imdblayouttoggle#{key}#{query.from_user.id}",
-            )
-        )
-    buttons.row(
-        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
-        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
-    )
-    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
+    buttons = _layout_keyboard(hidden, query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
@@ -382,19 +398,7 @@ async def imdb_layout_reset(_, query: CallbackQuery):
     if query.from_user.id != int(uid):
         return await query.answer("⚠️ Access Denied!", True)
     await reset_imdb_layout_fields(query.from_user.id)
-    buttons = InlineKeyboard(row_width=2)
-    for key, _label in _layout_fields():
-        buttons.add(
-            InlineButton(
-                _layout_field_label(key, True),
-                f"imdblayouttoggle#{key}#{query.from_user.id}",
-            )
-        )
-    buttons.row(
-        InlineButton("🔄 Reset", f"imdblayoutreset#{query.from_user.id}"),
-        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
-    )
-    buttons.row(InlineButton("❌ Close", f"close#{query.from_user.id}"))
+    buttons = _layout_keyboard(set(), query.from_user.id)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(_imdb_layout_caption(), reply_markup=buttons)
 
@@ -455,10 +459,13 @@ async def imdb_template_menu(_, query: CallbackQuery):
         "  Contoh: <code>{plot_html}</code>\n\n"
         "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
     )
-    buttons = InlineKeyboard()
-    buttons.row(
-        InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"),
-        InlineButton("❌ Close", f"close#{query.from_user.id}"),
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}"),
+                InlineKeyboardButton("❌ Close", callback_data=f"close#{query.from_user.id}"),
+            ]
+        ]
     )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(text, reply_markup=buttons)
@@ -477,8 +484,11 @@ async def imdb_by_menu(_, query: CallbackQuery):
         "Hapus dengan <code>/imdbby remove</code>.\n\n"
         f"Current: <code>{current}</code>"
     )
-    buttons = InlineKeyboard()
-    buttons.row(InlineButton("↩️ Back", f"imdbset#{query.from_user.id}"))
+    buttons = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}")]
+        ]
+    )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit_msg(text, reply_markup=buttons)
 
@@ -830,8 +840,12 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             if kategori := r_json.get("contentRating"):
                 category_text = kategori or "-"
                 res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
+            rating_value = "-"
+            rating_count = "-"
             if rating := r_json.get("aggregateRating"):
-                res_str += f"<b>Peringkat:</b> <code>{rating['ratingValue']}⭐️ dari {rating['ratingCount']} pengguna</code>\n"
+                rating_value = rating.get("ratingValue", "-")
+                rating_count = rating.get("ratingCount", "-")
+                res_str += f"<b>Peringkat:</b> <code>{rating_value}⭐️ dari {rating_count} pengguna</code>\n"
             if release := sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = (
                     release[0]
@@ -1035,6 +1049,21 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
                         "",
                     )
+                if "duration" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Durasi:</b> <code>{duration_text}</code>\n",
+                        "",
+                    )
+                if "category" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Kategori:</b> <code>{category_text}</code> \n",
+                        "",
+                    )
+                if "rating" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Peringkat:</b> <code>{rating_value}⭐️ dari {rating_count} pengguna</code>\n",
+                        "",
+                    )
                 if "release_date" in hidden_fields:
                     res_str = res_str.replace(
                         f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
@@ -1190,8 +1219,12 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             if kategori := r_json.get("contentRating"):
                 category_text = kategori or "-"
                 res_str += f"<b>Category:</b> <code>{kategori}</code> \n"
+            rating_value = "-"
+            rating_count = "-"
             if rating := r_json.get("aggregateRating"):
-                res_str += f"<b>Rating:</b> <code>{rating['ratingValue']}⭐️ from {rating['ratingCount']} users</code>\n"
+                rating_value = rating.get("ratingValue", "-")
+                rating_count = rating.get("ratingCount", "-")
+                res_str += f"<b>Rating:</b> <code>{rating_value}⭐️ from {rating_count} users</code>\n"
             if release := sop.select('li[data-testid="title-details-releasedate"]'):
                 rilis = (
                     release[0]
@@ -1393,6 +1426,21 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
                         f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        "",
+                    )
+                if "duration" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Duration:</b> <code>{duration_text}</code>\n",
+                        "",
+                    )
+                if "category" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Category:</b> <code>{category_text}</code> \n",
+                        "",
+                    )
+                if "rating" in hidden_fields:
+                    res_str = res_str.replace(
+                        f"<b>Rating:</b> <code>{rating_value}⭐️ from {rating_count} users</code>\n",
                         "",
                     )
                 if "release_date" in hidden_fields:
