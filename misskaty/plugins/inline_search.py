@@ -86,6 +86,14 @@ def render_imdb_template(template: str, payload: dict) -> str | None:
         return None
 
 
+def _normalize_imdb_layout_fields(stored_fields) -> set:
+    if isinstance(stored_fields, dict):
+        return {key for key, enabled in stored_fields.items() if not enabled}
+    if isinstance(stored_fields, (list, tuple, set)):
+        return set(stored_fields)
+    return set()
+
+
 def render_imdb_template_with_buttons(template: str, payload: dict):
     try:
         normalized = template.replace("\\n", "\n")
@@ -621,7 +629,8 @@ async def inline_menu(self, inline_query: InlineQuery):
             res = res.get("d") or res.get("results") or []
         if not isinstance(res, list):
             res = []
-        hidden_fields = set(await get_imdb_layout_fields(inline_query.from_user.id) or [])
+        stored_fields = await get_imdb_layout_fields(inline_query.from_user.id)
+        hidden_fields = _normalize_imdb_layout_fields(stored_fields)
         disable_web_preview = "web_preview" in hidden_fields
         send_as_photo = "send_as_photo" not in hidden_fields
         oorse = []
@@ -731,7 +740,8 @@ async def imdb_inl(_, query):
     i, cbuser, movie = query.data.split("#")
     if cbuser == f"{query.from_user.id}":
         try:
-            hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
+            stored_fields = await get_imdb_layout_fields(query.from_user.id)
+            hidden_fields = _normalize_imdb_layout_fields(stored_fields)
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
             if send_as_photo:
