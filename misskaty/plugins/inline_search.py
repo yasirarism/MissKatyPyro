@@ -622,7 +622,6 @@ async def inline_menu(self, inline_query: InlineQuery):
         if not isinstance(res, list):
             res = []
         hidden_fields = set(await get_imdb_layout_fields(inline_query.from_user.id) or [])
-        send_as_photo = "send_as_photo" not in hidden_fields
         disable_web_preview = "web_preview" in hidden_fields
         oorse = []
         for midb in res:
@@ -655,36 +654,25 @@ async def inline_menu(self, inline_query: InlineQuery):
                     ]
                 ]
             )
-            if send_as_photo:
-                oorse.append(
-                    InlineQueryResultPhoto(
-                        title=f"{title} {year}",
-                        caption=caption,
-                        description=description_text,
-                        photo_url=image_url,
-                        reply_markup=reply_markup,
-                    )
+            message_text = f"{caption}\n{description_text}"
+            oorse.append(
+                InlineQueryResultArticle(
+                    title=f"{title} {year}",
+                    description=description_text,
+                    thumb_url=image_url,
+                    url=imdb_url if not disable_web_preview else None,
+                    reply_markup=reply_markup,
+                    input_message_content=InputTextMessageContent(
+                        message_text=message_text,
+                        parse_mode=enums.ParseMode.HTML,
+                        disable_web_page_preview=disable_web_preview,
+                    ),
                 )
-            else:
-                message_text = f"{caption}\n{description_text}"
-                oorse.append(
-                    InlineQueryResultArticle(
-                        title=f"{title} {year}",
-                        description=description_text,
-                        thumb_url=image_url,
-                        url=imdb_url,
-                        reply_markup=reply_markup,
-                        input_message_content=InputTextMessageContent(
-                            message_text=message_text,
-                            parse_mode=enums.ParseMode.HTML,
-                            disable_web_page_preview=disable_web_preview,
-                        ),
-                    )
-                )
+            )
         resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
-            is_gallery=send_as_photo,
+            is_gallery=False,
             is_personal=False,
             next_offset="",
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
