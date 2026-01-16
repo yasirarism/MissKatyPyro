@@ -621,6 +621,9 @@ async def inline_menu(self, inline_query: InlineQuery):
             res = res.get("d") or res.get("results") or []
         if not isinstance(res, list):
             res = []
+        hidden_fields = set(await get_imdb_layout_fields(inline_query.from_user.id) or [])
+        send_as_photo = "send_as_photo" not in hidden_fields
+        disable_web_preview = "web_preview" in hidden_fields
         oorse = []
         for midb in res:
             if not isinstance(midb, dict):
@@ -641,24 +644,42 @@ async def inline_menu(self, inline_query: InlineQuery):
                 image_url = image_url.replace(".jpg", "._V1_UX360.jpg")
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
-            oorse.append(
-                InlineQueryResultPhoto(
-                    title=f"{title} {year}",
-                    caption=caption,
-                    description=f" {description} | {stars}",
-                    photo_url=image_url,
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="Get IMDB details",
-                                    callback_data=f"imdbinl#{inline_query.from_user.id}#{imdb_id}",
-                                )
-                            ]
-                        ]
-                    ),
-                )
+            description_text = f" {description} | {stars}"
+            reply_markup = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Get IMDB details",
+                            callback_data=f"imdbinl#{inline_query.from_user.id}#{imdb_id}",
+                        )
+                    ]
+                ]
             )
+            if send_as_photo:
+                oorse.append(
+                    InlineQueryResultPhoto(
+                        title=f"{title} {year}",
+                        caption=caption,
+                        description=description_text,
+                        photo_url=image_url,
+                        reply_markup=reply_markup,
+                    )
+                )
+            else:
+                message_text = f"{caption}\n{description_text}"
+                oorse.append(
+                    InlineQueryResultArticle(
+                        title=f"{title} {year}",
+                        description=description_text,
+                        thumb_url=image_url,
+                        reply_markup=reply_markup,
+                        input_message_content=InputTextMessageContent(
+                            message_text=message_text,
+                            parse_mode=enums.ParseMode.HTML,
+                            disable_web_page_preview=disable_web_preview,
+                        ),
+                    )
+                )
         resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
