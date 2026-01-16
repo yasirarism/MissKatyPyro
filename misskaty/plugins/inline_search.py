@@ -86,6 +86,14 @@ def render_imdb_template(template: str, payload: dict) -> str | None:
         return None
 
 
+def _normalize_imdb_layout_fields(stored_fields) -> set:
+    if isinstance(stored_fields, dict):
+        return {key for key, enabled in stored_fields.items() if not enabled}
+    if isinstance(stored_fields, (list, tuple, set)):
+        return set(stored_fields)
+    return set()
+
+
 def render_imdb_template_with_buttons(template: str, payload: dict):
     try:
         normalized = template.replace("\\n", "\n")
@@ -610,44 +618,84 @@ async def inline_menu(self, inline_query: InlineQuery):
         search_results = await fetch.get(
             f"https://yasirapi.eu.org/imdb-search?q={movie_name}"
         )
-        res = json.loads(search_results.text).get("result")
+        imdb_payload = json.loads(search_results.text)
+        res = imdb_payload.get("result")
+        if isinstance(res, str):
+            try:
+                res = json.loads(res)
+            except json.JSONDecodeError:
+                res = []
+        if isinstance(res, dict):
+            res = res.get("d") or res.get("results") or []
+        if not isinstance(res, list):
+            res = []
+        stored_fields = await get_imdb_layout_fields(inline_query.from_user.id)
+        hidden_fields = _normalize_imdb_layout_fields(stored_fields)
+        disable_web_preview = "web_preview" in hidden_fields
+        send_as_photo = "send_as_photo" not in hidden_fields
         oorse = []
         for midb in res:
+            if not isinstance(midb, dict):
+                continue
             title = midb.get("l", "")
             description = midb.get("q", "")
             stars = midb.get("s", "")
-            imdb_url = f"https://imdb.com/title/{midb.get('id')}"
+            imdb_id = midb.get("id", "")
+            imdb_url = f"https://imdb.com/title/{imdb_id}"
             year = f"({midb.get('y', '')})"
-            image_url = (
-                midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg")
-                if midb.get("i")
-                else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
-            )
+            image = midb.get("i")
+            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+            if isinstance(image, dict):
+                image_url = image.get("imageUrl", image_url)
+            elif isinstance(image, str) and image:
+                image_url = image
+            if image_url.endswith(".jpg"):
+                image_url = image_url.replace(".jpg", "._V1_UX360.jpg")
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
-            oorse.append(
-                InlineQueryResultPhoto(
-                    title=f"{title} {year}",
-                    caption=caption,
-                    description=f" {description} | {stars}",
-                    photo_url=image_url,
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="Get IMDB details",
-                                    callback_data=f"imdbinl#{inline_query.from_user.id}#{midb.get('id')}",
-                                )
-                            ]
-                        ]
-                    ),
-                )
+            description_text = f" {description} | {stars}"
+            reply_markup = InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton(
+                            text="Get IMDB details",
+                            callback_data=f"imdbinl#{inline_query.from_user.id}#{imdb_id}",
+                        )
+                    ]
+                ]
             )
-        resfo = json.loads(search_results.text).get("q")
+            if send_as_photo:
+                oorse.append(
+                    InlineQueryResultPhoto(
+                        title=f"{title} {year}",
+                        caption=caption,
+                        description=description_text,
+                        photo_url=image_url,
+                        reply_markup=reply_markup,
+                    )
+                )
+            else:
+                message_text = f"{caption}\n{description_text}"
+                oorse.append(
+                    InlineQueryResultArticle(
+                        title=f"{title} {year}",
+                        description=description_text,
+                        thumb_url=image_url,
+                        url=imdb_url if not disable_web_preview else None,
+                        reply_markup=reply_markup,
+                        input_message_content=InputTextMessageContent(
+                            message_text=message_text,
+                            parse_mode=enums.ParseMode.HTML,
+                            disable_web_page_preview=disable_web_preview,
+                        ),
+                    )
+                )
+        resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
             is_gallery=False,
-            is_personal=False,
+            is_personal=True,
+            cache_time=0,
             next_offset="",
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
             switch_pm_parameter="imdb",
@@ -693,9 +741,20 @@ async def imdb_inl(_, query):
     i, cbuser, movie = query.data.split("#")
     if cbuser == f"{query.from_user.id}":
         try:
-            await query.edit_message_caption(
-                "⏳ <i>Permintaan kamu sedang diproses.. </i>"
-            )
+            stored_fields = await get_imdb_layout_fields(query.from_user.id)
+            hidden_fields = _normalize_imdb_layout_fields(stored_fields)
+            disable_web_preview = "web_preview" in hidden_fields
+            send_as_photo = "send_as_photo" not in hidden_fields
+            if send_as_photo:
+                await query.edit_message_caption(
+                    "⏳ <i>Permintaan kamu sedang diproses.. </i>"
+                )
+            else:
+                await query.edit_message_text(
+                    "⏳ <i>Permintaan kamu sedang diproses.. </i>",
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await fetch.get(url)
             sop = BeautifulSoup(resp, "lxml")
@@ -704,7 +763,6 @@ async def imdb_inl(_, query):
             )
             ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
             template = await get_imdb_template(query.from_user.id)
-            hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
             res_str = ""
             typee = r_json.get("@type", "")
@@ -1022,13 +1080,28 @@ async def imdb_inl(_, query):
                             ]
                         ]
                     )
-            await query.edit_message_caption(
-                res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-            )
+            if send_as_photo:
+                await query.edit_message_caption(
+                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                )
+            else:
+                await query.edit_message_text(
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
+                )
         except (MessageNotModified, MessageIdInvalid):
             pass
         except Exception:
             exc = traceback.format_exc()
-            await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+            if send_as_photo:
+                await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+            else:
+                await query.edit_message_text(
+                    f"<b>ERROR:</b>\n<code>{exc}</code>",
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
     else:
         await query.answer("⚠️ Akses Ditolak!", True)
