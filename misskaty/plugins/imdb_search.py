@@ -175,6 +175,7 @@ def _layout_fields():
         ("open_imdb", "Open IMDb"),
         ("trailer", "Trailer"),
         ("send_as_photo", "Send as Photo"),
+        ("web_preview", "Link Preview"),
     ]
 
 
@@ -498,7 +499,8 @@ async def imdb_template_menu(_, query: CallbackQuery):
         "• <code>{locale}</code> - Kode bahasa (id/en)\n"
         "• <code>{nama_placeholder_html}</code> - versi aman HTML (otomatis tersedia)\n"
         "  Contoh: <code>{plot_html}</code>\n\n"
-        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan."
+        "Catatan: ketika template aktif, pengaturan layout bawaan diabaikan "
+        "(kecuali Link Preview)."
     )
     buttons = InlineKeyboardMarkup(
         [
@@ -1165,10 +1167,14 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         markup = InlineKeyboardMarkup(
                             [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
                         )
+            disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
             if not send_as_photo:
                 await query.message.edit_msg(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
                 )
             elif thumb := r_json.get("image"):
                 try:
@@ -1197,7 +1203,10 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     MessageNotModified,
                 ):
                     await query.message.edit_msg(
-                        res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                        res_str,
+                        parse_mode=enums.ParseMode.HTML,
+                        reply_markup=markup,
+                        disable_web_page_preview=disable_web_preview,
                     )
                 except Exception as err:
                     LOGGER.error(
@@ -1208,10 +1217,14 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                             res_str,
                             parse_mode=enums.ParseMode.HTML,
                             reply_markup=markup,
+                            disable_web_page_preview=disable_web_preview,
                         )
             else:
                 await query.message.edit_msg(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
                 )
         except httpx.HTTPError as exc:
             await query.message.edit_msg(
@@ -1567,10 +1580,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         markup = InlineKeyboardMarkup(
                             [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
                         )
+            disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
             if not send_as_photo:
                 await query.message.edit_msg(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
                 )
             elif thumb := r_json.get("image"):
                 try:
@@ -1599,7 +1616,10 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     MessageNotModified,
                 ):
                     await query.message.edit_msg(
-                        res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                        res_str,
+                        parse_mode=enums.ParseMode.HTML,
+                        reply_markup=markup,
+                        disable_web_page_preview=disable_web_preview,
                     )
                 except Exception as err:
                     LOGGER.error(f"Error while displaying IMDB Data. ERROR: {err}")
@@ -1608,10 +1628,14 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                             res_str,
                             parse_mode=enums.ParseMode.HTML,
                             reply_markup=markup,
+                            disable_web_page_preview=disable_web_preview,
                         )
             else:
                 await query.message.edit_msg(
-                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
                 )
         except httpx.HTTPError as exc:
             await query.message.edit_msg(
