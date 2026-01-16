@@ -672,6 +672,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                         title=f"{title} {year}",
                         description=description_text,
                         thumb_url=image_url,
+                        url=imdb_url,
                         reply_markup=reply_markup,
                         input_message_content=InputTextMessageContent(
                             message_text=message_text,
@@ -683,7 +684,7 @@ async def inline_menu(self, inline_query: InlineQuery):
         resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
-            is_gallery=False,
+            is_gallery=send_as_photo,
             is_personal=False,
             next_offset="",
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
