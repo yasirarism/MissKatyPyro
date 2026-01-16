@@ -1172,16 +1172,20 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 )
             elif thumb := r_json.get("image"):
                 try:
-                    await query.message.edit_media(
-                        InputMediaPhoto(
+                    await self.edit_message_media(
+                        chat_id=query.message.chat.id,
+                        message_id=query.message.id,
+                        media=InputMediaPhoto(
                             thumb, caption=res_str, parse_mode=enums.ParseMode.HTML
                         ),
                         reply_markup=markup,
                     )
                 except (PhotoInvalidDimensions, WebpageMediaEmpty):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await query.message.edit_media(
-                        InputMediaPhoto(
+                    await self.edit_message_media(
+                        chat_id=query.message.chat.id,
+                        message_id=query.message.id,
+                        media=InputMediaPhoto(
                             poster, caption=res_str, parse_mode=enums.ParseMode.HTML
                         ),
                         reply_markup=markup,
@@ -1570,16 +1574,20 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 )
             elif thumb := r_json.get("image"):
                 try:
-                    await query.message.edit_media(
-                        InputMediaPhoto(
+                    await self.edit_message_media(
+                        chat_id=query.message.chat.id,
+                        message_id=query.message.id,
+                        media=InputMediaPhoto(
                             thumb, caption=res_str, parse_mode=enums.ParseMode.HTML
                         ),
                         reply_markup=markup,
                     )
                 except (PhotoInvalidDimensions, WebpageMediaEmpty):
                     poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await query.message.edit_media(
-                        InputMediaPhoto(
+                    await self.edit_message_media(
+                        chat_id=query.message.chat.id,
+                        message_id=query.message.id,
+                        media=InputMediaPhoto(
                             poster, caption=res_str, parse_mode=enums.ParseMode.HTML
                         ),
                         reply_markup=markup,
