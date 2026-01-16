@@ -684,7 +684,7 @@ async def inline_menu(self, inline_query: InlineQuery):
         resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
-            is_gallery=send_as_photo,
+            is_gallery=False,
             is_personal=False,
             next_offset="",
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
@@ -731,9 +731,19 @@ async def imdb_inl(_, query):
     i, cbuser, movie = query.data.split("#")
     if cbuser == f"{query.from_user.id}":
         try:
-            await query.edit_message_caption(
-                "⏳ <i>Permintaan kamu sedang diproses.. </i>"
-            )
+            hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
+            disable_web_preview = "web_preview" in hidden_fields
+            send_as_photo = "send_as_photo" not in hidden_fields
+            if send_as_photo:
+                await query.edit_message_caption(
+                    "⏳ <i>Permintaan kamu sedang diproses.. </i>"
+                )
+            else:
+                await query.message.edit_text(
+                    "⏳ <i>Permintaan kamu sedang diproses.. </i>",
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
             url = f"https://www.imdb.com/title/{movie}/"
             resp = await fetch.get(url)
             sop = BeautifulSoup(resp, "lxml")
@@ -742,7 +752,6 @@ async def imdb_inl(_, query):
             )
             ott = await search_jw(r_json.get("alternateName") or r_json["name"], "ID")
             template = await get_imdb_template(query.from_user.id)
-            hidden_fields = set(await get_imdb_layout_fields(query.from_user.id) or [])
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{app.me.username}"
             res_str = ""
             typee = r_json.get("@type", "")
@@ -1060,13 +1069,28 @@ async def imdb_inl(_, query):
                             ]
                         ]
                     )
-            await query.edit_message_caption(
-                res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-            )
+            if send_as_photo:
+                await query.edit_message_caption(
+                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                )
+            else:
+                await query.message.edit_text(
+                    res_str,
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    disable_web_page_preview=disable_web_preview,
+                )
         except (MessageNotModified, MessageIdInvalid):
             pass
         except Exception:
             exc = traceback.format_exc()
-            await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+            if send_as_photo:
+                await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
+            else:
+                await query.message.edit_text(
+                    f"<b>ERROR:</b>\n<code>{exc}</code>",
+                    parse_mode=enums.ParseMode.HTML,
+                    disable_web_page_preview=True,
+                )
     else:
         await query.answer("⚠️ Akses Ditolak!", True)
