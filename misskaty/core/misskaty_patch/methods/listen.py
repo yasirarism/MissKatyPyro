@@ -17,7 +17,7 @@ async def listen(
 ) -> Message:
     loop = asyncio.get_running_loop()
     future = loop.create_future()
-    handler_group = 999
+    handler_group = -1
 
     async def _listener(client: Client, message: Message) -> None:
         if chat_id is not None and message.chat and message.chat.id != chat_id:
@@ -29,6 +29,11 @@ async def listen(
             future.set_result(message)
 
     handler_filters = filters or pyro_filters.all
+    handler_filters &= pyro_filters.incoming
+    if chat_id is not None:
+        handler_filters &= pyro_filters.chat(chat_id)
+    if user_id is not None:
+        handler_filters &= pyro_filters.user(user_id)
     handler = MessageHandler(_listener, filters=handler_filters)
     self.add_handler(handler, group=handler_group)
     try:
