@@ -610,19 +610,35 @@ async def inline_menu(self, inline_query: InlineQuery):
         search_results = await fetch.get(
             f"https://yasirapi.eu.org/imdb-search?q={movie_name}"
         )
-        res = json.loads(search_results.text).get("result")
+        imdb_payload = json.loads(search_results.text)
+        res = imdb_payload.get("result")
+        if isinstance(res, str):
+            try:
+                res = json.loads(res)
+            except json.JSONDecodeError:
+                res = []
+        if isinstance(res, dict):
+            res = res.get("d") or res.get("results") or []
+        if not isinstance(res, list):
+            res = []
         oorse = []
         for midb in res:
+            if not isinstance(midb, dict):
+                continue
             title = midb.get("l", "")
             description = midb.get("q", "")
             stars = midb.get("s", "")
-            imdb_url = f"https://imdb.com/title/{midb.get('id')}"
+            imdb_id = midb.get("id", "")
+            imdb_url = f"https://imdb.com/title/{imdb_id}"
             year = f"({midb.get('y', '')})"
-            image_url = (
-                midb.get("i").get("imageUrl").replace(".jpg", "._V1_UX360.jpg")
-                if midb.get("i")
-                else "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
-            )
+            image = midb.get("i")
+            image_url = "https://te.legra.ph/file/e263d10ff4f4426a7c664.jpg"
+            if isinstance(image, dict):
+                image_url = image.get("imageUrl", image_url)
+            elif isinstance(image, str) and image:
+                image_url = image
+            if image_url.endswith(".jpg"):
+                image_url = image_url.replace(".jpg", "._V1_UX360.jpg")
             caption = f"<a href='{image_url}'>🎬</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
             oorse.append(
@@ -636,14 +652,14 @@ async def inline_menu(self, inline_query: InlineQuery):
                             [
                                 InlineKeyboardButton(
                                     text="Get IMDB details",
-                                    callback_data=f"imdbinl#{inline_query.from_user.id}#{midb.get('id')}",
+                                    callback_data=f"imdbinl#{inline_query.from_user.id}#{imdb_id}",
                                 )
                             ]
                         ]
                     ),
                 )
             )
-        resfo = json.loads(search_results.text).get("q")
+        resfo = imdb_payload.get("q")
         await inline_query.answer(
             results=oorse,
             is_gallery=False,
