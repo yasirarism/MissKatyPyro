@@ -694,7 +694,8 @@ async def inline_menu(self, inline_query: InlineQuery):
         await inline_query.answer(
             results=oorse,
             is_gallery=False,
-            is_personal=False,
+            is_personal=True,
+            cache_time=0,
             next_offset="",
             switch_pm_text=f"Found {len(oorse)} results for {resfo}",
             switch_pm_parameter="imdb",
