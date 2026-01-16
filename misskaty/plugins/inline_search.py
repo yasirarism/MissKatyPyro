@@ -749,7 +749,7 @@ async def imdb_inl(_, query):
                     "⏳ <i>Permintaan kamu sedang diproses.. </i>"
                 )
             else:
-                await query.message.edit_text(
+                await query.edit_message_text(
                     "⏳ <i>Permintaan kamu sedang diproses.. </i>",
                     parse_mode=enums.ParseMode.HTML,
                     disable_web_page_preview=True,
@@ -1084,7 +1084,7 @@ async def imdb_inl(_, query):
                     res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
                 )
             else:
-                await query.message.edit_text(
+                await query.edit_message_text(
                     res_str,
                     parse_mode=enums.ParseMode.HTML,
                     reply_markup=markup,
@@ -1097,7 +1097,7 @@ async def imdb_inl(_, query):
             if send_as_photo:
                 await query.edit_message_caption(f"<b>ERROR:</b>\n<code>{exc}</code>")
             else:
-                await query.message.edit_text(
+                await query.edit_message_text(
                     f"<b>ERROR:</b>\n<code>{exc}</code>",
                     parse_mode=enums.ParseMode.HTML,
                     disable_web_page_preview=True,
