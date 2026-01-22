@@ -829,7 +829,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             await query.message.edit_msg("⏳ Permintaan kamu sedang diproses.. ")
-            imdb_url = f"https://www.imdb.com/title/tt{movie}/"
+            imdb_url = f"https://m.imdb.com/title/tt{movie}/"
             resp = await fetch.get(imdb_url)
             resp.raise_for_status()
             sop = BeautifulSoup(resp, "lxml")
@@ -1244,7 +1244,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             await query.message.edit_msg("<i>⏳ Getting IMDb source..</i>")
-            imdb_url = f"https://www.imdb.com/title/tt{movie}/"
+            imdb_url = f"https://m.imdb.com/title/tt{movie}/"
             resp = await fetch.get(imdb_url)
             resp.raise_for_status()
             sop = BeautifulSoup(resp, "lxml")
