@@ -755,7 +755,7 @@ async def imdb_inl(_, query):
                     parse_mode=enums.ParseMode.HTML,
                     disable_web_page_preview=True,
                 )
-            url = f"https://www.imdb.com/title/{movie}/"
+            url = f"https://m.imdb.com/title/{movie}/"
             resp = await fetch.get(url)
             sop = BeautifulSoup(resp, "lxml")
             r_json = json.loads(
