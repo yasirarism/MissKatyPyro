@@ -86,6 +86,7 @@ FED_MARKUP = InlineKeyboardMarkup(
 
 
 @app.on_message(filters.command("start", COMMAND_HANDLER))
+@app.on_managed_bot(filters.command("start", COMMAND_HANDLER))
 @use_chat_lang()
 async def start(self, ctx: Message, strings):
     if ctx.chat.type.value != "private":
