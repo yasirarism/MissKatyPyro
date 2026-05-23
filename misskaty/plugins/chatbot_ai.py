@@ -218,7 +218,7 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
 
 
 @app.on_message(filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10))
-@app.on_bot_business_message(
+@app.on_business_message(
     filters.command("ai", COMMAND_HANDLER) & pyro_cooldown.wait(10)
 )
 # Guest Mode: triggered by mention/reply, not by /command in that chat
@@ -294,7 +294,7 @@ async def gemini_chatbot(client, ctx: Message, strings):
     gemini_conversations[uid].append({"role": "assistant", "content": ai_response})
 
 @app.on_message(filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10))
-@app.on_bot_business_message(
+@app.on_business_message(
     filters.command("ask", COMMAND_HANDLER) & pyro_cooldown.wait(10)
 )
 # Guest Mode: triggered by mention/reply, not by /command in that chat
