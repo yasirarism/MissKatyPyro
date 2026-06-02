@@ -10,6 +10,8 @@ import logging
 import re
 import sys
 import traceback
+from html import escape
+from urllib.parse import quote_plus, urljoin
 
 import cloudscraper
 import httpx
@@ -42,6 +44,7 @@ __HELP__ = """
 /nunadrama [query <optional>] - Scrape website data from NunaDrama
 /dutamovie [query <optional>] - Scrape website data from DutaMovie
 /pusatfilm [query <optional>] - Scrape website data from Pusatfilm21
+/oppaweb [query <optional>] - Scrape website data from OppaWeb.
 /webdomain - Edit scraper domains via interactive buttons (OWNER only).
 """
 
@@ -68,7 +71,8 @@ DEFAULT_WEB = {
     "nodrakor": "https://no-drakor.xyz",
     "nunadrama": "https://s1.nunadrama.live",
     "dutamovie": "https://yborfilmfestival.com",
-    "pusatfilm": "http://217.76.53.139"
+    "pusatfilm": "http://217.76.53.139",
+    "oppaweb": "http://45.11.57.199",
 }
 web = DEFAULT_WEB.copy()
 WEB_CONFIG_LOADED = False
@@ -262,6 +266,169 @@ def split_arr(arr, size: 5):
         arr = arr[size:]
     arrs.append(arr)
     return arrs
+
+
+OPPAWEB_MAX_PAGES = 5
+OPPAWEB_COOKIES = {"user_is_human": "true"}
+OPPAWEB_HEADERS = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Connection": "keep-alive",
+    "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+}
+
+
+def oppaweb_url(path: str = ""):
+    base_url = web["oppaweb"].rstrip("/")
+    if not path:
+        return base_url
+    return f"{base_url}/{path.lstrip('/')}"
+
+
+def oppaweb_search_url(kueri: str, page: int):
+    if kueri:
+        query = quote_plus(kueri)
+        if page == 1:
+            return oppaweb_url(f"?s={query}")
+        return oppaweb_url(f"page/{page}/?s={query}")
+    if page == 1:
+        return oppaweb_url()
+    return oppaweb_url(f"page/{page}/")
+
+
+def oppaweb_request_headers(referer=None):
+    headers = OPPAWEB_HEADERS.copy()
+    if referer:
+        headers["Referer"] = referer
+    return headers
+
+
+def parse_oppaweb_search(html: str):
+    soup = BeautifulSoup(html, "lxml")
+    results = []
+    for article in soup.find_all("article", class_="bs"):
+        title_elem = article.find("h2", itemprop="headline")
+        link_elem = article.find("a", itemprop="url")
+        if not link_elem or not link_elem.get("href"):
+            continue
+        type_elem = article.find("div", class_="typez")
+        status_elem = article.find("span", class_="epx")
+        sub_elem = article.find("span", class_="sb")
+        results.append(
+            {
+                "judul": title_elem.text.strip() if title_elem else "Judul tidak diketahui",
+                "link": urljoin(oppaweb_url(), link_elem["href"]),
+                "type": type_elem.text.strip() if type_elem else "-",
+                "status": status_elem.text.strip() if status_elem else "-",
+                "subtitle": sub_elem.text.strip() if sub_elem else "-",
+            }
+        )
+    pagination = soup.find("div", class_="pagination")
+    has_next = bool(pagination and pagination.find("a", class_="next"))
+    return results, has_next
+
+
+def clean_oppaweb_text(element):
+    return " ".join(element.stripped_strings) if element else ""
+
+
+def parse_oppaweb_episode_link(html: str):
+    soup = BeautifulSoup(html, "lxml")
+    episode_link = soup.select_one(".epcheck .eplister li a[href]")
+    if not episode_link:
+        episode_link = soup.select_one(".epcheck a[href]")
+    if not episode_link:
+        episode_link = soup.select_one(".bixbox.episodedl a[href]")
+    return urljoin(oppaweb_url(), episode_link["href"]) if episode_link else None
+
+
+def parse_oppaweb_synopsis(soup):
+    for selector in (
+        ".bixbox.synp .entry-content",
+        ".entry-content[itemprop='description']",
+        ".desc.mindes",
+        ".desc",
+        ".mindesc",
+    ):
+        synopsis = clean_oppaweb_text(soup.select_one(selector))
+        if synopsis:
+            return synopsis
+    meta_desc = soup.find("meta", attrs={"name": "description"})
+    if meta_desc and meta_desc.get("content"):
+        return meta_desc["content"].strip()
+    return "Sinopsis tidak ditemukan"
+
+
+def parse_oppaweb_detail(html: str):
+    soup = BeautifulSoup(html, "lxml")
+    title_elem = soup.find("h1", class_="entry-title")
+    rating_elem = soup.find("div", class_="rating")
+    synopsis = parse_oppaweb_synopsis(soup)
+
+    genres = []
+    genre_div = soup.find("div", class_="genxed")
+    if genre_div:
+        genres = [a.text.strip() for a in genre_div.find_all("a") if a.text.strip()]
+
+    details = {}
+    info_div = soup.find("div", class_="spe")
+    if info_div:
+        for span in info_div.find_all("span"):
+            key, sep, value = span.text.partition(":")
+            if sep and key.strip() not in details:
+                details[key.strip()] = value.strip()
+
+    download_links = []
+    dl_box = soup.find("div", class_="dlbox")
+    if dl_box:
+        for li in dl_box.find_all("li")[1:]:
+            server_elem = li.find("span", class_="q")
+            quality_elem = li.find("span", class_="w")
+            link_elem = li.find("span", class_="e")
+            link_anchor = link_elem.find("a", href=True) if link_elem else None
+            if not link_anchor:
+                continue
+            download_links.append(
+                {
+                    "server": server_elem.text.strip() if server_elem else "Unknown Server",
+                    "kualitas": quality_elem.text.strip() if quality_elem else "Unknown Quality",
+                    "url": link_anchor["href"],
+                }
+            )
+
+    return {
+        "title": title_elem.text.strip() if title_elem else "Judul tidak ditemukan",
+        "rating": rating_elem.strong.text.strip() if rating_elem and rating_elem.strong else "Rating tidak ada",
+        "synopsis": synopsis,
+        "genres": genres,
+        "details": details,
+        "download_links": download_links,
+    }
+
+
+def format_oppaweb_detail(data: dict):
+    genres = ", ".join(escape(i) for i in data["genres"]) or "-"
+    result = (
+        f"<b>Judul:</b> {escape(data['title'])}\n"
+        f"<b>Rating:</b> {escape(data['rating'])}\n"
+        f"<b>Genre:</b> {genres}\n\n"
+        f"<b>Sinopsis:</b>\n{escape(data['synopsis'])}\n"
+    )
+    if data["details"]:
+        result += "\n<b>--- Detail Info ---</b>\n"
+        for key, value in data["details"].items():
+            result += f"<b>{escape(key)}:</b> {escape(value)}\n"
+    result += "\n<b>--- Link Download ---</b>\n"
+    if data["download_links"]:
+        for dl in data["download_links"]:
+            url = escape(dl["url"], quote=True)
+            result += (
+                f"[{escape(dl['kualitas'])}] {escape(dl['server'])} "
+                f"-&gt; <a href='{url}'>{url}</a>\n"
+            )
+    else:
+        result += "Link download tidak ditemukan."
+    return result
 
 
 # Terbit21 GetData
@@ -750,6 +917,61 @@ async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
             )
     dutaResult += strings("unsupport_dl_btn")
     return dutaResult, PageLen, extractbtn
+
+
+# OppaWeb GetData
+async def getDataOppaweb(msg, kueri, CurrentPage, user, strings):
+    await ensure_web_config()
+    if not SCRAP_DICT.get(msg.id):
+        oppawebdata = []
+        with contextlib.redirect_stdout(sys.stderr):
+            try:
+                for page in range(1, OPPAWEB_MAX_PAGES + 1):
+                    data = await fetch.get(
+                        oppaweb_search_url(kueri, page),
+                        headers=oppaweb_request_headers(),
+                        cookies=OPPAWEB_COOKIES,
+                        follow_redirects=True,
+                    )
+                    data.raise_for_status()
+                    page_results, has_next = parse_oppaweb_search(data.text)
+                    oppawebdata.extend(page_results)
+                    if not has_next:
+                        break
+            except httpx.HTTPError as exc:
+                await msg.edit(
+                    f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>",
+                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+                )
+                return None, 0, None
+        if not oppawebdata:
+            if not kueri:
+                await msg.edit(strings("no_result"), del_in=5)
+            else:
+                await msg.edit(strings("no_result_w_query").format(kueri=kueri), del_in=5)
+            return None, 0, None
+        SCRAP_DICT.add(msg.id, [split_arr(oppawebdata, 6), kueri], timeout=1800)
+    index = int(CurrentPage - 1)
+    PageLen = len(SCRAP_DICT[msg.id][0])
+    extractbtn = []
+
+    oppawebResult = (
+        strings("header_no_query").format(web="OppaWeb", cmd="oppaweb")
+        if kueri == ""
+        else strings("header_with_query").format(web="OppaWeb", kueri=kueri)
+    )
+    for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        oppawebResult += (
+            f"<b>{index*6+c}. <a href='{escape(i['link'], quote=True)}'>{escape(i['judul'])}</a></b>\n"
+            f"<b>Tipe:</b> <code>{escape(i['type'])}</code>\n"
+            f"<b>Status:</b> <code>{escape(i['status'])}</code> [<code>{escape(i['subtitle'])}</code>]\n\n"
+        )
+        extractbtn.append(
+            InlineButton(
+                index * 6 + c, f"oppawebextract#{CurrentPage}#{c}#{user}#{msg.id}"
+            )
+        )
+    return oppawebResult, PageLen, extractbtn
 
 
 # Lendrive GetData
@@ -1321,6 +1543,80 @@ async def movieku_s(self, ctx: Message, strings):
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
     await pesan.edit(
         moviekures, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
+    )
+
+
+# OppaWeb CMD
+@app.on_cmd("oppaweb", no_channel=True)
+@use_chat_lang()
+async def oppaweb_s(self, ctx: Message, strings):
+    kueri = ctx.input or ""
+    pesan = await ctx.reply(strings("get_data"))
+    CurrentPage = 1
+    oppawebres, PageLen, btn = await getDataOppaweb(
+        pesan, kueri, CurrentPage, ctx.from_user.id, strings
+    )
+    if not oppawebres:
+        return
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_oppaweb#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
+    keyboard.row(*btn)
+    keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
+    await pesan.edit(
+        oppawebres,
+        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+        reply_markup=keyboard,
+    )
+
+
+# OppaWeb Page Callback
+@app.on_cb("page_oppaweb#")
+@use_chat_lang()
+async def oppawebpage_callback(self, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        message_id = int(callback_query.data.split("#")[2])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        kueri = SCRAP_DICT[message_id][1]
+    except (IndexError, ValueError):
+        return
+    except KeyError:
+        return await callback_query.message.edit(strings("invalid_cb"))
+    except QueryIdInvalid:
+        return
+
+    try:
+        oppawebres, PageLen, btn = await getDataOppaweb(
+            callback_query.message,
+            kueri,
+            CurrentPage,
+            callback_query.from_user.id,
+            strings,
+        )
+    except TypeError:
+        return
+
+    keyboard = InlineKeyboard()
+    keyboard.paginate(
+        PageLen,
+        CurrentPage,
+        "page_oppaweb#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+    )
+    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
+    keyboard.row(*btn)
+    keyboard.row(
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
+    )
+    await callback_query.message.edit(
+        oppawebres,
+        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+        reply_markup=keyboard,
     )
 
 
@@ -1935,6 +2231,72 @@ async def gomovpage_callback(self, callback_query, strings):
 
 
 ### Scrape DDL Link From Web ###
+# OppaWeb DDL
+@app.on_cb("oppawebextract#")
+@use_chat_lang()
+async def oppaweb_scrap(_, callback_query, strings):
+    try:
+        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
+            return await callback_query.answer(strings("unauth"), True)
+        idlink = int(callback_query.data.split("#")[2])
+        message_id = int(callback_query.data.split("#")[4])
+        CurrentPage = int(callback_query.data.split("#")[1])
+        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except QueryIdInvalid:
+        return
+    except KeyError:
+        return await callback_query.message.edit(strings("invalid_cb"))
+
+    keyboard = InlineKeyboard()
+    keyboard.row(
+        InlineButton(
+            strings("back_btn"),
+            f"page_oppaweb#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+        ),
+        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
+    )
+    with contextlib.redirect_stdout(sys.stderr):
+        try:
+            html = await fetch.get(
+                link,
+                headers=oppaweb_request_headers(link),
+                cookies=OPPAWEB_COOKIES,
+                follow_redirects=True,
+            )
+            html.raise_for_status()
+            source_data = parse_oppaweb_detail(html.text)
+            detail_url = parse_oppaweb_episode_link(html.text) or link
+            detail_data = source_data
+            if detail_url != link:
+                html = await fetch.get(
+                    detail_url,
+                    headers=oppaweb_request_headers(link),
+                    cookies=OPPAWEB_COOKIES,
+                    follow_redirects=True,
+                )
+                html.raise_for_status()
+                detail_data = parse_oppaweb_detail(html.text)
+                if detail_data["synopsis"] == "Sinopsis tidak ditemukan":
+                    detail_data["synopsis"] = source_data["synopsis"]
+                if not detail_data["genres"]:
+                    detail_data["genres"] = source_data["genres"]
+                if not detail_data["details"]:
+                    detail_data["details"] = source_data["details"]
+            res = format_oppaweb_detail(detail_data)
+            await callback_query.message.edit(
+                strings("res_scrape").format(link=detail_url, kl=res),
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+                reply_markup=keyboard,
+            )
+        except httpx.HTTPError as exc:
+            await callback_query.message.edit(
+                f"HTTP Exception for {exc.request.url} - <code>{exc}</code>",
+                reply_markup=keyboard,
+            )
+        except Exception as err:
+            await callback_query.message.edit(f"ERROR: {err}", reply_markup=keyboard)
+
+
 # Kusonime DDL
 @app.on_cb("kusoextract#")
 @use_chat_lang()
