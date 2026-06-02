@@ -328,11 +328,42 @@ def parse_oppaweb_search(html: str):
     return results, has_next
 
 
+def clean_oppaweb_text(element):
+    return " ".join(element.stripped_strings) if element else ""
+
+
+def parse_oppaweb_episode_link(html: str):
+    soup = BeautifulSoup(html, "lxml")
+    episode_link = soup.select_one(".epcheck .eplister li a[href]")
+    if not episode_link:
+        episode_link = soup.select_one(".epcheck a[href]")
+    if not episode_link:
+        episode_link = soup.select_one(".bixbox.episodedl a[href]")
+    return urljoin(oppaweb_url(), episode_link["href"]) if episode_link else None
+
+
+def parse_oppaweb_synopsis(soup):
+    for selector in (
+        ".bixbox.synp .entry-content",
+        ".entry-content[itemprop='description']",
+        ".desc.mindes",
+        ".desc",
+        ".mindesc",
+    ):
+        synopsis = clean_oppaweb_text(soup.select_one(selector))
+        if synopsis:
+            return synopsis
+    meta_desc = soup.find("meta", attrs={"name": "description"})
+    if meta_desc and meta_desc.get("content"):
+        return meta_desc["content"].strip()
+    return "Sinopsis tidak ditemukan"
+
+
 def parse_oppaweb_detail(html: str):
     soup = BeautifulSoup(html, "lxml")
     title_elem = soup.find("h1", class_="entry-title")
     rating_elem = soup.find("div", class_="rating")
-    synopsis_elem = soup.find("div", class_="desc mindes")
+    synopsis = parse_oppaweb_synopsis(soup)
 
     genres = []
     genre_div = soup.find("div", class_="genxed")
@@ -344,7 +375,7 @@ def parse_oppaweb_detail(html: str):
     if info_div:
         for span in info_div.find_all("span"):
             key, sep, value = span.text.partition(":")
-            if sep:
+            if sep and key.strip() not in details:
                 details[key.strip()] = value.strip()
 
     download_links = []
@@ -368,7 +399,7 @@ def parse_oppaweb_detail(html: str):
     return {
         "title": title_elem.text.strip() if title_elem else "Judul tidak ditemukan",
         "rating": rating_elem.strong.text.strip() if rating_elem and rating_elem.strong else "Rating tidak ada",
-        "synopsis": synopsis_elem.text.strip() if synopsis_elem else "Sinopsis tidak ditemukan",
+        "synopsis": synopsis,
         "genres": genres,
         "details": details,
         "download_links": download_links,
@@ -2233,9 +2264,27 @@ async def oppaweb_scrap(_, callback_query, strings):
                 follow_redirects=True,
             )
             html.raise_for_status()
-            res = format_oppaweb_detail(parse_oppaweb_detail(html.text))
+            source_data = parse_oppaweb_detail(html.text)
+            detail_url = parse_oppaweb_episode_link(html.text) or link
+            detail_data = source_data
+            if detail_url != link:
+                html = await fetch.get(
+                    detail_url,
+                    headers=oppaweb_request_headers(link),
+                    cookies=OPPAWEB_COOKIES,
+                    follow_redirects=True,
+                )
+                html.raise_for_status()
+                detail_data = parse_oppaweb_detail(html.text)
+                if detail_data["synopsis"] == "Sinopsis tidak ditemukan":
+                    detail_data["synopsis"] = source_data["synopsis"]
+                if not detail_data["genres"]:
+                    detail_data["genres"] = source_data["genres"]
+                if not detail_data["details"]:
+                    detail_data["details"] = source_data["details"]
+            res = format_oppaweb_detail(detail_data)
             await callback_query.message.edit(
-                strings("res_scrape").format(link=link, kl=res),
+                strings("res_scrape").format(link=detail_url, kl=res),
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                 reply_markup=keyboard,
             )
