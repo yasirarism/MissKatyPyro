@@ -4,6 +4,7 @@
 """Chat-configurable prayer time reminder using api.myquran.com."""
 
 import datetime
+from contextlib import suppress
 from html import escape
 from logging import getLogger
 from typing import Optional
@@ -25,6 +26,7 @@ from database.prayer_reminder_db import (
     set_prayer_city,
     set_prayer_enabled,
     set_prayer_last_sent,
+    set_prayer_schedule,
     set_prayer_target,
 )
 from misskaty import app, scheduler
@@ -99,16 +101,28 @@ def _format_reminder(
     for key in PRAYER_KEYS:
         label = LABEL_TEXT[key]
         time_value = jadwal.get(key, "-")
-        marker = " ← sekarang" if key == prayer else ""
-        rows.append(f"{EMOJI_MAP[key]} {label:<8} │ {time_value:<5}{marker}")
+        current = "✅ Sekarang" if key == prayer else ""
+        rows.append(
+            "<tr>"
+            f"<td>{escape(EMOJI_MAP[key])}</td>"
+            f"<td><b>{escape(label)}</b></td>"
+            f"<td align=\"center\"><code>{escape(time_value)}</code></td>"
+            f"<td>{escape(current)}</td>"
+            "</tr>"
+        )
 
-    table = "\n".join(rows)
+    table = (
+        "<table bordered striped>"
+        "<caption>Jadwal Hari Ini</caption>"
+        "<tr><th>Icon</th><th>Sholat</th><th>Waktu</th><th>Status</th></tr>"
+        f"{''.join(rows)}"
+        "</table>"
+    )
     return (
-        f"🕌 <b>Waktunya Sholat {escape(_prayer_label(prayer, now))}</b>\n"
-        f"<b>Wilayah:</b> {escape(city_name)}\n"
-        f"<b>Tanggal:</b> {weekday}, {now.strftime('%d')} {month} {now.year}\n\n"
-        "⏰ <b>Jadwal Hari Ini</b>\n"
-        f"<pre>{escape(table)}</pre>"
+        f"🕌 <b>Waktunya Sholat {escape(_prayer_label(prayer, now))}</b><br>"
+        f"<b>Wilayah:</b> {escape(city_name)}<br>"
+        f"<b>Tanggal:</b> {weekday}, {now.strftime('%d')} {month} {now.year}<br><br>"
+        f"{table}"
     )
 
 
@@ -169,7 +183,7 @@ async def _fetch_json(url: str) -> Optional[dict]:
         return None
 
 
-async def _get_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
+async def _fetch_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
     date_str = now.strftime("%Y-%m-%d")
     data = await _fetch_json(
         SCHEDULE_URL.format(
@@ -179,6 +193,18 @@ async def _get_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
     if not data:
         return None
     return _normalize_jadwal(data)
+
+
+async def _get_cached_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
+    date_str = now.strftime("%Y-%m-%d")
+    cached = config.get("schedule")
+    if config.get("schedule_date") == date_str and isinstance(cached, dict):
+        return cached
+
+    jadwal = await _fetch_jadwal(config, now)
+    if jadwal and all(key in jadwal for key in PRAYER_KEYS):
+        await set_prayer_schedule(config["chat_id"], date_str, jadwal)
+    return jadwal
 
 
 async def _get_cities() -> list[dict]:
@@ -227,12 +253,14 @@ def _city_markup(cities: list[dict], user_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(rows)
 
 
-async def send_prayer_reminder(config: dict, force: bool = False):
+async def send_prayer_reminder(
+    config: dict, force: bool = False, prayer: Optional[str] = None
+):
     if not config.get("chat_id"):
         return False
     timezone = pytz.timezone(config["timezone"])
     now = datetime.datetime.now(timezone)
-    jadwal = await _get_jadwal(config, now)
+    jadwal = await _get_cached_jadwal(config, now)
     if not jadwal or any(key not in jadwal for key in PRAYER_KEYS):
         LOGGER.warning(
             "Prayer schedule is incomplete for chat_id=%s city_id=%s",
@@ -240,7 +268,7 @@ async def send_prayer_reminder(config: dict, force: bool = False):
             config.get("city_id"),
         )
         return False
-    prayer = _current_prayer(jadwal, now) or ("subuh" if force else None)
+    prayer = prayer or _current_prayer(jadwal, now) or ("subuh" if force else None)
     if not prayer:
         return False
     sent_key = f"{now.strftime('%Y-%m-%d')}:{prayer}"
@@ -261,9 +289,74 @@ async def send_prayer_reminder(config: dict, force: bool = False):
     return True
 
 
-async def check_prayer_reminder():
+def _job_id(chat_id: int, name: str) -> str:
+    return f"prayer_reminder_{chat_id}_{name}"
+
+
+def _remove_chat_jobs(chat_id: int):
+    for key in [*PRAYER_KEYS, "refresh"]:
+        with suppress(Exception):
+            scheduler.remove_job(_job_id(chat_id, key))
+
+
+async def send_scheduled_prayer(chat_id: int, prayer: str):
+    config = await get_prayer_config(chat_id)
+    if config.get("enabled"):
+        await send_prayer_reminder(config, prayer=prayer)
+
+
+async def refresh_prayer_jobs(chat_id: int):
+    config = await get_prayer_config(chat_id)
+    await sync_prayer_jobs(config)
+
+
+async def sync_prayer_jobs(config: dict):
+    chat_id = config["chat_id"]
+    _remove_chat_jobs(chat_id)
+    if not config.get("enabled"):
+        return
+
+    timezone = pytz.timezone(config["timezone"])
+    now = datetime.datetime.now(timezone)
+    jadwal = await _get_cached_jadwal(config, now)
+    if not jadwal or any(key not in jadwal for key in PRAYER_KEYS):
+        LOGGER.warning(
+            "Cannot schedule prayer reminder for chat_id=%s because schedule is incomplete",
+            chat_id,
+        )
+        return
+
+    for prayer in PRAYER_KEYS:
+        hour, minute = map(int, jadwal[prayer].split(":")[:2])
+        run_time = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if run_time <= now:
+            continue
+        scheduler.add_job(
+            send_scheduled_prayer,
+            "date",
+            [chat_id, prayer],
+            id=_job_id(chat_id, prayer),
+            run_date=run_time,
+            replace_existing=True,
+            misfire_grace_time=60,
+        )
+
+    scheduler.add_job(
+        refresh_prayer_jobs,
+        "cron",
+        [chat_id],
+        id=_job_id(chat_id, "refresh"),
+        hour=0,
+        minute=5,
+        timezone=timezone,
+        replace_existing=True,
+        misfire_grace_time=300,
+    )
+
+
+async def bootstrap_prayer_reminders():
     for config in await get_enabled_prayer_configs():
-        await send_prayer_reminder(config)
+        await sync_prayer_jobs(config)
 
 
 @app.on_message(filters.command(["prayerreminder", "sholatreminder"], COMMAND_HANDLER))
@@ -305,11 +398,13 @@ async def prayer_reminder_callback(_, query: CallbackQuery):
         if not config.get("chat_id"):
             return await query.answer("Set target chat/topic dulu.", show_alert=True)
         config = await set_prayer_enabled(query.message.chat.id, not config["enabled"])
+        await sync_prayer_jobs(config)
         await query.answer("Reminder diaktifkan." if config["enabled"] else "Reminder dimatikan.")
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
     if action == "prtarget":
         config = await set_prayer_target(query.message.chat.id, query.message.message_thread_id)
+        await sync_prayer_jobs(config)
         await query.answer("Target chat/topic disimpan.")
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
@@ -323,16 +418,16 @@ async def prayer_reminder_callback(_, query: CallbackQuery):
         if not city:
             return await query.answer("Kota tidak ditemukan.", show_alert=True)
         config = await set_prayer_city(query.message.chat.id, city["id"], city["lokasi"])
+        await sync_prayer_jobs(config)
         await query.answer(f"Kota diset ke {city['lokasi']}.")
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
 
 scheduler.add_job(
-    check_prayer_reminder,
-    "interval",
-    id="prayer_reminder_checker",
-    seconds=60,
+    bootstrap_prayer_reminders,
+    "date",
+    id="prayer_reminder_bootstrap",
+    run_date=datetime.datetime.now() + datetime.timedelta(seconds=5),
     replace_existing=True,
-    max_instances=1,
-    misfire_grace_time=30,
+    misfire_grace_time=60,
 )

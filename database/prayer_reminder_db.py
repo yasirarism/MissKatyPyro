@@ -12,6 +12,8 @@ DEFAULT_CONFIG = {
     "chat_id": None,
     "thread_id": None,
     "last_sent": None,
+    "schedule_date": None,
+    "schedule": None,
 }
 
 
@@ -56,8 +58,16 @@ async def set_prayer_target(chat_id: int, thread_id: Optional[int] = None) -> di
 
 
 async def set_prayer_city(chat_id: int, city_id: str, city_name: str) -> dict:
-    return await update_prayer_config(chat_id, city_id=city_id, city_name=city_name)
+    return await update_prayer_config(
+        chat_id, city_id=city_id, city_name=city_name, schedule_date=None, schedule=None
+    )
 
 
 async def set_prayer_last_sent(chat_id: int, last_sent: str) -> dict:
     return await update_prayer_config(chat_id, last_sent=last_sent)
+
+
+async def set_prayer_schedule(chat_id: int, schedule_date: str, schedule: dict) -> dict:
+    return await update_prayer_config(
+        chat_id, schedule_date=schedule_date, schedule=schedule
+    )
