@@ -64,11 +64,11 @@ MONTHS_ID = [
 ]
 PRAYER_KEYS = ["subuh", "dzuhur", "ashar", "maghrib", "isya"]
 EMOJI_MAP = {
-    "subuh": "🔅",
-    "dzuhur": "🕎",
+    "subuh": "🌅",
+    "dzuhur": "🌞",
     "ashar": "🔘",
-    "maghrib": "💜",
-    "isya": "🔭",
+    "maghrib": "🌤",
+    "isya": "⭐",
 }
 LABEL_TEXT = {
     "subuh": "Subuh",
@@ -101,12 +101,11 @@ def _format_reminder(
     for key in PRAYER_KEYS:
         label = LABEL_TEXT[key]
         time_value = jadwal.get(key, "-")
-        current = "✅ Sekarang" if key == prayer else ""
+        current = "<emoji id=6039454987250044861>✅</emoji>" if key == prayer else ""
         rows.append(
             "<tr>"
             f"<td>{escape(EMOJI_MAP[key])} <b>{escape(label)}</b></td>"
-            f"<td align=\"center\"><code>{escape(time_value)}</code></td>"
-            f"<td>{escape(current)}</td>"
+            f"<td align=\"center\"><code>{escape(time_value)}</code> {escape(current)}</td>"
             "</tr>"
         )
 
@@ -215,7 +214,7 @@ async def _get_cities() -> list[dict]:
 
 
 def _panel_markup(config: dict, user_id: int) -> InlineKeyboardMarkup:
-    status_text = "🔴 Matikan" if config["enabled"] else "🟢 Aktifkan"
+    status_text = "🔴 Nonaktifkan" if config["enabled"] else "🟢 Aktifkan"
     return InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(status_text, callback_data=f"prtoggle#{user_id}")],
@@ -227,7 +226,7 @@ def _panel_markup(config: dict, user_id: int) -> InlineKeyboardMarkup:
 
 
 def _panel_text(config: dict) -> str:
-    status = "aktif" if config["enabled"] else "nonaktif"
+    status = "Aktif" if config["enabled"] else "Nonaktif"
     return (
         "🕌 **Prayer Reminder**\n"
         f"Status: **{status}**\n"
@@ -235,7 +234,7 @@ def _panel_text(config: dict) -> str:
         f"Timezone: `{config['timezone']}`\n"
         f"Chat ID: `{config['chat_id'] or '-'}`\n"
         f"Thread ID: `{config['thread_id'] or '-'}`\n\n"
-        "Cari kota dengan command: `/prayerreminder sura`"
+        "Cari kota dengan command: `/prayerreminder <kota>`"
     )
 
 
