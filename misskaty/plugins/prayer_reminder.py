@@ -104,8 +104,7 @@ def _format_reminder(
         current = "✅ Sekarang" if key == prayer else ""
         rows.append(
             "<tr>"
-            f"<td>{escape(EMOJI_MAP[key])}</td>"
-            f"<td><b>{escape(label)}</b></td>"
+            f"<td>{escape(EMOJI_MAP[key])} <b>{escape(label)}</b></td>"
             f"<td align=\"center\"><code>{escape(time_value)}</code></td>"
             f"<td>{escape(current)}</td>"
             "</tr>"
@@ -114,15 +113,16 @@ def _format_reminder(
     table = (
         "<table bordered striped>"
         "<caption>Jadwal Hari Ini</caption>"
-        "<tr><th>Icon</th><th>Sholat</th><th>Waktu</th><th>Status</th></tr>"
+        "<tr><th>Sholat</th><th>Waktu</th><th>Status</th></tr>"
         f"{''.join(rows)}"
         "</table>"
     )
     return (
         f"🕌 <b>Waktunya Sholat {escape(_prayer_label(prayer, now))}</b><br>"
         f"<b>Wilayah:</b> {escape(city_name)}<br>"
-        f"<b>Tanggal:</b> {weekday}, {now.strftime('%d')} {month} {now.year}<br><br>"
+        f"<b>Tanggal:</b> {weekday}, {now.strftime('%d')} {month} {now.year}<br>"
         f"{table}"
+        "<aside>Sumber:<cite>Kemenag RI</cite></aside>"
     )
 
 
