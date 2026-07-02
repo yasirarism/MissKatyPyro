@@ -234,7 +234,7 @@ def _panel_text(config: dict) -> str:
         f"Timezone: `{config['timezone']}`\n"
         f"Chat ID: `{config['chat_id'] or '-'}`\n"
         f"Thread ID: `{config['thread_id'] or '-'}`\n\n"
-        "Cari kota dengan command: `/prayerreminder <kota>`"
+        "Cari kota dengan command: `/prayerreminder nama kota`"
     )
 
 
