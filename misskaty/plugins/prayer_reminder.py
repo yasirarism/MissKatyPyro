@@ -105,7 +105,7 @@ def _format_reminder(
         rows.append(
             "<tr>"
             f"<td>{escape(EMOJI_MAP[key])} <b>{escape(label)}</b></td>"
-            f"<td align=\"center\"><code>{escape(time_value)}</code> {escape(current)}</td>"
+            f"<td align=\"center\"><code>{escape(time_value)}</code> {current}</td>"
             "</tr>"
         )
 
