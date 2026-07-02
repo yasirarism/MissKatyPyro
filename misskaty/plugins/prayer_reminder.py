@@ -101,7 +101,7 @@ def _format_reminder(
     for key in PRAYER_KEYS:
         label = LABEL_TEXT[key]
         time_value = jadwal.get(key, "-")
-        current = "<emoji id=6039454987250044861>✅</emoji>" if key == prayer else ""
+        current = "<<tg-emoji emoji-id=6039454987250044861>✅</tg-emoji>" if key == prayer else ""
         rows.append(
             "<tr>"
             f"<td>{escape(EMOJI_MAP[key])} <b>{escape(label)}</b></td>"
@@ -112,7 +112,7 @@ def _format_reminder(
     table = (
         "<table bordered striped>"
         "<caption>Jadwal Hari Ini</caption>"
-        "<tr><th>Sholat</th><th>Waktu</th><th>Status</th></tr>"
+        "<tr><th>Sholat</th><th>Waktu</th></tr>"
         f"{''.join(rows)}"
         "</table>"
     )
