@@ -1,7 +1,7 @@
 # * @author        Yasir Aris M <yasiramunandar@gmail.com>
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-"""Owner-configurable prayer time reminder using api.myquran.com."""
+"""Chat-configurable prayer time reminder using api.myquran.com."""
 
 import datetime
 from logging import getLogger
@@ -13,6 +13,7 @@ from pyrogram import filters
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database.prayer_reminder_db import (
+    get_enabled_prayer_configs,
     get_prayer_config,
     set_prayer_city,
     set_prayer_enabled,
@@ -20,19 +21,19 @@ from database.prayer_reminder_db import (
     set_prayer_target,
 )
 from misskaty import app, scheduler
-from misskaty.vars import COMMAND_HANDLER, OWNER_ID
+from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger("MissKaty")
 
 __MODULE__ = "PrayerReminder"
 __HELP__ = """<b>Reminder sholat otomatis dari api.myquran.com</b>
 
-<b>Khusus Owner:</b>
+<b>Commands:</b>
 /prayerreminder - buka panel pengaturan dengan tombol
 /prayerreminder sura - cari kota, lalu pilih lewat tombol
 /prayerreminder test - kirim contoh reminder ke target tersimpan
 
-Setting disimpan ke database. Gunakan tombol panel untuk ON/OFF dan set target chat/topic.
+Setting disimpan per chat di database. Gunakan tombol panel untuk ON/OFF dan set target chat/topic.
 """
 
 CITY_LIST_URL = "https://api.myquran.com/v3/sholat/kabkota/semua"
@@ -69,10 +70,6 @@ LABEL_BOLD = {
 }
 
 
-def _owner_only(user_id: int) -> bool:
-    return user_id == OWNER_ID
-
-
 def _prayer_label(prayer: str, now: datetime.datetime) -> str:
     if prayer == "dzuhur" and now.weekday() == 4:
         return "Jum'at"
@@ -90,7 +87,7 @@ def _format_reminder(prayer: str, jadwal: dict, now: datetime.datetime, city_nam
     ]
     for key in PRAYER_KEYS:
         marker = " **← sekarang**" if key == prayer else ""
-        lines.append(f"{EMOJI_MAP[key]} {LABEL_BOLD[key]}: {jadwal[key]}{marker}")
+        lines.append(f"{EMOJI_MAP[key]} {LABEL_BOLD[key]}: {jadwal.get(key, '-')}{marker}")
     return "\n".join(lines)
 
 
@@ -105,6 +102,14 @@ def _current_prayer(jadwal: dict, now: datetime.datetime) -> Optional[str]:
             return key
     return None
 
+
+def _normalize_jadwal(jadwal: dict) -> dict:
+    if not isinstance(jadwal, dict):
+        return {}
+    normalized = {str(key).lower(): value for key, value in jadwal.items()}
+    if "zuhur" in normalized and "dzuhur" not in normalized:
+        normalized["dzuhur"] = normalized["zuhur"]
+    return normalized
 
 async def _fetch_json(url: str) -> Optional[dict]:
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -125,7 +130,8 @@ async def _get_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
     data = await _fetch_json(SCHEDULE_URL.format(city_id=config["city_id"], date=date_str))
     if not data:
         return None
-    return data.get("data", {}).get("jadwal")
+    jadwal = data.get("data", {}).get("jadwal")
+    return _normalize_jadwal(jadwal)
 
 
 async def _get_cities() -> list[dict]:
@@ -195,20 +201,18 @@ async def send_prayer_reminder(config: dict, force: bool = False):
         **kwargs,
     )
     if not force:
-        await set_prayer_last_sent(sent_key)
+        await set_prayer_last_sent(config["chat_id"], sent_key)
     return True
 
 
 async def check_prayer_reminder():
-    config = await get_prayer_config()
-    if not config["enabled"]:
-        return
-    await send_prayer_reminder(config)
+    for config in await get_enabled_prayer_configs():
+        await send_prayer_reminder(config)
 
 
-@app.on_message(filters.command(["prayerreminder", "sholatreminder"], COMMAND_HANDLER) & filters.user(OWNER_ID))
+@app.on_message(filters.command(["prayerreminder", "sholatreminder"], COMMAND_HANDLER))
 async def prayer_reminder_handler(_, msg: Message):
-    config = await get_prayer_config()
+    config = await get_prayer_config(msg.chat.id)
     if len(msg.command) > 1 and msg.command[1].lower() == "test":
         sent = await send_prayer_reminder(config, force=True)
         return await msg.reply("✅ Test reminder sholat sudah dikirim." if sent else "⚠️ Target belum diset atau jadwal gagal diambil.")
@@ -226,21 +230,15 @@ async def prayer_reminder_handler(_, msg: Message):
     await msg.reply(_panel_text(config), reply_markup=_panel_markup(config, msg.from_user.id))
 
 
-@app.on_message(filters.command(["prayerreminder", "sholatreminder"], COMMAND_HANDLER))
-async def prayer_reminder_denied(_, msg: Message):
-    if not msg.from_user or msg.from_user.id != OWNER_ID:
-        await msg.reply("⚠️ Hanya owner yang bisa mengatur reminder sholat.", del_in=5)
-
-
 @app.on_callback_query(filters.regex(r"^pr(toggle|target|test|close|panel|city)#"))
 async def prayer_reminder_callback(_, query: CallbackQuery):
     parts = query.data.split("#")
     action = parts[0]
     user_id = int(parts[1])
-    if query.from_user.id != user_id or not _owner_only(query.from_user.id):
-        return await query.answer("⚠️ Access Denied!", show_alert=True)
+    if query.from_user.id != user_id:
+        return await query.answer("⚠️ Tombol ini bukan untuk kamu.", show_alert=True)
 
-    config = await get_prayer_config()
+    config = await get_prayer_config(query.message.chat.id)
     if action == "prclose":
         return await query.message.delete()
 
@@ -250,7 +248,7 @@ async def prayer_reminder_callback(_, query: CallbackQuery):
     if action == "prtoggle":
         if not config.get("chat_id"):
             return await query.answer("Set target chat/topic dulu.", show_alert=True)
-        config = await set_prayer_enabled(not config["enabled"])
+        config = await set_prayer_enabled(query.message.chat.id, not config["enabled"])
         await query.answer("Reminder diaktifkan." if config["enabled"] else "Reminder dimatikan.")
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
@@ -268,7 +266,7 @@ async def prayer_reminder_callback(_, query: CallbackQuery):
         city = next((item for item in await _get_cities() if item.get("id") == city_id), None)
         if not city:
             return await query.answer("Kota tidak ditemukan.", show_alert=True)
-        config = await set_prayer_city(city["id"], city["lokasi"])
+        config = await set_prayer_city(query.message.chat.id, city["id"], city["lokasi"])
         await query.answer(f"Kota diset ke {city['lokasi']}.")
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
