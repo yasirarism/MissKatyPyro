@@ -4,13 +4,20 @@
 """Chat-configurable prayer time reminder using api.myquran.com."""
 
 import datetime
+from html import escape
 from logging import getLogger
 from typing import Optional
 
 import aiohttp
 import pytz
 from pyrogram import filters
-from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputRichMessage,
+    Message,
+)
 
 from database.prayer_reminder_db import (
     get_enabled_prayer_configs,
@@ -37,7 +44,7 @@ Setting disimpan per chat di database. Gunakan tombol panel untuk ON/OFF dan set
 """
 
 CITY_LIST_URL = "https://api.myquran.com/v3/sholat/kabkota/semua"
-SCHEDULE_URL = "https://api.myquran.com/v3/sholat/jadwal/{city_id}/{date}"
+SCHEDULE_URL = "https://api.myquran.com/v3/sholat/jadwal/{city_id}/{date}?tz={timezone}"
 WEEKDAYS_ID = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
 MONTHS_ID = [
     "Januari",
@@ -61,12 +68,19 @@ EMOJI_MAP = {
     "maghrib": "💜",
     "isya": "🔭",
 }
-LABEL_BOLD = {
-    "subuh": "**Subuh**",
-    "dzuhur": "**Dzuhur**",
-    "ashar": "**Ashar**",
-    "maghrib": "**Maghrib**",
-    "isya": "**Isya**",
+LABEL_TEXT = {
+    "subuh": "Subuh",
+    "dzuhur": "Dzuhur",
+    "ashar": "Ashar",
+    "maghrib": "Maghrib",
+    "isya": "Isya",
+}
+PRAYER_ALIASES = {
+    "subuh": ("subuh", "shubuh", "fajr"),
+    "dzuhur": ("dzuhur", "zuhur", "dhuhur", "dhuhr"),
+    "ashar": ("ashar", "asar", "asr"),
+    "maghrib": ("maghrib", "magrib"),
+    "isya": ("isya", "isya\'", "isha"),
 }
 
 
@@ -76,19 +90,26 @@ def _prayer_label(prayer: str, now: datetime.datetime) -> str:
     return prayer.capitalize()
 
 
-def _format_reminder(prayer: str, jadwal: dict, now: datetime.datetime, city_name: str) -> str:
+def _format_reminder(
+    prayer: str, jadwal: dict, now: datetime.datetime, city_name: str
+) -> str:
     weekday = WEEKDAYS_ID[now.weekday()]
     month = MONTHS_ID[now.month - 1]
-    lines = [
-        f"🕌 **Waktunya Sholat {_prayer_label(prayer, now)} Untuk Wilayah {city_name}**",
-        f"**Tanggal: {weekday}, {now.strftime('%d')} {month} {now.year}**",
-        "",
-        "⏰ **Jadwal Hari Ini:**",
-    ]
+    rows = []
     for key in PRAYER_KEYS:
-        marker = " **← sekarang**" if key == prayer else ""
-        lines.append(f"{EMOJI_MAP[key]} {LABEL_BOLD[key]}: {jadwal.get(key, '-')}{marker}")
-    return "\n".join(lines)
+        label = LABEL_TEXT[key]
+        time_value = jadwal.get(key, "-")
+        marker = " ← sekarang" if key == prayer else ""
+        rows.append(f"{EMOJI_MAP[key]} {label:<8} │ {time_value:<5}{marker}")
+
+    table = "\n".join(rows)
+    return (
+        f"🕌 <b>Waktunya Sholat {escape(_prayer_label(prayer, now))}</b>\n"
+        f"<b>Wilayah:</b> {escape(city_name)}\n"
+        f"<b>Tanggal:</b> {weekday}, {now.strftime('%d')} {month} {now.year}\n\n"
+        "⏰ <b>Jadwal Hari Ini</b>\n"
+        f"<pre>{escape(table)}</pre>"
+    )
 
 
 def _current_prayer(jadwal: dict, now: datetime.datetime) -> Optional[str]:
@@ -103,13 +124,36 @@ def _current_prayer(jadwal: dict, now: datetime.datetime) -> Optional[str]:
     return None
 
 
-def _normalize_jadwal(jadwal: dict) -> dict:
+def _find_jadwal_payload(payload) -> dict:
+    if isinstance(payload, dict):
+        lowered_keys = {str(key).lower() for key in payload}
+        if any(alias in lowered_keys for aliases in PRAYER_ALIASES.values() for alias in aliases):
+            return payload
+        for value in payload.values():
+            found = _find_jadwal_payload(value)
+            if found:
+                return found
+    if isinstance(payload, list):
+        for item in payload:
+            found = _find_jadwal_payload(item)
+            if found:
+                return found
+    return {}
+
+
+def _normalize_jadwal(payload) -> dict:
+    jadwal = _find_jadwal_payload(payload)
     if not isinstance(jadwal, dict):
         return {}
-    normalized = {str(key).lower(): value for key, value in jadwal.items()}
-    if "zuhur" in normalized and "dzuhur" not in normalized:
-        normalized["dzuhur"] = normalized["zuhur"]
+    lowered = {str(key).lower(): value for key, value in jadwal.items()}
+    normalized = {}
+    for prayer, aliases in PRAYER_ALIASES.items():
+        for alias in aliases:
+            if alias in lowered and lowered[alias]:
+                normalized[prayer] = str(lowered[alias])
+                break
     return normalized
+
 
 async def _fetch_json(url: str) -> Optional[dict]:
     headers = {"User-Agent": "Mozilla/5.0"}
@@ -127,11 +171,14 @@ async def _fetch_json(url: str) -> Optional[dict]:
 
 async def _get_jadwal(config: dict, now: datetime.datetime) -> Optional[dict]:
     date_str = now.strftime("%Y-%m-%d")
-    data = await _fetch_json(SCHEDULE_URL.format(city_id=config["city_id"], date=date_str))
+    data = await _fetch_json(
+        SCHEDULE_URL.format(
+            city_id=config["city_id"], date=date_str, timezone=config["timezone"]
+        )
+    )
     if not data:
         return None
-    jadwal = data.get("data", {}).get("jadwal")
-    return _normalize_jadwal(jadwal)
+    return _normalize_jadwal(data)
 
 
 async def _get_cities() -> list[dict]:
@@ -186,7 +233,12 @@ async def send_prayer_reminder(config: dict, force: bool = False):
     timezone = pytz.timezone(config["timezone"])
     now = datetime.datetime.now(timezone)
     jadwal = await _get_jadwal(config, now)
-    if not jadwal:
+    if not jadwal or any(key not in jadwal for key in PRAYER_KEYS):
+        LOGGER.warning(
+            "Prayer schedule is incomplete for chat_id=%s city_id=%s",
+            config.get("chat_id"),
+            config.get("city_id"),
+        )
         return False
     prayer = _current_prayer(jadwal, now) or ("subuh" if force else None)
     if not prayer:
@@ -195,11 +247,15 @@ async def send_prayer_reminder(config: dict, force: bool = False):
     if not force and config.get("last_sent") == sent_key:
         return False
     kwargs = {"message_thread_id": config.get("thread_id")} if config.get("thread_id") else {}
-    await app.send_message(
-        config["chat_id"],
-        _format_reminder(prayer, jadwal, now, config["city_name"]),
-        **kwargs,
-    )
+    html = _format_reminder(prayer, jadwal, now, config["city_name"])
+    if hasattr(app, "send_rich_message"):
+        await app.send_rich_message(
+            config["chat_id"],
+            InputRichMessage(html=html),
+            **kwargs,
+        )
+    else:
+        await app.send_message(config["chat_id"], html, **kwargs)
     if not force:
         await set_prayer_last_sent(config["chat_id"], sent_key)
     return True
