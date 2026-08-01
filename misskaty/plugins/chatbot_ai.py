@@ -58,7 +58,7 @@ async def _reply_ctx(client, ctx: Message, text: str, **kwargs):
         )
         return _GuestInlineMessage(client, sent.inline_message_id)
 
-    return await ctx.reply_msg(text, **kwargs)
+    return await ctx.reply(text, **kwargs)
 
 
 async def _progress_ctx(client, ctx: Message, strings):
@@ -76,7 +76,14 @@ async def _progress_ctx(client, ctx: Message, strings):
         )
         return _GuestInlineMessage(client, sent.inline_message_id)
 
-    return await ctx.reply_msg(strings("find_answers_str"), quote=True)
+    return await ctx.reply(strings("find_answers_str"), quote=True)
+
+
+async def _edit_msg(bmsg, text: str, **kwargs):
+    """Edit a message: Kurigram Message uses .edit(); guest adapter uses .edit_msg()."""
+    if hasattr(bmsg, "edit_msg"):
+        return await bmsg.edit_msg(text, **kwargs)
+    return await bmsg.edit(text, **kwargs)
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core import pyro_cooldown
@@ -212,7 +219,7 @@ async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
     if rich_mode:
         await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
     else:
-        await bmsg.edit_msg(err)
+        await _edit_msg(bmsg, err)
 
 
 async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool):
@@ -227,7 +234,7 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
             return
     else:
         if len(text) <= EDIT_MAX_CHARS:
-            await bmsg.edit_msg(text, disable_web_page_preview=True)
+            await _edit_msg(bmsg, text, disable_web_page_preview=True)
             return
     answerlink = await privatebinapi.send_async(
         "https://bin.yasirweb.eu.org",
@@ -241,7 +248,7 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
     if rich_mode:
         await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
     else:
-        await bmsg.edit_msg(text, disable_web_page_preview=True)
+        await _edit_msg(bmsg, text, disable_web_page_preview=True)
 
 
 async def _edit_result(client, ctx, bmsg, text: str, strings):
@@ -296,7 +303,7 @@ async def get_openai_stream_response(
                         pass
                 else:
                     if num == 30 and len(answer) < 4000:
-                        await bmsg.edit_msg(html.escape(answer))
+                        await _edit_msg(bmsg, html.escape(answer))
                         await asyncio.sleep(1.5)
                         num = 0
             final = f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>"
