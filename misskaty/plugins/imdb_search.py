@@ -344,38 +344,23 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             reply_markup=markup,
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
         )
-    # Download poster dulu — kirim file lokal lebih andal daripada URL
-    poster_file = await _download_poster(thumb)
-    media_sources = []
-    if poster_file:
-        media_sources.append(poster_file)
-    # Fallback: URL asli (kecil) kalau download gagal
-    media_sources.append(thumb.replace(".jpg", "._V1_UX360.jpg"))
     caption_too_long = False
-    for media in media_sources:
-        try:
-            await self.edit_message_media(
-                chat_id=query.message.chat.id,
-                message_id=query.message.id,
-                media=InputMediaPhoto(media, caption=res_str, parse_mode=enums.ParseMode.HTML),
-                reply_markup=markup,
-            )
-            return
-        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty, WebpageCurlFailed):
-            continue
-        except MediaCaptionTooLong:
-            caption_too_long = True
-            break
-        except MessageNotModified:
-            return
-        except Exception as err:
-            LOGGER.warning(f"Edit media gagal ({media}): {err.__class__.__name__}: {err}")
-    # Rich fallback untuk caption kepanjangan
+    try:
+        await self.edit_message_media(
+            chat_id=query.message.chat.id,
+            message_id=query.message.id,
+            media=InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
+            reply_markup=markup,
+        )
+        return
+    except MediaCaptionTooLong:
+        caption_too_long = True
+    except MessageNotModified:
+        return
+    except Exception as err:
+        LOGGER.warning(f"Edit media gagal ({thumb}): {err.__class__.__name__}: {err}")
     if caption_too_long and await _send_rich_result(self, query, res_str, markup, thumb):
         return
-    if poster_file:
-        with contextlib.suppress(OSError):
-            os.remove(poster_file)
     with contextlib.suppress(MessageNotModified, MessageIdInvalid):
         await query.message.edit(
             res_str,
