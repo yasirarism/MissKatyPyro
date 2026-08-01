@@ -268,23 +268,44 @@ def _to_rich_html(text: str) -> str:
     return "\n".join(rendered)
 
 
-async def _send_rich_result(self, query, res_str, markup, poster_url=None):
+async def _upload_poster(self, poster_file: str) -> str | None:
+    """Upload poster ke Saved Messages, return file_id (untuk rich message).
+
+    Rich message media (``<tg-photo src="...">``) tidak di-fetch dari URL —
+    server Telegram butuh file_id yang sudah di-upload. File dihapus setelah
+    diambil file_id-nya.
+    """
+    try:
+        sent = await self.send_photo("me", poster_file)
+        file_id = sent.photo.file_id
+        with contextlib.suppress(Exception):
+            await sent.delete()
+        return file_id
+    except Exception as err:
+        LOGGER.warning(f"Upload poster gagal ({err.__class__.__name__}): {err}")
+        return None
+
+
+async def _send_rich_result(self, query, res_str, markup, poster_file=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
     - Reply ke pesan asli user (query.message.reply_to_message_id)
     - Hapus pesan "sedang diproses" setelah rich terkirim
-    - Rich message mendukung gambar via ``<tg-photo src="...">``
+    - Poster dikirim via file_id (upload dulu), bukan URL — rich message
+      tidak fetch media dari URL
     """
     chat_id = query.message.chat.id
     reply_to = getattr(query.message, "reply_to_message_id", None)
     reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
     rich_html = _to_rich_html(res_str)
-    attempts = (
-        [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{rich_html}', poster_url), (rich_html, None)]
-        if poster_url
-        else [(rich_html, None)]
-    )
-    for html_content, _ in attempts:
+    # Upload poster -> file_id kalau ada file lokal
+    photo_html = ""
+    if poster_file and (file_id := await _upload_poster(self, poster_file)):
+        photo_html = f'<tg-photo src="{file_id}"></tg-photo>\n\n'
+    attempts = [photo_html + rich_html]
+    if photo_html:
+        attempts.append(rich_html)  # fallback tanpa foto
+    for html_content in attempts:
         try:
             await self.send_rich_message(
                 chat_id,
@@ -295,6 +316,10 @@ async def _send_rich_result(self, query, res_str, markup, poster_url=None):
             # Bersihkan pesan "sedang diproses" supaya tidak tertinggal
             with contextlib.suppress(MessageNotModified, MessageIdInvalid):
                 await query.message.delete()
+            # File poster sudah di-upload — bersihkan file lokal
+            if poster_file:
+                with contextlib.suppress(OSError):
+                    os.remove(poster_file)
             return True
         except Exception as err:
             LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
@@ -371,12 +396,12 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             return
         except Exception as err:
             LOGGER.warning(f"Edit media gagal ({media}): {err.__class__.__name__}: {err}")
-    # Bersihkan file temp
+    # Rich fallback DULU (butuh poster_file), baru hapus file temp
+    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, poster_file):
+        return
     if poster_file:
         with contextlib.suppress(OSError):
             os.remove(poster_file)
-    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
-        return
     with contextlib.suppress(MessageNotModified, MessageIdInvalid):
         await query.message.edit(
             res_str,

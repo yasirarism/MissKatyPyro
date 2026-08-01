@@ -16,14 +16,13 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
 from pyrogram import types as pyro_types
-from pyrogram.errors import MediaCaptionTooLong, MessageIdInvalid, MessageNotModified
+from pyrogram.errors import MessageIdInvalid, MessageNotModified
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     InlineQuery,
     InlineQueryResultArticle,
     InlineQueryResultPhoto,
-    InputRichMessage,
     InputTextMessageContent,
 )
 
@@ -31,7 +30,6 @@ from database.imdb_db import get_imdb_by, get_imdb_layout_fields, get_imdb_templ
 from misskaty import BOT_USERNAME, app, user
 from misskaty.helper import GENRES_EMOJI, fetch, gtranslate, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
-from misskaty.plugins.imdb_search import _to_rich_html
 from misskaty.plugins.misc_tools import calc_btn, calcExpression
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from misskaty.vars import USER_SESSION
@@ -754,35 +752,6 @@ async def destroy_msg(_, c_q):
         await c_q.answer(f"only {flname} can see this Private Msg!", show_alert=True)
 
 
-async def _send_inline_rich(query, res_str, markup, poster_url=None):
-    """Kirim hasil IMDb inline sebagai rich message baru ke chat.
-
-    Pesan inline (InlineQueryResultPhoto) tidak bisa diubah jadi rich message,
-    jadi kirim rich message baru ke chat lalu pesan inline ditandai.
-    """
-    try:
-        rich_html = _to_rich_html(res_str)
-        chat_id = query.message.chat.id
-        attempts = (
-            [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{rich_html}', poster_url), (rich_html, None)]
-            if poster_url
-            else [(rich_html, None)]
-        )
-        for html_content, _ in attempts:
-            try:
-                await app.send_rich_message(
-                    chat_id,
-                    InputRichMessage(html=html_content),
-                    reply_markup=markup,
-                )
-                return True
-            except Exception as err:
-                LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
-    except Exception as err:
-        LOGGER.warning(f"_send_inline_rich gagal: {err}")
-    return False
-
-
 @app.on_callback_query(filters.regex("^imdbinl#"))
 async def imdb_inl(_, query):
     i, cbuser, movie = query.data.split("#")
@@ -792,7 +761,6 @@ async def imdb_inl(_, query):
             hidden_fields = _normalize_imdb_layout_fields(stored_fields)
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            use_rich_on_long = "send_rich_on_long" not in hidden_fields
             if send_as_photo:
                 await query.edit_message_caption(
                     "⏳ <i>Permintaan kamu sedang diproses.. </i>"
@@ -1101,25 +1069,9 @@ async def imdb_inl(_, query):
                         ]
                     )
             if send_as_photo:
-                try:
-                    await query.edit_message_caption(
-                        res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
-                    )
-                except MediaCaptionTooLong:
-                    if use_rich_on_long:
-                        # Caption kepanjangan -> kirim rich message baru, tandai pesan inline
-                        await _send_inline_rich(query, res_str, markup, r_json.get("image"))
-                        await query.edit_message_caption(
-                            "✅ <b>Hasil terlalu panjang</b> — dikirim sebagai rich message di atas.",
-                            parse_mode=enums.ParseMode.HTML,
-                        )
-                    else:
-                        await query.edit_message_text(
-                            res_str,
-                            parse_mode=enums.ParseMode.HTML,
-                            reply_markup=markup,
-                            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                        )
+                await query.edit_message_caption(
+                    res_str, parse_mode=enums.ParseMode.HTML, reply_markup=markup
+                )
             else:
                 await query.edit_message_text(
                     res_str,
