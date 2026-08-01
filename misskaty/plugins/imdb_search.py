@@ -5,6 +5,7 @@
 import contextlib
 import html
 import logging
+import os
 import re
 import sys
 import traceback
@@ -300,11 +301,31 @@ async def _send_rich_result(self, query, res_str, markup, poster_url=None):
     return False
 
 
+async def _download_poster(url: str) -> str | None:
+    """Download poster ke file temp. Return path lokal, None kalau gagal.
+
+    Mengirim URL langsung ke Telegram kadang gagal (WebpageCurlFailed)
+    karena server Telegram tidak selalu bisa fetch m.media-amazon.com.
+    Download dulu dari sisi bot lebih andal.
+    """
+    try:
+        resp = await fetch.get(url)
+        if resp.status_code != 200:
+            return None
+        fname = f"cache/imdb_{get_random_string(6)}.jpg"
+        with open(fname, "wb") as f:
+            f.write(resp.content)
+        return fname
+    except Exception as err:
+        LOGGER.warning(f"Download poster gagal: {err}")
+        return None
+
+
 async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo, use_rich_on_long):
     """Kirim hasil IMDb ke chat.
 
     Prioritas:
-    1. send_as_photo + poster -> edit media foto + caption
+    1. send_as_photo + poster -> download lalu edit media foto + caption
     2. caption kepanjangan (MediaCaptionTooLong):
        - use_rich_on_long=True  -> kirim rich message (default)
        - use_rich_on_long=False -> fallback edit teks biasa
@@ -324,46 +345,45 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             reply_markup=markup,
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
         )
-    try:
-        await self.edit_message_media(
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-            media=InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
-            reply_markup=markup,
-        )
-    except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-        poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-        await self.edit_message_media(
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-            media=InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML),
-            reply_markup=markup,
-        )
-    except MediaCaptionTooLong:
-        if use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
-            return
-        await query.message.edit(
-            res_str,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=markup,
-            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-        )
-    except (WebpageCurlFailed, MessageNotModified):
-        await query.message.edit(
-            res_str,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=markup,
-            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-        )
-    except Exception as err:
-        LOGGER.error(f"Terjadi error saat menampilkan data IMDB. ERROR: {err}")
-        with contextlib.suppress(MessageNotModified, MessageIdInvalid):
-            await query.message.edit(
-                res_str,
-                parse_mode=enums.ParseMode.HTML,
+    # Download poster dulu — kirim file lokal lebih andal daripada URL
+    poster_file = await _download_poster(thumb)
+    media_sources = []
+    if poster_file:
+        media_sources.append(poster_file)
+    # Fallback: URL asli (kecil) kalau download gagal
+    media_sources.append(thumb.replace(".jpg", "._V1_UX360.jpg"))
+    caption_too_long = False
+    for media in media_sources:
+        try:
+            await self.edit_message_media(
+                chat_id=query.message.chat.id,
+                message_id=query.message.id,
+                media=InputMediaPhoto(media, caption=res_str, parse_mode=enums.ParseMode.HTML),
                 reply_markup=markup,
-                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
             )
+            return
+        except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty, WebpageCurlFailed):
+            continue
+        except MediaCaptionTooLong:
+            caption_too_long = True
+            break
+        except MessageNotModified:
+            return
+        except Exception as err:
+            LOGGER.warning(f"Edit media gagal ({media}): {err.__class__.__name__}: {err}")
+    # Bersihkan file temp
+    if poster_file:
+        with contextlib.suppress(OSError):
+            os.remove(poster_file)
+    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
+        return
+    with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+        await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
 
 
 # IMDB Choose Language
