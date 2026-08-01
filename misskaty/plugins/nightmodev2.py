@@ -22,7 +22,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from database.locale_db import get_db_lang
 from misskaty import BOT_NAME, app, scheduler
-from misskaty.core.decorator import permissions
 from misskaty.core.decorator.permissions import require_admin
 from misskaty.helper.chat_permissions import (
     build_chat_permissions,

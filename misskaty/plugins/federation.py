@@ -369,7 +369,7 @@ async def leave_fed(client, message):
 
 @app.on_message(filters.command("fedchats", COMMAND_HANDLER))
 @capture_err
-async def fed_chat(client, message):
+async def fed_chats(client, message):
     chat = message.chat
     user = message.from_user
     if message.chat.type != ChatType.PRIVATE:

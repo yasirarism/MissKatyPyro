@@ -16,7 +16,6 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, enums
 from pyrogram import types as pyro_types
 from pyrogram.errors import (
-    ListenerTimeout,
     MediaCaptionTooLong,
     MediaEmpty,
     MessageIdInvalid,

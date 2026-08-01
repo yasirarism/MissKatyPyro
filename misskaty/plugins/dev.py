@@ -39,8 +39,6 @@ from pyrogram.errors import (
     FloodWait,
     MessageTooLong,
     PeerIdInvalid,
-    RPCError,
-    SlowmodeWait,
 )
 from pyrogram.raw.types import UpdateBotStopped
 from pyrogram.types import (

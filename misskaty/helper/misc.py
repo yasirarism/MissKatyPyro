@@ -89,3 +89,12 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
 
 def is_module_loaded(name):
     return (not MOD_LOAD or name in MOD_LOAD) and name not in MOD_NOLOAD
+
+
+import asyncio
+
+
+async def run_sync(func, *args, **kwargs):
+    """Run a blocking function in the default executor to avoid stalling the event loop."""
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, lambda: func(*args, **kwargs))

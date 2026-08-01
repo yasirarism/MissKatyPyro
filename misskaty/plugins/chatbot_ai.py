@@ -9,7 +9,6 @@ import privatebinapi
 from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
 from pyrogram import enums, filters
-from pyrogram.errors import MessageTooLong
 from pyrogram.types import (
     InlineQueryResultArticle,
     InputTextMessageContent,
@@ -79,7 +78,7 @@ async def _progress_ctx(client, ctx: Message, strings):
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core import pyro_cooldown
-from misskaty.helper import check_time_gap, post_to_telegraph, use_chat_lang
+from misskaty.helper import check_time_gap, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, OWNER_ID, SUDO
 
 

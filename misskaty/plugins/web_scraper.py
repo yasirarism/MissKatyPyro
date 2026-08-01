@@ -9,7 +9,6 @@ import contextlib
 import logging
 import re
 import sys
-import traceback
 from html import escape
 from urllib.parse import quote_plus, urljoin
 
@@ -1667,7 +1666,7 @@ async def sf21page_callback(self, callback_query, strings):
 # NunaDrama Page Callback
 @app.on_cb("page_nuna#")
 @use_chat_lang()
-async def sf21page_callback(self, callback_query, strings):
+async def nunapage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -1711,7 +1710,7 @@ async def sf21page_callback(self, callback_query, strings):
 # DutaMovie Page Callback
 @app.on_cb("page_duta#")
 @use_chat_lang()
-async def sf21page_callback(self, callback_query, strings):
+async def dutapage_callback(self, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -1750,50 +1749,6 @@ async def sf21page_callback(self, callback_query, strings):
     await callback_query.message.edit(
         dutares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
     )
-
-# NunaDrama Page Callback
-@app.on_cb("page_nuna#")
-@use_chat_lang()
-async def sf21page_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):  # Gatau napa err ini
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        nunares, PageLen, btn = await getDataNunaDrama(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nuna#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        nunares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
 
 # PusatFilm Page Callback
 @app.on_cb("page_pf#")

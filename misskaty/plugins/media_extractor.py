@@ -16,7 +16,6 @@ from urllib.parse import unquote
 
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
-from pyrogram.errors import ListenerTimeout
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,

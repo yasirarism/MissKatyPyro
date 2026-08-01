@@ -321,7 +321,7 @@ async def list_ban_(c, message, strings):
 
     if userid == c.me.id:
         return await message.reply_text(strings("ban_self_err"))
-    if userid in SUDO or user_id == OWNER_ID:
+    if userid in SUDO or userid == OWNER_ID:
         return await message.reply_text(strings("ban_sudo_err"))
     splitted = messagelink.split("/")
     uname, mid = splitted[-2], int(splitted[-1])
