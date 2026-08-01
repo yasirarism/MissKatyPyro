@@ -5,11 +5,13 @@
 import asyncio
 import html
 import re
+from logging import getLogger
 import privatebinapi
 
 from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
 from pyrogram import enums, filters
+from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import (
     InlineQueryResultArticle,
     InputRichMessage,
@@ -97,6 +99,38 @@ from misskaty.vars import (
     OWNER_ID,
     SUDO,
 )
+
+LOGGER = getLogger("MissKaty")
+
+
+async def _rich_send(client, chat_id, text: str, draft_id: int = None):
+    """Kirim rich message (draft/final) dengan handling FloodWait & error global.
+
+    - draft_id=None  -> send_rich_message (final)
+    - draft_id!=None -> send_rich_message_draft (streaming preview)
+    """
+    retries = 3
+    for attempt in range(retries):
+        try:
+            if draft_id is not None:
+                return await client.send_rich_message_draft(
+                    chat_id, draft_id, InputRichMessage(html=text)
+                )
+            return await client.send_rich_message(
+                chat_id, InputRichMessage(html=text)
+            )
+        except FloodWait as e:
+            LOGGER.warning(f"Got floodwait in {chat_id} for {e.value}'s.")
+            await asyncio.sleep(e.value)
+        except MessageNotModified:
+            return None
+        except Exception as e:
+            # Rich message masih eksperimental — jangan crash, log & lanjut
+            LOGGER.warning(f"send_rich_message error di {chat_id}: {e.__class__.__name__}: {e}")
+            if attempt == retries - 1:
+                return None
+            await asyncio.sleep(1)
+    return None
 
 
 def _extract_guest_prompt(ctx: Message) -> str:
@@ -217,7 +251,7 @@ def _is_private_chat(ctx: Message) -> bool:
 async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
     """Kirim pesan error: rich message di private, edit_msg di tempat lain."""
     if rich_mode:
-        await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+        await _rich_send(client, ctx.chat.id, err)
     else:
         await _edit_msg(bmsg, err)
 
@@ -230,7 +264,7 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
     """
     if rich_mode:
         if not _rich_too_long(text):
-            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
+            await _rich_send(client, ctx.chat.id, text)
             return
     else:
         if len(text) <= EDIT_MAX_CHARS:
@@ -246,7 +280,7 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
         answerlink=answerlink.get("full_url")
     )
     if rich_mode:
-        await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
+        await _rich_send(client, ctx.chat.id, text)
     else:
         await _edit_msg(bmsg, text, disable_web_page_preview=True)
 
@@ -267,11 +301,7 @@ async def get_openai_stream_response(
     draft_id = None
     if rich_mode:
         draft_id = client.rnd_id()
-        await client.send_rich_message_draft(
-            ctx.chat.id,
-            draft_id,
-            InputRichMessage(html=RICH_THINKING_HTML),
-        )
+        await _rich_send(client, ctx.chat.id, RICH_THINKING_HTML, draft_id)
     try:
         response = await ai.chat.completions.create(
             model=model,
@@ -294,11 +324,7 @@ async def get_openai_stream_response(
                     if _rich_too_long(answer):
                         continue
                     try:
-                        await client.send_rich_message_draft(
-                            ctx.chat.id,
-                            draft_id,
-                            InputRichMessage(html=html.escape(answer)),
-                        )
+                        await _rich_send(client, ctx.chat.id, html.escape(answer), draft_id)
                     except Exception:
                         pass
                 else:
