@@ -4,6 +4,7 @@
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
 import html
+import re
 import privatebinapi
 
 from cachetools import TTLCache
@@ -167,6 +168,37 @@ gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
 RICH_THINKING_HTML = "<tg-thinking>🤔 <b>Mikir...</b></tg-thinking>"
 
+# Batasan rich message Telegram (Bot API):
+#   - 32768 UTF-8 chars (incl. emoji alt text & formula source)
+#   - 500 blocks (nested, list items, table rows, quotations, details)
+#   - 16 levels nested formatting/blocks
+#   - 50 media attachments
+#   - 20 table columns
+# Margin aman supaya tidak kena limit di tengah render.
+RICH_MAX_CHARS = 32000
+RICH_MAX_BLOCKS = 480
+# Telegram edit limit untuk fallback non-rich (edit_msg)
+EDIT_MAX_CHARS = 4000
+
+# Tag blok-level yang dihitung sebagai satu "block" oleh Telegram.
+# Hanya tag pembuka yang dihitung (</p> dst = penutup, bukan blok baru).
+_BLOCK_TAGS = re.compile(
+    r"<(?:p|div|li|tr|blockquote|details|summary|pre|h[1-6]|"
+    r"tg-heading|tg-subheading|tg-bold|tg-pre|tg-code|tg-blockquote|"
+    r"tg-slideshow|tg-collage|tg-map|tg-location|tg-math-block)\b",
+    re.IGNORECASE,
+)
+
+
+def _rich_too_long(text: str) -> bool:
+    """True jika teks melampaui batas rich message (chars atau blocks)."""
+    if len(text) > RICH_MAX_CHARS:
+        return True
+    # Estimasi jumlah blok dari tag blok-level (batas 500)
+    if len(_BLOCK_TAGS.findall(text)) > RICH_MAX_BLOCKS:
+        return True
+    return False
+
 
 def _is_private_chat(ctx: Message) -> bool:
     """True when we can use rich messages/drafts: private DM, not guest inline."""
@@ -184,17 +216,28 @@ async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
 
 
 async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool):
-    """Kirim hasil: rich message di private, edit_msg di tempat lain."""
-    if len(text) > 4000:
-        answerlink = await privatebinapi.send_async(
-            "https://bin.yasirweb.eu.org",
-            text=text,
-            expiration="1week",
-            formatting="markdown",
-        )
-        text = strings("answers_too_long").format(
-            answerlink=answerlink.get("full_url")
-        )
+    """Kirim hasil: rich message di private, edit_msg di tempat lain.
+
+    Rich message punya batas 32768 char / 500 blok (Bot API); edit biasa
+    dibatasi 4096 char. Jika melampaui batas mode aktif -> privatebin.
+    """
+    if rich_mode:
+        if not _rich_too_long(text):
+            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
+            return
+    else:
+        if len(text) <= EDIT_MAX_CHARS:
+            await bmsg.edit_msg(text, disable_web_page_preview=True)
+            return
+    answerlink = await privatebinapi.send_async(
+        "https://bin.yasirweb.eu.org",
+        text=text,
+        expiration="1week",
+        formatting="markdown",
+    )
+    text = strings("answers_too_long").format(
+        answerlink=answerlink.get("full_url")
+    )
     if rich_mode:
         await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
     else:
@@ -231,10 +274,7 @@ async def get_openai_stream_response(
         )
         if not is_stream:
             answer += response.choices[0].message.content or ""
-            if rich_mode:
-                await _edit_result(client, ctx, bmsg, f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>", strings)
-            else:
-                await _edit_result(client, ctx, bmsg, f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>", strings)
+            await _edit_result(client, ctx, bmsg, f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>", strings)
         else:
             async for chunk in response:
                 if not chunk.choices or not chunk.choices[0].delta.content:
@@ -242,7 +282,10 @@ async def get_openai_stream_response(
                 num += 1
                 answer += chunk.choices[0].delta.content
                 if rich_mode:
-                    # Streaming preview via rich draft (same draft_id = animated)
+                    # Streaming preview via rich draft (same draft_id = animated).
+                    # Skip update kalau sudah melampaui batas rich (hemat request).
+                    if _rich_too_long(answer):
+                        continue
                     try:
                         await client.send_rich_message_draft(
                             ctx.chat.id,
