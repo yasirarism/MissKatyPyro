@@ -11,6 +11,7 @@ from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitErr
 from pyrogram import enums, filters
 from pyrogram.types import (
     InlineQueryResultArticle,
+    InputRichMessage,
     InputTextMessageContent,
     LinkPreviewOptions,
     Message,
@@ -79,7 +80,15 @@ async def _progress_ctx(client, ctx: Message, strings):
 from misskaty import BOT_USERNAME, app
 from misskaty.core import pyro_cooldown
 from misskaty.helper import check_time_gap, use_chat_lang
-from misskaty.vars import COMMAND_HANDLER, GOOGLEAI_KEY, OPENAI_KEY, OWNER_ID, SUDO
+from misskaty.vars import (
+    COMMAND_HANDLER,
+    NINE_ROUTER_API_KEY,
+    NINE_ROUTER_BASE_URL,
+    NINE_ROUTER_MODEL_AI,
+    NINE_ROUTER_MODEL_ASK,
+    OWNER_ID,
+    SUDO,
+)
 
 
 def _extract_guest_prompt(ctx: Message) -> str:
@@ -149,17 +158,79 @@ def _extract_guest_prompt(ctx: Message) -> str:
 
 __MODULE__ = "ChatBot"
 __HELP__ = """
-/ai - Generate text response from AI using Gemini AI By Google.
-/ask - Generate text response from AI using OpenAI.
+/ai - Generate text response from AI using Mimo via 9Router.
+/ask - Generate text response from AI using DeepSeek via 9Router.
 """
 
 gptai_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 gemini_conversations = TTLCache(maxsize=4000, ttl=24*60*60)
 
-async def get_openai_stream_response(is_stream, key, base_url, model, messages, bmsg, strings):
+RICH_THINKING_HTML = "<tg-thinking>🤔 <b>Mikir...</b></tg-thinking>"
+
+
+def _is_private_chat(ctx: Message) -> bool:
+    """True when we can use rich messages/drafts: private DM, not guest inline."""
+    if getattr(ctx, "guest_query_id", None):
+        return False
+    return getattr(ctx.chat, "type", None) == enums.ChatType.PRIVATE
+
+
+async def _edit_result(client, ctx, bmsg, text: str, strings):
+    """Send final answer: rich message in private, edit_msg elsewhere."""
+    if _is_private_chat(ctx):
+        if len(text) > 4000:
+            answerlink = await privatebinapi.send_async(
+                "https://bin.yasirweb.eu.org",
+                text=text,
+                expiration="1week",
+                formatting="markdown",
+            )
+            await client.send_rich_message(
+                ctx.chat.id,
+                InputRichMessage(
+                    html=strings("answers_too_long").format(
+                        answerlink=answerlink.get("full_url")
+                    )
+                ),
+            )
+        else:
+            await client.send_rich_message(
+                ctx.chat.id,
+                InputRichMessage(html=text),
+            )
+    else:
+        if len(text) > 4000:
+            answerlink = await privatebinapi.send_async(
+                "https://bin.yasirweb.eu.org",
+                text=text,
+                expiration="1week",
+                formatting="markdown",
+            )
+            await bmsg.edit_msg(
+                strings("answers_too_long").format(
+                    answerlink=answerlink.get("full_url")
+                ),
+                disable_web_page_preview=True,
+            )
+        else:
+            await bmsg.edit_msg(text, disable_web_page_preview=True)
+
+
+async def get_openai_stream_response(
+    client, is_stream, key, base_url, model, messages, bmsg, strings, ctx=None
+):
     ai = AsyncOpenAI(api_key=key, base_url=base_url)
     answer = ""
     num = 0
+    rich_mode = ctx is not None and _is_private_chat(ctx) and is_stream
+    draft_id = None
+    if rich_mode:
+        draft_id = client.rnd_id()
+        await client.send_rich_message_draft(
+            ctx.chat.id,
+            draft_id,
+            InputRichMessage(html=RICH_THINKING_HTML),
+        )
     try:
         response = await ai.chat.completions.create(
             model=model,
@@ -168,50 +239,65 @@ async def get_openai_stream_response(is_stream, key, base_url, model, messages, 
             stream=is_stream,
         )
         if not is_stream:
-            answer += response.choices[0].message.content
-            if len(answer) > 4000:
-                answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
-                await bmsg.edit_msg(
-                    strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
-                    disable_web_page_preview=True,
-                )
+            answer += response.choices[0].message.content or ""
+            if rich_mode:
+                await _edit_result(client, ctx, bmsg, f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>", strings)
             else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>Gemini 2.5 Flash</code>")
+                await _edit_result(client, ctx, bmsg, f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>", strings)
         else:
             async for chunk in response:
                 if not chunk.choices or not chunk.choices[0].delta.content:
                     continue
                 num += 1
                 answer += chunk.choices[0].delta.content
-                if num == 30 and len(answer) < 4000:
-                    await bmsg.edit_msg(html.escape(answer))
-                    await asyncio.sleep(1.5)
-                    num = 0
-            if len(answer) > 4000:
-                answerlink = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=answer, expiration="1week", formatting="markdown")
-                await bmsg.edit_msg(
-                    strings("answers_too_long").format(answerlink=answerlink.get("full_url")),
-                    disable_web_page_preview=True,
-                )
-            else:
-                await bmsg.edit_msg(f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>DeepSeek</code>")
+                if rich_mode:
+                    # Streaming preview via rich draft (same draft_id = animated)
+                    try:
+                        await client.send_rich_message_draft(
+                            ctx.chat.id,
+                            draft_id,
+                            InputRichMessage(html=html.escape(answer)),
+                        )
+                    except Exception:
+                        pass
+                else:
+                    if num == 30 and len(answer) < 4000:
+                        await bmsg.edit_msg(html.escape(answer))
+                        await asyncio.sleep(1.5)
+                        num = 0
+            final = f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>"
+            await _edit_result(client, ctx, bmsg, final, strings)
     except APIConnectionError as e:
-        await bmsg.edit_msg(f"The server could not be reached because {e.__cause__}")
+        err = f"The server could not be reached because {e.__cause__}"
+        if rich_mode:
+            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+        else:
+            await bmsg.edit_msg(err)
         return None
     except RateLimitError as e:
+        err = "You're got rate limit, please try again later."
         if "billing details" in str(e):
-            return await bmsg.edit_msg(
-                "This openai key from this bot has expired, please give openai key donation for bot owner."
-            )
-        await bmsg.edit_msg("You're got rate limit, please try again later.")
+            err = "This openai key from this bot has expired, please give openai key donation for bot owner."
+        if rich_mode:
+            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+        else:
+            await bmsg.edit_msg(err)
         return None
     except APIStatusError as e:
-        await bmsg.edit_msg(
+        err = (
             f"Another {e.status_code} status code was received with response {e.response}"
         )
+        if rich_mode:
+            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+        else:
+            await bmsg.edit_msg(err)
         return None
     except Exception as e:
-        await bmsg.edit_msg(f"ERROR: {e}")
+        err = f"ERROR: {e}"
+        if rich_mode:
+            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+        else:
+            await bmsg.edit_msg(err)
         return None
     return answer
 
@@ -253,6 +339,7 @@ async def gemini_chatbot(client, ctx: Message, strings):
             prompt = prompt.strip()[len("ai "):].lstrip(" \t:-")
 
         user_content = prompt
+        model = NINE_ROUTER_MODEL_ASK  # guest mode -> deepseek
     else:
         if len(ctx.command) == 1:
             return await _reply_ctx(
@@ -263,9 +350,10 @@ async def gemini_chatbot(client, ctx: Message, strings):
                 del_in=5,
             )
         user_content = ctx.input
+        model = NINE_ROUTER_MODEL_AI  # /ai -> mimo
 
-    if not GOOGLEAI_KEY:
-        return await _reply_ctx(client, ctx, "GOOGLEAI_KEY env is missing!!!")
+    if not NINE_ROUTER_API_KEY:
+        return await _reply_ctx(client, ctx, "NINE_ROUTER_API_KEY env is missing!!!")
 
     uid = (
         ctx.guest_bot_caller_user.id
@@ -273,7 +361,7 @@ async def gemini_chatbot(client, ctx: Message, strings):
         else (ctx.from_user.id if ctx.from_user else ctx.sender_chat.id)
     )
 
-    msg = await _progress_ctx(client, ctx, strings)
+    msg = None if _is_private_chat(ctx) else await _progress_ctx(client, ctx, strings)
     if uid not in gemini_conversations:
         gemini_conversations[uid] = [
             {
@@ -284,7 +372,10 @@ async def gemini_chatbot(client, ctx: Message, strings):
         ]
     else:
         gemini_conversations[uid].append({"role": "user", "content": user_content})
-    ai_response = await get_openai_stream_response(False, GOOGLEAI_KEY, "https://generativelanguage.googleapis.com/v1beta", "gemini-2.5-flash", gemini_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(
+        client, True, NINE_ROUTER_API_KEY, NINE_ROUTER_BASE_URL, model,
+        gemini_conversations[uid], msg, strings, ctx,
+    )
     if not ai_response:
         gemini_conversations[uid].pop()
         if len(gemini_conversations[uid]) == 1:
@@ -340,8 +431,8 @@ async def openai_chatbot(client, ctx: Message, strings):
             )
         user_content = ctx.input
 
-    if not OPENAI_KEY:
-        return await _reply_ctx(client, ctx, "OPENAI_KEY env is missing!!!")
+    if not NINE_ROUTER_API_KEY:
+        return await _reply_ctx(client, ctx, "NINE_ROUTER_API_KEY env is missing!!!")
 
     uid = (
         ctx.guest_bot_caller_user.id
@@ -354,7 +445,7 @@ async def openai_chatbot(client, ctx: Message, strings):
         return await _reply_ctx(client, ctx, strings("dont_spam"), del_in=5)
 
     pertanyaan = user_content
-    msg = await _progress_ctx(client, ctx, strings)
+    msg = None if _is_private_chat(ctx) else await _progress_ctx(client, ctx, strings)
     if uid not in gptai_conversations:
         gptai_conversations[uid] = [
             {
@@ -365,7 +456,10 @@ async def openai_chatbot(client, ctx: Message, strings):
         ]
     else:
         gptai_conversations[uid].append({"role": "user", "content": pertanyaan})
-    ai_response = await get_openai_stream_response(False, OPENAI_KEY, "https://openrouter.ai/api/v1", "deepseek/deepseek-r1-0528:free", gptai_conversations[uid], msg, strings)
+    ai_response = await get_openai_stream_response(
+        client, True, NINE_ROUTER_API_KEY, NINE_ROUTER_BASE_URL, NINE_ROUTER_MODEL_ASK,
+        gptai_conversations[uid], msg, strings, ctx,
+    )
     if not ai_response:
         gptai_conversations[uid].pop()
         if len(gptai_conversations[uid]) == 1:

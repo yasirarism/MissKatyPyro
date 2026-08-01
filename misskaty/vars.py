@@ -66,6 +66,11 @@ SUPPORT_CHAT = environ.get("SUPPORT_CHAT", "YasirPediaChannel")
 AUTO_RESTART = environ.get("AUTO_RESTART", False)
 OPENAI_KEY = environ.get("OPENAI_KEY")
 GOOGLEAI_KEY = environ.get("GOOGLEAI_KEY")
+# 9Router (OpenAI-compatible gateway) untuk chatbot AI
+NINE_ROUTER_API_KEY = environ.get("NINE_ROUTER_API_KEY")
+NINE_ROUTER_BASE_URL = environ.get("NINE_ROUTER_BASE_URL", "https://9router.yasirweb.eu.org/v1")
+NINE_ROUTER_MODEL_AI = environ.get("NINE_ROUTER_MODEL_AI", "oc/mimo-v2.5-free")
+NINE_ROUTER_MODEL_ASK = environ.get("NINE_ROUTER_MODEL_ASK", "oc/deepseek-v4-flash-free")
 PAYDISINI_KEY = environ.get("PAYDISINI_KEY")
 PAYDISINI_CHANNEL_ID = environ.get("PAYDISINI_CHANNEL_ID", "17")
 
