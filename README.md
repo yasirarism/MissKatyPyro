@@ -89,6 +89,10 @@ If you want help me fixing some error in my bot, you can make pull request to th
 * `OPENAI_API`: Create personal access token from github, and set as this env. Make sure you have access to Github Model.
 * `GOOGLEAI_KEY`: Learn how to get api key from this https://ai.google.dev/tutorials/python_quickstart?hl=en.
 * `CURRENCY_API`: Get API Key from https://app.exchangerate-api.com/sign-up
+* `NINE_ROUTER_API_KEY`: API key for the [9Router](https://9router.yasirweb.eu.org) gateway used by `/ai` and `/ask` chatbot commands (OpenAI-compatible API). **Required for ChatBot plugin.**
+* `NINE_ROUTER_BASE_URL`: 9Router base URL. Default `https://9router.yasirweb.eu.org/v1` (optional).
+* `NINE_ROUTER_MODEL_AI`: Model used by `/ai`. Default `oc/mimo-v2.5-free` (optional).
+* `NINE_ROUTER_MODEL_ASK`: Model used by `/ask` & guest mode. Default `oc/deepseek-v4-flash-free` (optional).
 
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 

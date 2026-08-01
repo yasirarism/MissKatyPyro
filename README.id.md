@@ -91,6 +91,10 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 * `OPENAI_API`: Dapatkan dari Web OpenAI (Deprecated Temporary)
 * `GOOGLE_API`: Pelajari dari ini https://github.com/dsdanielpark/Bard-API untuk mendapatkan cookies dan set sebagai api key.
 * `CURRENCY_API`: Dapatkan API Key di https://app.exchangerate-api.com/sign-up
+* `NINE_ROUTER_API_KEY`: API key gateway [9Router](https://9router.yasirweb.eu.org) untuk command chatbot `/ai` dan `/ask` (API OpenAI-compatible). **Wajib untuk plugin ChatBot.**
+* `NINE_ROUTER_BASE_URL`: Base URL 9Router. Default `https://9router.yasirweb.eu.org/v1` (opsional).
+* `NINE_ROUTER_MODEL_AI`: Model untuk `/ai`. Default `oc/mimo-v2.5-free` (opsional).
+* `NINE_ROUTER_MODEL_ASK`: Model untuk `/ask` & guest mode. Default `oc/deepseek-v4-flash-free` (opsional).
 
 ## [7] Tutorial Deploy (Recommended using Docker/Docker Compose)
 
