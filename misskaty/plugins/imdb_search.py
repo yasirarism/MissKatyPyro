@@ -53,7 +53,7 @@ from database.imdb_db import (
     set_imdb_template,
 )
 from misskaty import app
-from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, search_jw
+from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from utils import demoji
 
@@ -309,7 +309,7 @@ async def _download_poster(url: str) -> str | None:
     Download dulu dari sisi bot lebih andal.
     """
     try:
-        resp = await fetch.get(url)
+        resp = await resp_get(url)
         if resp.status_code != 200:
             return None
         fname = f"cache/imdb_{get_random_string(6)}.jpg"
