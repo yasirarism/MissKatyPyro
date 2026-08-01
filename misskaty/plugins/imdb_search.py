@@ -32,6 +32,7 @@ from pyrogram.types import (
     InputMediaPhoto,
     InputRichMessage,
     Message,
+    ReplyParameters,
 )
 
 from database.imdb_db import (
@@ -230,8 +231,15 @@ def _to_rich_html(text: str) -> str:
 
     Rich message tidak merender ``\\n`` sebagai newline — harus pakai ``<br>``
     atau tag blok. `<blockquote expandable>` juga bukan tag rich yang valid,
-    diganti `<details>` + `<summary>` supaya tetap collapsible.
+    diganti `<details>` + `<summary>` supaya tetap collapsible. Custom emoji
+    ``<emoji id=...>`` diubah ke bentuk rich ``<tg-emoji emoji-id=...>``.
     """
+    # 0) Custom emoji -> bentuk rich message
+    text = re.sub(
+        r"<emoji id=(\d+)>([^<]*)</emoji>",
+        r'<tg-emoji emoji-id="\1">\2</tg-emoji>',
+        text,
+    )
     # 1) Blockquote expandable -> <details><summary>
     text = re.sub(
         r"<blockquote expandable><code>(.*?)</code></blockquote>",
@@ -259,12 +267,16 @@ def _to_rich_html(text: str) -> str:
     return "\n".join(rendered)
 
 
-async def _send_rich_result(self, chat_id, res_str, markup, poster_url=None):
+async def _send_rich_result(self, query, res_str, markup, poster_url=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
-    Rich message mendukung gambar via tag ``<tg-photo src="...">`` (URL atau
-    file_id). Jika kirim dengan gambar gagal, retry sekali tanpa gambar.
+    - Reply ke pesan asli user (query.message.reply_to_message_id)
+    - Hapus pesan "sedang diproses" setelah rich terkirim
+    - Rich message mendukung gambar via ``<tg-photo src="...">``
     """
+    chat_id = query.message.chat.id
+    reply_to = getattr(query.message, "reply_to_message_id", None)
+    reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
     rich_html = _to_rich_html(res_str)
     attempts = (
         [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{rich_html}', poster_url), (rich_html, None)]
@@ -277,7 +289,11 @@ async def _send_rich_result(self, chat_id, res_str, markup, poster_url=None):
                 chat_id,
                 InputRichMessage(html=html_content),
                 reply_markup=markup,
+                reply_parameters=reply_parameters,
             )
+            # Bersihkan pesan "sedang diproses" supaya tidak tertinggal
+            with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+                await query.message.delete()
             return True
         except Exception as err:
             LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
@@ -324,7 +340,7 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             reply_markup=markup,
         )
     except MediaCaptionTooLong:
-        if use_rich_on_long and await _send_rich_result(self, query.message.chat.id, res_str, markup, thumb):
+        if use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
             return
         await query.message.edit(
             res_str,
