@@ -526,22 +526,20 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         result = []
         try:
             with contextlib.redirect_stdout(sys.stderr):
-                try:
-                    if kueri:
-                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
-                    else:
-                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
-                    lk21json.raise_for_status()
-                    result = lk21json.json().get("result") or []
-                except httpx.HTTPError:
-                    result = []
-        except Exception:
-            result = []
+                if kueri:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
+                else:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
+                lk21json.raise_for_status()
+                result = lk21json.json().get("result") or []
+        except (httpx.HTTPError, ValueError) as exc:
+            # API error / response bukan JSON -> fallback scrape langsung
+            LOGGER.warning("LK21 API gagal (%s), fallback ke scrape langsung", exc)
         if not result:
-            # API kosong/error -> fallback scrape langsung dari situs
             try:
                 result = await _scrape_lk21_direct(kueri)
             except Exception as exc:
+                LOGGER.exception("LK21 direct scrape gagal")
                 await msg.edit(
                     f"ERROR: Gagal mengambil data LK21 - <code>{exc}</code>"
                 )
@@ -1246,22 +1244,22 @@ async def getSame(msg, query, current_page, strings):
 # Mapping: command -> (getdata_fn, page_prefix, needs_user)
 # ============================================================
 SCRAPER_REGISTRY = {
-    "samehadaku": ("getSame", "page_same", False),
-    "terbit21": ("getDataTerbit21", "page_terbit21", False),
-    "lk21": ("getDatalk21", "page_lk21", False),
-    "pahe": ("getDataPahe", "page_pahe", False),
-    "gomov": ("getDataGomov", "page_gomov", True),
-    "klikxxi": ("getDataGomov", "page_gomov", True),
-    "melongmovie": ("getDataMelong", "page_melong", True),
-    "nunadrama": ("getDataNunaDrama", "page_nuna", True),
-    "pusatfilm": ("getDataPusatFilm", "page_pf", True),
-    "dutamovie": ("getDataDutaMovie", "page_duta", True),
-    "savefilm21": ("getDataSavefilm21", "page_sf21", True),
-    "nodrakor": ("getDataNodrakor", "page_nodrakor", True),
-    "kusonime": ("getDataKuso", "page_kuso", True),
-    "lendrive": ("getDataLendrive", "page_lendrive", True),
-    "movieku": ("getDataMovieku", "page_movieku", True),
-    "oppaweb": ("getDataOppaweb", "page_oppaweb", True),
+    "samehadaku": (getSame, "page_same", False),
+    "terbit21": (getDataTerbit21, "page_terbit21", False),
+    "lk21": (getDatalk21, "page_lk21", False),
+    "pahe": (getDataPahe, "page_pahe", False),
+    "gomov": (getDataGomov, "page_gomov", True),
+    "klikxxi": (getDataGomov, "page_gomov", True),
+    "melongmovie": (getDataMelong, "page_melong", True),
+    "nunadrama": (getDataNunaDrama, "page_nuna", True),
+    "pusatfilm": (getDataPusatFilm, "page_pf", True),
+    "dutamovie": (getDataDutaMovie, "page_duta", True),
+    "savefilm21": (getDataSavefilm21, "page_sf21", True),
+    "nodrakor": (getDataNodrakor, "page_nodrakor", True),
+    "kusonime": (getDataKuso, "page_kuso", True),
+    "lendrive": (getDataLendrive, "page_lendrive", True),
+    "movieku": (getDataMovieku, "page_movieku", True),
+    "oppaweb": (getDataOppaweb, "page_oppaweb", True),
 }
 
 PAGE_REGISTRY = {v[1]: (v[0], v[2]) for v in SCRAPER_REGISTRY.values()}
@@ -1271,8 +1269,7 @@ PAGE_REGISTRY = {v[1]: (v[0], v[2]) for v in SCRAPER_REGISTRY.values()}
 @use_chat_lang()
 async def scraper_cmd(_, message, strings):
     cmd = message.command[0].lower().lstrip("/")
-    fn_name, page_prefix, needs_user = SCRAPER_REGISTRY[cmd]
-    func = globals()[fn_name]
+    func, page_prefix, needs_user = SCRAPER_REGISTRY[cmd]
     kueri = " ".join(message.command[1:]) or None
     pesan = await message.reply(strings("get_data"))
     if needs_user:
@@ -1315,10 +1312,9 @@ async def scraper_page_callback(_, callback_query, strings):
         return
 
     prefix = callback_query.data.split("#")[0]
-    fn_name, needs_user = PAGE_REGISTRY.get(prefix, (None, False))
-    if not fn_name:
+    func, needs_user = PAGE_REGISTRY.get(prefix, (None, False))
+    if not func:
         return
-    func = globals()[fn_name]
     try:
         if needs_user:
             res, PageLen, btn = await func(
