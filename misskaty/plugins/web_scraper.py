@@ -482,11 +482,14 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
 
     Cloudflare memblokir User-Agent curl biasa, jadi pakai Googlebot UA.
     """
+    base = web.get("lk21") or DEFAULT_WEB["lk21"]
+    if not base.startswith(("http://", "https://")):
+        base = f"https://{base}"
     headers = {"User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"}
     if kueri:
-        url = f"{web['lk21']}/?s={quote_plus(kueri)}"
+        url = f"{base}/?s={quote_plus(kueri)}"
     else:
-        url = f"{web['lk21']}/latest"
+        url = f"{base}/latest"
         if page > 1:
             url += f"/page/{page}"
     resp = await resp_get(url, headers=headers)
@@ -502,7 +505,7 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
             continue
         link = href.group(1)
         if link.startswith("/"):
-            link = urljoin(web["lk21"], link)
+            link = urljoin(base, link)
         result.append(
             {
                 "link": link,
