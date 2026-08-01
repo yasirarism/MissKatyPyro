@@ -95,14 +95,14 @@ async def ceksub(self, ctx: Message, strings):
             mapping = stream["index"]
             try:
                 stream_name = stream["codec_name"]
-            except:
+            except Exception:
                 stream_name = "-"
             stream_type = stream["codec_type"]
             if stream_type not in ("audio", "subtitle"):
                 continue
             try:
                 lang = stream["tags"]["language"]
-            except:
+            except Exception:
                 lang = mapping
             buttons.append(
                 [
@@ -161,7 +161,7 @@ async def convertsrt(self: Client, ctx: Message, strings):
     try:
         os.remove(dl)
         os.remove(f"downloads/{filename}.{suffix}")
-    except:
+    except Exception:
         pass
 
 
@@ -175,7 +175,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     _, lang, map_code, codec = cb_data.split("#")
     try:
         link = update.message.reply_to_message.command[1]
-    except:
+    except Exception:
         return await update.answer(strings("invalid_cb"), True)
     await update.message.edit(strings("progress_str"))
     if codec == "aac":
@@ -208,11 +208,11 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
         await update.message.delete_msg()
         try:
             os.remove(namafile)
-        except:
+        except Exception:
             pass
     except Exception as e:
         try:
             os.remove(namafile)
-        except:
+        except Exception:
             pass
         await update.message.edit(strings("fail_extr_sub").format(link=link, e=e))

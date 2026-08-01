@@ -601,7 +601,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     el_us = after - before
     try:
         el_str = get_readable_time(el_us)
-    except:
+    except Exception:
         el_str = "1s"
     if not el_str or el_str is None:
         el_str = "0.1s"

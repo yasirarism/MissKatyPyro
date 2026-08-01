@@ -107,7 +107,7 @@ async def admin_cache_func(_, cmu):
                 ],
             }
             LOGGER.info(f"Updated admin cache for {cmu.chat.id} [{cmu.chat.title}]")
-        except:
+        except Exception:
             pass
 
 
@@ -329,7 +329,7 @@ async def list_ban_(c, message, strings):
     try:
         msgtext = (await app.get_messages(uname, mid)).text
         gusernames = re.findall(r"@\w+", msgtext)
-    except:
+    except Exception:
         return await m.edit_text(strings("failed_get_uname"))
     count = 0
     for username in gusernames:
@@ -338,7 +338,7 @@ async def list_ban_(c, message, strings):
             await asyncio.sleep(1)
         except FloodWait as e:
             await asyncio.sleep(e.value)
-        except:
+        except Exception:
             continue
         count += 1
     mention = (await app.get_users(userid)).mention
@@ -372,7 +372,7 @@ async def list_unban(_, message, strings):
     try:
         msgtext = (await app.get_messages(uname, mid)).text
         gusernames = re.findall(r"@\w+", msgtext)
-    except:
+    except Exception:
         return await m.edit_text(strings("failed_get_uname"))
     count = 0
     for username in gusernames:
@@ -381,7 +381,7 @@ async def list_unban(_, message, strings):
             await asyncio.sleep(1)
         except FloodWait as e:
             await asyncio.sleep(e.x)
-        except:
+        except Exception:
             continue
         count += 1
     mention = (await app.get_users(userid)).mention
@@ -401,7 +401,7 @@ async def deleteFunc(_, message, strings):
     try:
         await message.reply_to_message.delete()
         await message.delete()
-    except:
+    except Exception:
         await message.reply(strings("no_delete_perm"))
 
 
@@ -413,7 +413,7 @@ async def promoteFunc(client, message, strings):
     try:
         user_id = await extract_user(message)
         umention = (await client.get_users(user_id)).mention
-    except:
+    except Exception:
         return await message.reply(strings("invalid_id_uname"))
     if not user_id:
         return await message.reply_text(strings("user_not_found"))

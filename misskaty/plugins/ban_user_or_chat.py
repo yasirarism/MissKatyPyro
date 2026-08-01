@@ -53,11 +53,11 @@ async def grp_bd(self: Client, ctx: Message, strings):
                 reply_markup=reply_markup,
             )
             await k.pin()
-        except:
+        except Exception:
             pass
         try:
             await self.leave_chat(ctx.chat.id)
-        except:
+        except Exception:
             pass
         await ctx.stop_propagation()
 
@@ -75,7 +75,7 @@ async def ban_a_user(bot, message):
         reason = "No reason Provided"
     try:
         chat = int(chat)
-    except:
+    except Exception:
         pass
     try:
         k = await bot.get_users(chat)
@@ -107,7 +107,7 @@ async def unban_a_user(bot, message):
     chat = message.text.split(None, 2)[1] if len(r) > 2 else message.command[1]
     try:
         chat = int(chat)
-    except:
+    except Exception:
         pass
     try:
         k = await bot.get_users(chat)
@@ -140,7 +140,7 @@ async def disable_chat(bot, message):
         reason = "No reason Provided"
     try:
         chat_ = int(chat)
-    except:
+    except Exception:
         return await message.reply("Give Me A Valid Chat ID")
     cha_t = await db.get_chat(chat_)
     if not cha_t:
@@ -173,7 +173,7 @@ async def re_enable_chat(_, ctx: Message):
     chat = ctx.command[1]
     try:
         chat_ = int(chat)
-    except:
+    except Exception:
         return await ctx.reply("Give Me A Valid Chat ID")
     sts = await db.get_chat(int(chat))
     if not sts:

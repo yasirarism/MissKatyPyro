@@ -50,7 +50,7 @@ async def del_msg(_, message):
                     message[0].chat.id, a.deleted_message.from_user.id
                 )
             ).status
-        except:
+        except Exception:
             ustat = enums.ChatMemberStatus.MEMBER
         if (
             ustat
@@ -77,7 +77,7 @@ async def edit_msg(_, message):
         ustat = (
             await user.get_chat_member(message.chat.id, message.from_user.id)
         ).status
-    except:
+    except Exception:
         ustat = enums.ChatMemberStatus.MEMBER
     if message.from_user.is_bot or ustat in [
         enums.ChatMemberStatus.ADMINISTRATOR,

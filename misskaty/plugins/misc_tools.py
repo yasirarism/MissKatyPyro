@@ -656,11 +656,11 @@ async def mdl_callback(_, query: CallbackQuery):
                 )
                 try:
                     result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
-                except:
+                except Exception:
                     pass
                 try:
                     result += f"<b>Original Network:</b> <code>{res['data']['details']['original_network']}</code>\n"
-                except:
+                except Exception:
                     pass
             result += (
                 f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"

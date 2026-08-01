@@ -353,7 +353,7 @@ async def fbdl(_, message):
         await msg.delete()
         try:
             os.remove(path)
-        except:
+        except Exception:
             pass
     except Exception as e:
         await message.reply(

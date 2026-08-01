@@ -13,30 +13,27 @@ fetch = AsyncClient(
 
 
 async def get(url: str, *args, **kwargs):
+    resp = await fetch.get(url, *args, **kwargs)
     try:
-        resp = await fetch.get(url, *args, **kwargs)
-        data = await resp.json()
+        return await resp.json()
     except Exception:
-        data = await resp.text()
-    return data
+        return resp.text
 
 
 async def head(url: str, *args, **kwargs):
+    resp = await fetch.head(url, *args, **kwargs)
     try:
-        resp = await fetch.head(url, *args, **kwargs)
-        data = await resp.json()
+        return await resp.json()
     except Exception:
-        data = await resp.text()
-    return data
+        return resp.text
 
 
 async def post(url: str, *args, **kwargs):
+    resp = await fetch.post(url, *args, **kwargs)
     try:
-        resp = await fetch.post(url, *args, **kwargs)
-        data = await resp.json()
+        return await resp.json()
     except Exception:
-        data = await resp.text()
-    return data
+        return resp.text
 
 
 async def multiget(url: str, times: int, *args, **kwargs):

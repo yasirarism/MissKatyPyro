@@ -64,7 +64,7 @@ async def handle_error(
                     "https://img.yasirweb.eu.org/file/3c9162b242567ae25d5af.jpg",
                     caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience",
                 )
-            except:
+            except Exception:
                 await m.reply(
                     "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
                 )
@@ -86,7 +86,7 @@ async def handle_error(
                     "https://img.yasirweb.eu.org/file/3c9162b242567ae25d5af.jpg",
                     caption="An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience",
                 )
-            except:
+            except Exception:
                 await m.message.reply(
                     "An Internal Error Occurred while Processing your Command, the Logs have been sent to the Owners of this Bot. Sorry for Inconvenience"
                 )

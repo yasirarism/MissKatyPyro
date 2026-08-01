@@ -94,7 +94,7 @@ async def new_fed(self, message):
                 f"New Federation: <b>{fed_name}</b>\nID: <pre>{fed_id}</pre>",
                 parse_mode=ParseMode.HTML,
             )
-        except:
+        except Exception:
             self.log.info("Cannot send a message to EVENT_LOGS")
     else:
         await message.reply_text("Please write down the name of the federation")

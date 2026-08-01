@@ -14,7 +14,7 @@ async def down_page(url):
         imdb = ""
     try:
         poster = maindiv.find("div", class_="poster").a["href"]
-    except:
+    except Exception:
         poster = ""
     try:
         author_name = (
@@ -23,7 +23,7 @@ async def down_page(url):
             .a.text.strip()
         )
         author_link = f"https://subscene.com{maindiv.find('div', class_='header').ul.find('li', class_='author').a['href']}"
-    except:
+    except Exception:
         author_link = ""
         author_name = "Anonymous"
 
@@ -36,7 +36,7 @@ async def down_page(url):
             .find("div", class_="comment")
             .text
         )
-    except:
+    except Exception:
         comments = ""
     try:
         release = (

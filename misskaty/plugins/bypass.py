@@ -10,7 +10,6 @@ import re
 import urllib.parse
 from urllib.parse import unquote
 
-import requests
 from pyrogram import filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
@@ -18,7 +17,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper import fetch, get_readable_file_size, rentry
+from misskaty.helper import fetch, get_readable_file_size, rentry, resp_get
 from misskaty.vars import COMMAND_HANDLER
 
 LIST_LINK = """
@@ -54,13 +53,13 @@ async def pling_bypass(url):
         )
         return msg
     except Exception as e:
-        return e
+        return str(e)
 
 
-def wetransfer_bypass(url: str) -> str:
+async def wetransfer_bypass(url: str) -> str:
     if url.startswith("https://we.tl/"):
-        r = requests.head(url, allow_redirects=True)
-        url = r.url
+        r = await resp_get(url)
+        url = str(r.url)
     recipient_id = None
     params = urllib.parse.urlparse(url).path.split("/")[2:]
 
@@ -79,19 +78,24 @@ def wetransfer_bypass(url: str) -> str:
     if recipient_id:
         j["recipient_id"] = recipient_id
     try:
-        s = requests.Session()
-        r = s.get("https://wetransfer.com/")
+        r = await resp_get("https://wetransfer.com/")
         m = re.search('name="csrf-token" content="([^"]+)"', r.text)
-        s.headers.update({"x-csrf-token": m[1], "x-requested-with": "XMLHttpRequest"})
-        r = s.post(
-            f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download", json=j
+        if not m:
+            return "ERROR: CSRF token not found in wetransfer.com response."
+        r = await fetch.post(
+            f"https://wetransfer.com/api/v4/transfers/{transfer_id}/download",
+            json=j,
+            headers={
+                "x-csrf-token": m[1],
+                "x-requested-with": "XMLHttpRequest",
+            },
         )
         j = r.json()
         dl_url = j["direct_link"]
 
         return f"\n**Source Link** :\n`{url}`\n**Direct Link :**\n{dl_url}"
     except Exception as er:
-        return er
+        return str(er)
 
 
 @app.on_message(filters.command(["directurl"], COMMAND_HANDLER))
@@ -124,5 +128,5 @@ async def bypass(_, ctx: Message):
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
             )
     else:
-        data = wetransfer_bypass(url)
+        data = await wetransfer_bypass(url)
         await msg.edit(f"{data}\n\n{mention}")

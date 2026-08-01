@@ -106,7 +106,7 @@ async def telegraph_paste(_, message):
         except UnicodeDecodeError:
             try:
                 remove(file)
-            except:
+            except Exception:
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
@@ -169,7 +169,7 @@ async def wastepaste(_, message):
         except UnicodeDecodeError:
             try:
                 remove(file)
-            except:
+            except Exception:
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
@@ -233,7 +233,7 @@ async def nekopaste(_, message):
         except UnicodeDecodeError:
             try:
                 remove(file)
-            except:
+            except Exception:
                 pass
             return await message.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
@@ -304,7 +304,7 @@ async def spacebinn(_, message):
         except UnicodeDecodeError:
             try:
                 remove(file)
-            except:
+            except Exception:
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):
@@ -373,7 +373,7 @@ async def rentrypaste(_, message):
         except UnicodeDecodeError:
             try:
                 remove(file)
-            except:
+            except Exception:
                 pass
             return await msg.edit("`File Not Supported !`")
     elif reply and (reply.text or reply.caption):

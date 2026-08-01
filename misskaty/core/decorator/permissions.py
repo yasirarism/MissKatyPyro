@@ -42,7 +42,7 @@ async def member_permissions(chat_id: int, user_id: int):
         if member.can_manage_video_chats:
             perms.append("can_manage_video_chats")
         return perms
-    except:
+    except Exception:
         return []
 
 
