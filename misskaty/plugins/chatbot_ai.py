@@ -175,45 +175,36 @@ def _is_private_chat(ctx: Message) -> bool:
     return getattr(ctx.chat, "type", None) == enums.ChatType.PRIVATE
 
 
+async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
+    """Kirim pesan error: rich message di private, edit_msg di tempat lain."""
+    if rich_mode:
+        await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
+    else:
+        await bmsg.edit_msg(err)
+
+
+async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool):
+    """Kirim hasil: rich message di private, edit_msg di tempat lain."""
+    if len(text) > 4000:
+        answerlink = await privatebinapi.send_async(
+            "https://bin.yasirweb.eu.org",
+            text=text,
+            expiration="1week",
+            formatting="markdown",
+        )
+        text = strings("answers_too_long").format(
+            answerlink=answerlink.get("full_url")
+        )
+    if rich_mode:
+        await client.send_rich_message(ctx.chat.id, InputRichMessage(html=text))
+    else:
+        await bmsg.edit_msg(text, disable_web_page_preview=True)
+
+
 async def _edit_result(client, ctx, bmsg, text: str, strings):
     """Send final answer: rich message in private, edit_msg elsewhere."""
-    if _is_private_chat(ctx):
-        if len(text) > 4000:
-            answerlink = await privatebinapi.send_async(
-                "https://bin.yasirweb.eu.org",
-                text=text,
-                expiration="1week",
-                formatting="markdown",
-            )
-            await client.send_rich_message(
-                ctx.chat.id,
-                InputRichMessage(
-                    html=strings("answers_too_long").format(
-                        answerlink=answerlink.get("full_url")
-                    )
-                ),
-            )
-        else:
-            await client.send_rich_message(
-                ctx.chat.id,
-                InputRichMessage(html=text),
-            )
-    else:
-        if len(text) > 4000:
-            answerlink = await privatebinapi.send_async(
-                "https://bin.yasirweb.eu.org",
-                text=text,
-                expiration="1week",
-                formatting="markdown",
-            )
-            await bmsg.edit_msg(
-                strings("answers_too_long").format(
-                    answerlink=answerlink.get("full_url")
-                ),
-                disable_web_page_preview=True,
-            )
-        else:
-            await bmsg.edit_msg(text, disable_web_page_preview=True)
+    rich_mode = ctx is not None and _is_private_chat(ctx)
+    await _deliver_result(client, ctx, bmsg, text, strings, rich_mode)
 
 
 async def get_openai_stream_response(
@@ -268,36 +259,23 @@ async def get_openai_stream_response(
             final = f"{html.escape(answer)}\n\n<b>Powered by:</b> <code>{model}</code>"
             await _edit_result(client, ctx, bmsg, final, strings)
     except APIConnectionError as e:
-        err = f"The server could not be reached because {e.__cause__}"
-        if rich_mode:
-            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
-        else:
-            await bmsg.edit_msg(err)
+        await _deliver_error(client, ctx, bmsg, f"The server could not be reached because {e.__cause__}", rich_mode)
         return None
     except RateLimitError as e:
         err = "You're got rate limit, please try again later."
         if "billing details" in str(e):
             err = "This openai key from this bot has expired, please give openai key donation for bot owner."
-        if rich_mode:
-            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
-        else:
-            await bmsg.edit_msg(err)
+        await _deliver_error(client, ctx, bmsg, err, rich_mode)
         return None
     except APIStatusError as e:
-        err = (
-            f"Another {e.status_code} status code was received with response {e.response}"
+        await _deliver_error(
+            client, ctx, bmsg,
+            f"Another {e.status_code} status code was received with response {e.response}",
+            rich_mode,
         )
-        if rich_mode:
-            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
-        else:
-            await bmsg.edit_msg(err)
         return None
     except Exception as e:
-        err = f"ERROR: {e}"
-        if rich_mode:
-            await client.send_rich_message(ctx.chat.id, InputRichMessage(html=err))
-        else:
-            await bmsg.edit_msg(err)
+        await _deliver_error(client, ctx, bmsg, f"ERROR: {e}", rich_mode)
         return None
     return answer
 
