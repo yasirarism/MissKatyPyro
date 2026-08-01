@@ -207,10 +207,37 @@ async def _get_cached_jadwal(config: dict, now: datetime.datetime) -> Optional[d
 
 
 async def _get_cities() -> list[dict]:
+    """Fetch list of cities with a simple in-memory TTL cache.
+
+    This reduces latency and external API calls for interactive flows that
+    repeatedly query the mostly-static city list.
+    """
+    cache_ttl_seconds = 3600  # 1 hour
+
+    now = datetime.datetime.now(datetime.timezone.utc)
+    cached_cities: Optional[list[dict]] = getattr(_get_cities, "_cache", None)
+    cache_expires_at: Optional[datetime.datetime] = getattr(
+        _get_cities, "_cache_expires_at", None
+    )
+
+    # Return cached value if it exists and is still valid
+    if cached_cities is not None and cache_expires_at is not None and now < cache_expires_at:
+        return cached_cities
+
     data = await _fetch_json(CITY_LIST_URL)
     if not data or not data.get("status"):
+        # On error, fall back to stale cache if we have one
+        if cached_cities is not None:
+            return cached_cities
         return []
-    return data.get("data", [])
+
+    cities = data.get("data", []) or []
+
+    # Update cache and expiry
+    setattr(_get_cities, "_cache", cities)
+    setattr(_get_cities, "_cache_expires_at", now + datetime.timedelta(seconds=cache_ttl_seconds))
+
+    return cities
 
 
 def _panel_markup(config: dict, user_id: int) -> InlineKeyboardMarkup:
