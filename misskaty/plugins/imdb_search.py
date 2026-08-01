@@ -52,7 +52,7 @@ from database.imdb_db import (
     set_imdb_layout_fields,
     set_imdb_template,
 )
-from misskaty import app
+from misskaty import UBOT_ID, app, user
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from utils import demoji
@@ -268,22 +268,32 @@ def _to_rich_html(text: str) -> str:
     return "\n".join(rendered)
 
 
-async def _upload_poster(self, poster_file: str) -> str | None:
-    """Upload poster ke Saved Messages, return file_id (untuk rich message).
+async def _upload_poster(self, poster_file: str, chat_id=None) -> str | None:
+    """Upload poster, return file_id (untuk rich message).
 
     Rich message media (``<tg-photo src="...">``) tidak di-fetch dari URL —
-    server Telegram butuh file_id yang sudah di-upload. File dihapus setelah
-    diambil file_id-nya.
+    server Telegram butuh file_id yang sudah di-upload.
+
+    Bot tidak bisa kirim ke Saved Messages sendiri (USER_IS_BOT), jadi:
+    1. Kalau userbot aktif (UBOT_ID) -> upload via user ke Saved Messages user
+    2. Kalau tidak -> kirim ke chat yang sedang aktif, ambil file_id, hapus
     """
     try:
-        sent = await self.send_photo("me", poster_file)
-        file_id = sent.photo.file_id
-        with contextlib.suppress(Exception):
-            await sent.delete()
-        return file_id
+        if UBOT_ID:
+            sent = await user.send_photo("me", poster_file)
+            file_id = sent.photo.file_id
+            with contextlib.suppress(Exception):
+                await sent.delete()
+            return file_id
+        if chat_id:
+            sent = await self.send_photo(chat_id, poster_file)
+            file_id = sent.photo.file_id
+            with contextlib.suppress(Exception):
+                await sent.delete()
+            return file_id
     except Exception as err:
         LOGGER.warning(f"Upload poster gagal ({err.__class__.__name__}): {err}")
-        return None
+    return None
 
 
 async def _send_rich_result(self, query, res_str, markup, poster_file=None):
@@ -300,7 +310,7 @@ async def _send_rich_result(self, query, res_str, markup, poster_file=None):
     rich_html = _to_rich_html(res_str)
     # Upload poster -> file_id kalau ada file lokal
     photo_html = ""
-    if poster_file and (file_id := await _upload_poster(self, poster_file)):
+    if poster_file and (file_id := await _upload_poster(self, poster_file, chat_id)):
         photo_html = f'<tg-photo src="{file_id}"></tg-photo>\n\n'
     attempts = [photo_html + rich_html]
     if photo_html:
