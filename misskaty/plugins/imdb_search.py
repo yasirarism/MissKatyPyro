@@ -225,16 +225,51 @@ async def _toggle_layout_field(user_id: int, field_key: str):
     return hidden
 
 
+def _to_rich_html(text: str) -> str:
+    """Konversi caption HTML biasa (parse_mode=HTML) ke HTML rich message.
+
+    Rich message tidak merender ``\\n`` sebagai newline — harus pakai ``<br>``
+    atau tag blok. `<blockquote expandable>` juga bukan tag rich yang valid,
+    diganti `<details>` + `<summary>` supaya tetap collapsible.
+    """
+    # 1) Blockquote expandable -> <details><summary>
+    text = re.sub(
+        r"<blockquote expandable><code>(.*?)</code></blockquote>",
+        r"<details><summary>🔍 Detail</summary><code>\1</code></details>",
+        text,
+        flags=re.DOTALL,
+    )
+    text = re.sub(
+        r"<blockquote expandable>(.*?)</blockquote>",
+        r"<details><summary>🔍 Detail</summary>\1</details>",
+        text,
+        flags=re.DOTALL,
+    )
+    # 2) Bungkus baris teks dalam <p> supaya rapi, bukan <br> mentah
+    #    (skip baris yang sudah berupa tag blok <details> utuh)
+    lines = [ln.strip() for ln in text.split("\n")]
+    rendered = []
+    for ln in lines:
+        if not ln:
+            continue
+        if ln.startswith("<details>") or ln.startswith("<p>"):
+            rendered.append(ln)
+        else:
+            rendered.append(f"<p>{ln}</p>")
+    return "\n".join(rendered)
+
+
 async def _send_rich_result(self, chat_id, res_str, markup, poster_url=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
     Rich message mendukung gambar via tag ``<tg-photo src="...">`` (URL atau
     file_id). Jika kirim dengan gambar gagal, retry sekali tanpa gambar.
     """
+    rich_html = _to_rich_html(res_str)
     attempts = (
-        [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{res_str}', poster_url), (res_str, None)]
+        [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{rich_html}', poster_url), (rich_html, None)]
         if poster_url
-        else [(res_str, None)]
+        else [(rich_html, None)]
     )
     for html_content, _ in attempts:
         try:
