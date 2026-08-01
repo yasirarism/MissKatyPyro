@@ -5,6 +5,7 @@
 import contextlib
 import html
 import logging
+import os
 import re
 import sys
 import traceback
@@ -32,6 +33,7 @@ from pyrogram.types import (
     InputMediaPhoto,
     InputRichMessage,
     Message,
+    ReplyParameters,
 )
 
 from database.imdb_db import (
@@ -51,7 +53,7 @@ from database.imdb_db import (
     set_imdb_template,
 )
 from misskaty import app
-from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, search_jw
+from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from utils import demoji
 
@@ -175,7 +177,6 @@ def _layout_fields():
         ("open_imdb", "Open IMDb"),
         ("trailer", "Trailer"),
         ("send_as_photo", "Send as Photo"),
-        ("send_rich_on_long", "Rich on Long Caption"),
         ("web_preview", "Link Preview"),
     ]
 
@@ -225,38 +226,108 @@ async def _toggle_layout_field(user_id: int, field_key: str):
     return hidden
 
 
-async def _send_rich_result(self, chat_id, res_str, markup, poster_url=None):
+def _to_rich_html(text: str) -> str:
+    """Konversi caption HTML biasa (parse_mode=HTML) ke HTML rich message.
+
+    Rich message tidak merender ``\\n`` sebagai newline — harus pakai ``<br>``
+    atau tag blok. `<blockquote expandable>` juga bukan tag rich yang valid,
+    diganti `<details>` + `<summary>` supaya tetap collapsible. Custom emoji
+    ``<emoji id=...>`` diubah ke bentuk rich ``<tg-emoji emoji-id=...>``.
+    """
+    # 0) Custom emoji -> bentuk rich message
+    text = re.sub(
+        r"<emoji id=(\d+)>([^<]*)</emoji>",
+        r'<tg-emoji emoji-id="\1">\2</tg-emoji>',
+        text,
+    )
+    # 1) Blockquote expandable -> <details><summary>
+    text = re.sub(
+        r"<blockquote expandable><code>(.*?)</code></blockquote>",
+        r"<details><summary>🔍 Detail</summary><code>\1</code></details>",
+        text,
+        flags=re.DOTALL,
+    )
+    text = re.sub(
+        r"<blockquote expandable>(.*?)</blockquote>",
+        r"<details><summary>🔍 Detail</summary>\1</details>",
+        text,
+        flags=re.DOTALL,
+    )
+    # 2) Bungkus baris teks dalam <p> supaya rapi, bukan <br> mentah
+    #    (skip baris yang sudah berupa tag blok <details> utuh)
+    lines = [ln.strip() for ln in text.split("\n")]
+    rendered = []
+    for ln in lines:
+        if not ln:
+            continue
+        if ln.startswith("<details>") or ln.startswith("<p>"):
+            rendered.append(ln)
+        else:
+            rendered.append(f"<p>{ln}</p>")
+    return "\n".join(rendered)
+
+
+async def _send_rich_result(self, query, res_str, markup, poster_url=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
-    Rich message mendukung gambar via tag ``<tg-photo src="...">`` (URL atau
-    file_id). Jika kirim dengan gambar gagal, retry sekali tanpa gambar.
+    - Reply ke pesan asli user (query.message.reply_to_message_id)
+    - Hapus pesan "sedang diproses" setelah rich terkirim
+    - Poster dikirim via ``<img src="URL">`` (server Telegram yang fetch URL);
+      kalau gagal -> fallback rich tanpa foto
     """
-    attempts = (
-        [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{res_str}', poster_url), (res_str, None)]
-        if poster_url
-        else [(res_str, None)]
-    )
-    for html_content, _ in attempts:
+    chat_id = query.message.chat.id
+    reply_to = getattr(query.message, "reply_to_message_id", None)
+    reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
+    rich_html = _to_rich_html(res_str)
+    photo_html = f'<img src="{poster_url}"/>\n\n' if poster_url else ""
+    attempts = [photo_html + rich_html]
+    if photo_html:
+        attempts.append(rich_html)  # fallback tanpa foto
+    for html_content in attempts:
         try:
             await self.send_rich_message(
                 chat_id,
                 InputRichMessage(html=html_content),
                 reply_markup=markup,
+                reply_parameters=reply_parameters,
             )
+            # Bersihkan pesan "sedang diproses" supaya tidak tertinggal
+            with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+                await query.message.delete()
             return True
         except Exception as err:
             LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
     return False
 
 
-async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo, use_rich_on_long):
+async def _download_poster(url: str) -> str | None:
+    """Download poster ke file temp. Return path lokal, None kalau gagal.
+
+    Mengirim URL langsung ke Telegram kadang gagal (WebpageCurlFailed)
+    karena server Telegram tidak selalu bisa fetch m.media-amazon.com.
+    Download dulu dari sisi bot lebih andal.
+    """
+    try:
+        resp = await resp_get(url)
+        if resp.status_code != 200:
+            return None
+        fname = f"cache/imdb_{get_random_string(6)}.jpg"
+        with open(fname, "wb") as f:
+            f.write(resp.content)
+        return fname
+    except Exception as err:
+        LOGGER.warning(f"Download poster gagal: {err}")
+        return None
+
+
+async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo):
     """Kirim hasil IMDb ke chat.
 
     Prioritas:
-    1. send_as_photo + poster -> edit media foto + caption
-    2. caption kepanjangan (MediaCaptionTooLong):
-       - use_rich_on_long=True  -> kirim rich message (default)
-       - use_rich_on_long=False -> fallback edit teks biasa
+    1. send_as_photo + poster -> download lalu edit media foto + caption
+    2. caption kepanjangan (MediaCaptionTooLong): kirim rich message
+       dengan `<img src="URL">` (server Telegram yang fetch), fallback
+       ke rich tanpa foto kalau URL gagal
     3. selain itu -> edit teks biasa
     """
     if not send_as_photo:
@@ -273,6 +344,7 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             reply_markup=markup,
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
         )
+    caption_too_long = False
     try:
         await self.edit_message_media(
             chat_id=query.message.chat.id,
@@ -280,39 +352,22 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             media=InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
             reply_markup=markup,
         )
-    except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-        poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-        await self.edit_message_media(
-            chat_id=query.message.chat.id,
-            message_id=query.message.id,
-            media=InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML),
-            reply_markup=markup,
-        )
+        return
     except MediaCaptionTooLong:
-        if use_rich_on_long and await _send_rich_result(self, query.message.chat.id, res_str, markup, thumb):
-            return
-        await query.message.edit(
-            res_str,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=markup,
-            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-        )
-    except (WebpageCurlFailed, MessageNotModified):
-        await query.message.edit(
-            res_str,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=markup,
-            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-        )
+        caption_too_long = True
+    except MessageNotModified:
+        return
     except Exception as err:
-        LOGGER.error(f"Terjadi error saat menampilkan data IMDB. ERROR: {err}")
-        with contextlib.suppress(MessageNotModified, MessageIdInvalid):
-            await query.message.edit(
-                res_str,
-                parse_mode=enums.ParseMode.HTML,
-                reply_markup=markup,
-                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-            )
+        LOGGER.warning(f"Edit media gagal ({thumb}): {err.__class__.__name__}: {err}")
+    if caption_too_long and await _send_rich_result(self, query, res_str, markup, thumb):
+        return
+    with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+        await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
 
 
 # IMDB Choose Language
@@ -1227,7 +1282,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            use_rich_on_long = "send_rich_on_long" not in hidden_fields
             await _deliver_imdb_result(
                 self,
                 query,
@@ -1236,7 +1290,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 disable_web_preview,
                 r_json.get("image"),
                 send_as_photo,
-                use_rich_on_long,
             )
         except httpx.HTTPError as exc:
             await query.message.edit(
@@ -1573,7 +1626,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            use_rich_on_long = "send_rich_on_long" not in hidden_fields
             await _deliver_imdb_result(
                 self,
                 query,
@@ -1582,7 +1634,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 disable_web_preview,
                 r_json.get("image"),
                 send_as_photo,
-                use_rich_on_long,
             )
         except httpx.HTTPError as exc:
             await query.message.edit(
