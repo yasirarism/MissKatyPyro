@@ -52,7 +52,7 @@ from database.imdb_db import (
     set_imdb_layout_fields,
     set_imdb_template,
 )
-from misskaty import UBOT_ID, app, user
+from misskaty import app
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from utils import demoji
@@ -268,50 +268,19 @@ def _to_rich_html(text: str) -> str:
     return "\n".join(rendered)
 
 
-async def _upload_poster(self, poster_file: str, chat_id=None) -> str | None:
-    """Upload poster, return file_id (untuk rich message).
-
-    Rich message media (``<tg-photo src="...">``) tidak di-fetch dari URL —
-    server Telegram butuh file_id yang sudah di-upload.
-
-    Bot tidak bisa kirim ke Saved Messages sendiri (USER_IS_BOT), jadi:
-    1. Kalau userbot aktif (UBOT_ID) -> upload via user ke Saved Messages user
-    2. Kalau tidak -> kirim ke chat yang sedang aktif, ambil file_id, hapus
-    """
-    try:
-        if UBOT_ID:
-            sent = await user.send_photo("me", poster_file)
-            file_id = sent.photo.file_id
-            with contextlib.suppress(Exception):
-                await sent.delete()
-            return file_id
-        if chat_id:
-            sent = await self.send_photo(chat_id, poster_file)
-            file_id = sent.photo.file_id
-            with contextlib.suppress(Exception):
-                await sent.delete()
-            return file_id
-    except Exception as err:
-        LOGGER.warning(f"Upload poster gagal ({err.__class__.__name__}): {err}")
-    return None
-
-
-async def _send_rich_result(self, query, res_str, markup, poster_file=None):
+async def _send_rich_result(self, query, res_str, markup, poster_url=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
     - Reply ke pesan asli user (query.message.reply_to_message_id)
     - Hapus pesan "sedang diproses" setelah rich terkirim
-    - Poster dikirim via file_id (upload dulu), bukan URL — rich message
-      tidak fetch media dari URL
+    - Poster dikirim via ``<img src="URL">`` (server Telegram yang fetch URL);
+      kalau gagal -> fallback rich tanpa foto
     """
     chat_id = query.message.chat.id
     reply_to = getattr(query.message, "reply_to_message_id", None)
     reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
     rich_html = _to_rich_html(res_str)
-    # Upload poster -> file_id kalau ada file lokal
-    photo_html = ""
-    if poster_file and (file_id := await _upload_poster(self, poster_file, chat_id)):
-        photo_html = f'<tg-photo src="{file_id}"></tg-photo>\n\n'
+    photo_html = f'<img src="{poster_url}"/>\n\n' if poster_url else ""
     attempts = [photo_html + rich_html]
     if photo_html:
         attempts.append(rich_html)  # fallback tanpa foto
@@ -326,10 +295,6 @@ async def _send_rich_result(self, query, res_str, markup, poster_file=None):
             # Bersihkan pesan "sedang diproses" supaya tidak tertinggal
             with contextlib.suppress(MessageNotModified, MessageIdInvalid):
                 await query.message.delete()
-            # File poster sudah di-upload — bersihkan file lokal
-            if poster_file:
-                with contextlib.suppress(OSError):
-                    os.remove(poster_file)
             return True
         except Exception as err:
             LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
@@ -407,7 +372,7 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
         except Exception as err:
             LOGGER.warning(f"Edit media gagal ({media}): {err.__class__.__name__}: {err}")
     # Rich fallback DULU (butuh poster_file), baru hapus file temp
-    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, poster_file):
+    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
         return
     if poster_file:
         with contextlib.suppress(OSError):
