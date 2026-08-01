@@ -5,7 +5,6 @@
 * Copyright @YasirPedia All rights reserved
 """
 import privatebinapi
-from json import loads as json_loads
 from os import remove
 from re import compile as compiles
 

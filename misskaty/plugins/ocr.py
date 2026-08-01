@@ -9,7 +9,6 @@ import os
 
 from pyrogram import filters
 from pyrogram.types import Message
-from telegraph.aio import Telegraph
 
 from misskaty import app
 from misskaty.core.decorator.errors import capture_err

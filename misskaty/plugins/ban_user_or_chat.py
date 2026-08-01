@@ -1,5 +1,3 @@
-from curses.ascii import isblank
-
 from pyrogram import Client, filters
 from pyrogram.errors import ChannelPrivate, PeerIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message

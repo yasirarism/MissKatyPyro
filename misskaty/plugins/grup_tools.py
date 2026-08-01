@@ -10,7 +10,6 @@ from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.errors import (
     ChatAdminRequired,
     ChatSendPhotosForbidden,
-    ChatWriteForbidden,
     MessageTooLong,
     RPCError,
 )

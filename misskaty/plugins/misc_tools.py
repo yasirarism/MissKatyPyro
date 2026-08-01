@@ -22,7 +22,6 @@ import aiohttp
 import httpx
 from bs4 import BeautifulSoup
 from gtts import gTTS
-from PIL import Image
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import (
