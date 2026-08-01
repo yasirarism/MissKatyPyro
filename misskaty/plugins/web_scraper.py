@@ -24,7 +24,15 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from database import dbname
 from misskaty import app
-from misskaty.helper import Cache, Kusonime, fetch, post_to_telegraph, use_chat_lang
+from misskaty.helper import (
+    Cache,
+    Kusonime,
+    fetch,
+    post_to_telegraph,
+    resp_get,
+    run_sync,
+    use_chat_lang,
+)
 from misskaty.vars import OWNER_ID
 
 __MODULE__ = "WebScraper"
@@ -60,7 +68,7 @@ DEFAULT_WEB = {
     "savefilm21": "https://new13.savefilm21info.com",
     "melongmovie": "https://tv12.melongmovies.com",
     "terbit21": "https://terbit21official.site",
-    "lk21": "https://tv6.lk21official.cc",
+    "lk21": "https://tv12.lk21official.cc",
     "gomov": "https://klikxxi.com",
     "movieku": "https://movieku.fit",
     "kusonime": "https://kusonime.com",
@@ -469,27 +477,79 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     return TerbitRes, PageLen
 
 
+async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
+    """Scrape LK21 langsung dari situs (fallback saat API yasirapi kosong).
+
+    Cloudflare memblokir User-Agent curl biasa, jadi pakai Googlebot UA.
+    """
+    base = web.get("lk21") or DEFAULT_WEB["lk21"]
+    if not base.startswith(("http://", "https://")):
+        base = f"https://{base}"
+    headers = {"User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"}
+    if kueri:
+        url = f"{base}/?s={quote_plus(kueri)}"
+    else:
+        url = f"{base}/latest"
+        if page > 1:
+            url += f"/page/{page}"
+    resp = await resp_get(url, headers=headers, follow_redirects=True)
+    resp.raise_for_status()
+    # Setelah redirect (misal tv10 -> tv12), pakai URL final sebagai base
+    final_base = str(resp.url).rstrip("/")
+    html = resp.text
+    articles = re.findall(r"<article.*?</article>", html, re.DOTALL)
+    result = []
+    for b in articles:
+        href = re.search(r'<a href="([^"]+)"[^>]*itemprop="url"', b)
+        title = re.search(r'<h3 class="poster-title"[^>]*>([^<]+)</h3>', b)
+        genre = re.search(r'<div class="genre">\s*([^<]+?)\s*</div>', b)
+        if not href or not title:
+            continue
+        link = href.group(1)
+        if link.startswith("/"):
+            link = urljoin(final_base, link)
+        result.append(
+            {
+                "link": link,
+                "judul": title.group(1).strip(),
+                "kategori": genre.group(1).strip() if genre else "Movie",
+                "dl": link,
+            }
+        )
+    return result
+
+
 # LK21 GetData
 async def getDatalk21(msg, kueri, CurrentPage, strings):
     await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
-        with contextlib.redirect_stdout(sys.stderr):
+        result = []
+        try:
+            with contextlib.redirect_stdout(sys.stderr):
+                try:
+                    if kueri:
+                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
+                    else:
+                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
+                    lk21json.raise_for_status()
+                    result = lk21json.json().get("result") or []
+                except httpx.HTTPError:
+                    result = []
+        except Exception:
+            result = []
+        if not result:
+            # API kosong/error -> fallback scrape langsung dari situs
             try:
-                if kueri:
-                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
-                else:
-                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
-                lk21json.raise_for_status()
-            except httpx.HTTPError as exc:
+                result = await _scrape_lk21_direct(kueri)
+            except Exception as exc:
                 await msg.edit(
-                    f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>"
+                    f"ERROR: Gagal mengambil data LK21 - <code>{exc}</code>"
                 )
                 return None, None
-        res = lk21json.json()
-        if not res.get("result"):
+        if not result:
             await msg.edit(strings("no_result"), del_in=5)
             return None, None
-        SCRAP_DICT.add(msg.id, [split_arr(res["result"], 6), kueri], timeout=1800)
+        SCRAP_DICT.add(msg.id, [split_arr(result, 6), kueri], timeout=1800)
     index = int(CurrentPage - 1)
     PageLen = len(SCRAP_DICT[msg.id][0])
     if kueri:
