@@ -492,8 +492,10 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
         url = f"{base}/latest"
         if page > 1:
             url += f"/page/{page}"
-    resp = await resp_get(url, headers=headers)
+    resp = await resp_get(url, headers=headers, follow_redirects=True)
     resp.raise_for_status()
+    # Setelah redirect (misal tv10 -> tv12), pakai URL final sebagai base
+    final_base = str(resp.url).rstrip("/")
     html = resp.text
     articles = re.findall(r"<article.*?</article>", html, re.DOTALL)
     result = []
@@ -505,7 +507,7 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
             continue
         link = href.group(1)
         if link.startswith("/"):
-            link = urljoin(base, link)
+            link = urljoin(final_base, link)
         result.append(
             {
                 "link": link,
