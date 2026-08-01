@@ -177,7 +177,6 @@ def _layout_fields():
         ("open_imdb", "Open IMDb"),
         ("trailer", "Trailer"),
         ("send_as_photo", "Send as Photo"),
-        ("send_rich_on_long", "Rich on Long Caption"),
         ("web_preview", "Link Preview"),
     ]
 
@@ -321,14 +320,14 @@ async def _download_poster(url: str) -> str | None:
         return None
 
 
-async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo, use_rich_on_long):
+async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo):
     """Kirim hasil IMDb ke chat.
 
     Prioritas:
     1. send_as_photo + poster -> download lalu edit media foto + caption
-    2. caption kepanjangan (MediaCaptionTooLong):
-       - use_rich_on_long=True  -> kirim rich message (default)
-       - use_rich_on_long=False -> fallback edit teks biasa
+    2. caption kepanjangan (MediaCaptionTooLong): kirim rich message
+       dengan `<img src="URL">` (server Telegram yang fetch), fallback
+       ke rich tanpa foto kalau URL gagal
     3. selain itu -> edit teks biasa
     """
     if not send_as_photo:
@@ -371,8 +370,8 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
             return
         except Exception as err:
             LOGGER.warning(f"Edit media gagal ({media}): {err.__class__.__name__}: {err}")
-    # Rich fallback DULU (butuh poster_file), baru hapus file temp
-    if caption_too_long and use_rich_on_long and await _send_rich_result(self, query, res_str, markup, thumb):
+    # Rich fallback untuk caption kepanjangan
+    if caption_too_long and await _send_rich_result(self, query, res_str, markup, thumb):
         return
     if poster_file:
         with contextlib.suppress(OSError):
@@ -1298,7 +1297,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            use_rich_on_long = "send_rich_on_long" not in hidden_fields
             await _deliver_imdb_result(
                 self,
                 query,
@@ -1307,7 +1305,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 disable_web_preview,
                 r_json.get("image"),
                 send_as_photo,
-                use_rich_on_long,
             )
         except httpx.HTTPError as exc:
             await query.message.edit(
@@ -1644,7 +1641,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            use_rich_on_long = "send_rich_on_long" not in hidden_fields
             await _deliver_imdb_result(
                 self,
                 query,
@@ -1653,7 +1649,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                 disable_web_preview,
                 r_json.get("image"),
                 send_as_photo,
-                use_rich_on_long,
             )
         except httpx.HTTPError as exc:
             await query.message.edit(
