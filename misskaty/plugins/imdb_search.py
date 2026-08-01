@@ -30,6 +30,7 @@ from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     InputMediaPhoto,
+    InputRichMessage,
     Message,
 )
 
@@ -174,6 +175,7 @@ def _layout_fields():
         ("open_imdb", "Open IMDb"),
         ("trailer", "Trailer"),
         ("send_as_photo", "Send as Photo"),
+        ("send_rich_on_long", "Rich on Long Caption"),
         ("web_preview", "Link Preview"),
     ]
 
@@ -221,6 +223,96 @@ async def _toggle_layout_field(user_id: int, field_key: str):
         hidden.add(field_key)
     await set_imdb_layout_fields(user_id, list(hidden))
     return hidden
+
+
+async def _send_rich_result(self, chat_id, res_str, markup, poster_url=None):
+    """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
+
+    Rich message mendukung gambar via tag ``<tg-photo src="...">`` (URL atau
+    file_id). Jika kirim dengan gambar gagal, retry sekali tanpa gambar.
+    """
+    attempts = (
+        [(f'<tg-photo src="{poster_url}"></tg-photo>\n\n{res_str}', poster_url), (res_str, None)]
+        if poster_url
+        else [(res_str, None)]
+    )
+    for html_content, _ in attempts:
+        try:
+            await self.send_rich_message(
+                chat_id,
+                InputRichMessage(html=html_content),
+                reply_markup=markup,
+            )
+            return True
+        except Exception as err:
+            LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
+    return False
+
+
+async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo, use_rich_on_long):
+    """Kirim hasil IMDb ke chat.
+
+    Prioritas:
+    1. send_as_photo + poster -> edit media foto + caption
+    2. caption kepanjangan (MediaCaptionTooLong):
+       - use_rich_on_long=True  -> kirim rich message (default)
+       - use_rich_on_long=False -> fallback edit teks biasa
+    3. selain itu -> edit teks biasa
+    """
+    if not send_as_photo:
+        return await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
+    if not thumb:
+        return await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
+    try:
+        await self.edit_message_media(
+            chat_id=query.message.chat.id,
+            message_id=query.message.id,
+            media=InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
+            reply_markup=markup,
+        )
+    except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
+        poster = thumb.replace(".jpg", "._V1_UX360.jpg")
+        await self.edit_message_media(
+            chat_id=query.message.chat.id,
+            message_id=query.message.id,
+            media=InputMediaPhoto(poster, caption=res_str, parse_mode=enums.ParseMode.HTML),
+            reply_markup=markup,
+        )
+    except MediaCaptionTooLong:
+        if use_rich_on_long and await _send_rich_result(self, query.message.chat.id, res_str, markup, thumb):
+            return
+        await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
+    except (WebpageCurlFailed, MessageNotModified):
+        await query.message.edit(
+            res_str,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=markup,
+            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+        )
+    except Exception as err:
+        LOGGER.error(f"Terjadi error saat menampilkan data IMDB. ERROR: {err}")
+        with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+            await query.message.edit(
+                res_str,
+                parse_mode=enums.ParseMode.HTML,
+                reply_markup=markup,
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+            )
 
 
 # IMDB Choose Language
@@ -829,7 +921,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             r_json = await get_imdb_details_graphql(f"tt{movie}")
             if not r_json:
                 raise ValueError("IMDb GraphQL returned empty payload")
-            sop = None
             ott = await search_jw(
                 r_json.get("alternateName") or r_json.get("name"), "ID"
             )
@@ -839,7 +930,6 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
             res_str = ""
             duration_text = "-"
-            duration_raw = "-"
             duration_raw = "-"
             category_text = "-"
             release_date_text = "-"
@@ -1137,62 +1227,17 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            if not send_as_photo:
-                await query.message.edit(
-                    res_str,
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_markup=markup,
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                )
-            elif thumb := r_json.get("image"):
-                try:
-                    await self.edit_message_media(
-                        chat_id=query.message.chat.id,
-                        message_id=query.message.id,
-                        media=InputMediaPhoto(
-                            thumb, caption=res_str, parse_mode=enums.ParseMode.HTML
-                        ),
-                        reply_markup=markup,
-                    )
-                except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-                    poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await self.edit_message_media(
-                        chat_id=query.message.chat.id,
-                        message_id=query.message.id,
-                        media=InputMediaPhoto(
-                            poster, caption=res_str, parse_mode=enums.ParseMode.HTML
-                        ),
-                        reply_markup=markup,
-                    )
-                except (
-                    MediaCaptionTooLong,
-                    WebpageCurlFailed,
-                    MessageNotModified,
-                ):
-                    await query.message.edit(
-                        res_str,
-                        parse_mode=enums.ParseMode.HTML,
-                        reply_markup=markup,
-                        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                    )
-                except Exception as err:
-                    LOGGER.error(
-                        f"Terjadi error saat menampilkan data IMDB. ERROR: {err}"
-                    )
-                    with contextlib.suppress(MessageNotModified, MessageIdInvalid):
-                        await query.message.edit(
-                            res_str,
-                            parse_mode=enums.ParseMode.HTML,
-                            reply_markup=markup,
-                            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                        )
-            else:
-                await query.message.edit(
-                    res_str,
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_markup=markup,
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                )
+            use_rich_on_long = "send_rich_on_long" not in hidden_fields
+            await _deliver_imdb_result(
+                self,
+                query,
+                res_str,
+                markup,
+                disable_web_preview,
+                r_json.get("image"),
+                send_as_photo,
+                use_rich_on_long,
+            )
         except httpx.HTTPError as exc:
             await query.message.edit(
                 f"HTTP Exception for IMDB Search - <code>{exc}</code>"
@@ -1223,7 +1268,6 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
             r_json = await get_imdb_details_graphql(f"tt{movie}")
             if not r_json:
                 raise ValueError("IMDb GraphQL returned empty payload")
-            sop = None
             ott = await search_jw(
                 r_json.get("alternateName") or r_json.get("name"), "US"
             )
@@ -1529,60 +1573,17 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                         )
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
-            if not send_as_photo:
-                await query.message.edit(
-                    res_str,
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_markup=markup,
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                )
-            elif thumb := r_json.get("image"):
-                try:
-                    await self.edit_message_media(
-                        chat_id=query.message.chat.id,
-                        message_id=query.message.id,
-                        media=InputMediaPhoto(
-                            thumb, caption=res_str, parse_mode=enums.ParseMode.HTML
-                        ),
-                        reply_markup=markup,
-                    )
-                except (MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty):
-                    poster = thumb.replace(".jpg", "._V1_UX360.jpg")
-                    await self.edit_message_media(
-                        chat_id=query.message.chat.id,
-                        message_id=query.message.id,
-                        media=InputMediaPhoto(
-                            poster, caption=res_str, parse_mode=enums.ParseMode.HTML
-                        ),
-                        reply_markup=markup,
-                    )
-                except (
-                    MediaCaptionTooLong,
-                    WebpageCurlFailed,
-                    MessageNotModified,
-                ):
-                    await query.message.edit(
-                        res_str,
-                        parse_mode=enums.ParseMode.HTML,
-                        reply_markup=markup,
-                        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                    )
-                except Exception as err:
-                    LOGGER.error(f"Error while displaying IMDB Data. ERROR: {err}")
-                    with contextlib.suppress(MessageNotModified, MessageIdInvalid):
-                        await query.message.edit(
-                            res_str,
-                            parse_mode=enums.ParseMode.HTML,
-                            reply_markup=markup,
-                            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                        )
-            else:
-                await query.message.edit(
-                    res_str,
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_markup=markup,
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-                )
+            use_rich_on_long = "send_rich_on_long" not in hidden_fields
+            await _deliver_imdb_result(
+                self,
+                query,
+                res_str,
+                markup,
+                disable_web_preview,
+                r_json.get("image"),
+                send_as_photo,
+                use_rich_on_long,
+            )
         except httpx.HTTPError as exc:
             await query.message.edit(
                 f"HTTP Exception for IMDB Search - <code>{exc}</code>"
