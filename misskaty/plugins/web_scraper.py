@@ -526,22 +526,20 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
         result = []
         try:
             with contextlib.redirect_stdout(sys.stderr):
-                try:
-                    if kueri:
-                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
-                    else:
-                        lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
-                    lk21json.raise_for_status()
-                    result = lk21json.json().get("result") or []
-                except httpx.HTTPError:
-                    result = []
-        except Exception:
-            result = []
+                if kueri:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21?q={kueri}")
+                else:
+                    lk21json = await fetch.get(f"{web['yasirapi']}/lk21")
+                lk21json.raise_for_status()
+                result = lk21json.json().get("result") or []
+        except (httpx.HTTPError, ValueError) as exc:
+            # API error / response bukan JSON -> fallback scrape langsung
+            LOGGER.warning("LK21 API gagal (%s), fallback ke scrape langsung", exc)
         if not result:
-            # API kosong/error -> fallback scrape langsung dari situs
             try:
                 result = await _scrape_lk21_direct(kueri)
             except Exception as exc:
+                LOGGER.exception("LK21 direct scrape gagal")
                 await msg.edit(
                     f"ERROR: Gagal mengambil data LK21 - <code>{exc}</code>"
                 )
@@ -1241,402 +1239,65 @@ async def getSame(msg, query, current_page, strings):
     return sameresult, PageLen
 
 
-# SameHada CMD
-@app.on_cmd("samehadaku", no_channel=True)
-@use_chat_lang()
-async def same_search(_, msg, strings):
-    query = msg.text.split(maxsplit=1)[1] if len(msg.command) > 1 else None
-    bmsg = await msg.reply(strings("get_data"))
-    sameres, PageLen = await getSame(bmsg, query, 1, strings)
-    if not sameres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen, 1, "page_same#{number}" + f"#{bmsg.id}#{msg.from_user.id}"
-    )
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{msg.from_user.id}"))
-    await bmsg.edit(sameres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
+# ============================================================
+# GENERIC SCRAPER HANDLERS (command + page callback)
+# Mapping: command -> (getdata_fn, page_prefix, needs_user)
+# ============================================================
+SCRAPER_REGISTRY = {
+    "samehadaku": (getSame, "page_same", False),
+    "terbit21": (getDataTerbit21, "page_terbit21", False),
+    "lk21": (getDatalk21, "page_lk21", False),
+    "pahe": (getDataPahe, "page_pahe", False),
+    "gomov": (getDataGomov, "page_gomov", True),
+    "klikxxi": (getDataGomov, "page_gomov", True),
+    "melongmovie": (getDataMelong, "page_melong", True),
+    "nunadrama": (getDataNunaDrama, "page_nuna", True),
+    "pusatfilm": (getDataPusatFilm, "page_pf", True),
+    "dutamovie": (getDataDutaMovie, "page_duta", True),
+    "savefilm21": (getDataSavefilm21, "page_sf21", True),
+    "nodrakor": (getDataNodrakor, "page_nodrakor", True),
+    "kusonime": (getDataKuso, "page_kuso", True),
+    "lendrive": (getDataLendrive, "page_lendrive", True),
+    "movieku": (getDataMovieku, "page_movieku", True),
+    "oppaweb": (getDataOppaweb, "page_oppaweb", True),
+}
+
+PAGE_REGISTRY = {v[1]: (v[0], v[2]) for v in SCRAPER_REGISTRY.values()}
 
 
-# Terbit21 CMD
-@app.on_cmd("terbit21", no_channel=True)
+@app.on_cmd(list(SCRAPER_REGISTRY.keys()), no_channel=True)
 @use_chat_lang()
-async def terbit21_s(_, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = None
+async def scraper_cmd(_, message, strings):
+    cmd = message.command[0].lower().lstrip("/")
+    func, page_prefix, needs_user = SCRAPER_REGISTRY[cmd]
+    kueri = " ".join(message.command[1:]) or None
     pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    terbitres, PageLen = await getDataTerbit21(pesan, kueri, CurrentPage, strings)
-    if not terbitres:
+    if needs_user:
+        res, PageLen, btn = await func(pesan, kueri, 1, message.from_user.id, strings)
+    else:
+        res, PageLen = await func(pesan, kueri, 1, strings)
+    if not res:
         return
     keyboard = InlineKeyboard()
     keyboard.paginate(
         PageLen,
-        CurrentPage,
-        "page_terbit21#{number}" + f"#{pesan.id}#{message.from_user.id}",
+        1,
+        f"{page_prefix}#{{number}}" + f"#{pesan.id}#{message.from_user.id}",
     )
+    if needs_user:
+        keyboard.row(InlineButton(strings("ex_data"), user_id=_.me.id))
+        keyboard.row(*btn)
     keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
     await pesan.edit(
-        terbitres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# LK21 CMD
-@app.on_cmd("lk21", no_channel=True)
-@use_chat_lang()
-async def lk21_s(_, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = None
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    lkres, PageLen = await getDatalk21(pesan, kueri, CurrentPage, strings)
-    if not lkres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_lk21#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(lkres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
-
-
-# Pahe CMD
-@app.on_cmd("pahe", no_channel=True)
-@use_chat_lang()
-async def pahe_s(_, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    paheres, PageLen = await getDataPahe(pesan, kueri, CurrentPage, strings)
-    if not paheres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_pahe#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(paheres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
-
-
-# Gomov CMD
-@app.on_cmd(["gomov", "klikxxi"], no_channel=True)
-@use_chat_lang()
-async def gomov_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    gomovres, PageLen, btn = await getDataGomov(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not gomovres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_gomov#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(gomovres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
-
-
-# MelongMovie CMD
-@app.on_cmd("melongmovie", no_channel=True)
-@use_chat_lang()
-async def melong_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    melongres, PageLen, btn = await getDataMelong(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not melongres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_melong#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    try:
-        await pesan.edit(
-            melongres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-        )
-    except Exception as err:
-        await pesan.edit(
-            f"<b>ERROR:</b> {err}", link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-        )
-
-
-# NunaDrama CMD
-@app.on_cmd("nunadrama", no_channel=True)
-@use_chat_lang()
-async def nunadrama_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    nunares, PageLen, btn = await getDataNunaDrama(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not nunares:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nuna#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(
-        nunares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# PusatFilm21 CMD
-@app.on_cmd("pusatfilm", no_channel=True)
-@use_chat_lang()
-async def pusatfilm_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    pfres, PageLen, btn = await getDataPusatFilm(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not pfres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_pf#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(
-        pfres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# DutaMovie CMD
-@app.on_cmd("dutamovie", no_channel=True)
-@use_chat_lang()
-async def dutamovie_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    dutares, PageLen, btn = await getDataDutaMovie(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not dutares:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nuna#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(
-        dutares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Savefilm21 CMD
-@app.on_cmd("savefilm21", no_channel=True)
-@use_chat_lang()
-async def savefilm_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    savefilmres, PageLen, btn = await getDataSavefilm21(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not savefilmres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_sf21#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(
-        savefilmres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# NoDrakor CMD
-@app.on_cmd("nodrakor", no_channel=True)
-@use_chat_lang()
-async def nodrakor_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    nodrakorres, PageLen, btn = await getDataNodrakor(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not nodrakorres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nodrakor#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(
-        nodrakorres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Kusonime CMD
-@app.on_cmd("kusonime", no_channel=True)
-@use_chat_lang()
-async def kusonime_s(self, message, strings):
-    kueri = " ".join(message.command[1:])
-    if not kueri:
-        kueri = ""
-    pesan = await message.reply(strings("get_data"))
-    CurrentPage = 1
-    kusores, PageLen, btn1, btn2 = await getDataKuso(
-        pesan, kueri, CurrentPage, message.from_user.id, strings
-    )
-    if not kusores:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_kuso#{number}" + f"#{pesan.id}#{message.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn1)
-    if btn2:
-        keyboard.row(*btn2)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{message.from_user.id}"))
-    await pesan.edit(kusores, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
-
-
-# Lendrive CMD
-@app.on_cmd("lendrive", no_channel=True)
-@use_chat_lang()
-async def lendrive_s(self, ctx: Message, strings):
-    kueri = ctx.input
-    if not kueri:
-        kueri = ""
-    pesan = await ctx.reply(strings("get_data"))
-    CurrentPage = 1
-    lendres, PageLen, btn = await getDataLendrive(
-        pesan, kueri, CurrentPage, ctx.from_user.id, strings
-    )
-    if not lendres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_lendrive#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
-    await pesan.edit(lendres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard)
-
-
-# Movieku CMD
-@app.on_cmd("movieku", no_channel=True)
-@use_chat_lang()
-async def movieku_s(self, ctx: Message, strings):
-    kueri = ctx.input
-    if not kueri:
-        kueri = ""
-    pesan = await ctx.reply(strings("get_data"))
-    CurrentPage = 1
-    moviekures, PageLen, btn = await getDataMovieku(pesan, kueri, CurrentPage, ctx.from_user.id, strings)
-    if not moviekures:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_movieku#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
-    await pesan.edit(
-        moviekures, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# OppaWeb CMD
-@app.on_cmd("oppaweb", no_channel=True)
-@use_chat_lang()
-async def oppaweb_s(self, ctx: Message, strings):
-    kueri = ctx.input or ""
-    pesan = await ctx.reply(strings("get_data"))
-    CurrentPage = 1
-    oppawebres, PageLen, btn = await getDataOppaweb(
-        pesan, kueri, CurrentPage, ctx.from_user.id, strings
-    )
-    if not oppawebres:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_oppaweb#{number}" + f"#{pesan.id}#{ctx.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{ctx.from_user.id}"))
-    await pesan.edit(
-        oppawebres,
+        res,
         link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
         reply_markup=keyboard,
     )
 
 
-# OppaWeb Page Callback
-@app.on_cb("page_oppaweb#")
+@app.on_cb("page_")
 @use_chat_lang()
-async def oppawebpage_callback(self, callback_query, strings):
+async def scraper_page_callback(_, callback_query, strings):
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             return await callback_query.answer(strings("unauth"), True)
@@ -1650,14 +1311,17 @@ async def oppawebpage_callback(self, callback_query, strings):
     except QueryIdInvalid:
         return
 
+    prefix = callback_query.data.split("#")[0]
+    func, needs_user = PAGE_REGISTRY.get(prefix, (None, False))
+    if not func:
+        return
     try:
-        oppawebres, PageLen, btn = await getDataOppaweb(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
+        if needs_user:
+            res, PageLen, btn = await func(
+                callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings
+            )
+        else:
+            res, PageLen = await func(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
         return
 
@@ -1665,611 +1329,74 @@ async def oppawebpage_callback(self, callback_query, strings):
     keyboard.paginate(
         PageLen,
         CurrentPage,
-        "page_oppaweb#{number}" + f"#{message_id}#{callback_query.from_user.id}",
+        f"{prefix}#{{number}}" + f"#{message_id}#{callback_query.from_user.id}",
     )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
+    if needs_user:
+        keyboard.row(InlineButton(strings("ex_data"), user_id=_.me.id))
+        keyboard.row(*btn)
     keyboard.row(
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
     )
     await callback_query.message.edit(
-        oppawebres,
+        res,
         link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
         reply_markup=keyboard,
     )
 
 
-# Savefillm21 Page Callback
-@app.on_cb("page_sf21#")
-@use_chat_lang()
-async def sf21page_callback(self, callback_query, strings):
+# ============================================================
+# GENERIC EXTRACT HANDLER (semua *extract# callback)
+# Dispatch ke fungsi per-situs; parsing + keyboard terpusat
+# ============================================================
+async def _extract_cb_parse(callback_query, strings, back_prefix, store):
+    """Parse callback data + buat keyboard back/close. Return (link, keyboard) atau None."""
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):  # Gatau napa err ini
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        savefilmres, PageLen, btn = await getDataSavefilm21(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_sf21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        savefilmres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# NunaDrama Page Callback
-@app.on_cb("page_nuna#")
-@use_chat_lang()
-async def nunapage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):  # Gatau napa err ini
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        nunares, PageLen, btn = await getDataNunaDrama(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nuna#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        nunares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# DutaMovie Page Callback
-@app.on_cb("page_duta#")
-@use_chat_lang()
-async def dutapage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        dutares, PageLen, btn = await getDataDutaMovie(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_duta#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        dutares, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-# PusatFilm Page Callback
-@app.on_cb("page_pf#")
-@use_chat_lang()
-async def pfpage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        pfres, PageLen, btn = await getDataDutaMovie(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_pf#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        pfres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# NoDrakor Page Callback
-@app.on_cb("page_nodrakor#")
-@use_chat_lang()
-async def nodrakorpage_cb(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except (IndexError, ValueError):
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-    except QueryIdInvalid:
-        return
-
-    try:
-        nodrakorres, PageLen, btn = await getDataNodrakor(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_nodrakor#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        nodrakorres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Kuso Page Callback
-@app.on_cb("page_kuso#")
-@use_chat_lang()
-async def kusopage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        kusores, PageLen, btn1, btn2 = await getDataKuso(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_kuso#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn1)
-    if btn2:
-        keyboard.row(*btn2)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        kusores, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Lendrive Page Callback
-@app.on_cb("page_lendrive#")
-@use_chat_lang()
-async def lendrivepage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = savedict[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        lendres, PageLen, btn = await getDataLendrive(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_lendrive#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        lendres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Movieku Page Callback
-@app.on_cb("page_movieku#")
-@use_chat_lang()
-async def moviekupage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"), True)
-
-    try:
-        moviekures, PageLen, btn = await getDataMovieku(
-            callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_movieku#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        moviekures, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Samehada Page Callback
-@app.on_cb("page_same#")
-@use_chat_lang()
-async def samepg(_, query, strings):
-    try:
-        _, current_page, _id, user_id = query.data.split("#")
-        if int(user_id) != query.from_user.id:
-            return await query.answer(strings("unauth"), True)
-        lquery = savedict[int(_id)][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await query.message.edit(strings("invalid_cb"))
-    try:
-        sameres, PageLen = await getSame(
-            query.message, lquery, int(current_page), strings
-        )
-    except TypeError:
-        return
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        int(current_page),
-        "page_same#{number}" + f"#{_id}#{query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("cl_btn"), f"close#{query.from_user.id}"))
-    await query.message.edit(
-        sameres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Terbit21 Page Callback
-@app.on_cb("page_terbit21#")
-@use_chat_lang()
-async def terbit21page_callback(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        terbitres, PageLen = await getDataTerbit21(
-            callback_query.message, kueri, CurrentPage, strings
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_terbit21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        terbitres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Page Callback Melong
-@app.on_cb("page_melong#")
-@use_chat_lang()
-async def melongpage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        terbitres, PageLen, btn = await getDataMelong(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_melong#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        terbitres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Lk21 Page Callback
-@app.on_cb("page_lk21#")
-@use_chat_lang()
-async def lk21page_callback(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        lkres, PageLen = await getDatalk21(
-            callback_query.message, kueri, CurrentPage, strings
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_lk21#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        lkres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Pahe Page Callback
-@app.on_cb("page_pahe#")
-@use_chat_lang()
-async def pahepage_callback(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        lkres, PageLen = await getDataPahe(
-            callback_query.message, kueri, CurrentPage, strings
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_pahe#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        lkres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-# Gomov Page Callback
-@app.on_cb("page_gomov#")
-@use_chat_lang()
-async def gomovpage_callback(self, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        message_id = int(callback_query.data.split("#")[2])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        kueri = SCRAP_DICT[message_id][1]
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    try:
-        gomovres, PageLen, btn = await getDataGomov(
-            callback_query.message,
-            kueri,
-            CurrentPage,
-            callback_query.from_user.id,
-            strings,
-        )
-    except TypeError:
-        return
-
-    keyboard = InlineKeyboard()
-    keyboard.paginate(
-        PageLen,
-        CurrentPage,
-        "page_gomov#{number}" + f"#{message_id}#{callback_query.from_user.id}",
-    )
-    keyboard.row(InlineButton(strings("ex_data"), user_id=self.me.id))
-    keyboard.row(*btn)
-    keyboard.row(
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}")
-    )
-    await callback_query.message.edit(
-        gomovres, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True), reply_markup=keyboard
-    )
-
-
-### Scrape DDL Link From Web ###
-# OppaWeb DDL
-@app.on_cb("oppawebextract#")
-@use_chat_lang()
-async def oppaweb_scrap(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
+            await callback_query.answer(strings("unauth"), True)
+            return None
         idlink = int(callback_query.data.split("#")[2])
         message_id = int(callback_query.data.split("#")[4])
         CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
+        link = store[message_id][0][CurrentPage - 1][idlink - 1].get("link")
+    except (IndexError, ValueError):
+        return None
     except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
+        await callback_query.message.edit(strings("invalid_cb"))
+        return None
+    except QueryIdInvalid:
+        return None
 
     keyboard = InlineKeyboard()
     keyboard.row(
         InlineButton(
             strings("back_btn"),
-            f"page_oppaweb#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
+            f"{back_prefix}#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
         ),
         InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
     )
+    return link, keyboard
+
+
+@app.on_cb(r"\w+extract#")
+@use_chat_lang()
+async def scraper_extract_cb(client, callback_query, strings):
+    prefix = callback_query.data.split("#")[0]
+    entry = EXTRACT_REGISTRY.get(prefix)
+    if not entry:
+        return
+    back_prefix, handler = entry
+    store = savedict if prefix == "lendriveextract" else SCRAP_DICT
+    parsed = await _extract_cb_parse(callback_query, strings, back_prefix, store)
+    if not parsed:
+        return
+    link, keyboard = parsed
+    await handler(client, callback_query, strings, link, keyboard)
+
+
+# ============================================================
+# LOGIKA EXTRACT PER SITUS (bukan handler, dipanggil via registry)
+# ============================================================
+async def _extract_oppaweb(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(
@@ -2312,31 +1439,8 @@ async def oppaweb_scrap(_, callback_query, strings):
             await callback_query.message.edit(f"ERROR: {err}", reply_markup=keyboard)
 
 
-# Kusonime DDL
-@app.on_cb("kusoextract#")
-@use_chat_lang()
-async def kusonime_scrap(client, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
+async def _extract_kuso(client, callback_query, strings, link, keyboard):
     kuso = Kusonime()
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_kuso#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
     try:
         if init_url := data_kuso.get(link, False):
             await callback_query.message.edit(
@@ -2351,30 +1455,7 @@ async def kusonime_scrap(client, callback_query, strings):
             return await callback_query.message.edit(e, reply_markup=keyboard)
 
 
-# Savefilm21 DDL
-@app.on_cb("sf21extract#")
-@use_chat_lang()
-async def savefilm21_scrap(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_sf21#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_savefilm21(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2396,30 +1477,7 @@ async def savefilm21_scrap(_, callback_query, strings):
             )
 
 
-# NunaDrama DDL
-@app.on_cb("nunaextract#")
-@use_chat_lang()
-async def nunadrama_ddl(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_sf21#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_nuna(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2446,30 +1504,7 @@ async def nunadrama_ddl(_, callback_query, strings):
             )
 
 
-# PusatFilm21 DDL
-@app.on_cb("pfextract#")
-@use_chat_lang()
-async def pusatfilm_ddl(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_pf#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_pusatfilm(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2491,30 +1526,7 @@ async def pusatfilm_ddl(_, callback_query, strings):
             )
 
 
-# DutaMovie DDL
-@app.on_cb("dutaextract#")
-@use_chat_lang()
-async def dutamovie_ddl(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_duta#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_duta(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2541,30 +1553,7 @@ async def dutamovie_ddl(_, callback_query, strings):
             )
 
 
-# NoDrakor DDL
-@app.on_cb("nodrakorextract#")
-@use_chat_lang()
-async def nodrakorddl_scrap(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_nodrakor#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_nodrakor(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2602,30 +1591,7 @@ async def nodrakorddl_scrap(_, callback_query, strings):
             )
 
 
-# Scrape DDL Link Melongmovie
-@app.on_cb("moviekuextract#")
-@use_chat_lang()
-async def movieku_scrap(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_movieku#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_movieku(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2673,30 +1639,7 @@ async def movieku_scrap(_, callback_query, strings):
             )
 
 
-# Scrape DDL Link Melongmovie
-@app.on_cb("melongextract#")
-@use_chat_lang()
-async def melong_scrap(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_melong#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_melong(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2721,30 +1664,7 @@ async def melong_scrap(_, callback_query, strings):
             )
 
 
-# Scrape DDL Link Gomov
-@app.on_cb("gomovextract#")
-@use_chat_lang()
-async def gomov_dl(_, callback_query, strings):
-    try:
-        if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-            return await callback_query.answer(strings("unauth"), True)
-        idlink = int(callback_query.data.split("#")[2])
-        message_id = int(callback_query.data.split("#")[4])
-        CurrentPage = int(callback_query.data.split("#")[1])
-        link = SCRAP_DICT[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except QueryIdInvalid:
-        return
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_gomov#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_gomov(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
@@ -2770,27 +1690,7 @@ async def gomov_dl(_, callback_query, strings):
             )
 
 
-@app.on_cb("lendriveextract#")
-@use_chat_lang()
-async def lendrive_dl(_, callback_query, strings):
-    if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
-        return await callback_query.answer(strings("unauth"), True)
-    idlink = int(callback_query.data.split("#")[2])
-    message_id = int(callback_query.data.split("#")[4])
-    CurrentPage = int(callback_query.data.split("#")[1])
-    try:
-        link = savedict[message_id][0][CurrentPage - 1][idlink - 1].get("link")
-    except KeyError:
-        return await callback_query.message.edit(strings("invalid_cb"))
-
-    keyboard = InlineKeyboard()
-    keyboard.row(
-        InlineButton(
-            strings("back_btn"),
-            f"page_lendrive#{CurrentPage}#{message_id}#{callback_query.from_user.id}",
-        ),
-        InlineButton(strings("cl_btn"), f"close#{callback_query.from_user.id}"),
-    )
+async def _extract_lendrive(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             hmm = await fetch.get(link)
@@ -2818,6 +1718,22 @@ async def lendrive_dl(_, callback_query, strings):
             await callback_query.message.edit(
                 f"ERROR: {err}", reply_markup=keyboard
             )
+
+
+EXTRACT_REGISTRY = {
+    "oppawebextract": ("page_oppaweb", _extract_oppaweb),
+    "kusoextract": ("page_kuso", _extract_kuso),
+    "sf21extract": ("page_sf21", _extract_savefilm21),
+    "nunaextract": ("page_nuna", _extract_nuna),
+    "pfextract": ("page_pf", _extract_pusatfilm),
+    "dutaextract": ("page_duta", _extract_duta),
+    "nodrakorextract": ("page_nodrakor", _extract_nodrakor),
+    "moviekuextract": ("page_movieku", _extract_movieku),
+    "melongextract": ("page_melong", _extract_melong),
+    "gomovextract": ("page_gomov", _extract_gomov),
+    "lendriveextract": ("page_lendrive", _extract_lendrive),
+}
+
 
 # Manual Scrape DDL Movieku.CC incase cannot auto scrape from button
 @app.on_cmd("movieku_scrap")
