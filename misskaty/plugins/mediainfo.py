@@ -65,7 +65,7 @@ DETAILS
             markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
             )
-        except:
+        except Exception:
             try:
                 link = await post_to_telegraph(
                     False, "MissKaty MediaInfo", f"<code>{body_text}</code>"
@@ -73,7 +73,7 @@ DETAILS
                 markup = InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
                 )
-            except:
+            except Exception:
                 markup = None
         with io.BytesIO(str.encode(body_text)) as out_file:
             out_file.name = "MissKaty_Mediainfo.txt"
@@ -112,7 +112,7 @@ DETAILS
                 markup = InlineKeyboardMarkup(
                     [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
                 )
-            except:
+            except Exception:
                 try:
                     link = await post_to_telegraph(
                         False, "MissKaty MediaInfo", body_text
@@ -120,7 +120,7 @@ DETAILS
                     markup = InlineKeyboardMarkup(
                         [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
                     )
-                except:
+                except Exception:
                     markup = None
             with io.BytesIO(str.encode(output)) as out_file:
                 out_file.name = "MissKaty_Mediainfo.txt"

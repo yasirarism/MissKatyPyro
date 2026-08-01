@@ -51,7 +51,7 @@ async def urbanDictionary(_, ctx: Message):
     CurrentPage = 1
     try:
         UDReasult, PageLen = await getData(chat_id, message_id, GetWord, CurrentPage)
-    except:
+    except Exception:
         return await ctx.reply("😭 Failed getting info from urban dictionary.")
 
     keyboard = InlineKeyboard()

@@ -123,7 +123,7 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
         if (temp.MELCOW).get(f"welcome-{member.chat.id}") is not None:
             try:
                 await temp.MELCOW[f"welcome-{member.chat.id}"].delete()
-            except:
+            except Exception:
                 pass
         mention = f"<a href='tg://user?id={user.id}'>{user.first_name}</a>"
         joined_date = datetime.fromtimestamp(time.time()).strftime("%Y.%m.%d %H:%M:%S")
@@ -223,7 +223,7 @@ async def leave_a_chat(bot, message):
     chat = message.command[1]
     try:
         chat = int(chat)
-    except:
+    except Exception:
         pass
     try:
         buttons = [
@@ -249,7 +249,7 @@ async def gen_invite(bot, message):
     chat = message.command[1]
     try:
         chat = int(chat)
-    except:
+    except Exception:
         return await message.reply("Give Me A Valid Chat ID")
     try:
         link = await bot.create_chat_invite_link(chat)

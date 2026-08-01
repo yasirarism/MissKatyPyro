@@ -593,7 +593,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                 deskripsi = "".join(
                     f"{i['text']} " for i in sraeo.get("descriptionSnippet")
                 )
-            except:
+            except Exception:
                 deskripsi = "-"
             message_text = f"<a href='{link}'>{title}</a>\n"
             message_text += f"Description: {deskripsi}\n"

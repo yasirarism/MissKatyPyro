@@ -182,13 +182,13 @@ async def memify(_, message):
             try:
                 hapus(webp)
                 hapus(png)
-            except:
+            except Exception:
                 pass
         except Exception as err:
             try:
                 hapus(webp)
                 hapus(png)
-            except:
+            except Exception:
                 pass
             await message.reply(f"ERROR: {err}")
     else:

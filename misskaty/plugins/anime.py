@@ -188,13 +188,13 @@ async def anime_search(_, mesg):
     try:
         sd = res["startDate"]
         startdate = str(f"{month_name[sd['month']]} {sd['day']}, {sd['year']}")
-    except:
+    except Exception:
         startdate = "-"
     msg += f"<b>Start date</b>: <code>{startdate}</code>\n"
     try:
         ed = res["endDate"]
         enddate = str(f"{month_name[ed['month']]} {ed['day']}, {ed['year']}")
-    except:
+    except Exception:
         enddate = "-"
     msg += f"<b>End date</b>: <code>{enddate}</code>\n"
     msg += "<b>Studios</b>: <code>"
@@ -234,7 +234,7 @@ async def anime_search(_, mesg):
             await mesg.reply_photo(
                 image, caption=msg, reply_markup=InlineKeyboardMarkup(btn)
             )
-        except:
+        except Exception:
             msg += f" [〽️]({image})"
             await reply.edit(msg)
     else:

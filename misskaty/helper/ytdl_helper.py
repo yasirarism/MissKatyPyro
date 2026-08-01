@@ -1,7 +1,6 @@
 import os
 import random
 import string
-import time
 
 import requests
 
@@ -26,19 +25,22 @@ def DownLoadFile(url, file_name, chunk_size, client, ud_type, message_id, chat_i
     # https://stackoverflow.com/a/47342052/4723940
     total_size = int(r.headers.get("content-length", 0))
     downloaded_size = 0
+    last_update = 0.0
     with open(file_name, "wb") as fd:
         for chunk in r.iter_content(chunk_size=chunk_size):
             if chunk:
                 fd.write(chunk)
-                downloaded_size += chunk_size
-            if client is not None and ((total_size // downloaded_size) % 5) == 0:
-                time.sleep(0.3)
-                try:
-                    client.edit_message_text(
-                        chat_id,
-                        message_id,
-                        text=f"{ud_type}: {get_readable_file_size(downloaded_size)} of {get_readable_file_size(total_size)}",
-                    )
-                except:
-                    pass
+                downloaded_size += len(chunk)
+            if client is not None and total_size > 0 and downloaded_size > 0:
+                progress = (downloaded_size * 100) // total_size
+                if progress >= last_update + 5:
+                    last_update = progress
+                    try:
+                        client.edit_message_text(
+                            chat_id,
+                            message_id,
+                            text=f"{ud_type}: {get_readable_file_size(downloaded_size)} of {get_readable_file_size(total_size)}",
+                        )
+                    except Exception:
+                        pass
     return file_name

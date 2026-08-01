@@ -304,5 +304,5 @@ async def help_button(self: Client, query: CallbackQuery, strings):
 
     try:
         await self.answer_callback_query(query.id)
-    except:
+    except Exception:
         pass

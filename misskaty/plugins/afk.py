@@ -303,7 +303,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                             usr=user_name, id=userid, tm=seenago, reas=reasonafk
                         ),
                     )
-        except:
+        except Exception:
             msg += strings("is_online").format(usr=user_name, id=userid)
 
     # Replied to a User which is AFK
@@ -374,7 +374,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                     msg += strings("is_afk").format(
                         usr=replied_first_name, id=replied_user_id
                     )
-        except:
+        except Exception:
             pass
 
     # If username or mentioned user is AFK
@@ -390,7 +390,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                     if user.id == replied_user_id:
                         j += 1
                         continue
-                except:
+                except Exception:
                     j += 1
                     continue
                 verifier, reasondb = await is_afk(user.id)
@@ -448,7 +448,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                                         reas=reasonafk,
                                     ),
                                 )
-                    except:
+                    except Exception:
                         msg += strings("is_afk").format(
                             usr=user.first_name[:25], id=user.id
                         )
@@ -459,7 +459,7 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                         j += 1
                         continue
                     first_name = entity[j].user.first_name
-                except:
+                except Exception:
                     j += 1
                     continue
                 verifier, reasondb = await is_afk(user_id)
@@ -517,15 +517,15 @@ async def afk_watcher_func(self: Client, ctx: Message, strings):
                                         reas=reasonafk,
                                     ),
                                 )
-                    except:
+                    except Exception:
                         msg += strings("is_afk").format(usr=first_name[:25], id=user_id)
             j += 1
     if msg != "":
         try:
             send = await ctx.reply_text(msg, link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True))
-        except:
+        except Exception:
             pass
     try:
         await put_cleanmode(ctx.chat.id, send.id)
-    except:
+    except Exception:
         pass

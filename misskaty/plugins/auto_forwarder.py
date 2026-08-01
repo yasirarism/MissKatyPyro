@@ -86,7 +86,7 @@ async def ForwardMessage(client: user, msg: Message):
                 LOGGER.warning(
                     f"#ERROR: {err}\n\nUnable to Forward Message to {str(item)}, reason: <code>{err}</code>"
                 )
-    except:
+    except Exception:
         pass
 
 

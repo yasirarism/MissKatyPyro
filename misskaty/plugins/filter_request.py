@@ -130,7 +130,7 @@ async def request_user(client, message):
             text=f"Hai {message.from_user.mention}, request kamu sudah dikirim yaa. Harap bersabar mungkin admin juga punya kesibukan lain.\n\n<b>Sisa Request:</b> {3 - REQUEST_DB[user_id]}x",
             reply_markup=markup2,
         )
-    except:
+    except Exception:
         pass
 
 

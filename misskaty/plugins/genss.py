@@ -127,14 +127,14 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     os.remove(images)
                     os.remove(download_file_path)
-                except:
+                except Exception:
                     pass
             except Exception as exc:
                 await ctx.reply(strings("err_ssgen").format(exc=exc))
                 try:
                     os.remove(images)
                     os.remove(download_file_path)
-                except:
+                except Exception:
                     pass
     elif replied and replied.media:
         vid = [replied.video, replied.document]
@@ -196,14 +196,14 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     os.remove(images)
                     os.remove(the_real_download_location)
-                except:
+                except Exception:
                     pass
             except Exception as exc:
                 await ctx.reply(strings("err_ssgen").format(exc=exc))
                 try:
                     os.remove(images)
                     os.remove(the_real_download_location)
-                except:
+                except Exception:
                     pass
     else:
         await ctx.reply(strings("no_reply"), del_in=6)

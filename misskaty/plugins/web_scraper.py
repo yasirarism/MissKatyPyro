@@ -1065,7 +1065,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
             title = dd[0]["title"]
             try:
                 quality = dd[0].find(class_="quality").text
-            except:
+            except Exception:
                 quality = "N/A"
             melongdata.append({"judul": title, "link": url, "quality": quality})
         if not melongdata:
