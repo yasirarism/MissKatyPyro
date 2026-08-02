@@ -1556,18 +1556,18 @@ async def _extract_nuna(client, callback_query, strings, link, keyboard):
             for label, dl_link in download_links.items():
                 res += f"{label}: <a href='{dl_link}'>{dl_link}</a>\n"
 
-            # Kirim sebagai rich message biar muat banyak link; hapus pesan proses
-            chat_id = callback_query.message.chat.id
+            # Edit pesan yang sama jadi rich message (edit_message_text punya param rich_message;
+            # shortcut Message.edit() TIDAK meneruskan rich_message, jadi panggil method client langsung)
+            rich_html = _to_rich_html(strings("res_scrape").format(link=link, kl=res))
             try:
-                await client.send_rich_message(
-                    chat_id,
-                    InputRichMessage(html=_to_rich_html(strings("res_scrape").format(link=link, kl=res))),
+                await client.edit_message_text(
+                    callback_query.message.chat.id,
+                    callback_query.message.id,
+                    rich_message=InputRichMessage(html=rich_html),
                     reply_markup=keyboard,
                 )
-                with contextlib.suppress(Exception):
-                    await callback_query.message.delete()
             except Exception as rich_err:
-                LOGGER.warning(f"send_rich_message gagal ({rich_err.__class__.__name__}): {rich_err}")
+                LOGGER.warning(f"edit rich_message gagal ({rich_err.__class__.__name__}): {rich_err}")
                 await callback_query.message.edit(
                     strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
                 )
