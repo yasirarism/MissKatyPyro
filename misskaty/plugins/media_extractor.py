@@ -213,21 +213,16 @@ async def convertsrt(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def stream_extract(self: Client, update: CallbackQuery, strings):
     cb_data = update.data or ""
-    LOGGER.info(f"[DEBUG] stream_extract dipanggil: data={cb_data!r} user={update.from_user.id}")
     parsed = StreamExtractHelper.parse_callback(cb_data)
     if not parsed:
-        LOGGER.warning(f"[DEBUG] parse_callback gagal: {cb_data!r}")
         return await update.answer(strings("invalid_cb"), True)
     owner_id, lang, map_code, codec = parsed
-    LOGGER.info(f"[DEBUG] parsed OK: owner={owner_id} lang={lang} map={map_code} codec={codec}")
 
     # Hanya pemilik link yang boleh mengekstrak
     if not StreamExtractHelper.is_authorized(update.from_user.id, owner_id):
-        LOGGER.warning(f"[DEBUG] unauthorized: user={update.from_user.id} owner={owner_id}")
         return await update.answer(strings("unauth_cb"), True)
 
     link = StreamExtractHelper.get_source_link(owner_id)
-    LOGGER.info(f"[DEBUG] link ditemukan: {bool(link)}")
     if not link:
         return await update.answer(strings("invalid_cb"), True)
 
