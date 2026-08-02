@@ -54,6 +54,10 @@ __HELP__ = """
 /converttoass [Reply to .srt or .vtt TG File] - Convert from .srt or .vtt to srt
 """
 
+# Cache sementara: user_id -> {link, ...}. Dipakai supaya callback tidak
+# bergantung pada `reply_to_message` yang bisa hilang/None.
+_EXTRACT_SESSIONS: dict[int, dict] = {}
+
 
 def get_base_name(orig_path: str):
     if ext := [ext for ext in ARCH_EXT if orig_path.lower().endswith(ext)]:
@@ -80,30 +84,31 @@ class StreamExtractHelper:
         return str(value).replace("#", "_")
 
     @staticmethod
-    def parse_callback(data: str) -> tuple[str, str, str] | None:
+    def build_callback(user_id: int, lang: str, mapping: int | str, codec: str) -> str:
+        return (
+            f"streamextract#{user_id}#{StreamExtractHelper.sanitize(lang)}"
+            f"#0:{mapping}#{StreamExtractHelper.sanitize(codec)}"
+        )
+
+    @staticmethod
+    def parse_callback(data: str) -> tuple[int, str, str, str] | None:
+        """Parse payload -> (user_id, lang, map_code, codec). None kalau invalid."""
         try:
-            _, lang, map_code, codec = data.split("#", 3)
-            return lang, map_code, codec
-        except ValueError:
+            _, uid, lang, map_code, codec = data.split("#", 4)
+            return int(uid), lang, map_code, codec
+        except (ValueError, TypeError):
             return None
 
     @staticmethod
-    async def is_authorized(callback: CallbackQuery) -> bool:
-        usr = callback.message.reply_to_message
-        if not usr or not usr.from_user:
-            return False
-        return callback.from_user.id == usr.from_user.id
+    def is_authorized(user_id: int, owner_id: int) -> bool:
+        return user_id == owner_id
 
     @staticmethod
-    async def get_source_link(callback: CallbackQuery) -> str | None:
-        try:
-            return callback.message.reply_to_message.command[1]
-        except Exception:
+    def get_source_link(user_id: int) -> str | None:
+        session = _EXTRACT_SESSIONS.get(user_id)
+        if not session:
             return None
-
-    @staticmethod
-    def build_callback(lang: str, mapping: int | str, codec: str) -> str:
-        return f"streamextract#{StreamExtractHelper.sanitize(lang)}#0:{mapping}#{StreamExtractHelper.sanitize(codec)}"
+        return session.get("link")
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -114,6 +119,7 @@ async def ceksub(_, ctx: Message, strings):
             strings("sub_extr_help").format(cmd=ctx.command[0]), del_in=5
         )
     link = ctx.command[1]
+    owner_id = ctx.from_user.id if ctx.from_user else 0
     start_time = time()
     pesan = await ctx.reply(strings("progress_str"))
     try:
@@ -123,6 +129,8 @@ async def ceksub(_, ctx: Message, strings):
             )
         )[0]
         details = json.loads(res)
+        # Simpan link untuk dipakai callback nanti (tanpa reply_to_message)
+        _EXTRACT_SESSIONS[owner_id] = {"link": link}
         buttons = []
         for stream in details["streams"]:
             mapping = stream["index"]
@@ -141,20 +149,23 @@ async def ceksub(_, ctx: Message, strings):
                 [
                     InlineKeyboardButton(
                         f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                        StreamExtractHelper.build_callback(lang, mapping, stream_name),
+                        StreamExtractHelper.build_callback(
+                            owner_id, lang, mapping, stream_name
+                        ),
                     )
                 ]
             )
         timelog = time() - start_time
         buttons.append(
-            [InlineKeyboardButton(strings("cancel_btn"), f"close#{ctx.from_user.id}")]
+            [InlineKeyboardButton(strings("cancel_btn"), f"close#{owner_id}")]
         )
         await pesan.edit(
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
-    except Exception as e:
+    except Exception:
         LOGGER.error(traceback.format_exc())
+        _EXTRACT_SESSIONS.pop(owner_id, None)
         await pesan.edit(strings("fail_extr_media"))
 
 
@@ -201,18 +212,20 @@ async def convertsrt(self: Client, ctx: Message, strings):
 @app.on_callback_query(filters.regex(r"^streamextract#"))
 @use_chat_lang()
 async def stream_extract(self: Client, update: CallbackQuery, strings):
-    cb_data = update.data
-    usr = update.message.reply_to_message
-    if update.from_user.id != usr.from_user.id:
-        return await update.answer(strings("unauth_cb"), True)
+    cb_data = update.data or ""
     parsed = StreamExtractHelper.parse_callback(cb_data)
     if not parsed:
         return await update.answer(strings("invalid_cb"), True)
-    lang, map_code, codec = parsed
-    try:
-        link = update.message.reply_to_message.command[1]
-    except Exception:
+    owner_id, lang, map_code, codec = parsed
+
+    # Hanya pemilik link yang boleh mengekstrak
+    if not StreamExtractHelper.is_authorized(update.from_user.id, owner_id):
+        return await update.answer(strings("unauth_cb"), True)
+
+    link = StreamExtractHelper.get_source_link(owner_id)
+    if not link:
         return await update.answer(strings("invalid_cb"), True)
+
     await update.message.edit(strings("progress_str"))
     if codec == "aac":
         ext = "aac"
@@ -236,7 +249,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
             caption=strings("capt_extr_sub").format(
                 nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
             ),
-            reply_parameters=pyro_types.ReplyParameters(message_id=usr.id),
+            reply_parameters=pyro_types.ReplyParameters(message_id=update.message.id),
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
             progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
