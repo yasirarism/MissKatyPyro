@@ -16,7 +16,7 @@ import re
 import sys
 import traceback
 from logging import getLogger
-from urllib.parse import quote
+from urllib.parse import quote, quote_plus
 
 import aiohttp
 import httpx
@@ -596,9 +596,36 @@ async def close_callback(_, query: CallbackQuery):
 
 
 async def mdlapi(title):
-    link = f"https://kuryana.vercel.app/search/q/{title}"
-    async with aiohttp.ClientSession() as ses, ses.get(link) as result:
-        return await result.json()
+    """Cari drama di MyDramaList (scrape langsung — kuryana API mati 429).
+
+    Return list of dict: {title, year, slug, type}. Hanya item drama/series
+    (bukan /people/).
+    """
+    link = f"https://mydramalist.com/search?q={quote_plus(title)}"
+    async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as ses, ses.get(link) as result:
+        if result.status != 200:
+            raise RuntimeError(f"MDL search gagal: HTTP {result.status}")
+        html = await result.text()
+    soup = BeautifulSoup(html, "lxml")
+    movies = []
+    for row in soup.select(".box-body .row"):
+        a = row.select_one(".title a")
+        href = str(a["href"]) if a and a.get("href") else ""
+        if not a or not href or "/people/" in href:
+            continue
+        content = row.select_one(".content")
+        txt = content.text.strip() if content else ""
+        year_m = re.search(r"(?:19|20)\d{2}", txt)
+        type_m = re.search(r"(Korean|Japanese|Chinese|Taiwanese|Hong Kong|Thai|Filipino) (?:Drama|Movie|Variety)", txt)
+        movies.append(
+            {
+                "title": a.text.strip(),
+                "year": year_m.group(0) if year_m else "",
+                "slug": href.strip("/").split("/")[-1],
+                "type": type_m.group(0) if type_m else "",
+            }
+        )
+    return movies
 
 
 @app.on_message(filters.command(["mdl"], COMMAND_HANDLER))
@@ -607,18 +634,20 @@ async def mdlsearch(_, message):
     if " " in message.text:
         _, title = message.text.split(None, 1)
         k = await message.reply("Sedang mencari di Database MyDramaList.. 😴")
-        movies = await mdlapi(title)
-        res = movies["results"]["dramas"]
+        try:
+            movies = await mdlapi(title)
+        except Exception as e:
+            return await k.edit(f"<b>ERROR:</b>\n<code>{e}</code>")
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})",
+                    text=f"{movie.get('title')} ({movie.get('year')})".strip(),
                     callback_data=f"mdls#{message.from_user.id}#{message.id}#{movie['slug']}",
                 )
             ]
-            for movie in res
+            for movie in movies
         ]
         await k.edit(
             f"Ditemukan {len(movies)} query dari <code>{title}</code>",
@@ -635,45 +664,99 @@ async def mdl_callback(_, query: CallbackQuery):
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
         try:
-            res = (await fetch.get(f"https://kuryana.vercel.app/id/{slug}")).json()
-            result += f"<b>Title:</b> <a href='{res['data']['link']}'>{res['data']['title']}</a>\n"
-            result += (
-                f"<b>AKA:</b> <code>{res['data']['others']['also_known_as']}</code>\n\n"
-            )
-            result += f"<b>Rating:</b> <code>{res['data']['details']['score']}</code>\n"
-            result += f"<b>Content Rating:</b> <code>{res['data']['details']['content_rating']}</code>\n"
-            result += f"<b>Type:</b> <code>{res['data']['details']['type']}</code>\n"
-            result += (
-                f"<b>Country:</b> <code>{res['data']['details']['country']}</code>\n"
-            )
-            if res["data"]["details"]["type"] == "Movie":
-                result += f"<b>Release Date:</b> <code>{res['data']['details']['release_date']}</code>\n"
-            elif res["data"]["details"]["type"] == "Drama":
-                result += f"<b>Episode:</b> {res['data']['details']['episodes']}\n"
-                result += (
-                    f"<b>Aired:</b> <code>{res['data']['details']['aired']}</code>\n"
-                )
-                try:
-                    result += f"<b>Aired on:</b> <code>{res['data']['details']['aired_on']}</code>\n"
-                except Exception:
-                    pass
-                try:
-                    result += f"<b>Original Network:</b> <code>{res['data']['details']['original_network']}</code>\n"
-                except Exception:
-                    pass
-            result += (
-                f"<b>Duration:</b> <code>{res['data']['details']['duration']}</code>\n"
-            )
-            result += (
-                f"<b>Genre:</b> <code>{res['data']['others']['genres']}</code>\n\n"
-            )
-            result += f"<b>Synopsis:</b> <code>{res['data']['synopsis']}</code>\n"
-            result += f"<b>Tags:</b> <code>{res['data']['others']['tags']}</code>\n"
+            res = await mdl_detail(slug)
+            result += f"<b>Title:</b> <a href='{res['link']}'>{res['title']}</a>\n"
+            if res.get("aka"):
+                result += f"<b>AKA:</b> <code>{res['aka']}</code>\n\n"
+            result += f"<b>Rating:</b> <code>{res.get('rating', '-')}</code>\n"
+            if res.get("content_rating"):
+                result += f"<b>Content Rating:</b> <code>{res['content_rating']}</code>\n"
+            result += f"<b>Type:</b> <code>{res.get('type', '-')}</code>\n"
+            if res.get("country"):
+                result += f"<b>Country:</b> <code>{res['country']}</code>\n"
+            if res.get("type") == "Movie":
+                if res.get("release_date"):
+                    result += f"<b>Release Date:</b> <code>{res['release_date']}</code>\n"
+            else:
+                if res.get("episodes"):
+                    result += f"<b>Episode:</b> {res['episodes']}\n"
+                if res.get("aired"):
+                    result += f"<b>Aired:</b> <code>{res['aired']}</code>\n"
+                if res.get("aired_on"):
+                    result += f"<b>Aired on:</b> <code>{res['aired_on']}</code>\n"
+                if res.get("original_network"):
+                    result += f"<b>Original Network:</b> <code>{res['original_network']}</code>\n"
+            if res.get("duration"):
+                result += f"<b>Duration:</b> <code>{res['duration']}</code>\n"
+            if res.get("genres"):
+                result += f"<b>Genre:</b> <code>{res['genres']}</code>\n\n"
+            if res.get("synopsis"):
+                result += f"<b>Synopsis:</b> <code>{res['synopsis'][:400]}</code>\n"
+            if res.get("tags"):
+                result += f"<b>Tags:</b> <code>{res['tags'][:200]}</code>\n"
             btn = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("🎬 Open MyDramaList", url=res["data"]["link"])]]
+                [[InlineKeyboardButton("🎬 Open MyDramaList", url=res["link"])]]
             )
             await query.message.edit_text(result, reply_markup=btn)
         except Exception as e:
             await query.message.edit_text(f"<b>ERROR:</b>\n<code>{e}</code>")
     else:
         await query.answer("Tombol ini bukan untukmu", show_alert=True)
+
+
+async def mdl_detail(slug: str) -> dict:
+    """Scrape detail drama dari MyDramaList (kuryana API mati 429)."""
+    link = f"https://mydramalist.com/{slug}"
+    async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as ses, ses.get(link) as result:
+        if result.status != 200:
+            raise RuntimeError(f"MDL detail gagal: HTTP {result.status}")
+        html = await result.text()
+    soup = BeautifulSoup(html, "lxml")
+
+    h1 = soup.select_one("h1")
+    title = h1.text.strip() if h1 else slug
+
+    # Detail rows: <li class="list-item"> berisi <b>Label:</b> value
+    details = {}
+    for li in soup.select("ul.list li.list-item, ul.list li"):
+        txt = li.text.strip()
+        b = li.find("b") or li.find("strong")
+        if b:
+            label = b.text.strip(" :\t\n").lower()
+            value = txt.replace(b.text, "", 1).strip(" :\t\n")
+            details[label] = value
+
+    score_el = soup.select_one(".col-film-rating")
+    rating = score_el.text.strip() if score_el else "-"
+
+    def get(*keys):
+        for k in keys:
+            if k in details:
+                return details[k]
+        return ""
+
+    syn_el = soup.select_one(".show-synopsis") or soup.select_one("#synopsis")
+    synopsis = syn_el.text.strip() if syn_el else ""
+    tags_el = soup.select_one("#tags") or soup.select_one(".tags")
+    tags = tags_el.text.strip() if tags_el else ""
+    if tags and tags.lower().startswith("tags:"):
+        tags = tags[len("tags:"):].strip()
+
+    return {
+        "title": title,
+        "link": link,
+        "aka": get("native title"),
+        "rating": rating,
+        "content_rating": get("content rating"),
+        "type": get("type"),
+        "country": get("country"),
+        "episodes": get("episodes"),
+        "aired": get("airs"),
+        "aired_on": get("airs on"),
+        "original_network": get("original network"),
+        "release_date": get("release date", "release"),
+        "duration": get("duration"),
+        "genres": get("genres"),
+        "synopsis": synopsis,
+        "tags": tags,
+    }
