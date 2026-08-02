@@ -722,7 +722,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(data, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if not entry or entry[0].text.strip() in ("Nothing Found", "Tidak Ditemukan"):
             if not kueri:
                 await msg.edit(strings("no_result"), del_in=5)
             else:
@@ -826,7 +826,7 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(nunafetch, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if not entry or entry[0].text.strip() in ("Nothing Found", "Tidak Ditemukan"):
             if not kueri:
                 await msg.edit(strings("no_result"), del_in=5)
             else:
@@ -882,7 +882,7 @@ async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(nunafetch, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if not entry or entry[0].text.strip() in ("Nothing Found", "Tidak Ditemukan"):
             if not kueri:
                 await msg.edit(strings("no_result"), del_in=5)
             else:
@@ -938,7 +938,7 @@ async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(nunafetch, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if not entry or entry[0].text.strip() in ("Nothing Found", "Tidak Ditemukan"):
             if not kueri:
                 await msg.edit(strings("no_result"), del_in=5)
             else:
@@ -1166,7 +1166,7 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
                 return None, 0, None
         text = BeautifulSoup(gomovv, "lxml")
         entry = text.find_all(class_="entry-header")
-        if entry[0].text.strip() == "Nothing Found":
+        if not entry or entry[0].text.strip() in ("Nothing Found", "Tidak Ditemukan"):
             if not kueri:
                 await msg.edit(strings("no_result"), del_in=5)
             else:
@@ -1495,13 +1495,23 @@ async def _extract_nuna(client, callback_query, strings, link, keyboard):
             html = await fetch.get(link)
             html.raise_for_status()
             soup = BeautifulSoup(html.text, "lxml")
-            download_section = soup.find("div", class_="dzdesu")
-            title = download_section.find("h2").text.strip()
+            # Struktur baru: <div class="gmr-download-wrap"> berisi tombol download
+            download_section = soup.find("div", class_="gmr-download-wrap")
+            if not download_section:
+                # fallback selector lama
+                download_section = soup.find("div", class_="dzdesu")
+            if not download_section:
+                await callback_query.message.edit(
+                    f"ERROR: No download section found on {link}", reply_markup=keyboard
+                )
+                return
+            title_el = download_section.find("h3") or download_section.find("h2")
+            title = title_el.text.strip() if title_el else "N/A"
             links = download_section.find_all("a", href=True)
-            download_links = {link.text.strip(): link['href'] for link in links}
+            download_links = {link.text.strip(): link["href"] for link in links}
             res = f"<b>Judul</b>: {title}\n\n<b>Link Download:</b>\n"
-            for label, link in download_links.items():
-                res += f"{label}: <a href='{link}'>{link}</a>\n"
+            for label, dl_link in download_links.items():
+                res += f"{label}: <a href='{dl_link}'>{dl_link}</a>\n"
             await callback_query.message.edit(
                 strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
             )
