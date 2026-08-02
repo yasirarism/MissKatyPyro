@@ -1377,7 +1377,7 @@ async def _extract_cb_parse(callback_query, strings, back_prefix, store):
     return link, keyboard
 
 
-@app.on_cb(r"\w+extract#")
+@app.on_cb(r"^(oppaweb|kuso|sf21|nuna|pf|duta|nodrakor|movieku|melong|gomov|lendrive)extract#")
 @use_chat_lang()
 async def scraper_extract_cb(client, callback_query, strings):
     prefix = callback_query.data.split("#")[0]
