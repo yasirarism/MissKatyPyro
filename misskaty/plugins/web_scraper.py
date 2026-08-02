@@ -20,7 +20,7 @@ from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import QueryIdInvalid
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, InputRichMessage
 
 from database import dbname
 from misskaty import app
@@ -1489,32 +1489,88 @@ async def _extract_savefilm21(client, callback_query, strings, link, keyboard):
             )
 
 
+def _to_rich_html(text: str) -> str:
+    """Konversi caption HTML biasa ke HTML rich message (baris -> <p>, emoji -> tg-emoji)."""
+    text = re.sub(
+        r"<emoji id=(\d+)>([^<]*)</emoji>",
+        r'<tg-emoji emoji-id="\1">\2</tg-emoji>',
+        text,
+    )
+    lines = [ln.strip() for ln in text.split("\n")]
+    rendered = []
+    for ln in lines:
+        if not ln:
+            continue
+        if ln.startswith("<details>") or ln.startswith("<p>"):
+            rendered.append(ln)
+        else:
+            rendered.append(f"<p>{ln}</p>")
+    return "\n".join(rendered)
+
+
 async def _extract_nuna(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             html = await fetch.get(link)
             html.raise_for_status()
             soup = BeautifulSoup(html.text, "lxml")
-            # Struktur baru: <div class="gmr-download-wrap"> berisi tombol download
+
+            # Struktur 1 (movie/single): <div class="gmr-download-wrap">
             download_section = soup.find("div", class_="gmr-download-wrap")
-            if not download_section:
-                # fallback selector lama
-                download_section = soup.find("div", class_="dzdesu")
-            if not download_section:
+            if download_section:
+                title_el = download_section.find("h3") or download_section.find("h2")
+                title = title_el.text.strip() if title_el else "N/A"
+                links = download_section.find_all("a", href=True)
+                download_links = {a.text.strip(): a["href"] for a in links}
+            else:
+                # Struktur 2 (tv episode): link download di dalam entry-content-single,
+                # tiap <p> = 1 kualitas (mis. "480p (Hardsub Indo): MIRRORED | FILEMOON | UPFILES")
+                content = soup.find("div", class_="entry-content-single")
+                title_el = soup.find("h1")
+                title = title_el.text.strip() if title_el else "N/A"
+                download_links = {}
+                if content:
+                    for p in content.find_all("p"):
+                        anchors = p.find_all("a", href=True)
+                        if not anchors:
+                            continue
+                        # label = teks sebelum link pertama (bagian kualitas)
+                        label_parts = []
+                        for node in p.contents:
+                            if getattr(node, "name", None) == "a":
+                                break
+                            if isinstance(node, str):
+                                label_parts.append(node)
+                        quality = " ".join(label_parts).replace("\xa0", " ").strip(" :\t\n") or "Download"
+                        for a in anchors:
+                            server = a.text.strip() or a["href"]
+                            download_links[f"{quality} [{server}]"] = a["href"]
+
+            if not download_links:
                 await callback_query.message.edit(
-                    f"ERROR: No download section found on {link}", reply_markup=keyboard
+                    f"ERROR: No download link found on {link}", reply_markup=keyboard
                 )
                 return
-            title_el = download_section.find("h3") or download_section.find("h2")
-            title = title_el.text.strip() if title_el else "N/A"
-            links = download_section.find_all("a", href=True)
-            download_links = {link.text.strip(): link["href"] for link in links}
+
             res = f"<b>Judul</b>: {title}\n\n<b>Link Download:</b>\n"
             for label, dl_link in download_links.items():
                 res += f"{label}: <a href='{dl_link}'>{dl_link}</a>\n"
-            await callback_query.message.edit(
-                strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
-            )
+
+            # Kirim sebagai rich message biar muat banyak link; hapus pesan proses
+            chat_id = callback_query.message.chat.id
+            try:
+                await client.send_rich_message(
+                    chat_id,
+                    InputRichMessage(html=_to_rich_html(strings("res_scrape").format(link=link, kl=res))),
+                    reply_markup=keyboard,
+                )
+                with contextlib.suppress(Exception):
+                    await callback_query.message.delete()
+            except Exception as rich_err:
+                LOGGER.warning(f"send_rich_message gagal ({rich_err.__class__.__name__}): {rich_err}")
+                await callback_query.message.edit(
+                    strings("res_scrape").format(link=link, kl=res), reply_markup=keyboard
+                )
         except httpx.HTTPError as exc:
             await callback_query.message.edit(
                 f"HTTP Exception for {exc.request.url} - <code>{exc}</code>",
