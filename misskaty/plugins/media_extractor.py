@@ -54,9 +54,23 @@ __HELP__ = """
 /converttoass [Reply to .srt or .vtt TG File] - Convert from .srt or .vtt to srt
 """
 
-# Cache sementara: user_id -> {link, ...}. Dipakai supaya callback tidak
-# bergantung pada `reply_to_message` yang bisa hilang/None.
+# Cache sementara: message_id -> {link, user_id, created_at}. Dipakai supaya
+# callback tidak bergantung pada `reply_to_message` yang bisa hilang/None.
+# Key = message_id pesan yang berisi tombol, expired 60 detik.
 _EXTRACT_SESSIONS: dict[int, dict] = {}
+_EXTRACT_TTL = 60  # detik
+
+
+def _purge_expired_sessions():
+    """Hapus session yang sudah lewat TTL supaya dict tidak membengkak."""
+    now = time()
+    expired = [
+        mid
+        for mid, s in _EXTRACT_SESSIONS.items()
+        if now - s.get("created_at", 0) > _EXTRACT_TTL
+    ]
+    for mid in expired:
+        _EXTRACT_SESSIONS.pop(mid, None)
 
 
 def get_base_name(orig_path: str):
@@ -104,8 +118,9 @@ class StreamExtractHelper:
         return user_id == owner_id
 
     @staticmethod
-    def get_source_link(user_id: int) -> str | None:
-        session = _EXTRACT_SESSIONS.get(user_id)
+    def get_source_link(message_id: int) -> str | None:
+        _purge_expired_sessions()
+        session = _EXTRACT_SESSIONS.get(message_id)
         if not session:
             return None
         return session.get("link")
@@ -129,8 +144,13 @@ async def ceksub(_, ctx: Message, strings):
             )
         )[0]
         details = json.loads(res)
-        # Simpan link untuk dipakai callback nanti (tanpa reply_to_message)
-        _EXTRACT_SESSIONS[owner_id] = {"link": link}
+        # Simpan link per message_id pesan tombol, expired 60 detik.
+        # Key beda per pesan -> tombol lama tidak kebaca link yang baru.
+        _EXTRACT_SESSIONS[pesan.id] = {
+            "link": link,
+            "user_id": owner_id,
+            "created_at": time(),
+        }
         buttons = []
         for stream in details["streams"]:
             mapping = stream["index"]
@@ -222,7 +242,7 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     if not StreamExtractHelper.is_authorized(update.from_user.id, owner_id):
         return await update.answer(strings("unauth_cb"), True)
 
-    link = StreamExtractHelper.get_source_link(owner_id)
+    link = StreamExtractHelper.get_source_link(update.message.id)
     if not link:
         return await update.answer(strings("invalid_cb"), True)
 
