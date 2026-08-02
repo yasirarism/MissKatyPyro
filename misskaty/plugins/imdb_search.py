@@ -357,6 +357,18 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
         caption_too_long = True
     except MessageNotModified:
         return
+    except (PhotoInvalidDimensions, WebpageMediaEmpty):
+        thumb = thumb.replace(".jpg", "._V1_UX360.jpg")
+        try:
+            await self.edit_message_media(
+                chat_id=query.message.chat.id,
+                message_id=query.message.id,
+                media=InputMediaPhoto(thumb, caption=res_str, parse_mode=enums.ParseMode.HTML),
+                reply_markup=markup,
+            )
+            return
+        except Exception as retry_err:
+            LOGGER.warning(f"Edit media retry gagal ({thumb}): {retry_err.__class__.__name__}: {retry_err}")
     except Exception as err:
         LOGGER.warning(f"Edit media gagal ({thumb}): {err.__class__.__name__}: {err}")
     if caption_too_long and await _send_rich_result(self, query, res_str, markup, thumb):
