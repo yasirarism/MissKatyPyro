@@ -31,13 +31,14 @@ async def _dump_handlers():
         for gid in sorted(groups.keys()):
             for handler in groups[gid]:
                 if isinstance(handler, CallbackQueryHandler):
-                    fs = repr(getattr(handler, "filters", None))
-                    lines.append(f"CB g{gid}: {fs[:110]}")
-                elif isinstance(handler, MessageHandler):
-                    lines.append(f"MSG g{gid}")
-        LOGGER.warning("[DUMP] callback handlers terdaftar:\n" + "\n".join(lines))
+                    flt = getattr(handler, "filters", None)
+                    # Coba ekstrak pattern dari RegexFilter
+                    pat = getattr(flt, "p", None)
+                    pat_str = repr(pat.pattern) if pat and hasattr(pat, "pattern") else repr(flt)
+                    lines.append(f"CB g{gid}: {pat_str[:120]}")
+        LOGGER.warning("[DUMP2] callback handlers terdaftar:\n" + "\n".join(lines))
     except Exception as e:
-        LOGGER.warning(f"[DUMP] gagal: {e}")
+        LOGGER.warning(f"[DUMP2] gagal: {e}")
 
 import asyncio
 asyncio.get_event_loop().create_task(_dump_handlers())
