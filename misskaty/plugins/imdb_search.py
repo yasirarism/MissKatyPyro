@@ -1158,7 +1158,7 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                     f"<a href=\"{release_url}\">{rilis}</a>" if rilis_url else "-"
                 )
                 poster_url = r_json.get("image") or "-"
-                trailer_url = r_json.get("trailer", {}).get("url") or "-"
+                trailer_url = (r_json.get("trailer") or {}).get("url") or "-"
                 payload = {
                     "title": title,
                     "title_with_year": title_with_year,
@@ -1502,7 +1502,7 @@ async def imdb_en_callback(self: Client, query: CallbackQuery):
                     f"<a href=\"{release_url}\">{rilis}</a>" if rilis_url else "-"
                 )
                 poster_url = r_json.get("image") or "-"
-                trailer_url = r_json.get("trailer", {}).get("url") or "-"
+                trailer_url = (r_json.get("trailer") or {}).get("url") or "-"
                 payload = {
                     "title": title,
                     "title_with_year": title_with_year,

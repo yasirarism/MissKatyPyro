@@ -1273,7 +1273,13 @@ async def scraper_cmd(_, message, strings):
     kueri = " ".join(message.command[1:]) or None
     pesan = await message.reply(strings("get_data"))
     if needs_user:
-        res, PageLen, btn = await func(pesan, kueri, 1, message.from_user.id, strings)
+        unpacked = await func(pesan, kueri, 1, message.from_user.id, strings)
+        if len(unpacked) == 4:
+            # getDataKuso punya 2 baris tombol (extractbtn1 + extractbtn2)
+            res, PageLen, btn1, btn2 = unpacked
+            btn = btn1 + btn2
+        else:
+            res, PageLen, btn = unpacked
     else:
         res, PageLen = await func(pesan, kueri, 1, strings)
     if not res:
