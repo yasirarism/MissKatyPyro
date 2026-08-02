@@ -1323,9 +1323,15 @@ async def scraper_page_callback(_, callback_query, strings):
         return
     try:
         if needs_user:
-            res, PageLen, btn = await func(
+            unpacked = await func(
                 callback_query.message, kueri, CurrentPage, callback_query.from_user.id, strings
             )
+            if len(unpacked) == 4:
+                # getDataKuso punya 2 baris tombol (extractbtn1 + extractbtn2)
+                res, PageLen, btn1, btn2 = unpacked
+                btn = btn1 + btn2
+            else:
+                res, PageLen, btn = unpacked
         else:
             res, PageLen = await func(callback_query.message, kueri, CurrentPage, strings)
     except TypeError:
