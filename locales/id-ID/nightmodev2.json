@@ -9,9 +9,9 @@
     "nmd_off_not_admin": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`, karena {bname} bukan admin di obrolan `{chat_id}`",
     "nmd_off_not_present": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`, karena {bname} tidak ada di obrolan `{chat_id}`. Menghapus grup dari daftar.",
     "nmd_off_err": "#NIGHTMODE_FAIL\nGagal mematikan mode malam di `{chat_id}`\nERROR: `{e}`",
-    "nmd_off_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n☀️ Grup sedang dibuka.\nAkan ditutup pada {close_at}",
+    "nmd_off_success": "#NIGHTMODE_HANDLER\n<emoji id=5890937706803894250>📆</emoji> {dt}\n\n<emoji id=6005924903419646424>☀️</emoji> Grup sedang dibuka.\nAkan ditutup pada {close_at}",
     "nmd_on_not_admin": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`, karena {bname} bukan admin di obrolan `{chat_id}`",
     "nmd_on_not_present": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`, karena {bname} tidak ada di obrolan `{chat_id}`. Grup dihapus dari daftar.",
     "nmd_on_err": "#NIGHTMODE_FAIL\nGagal mengaktifkan mode malam di `{chat_id}`\nERROR: `{e}`",
-    "nmd_on_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n🌗 Grup ditutup.\nAkan dibuka pada {open_at}"
+    "nmd_on_success": "#NIGHTMODE_HANDLER\n<emoji id=5890937706803894250>📆</emoji> {dt}\n\n<emoji id=6005928962163742139>🌗</emoji> Grup ditutup.\nAkan dibuka pada {open_at}"
 }

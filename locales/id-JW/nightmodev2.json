@@ -9,9 +9,9 @@
     "nmd_off_not_admin": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} dudu admin ing chat `{chat_id}`",
     "nmd_off_not_present": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`, amarga {bname} ora ana ing chat `{chat_id}`. Dibusak grup saka dhaptar.",
     "nmd_off_err": "#NIGHTMODE_FAIL\nGagal mateni nightmode ing `{chat_id}`\nERROR: `{e}`",
-    "nmd_off_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n☀️ Grup dibukak.\nBakal ditutup jam {close_at}",
+    "nmd_off_success": "#NIGHTMODE_HANDLER\n<emoji id=5890937706803894250>📆</emoji> {dt}\n\n<emoji id=6005924903419646424>☀️</emoji> Grup dibukak.\nBakal ditutup jam {close_at}",
     "nmd_on_not_admin": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`, amarga {bname} dudu admin ing chat `{chat_id}`",
     "nmd_on_not_present": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`, amarga {bname} ora ana ing obrolan `{chat_id}`. Grup dibusak saka dhaptar.",
     "nmd_on_err": "#NIGHTMODE_FAIL\nGagal ngaktifake mode wengi ing `{chat_id}`\nERROR: `{e}`",
-    "nmd_on_success": "#NIGHTMODE_HANDLER\n📆 {dt}\n\n🌗 Grup ditutup.\nBakal dibukak ing {open_at}"
+    "nmd_on_success": "#NIGHTMODE_HANDLER\n<emoji id=5890937706803894250>📆</emoji> {dt}\n\n<emoji id=6005928962163742139>🌗</emoji> Grup ditutup.\nBakal dibukak ing {open_at}"
 }
