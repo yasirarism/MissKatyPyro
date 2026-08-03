@@ -601,12 +601,44 @@ async def close_callback(_, query: CallbackQuery):
         await query.message.reply_to_message.delete_msg()
 
 
-async def mdlapi(title):
-    """Cari drama di MyDramaList (scrape langsung — kuryana API mati 429).
+# Kuryana mirror yg bisa diakses dari VPS (api asli kena Vercel Security Checkpoint)
+KURYANA_BASE = "https://kuryana.tbdh.app"
 
-    Return list of dict: {title, year, slug, type}. Hanya item drama/series
-    (bukan /people/).
+
+async def _kuryana_json(path: str) -> dict | None:
+    """Fetch Kuryana mirror API. Return dict atau None kalau gagal/non-JSON."""
+    try:
+        async with aiohttp.ClientSession(
+            headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        ) as ses, ses.get(f"{KURYANA_BASE}{path}") as result:
+            if result.status != 200:
+                return None
+            if "json" not in result.headers.get("Content-Type", ""):
+                return None
+            return await result.json(content_type=None)
+    except Exception:
+        return None
+
+
+async def mdlapi(title):
+    """Cari drama di MyDramaList via Kuryana mirror (lebih lengkap).
+
+    Return list of dict: {title, year, slug, type}. Fallback scrape MDL
+    langsung kalau Kuryana gagal.
     """
+    kuryana = await _kuryana_json(f"/search/q/{quote_plus(title)}")
+    if kuryana and kuryana.get("results", {}).get("dramas"):
+        return [
+            {
+                "title": m.get("title", ""),
+                "year": m.get("year", ""),
+                "slug": m.get("slug", ""),
+                "type": m.get("type", ""),
+            }
+            for m in kuryana["results"]["dramas"]
+        ]
+
+    # Fallback: scrape search MDL
     link = f"https://mydramalist.com/search?q={quote_plus(title)}"
     async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as ses, ses.get(link) as result:
         if result.status != 200:
@@ -651,7 +683,7 @@ async def mdlsearch(_, message):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{idx}. {movie.get('title')} ({movie.get('year')})".strip(),
+                    text=f"{idx+1}. {movie.get('title')} ({movie.get('year')})".strip(),
                     callback_data=f"mdls#{message.from_user.id}#{k.id}#{idx}",
                 )
             ]
@@ -719,8 +751,43 @@ async def mdl_callback(_, query: CallbackQuery):
 
 
 async def mdl_detail(slug: str) -> dict:
-    """Scrape detail drama dari MyDramaList (kuryana API mati 429)."""
+    """Ambil detail drama via Kuryana mirror (lebih lengkap).
+
+    Fallback scrape MDL langsung kalau Kuryana gagal.
+    """
     link = f"https://mydramalist.com/{slug}"
+
+    kuryana = await _kuryana_json(f"/id/{slug}")
+    if kuryana and kuryana.get("data"):
+        d = kuryana["data"]
+        det = d.get("details", {})
+        oth = d.get("others", {})
+        genre = oth.get("genres", [])
+        if isinstance(genre, list):
+            genre = ", ".join(g for g in genre if g)
+        tag_src = oth.get("tags", [])
+        if isinstance(tag_src, list):
+            tag_src = ", ".join(str(t) for t in tag_src)
+        return {
+            "title": d.get("title", slug),
+            "link": d.get("link", link),
+            "aka": oth.get("also_known_as", ""),
+            "rating": det.get("score", "-"),
+            "content_rating": det.get("content_rating", ""),
+            "type": det.get("type", ""),
+            "country": det.get("country", ""),
+            "episodes": det.get("episodes", ""),
+            "aired": det.get("aired", ""),
+            "aired_on": det.get("aired_on", ""),
+            "original_network": det.get("original_network", ""),
+            "release_date": det.get("release_date", ""),
+            "duration": det.get("duration", ""),
+            "genres": genre,
+            "synopsis": d.get("synopsis", ""),
+            "tags": tag_src,
+        }
+
+    # Fallback: scrape halaman detail MDL
     async with aiohttp.ClientSession(headers={"User-Agent": "Mozilla/5.0"}) as ses, ses.get(link) as result:
         if result.status != 200:
             raise RuntimeError(f"MDL detail gagal: HTTP {result.status}")
