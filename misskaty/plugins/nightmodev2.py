@@ -47,11 +47,7 @@ __HELP__ = """<b>Enable or disable nightmode (locks the chat at specified interv
 
 TIME_ZONE = pytz.timezone(TZ)
 reply_markup = InlineKeyboardMarkup(
-    [[InlineKeyboardButton(
-        text="\u200d",  # zero-width joiner; cuma custom emoji yg tampil
-        callback_data="nightmd",
-        icon_custom_emoji_id="5938368005611195877",
-    )]]
+    [[InlineKeyboardButton(text="❤️", callback_data="nightmd")]]
 )
 
 
