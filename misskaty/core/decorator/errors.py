@@ -23,13 +23,6 @@ def capture_err(func):
         try:
             return await func(client, message, *args, **kwargs)
         except ChatWriteForbidden:
-            try:
-                from database.nightmode_chat_db import forget_chat, is_nightmode_on
-
-                if await is_nightmode_on(message.chat.id):
-                    await forget_chat(message.chat.id)
-            except Exception:
-                pass
             return await client.leave_chat(message.chat.id)
         except Exception as err:
             exc = traceback.format_exc()

@@ -29,17 +29,6 @@ _ORIG_EDIT_TEXT = Message.edit_text
 _ORIG_EDIT = getattr(Message, "edit", None)
 
 
-async def _nightmode_cleanup(chat_id: int) -> None:
-    """Hapus data nightmode utk chat ketika bot leave krn ChatWriteForbidden."""
-    try:
-        from database.nightmode_chat_db import forget_chat, is_nightmode_on
-
-        if await is_nightmode_on(chat_id):
-            await forget_chat(chat_id)
-    except Exception as err:  # pragma: no cover
-        LOGGER.debug(f"nightmode cleanup gagal: {err}")
-
-
 @property
 def parse_cmd(msg):
     return msg.text.split(None, 1)[1] if len(msg.command) > 1 else None
@@ -107,7 +96,6 @@ async def reply_text(
         LOGGER.info(
             f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have enough permission."
         )
-        await _nightmode_cleanup(self.chat.id)
         return await self.chat.leave()
 
 
@@ -155,7 +143,6 @@ async def edit_text(
         LOGGER.info(
             f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
         )
-        await _nightmode_cleanup(self.chat.id)
         return await self.chat.leave()
     except (MessageAuthorRequired, MessageIdInvalid):
         return await reply_text(self, text=text, *args, **kwargs)
