@@ -15,6 +15,7 @@ from pyrogram.errors import (
     ChatAdminRequired,
     ChatNotModified,
     ChatRestricted,
+    ChatWriteForbidden,
     PeerIdInvalid,
     QueryIdInvalid,
 )
@@ -147,9 +148,13 @@ async def un_mute_chat(chat_id: int, perm):
                 ),
                 reply_markup=reply_markup,
             )
-        except ChatRestricted:
+        except (ChatRestricted, ChatWriteForbidden):
             scheduler.remove_job(f"enable_nightmode_{chat_id}")
             scheduler.remove_job(f"disable_nightmode_{chat_id}")
+            try:
+                await app.leave_chat(chat_id)
+            except Exception:
+                pass
 
 
 async def mute_chat(chat_id: int):
@@ -183,13 +188,21 @@ async def mute_chat(chat_id: int):
     else:
         job = scheduler.get_job(f"disable_nightmode_{chat_id}")
         open_at = job.next_run_time
-        await app.send_message(
-            chat_id,
-            langdict[getlang]["nightmodev2"]["nmd_on_success"].format(
-                dt=tglsekarang(), open_at=open_at
-            ),
-            reply_markup=reply_markup,
-        )
+        try:
+            await app.send_message(
+                chat_id,
+                langdict[getlang]["nightmodev2"]["nmd_on_success"].format(
+                    dt=tglsekarang(), open_at=open_at
+                ),
+                reply_markup=reply_markup,
+            )
+        except (ChatRestricted, ChatWriteForbidden):
+            scheduler.remove_job(f"enable_nightmode_{chat_id}")
+            scheduler.remove_job(f"disable_nightmode_{chat_id}")
+            try:
+                await app.leave_chat(chat_id)
+            except Exception:
+                pass
 
 
 @app.on_message(filters.command("nightmode", COMMAND_HANDLER) & filters.group)
