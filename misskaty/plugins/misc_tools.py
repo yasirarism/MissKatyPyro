@@ -21,6 +21,7 @@ from urllib.parse import quote, quote_plus
 import aiohttp
 import httpx
 from bs4 import BeautifulSoup
+from cachetools import TTLCache
 from gtts import gTTS
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
@@ -44,6 +45,11 @@ from misskaty.vars import COMMAND_HANDLER
 from utils import extract_user, get_file_id
 
 LOGGER = getLogger("MissKaty")
+
+# Cache hasil search MDL per message_id -> list[{title, year, slug}],
+# biar callback_data hanya berisi index pendek (slug MDL bisa panjang,
+# melebihi limit 64 byte callback_data Telegram).
+_MDL_CACHE: TTLCache = TTLCache(maxsize=512, ttl=600)
 
 __MODULE__ = "Misc"
 __HELP__ = """
@@ -640,14 +646,16 @@ async def mdlsearch(_, message):
             return await k.edit(f"<b>ERROR:</b>\n<code>{e}</code>")
         if not movies:
             return await k.edit("Tidak ada hasil ditemukan.. 😕")
+        # Simpan hasil di cache, callback pakai index pendek (slug bisa >64 byte)
+        _MDL_CACHE[k.id] = movies
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{movie.get('title')} ({movie.get('year')})".strip(),
-                    callback_data=f"mdls#{message.from_user.id}#{message.id}#{movie['slug']}",
+                    text=f"{idx}. {movie.get('title')} ({movie.get('year')})".strip(),
+                    callback_data=f"mdls#{message.from_user.id}#{k.id}#{idx}",
                 )
             ]
-            for movie in movies
+            for idx, movie in enumerate(movies)
         ]
         await k.edit(
             f"Ditemukan {len(movies)} query dari <code>{title}</code>",
@@ -659,11 +667,17 @@ async def mdlsearch(_, message):
 
 @app.on_callback_query(filters.regex("^mdls"))
 async def mdl_callback(_, query: CallbackQuery):
-    _, user, _, slug = query.data.split("#")
+    _, user, list_msg_id, idx = query.data.split("#")
     if user == f"{query.from_user.id}":
         await query.message.edit_text("Permintaan kamu sedang diproses.. ")
         result = ""
         try:
+            movies = _MDL_CACHE.get(int(list_msg_id))
+            if not movies or int(idx) >= len(movies):
+                return await query.message.edit_text(
+                    "Hasil pencarian sudah kedaluwarsa / tidak ditemukan. Jalankan /mdl lagi."
+                )
+            slug = movies[int(idx)]["slug"]
             res = await mdl_detail(slug)
             result += f"<b>Title:</b> <a href='{res['link']}'>{res['title']}</a>\n"
             if res.get("aka"):
