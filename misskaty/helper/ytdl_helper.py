@@ -1,10 +1,36 @@
+import logging
 import os
 import random
 import string
+from pathlib import Path
 
+import httpx
 import requests
 
 from misskaty.helper.human_read import get_readable_file_size
+from misskaty.vars import YT_COOKIES
+
+LOGGER = logging.getLogger("MissKaty")
+
+
+async def ensure_yt_cookies() -> None:
+    """Download the YT cookies file once during startup (non-blocking).
+
+    Uses a bounded timeout so a slow/unreachable URL can never stall the
+    bot startup; on failure the bot simply runs without a cookie file.
+    """
+    if not YT_COOKIES:
+        return
+    try:
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as client:
+            resp = await client.get(YT_COOKIES)
+            if resp.status_code == 200:
+                Path("cookies.txt").write_text(resp.text, encoding="utf-8")
+                LOGGER.info("Success download YT Cookies")
+            else:
+                LOGGER.info("Failed download YT Cookies: status %s", resp.status_code)
+    except Exception as exc:
+        LOGGER.info("Failed download YT Cookies: %s", exc)
 
 
 def random_char(y):

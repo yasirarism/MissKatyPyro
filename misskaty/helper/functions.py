@@ -193,9 +193,9 @@ async def extract_userid(message, text: str):
         return (await app.get_users(text)).id
     entity = entities[1]
     if entity.type == enums.MessageEntityType.MENTION:
+        if entity.user:
+            return entity.user.id
         return (await app.get_users(text)).id
-    if entity.type == enums.MessageEntityType.MENTION:
-        return entity.user.id
     return None
 
 

@@ -20,7 +20,7 @@ from misskaty.helper import post_to_telegraph, progress_for_pyrogram, runcmd
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.mediainfo_paste import mediainfo_paste
 from misskaty.vars import COMMAND_HANDLER
-from utils import get_file_id
+from misskaty.helper.chat_utils import get_file_id
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))

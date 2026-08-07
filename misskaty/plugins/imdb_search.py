@@ -55,7 +55,7 @@ from database.imdb_db import (
 from misskaty import app
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
-from utils import demoji
+from misskaty.helper.chat_utils import demoji
 
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)

@@ -1,7 +1,7 @@
 from pyrogram import types as pyro_types
 import html
 import io
-from asyncio import get_event_loop
+from asyncio import create_task
 from asyncio import sleep as asleep
 from logging import getLogger
 from typing import Union
@@ -274,7 +274,7 @@ async def reply_as_file(
     """
     reply_to_id = self.reply_to_message.id if self.reply_to_message else self.id
     if delete_message:
-        get_event_loop().create_task(self.delete())
+        create_task(self.delete())
     doc = io.BytesIO(text.encode())
     doc.name = filename
     return await self.reply_document(

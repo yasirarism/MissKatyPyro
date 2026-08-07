@@ -1,5 +1,4 @@
-from database import Database
-from misskaty.vars import DATABASE_NAME, DATABASE_URI
+from database import Database, mongo
 
 
 class UsersData:
@@ -105,4 +104,4 @@ class UsersData:
         return (await self.db.command("dbstats"))["dataSize"]
 
 
-db = UsersData(Database(DATABASE_URI, DATABASE_NAME))
+db = UsersData(mongo)

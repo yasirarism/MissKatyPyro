@@ -16,7 +16,7 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.core.decorator.permissions import admins_in_chat
 from misskaty.helper.time_gap import check_time_gap
-from utils import temp
+from misskaty.helper.chat_utils import temp
 
 from .pypi_search import PYPI_DICT
 from .web_scraper import SCRAP_DICT, data_kuso
