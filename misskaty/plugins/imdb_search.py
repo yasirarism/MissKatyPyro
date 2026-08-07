@@ -1053,7 +1053,7 @@ _IMDB_LABELS = {
         "search_jw_locale": "US",
         "date_locale": "en",
         "translate": False,
-        "title": "📹 Judul:",
+        "title": "📹 Title:",
         "aka": "📢 AKA:",
         "duration": "Duration:",
         "category": "Category:",
@@ -1113,7 +1113,10 @@ async def _build_imdb_result(
     storyline_text = "-"
     keyword_text = "-"
     awards_text = "-"
-    rilis = "-"
+    # Tanggal rilis mentah dari GraphQL (dipakai payload template {release}).
+    # GraphQL IMDb tidak menyediakan URL spesifik per tanggal rilis, jadi
+    # rilis_url sengaja dikosongkan -> {release_url}/{release_link} = "-".
+    rilis = r_json.get("datePublished") or "-"
     rilis_url = ""
     summary = ""
     genre_list = []
@@ -1154,8 +1157,8 @@ async def _build_imdb_result(
             f"<b>{L['rating']}</b> <code>{rating_value}{_RATING_STAR} "
             f"{L['rating_from'].format(count=rating_count)}</code>\n"
         )
-    if rilis := r_json.get("datePublished"):
-        release_date_text = format_imdb_date(rilis, L["date_locale"]) or (rilis or "-")
+    if rilis != "-":
+        release_date_text = format_imdb_date(rilis, L["date_locale"]) or rilis
         lines["release_date"] = f"<b>{L['release']}</b> <code>{release_date_text}</code>\n"
     if genre := r_json.get("genre"):
         genre_list = genre if isinstance(genre, list) else [genre]

@@ -514,7 +514,7 @@ async def demote(client, message, strings):
                 can_manage_video_chats=False,
             ),
         ),
-        on_not_admin="Please give me promote permission to demote members..",
+        on_not_admin=strings("no_demote_perm"),
     )
     if err:
         return await message.reply(err)

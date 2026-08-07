@@ -71,5 +71,6 @@
     "chat_title_changed": "✅ Berhasil mengganti judul grup dari <b>{old}</b> menjadi <b>{new}</b>",
     "chat_photo_changed": "✅ Berhasil mengganti foto grup",
     "user_title_changed": "✅ Berhasil mengganti judul admin {mention} menjadi <b>{title}</b>",
-    "invalid_tg_link": "Tautan pesan yang diberikan tidak valid"
+    "invalid_tg_link": "Tautan pesan yang diberikan tidak valid",
+    "no_demote_perm": "Tolong beri saya izin promote untuk mendemote anggota."
 }

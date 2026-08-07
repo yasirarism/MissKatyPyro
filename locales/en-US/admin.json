@@ -71,5 +71,6 @@
     "chat_title_changed": "✅ Successfully changed group title from <b>{old}</b> to <b>{new}</b>",
     "chat_photo_changed": "✅ Successfully changed group photo",
     "user_title_changed": "✅ Successfully changed {mention}'s admin title to <b>{title}</b>",
-    "invalid_tg_link": "Invalid message link provided"
+    "invalid_tg_link": "Invalid message link provided",
+    "no_demote_perm": "Please give me promote permission to demote members."
 }
