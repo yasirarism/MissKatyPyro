@@ -55,10 +55,11 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 
 | FEATURE MY BOT |🌱|
 | ------------- | ------------- |
-| Basic Admin Feature |✔️|
+| Basic Admin Feature (ban, kick, mute, warn, promote, purge, dll) |✔️|
 | AFK Feature |✔️|
-| Downloader FB, TikTok and YT-DLP Support  |✔️|
-| MultiLanguage Support (Still Beta) |⚠️|
+| Downloader FB, TikTok and YT-DLP Support (output AVC + AAC) |✔️|
+| YT Search & Quality Picker (resolusi, bitrate, codec) |✔️|
+| MultiLanguage Support (en-US, id-ID, id-JW, ru-RU) |✔️|
 | NightMode  |✔️|
 | ChatBot based on OpenAI, and Google Bard |✔️|
 | MissKaty Mata |✔️|
@@ -66,8 +67,8 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 | Sticker Tools  |✔️|
 | PasteBin Tools  |✔️|
 | WebScraper (Pahe, MelongMovie, LK21, Terbit21, Kusonime, etc)  |✔️|
-| IMDB Search With Multi Language Per User |✔️|
-| GenSS From Media and MediaInfo Generator |✔️|
+| IMDB Search Dengan Rich Message & Multi Language Per User |✔️|
+| GenSS From Media and MediaInfo Generator (Partial Analysis, tanpa download penuh) |✔️|
 | And Many More.. |✔️|
 
 ## [6] Variables

@@ -8,7 +8,7 @@ from pyrogram.types import Message
 from database.users_chats_db import db
 from misskaty import app
 from misskaty.vars import OWNER_ID
-from utils import broadcast_messages
+from misskaty.helper.chat_utils import broadcast_messages
 
 
 @app.on_message(filters.command("broadcast") & filters.user(OWNER_ID) & filters.reply)

@@ -28,6 +28,7 @@
   - [Build And Run The Docker Image Using docker-compose](#build-and-run-the-docker-image-using-docker-compose)
 - [[8] Credits](#8-thanks-to)
 - [[9] Disclaimer](#8-disclaimer)
+- [[10] Changelog](#10-changelog)
 
 # [1] About MissKaty
 *MissKaty* is a Telegram Bot built using Python and the Pyrogram library. Many useful features for us to use. I hope that one day this project will be discontinued, someone will continue or develop it again. I gave the name MissKaty because I like cats, a cute animal that likes to be played with and friendly with humans.
@@ -54,10 +55,11 @@ If you want help me fixing some error in my bot, you can make pull request to th
 
 | FEATURE MY BOT |🌱|
 | ------------- | ------------- |
-| Basic Admin Feature |✔️|
+| Basic Admin Feature (ban, kick, mute, warn, promote, purge, dll) |✔️|
 | AFK Feature |✔️|
-| Downloader FB, TikTok and YT-DLP Support  |✔️|
-| MultiLanguage Support (Unfinished) |⚠️|
+| Downloader FB, TikTok and YT-DLP Support (AVC + AAC output) |✔️|
+| YT Search & Quality Picker (resolution, bitrate, codec) |✔️|
+| MultiLanguage Support (en-US, id-ID, id-JW, ru-RU) |✔️|
 | NightMode  |✔️|
 | ChatBot based on OpenAI and Google Bard |✔️|
 | MissKaty Mata |✔️|
@@ -65,8 +67,8 @@ If you want help me fixing some error in my bot, you can make pull request to th
 | Sticker Tools  |✔️|
 | PasteBin Tools  |✔️|
 | WebScraper (Pahe, MelongMovie, LK21, Terbit21, Kusonime, etc)  |✔️|
-| IMDB Search With Multi Language Per User |✔️|
-| GenSS From Media and MediaInfo Generator |✔️|
+| IMDB Search With Rich Message & Multi Language Per User |✔️|
+| GenSS From Media and MediaInfo Generator (Partial Analysis, no full download) |✔️|
 | And Many More.. |✔️|
 
 ## [6] Variables
@@ -183,6 +185,36 @@ sudo docker-compose stop <pid>
 [![GNU Affero General Public License 2.0](https://www.gnu.org/graphics/agplv3-155x51.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)    
 Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/master/LICENSE)
 WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. Or i will stop this project forever.
+
+## [10] Changelog
+
+### v2.17.0 (2026-08-07)
+Built on top of the **Kurigram** fork (`KurimuzonAkuma/pyrogram`), which adds rich-message support (`InputRichMessage`, `rich_message` on send/edit) and `Client.get_file` with offset/limit for partial downloads.
+
+**Refactor & performance**
+- Moved root-level `utils.py` and `web/webserver.py` into the `misskaty` package (`helper/`, `core/`) so everything lives under one package.
+- Single shared MongoDB connection (singleton + lazy init) instead of multiple `AsyncMongoClient` instances; removed circular imports between `database` and `misskaty`.
+- Bootstrapping moved to `misskaty/core/bootstrap.py`; yt-dlp cookies are fetched asynchronously at startup (no more blocking `requests.get` on import).
+
+**IMDb**
+- Results are now delivered as **rich messages via edit** (`edit_message_text` + `rich_message`) instead of delete-then-send.
+- Merged duplicated `imdbres_id`/`imdbres_en` callbacks into one builder with per-locale labels; fixed hidden-layout fields and mixed-language labels.
+
+**Admin**
+- Fixed real bugs (`contextlib` missing import, `FloodWait e.x`, `time_converter` returning a `Message`, wrong locale key) and hardened edge cases (channel replies, deleted accounts, missing `from_user`).
+- Messages restyled with emoji + separators in all 4 locales.
+
+**YT-DLP**
+- Progress no longer jumps backwards on merged formats; shows elapsed time, ETA, speed and a monospace progress bar; detects the "Finalizing" phase.
+- Captions use monospace blocks and mention the requester; title whitespace is normalized (no more double line breaks).
+- `/ytdown` now requires a URL argument or a replied message containing a URL.
+- Video output prefers **H.264 (AVC) video + AAC audio** (fallback to best available), audio extraction uses AAC.
+
+**MediaInfo**
+- **Partial analysis**: only the first/last 8 MiB are downloaded (`upload.getFile` offset/limit), so 2–4 GB files are analyzed in seconds; falls back to a full download automatically when the partial result is incomplete.
+
+### v2.16.1 (previous)
+- Fix: use plain emoji on nightmode button (premium-safe).
 
 <!--Url for Badges-->
 [license-shield]: https://img.shields.io/github/license/yasirarism/MissKatyPyro?labelColor=D8D8D8&color=04B4AE

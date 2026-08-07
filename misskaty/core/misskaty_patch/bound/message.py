@@ -1,7 +1,7 @@
 from pyrogram import types as pyro_types
 import html
 import io
-from asyncio import get_event_loop
+from asyncio import create_task
 from asyncio import sleep as asleep
 from logging import getLogger
 from typing import Union
@@ -274,7 +274,7 @@ async def reply_as_file(
     """
     reply_to_id = self.reply_to_message.id if self.reply_to_message else self.id
     if delete_message:
-        get_event_loop().create_task(self.delete())
+        create_task(self.delete())
     doc = io.BytesIO(text.encode())
     doc.name = filename
     return await self.reply_document(
@@ -309,6 +309,57 @@ async def delete(self, revoke: bool = True) -> bool:
         LOGGER.warning(str(e))
 
 
+async def edit_rich(
+    self: Message,
+    rich_message: pyro_types.InputRichMessage,
+    *args,
+    **kwargs,
+) -> Union["Message", bool, None]:
+    """Edit this message into a rich message (Kurigram InputRichMessage).
+
+    Rich messages are rendered server-side (expandable blocks, <img>,
+    <tg-emoji>, ...). The underlying ``edit_message_text`` of the
+    KurimuzonAkuma/pyrogram fork accepts ``rich_message``, so we can turn
+    an existing plain text message into a rich one *without* having to
+    send a new message and delete the old one.
+
+    Returns:
+        The edited :obj:`Message` on success,
+        ``False`` when the message was not modified,
+        ``None`` when the message no longer exists (caller may fallback).
+    """
+    try:
+        return await self._client.edit_message_text(
+            chat_id=self.chat.id,
+            message_id=self.id,
+            rich_message=rich_message,
+            *args,
+            **kwargs,
+        )
+    except FloodWait as e:
+        LOGGER.warning(f"Got floodwait in {self.chat.id} for {e.value}'s.")
+        await asleep(e.value)
+        return await self._client.edit_message_text(
+            chat_id=self.chat.id,
+            message_id=self.id,
+            rich_message=rich_message,
+            *args,
+            **kwargs,
+        )
+    except (MessageNotModified, ChannelPrivate):
+        return False
+    except (ChatWriteForbidden, ChatAdminRequired):
+        LOGGER.info(
+            f"Leaving from {self.chat.title} [{self.chat.id}] because doesn't have admin permission."
+        )
+        return await self.chat.leave()
+    except (MessageAuthorRequired, MessageIdInvalid):
+        return None
+    except Exception as e:
+        LOGGER.warning(f"edit_rich failed in {self.chat.id}: {e.__class__.__name__}: {e}")
+        return False
+
+
 async def reply(self: Message, text: str, del_in: int = 0, *args, **kwargs):
     return await reply_text(self, text=text, del_in=del_in, *args, **kwargs)
 
@@ -321,6 +372,7 @@ Message.reply = reply
 Message.reply_text = reply
 Message.edit = edit
 Message.edit_text = edit
+Message.edit_rich = edit_rich
 
 Message.edit_or_send_as_file = edit_or_send_as_file
 Message.reply_or_send_as_file = reply_or_send_as_file

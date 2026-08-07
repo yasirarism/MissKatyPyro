@@ -6,7 +6,6 @@
 """
 
 import glob
-import importlib
 import sys
 from logging import getLogger
 from os.path import basename, dirname, isfile
@@ -51,6 +50,5 @@ def __list_all_modules():
 
 
 LOGGER.info("[INFO]: IMPORTING PLUGINS")
-importlib.import_module("misskaty.plugins.__main__")
 ALL_MODULES = sorted(__list_all_modules())
 __all__ = ALL_MODULES + ["ALL_MODULES"]

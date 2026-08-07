@@ -2,22 +2,19 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import os
+import asyncio
 import time
-from asyncio import get_event_loop
 from faulthandler import enable as faulthandler_enable
 from logging import ERROR, INFO, StreamHandler, basicConfig, getLogger, handlers
 
-import uvloop, uvicorn
-from beanie import init_beanie
+import uvloop
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from beanie import init_beanie
 from pymongo import MongoClient
 from pyrogram import Client
 
-from database import Database
-from web.webserver import api
-
+from database import get_database
 from misskaty.core.client import MissKatyClient
 from misskaty.core.storage import MongoStorage
 from misskaty.core.storage.models import all_models
@@ -27,7 +24,6 @@ from misskaty.vars import (
     BOT_TOKEN,
     DATABASE_NAME,
     DATABASE_URI,
-    PORT,
     TZ,
     USER_SESSION,
 )
@@ -47,20 +43,29 @@ getLogger("pyrogram").setLevel(ERROR)
 getLogger("openai").setLevel(ERROR)
 getLogger("httpx").setLevel(ERROR)
 
+# ---------------------------------------------------------------- runtime state
 MOD_LOAD = []
 MOD_NOLOAD = ["subscene_dl"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.16.1"
+misskaty_version = "v2.17.0"
 
+# ------------------------------------------------------------------ event loop
 uvloop.install()
 faulthandler_enable()
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
+# --------------------------------------------------------------------- database
+# Shared with `database.mongo` / `database.dbname` (single Mongo connection).
+app_db = get_database()
+
+# ------------------------------------------------------------- pyrogram clients
 from misskaty.core import misskaty_patch
+
 storage_session = MongoStorage(name=BOT_TOKEN.split(":")[0], remove_peers=False)
 # Pyrogram Bot Client
-app_db = Database(DATABASE_URI, DATABASE_NAME)
-
 app = MissKatyClient(
     "MissKatyBot",
     api_id=API_ID,
@@ -84,6 +89,7 @@ user = Client(
     app_version="MissKaty Ubot",
 )
 
+# -------------------------------------------------------------------- scheduler
 jobstores = {
     "default": MongoDBJobStore(
         client=MongoClient(DATABASE_URI), database=DATABASE_NAME, collection="nightmode"
@@ -91,6 +97,7 @@ jobstores = {
 }
 scheduler = AsyncIOScheduler(jobstores=jobstores, timezone=TZ)
 
+# ---------------------------------------------------------------------- startup
 async def verify_database_connection():
     try:
         ping_result = await app.database.ping()
@@ -109,16 +116,13 @@ async def verify_database_connection():
         )
         raise
 
+
 async def init_storage_models():
     await init_beanie(database=app.db, document_models=all_models)
 
-async def run_wsgi():
-    config = uvicorn.Config(api, host="0.0.0.0", port=int(PORT))
-    server = uvicorn.Server(config)
-    await server.serve()
 
-get_event_loop().run_until_complete(verify_database_connection())
-get_event_loop().run_until_complete(init_storage_models())
+loop.run_until_complete(verify_database_connection())
+loop.run_until_complete(init_storage_models())
 app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name

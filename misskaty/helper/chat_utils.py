@@ -1,7 +1,9 @@
+"""Misc chat utilities shared by plugins: user extraction, file-id
+retrieval, broadcast helper and the in-memory ``temp`` state container."""
+
 import asyncio
+import logging
 import os
-from datetime import datetime, timedelta
-from logging import getLogger
 from typing import Union
 
 import emoji
@@ -13,44 +15,9 @@ from pyrogram.errors import (
 )
 from pyrogram.types import Message
 
-from database.afk_db import is_cleanmode_on
 from database.users_chats_db import db
-from misskaty import app, cleanmode
 
-LOGGER = getLogger("MissKaty")
-BANNED = {}
-
-loop = asyncio.get_event_loop()
-
-
-async def put_cleanmode(chat_id, message_id):
-    if chat_id not in cleanmode:
-        cleanmode[chat_id] = []
-    time_now = datetime.now()
-    put = {
-        "msg_id": message_id,
-        "timer_after": time_now + timedelta(minutes=1),
-    }
-    cleanmode[chat_id].append(put)
-
-
-async def auto_clean():
-    while not await asyncio.sleep(30):
-        try:
-            for chat_id in cleanmode:
-                if not await is_cleanmode_on(chat_id):
-                    continue
-                for x in cleanmode[chat_id]:
-                    if datetime.now() <= x["timer_after"]:
-                        continue
-                    try:
-                        await app.delete_messages(chat_id, x["msg_id"])
-                    except FloodWait as e:
-                        await asyncio.sleep(e.value)
-                    except:
-                        continue
-        except:
-            continue
+LOGGER = logging.getLogger("MissKaty")
 
 
 # temp db for banned
@@ -90,19 +57,6 @@ async def broadcast_messages(user_id, message):
             return False, "Error"
 
 
-
-def get_size(size):
-    """Get size in readable format"""
-
-    units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
-    size = float(size)
-    i = 0
-    while size >= 1024.0 and i < len(units):
-        i += 1
-        size /= 1024.0
-    return "%.2f %s" % (size, units[i])
-
-
 def get_file_id(msg: Message):
     if msg.media:
         for message_type in (
@@ -120,8 +74,8 @@ def get_file_id(msg: Message):
                 return obj
 
 
-def extract_user(message: Message) -> Union[int, str]:
-    """extracts the user from a message"""
+def extract_user_and_name(message: Message) -> Union[int, str]:
+    """extracts (user_id, user_first_name) from a message (sync helper)"""
     # https://github.com/SpEcHiDe/PyroGramBot/blob/f30e2cca12002121bad1982f68cd0ff9814ce027/pyrobot/helper_functions/extract_user.py#L7
     user_id = None
     user_first_name = None

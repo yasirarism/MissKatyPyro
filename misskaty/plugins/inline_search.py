@@ -33,7 +33,7 @@ from misskaty.plugins.dev import shell_exec
 from misskaty.plugins.misc_tools import calc_btn, calcExpression
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
 from misskaty.vars import USER_SESSION
-from utils import demoji
+from misskaty.helper.chat_utils import demoji
 
 __MODULE__ = "InlineFeature"
 __HELP__ = """

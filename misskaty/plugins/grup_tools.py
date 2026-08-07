@@ -27,7 +27,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
 from misskaty.helper import fetch, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUPPORT_CHAT, OWNER_ID
-from utils import temp
+from misskaty.helper.chat_utils import temp
 
 LOGGER = getLogger("MissKaty")
 

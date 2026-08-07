@@ -3,16 +3,23 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
+import contextlib
 from html import escape
 from io import BytesIO
 import os
 from pathlib import Path
+from time import time
 from uuid import uuid4
 
 from PIL import Image
 from pyrogram import Client, filters
 from pyrogram.enums import ParseMode
-from pyrogram.errors import MessageNotModified, QueryIdInvalid, WebpageMediaEmpty
+from pyrogram.errors import (
+    MessageIdInvalid,
+    MessageNotModified,
+    QueryIdInvalid,
+    WebpageMediaEmpty,
+)
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -27,7 +34,16 @@ from yt_dlp import DownloadError, YoutubeDL
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task
-from misskaty.helper import fetch, isValidURL, use_chat_lang
+from misskaty.helper import (
+    PROCESS_TEXT,
+    dl_caption_meta,
+    dl_finalizing_text,
+    dl_progress_text,
+    fetch,
+    format_progress_bar,
+    isValidURL,
+    use_chat_lang,
+)
 from misskaty.helper.pyro_progress import humanbytes, time_formatter
 from misskaty.vars import COMMAND_HANDLER
 
@@ -35,7 +51,6 @@ YT_REGEX = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(wa
 YT_DB = {}
 YTDL_CACHE = {}
 ACTIVE_DOWNLOADS = {}
-PROCESS_TEXT = "<emoji id=5319190934510904031>⏳</emoji> Processing.."
 
 
 class DownloadCancelled(Exception):
@@ -46,9 +61,20 @@ def rand_key() -> str:
     return str(uuid4())[:8]
 
 
-def format_progress_bar(percentage: float) -> str:
-    filled = max(0, min(20, int(percentage // 5)))
-    return f"[{'●' * filled}{'○' * (20 - filled)}]"
+def _resolve_yt_url(ctx: Message) -> str:
+    """Ambil URL untuk /ytdown.
+
+    Prioritas: 1) argumen command, 2) reply message (text/caption),
+    3) trigger regex (link dikirim langsung di chat). Mengembalikan string
+    kosong kalau tidak ada URL sama sekali.
+    """
+    if ctx.command and len(ctx.command) > 1:
+        return ctx.command[1]
+    if ctx.reply_to_message:
+        return (ctx.reply_to_message.text or ctx.reply_to_message.caption or "").strip()
+    if ctx.command:
+        return ""  # command tanpa argumen & tanpa reply
+    return (ctx.text or ctx.caption or "").strip()
 
 
 def get_cookie_file() -> str | None:
@@ -116,12 +142,15 @@ def parse_quality_tree(info: dict) -> dict:
                 continue
             if fmt.get("vcodec") in (None, "none"):
                 continue
+            vcodec = (fmt.get("vcodec") or "").lower()
+            is_avc = vcodec.startswith("avc1") or "h264" in vcodec
             tbr = int(fmt.get("tbr") or fmt.get("vbr") or 0)
             fps = int(fmt.get("fps") or 0)
             format_id = str(fmt.get("format_id"))
             selector = format_id
             if fmt.get("acodec") in (None, "none"):
-                selector = f"{format_id}+bestaudio/best"
+                # Gabung dengan audio AAC kalau tersedia (fallback bestaudio)
+                selector = f"{format_id}+bestaudio[acodec^=mp4a]/bestaudio/best"
             size_bytes = int(fmt.get("filesize") or fmt.get("filesize_approx") or 0)
             candidates.append(
                 {
@@ -134,13 +163,19 @@ def parse_quality_tree(info: dict) -> dict:
                     "fps": fps,
                     "format_id": format_id,
                     "height": target_height,
+                    "codec": "AVC" if is_avc else (vcodec.split(".")[0].upper() or "?"),
+                    "avc": is_avc,
                 }
             )
         if candidates:
+            # Prioritaskan H.264/AVC (kompatibel & ringan), lalu bitrate & fps
             resolutions[str(target_height)] = sorted(
                 candidates,
-                key=lambda x: (x.get("bitrate", 0), x.get("fps", 0)),
-                reverse=True,
+                key=lambda x: (
+                    not x.get("avc", False),
+                    -x.get("bitrate", 0),
+                    -x.get("fps", 0),
+                ),
             )
 
     audio = []
@@ -148,9 +183,11 @@ def parse_quality_tree(info: dict) -> dict:
         audio.append(
             {
                 "label": f"{bitrate}kbps",
-                "format": "bestaudio/best",
+                # AAC (m4a) dulu; fallback bestaudio kalau tidak tersedia
+                "format": "bestaudio[acodec^=mp4a]/bestaudio/best",
                 "kind": "audio",
                 "ext": "m4a",
+                "codec": "aac",
                 "bitrate": str(bitrate),
                 "size": estimate_audio_size(duration, bitrate),
             }
@@ -272,7 +309,7 @@ async def ytsearch(_, ctx: Message, strings):
     results = search.get("entries") or []
     if not results:
         return await ctx.reply(strings("no_res").format(kweri=query))
-    YT_DB[search_key] = {"query": query, "results": results}
+    YT_DB[search_key] = {"query": query, "results": results, "user_id": ctx.from_user.id}
     i = results[0]
     out = strings("yts_msg").format(
         pub=i.get("upload_date") or "-",
@@ -302,8 +339,9 @@ async def ytsearch(_, ctx: Message, strings):
 async def ytdownv2(_, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply(strings("no_channel"))
-    url = ctx.command[1] if ctx.command and len(ctx.command) > 1 else ctx.text or ctx.caption
-    if not isValidURL(url):
+    # Tanpa URL (argumen/reply/teks) -> perintah ditolak, tidak memproses.
+    url = _resolve_yt_url(ctx)
+    if not url or not isValidURL(url):
         return await ctx.reply(strings("invalid_link"))
 
     progress_msg = await ctx.reply(PROCESS_TEXT, parse_mode=ParseMode.HTML)
@@ -374,7 +412,8 @@ async def ytdl_pick_step(_, cq: CallbackQuery, strings):
         for idx, opt in enumerate(options):
             fmt_id = opt.get("format_id") or "-"
             fps = opt.get("fps") or 0
-            label = f"{opt['label']} • {fps}fps • {fmt_id}"
+            codec = opt.get("codec") or "?"
+            label = f"{opt['label']} • {codec} • {fps}fps • {fmt_id}"
             if opt.get("size"):
                 label += f" • {humanbytes(opt['size'])}"
             rows.append([InlineKeyboardButton(label, callback_data=f"yt_dl|{cache_key}|v|{res}|{idx}")])
@@ -426,12 +465,36 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
         label = f"AAC {bitrate}kbps"
 
     job_id = rand_key()
-    ACTIVE_DOWNLOADS[job_id] = {"cancelled": False, "downloaded": 0, "total": 0, "speed": 0, "eta": 0}
+    requester = cq.from_user
+    mention = requester.mention if requester else "Unknown"
+    ACTIVE_DOWNLOADS[job_id] = {
+        "cancelled": False,
+        "downloaded": 0,
+        "total": 0,
+        "speed": 0,
+        "eta": 0,
+        "start": time(),
+        "last_update": time(),
+        "last_status": "starting",
+    }
     cancel_markup = InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data=f"yt_cancel|{job_id}")]])
 
+    def _edit_caption(text: str, markup=cancel_markup):
+        """Edit caption via client (lebih andal daripada via callback query)."""
+        return self.edit_message_caption(
+            cq.message.chat.id,
+            cq.message.id,
+            caption=text,
+            parse_mode=ParseMode.HTML,
+            reply_markup=markup,
+        )
+
     try:
-        await cq.edit_message_caption(f"Preparing <b>{label}</b>...", parse_mode=ParseMode.HTML, reply_markup=cancel_markup)
+        await _edit_caption(f"Preparing <b>{escape(label)}</b>...")
     except MessageNotModified:
+        pass
+    except MessageIdInvalid:
+        # Pesan sudah dihapus user — lanjutkan download tanpa progress UI
         pass
 
     output_dir = "downloads"
@@ -444,13 +507,27 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
             return
         if state["cancelled"]:
             raise DownloadCancelled("Cancelled by user")
+        state["last_update"] = time()
         if status.get("status") == "downloading":
-            state["downloaded"] = status.get("downloaded_bytes") or 0
-            state["total"] = status.get("total_bytes") or status.get("total_bytes_estimate") or 0
+            downloaded = status.get("downloaded_bytes") or 0
+            total = status.get("total_bytes") or status.get("total_bytes_estimate") or 0
+            # Format gabungan (video+audio) memanggil hook 2x — progress
+            # stream kedua mulai dari 0. Clamp dengan max supaya bar
+            # tidak pernah mundur.
+            state["downloaded"] = max(state["downloaded"], downloaded)
+            state["total"] = max(state["total"], total)
+            if state["total"] and state["downloaded"] > state["total"]:
+                state["downloaded"] = state["total"]
             state["speed"] = status.get("speed") or 0
             state["eta"] = status.get("eta") or 0
+            state["last_status"] = "downloading"
+        elif status.get("status") == "finished":
+            state["last_status"] = "finished"
 
     def do_download():
+        # Video: selector sudah memilih format H.264/AVC + audio AAC (m4a)
+        # di parse_quality_tree, lalu di-merge ke container MP4.
+        # Audio: ambil AAC (m4a) lalu ekstrak/konversi ke AAC murni.
         ydl_opts = build_ydl_opts({
             "outtmpl": file_path,
             "noprogress": True,
@@ -464,6 +541,10 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
                 {"key": "FFmpegMetadata", "add_metadata": True},
                 {"key": "EmbedThumbnail"},
             ]
+        else:
+            ydl_opts["postprocessors"] = [
+                {"key": "FFmpegMetadata", "add_metadata": True},
+            ]
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(data["url"], download=True)
             requested = info.get("requested_downloads") or []
@@ -473,71 +554,84 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
 
     download_task = asyncio.create_task(asyncio.to_thread(do_download))
     status_text = ""
+    title = data.get("title") or "Untitled"
 
     while not download_task.done():
         state = ACTIVE_DOWNLOADS[job_id]
-        total = state["total"] or 1
-        percentage = (state["downloaded"] / total) * 100 if state["total"] else 0
-        text = (
-            f"{PROCESS_TEXT}\n⬇️ Downloading <b>{label}</b>\n"
-            f"{format_progress_bar(percentage)} {percentage:.2f}%\n"
-            f"{humanbytes(state['downloaded'])} / {humanbytes(state['total'])}\n"
-            f"Speed: {humanbytes(state['speed'])}/s\n"
-            f"ETA: {time_formatter(int(state['eta'])) or 'Unknown'}"
-        )
+        # Hook diam >8 detik tapi download masih jalan => yt-dlp sedang
+        # merge/post-process (hook tidak dipanggil pada fase ini).
+        if time() - state["last_update"] > 8 and state["downloaded"] > 0:
+            text = dl_finalizing_text(label, mention)
+        else:
+            text = dl_progress_text(state, label, title, mention)
         if text != status_text:
             try:
-                await cq.edit_message_caption(text, parse_mode=ParseMode.HTML, reply_markup=cancel_markup)
+                await _edit_caption(text)
                 status_text = text
             except (MessageNotModified, QueryIdInvalid):
                 pass
-        await asyncio.sleep(7)
+            except MessageIdInvalid:
+                # Pesan dihapus user — stop update UI, biarkan download jalan
+                status_text = text
+                break
+        await asyncio.sleep(3)
 
     try:
         downloaded_file = await download_task
     except DownloadCancelled:
         ACTIVE_DOWNLOADS.pop(job_id, None)
-        return await cq.edit_message_caption("❌ Download cancelled.")
+        with contextlib.suppress(MessageIdInvalid):
+            return await _edit_caption("❌ Download cancelled.")
+        return
     except DownloadError as err:
         ACTIVE_DOWNLOADS.pop(job_id, None)
-        return await cq.edit_message_caption(
-            f"❌ Download failed: <code>{format_ytdl_error(err)}</code>",
-            parse_mode=ParseMode.HTML,
-        )
+        with contextlib.suppress(MessageIdInvalid):
+            return await _edit_caption(
+                f"❌ Download failed: <code>{format_ytdl_error(err)}</code>"
+            )
+        return
     except Exception as err:
         ACTIVE_DOWNLOADS.pop(job_id, None)
-        return await cq.edit_message_caption(
-            f"❌ Download error: <code>{format_ytdl_error(err)}</code>",
-            parse_mode=ParseMode.HTML,
-        )
+        with contextlib.suppress(MessageIdInvalid):
+            return await _edit_caption(
+                f"❌ Download error: <code>{format_ytdl_error(err)}</code>"
+            )
+        return
 
     if "%" in downloaded_file or not os.path.exists(downloaded_file):
         downloaded_file = resolve_downloaded_file(output_dir, "", option.get("ext"))
     if not downloaded_file or not os.path.exists(downloaded_file):
         ACTIVE_DOWNLOADS.pop(job_id, None)
-        return await cq.edit_message_caption("❌ Downloaded file not found.")
+        with contextlib.suppress(MessageIdInvalid):
+            return await _edit_caption("❌ Downloaded file not found.")
+        return
 
     thumb_file = await download_thumb_file(data.get("thumb"), job_id, output_dir)
     if not thumb_file and option["kind"] == "video":
         thumb_file = await generate_thumb_with_ffmpeg(downloaded_file, job_id, output_dir)
 
     try:
-        await cq.edit_message_caption("<emoji id=5319190934510904031>⏳</emoji> Uploading...", parse_mode=ParseMode.HTML, reply_markup=cancel_markup)
-    except (MessageNotModified, QueryIdInvalid):
+        await _edit_caption("<emoji id=5319190934510904031>⏳</emoji> Uploading...")
+    except (MessageNotModified, QueryIdInvalid, MessageIdInvalid):
         pass
 
     try:
         if option["kind"] == "audio":
             performer = data.get("artist") or data.get("uploader") or None
             title = data.get("track") or data.get("title")
-            caption_lines = [f"<b>{data.get('title')}</b>"]
+            meta = []
+            if performer:
+                meta.append(f"🎤 {performer}")
             if data.get("album"):
-                caption_lines.append(f"Album: <code>{data.get('album')}</code>")
+                meta.append(f"💿 {data.get('album')}")
             if data.get("release_date"):
-                caption_lines.append(f"Date: <code>{data.get('release_date')}</code>")
+                meta.append(f"📅 {data.get('release_date')}")
+            if data.get("duration"):
+                meta.append(f"⏱ {time_formatter(data['duration']).strip()}")
+            caption = dl_caption_meta(title or "Audio", meta, mention)
             media = InputMediaAudio(
                 media=downloaded_file,
-                caption="\n".join(caption_lines),
+                caption=caption,
                 parse_mode=ParseMode.HTML,
                 duration=data.get("duration") or None,
                 performer=performer,
@@ -545,9 +639,16 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
                 thumb=thumb_file,
             )
         else:
+            meta = []
+            if data.get("uploader"):
+                meta.append(f"👤 {data.get('uploader')}")
+            if data.get("duration"):
+                meta.append(f"⏱ {time_formatter(data['duration']).strip()}")
+            caption = dl_caption_meta(title, meta, mention)
             media = InputMediaVideo(
                 media=downloaded_file,
-                caption=data["title"],
+                caption=caption,
+                parse_mode=ParseMode.HTML,
                 duration=data.get("duration") or None,
                 thumb=thumb_file,
                 supports_streaming=True,
@@ -559,9 +660,11 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
             reply_markup=None,
         )
     except DownloadCancelled:
-        await cq.edit_message_caption("❌ Upload cancelled.")
+        with contextlib.suppress(MessageIdInvalid):
+            await _edit_caption("❌ Upload cancelled.")
     except Exception as err:
-        await cq.edit_message_caption(f"❌ Upload failed: <code>{err}</code>", parse_mode=ParseMode.HTML)
+        with contextlib.suppress(MessageIdInvalid):
+            await _edit_caption(f"❌ Upload failed: <code>{err}</code>")
     finally:
         ACTIVE_DOWNLOADS.pop(job_id, None)
         if os.path.exists(downloaded_file):
@@ -593,7 +696,7 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
     data = YT_DB.get(search_key)
     if not data:
         return await cq.answer("Search expired", show_alert=True)
-    if cq.from_user.id != cq.message.reply_to_message.from_user.id:
+    if cq.from_user.id != data["user_id"]:
         return await cq.answer(strings("unauth"), True)
 
     results = data["results"]
@@ -628,7 +731,7 @@ async def ytdl_gen_from_search(_, cq: CallbackQuery, strings):
     data = YT_DB.get(search_key)
     if not data:
         return await cq.answer("Search expired", show_alert=True)
-    if cq.from_user.id != cq.message.reply_to_message.from_user.id:
+    if cq.from_user.id != data["user_id"]:
         return await cq.answer(strings("unauth"), True)
 
     entry = data["results"][page]
@@ -638,6 +741,20 @@ async def ytdl_gen_from_search(_, cq: CallbackQuery, strings):
     anim_task = asyncio.create_task(animate_processing(cq.message, PROCESS_TEXT, stop_event))
     try:
         info = await yt_extract(url)
+    except DownloadError as err:
+        return await cq.edit_message_caption(
+            f"❌ <code>{format_ytdl_error(err)}</code>", parse_mode=ParseMode.HTML
+        )
+    except asyncio.TimeoutError:
+        return await cq.edit_message_caption(
+            "❌ Request timed out while contacting yt-dlp source.",
+            parse_mode=ParseMode.HTML,
+        )
+    except Exception as err:
+        return await cq.edit_message_caption(
+            f"{strings('err_parse')}\n\n<code>{format_ytdl_error(err)}</code>",
+            parse_mode=ParseMode.HTML,
+        )
     finally:
         stop_event.set()
         await anim_task

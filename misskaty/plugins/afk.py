@@ -22,7 +22,7 @@ from misskaty import app
 from misskaty.core.decorator.permissions import adminsOnly
 from misskaty.helper import get_readable_time2
 from misskaty.helper.localization import use_chat_lang
-from utils import put_cleanmode
+from misskaty.helper.cleanmode import put_cleanmode
 
 __MODULE__ = "AFK"
 __HELP__ = """/afk [Reason > Optional] - Tell others that you are AFK (Away From Keyboard), so that your boyfriend or girlfriend won't look for you 💔.

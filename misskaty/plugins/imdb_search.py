@@ -21,6 +21,7 @@ from pyrogram.errors import (
     MediaEmpty,
     MessageIdInvalid,
     MessageNotModified,
+    MessageTooLong,
     PhotoInvalidDimensions,
     QueryIdInvalid,
     WebpageCurlFailed,
@@ -55,7 +56,7 @@ from database.imdb_db import (
 from misskaty import app
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, resp_get, search_jw
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
-from utils import demoji
+from misskaty.helper.chat_utils import demoji
 
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
@@ -254,13 +255,13 @@ def _to_rich_html(text: str) -> str:
         flags=re.DOTALL,
     )
     # 2) Bungkus baris teks dalam <p> supaya rapi, bukan <br> mentah
-    #    (skip baris yang sudah berupa tag blok <details> utuh)
+    #    (skip baris yang sudah berupa tag blok utuh)
     lines = [ln.strip() for ln in text.split("\n")]
     rendered = []
     for ln in lines:
         if not ln:
             continue
-        if ln.startswith("<details>") or ln.startswith("<p>"):
+        if ln.startswith(("<details>", "<p>", "<blockquote", "<hr", "<h")):
             rendered.append(ln)
         else:
             rendered.append(f"<p>{ln}</p>")
@@ -270,33 +271,55 @@ def _to_rich_html(text: str) -> str:
 async def _send_rich_result(self, query, res_str, markup, poster_url=None):
     """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
 
-    - Reply ke pesan asli user (query.message.reply_to_message_id)
-    - Hapus pesan "sedang diproses" setelah rich terkirim
-    - Poster dikirim via ``<img src="URL">`` (server Telegram yang fetch URL);
-      kalau gagal -> fallback rich tanpa foto
+    Prioritas sekarang: EDIT pesan yang sudah ada menjadi rich message
+    (didukung ``edit_message_text`` + ``rich_message`` di fork Kurigram),
+    jadi tidak perlu hapus-lalu-kirim pesan baru. Poster dikirim via
+    ``<img src="URL">`` (server Telegram yang fetch URL); kalau gagal ->
+    fallback rich tanpa foto, lalu edit HTML biasa. Kirim pesan baru hanya
+    dipakai sebagai jalan terakhir kalau pesan asli sudah tidak bisa diedit.
     """
     chat_id = query.message.chat.id
-    reply_to = getattr(query.message, "reply_to_message_id", None)
-    reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
     rich_html = _to_rich_html(res_str)
     photo_html = f'<img src="{poster_url}"/>\n\n' if poster_url else ""
-    attempts = [photo_html + rich_html]
-    if photo_html:
-        attempts.append(rich_html)  # fallback tanpa foto
+    attempts = [photo_html + rich_html, rich_html] if photo_html else [rich_html]
+
     for html_content in attempts:
-        try:
-            await self.send_rich_message(
-                chat_id,
-                InputRichMessage(html=html_content),
-                reply_markup=markup,
-                reply_parameters=reply_parameters,
-            )
-            # Bersihkan pesan "sedang diproses" supaya tidak tertinggal
-            with contextlib.suppress(MessageNotModified, MessageIdInvalid):
-                await query.message.delete()
+        result = await query.message.edit_rich(
+            InputRichMessage(html=html_content), reply_markup=markup
+        )
+        if result is None:
+            # Pesan asli sudah dihapus user -> jalan terakhir: kirim baru
+            break
+        if result is not False:
             return True
-        except Exception as err:
-            LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
+
+    # Fallback 1: edit HTML biasa (tanpa fitur rich)
+    if not poster_url:
+        try:
+            await query.message.edit(
+                res_str,
+                parse_mode=enums.ParseMode.HTML,
+                reply_markup=markup,
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+            )
+            return True
+        except Exception:
+            pass
+
+    # Fallback 2: pesan asli tidak bisa diedit -> kirim rich message baru
+    # (tanpa perlu hapus, biarkan user yang hapus pesan lama)
+    reply_to = getattr(query.message, "reply_to_message_id", None)
+    reply_parameters = ReplyParameters(message_id=reply_to) if reply_to else None
+    try:
+        await self.send_rich_message(
+            chat_id,
+            InputRichMessage(html=rich_html),
+            reply_markup=markup,
+            reply_parameters=reply_parameters,
+        )
+        return True
+    except Exception as err:
+        LOGGER.warning(f"send_rich_message gagal ({err.__class__.__name__}): {err}")
     return False
 
 
@@ -325,18 +348,32 @@ async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview
 
     Prioritas:
     1. send_as_photo + poster -> download lalu edit media foto + caption
-    2. caption kepanjangan (MediaCaptionTooLong): kirim rich message
-       dengan `<img src="URL">` (server Telegram yang fetch), fallback
-       ke rich tanpa foto kalau URL gagal
-    3. selain itu -> edit teks biasa
+    2. caption kepanjangan (MediaCaptionTooLong): EDIT pesan yang ada jadi
+       rich message (bukan hapus-lalu-kirim) dengan `<img src="URL">`,
+       fallback rich tanpa foto kalau URL gagal
+    3. teks kepanjangan tanpa foto (MessageTooLong) -> rich message via edit
+    4. selain itu -> edit teks biasa
     """
     if not send_as_photo:
-        return await query.message.edit(
-            res_str,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=markup,
-            link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
-        )
+        try:
+            await query.message.edit(
+                res_str,
+                parse_mode=enums.ParseMode.HTML,
+                reply_markup=markup,
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+            )
+            return
+        except MessageTooLong:
+            if await _send_rich_result(self, query, res_str, markup, None):
+                return
+            with contextlib.suppress(MessageNotModified, MessageIdInvalid):
+                await query.message.edit(
+                    res_str[:4090],
+                    parse_mode=enums.ParseMode.HTML,
+                    reply_markup=markup,
+                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=disable_web_preview),
+                )
+            return
     if not thumb:
         return await query.message.edit(
             res_str,
@@ -976,324 +1013,416 @@ async def imdbcari(_, query: CallbackQuery):
                 )
 
 
-@app.on_cb("imdbres_id")
-async def imdb_id_callback(self: Client, query: CallbackQuery):
-    i, userid, movie = query.data.split("#")
-    if query.from_user.id != int(userid):
-        return await query.answer("⚠️ Akses Ditolak!", True)
+# =====================================================================
+# Labels per locale — satu-satunya perbedaan antara hasil ID dan EN.
+# =====================================================================
+_IMDB_LABELS = {
+    "id": {
+        "processing": "<emoji id=5319190934510904031>⏳</emoji> Permintaan kamu sedang diproses.. ",
+        "search_jw_locale": "ID",
+        "date_locale": "id",
+        "translate": True,
+        "title": "📹 Judul:",
+        "aka": "📢 AKA:",
+        "duration": "Durasi:",
+        "category": "Kategori:",
+        "rating": "Peringkat:",
+        "rating_from": "dari {count} pengguna",
+        "release": "Rilis:",
+        "genre": "Genre:",
+        "country": "Negara:",
+        "language": "Bahasa:",
+        "cast_header": "<emoji id=5879770735999717115>🙎</emoji> Info Cast:",
+        "director": "Sutradara:",
+        "writer": "Penulis:",
+        "actor": "Pemeran:",
+        "plot": "<emoji id=5956561916573782596>📜</emoji> Plot:",
+        "keywords": "<emoji id=6008118472066732010>🔥</emoji> Kata Kunci:",
+        "awards": "<emoji id=5316979941181496594>🏆</emoji> Penghargaan:",
+        "available": "Tersedia di:",
+        "imdb_by": "<emoji id=5886440807325504167>©️</emoji> IMDb by",
+        "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
+        "parse_err": (
+            "Maaf, gagal mendapatkan info data dari IMDB.\n"
+            "<blockquote><code>{err}</code></blockquote>\n"
+            "<blockquote expandable><code>{exc}</code></blockquote>"
+        ),
+    },
+    "en": {
+        "processing": "<i><emoji id=5319190934510904031>⏳</emoji> Getting IMDb source..</i>",
+        "search_jw_locale": "US",
+        "date_locale": "en",
+        "translate": False,
+        "title": "📹 Title:",
+        "aka": "📢 AKA:",
+        "duration": "Duration:",
+        "category": "Category:",
+        "rating": "Rating:",
+        "rating_from": "from {count} users",
+        "release": "Release:",
+        "genre": "Genre:",
+        "country": "Country:",
+        "language": "Language:",
+        "cast_header": "<emoji id=5879770735999717115>🙎</emoji> Cast Info:",
+        "director": "Director:",
+        "writer": "Writer:",
+        "actor": "Stars:",
+        "plot": "<emoji id=5956561916573782596>📜</emoji> Summary:",
+        "keywords": "<emoji id=6008118472066732010>🔥</emoji> Keywords:",
+        "awards": "<emoji id=5316979941181496594>🏆</emoji> Awards:",
+        "available": "Available On:",
+        "imdb_by": "<emoji id=5886440807325504167>©️</emoji> IMDb by",
+        "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
+        "parse_err": (
+            "Sorry, failed getting data from IMDB.\n"
+            "<blockquote><code>{err}</code></blockquote>\n"
+            "<blockquote expandable><code>{exc}</code></blockquote>"
+        ),
+    },
+}
+
+_RATING_STAR = "<emoji id=5958376256788502078>⭐</emoji>"
+
+
+async def _build_imdb_result(
+    r_json, movie, imdb_url, locale, template, hidden_fields, imdb_by, ott
+):
+    """Rangkai hasil detail IMDb menjadi satu pesan.
+
+    Mengembalikan ``(res_str, markup, disable_web_preview, send_as_photo)``.
+    Setiap baris disimpan di dict ``lines`` supaya penghapusan field
+    tersembunyi (layout) tepat sasaran — tidak perlu string replace yang
+    rapuh seperti sebelumnya.
+    """
+    L = _IMDB_LABELS[locale]
+    lines: dict = {}
+    typee = r_json.get("@type", "")
+    tahun = str(r_json.get("releaseYear") or "N/A")
+
+    # ---- data vars (dipakai untuk payload template) ----
+    duration_raw = "-"
+    duration_text = "-"
+    category_text = "-"
+    release_date_text = "-"
+    genre_text = "-"
+    country_text = "-"
+    language_text = "-"
+    director_text = "-"
+    writer_text = "-"
+    cast_text = "-"
+    storyline_text = "-"
+    keyword_text = "-"
+    awards_text = "-"
+    # Tanggal rilis mentah dari GraphQL (dipakai payload template {release}).
+    # GraphQL IMDb tidak menyediakan URL spesifik per tanggal rilis, jadi
+    # rilis_url sengaja dikosongkan -> {release_url}/{release_link} = "-".
+    rilis = r_json.get("datePublished") or "-"
+    rilis_url = ""
+    summary = ""
+    genre_list = []
+    country_list = []
+    language_list = []
+    director_names = []
+    writer_names = []
+    actor_names = []
+    cast_lines = []
+
+    # ---- judul + AKA ----
+    lines["title"] = (
+        f"<b>{L['title']}</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> "
+        f"(<code>{typee}</code>)\n"
+    )
+    if aka := r_json.get("alternateName"):
+        lines["aka"] = f"<b>{L['aka']}</b> <code>{aka}</code>\n\n"
+    else:
+        lines["aka"] = "\n"
+
+    # ---- detail singkat ----
+    if durasi := r_json.get("duration"):
+        duration_raw = durasi
+        if L["translate"]:
+            duration_text = (await gtranslate(durasi, "auto", "id")).text
+        else:
+            duration_text = durasi
+        lines["duration"] = f"<b>{L['duration']}</b> <code>{duration_text}</code>\n"
+    if kategori := r_json.get("contentRating"):
+        category_text = kategori or "-"
+        lines["category"] = f"<b>{L['category']}</b> <code>{kategori}</code> \n"
+    rating_value = "-"
+    rating_count = "-"
+    if rating := r_json.get("aggregateRating"):
+        rating_value = rating.get("ratingValue", "-")
+        rating_count = rating.get("ratingCount", "-")
+        lines["rating"] = (
+            f"<b>{L['rating']}</b> <code>{rating_value}{_RATING_STAR} "
+            f"{L['rating_from'].format(count=rating_count)}</code>\n"
+        )
+    if rilis != "-":
+        release_date_text = format_imdb_date(rilis, L["date_locale"]) or rilis
+        lines["release_date"] = f"<b>{L['release']}</b> <code>{release_date_text}</code>\n"
+    if genre := r_json.get("genre"):
+        genre_list = genre if isinstance(genre, list) else [genre]
+        genre_text = "".join(
+            f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
+            if i in GENRES_EMOJI
+            else f"#{i.replace('-', '_').replace(' ', '_')}, "
+            for i in genre_list
+        )
+        lines["genre"] = f"<b>{L['genre']}</b> {genre_text[:-2]}\n"
+    if genre_text == "-":
+        genre_text = "-"
+    else:
+        genre_text = genre_text[:-2]
+    if countries := r_json.get("countryOfOrigin"):
+        country_items = countries if isinstance(countries, list) else [countries]
+        country_list = [str(country) for country in country_items if country]
+        country_text = "".join(
+            f"{demoji(str(country))} #{str(country).replace(' ', '_').replace('-', '_')}, "
+            for country in country_items
+            if country
+        )
+        lines["country"] = f"<b>{L['country']}</b> {country_text[:-2]}\n"
+    if country_text == "-":
+        country_text = "-"
+    else:
+        country_text = country_text[:-2]
+    if languages := r_json.get("inLanguage"):
+        language_items = languages if isinstance(languages, list) else [languages]
+        language_list = [str(lang) for lang in language_items if lang]
+        language_text = "".join(
+            f"#{str(lang).replace(' ', '_').replace('-', '_')}, "
+            for lang in language_items
+            if lang
+        )
+        lines["language"] = f"<b>{L['language']}</b> {language_text[:-2]}\n"
+    if language_text == "-":
+        language_text = "-"
+    else:
+        language_text = language_text[:-2]
+
+    # ---- cast ----
+    lines["cast_header"] = f"\n<b>{L['cast_header']}</b>\n"
+    if directors := r_json.get("director"):
+        director_names = [item["name"] for item in directors]
+        director = "".join(
+            f"<a href='{i['url']}'>{i['name']}</a>, " for i in directors
+        )
+        director_text = director[:-2] if director else "-"
+        cast_lines.append(f"{L['director'].rstrip(':')}: {director_text}")
+        lines["director"] = f"<b>{L['director']}</b> {director[:-2]}\n"
+    if creators := r_json.get("creator"):
+        writer_names = [
+            i["name"] for i in creators if i.get("@type") == "Person"
+        ]
+        creator = "".join(
+            f"<a href='{i['url']}'>{i['name']}</a>, "
+            for i in creators
+            if i.get("@type") == "Person"
+        )
+        writer_text = creator[:-2] if creator else "-"
+        cast_lines.append(f"{L['writer'].rstrip(':')}: {writer_text}")
+        lines["writer"] = f"<b>{L['writer']}</b> {creator[:-2]}\n"
+    if actors := r_json.get("actor"):
+        actor_names = [i["name"] for i in actors]
+        actor = "".join(
+            f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors
+        )
+        cast_text = actor[:-2] if actor else "-"
+        cast_lines.append(f"{L['actor'].rstrip(':')}: {cast_text}")
+        lines["actor"] = f"<b>{L['actor']}</b> {actor[:-2]}\n\n"
+    cast_info = "\n".join(cast_lines) if cast_lines else "-"
+
+    # ---- plot / keywords / awards ----
+    if deskripsi := r_json.get("description"):
+        if L["translate"]:
+            summary = (await gtranslate(deskripsi, "auto", "id")).text
+        else:
+            summary = deskripsi
+        storyline_text = summary or "-"
+        lines["plot"] = (
+            f"<b>{L['plot']}</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
+        )
+    keywords_list = []
+    if keywd := r_json.get("keywords"):
+        keywords_list = [kw.strip() for kw in keywd.split(",")]
+        keyword_text = "".join(
+            f"#{i.replace(' ', '_').replace('-', '_')}, "
+            for i in keywords_list
+        )
+        lines["keywords"] = (
+            f"<b>{L['keywords']}</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
+        )
+    if keyword_text != "-":
+        keyword_text = keyword_text[:-2]
+    if awards := r_json.get("awards"):
+        if L["translate"]:
+            awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
+        else:
+            awards_text = awards or "-"
+        lines["awards"] = (
+            f"<b>{L['awards']}</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
+        )
+    else:
+        lines["awards_spacer"] = "\n"
+    if ott != "":
+        lines["ott"] = f"{L['available']}\n{ott}\n"
+    ott_value = ott or "-"
+    lines["imdb_by"] = f"<b>{L['imdb_by']}</b> {imdb_by}"
+
+    res_str = "".join(lines.values())
+
+    # ---- template custom user ----
+    if template:
+        imdb_code = f"tt{movie}"
+        title = r_json.get("name") or "-"
+        year_text = tahun
+        title_with_year = f"{title} [{year_text}]"
+        title_link = f"<a href=\"{imdb_url}\">{title_with_year}</a>"
+        aka_text = r_json.get("alternateName") or "-"
+        rating_value = "-"
+        rating_count = "-"
+        rating_text = "-"
+        if rating := r_json.get("aggregateRating"):
+            rating_value = rating.get("ratingValue", "-")
+            rating_count = rating.get("ratingCount", "-")
+            rating_text = (
+                f"{rating_value}{_RATING_STAR} "
+                f"{L['rating_from'].format(count=rating_count)}"
+            )
+        release_url = f"https://www.imdb.com{rilis_url}" if rilis_url else "-"
+        release_link = f"<a href=\"{release_url}\">{rilis}</a>" if rilis_url else "-"
+        poster_url = r_json.get("image") or "-"
+        trailer_url = (r_json.get("trailer") or {}).get("url") or "-"
+        payload = {
+            "title": title,
+            "title_with_year": title_with_year,
+            "title_link": title_link,
+            "aka": aka_text,
+            "type": typee or "-",
+            "year": year_text,
+            "duration": duration_text,
+            "duration_raw": duration_raw,
+            "category": category_text,
+            "rating_value": rating_value,
+            "rating_count": rating_count,
+            "rating_text": rating_text,
+            "release": rilis,
+            "release_url": release_url,
+            "release_link": release_link,
+            "genres": genre_text,
+            "genres_list": ", ".join(genre_list) or "-",
+            "countries": country_text,
+            "countries_list": ", ".join(country_list) or "-",
+            "languages": language_text,
+            "languages_list": ", ".join(language_list) or "-",
+            "directors": ", ".join(director_names) or "-",
+            "writers": ", ".join(writer_names) or "-",
+            "cast": ", ".join(actor_names) or "-",
+            "plot": summary or "-",
+            "keywords": keyword_text,
+            "keywords_list": ", ".join(keywords_list) or "-",
+            "awards": awards_text,
+            "availability": ott_value,
+            "ott": ott_value,
+            "imdb_by": imdb_by,
+            "imdb_url": imdb_url,
+            "trailer_url": trailer_url,
+            "poster_url": poster_url,
+            "imdb_code": imdb_code,
+            "locale": locale,
+            "link": imdb_url,
+            "movie_type": typee or "-",
+            "release_date": release_date_text,
+            "genre": genre_text,
+            "country": country_text,
+            "language": language_text,
+            "director": director_text,
+            "writer": writer_text,
+            "cast_info": cast_info,
+            "storyline": storyline_text,
+            "keyword": keyword_text,
+        }
+        template_markup = None
+        rendered, template_buttons = render_imdb_template_with_buttons(
+            template, _with_html_placeholders(payload)
+        )
+        if rendered:
+            res_str = rendered
+            if template_buttons:
+                template_markup = InlineKeyboardMarkup([template_buttons])
+    else:
+        # ---- layout: buang field yang disembunyikan user ----
+        _HIDDEN_FIELD_LINES = {
+            "title": ["title"],
+            "duration": ["duration"],
+            "category": ["category"],
+            "rating": ["rating"],
+            "release_date": ["release_date"],
+            "genre": ["genre"],
+            "country": ["country"],
+            "language": ["language"],
+            "cast": ["cast_header", "director", "writer", "actor"],
+            "storyline": ["plot"],
+            "keyword": ["keywords"],
+            "awards": ["awards"],
+            "ott": ["ott"],
+            "imdb_by": ["imdb_by"],
+        }
+        for field, line_keys in _HIDDEN_FIELD_LINES.items():
+            if field in hidden_fields:
+                for line_key in line_keys:
+                    res_str = res_str.replace(lines.get(line_key, ""), "")
+
+    # ---- tombol ----
+    if template:
+        markup = template_markup
+    else:
+        if trailer := r_json.get("trailer"):
+            trailer_url = trailer["url"]
+            buttons = []
+            if "open_imdb" not in hidden_fields:
+                buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+            if "trailer" not in hidden_fields:
+                buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
+            markup = InlineKeyboardMarkup([buttons]) if buttons else None
+        else:
+            if "open_imdb" in hidden_fields:
+                markup = None
+            else:
+                markup = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                )
+    disable_web_preview = "web_preview" in hidden_fields
+    send_as_photo = "send_as_photo" not in hidden_fields
+    return res_str, markup, disable_web_preview, send_as_photo
+
+
+async def _process_imdb_callback(self: Client, query: CallbackQuery, movie: str, locale: str):
+    """Alur detail IMDb (dipakai callback id & en — bedanya hanya label)."""
+    L = _IMDB_LABELS[locale]
     with contextlib.redirect_stdout(sys.stderr):
         try:
-            await query.message.edit("<emoji id=5319190934510904031>⏳</emoji> Permintaan kamu sedang diproses.. ")
+            await query.message.edit(L["processing"])
             imdb_url = f"https://m.imdb.com/title/tt{movie}/"
             r_json = await get_imdb_details_graphql(f"tt{movie}")
             if not r_json:
                 raise ValueError("IMDb GraphQL returned empty payload")
             ott = await search_jw(
-                r_json.get("alternateName") or r_json.get("name"), "ID"
+                r_json.get("alternateName") or r_json.get("name"), L["search_jw_locale"]
             )
-            typee = r_json.get("@type", "")
             template = await get_imdb_template(query.from_user.id)
             hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
             imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
-            res_str = ""
-            duration_text = "-"
-            duration_raw = "-"
-            category_text = "-"
-            release_date_text = "-"
-            genre_text = "-"
-            country_text = "-"
-            language_text = "-"
-            director_text = "-"
-            writer_text = "-"
-            cast_text = "-"
-            storyline_text = "-"
-            keyword_text = "-"
-            awards_text = "-"
-            rilis = "-"
-            rilis_url = ""
-            summary = ""
-            tahun = str(r_json.get("releaseYear") or "N/A")
-            res_str += f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
-            if aka := r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
-            else:
-                res_str += "\n"
-            if durasi := r_json.get("duration"):
-                duration_raw = durasi
-                duration_text = (await gtranslate(durasi, "auto", "id")).text
-                res_str += f"<b>Durasi:</b> <code>{duration_text}</code>\n"
-            if kategori := r_json.get("contentRating"):
-                category_text = kategori or "-"
-                res_str += f"<b>Kategori:</b> <code>{kategori}</code> \n"
-            rating_value = "-"
-            rating_count = "-"
-            if rating := r_json.get("aggregateRating"):
-                rating_value = rating.get("ratingValue", "-")
-                rating_count = rating.get("ratingCount", "-")
-                res_str += f"<b>Peringkat:</b> <code>{rating_value}<emoji id=5958376256788502078>⭐</emoji> dari {rating_count} pengguna</code>\n"
-            if rilis := r_json.get("datePublished"):
-                release_date_text = format_imdb_date(rilis, "id") or (rilis or "-")
-                res_str += f"<b>Rilis:</b> <code>{release_date_text}</code>\n"
-            genre_list = []
-            if genre := r_json.get("genre"):
-                genre_list = genre if isinstance(genre, list) else [genre]
-                genre_text = "".join(
-                    f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    if i in GENRES_EMOJI
-                    else f"#{i.replace('-', '_').replace(' ', '_')}, "
-                    for i in genre_list
-                )
-                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
-            if genre_text == "-":
-                genre_text = "-"
-            else:
-                genre_text = genre_text[:-2]
-            country_list = []
-            if countries := r_json.get("countryOfOrigin"):
-                country_items = countries if isinstance(countries, list) else [countries]
-                country_list = [str(country) for country in country_items if country]
-                country_text = "".join(
-                    f"{demoji(str(country))} #{str(country).replace(' ', '_').replace('-', '_')}, "
-                    for country in country_items
-                    if country
-                )
-                res_str += f"<b>Negara:</b> {country_text[:-2]}\n"
-            if country_text == "-":
-                country_text = "-"
-            else:
-                country_text = country_text[:-2]
-            language_list = []
-            if languages := r_json.get("inLanguage"):
-                language_items = languages if isinstance(languages, list) else [languages]
-                language_list = [str(lang) for lang in language_items if lang]
-                language_text = "".join(
-                    f"#{str(lang).replace(' ', '_').replace('-', '_')}, "
-                    for lang in language_items
-                    if lang
-                )
-                res_str += f"<b>Bahasa:</b> {language_text[:-2]}\n"
-            if language_text == "-":
-                language_text = "-"
-            else:
-                language_text = language_text[:-2]
-            res_str += "\n<b><emoji id=5879770735999717115>🙎</emoji> Info Cast:</b>\n"
-            cast_lines = []
-            director_names = []
-            if directors := r_json.get("director"):
-                director_names = [item["name"] for item in directors]
-                director = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, " for i in directors
-                )
-                director_text = director[:-2] if director else "-"
-                cast_lines.append(f"Sutradara: {director_text}")
-                res_str += f"<b>Sutradara:</b> {director[:-2]}\n"
-            writer_names = []
-            if creators := r_json.get("creator"):
-                writer_names = [
-                    i["name"] for i in creators if i.get("@type") == "Person"
-                ]
-                creator = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, "
-                    for i in creators
-                    if i.get("@type") == "Person"
-                )
-                writer_text = creator[:-2] if creator else "-"
-                cast_lines.append(f"Penulis: {writer_text}")
-                res_str += f"<b>Penulis:</b> {creator[:-2]}\n"
-            actor_names = []
-            if actors := r_json.get("actor"):
-                actor_names = [i["name"] for i in actors]
-                actor = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, " for i in actors
-                )
-                cast_text = actor[:-2] if actor else "-"
-                cast_lines.append(f"Pemeran: {cast_text}")
-                res_str += f"<b>Pemeran:</b> {actor[:-2]}\n\n"
-            cast_info = "\n".join(cast_lines) if cast_lines else "-"
-            if deskripsi := r_json.get("description"):
-                summary = (await gtranslate(deskripsi, "auto", "id")).text
-                storyline_text = summary or "-"
-                res_str += f"<b><emoji id=5956561916573782596>📜</emoji> Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
-            keywords_list = []
-            if keywd := r_json.get("keywords"):
-                keywords_list = [kw.strip() for kw in keywd.split(",")]
-                keyword_text = "".join(
-                    f"#{i.replace(' ', '_').replace('-', '_')}, "
-                    for i in keywords_list
-                )
-                res_str += (
-                    f"<b><emoji id=6008118472066732010>🔥</emoji> Kata Kunci:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
-                )
-            if keyword_text != "-":
-                keyword_text = keyword_text[:-2]
-            if awards := r_json.get("awards"):
-                awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-                res_str += f"<b><emoji id=5316979941181496594>🏆</emoji> Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
-            else:
-                res_str += "\n"
-            if ott != "":
-                res_str += f"Tersedia di:\n{ott}\n"
-            ott_text = ott
-            if not ott_text:
-                ott_text = "-"
-            res_str += f"<b><emoji id=5886440807325504167>©️</emoji> IMDb by</b> {imdb_by}"
-            if template:
-                imdb_code = f"tt{movie}"
-                title = r_json.get("name") or "-"
-                year_text = tahun
-                title_with_year = f"{title} [{year_text}]"
-                title_link = f"<a href=\"{imdb_url}\">{title_with_year}</a>"
-                aka_text = r_json.get("alternateName") or "-"
-                rating_value = "-"
-                rating_count = "-"
-                rating_text = "-"
-                if rating := r_json.get("aggregateRating"):
-                    rating_value = rating.get("ratingValue", "-")
-                    rating_count = rating.get("ratingCount", "-")
-                    rating_text = f"{rating_value}<emoji id=5958376256788502078>⭐</emoji> dari {rating_count} pengguna"
-                release_url = (
-                    f"https://www.imdb.com{rilis_url}" if rilis_url else "-"
-                )
-                release_link = (
-                    f"<a href=\"{release_url}\">{rilis}</a>" if rilis_url else "-"
-                )
-                poster_url = r_json.get("image") or "-"
-                trailer_url = (r_json.get("trailer") or {}).get("url") or "-"
-                payload = {
-                    "title": title,
-                    "title_with_year": title_with_year,
-                    "title_link": title_link,
-                    "aka": aka_text,
-                    "type": typee or "-",
-                    "year": year_text,
-                    "duration": duration_text,
-                    "duration_raw": duration_raw,
-                    "category": category_text,
-                    "rating_value": rating_value,
-                    "rating_count": rating_count,
-                    "rating_text": rating_text,
-                    "release": rilis,
-                    "release_url": release_url,
-                    "release_link": release_link,
-                    "genres": genre_text,
-                    "genres_list": ", ".join(genre_list) or "-",
-                    "countries": country_text,
-                    "countries_list": ", ".join(country_list) or "-",
-                    "languages": language_text,
-                    "languages_list": ", ".join(language_list) or "-",
-                    "directors": ", ".join(director_names) or "-",
-                    "writers": ", ".join(writer_names) or "-",
-                    "cast": ", ".join(actor_names) or "-",
-                    "plot": summary or "-",
-                    "keywords": keyword_text,
-                    "keywords_list": ", ".join(keywords_list) or "-",
-                    "awards": awards_text,
-                    "availability": ott_text,
-                    "ott": ott_text,
-                    "imdb_by": imdb_by,
-                    "imdb_url": imdb_url,
-                    "trailer_url": trailer_url,
-                    "poster_url": poster_url,
-                    "imdb_code": imdb_code,
-                    "locale": "id",
-                    "link": imdb_url,
-                    "movie_type": typee or "-",
-                    "release_date": release_date_text,
-                    "genre": genre_text,
-                    "country": country_text,
-                    "language": language_text,
-                    "director": director_text,
-                    "writer": writer_text,
-                    "cast_info": cast_info,
-                    "storyline": storyline_text,
-                    "keyword": keyword_text,
-                }
-                template_markup = None
-                rendered, template_buttons = render_imdb_template_with_buttons(
-                    template, _with_html_placeholders(payload)
-                )
-                if rendered:
-                    res_str = rendered
-                    if template_buttons:
-                        template_markup = InlineKeyboardMarkup([template_buttons])
-            else:
-                if "title" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
-                        "",
-                    )
-                if "duration" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Durasi:</b> <code>{duration_text}</code>\n",
-                        "",
-                    )
-                if "category" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Kategori:</b> <code>{category_text}</code> \n",
-                        "",
-                    )
-                if "rating" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Peringkat:</b> <code>{rating_value}<emoji id=5958376256788502078>⭐</emoji> dari {rating_count} pengguna</code>\n",
-                        "",
-                    )
-                if "release_date" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
-                        "",
-                    )
-                if "genre" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Genre:</b> {genre_text}\n", "")
-                if "country" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Negara:</b> {country_text}\n", "")
-                if "language" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Bahasa:</b> {language_text}\n", "")
-                if "cast" in hidden_fields:
-                    res_str = res_str.replace("\n<b><emoji id=5879770735999717115>🙎</emoji> Info Cast:</b>\n", "")
-                    res_str = res_str.replace(f"<b>Sutradara:</b> {director_text}\n", "")
-                    res_str = res_str.replace(f"<b>Penulis:</b> {writer_text}\n", "")
-                    res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
-                if "storyline" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=5956561916573782596>📜</emoji> Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
-                        "",
-                    )
-                if "keyword" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=6008118472066732010>🔥</emoji>  Kata Kunci:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
-                        "",
-                    )
-                if "awards" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=5316979941181496594>🏆</emoji> Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
-                        "",
-                    )
-                if "ott" in hidden_fields:
-                    res_str = res_str.replace(f"Tersedia di:\n{ott}\n", "")
-                if "imdb_by" in hidden_fields:
-                    res_str = res_str.replace(f"<b><emoji id=5886440807325504167>©️</emoji> IMDb by</b> {imdb_by}", "")
-            if template:
-                markup = template_markup
-            else:
-                if trailer := r_json.get("trailer"):
-                    trailer_url = trailer["url"]
-                    buttons = []
-                    if "open_imdb" not in hidden_fields:
-                        buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
-                    if "trailer" not in hidden_fields:
-                        buttons.append(
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url)
-                        )
-                    markup = InlineKeyboardMarkup([buttons]) if buttons else None
-                else:
-                    if "open_imdb" in hidden_fields:
-                        markup = None
-                    else:
-                        markup = InlineKeyboardMarkup(
-                            [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                        )
-            disable_web_preview = "web_preview" in hidden_fields
-            send_as_photo = "send_as_photo" not in hidden_fields
+            res_str, markup, disable_web_preview, send_as_photo = await _build_imdb_result(
+                r_json,
+                movie,
+                imdb_url,
+                locale,
+                template,
+                hidden_fields,
+                imdb_by,
+                ott,
+            )
             await _deliver_imdb_result(
                 self,
                 query,
@@ -1304,362 +1433,30 @@ async def imdb_id_callback(self: Client, query: CallbackQuery):
                 send_as_photo,
             )
         except httpx.HTTPError as exc:
-            await query.message.edit(
-                f"HTTP Exception for IMDB Search - <code>{exc}</code>"
-            )
+            await query.message.edit(L["http_err"].format(exc=exc))
         except (AttributeError, ValueError) as err:
-            LOGGER.exception("IMDb ID callback failed while parsing IMDb payload")
+            LOGGER.exception(f"IMDb {locale} callback failed while parsing IMDb payload")
             exc = traceback.format_exc(limit=5)
             await query.message.edit(
-                "Maaf, gagal mendapatkan info data dari IMDB.\n"
-                f"<blockquote><code>{err}</code></blockquote>\n"
-                f"<blockquote expandable><code>{exc}</code></blockquote>",
+                L["parse_err"].format(err=err, exc=exc),
                 parse_mode=enums.ParseMode.HTML,
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
             )
         except (MessageNotModified, MessageIdInvalid):
             pass
+
+
+@app.on_cb("imdbres_id")
+async def imdb_id_callback(self: Client, query: CallbackQuery):
+    _, userid, movie = query.data.split("#")
+    if query.from_user.id != int(userid):
+        return await query.answer("⚠️ Akses Ditolak!", True)
+    await _process_imdb_callback(self, query, movie, "id")
 
 
 @app.on_cb("imdbres_en")
 async def imdb_en_callback(self: Client, query: CallbackQuery):
-    i, userid, movie = query.data.split("#")
+    _, userid, movie = query.data.split("#")
     if query.from_user.id != int(userid):
         return await query.answer("⚠️ Access Denied!", True)
-    with contextlib.redirect_stdout(sys.stderr):
-        try:
-            await query.message.edit("<i><emoji id=5319190934510904031>⏳</emoji> Getting IMDb source..</i>")
-            imdb_url = f"https://m.imdb.com/title/tt{movie}/"
-            r_json = await get_imdb_details_graphql(f"tt{movie}")
-            if not r_json:
-                raise ValueError("IMDb GraphQL returned empty payload")
-            ott = await search_jw(
-                r_json.get("alternateName") or r_json.get("name"), "US"
-            )
-            typee = r_json.get("@type", "")
-            template = await get_imdb_template(query.from_user.id)
-            hidden_fields = await _get_hidden_layout_fields(query.from_user.id)
-            imdb_by = await get_imdb_by(query.from_user.id) or f"@{self.me.username}"
-            res_str = ""
-            duration_text = "-"
-            category_text = "-"
-            release_date_text = "-"
-            genre_text = "-"
-            country_text = "-"
-            language_text = "-"
-            director_text = "-"
-            writer_text = "-"
-            cast_text = "-"
-            storyline_text = "-"
-            keyword_text = "-"
-            awards_text = "-"
-            rilis = "-"
-            rilis_url = ""
-            summary = ""
-            tahun = str(r_json.get("releaseYear") or "N/A")
-            res_str += f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n"
-            if aka := r_json.get("alternateName"):
-                res_str += f"<b>📢 AKA:</b> <code>{aka}</code>\n\n"
-            else:
-                res_str += "\n"
-            if durasi := r_json.get("duration"):
-                duration_raw = durasi
-                duration_text = durasi
-                res_str += f"<b>Duration:</b> <code>{durasi}</code>\n"
-            if kategori := r_json.get("contentRating"):
-                category_text = kategori or "-"
-                res_str += f"<b>Category:</b> <code>{kategori}</code> \n"
-            rating_value = "-"
-            rating_count = "-"
-            if rating := r_json.get("aggregateRating"):
-                rating_value = rating.get("ratingValue", "-")
-                rating_count = rating.get("ratingCount", "-")
-                res_str += f"<b>Rating:</b> <code>{rating_value}<emoji id=5958376256788502078>⭐</emoji> from {rating_count} users</code>\n"
-            if rilis := r_json.get("datePublished"):
-                release_date_text = format_imdb_date(rilis, "en") or (rilis or "-")
-                res_str += f"<b>Release:</b> <code>{release_date_text}</code>\n"
-            genre_list = []
-            if genre := r_json.get("genre"):
-                genre_list = genre if isinstance(genre, list) else [genre]
-                genre_text = "".join(
-                    f"{GENRES_EMOJI[i]} #{i.replace('-', '_').replace(' ', '_')}, "
-                    if i in GENRES_EMOJI
-                    else f"#{i.replace('-', '_').replace(' ', '_')}, "
-                    for i in genre_list
-                )
-                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
-            if genre_text == "-":
-                genre_text = "-"
-            else:
-                genre_text = genre_text[:-2]
-            country_list = []
-            if countries := r_json.get("countryOfOrigin"):
-                country_items = countries if isinstance(countries, list) else [countries]
-                country_list = [str(country) for country in country_items if country]
-                country_text = "".join(
-                    f"{demoji(str(country))} #{str(country).replace(' ', '_').replace('-', '_')}, "
-                    for country in country_items
-                    if country
-                )
-                res_str += f"<b>Country:</b> {country_text[:-2]}\n"
-            if country_text == "-":
-                country_text = "-"
-            else:
-                country_text = country_text[:-2]
-            language_list = []
-            if languages := r_json.get("inLanguage"):
-                language_items = languages if isinstance(languages, list) else [languages]
-                language_list = [str(lang) for lang in language_items if lang]
-                language_text = "".join(
-                    f"#{str(lang).replace(' ', '_').replace('-', '_')}, "
-                    for lang in language_items
-                    if lang
-                )
-                res_str += f"<b>Language:</b> {language_text[:-2]}\n"
-            if language_text == "-":
-                language_text = "-"
-            else:
-                language_text = language_text[:-2]
-            res_str += "\n<b><emoji id=5879770735999717115>🙎</emoji> Cast Info:</b>\n"
-            cast_lines = []
-            director_names = []
-            if r_json.get("director"):
-                director_names = [item["name"] for item in r_json["director"]]
-                director = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, "
-                    for i in r_json["director"]
-                )
-                director_text = director[:-2] if director else "-"
-                cast_lines.append(f"Director: {director_text}")
-                res_str += f"<b>Director:</b> {director[:-2]}\n"
-            writer_names = []
-            if r_json.get("creator"):
-                writer_names = [
-                    i["name"] for i in r_json["creator"] if i.get("@type") == "Person"
-                ]
-                creator = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, "
-                    for i in r_json["creator"]
-                    if i.get("@type") == "Person"
-                )
-                writer_text = creator[:-2] if creator else "-"
-                cast_lines.append(f"Writer: {writer_text}")
-                res_str += f"<b>Writer:</b> {creator[:-2]}\n"
-            actor_names = []
-            if r_json.get("actor"):
-                actor_names = [i["name"] for i in r_json["actor"]]
-                actors = actors = "".join(
-                    f"<a href='{i['url']}'>{i['name']}</a>, " for i in r_json["actor"]
-                )
-                cast_text = actors[:-2] if actors else "-"
-                cast_lines.append(f"Stars: {cast_text}")
-                res_str += f"<b>Stars:</b> {actors[:-2]}\n\n"
-            cast_info = "\n".join(cast_lines) if cast_lines else "-"
-            if description := r_json.get("description"):
-                storyline_text = description or "-"
-                summary = description
-                res_str += f"<b><b><emoji id=5956561916573782596>📜</emoji> Summary:</b>\n<blockquote expandable><code>{description}</code></blockquote>\n\n"
-            keywords_list = []
-            if r_json.get("keywords"):
-                keywords_list = [kw.strip() for kw in r_json["keywords"].split(",")]
-                keyword_text = "".join(
-                    f"#{i.replace(' ', '_').replace('-', '_')}, "
-                    for i in keywords_list
-                )
-                res_str += (
-                    f"<b><emoji id=6008118472066732010>🔥</emoji> Keywords:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
-                )
-            if keyword_text != "-":
-                keyword_text = keyword_text[:-2]
-            if awards := r_json.get("awards"):
-                awards_text = awards or "-"
-                res_str += f"<b><emoji id=5316979941181496594>🏆</emoji> Awards:</b>\n<blockquote expandable><code>{awards}</code></blockquote>\n"
-            else:
-                res_str += "\n"
-            if ott != "":
-                res_str += f"Available On:\n{ott}\n"
-            if not ott:
-                ott = "-"
-            res_str += f"<b><emoji id=5886440807325504167>©️</emoji> IMDb by</b> {imdb_by}"
-            if template:
-                imdb_code = f"tt{movie}"
-                title = r_json.get("name") or "-"
-                year_text = tahun
-                title_with_year = f"{title} [{year_text}]"
-                title_link = f"<a href=\"{imdb_url}\">{title_with_year}</a>"
-                aka_text = r_json.get("alternateName") or "-"
-                rating_value = "-"
-                rating_count = "-"
-                rating_text = "-"
-                if rating := r_json.get("aggregateRating"):
-                    rating_value = rating.get("ratingValue", "-")
-                    rating_count = rating.get("ratingCount", "-")
-                    rating_text = f"{rating_value}<emoji id=5958376256788502078>⭐</emoji> from {rating_count} users"
-                release_url = (
-                    f"https://www.imdb.com{rilis_url}" if rilis_url else "-"
-                )
-                release_link = (
-                    f"<a href=\"{release_url}\">{rilis}</a>" if rilis_url else "-"
-                )
-                poster_url = r_json.get("image") or "-"
-                trailer_url = (r_json.get("trailer") or {}).get("url") or "-"
-                payload = {
-                    "title": title,
-                    "title_with_year": title_with_year,
-                    "title_link": title_link,
-                    "aka": aka_text,
-                    "type": typee or "-",
-                    "year": year_text,
-                    "duration": duration_text,
-                    "duration_raw": duration_raw,
-                    "category": category_text,
-                    "rating_value": rating_value,
-                    "rating_count": rating_count,
-                    "rating_text": rating_text,
-                    "release": rilis,
-                    "release_url": release_url,
-                    "release_link": release_link,
-                    "genres": genre_text,
-                    "genres_list": ", ".join(genre_list) or "-",
-                    "countries": country_text,
-                    "countries_list": ", ".join(country_list) or "-",
-                    "languages": language_text,
-                    "languages_list": ", ".join(language_list) or "-",
-                    "directors": ", ".join(director_names) or "-",
-                    "writers": ", ".join(writer_names) or "-",
-                    "cast": ", ".join(actor_names) or "-",
-                    "plot": summary or "-",
-                    "keywords": keyword_text,
-                    "keywords_list": ", ".join(keywords_list) or "-",
-                    "awards": awards_text,
-                    "availability": ott,
-                    "ott": ott,
-                    "imdb_by": imdb_by,
-                    "imdb_url": imdb_url,
-                    "trailer_url": trailer_url,
-                    "poster_url": poster_url,
-                    "imdb_code": imdb_code,
-                    "locale": "en",
-                    "link": imdb_url,
-                    "movie_type": typee or "-",
-                    "release_date": release_date_text,
-                    "genre": genre_text,
-                    "country": country_text,
-                    "language": language_text,
-                    "director": director_text,
-                    "writer": writer_text,
-                    "cast_info": cast_info,
-                    "storyline": storyline_text,
-                    "keyword": keyword_text,
-                }
-                template_markup = None
-                rendered, template_buttons = render_imdb_template_with_buttons(
-                    template, _with_html_placeholders(payload)
-                )
-                if rendered:
-                    res_str = rendered
-                    if template_buttons:
-                        template_markup = InlineKeyboardMarkup([template_buttons])
-            else:
-                if "title" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href=\"{imdb_url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
-                        "",
-                    )
-                if "duration" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Duration:</b> <code>{duration_text}</code>\n",
-                        "",
-                    )
-                if "category" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Category:</b> <code>{category_text}</code> \n",
-                        "",
-                    )
-                if "rating" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Rating:</b> <code>{rating_value}<emoji id=5958376256788502078>⭐</emoji> from {rating_count} users</code>\n",
-                        "",
-                    )
-                if "release_date" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b>Rilis:</b> <a href=\"https://www.imdb.com{rilis_url}\">{rilis}</a>\n",
-                        "",
-                    )
-                if "genre" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Genre:</b> {genre_text}\n", "")
-                if "country" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Country:</b> {country_text}\n", "")
-                if "language" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Language:</b> {language_text}\n", "")
-                if "cast" in hidden_fields:
-                    res_str = res_str.replace("\n<b><emoji id=5879770735999717115>🙎</emoji> Cast Info:</b>\n", "")
-                    res_str = res_str.replace(f"<b>Director:</b> {director_text}\n", "")
-                    res_str = res_str.replace(f"<b>Writer:</b> {writer_text}\n", "")
-                    res_str = res_str.replace(f"<b>Stars:</b> {cast_text}\n\n", "")
-                if "storyline" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=5956561916573782596>📜</emoji> Summary:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
-                        "",
-                    )
-                if "keyword" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=6008118472066732010>🔥</emoji> Keywords:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
-                        "",
-                    )
-                if "awards" in hidden_fields:
-                    res_str = res_str.replace(
-                        f"<b><emoji id=5316979941181496594>🏆</emoji> Awards:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
-                        "",
-                    )
-                if "ott" in hidden_fields:
-                    res_str = res_str.replace(f"Available On:\n{ott}\n", "")
-                if "imdb_by" in hidden_fields:
-                    res_str = res_str.replace(f"<b><emoji id=5886440807325504167>©️</emoji> IMDb by</b> {imdb_by}", "")
-            if template:
-                markup = template_markup
-            else:
-                if trailer := r_json.get("trailer"):
-                    trailer_url = trailer["url"]
-                    buttons = []
-                    if "open_imdb" not in hidden_fields:
-                        buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
-                    if "trailer" not in hidden_fields:
-                        buttons.append(
-                            InlineKeyboardButton("▶️ Trailer", url=trailer_url)
-                        )
-                    markup = InlineKeyboardMarkup([buttons]) if buttons else None
-                else:
-                    if "open_imdb" in hidden_fields:
-                        markup = None
-                    else:
-                        markup = InlineKeyboardMarkup(
-                            [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
-                        )
-            disable_web_preview = "web_preview" in hidden_fields
-            send_as_photo = "send_as_photo" not in hidden_fields
-            await _deliver_imdb_result(
-                self,
-                query,
-                res_str,
-                markup,
-                disable_web_preview,
-                r_json.get("image"),
-                send_as_photo,
-            )
-        except httpx.HTTPError as exc:
-            await query.message.edit(
-                f"HTTP Exception for IMDB Search - <code>{exc}</code>"
-            )
-        except (AttributeError, ValueError) as err:
-            LOGGER.exception("IMDb EN callback failed while parsing IMDb payload")
-            exc = traceback.format_exc(limit=5)
-            await query.message.edit(
-                "Sorry, failed getting data from IMDB.\n"
-                f"<blockquote><code>{err}</code></blockquote>\n"
-                f"<blockquote expandable><code>{exc}</code></blockquote>",
-                parse_mode=enums.ParseMode.HTML,
-                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
-            )
-        except (MessageNotModified, MessageIdInvalid):
-            pass
+    await _process_imdb_callback(self, query, movie, "en")

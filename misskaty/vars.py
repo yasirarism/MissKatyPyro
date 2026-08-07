@@ -2,7 +2,6 @@
 # * @date          2023-06-21 22:12:27
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-import requests
 import sys
 from logging import getLogger
 from os import environ
@@ -13,14 +12,7 @@ LOGGER = getLogger("MissKaty")
 
 dotenv.load_dotenv("config.env", override=True)
 
-if YT_COOKIES := environ.get("YT_COOKIES"):
-    response = requests.get(YT_COOKIES)
-    if response.status_code == 200:
-        with open('cookies.txt', 'w') as file:
-            file.write(response.text)
-            LOGGER.info("Success download YT Cookies")
-    else:
-        LOGGER.info("Failed download YT Cookies")
+YT_COOKIES = environ.get("YT_COOKIES")
 
 if API_ID := environ.get("API_ID", ""):
     API_ID = int(API_ID)

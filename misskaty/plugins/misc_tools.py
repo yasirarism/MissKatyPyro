@@ -42,7 +42,7 @@ from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper import fetch, gtranslate, gen_trans_image, rentry
 from misskaty.vars import COMMAND_HANDLER
-from utils import extract_user, get_file_id
+from misskaty.helper.chat_utils import extract_user_and_name, get_file_id
 
 LOGGER = getLogger("MissKaty")
 
@@ -523,7 +523,7 @@ async def who_is(client, message):
     status_message = await message.reply_text("`Fetching user info...`")
     await status_message.edit("`Processing user info...`")
     from_user = None
-    from_user_id, _ = extract_user(message)
+    from_user_id, _ = extract_user_and_name(message)
     try:
         from_user = await client.get_users(from_user_id)
     except Exception as error:
