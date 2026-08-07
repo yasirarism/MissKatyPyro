@@ -234,22 +234,27 @@ async def extract_user(message):
     return (await extract_user_and_reason(message))[0]
 
 
-async def time_converter(message: Message, time_value: str) -> datetime:
+async def time_converter(time_value: str) -> datetime:
+    """Convert ``1d`` / ``2h`` / ``30m`` to a datetime.
+
+    Raises:
+        ValueError: when the format is invalid or empty.
+    """
+    if not time_value or not time_value[:-1].isdigit():
+        raise ValueError("Incorrect time specified")
     unit = ["m", "h", "d"]  # m == minutes | h == hours | d == days
-    check_unit = "".join(list(filter(time_value[-1].lower().endswith, unit)))
+    check_unit = "".join(filter(time_value[-1].lower().endswith, unit))
     currunt_time = datetime.now()
-    time_digit = time_value[:-1]
-    if not time_digit.isdigit():
-        return await message.reply_text("Incorrect time specified")
+    time_digit = int(time_value[:-1])
+    if time_digit <= 0:
+        raise ValueError("Incorrect time specified")
     if check_unit == "m":
-        temp_time = currunt_time + timedelta(minutes=int(time_digit))
-    elif check_unit == "h":
-        temp_time = currunt_time + timedelta(hours=int(time_digit))
-    elif check_unit == "d":
-        temp_time = currunt_time + timedelta(days=int(time_digit))
-    else:
-        return await message.reply_text("Incorrect time specified.")
-    return temp_time
+        return currunt_time + timedelta(minutes=time_digit)
+    if check_unit == "h":
+        return currunt_time + timedelta(hours=time_digit)
+    if check_unit == "d":
+        return currunt_time + timedelta(days=time_digit)
+    raise ValueError("Incorrect time specified")
 
 
 def extract_text_and_keyb(ikb, text: str, row_width: int = 2, chat_id: int | None = None):
