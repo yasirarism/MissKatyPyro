@@ -1,16 +1,87 @@
 import logging
 import os
 import random
+import re
 import string
+from html import escape
 from pathlib import Path
+from time import time
 
 import httpx
 import requests
 
 from misskaty.helper.human_read import get_readable_file_size
+from misskaty.helper.pyro_progress import humanbytes, time_formatter
 from misskaty.vars import YT_COOKIES
 
 LOGGER = logging.getLogger("MissKaty")
+
+PROCESS_TEXT = "<emoji id=5319190934510904031>⏳</emoji> Processing.."
+
+
+def format_progress_bar(percentage: float) -> str:
+    """Progress bar monospace-friendly: 10 slot block chars."""
+    filled = max(0, min(10, int(percentage // 10)))
+    return f"[{'█' * filled}{'░' * (10 - filled)}]"
+
+
+def _clean_line(text: str) -> str:
+    """Normalisasi baris: collapse whitespace/newline jadi satu spasi.
+
+    Judul YouTube kadang mengandung newline/karakter aneh yang membuat
+    caption monospace terlihat 'double enter' — baris ini merapikannya.
+    """
+    return " ".join((text or "").split())
+
+
+def dl_progress_text(state: dict, label: str, title: str, mention: str) -> str:
+    """Caption progress download — monospace + tag user + elapsed time."""
+    total = state["total"]
+    downloaded = min(state["downloaded"], total) if total else state["downloaded"]
+    percentage = (downloaded / total * 100) if total else 0
+    bar = format_progress_bar(percentage) if total else ""
+    pct = f"{percentage:.1f}%" if total else "??%"
+    speed = humanbytes(state["speed"]) or "0 B"
+    eta = time_formatter(int(state["eta"])).strip() if state["eta"] else "Unknown"
+    elapsed = time_formatter(int(time() - state.get("start", time()))).strip() or "0s"
+    return (
+        f"{PROCESS_TEXT}\n"
+        "⬇️ Downloading\n"
+        "<code>"
+        f"🎬 {escape(_clean_line(title))[:60]}\n"
+        f"{escape(_clean_line(label))}\n"
+        f"{bar} {pct}\n"
+        f"📦 {humanbytes(downloaded) or '0 B'} / {humanbytes(total) or '?'}\n"
+        f"⚡ {speed}/s\n"
+        f"⏱ Elapsed: {elapsed} • ETA: {eta}"
+        "</code>\n"
+        f"👤 {mention}"
+    )
+
+
+def dl_finalizing_text(label: str, mention: str) -> str:
+    """Caption saat yt-dlp sedang merge/post-process (hook tidak memanggil)."""
+    return (
+        f"{PROCESS_TEXT}\n"
+        "🧬 Finalizing\n"
+        "<code>"
+        f"🎞 {escape(_clean_line(label))}\n"
+        "Merging & processing file..."
+        "</code>\n"
+        f"👤 {mention}"
+    )
+
+
+def dl_caption_meta(title: str, extra: list[str], mention: str) -> str:
+    """Caption hasil akhir: blok monospace + tag user requester.
+
+    Baris-baris dinormalisasi supaya tidak ada 'double enter' dari judul
+    yang mengandung newline.
+    """
+    lines = ["<code>", f"🎬 {escape(_clean_line(title))}"]
+    lines += [escape(_clean_line(x)) for x in extra if _clean_line(x)]
+    lines += ["</code>", "", f"⬇️ Downloaded by {mention}"]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(lines))
 
 
 async def ensure_yt_cookies() -> None:

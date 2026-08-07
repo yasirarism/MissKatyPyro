@@ -34,7 +34,16 @@ from yt_dlp import DownloadError, YoutubeDL
 from misskaty import app
 from misskaty.core import pyro_cooldown
 from misskaty.core.decorator import capture_err, new_task
-from misskaty.helper import fetch, isValidURL, use_chat_lang
+from misskaty.helper import (
+    PROCESS_TEXT,
+    dl_caption_meta,
+    dl_finalizing_text,
+    dl_progress_text,
+    fetch,
+    format_progress_bar,
+    isValidURL,
+    use_chat_lang,
+)
 from misskaty.helper.pyro_progress import humanbytes, time_formatter
 from misskaty.vars import COMMAND_HANDLER
 
@@ -42,7 +51,6 @@ YT_REGEX = r"^(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(wa
 YT_DB = {}
 YTDL_CACHE = {}
 ACTIVE_DOWNLOADS = {}
-PROCESS_TEXT = "<emoji id=5319190934510904031>⏳</emoji> Processing.."
 
 
 class DownloadCancelled(Exception):
@@ -53,53 +61,20 @@ def rand_key() -> str:
     return str(uuid4())[:8]
 
 
-def format_progress_bar(percentage: float) -> str:
-    """Progress bar monospace-friendly: 10 slot block chars."""
-    filled = max(0, min(10, int(percentage // 10)))
-    return f"[{'█' * filled}{'░' * (10 - filled)}]"
+def _resolve_yt_url(ctx: Message) -> str:
+    """Ambil URL untuk /ytdown.
 
-
-def _dl_progress_text(state: dict, label: str, title: str, mention: str) -> str:
-    """Caption progress download — monospace + tag user."""
-    total = state["total"]
-    downloaded = min(state["downloaded"], total) if total else state["downloaded"]
-    percentage = (downloaded / total * 100) if total else 0
-    bar = format_progress_bar(percentage) if total else ""
-    pct = f"{percentage:.1f}%" if total else "??%"
-    speed = humanbytes(state["speed"]) or "0 B"
-    eta = time_formatter(int(state["eta"])) if state["eta"] else "Unknown"
-    return (
-        f"{PROCESS_TEXT}\n"
-        "⬇️ Downloading\n"
-        "<code>"
-        f"🎬 {escape(title)[:60]}\n"
-        f"{escape(label)}\n"
-        f"{bar} {pct}\n"
-        f"📦 {humanbytes(downloaded) or '0 B'} / {humanbytes(total) or '?'}\n"
-        f"⚡ {speed}/s\n"
-        f"⏱ ETA: {eta}"
-        "</code>\n"
-        f"👤 {mention}"
-    )
-
-
-def _dl_finalizing_text(label: str, mention: str) -> str:
-    """Caption saat yt-dlp sedang merge/post-process (hook tidak memanggil)."""
-    return (
-        f"{PROCESS_TEXT}\n"
-        "🧬 Finalizing\n"
-        "<code>"
-        f"🎞 {escape(label)}\n"
-        "Merging & processing file..."
-        "</code>\n"
-        f"👤 {mention}"
-    )
-
-
-def _dl_caption_meta(title: str, extra: list[str], mention: str) -> str:
-    """Caption hasil akhir: blok monospace + tag user requester."""
-    lines = ["<code>", f"🎬 {escape(title)}"] + [escape(x) for x in extra] + ["</code>", "", f"⬇️ Downloaded by {mention}"]
-    return "\n".join(lines)
+    Prioritas: 1) argumen command, 2) reply message (text/caption),
+    3) trigger regex (link dikirim langsung di chat). Mengembalikan string
+    kosong kalau tidak ada URL sama sekali.
+    """
+    if ctx.command and len(ctx.command) > 1:
+        return ctx.command[1]
+    if ctx.reply_to_message:
+        return (ctx.reply_to_message.text or ctx.reply_to_message.caption or "").strip()
+    if ctx.command:
+        return ""  # command tanpa argumen & tanpa reply
+    return (ctx.text or ctx.caption or "").strip()
 
 
 def get_cookie_file() -> str | None:
@@ -167,12 +142,15 @@ def parse_quality_tree(info: dict) -> dict:
                 continue
             if fmt.get("vcodec") in (None, "none"):
                 continue
+            vcodec = (fmt.get("vcodec") or "").lower()
+            is_avc = vcodec.startswith("avc1") or "h264" in vcodec
             tbr = int(fmt.get("tbr") or fmt.get("vbr") or 0)
             fps = int(fmt.get("fps") or 0)
             format_id = str(fmt.get("format_id"))
             selector = format_id
             if fmt.get("acodec") in (None, "none"):
-                selector = f"{format_id}+bestaudio/best"
+                # Gabung dengan audio AAC kalau tersedia (fallback bestaudio)
+                selector = f"{format_id}+bestaudio[acodec^=mp4a]/bestaudio/best"
             size_bytes = int(fmt.get("filesize") or fmt.get("filesize_approx") or 0)
             candidates.append(
                 {
@@ -185,13 +163,19 @@ def parse_quality_tree(info: dict) -> dict:
                     "fps": fps,
                     "format_id": format_id,
                     "height": target_height,
+                    "codec": "AVC" if is_avc else (vcodec.split(".")[0].upper() or "?"),
+                    "avc": is_avc,
                 }
             )
         if candidates:
+            # Prioritaskan H.264/AVC (kompatibel & ringan), lalu bitrate & fps
             resolutions[str(target_height)] = sorted(
                 candidates,
-                key=lambda x: (x.get("bitrate", 0), x.get("fps", 0)),
-                reverse=True,
+                key=lambda x: (
+                    not x.get("avc", False),
+                    -x.get("bitrate", 0),
+                    -x.get("fps", 0),
+                ),
             )
 
     audio = []
@@ -199,9 +183,11 @@ def parse_quality_tree(info: dict) -> dict:
         audio.append(
             {
                 "label": f"{bitrate}kbps",
-                "format": "bestaudio/best",
+                # AAC (m4a) dulu; fallback bestaudio kalau tidak tersedia
+                "format": "bestaudio[acodec^=mp4a]/bestaudio/best",
                 "kind": "audio",
                 "ext": "m4a",
+                "codec": "aac",
                 "bitrate": str(bitrate),
                 "size": estimate_audio_size(duration, bitrate),
             }
@@ -353,8 +339,9 @@ async def ytsearch(_, ctx: Message, strings):
 async def ytdownv2(_, ctx: Message, strings):
     if not ctx.from_user:
         return await ctx.reply(strings("no_channel"))
-    url = ctx.command[1] if ctx.command and len(ctx.command) > 1 else ctx.text or ctx.caption
-    if not isValidURL(url):
+    # Tanpa URL (argumen/reply/teks) -> perintah ditolak, tidak memproses.
+    url = _resolve_yt_url(ctx)
+    if not url or not isValidURL(url):
         return await ctx.reply(strings("invalid_link"))
 
     progress_msg = await ctx.reply(PROCESS_TEXT, parse_mode=ParseMode.HTML)
@@ -425,7 +412,8 @@ async def ytdl_pick_step(_, cq: CallbackQuery, strings):
         for idx, opt in enumerate(options):
             fmt_id = opt.get("format_id") or "-"
             fps = opt.get("fps") or 0
-            label = f"{opt['label']} • {fps}fps • {fmt_id}"
+            codec = opt.get("codec") or "?"
+            label = f"{opt['label']} • {codec} • {fps}fps • {fmt_id}"
             if opt.get("size"):
                 label += f" • {humanbytes(opt['size'])}"
             rows.append([InlineKeyboardButton(label, callback_data=f"yt_dl|{cache_key}|v|{res}|{idx}")])
@@ -485,6 +473,7 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
         "total": 0,
         "speed": 0,
         "eta": 0,
+        "start": time(),
         "last_update": time(),
         "last_status": "starting",
     }
@@ -536,6 +525,9 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
             state["last_status"] = "finished"
 
     def do_download():
+        # Video: selector sudah memilih format H.264/AVC + audio AAC (m4a)
+        # di parse_quality_tree, lalu di-merge ke container MP4.
+        # Audio: ambil AAC (m4a) lalu ekstrak/konversi ke AAC murni.
         ydl_opts = build_ydl_opts({
             "outtmpl": file_path,
             "noprogress": True,
@@ -548,6 +540,10 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
                 {"key": "FFmpegExtractAudio", "preferredcodec": option.get("codec", "aac"), "preferredquality": option.get("bitrate", "192")},
                 {"key": "FFmpegMetadata", "add_metadata": True},
                 {"key": "EmbedThumbnail"},
+            ]
+        else:
+            ydl_opts["postprocessors"] = [
+                {"key": "FFmpegMetadata", "add_metadata": True},
             ]
         with YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(data["url"], download=True)
@@ -565,9 +561,9 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
         # Hook diam >8 detik tapi download masih jalan => yt-dlp sedang
         # merge/post-process (hook tidak dipanggil pada fase ini).
         if time() - state["last_update"] > 8 and state["downloaded"] > 0:
-            text = _dl_finalizing_text(label, mention)
+            text = dl_finalizing_text(label, mention)
         else:
-            text = _dl_progress_text(state, label, title, mention)
+            text = dl_progress_text(state, label, title, mention)
         if text != status_text:
             try:
                 await _edit_caption(text)
@@ -632,7 +628,7 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
                 meta.append(f"📅 {data.get('release_date')}")
             if data.get("duration"):
                 meta.append(f"⏱ {time_formatter(data['duration']).strip()}")
-            caption = _dl_caption_meta(title or "Audio", meta, mention)
+            caption = dl_caption_meta(title or "Audio", meta, mention)
             media = InputMediaAudio(
                 media=downloaded_file,
                 caption=caption,
@@ -648,7 +644,7 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
                 meta.append(f"👤 {data.get('uploader')}")
             if data.get("duration"):
                 meta.append(f"⏱ {time_formatter(data['duration']).strip()}")
-            caption = _dl_caption_meta(title, meta, mention)
+            caption = dl_caption_meta(title, meta, mention)
             media = InputMediaVideo(
                 media=downloaded_file,
                 caption=caption,
