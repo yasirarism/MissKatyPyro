@@ -1,7 +1,6 @@
 import logging
 import os
 import random
-import re
 import string
 from html import escape
 from pathlib import Path
@@ -34,15 +33,37 @@ def _clean_line(text: str) -> str:
     return " ".join((text or "").split())
 
 
+def _estimate_eta(state: dict) -> int:
+    """Perkirakan ETA (detik).
+
+    yt-dlp sering melaporkan ``eta`` = 0/None pada format gabungan
+    (video+audio) atau saat total berubah. Kalau begitu, hitung sendiri
+    dari sisa byte / kecepatan supaya ETA selalu tampil.
+    """
+    eta = int(state.get("eta") or 0)
+    if eta > 0:
+        return eta
+    total = state.get("total") or 0
+    speed = state.get("speed") or 0
+    downloaded = state.get("downloaded") or 0
+    if total > 0 and speed > 0 and downloaded < total:
+        return int((total - downloaded) / speed)
+    return 0
+
+
 def dl_progress_text(state: dict, label: str, title: str, mention: str) -> str:
-    """Caption progress download — monospace + tag user + elapsed time."""
+    """Caption progress download — monospace + tag user + elapsed/ETA.
+
+    Tidak ada baris kosong sama sekali (anti 'double enter').
+    """
     total = state["total"]
     downloaded = min(state["downloaded"], total) if total else state["downloaded"]
     percentage = (downloaded / total * 100) if total else 0
     bar = format_progress_bar(percentage) if total else ""
     pct = f"{percentage:.1f}%" if total else "??%"
     speed = humanbytes(state["speed"]) or "0 B"
-    eta = time_formatter(int(state["eta"])).strip() if state["eta"] else "Unknown"
+    eta_secs = _estimate_eta(state)
+    eta = time_formatter(eta_secs).strip() if eta_secs else "Unknown"
     elapsed = time_formatter(int(time() - state.get("start", time()))).strip() or "0s"
     return (
         f"{PROCESS_TEXT}\n"
@@ -75,13 +96,13 @@ def dl_finalizing_text(label: str, mention: str) -> str:
 def dl_caption_meta(title: str, extra: list[str], mention: str) -> str:
     """Caption hasil akhir: blok monospace + tag user requester.
 
-    Baris-baris dinormalisasi supaya tidak ada 'double enter' dari judul
-    yang mengandung newline.
+    Tanpa baris kosong sama sekali — tiap baris dipisah satu newline,
+    jadi tidak ada 'double enter' di caption.
     """
     lines = ["<code>", f"🎬 {escape(_clean_line(title))}"]
     lines += [escape(_clean_line(x)) for x in extra if _clean_line(x)]
-    lines += ["</code>", "", f"⬇️ Downloaded by {mention}"]
-    return re.sub(r"\n{3,}", "\n\n", "\n".join(lines))
+    lines += ["</code>", f"⬇️ Downloaded by {mention}"]
+    return "\n".join(lines)
 
 
 async def ensure_yt_cookies() -> None:

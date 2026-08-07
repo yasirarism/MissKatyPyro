@@ -5,14 +5,15 @@
 * Copyright @YasirPedia All rights reserved
 """
 
+import contextlib
 import io
 import os
-import subprocess
 import time
 from logging import getLogger
 from os import path
 from os import remove as osremove
 
+import httpx
 from pyrogram import Client, filters
 from pyrogram.file_id import FileId, FileType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -35,6 +36,10 @@ HEAD_CHUNKS = 8  # 8 MiB awal
 TAIL_CHUNKS = 8  # 8 MiB akhir
 FULL_DL_LIMIT = 2_097_152_000  # 2 GiB — batas aman fallback download penuh
 PARTIAL_LIMIT = 4_294_967_296  # 4 GiB — partial analysis tetap bisa
+
+# URL (HTTP Range) — ukuran per request
+URL_CHUNK = 8 * 1024 * 1024  # 8 MiB per Range request
+MAX_URL_FULL = 200 * 1024 * 1024  # 200 MiB — cap full download URL tanpa Range
 
 
 async def _fetch_chunks(client: Client, decoded: FileId, file_size: int, offset_chunks: int, limit_chunks: int) -> bytes:
@@ -96,11 +101,142 @@ async def _partial_download(client: Client, media, file_size: int) -> str | None
         return None
 
 
+def _parse_content_range(value: str | None) -> int:
+    """Parse header ``Content-Range`` -> total ukuran file (0 jika tidak tahu).
+
+    Contoh: ``bytes 0-8388607/123456789`` -> 123456789
+    """
+    if not value or "/" not in value:
+        return 0
+    try:
+        return int(value.rsplit("/", 1)[1])
+    except (ValueError, IndexError):
+        return 0
+
+
+async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bool = False):
+    """Download URL remote via HTTP Range (head + tail) lalu simpan ke disk.
+
+    - Server support Range (206) -> ambil 8 MiB awal + 8 MiB akhir.
+    - Server abaikan Range (200) -> stream sampai 8 MiB saja (head);
+      kalau file > MAX_URL_FULL dan tidak support Range -> (None, total)
+      supaya pemanggil bisa menolak dengan pesan yang jelas.
+    - 403/404 -> (None, 0).
+
+    Returns:
+        ``(path, total_size)`` — total_size 0 berarti tidak diketahui.
+    """
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_path = path.join(tmp_dir, f"mi_url_{job}.part")
+    try:
+        async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
+            if not force_full:
+                async with client.stream(
+                    "GET", url, headers={"Range": f"bytes=0-{URL_CHUNK - 1}"}
+                ) as resp:
+                    if resp.status_code in (403, 404):
+                        return None, 0
+                    if resp.status_code != 206 and resp.status_code != 200:
+                        return None, 0
+                    if resp.status_code == 206:
+                        total = _parse_content_range(resp.headers.get("content-range"))
+                        data = bytearray()
+                        async for chunk in resp.aiter_bytes(256 * 1024):
+                            data += chunk
+                            if len(data) >= URL_CHUNK:
+                                break
+                        if total > 2 * URL_CHUNK:
+                            async with client.stream(
+                                "GET",
+                                url,
+                                headers={"Range": f"bytes={total - URL_CHUNK}-{total - 1}"},
+                            ) as tail_resp:
+                                if tail_resp.status_code == 206:
+                                    async for chunk in tail_resp.aiter_bytes(256 * 1024):
+                                        data += chunk
+                                        if len(data) >= URL_CHUNK * 2:
+                                            break
+                        with open(tmp_path, "wb") as f:
+                            f.write(data)
+                        return tmp_path, total
+                    # status 200: server abaikan Range
+                    total = _parse_content_range(resp.headers.get("content-range")) or int(
+                        resp.headers.get("content-length") or 0
+                    )
+                    if total > MAX_URL_FULL:
+                        return None, total
+                    with open(tmp_path, "wb") as f:
+                        size = 0
+                        async for chunk in resp.aiter_bytes(256 * 1024):
+                            f.write(chunk)
+                            size += len(chunk)
+                            if size >= URL_CHUNK:
+                                break
+                    return tmp_path, total
+            # force_full: stream seluruh file (dengan cap MAX_URL_FULL)
+            async with client.stream("GET", url) as resp:
+                if resp.status_code in (403, 404):
+                    return None, 0
+                if resp.status_code != 200:
+                    return None, 0
+                with open(tmp_path, "wb") as f:
+                    size = 0
+                    async for chunk in resp.aiter_bytes(256 * 1024):
+                        f.write(chunk)
+                        size += len(chunk)
+                        if size >= MAX_URL_FULL:
+                            break
+                return tmp_path, size
+    except Exception as err:
+        LOGGER.debug("URL partial download gagal: %s", err)
+        return None, 0
+
+
 def _looks_complete(out: str | None) -> bool:
     """Heuristik: output mediainfo dianggap lengkap jika ada section utama."""
     if not out:
         return False
     return any(section in out for section in ("General", "Video", "Audio"))
+
+
+async def _send_result(ctx: Message, process: Message, out: str, strings, media_type: str = "Unknown"):
+    """Buat paste + kirim file hasil mediainfo (dipakai reply & URL path)."""
+    body_text = f"""
+MissKatyBot MediaInfo
+JSON
+<pre>{media_type}</pre>
+    
+DETAILS
+<pre>{out or 'Not Supported'}</pre>
+    """
+    try:
+        link = await mediainfo_paste(out, "MissKaty Mediainfo")
+        markup = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+        )
+    except Exception:
+        try:
+            link = await post_to_telegraph(
+                False, "MissKaty MediaInfo", f"<code>{body_text}</code>"
+            )
+            markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+            )
+        except Exception:
+            markup = None
+    with io.BytesIO(str.encode(body_text)) as out_file:
+        out_file.name = "MissKaty_Mediainfo.txt"
+        await ctx.reply_document(
+            out_file,
+            caption=strings("capt_media").format(
+                ment=ctx.from_user.mention
+                if ctx.from_user
+                else ctx.sender_chat.title
+            ),
+            thumb="assets/thumb.jpg",
+            reply_markup=markup,
+        )
+        await process.delete()
 
 
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
@@ -155,92 +291,56 @@ async def mediainfo(client: Client, ctx: Message, strings):
             output_ = await runcmd(f'mediainfo "{file_path}"')
             out = output_[0] if len(output_) != 0 else None
 
-        body_text = f"""
-MissKatyBot MediaInfo
-JSON
-<pre>{getattr(file_info, 'message_type', 'Unknown')}</pre>
-    
-DETAILS
-<pre>{out or 'Not Supported'}</pre>
-    """
-        try:
-            link = await mediainfo_paste(out, "MissKaty Mediainfo")
-            markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-            )
-        except Exception:
-            try:
-                link = await post_to_telegraph(
-                    False, "MissKaty MediaInfo", f"<code>{body_text}</code>"
-                )
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                )
-            except Exception:
-                markup = None
-        with io.BytesIO(str.encode(body_text)) as out_file:
-            out_file.name = "MissKaty_Mediainfo.txt"
-            await ctx.reply_document(
-                out_file,
-                caption=strings("capt_media").format(
-                    ment=ctx.from_user.mention
-                    if ctx.from_user
-                    else ctx.sender_chat.title
-                ),
-                thumb="assets/thumb.jpg",
-                reply_markup=markup,
-            )
-            await process.delete()
+        # Output tetap kosong/tidak lengkap -> jangan kirim file kosong
+        if not _looks_complete(out):
+            with contextlib.suppress(Exception):
+                osremove(file_path)
+            return await process.edit(strings("err_analyze"), del_in=6)
+
+        await _send_result(
+            ctx, process, out, strings,
+            media_type=getattr(file_info, "message_type", "Unknown"),
+        )
         try:
             osremove(file_path)
         except Exception:
             pass
     else:
-        try:
-            link = ctx.input
-            process = await ctx.reply(strings("wait_msg"))
-            try:
-                # `mediainfo` CLI membaca URL remote secara parsial (HTTP range)
-                # — tidak perlu download penuh juga.
-                output = subprocess.check_output(["mediainfo", f"{link}"]).decode(
-                    "utf-8"
-                )
-            except Exception:
-                return await process.edit(strings("err_link"))
-            body_text = f"""
-            MissKatyBot MediaInfo
-            <pre>{output}</pre>
-            """
-            # link = await post_to_telegraph(False, title, body_text)
-            try:
-                link = await mediainfo_paste(output, "MissKaty Mediainfo")
-                markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                )
-            except Exception:
-                try:
-                    link = await post_to_telegraph(
-                        False, "MissKaty MediaInfo", body_text
-                    )
-                    markup = InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
-                    )
-                except Exception:
-                    markup = None
-            with io.BytesIO(str.encode(output)) as out_file:
-                out_file.name = "MissKaty_Mediainfo.txt"
-                await ctx.reply_document(
-                    out_file,
-                    caption=strings("capt_media").format(
-                        ment=ctx.from_user.mention
-                        if ctx.from_user
-                        else ctx.sender_chat.title
-                    ),
-                    thumb="assets/thumb.jpg",
-                    reply_markup=markup,
-                )
-                await process.delete()
-        except IndexError:
+        link = ctx.input
+        # Wajib ada link setelah command — kalau tidak, tampilkan bantuan
+        # (jangan trigger analisis kosong).
+        if not link:
             return await ctx.reply(
                 strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6
             )
+        process = await ctx.reply(strings("wait_msg"))
+        job = f"url{int(time.time())}"
+
+        # Download URL by chunk (HTTP Range) lalu analisis lokal —
+        # mengatasi URL yang kena 404 saat dipanggil langsung mediainfo CLI.
+        file_path, total = await _download_url_partial(link, "downloads", job)
+        if not file_path:
+            return await process.edit(strings("err_link"), del_in=6)
+
+        output_ = await runcmd(f'mediainfo "{file_path}"')
+        out = output_[0] if len(output_) != 0 else None
+
+        # Partial kurang lengkap & file masih masuk akal -> coba full stream
+        if not _looks_complete(out) and total and total <= MAX_URL_FULL:
+            LOGGER.info("URL partial kurang lengkap, coba full download")
+            osremove(file_path)
+            file_path, _ = await _download_url_partial(link, "downloads", f"{job}_full", force_full=True)
+            if file_path:
+                output_ = await runcmd(f'mediainfo "{file_path}"')
+                out = output_[0] if len(output_) != 0 else None
+
+        if not _looks_complete(out):
+            with contextlib.suppress(Exception):
+                osremove(file_path)
+            return await process.edit(strings("err_analyze"), del_in=6)
+
+        await _send_result(ctx, process, out, strings, media_type="URL")
+        try:
+            osremove(file_path)
+        except Exception:
+            pass
