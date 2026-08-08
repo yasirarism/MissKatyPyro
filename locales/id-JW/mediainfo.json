@@ -8,5 +8,7 @@
     "mediainfo_help": "Gunakake printah /{cmd} [link], utawa bales media telegram nganggo /{cmd}.",
     "capt_media": "ℹ️ Hasil mediainfo sampeyan..\n\n**Panjalukan Saka:** {ment}",
     "viweb": "💬 Bukak Web",
-    "err_analyze": "Gagal nganalisa file. Priksa link media langsung lan bisa diunduh."
+    "err_analyze": "Gagal nganalisa file. Priksa link media langsung lan bisa diunduh.",
+    "cancel_btn": "❌ Rasido",
+    "cancelled_text": "❌ Download dibatalake."
 }
