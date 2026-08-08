@@ -65,7 +65,7 @@ async def mediainfo_cancel_cb(_, query: CallbackQuery):
         await query.answer("Membatalkan download...", True)
 
 
-async def _mi_progress(current, total, ud_type, message, start, dc_id, gid):
+async def _mi_progress(current, total, ud_type, message, start, dc_id, gid, uid):
     """progress_for_pyrogram + tombol Cancel tetap tampil + cek flag cancel."""
     if ACTIVE_MEDIAINFO.get(int(gid), {}).get("cancelled"):
         raise asyncio.CancelledError
@@ -99,8 +99,9 @@ async def _mi_progress(current, total, ud_type, message, start, dc_id, gid):
                 estimated_total_time if estimated_total_time != "" else "0 s",
             )
         )
-        uid = getattr(message, "from_user", None)
-        markup = _mi_cancel_markup(int(gid), uid.id if uid else 0)
+        # UID requester di-pass eksplisit via progress_args (message adalah
+        # pesan proses milik bot, jadi message.from_user = bot, bukan requester).
+        markup = _mi_cancel_markup(int(gid), int(uid))
         try:
             await message.edit(f"{ud_type}\n {tmp}", reply_markup=markup)
         except FloodWait as e:
@@ -280,6 +281,11 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
                         if size >= MAX_URL_FULL:
                             break
                 return tmp_path, size
+    except asyncio.CancelledError:
+        # User menekan Cancel — jangan ditelan except Exception di bawah,
+        # biarkan propagate ke handler mediainfo (Python 3.8+: CancelledError
+        # turunan BaseException, tapi re-raise eksplisit lebih aman lintas versi).
+        raise
     except Exception as err:
         LOGGER.debug("URL partial download gagal: %s", err)
         return None, 0
@@ -373,7 +379,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                     dl = await ctx.reply_to_message.download(
                         file_name="downloads/",
                         progress=_mi_progress,
-                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid),
+                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid, uid),
                     )
                 except asyncio.CancelledError:
                     raise
@@ -394,7 +400,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                     dl = await ctx.reply_to_message.download(
                         file_name="downloads/",
                         progress=_mi_progress,
-                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid),
+                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid, uid),
                     )
                 except asyncio.CancelledError:
                     raise
