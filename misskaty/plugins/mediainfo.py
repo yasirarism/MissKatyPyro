@@ -5,8 +5,10 @@
 * Copyright @YasirPedia All rights reserved
 """
 
+import asyncio
 import contextlib
 import io
+import math
 import os
 import time
 from logging import getLogger
@@ -15,17 +17,98 @@ from os import remove as osremove
 
 import httpx
 from pyrogram import Client, filters
+from pyrogram.errors import (
+    FloodWait,
+    MessageIdInvalid,
+    MessageNotModified,
+    QueryIdInvalid,
+)
 from pyrogram.file_id import FileId, FileType
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.helper import post_to_telegraph, progress_for_pyrogram, runcmd
+from misskaty.helper import post_to_telegraph, runcmd
 from misskaty.helper.chat_utils import get_file_id
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.mediainfo_paste import mediainfo_paste
+from misskaty.helper.pyro_progress import humanbytes, time_formatter
 from misskaty.vars import COMMAND_HANDLER
 
 LOGGER = getLogger("MissKaty")
+
+# ---------------------------------------------------------------------------
+# Cancel support: ACTIVE_MEDIAINFO[gid] = {"cancelled": bool}
+# gid = message.id dari perintah /mediainfo. Tombol Cancel meng-flag pesan;
+# progress callback & loop download URL mengecek flag -> raise CancelledError.
+# ---------------------------------------------------------------------------
+ACTIVE_MEDIAINFO: dict[int, dict] = {}
+
+
+def _mi_cancel_markup(gid: int, uid: int, label: str = "❌ Cancel") -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton(label, callback_data=f"miocancel#{gid}#{uid}")]]
+    )
+
+
+@app.on_callback_query(filters.regex(r"^miocancel#"))
+async def mediainfo_cancel_cb(_, query: CallbackQuery):
+    _, gid, uid = query.data.split("#")
+    if query.from_user.id != int(uid):
+        with contextlib.suppress(QueryIdInvalid):
+            return await query.answer("Not yours!", True)
+    info = ACTIVE_MEDIAINFO.get(int(gid))
+    if not info:
+        with contextlib.suppress(QueryIdInvalid):
+            return await query.answer("Task sudah selesai / tidak ditemukan.", True)
+    info["cancelled"] = True
+    with contextlib.suppress(QueryIdInvalid):
+        await query.answer("Membatalkan download...", True)
+
+
+async def _mi_progress(current, total, ud_type, message, start, dc_id, gid, uid):
+    """progress_for_pyrogram + tombol Cancel tetap tampil + cek flag cancel."""
+    if ACTIVE_MEDIAINFO.get(int(gid), {}).get("cancelled"):
+        raise asyncio.CancelledError
+    now = time.time()
+    diff = now - start
+    if round(diff % 10.00) == 0 or current == total:
+        percentage = current * 100 / total
+        elapsed_time = round(diff)
+        if elapsed_time == 0:
+            return
+        speed = current / diff
+        time_to_completion = round((total - current) / speed)
+        estimated_total_time = elapsed_time + time_to_completion
+
+        elapsed_time = time_formatter(elapsed_time)
+        estimated_total_time = time_formatter(estimated_total_time)
+
+        progress = "[{0}{1}] \nP: {2}%\n".format(
+            "".join(["●" for _ in range(math.floor(percentage / 5))]),
+            "".join(["○" for _ in range(20 - math.floor(percentage / 5))]),
+            round(percentage, 2),
+        )
+
+        tmp = (
+            progress
+            + "{0} <b>of</b> {1}\n<b>Speed:</b> {2}/s\n<b>DC ID:</b> {3}\n<b>ETA:</b> {4}</b>\n".format(
+                humanbytes(current),
+                humanbytes(total),
+                humanbytes(speed),
+                dc_id,
+                estimated_total_time if estimated_total_time != "" else "0 s",
+            )
+        )
+        # UID requester di-pass eksplisit via progress_args (message adalah
+        # pesan proses milik bot, jadi message.from_user = bot, bukan requester).
+        markup = _mi_cancel_markup(int(gid), int(uid))
+        try:
+            await message.edit(f"{ud_type}\n {tmp}", reply_markup=markup)
+        except FloodWait as e:
+            await asyncio.sleep(e.value)
+            await message.edit(f"{ud_type}\n {tmp}", reply_markup=markup)
+        except (MessageNotModified, MessageIdInvalid):
+            pass
 
 # ---------------------------------------------------------------------------
 # Partial download settings (head + tail) — cukup ambil sebagian kecil file
@@ -114,7 +197,7 @@ def _parse_content_range(value: str | None) -> int:
         return 0
 
 
-async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bool = False):
+async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bool = False, gid: int = 0):
     """Download URL remote via HTTP Range (head + tail) lalu simpan ke disk.
 
     - Server support Range (206) -> ambil 8 MiB awal + 8 MiB akhir.
@@ -122,12 +205,19 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
       kalau file > MAX_URL_FULL dan tidak support Range -> (None, total)
       supaya pemanggil bisa menolak dengan pesan yang jelas.
     - 403/404 -> (None, 0).
+    - ``gid`` diisi saat dipanggil dari /mediainfo: flag cancel dicek tiap
+      chunk, kalau user menekan Cancel -> raise ``asyncio.CancelledError``.
 
     Returns:
         ``(path, total_size)`` — total_size 0 berarti tidak diketahui.
     """
     os.makedirs(tmp_dir, exist_ok=True)
     tmp_path = path.join(tmp_dir, f"mi_url_{job}.part")
+
+    def _check_cancel():
+        if gid and ACTIVE_MEDIAINFO.get(int(gid), {}).get("cancelled"):
+            raise asyncio.CancelledError
+
     try:
         async with httpx.AsyncClient(timeout=30, follow_redirects=True) as client:
             if not force_full:
@@ -142,6 +232,7 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
                         total = _parse_content_range(resp.headers.get("content-range"))
                         data = bytearray()
                         async for chunk in resp.aiter_bytes(256 * 1024):
+                            _check_cancel()
                             data += chunk
                             if len(data) >= URL_CHUNK:
                                 break
@@ -153,6 +244,7 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
                             ) as tail_resp:
                                 if tail_resp.status_code == 206:
                                     async for chunk in tail_resp.aiter_bytes(256 * 1024):
+                                        _check_cancel()
                                         data += chunk
                                         if len(data) >= URL_CHUNK * 2:
                                             break
@@ -168,6 +260,7 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
                     with open(tmp_path, "wb") as f:
                         size = 0
                         async for chunk in resp.aiter_bytes(256 * 1024):
+                            _check_cancel()
                             f.write(chunk)
                             size += len(chunk)
                             if size >= URL_CHUNK:
@@ -182,11 +275,17 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
                 with open(tmp_path, "wb") as f:
                     size = 0
                     async for chunk in resp.aiter_bytes(256 * 1024):
+                        _check_cancel()
                         f.write(chunk)
                         size += len(chunk)
                         if size >= MAX_URL_FULL:
                             break
                 return tmp_path, size
+    except asyncio.CancelledError:
+        # User menekan Cancel — jangan ditelan except Exception di bawah,
+        # biarkan propagate ke handler mediainfo (Python 3.8+: CancelledError
+        # turunan BaseException, tapi re-raise eksplisit lebih aman lintas versi).
+        raise
     except Exception as err:
         LOGGER.debug("URL partial download gagal: %s", err)
         return None, 0
@@ -242,105 +341,130 @@ DETAILS
 @app.on_message(filters.command(["mediainfo"], COMMAND_HANDLER))
 @use_chat_lang()
 async def mediainfo(client: Client, ctx: Message, strings):
-    if ctx.reply_to_message and ctx.reply_to_message.media:
-        process = await ctx.reply(strings("processing_text"))
-        file_info = get_file_id(ctx.reply_to_message)
-        if file_info is None:
-            return await process.edit(strings("media_invalid"))
-        file_size = getattr(file_info, "file_size", 0) or 0
-        if file_size > PARTIAL_LIMIT:
-            return await process.edit(strings("dl_limit_exceeded"), del_in=6)
-        c_time = time.time()
-        dc_id = FileId.decode(file_info.file_id).dc_id
+    gid = ctx.id
+    uid = ctx.from_user.id if ctx.from_user else 0
+    ACTIVE_MEDIAINFO[gid] = {"cancelled": False}
+    file_path: str | None = None
+    process: Message | None = None
 
-        # --- Percobaan 1: partial download (head+tail), tanpa download penuh ---
-        file_path = await _partial_download(client, file_info, file_size)
-        partial_used = file_path is not None
+    async def _cleanup(paths):
+        for p in paths:
+            with contextlib.suppress(Exception):
+                if p and path.exists(p):
+                    osremove(p)
 
-        if not partial_used:
-            if file_size > FULL_DL_LIMIT:
+    try:
+        if ctx.reply_to_message and ctx.reply_to_message.media:
+            process = await ctx.reply(
+                strings("processing_text"),
+                reply_markup=_mi_cancel_markup(gid, uid, strings("cancel_btn")),
+            )
+            file_info = get_file_id(ctx.reply_to_message)
+            if file_info is None:
+                return await process.edit(strings("media_invalid"))
+            file_size = getattr(file_info, "file_size", 0) or 0
+            if file_size > PARTIAL_LIMIT:
                 return await process.edit(strings("dl_limit_exceeded"), del_in=6)
-            try:
-                dl = await ctx.reply_to_message.download(
-                    file_name="downloads/",
-                    progress=progress_for_pyrogram,
-                    progress_args=(strings("dl_args_text"), process, c_time, dc_id),
-                )
-            except FileNotFoundError:
-                return await process.edit("ERROR: FileNotFound.")
-            file_path = path.join("downloads/", path.basename(dl))
+            c_time = time.time()
+            dc_id = FileId.decode(file_info.file_id).dc_id
 
-        output_ = await runcmd(f'mediainfo "{file_path}"')
-        out = output_[0] if len(output_) != 0 else None
+            # --- Percobaan 1: partial download (head+tail), tanpa download penuh ---
+            file_path = await _partial_download(client, file_info, file_size)
+            partial_used = file_path is not None
 
-        # --- Hasil partial kurang lengkap -> fallback download penuh ---
-        if partial_used and not _looks_complete(out):
-            LOGGER.info("Partial analysis kurang lengkap, fallback full download")
-            osremove(file_path)
-            if file_size > FULL_DL_LIMIT:
-                return await process.edit(strings("dl_limit_exceeded"), del_in=6)
-            try:
-                dl = await ctx.reply_to_message.download(
-                    file_name="downloads/",
-                    progress=progress_for_pyrogram,
-                    progress_args=(strings("dl_args_text"), process, c_time, dc_id),
-                )
-            except FileNotFoundError:
-                return await process.edit("ERROR: FileNotFound.")
-            file_path = path.join("downloads/", path.basename(dl))
+            if not partial_used:
+                if file_size > FULL_DL_LIMIT:
+                    return await process.edit(strings("dl_limit_exceeded"), del_in=6)
+                try:
+                    dl = await ctx.reply_to_message.download(
+                        file_name="downloads/",
+                        progress=_mi_progress,
+                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid, uid),
+                    )
+                except asyncio.CancelledError:
+                    raise
+                except FileNotFoundError:
+                    return await process.edit("ERROR: FileNotFound.")
+                file_path = path.join("downloads/", path.basename(dl))
+
             output_ = await runcmd(f'mediainfo "{file_path}"')
             out = output_[0] if len(output_) != 0 else None
 
-        # Output tetap kosong/tidak lengkap -> jangan kirim file kosong
-        if not _looks_complete(out):
-            with contextlib.suppress(Exception):
-                osremove(file_path)
-            return await process.edit(strings("err_analyze"), del_in=6)
-
-        await _send_result(
-            ctx, process, out, strings,
-            media_type=getattr(file_info, "message_type", "Unknown"),
-        )
-        try:
-            osremove(file_path)
-        except Exception:
-            pass
-    else:
-        link = ctx.input
-        # Wajib ada link setelah command — kalau tidak, tampilkan bantuan
-        # (jangan trigger analisis kosong).
-        if not link:
-            return await ctx.reply(
-                strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6
-            )
-        process = await ctx.reply(strings("wait_msg"))
-        job = f"url{int(time.time())}"
-
-        # Download URL by chunk (HTTP Range) lalu analisis lokal —
-        # mengatasi URL yang kena 404 saat dipanggil langsung mediainfo CLI.
-        file_path, total = await _download_url_partial(link, "downloads", job)
-        if not file_path:
-            return await process.edit(strings("err_link"), del_in=6)
-
-        output_ = await runcmd(f'mediainfo "{file_path}"')
-        out = output_[0] if len(output_) != 0 else None
-
-        # Partial kurang lengkap & file masih masuk akal -> coba full stream
-        if not _looks_complete(out) and total and total <= MAX_URL_FULL:
-            LOGGER.info("URL partial kurang lengkap, coba full download")
-            osremove(file_path)
-            file_path, _ = await _download_url_partial(link, "downloads", f"{job}_full", force_full=True)
-            if file_path:
+            # --- Hasil partial kurang lengkap -> fallback download penuh ---
+            if partial_used and not _looks_complete(out):
+                LOGGER.info("Partial analysis kurang lengkap, fallback full download")
+                await _cleanup([file_path])
+                if file_size > FULL_DL_LIMIT:
+                    return await process.edit(strings("dl_limit_exceeded"), del_in=6)
+                try:
+                    dl = await ctx.reply_to_message.download(
+                        file_name="downloads/",
+                        progress=_mi_progress,
+                        progress_args=(strings("dl_args_text"), process, c_time, dc_id, gid, uid),
+                    )
+                except asyncio.CancelledError:
+                    raise
+                except FileNotFoundError:
+                    return await process.edit("ERROR: FileNotFound.")
+                file_path = path.join("downloads/", path.basename(dl))
                 output_ = await runcmd(f'mediainfo "{file_path}"')
                 out = output_[0] if len(output_) != 0 else None
 
-        if not _looks_complete(out):
-            with contextlib.suppress(Exception):
-                osremove(file_path)
-            return await process.edit(strings("err_analyze"), del_in=6)
+            # Output tetap kosong/tidak lengkap -> jangan kirim file kosong
+            if not _looks_complete(out):
+                await _cleanup([file_path])
+                return await process.edit(strings("err_analyze"), del_in=6)
 
-        await _send_result(ctx, process, out, strings, media_type="URL")
-        try:
-            osremove(file_path)
-        except Exception:
-            pass
+            await _send_result(
+                ctx, process, out, strings,
+                media_type=getattr(file_info, "message_type", "Unknown"),
+            )
+            await _cleanup([file_path])
+        else:
+            link = ctx.input
+            # Wajib ada link setelah command — kalau tidak, tampilkan bantuan
+            # (jangan trigger analisis kosong).
+            if not link:
+                return await ctx.reply(
+                    strings("mediainfo_help").format(cmd=ctx.command[0]), del_in=6
+                )
+            process = await ctx.reply(
+                strings("wait_msg"), reply_markup=_mi_cancel_markup(gid, uid, strings("cancel_btn"))
+            )
+            job = f"url{int(time.time())}"
+
+            # Download URL by chunk (HTTP Range) lalu analisis lokal —
+            # mengatasi URL yang kena 404 saat dipanggil langsung mediainfo CLI.
+            file_path, total = await _download_url_partial(
+                link, "downloads", job, gid=gid
+            )
+            if not file_path:
+                return await process.edit(strings("err_link"), del_in=6)
+
+            output_ = await runcmd(f'mediainfo "{file_path}"')
+            out = output_[0] if len(output_) != 0 else None
+
+            # Partial kurang lengkap & file masih masuk akal -> coba full stream
+            if not _looks_complete(out) and total and total <= MAX_URL_FULL:
+                LOGGER.info("URL partial kurang lengkap, coba full download")
+                await _cleanup([file_path])
+                file_path, _ = await _download_url_partial(
+                    link, "downloads", f"{job}_full", force_full=True, gid=gid
+                )
+                if file_path:
+                    output_ = await runcmd(f'mediainfo "{file_path}"')
+                    out = output_[0] if len(output_) != 0 else None
+
+            if not _looks_complete(out):
+                await _cleanup([file_path])
+                return await process.edit(strings("err_analyze"), del_in=6)
+
+            await _send_result(ctx, process, out, strings, media_type="URL")
+            await _cleanup([file_path])
+    except asyncio.CancelledError:
+        LOGGER.info("mediainfo dibatalkan user (gid=%s)", gid)
+        await _cleanup([file_path])
+        with contextlib.suppress(Exception):
+            await process.edit(strings("cancelled_text"), del_in=5)
+    finally:
+        ACTIVE_MEDIAINFO.pop(gid, None)

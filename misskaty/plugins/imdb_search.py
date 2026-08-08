@@ -235,9 +235,9 @@ def _to_rich_html(text: str) -> str:
     diganti `<details>` + `<summary>` supaya tetap collapsible. Custom emoji
     ``<emoji id=...>`` diubah ke bentuk rich ``<tg-emoji emoji-id=...>``.
     """
-    # 0) Custom emoji -> bentuk rich message
+    # 0) Custom emoji -> bentuk rich message (terima bentuk quoted & unquoted)
     text = re.sub(
-        r"<emoji id=(\d+)>([^<]*)</emoji>",
+        r'<emoji id="?(\d+)"?>([^<]*)</emoji>',
         r'<tg-emoji emoji-id="\1">\2</tg-emoji>',
         text,
     )
@@ -254,18 +254,29 @@ def _to_rich_html(text: str) -> str:
         text,
         flags=re.DOTALL,
     )
-    # 2) Bungkus baris teks dalam <p> supaya rapi, bukan <br> mentah
-    #    (skip baris yang sudah berupa tag blok utuh)
+    # 2) Baris biasa rapat <p>; blank line jadi jarak antar section (collapse
+    #    ganda); baris setelah blank (section header) tanpa <p> supaya 1 enter.
+    text = text.strip()
     lines = [ln.strip() for ln in text.split("\n")]
-    rendered = []
+    out = []
+    prev_blank = False
     for ln in lines:
         if not ln:
+            if not prev_blank:
+                out.append("<br>")
+            prev_blank = True
             continue
-        if ln.startswith(("<details>", "<p>", "<blockquote", "<hr", "<h")):
-            rendered.append(ln)
+        is_header = prev_blank
+        prev_blank = False
+        if "<details" in ln or ln.startswith(
+            ("<blockquote", "<hr", "<h", "<img", "<figure", "<ul", "<ol", "<table")
+        ):
+            out.append(ln)
+        elif is_header:
+            out.append(ln)
         else:
-            rendered.append(f"<p>{ln}</p>")
-    return "\n".join(rendered)
+            out.append(f"<p>{ln}</p>")
+    return "".join(out)
 
 
 async def _send_rich_result(self, query, res_str, markup, poster_url=None):
@@ -1016,31 +1027,56 @@ async def imdbcari(_, query: CallbackQuery):
 # =====================================================================
 # Labels per locale — satu-satunya perbedaan antara hasil ID dan EN.
 # =====================================================================
+IMDB_CUSTOM_EMOJI = {
+    "processing": "5319190934510904031",  # ⏳
+    "cast": "5879770735999717115",  # 🙎
+    "plot": "5956561916573782596",  # 📜
+    "keywords": "6008118472066732010",  # 🔥
+    "title": "6005986106703613755",  # 📹
+    "aka": "6039454987250044861",  # 📢
+    "duration": "5900104897885376843",  # 🕓
+    "category": "5920137394153067262",  # 🔞
+    "awards": "6035162669948867129",  # 🏆
+    "rating": "6035162669948867129",  # 🏆
+    "released": "5967412305338568701",  # 📆
+    "genre": "6032625495328165724",  # 🎭
+    "country": "5776424837786374634",  # 🆔
+    "language": "5890997763331591703",  # 🔊
+    "rating_star": "6028338546736107668",  # ⭐
+    "close": "5985346521103604145",  # ❌ (tombol Close)
+    "imdb_by": "5886440807325504167",  # ©️
+}
+
+
+def _ce(key: str, glyph: str) -> str:
+    return f'<emoji id="{IMDB_CUSTOM_EMOJI[key]}">{glyph}</emoji>'
+
+
 _IMDB_LABELS = {
     "id": {
-        "processing": "<emoji id=5319190934510904031>⏳</emoji> Permintaan kamu sedang diproses.. ",
+        "processing": f"<i>{_ce('processing', '⏳')} Permintaan kamu sedang diproses.. </i>",
         "search_jw_locale": "ID",
         "date_locale": "id",
         "translate": True,
-        "title": "📹 Judul:",
-        "aka": "📢 AKA:",
-        "duration": "Durasi:",
-        "category": "Kategori:",
-        "rating": "Peringkat:",
+        "title": f"{_ce('title', '📹')} Judul:",
+        "aka": f"{_ce('aka', '📢')} AKA:",
+        "duration": f"{_ce('duration', '🕓')} Durasi:",
+        "category": f"{_ce('category', '🔞')} Kategori:",
+        "rating": f"{_ce('rating', '🏆')} Peringkat:",
         "rating_from": "dari {count} pengguna",
-        "release": "Rilis:",
-        "genre": "Genre:",
-        "country": "Negara:",
-        "language": "Bahasa:",
-        "cast_header": "<emoji id=5879770735999717115>🙎</emoji> Info Cast:",
+        "release": f"{_ce('released', '📆')} Rilis:",
+        "genre": f"{_ce('genre', '🎭')} Genre:",
+        "country": f"{_ce('country', '🆔')} Negara:",
+        "language": f"{_ce('language', '🔊')} Bahasa:",
+        "cast_header": f"{_ce('cast', '🙎')} Info Cast:",
         "director": "Sutradara:",
         "writer": "Penulis:",
         "actor": "Pemeran:",
-        "plot": "<emoji id=5956561916573782596>📜</emoji> Plot:",
-        "keywords": "<emoji id=6008118472066732010>🔥</emoji> Kata Kunci:",
-        "awards": "<emoji id=5316979941181496594>🏆</emoji> Penghargaan:",
-        "available": "Tersedia di:",
-        "imdb_by": "<emoji id=5886440807325504167>©️</emoji> IMDb by",
+        "plot": f"{_ce('plot', '📜')} Plot:",
+        "keywords": f"{_ce('keywords', '🔥')} Kata Kunci:",
+        "awards": f"{_ce('awards', '🏆')} Penghargaan:",
+        "available": "📽 Tersedia di:",
+        "imdb_by": f"{_ce('imdb_by', '©️')} IMDb by",
         "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
         "parse_err": (
             "Maaf, gagal mendapatkan info data dari IMDB.\n"
@@ -1049,29 +1085,29 @@ _IMDB_LABELS = {
         ),
     },
     "en": {
-        "processing": "<i><emoji id=5319190934510904031>⏳</emoji> Getting IMDb source..</i>",
+        "processing": f"<i>{_ce('processing', '⏳')} Getting IMDb source..</i>",
         "search_jw_locale": "US",
         "date_locale": "en",
         "translate": False,
-        "title": "📹 Title:",
-        "aka": "📢 AKA:",
-        "duration": "Duration:",
-        "category": "Category:",
-        "rating": "Rating:",
+        "title": f"{_ce('title', '📹')} Title:",
+        "aka": f"{_ce('aka', '📢')} AKA:",
+        "duration": f"{_ce('duration', '🕓')} Duration:",
+        "category": f"{_ce('category', '🔞')} Category:",
+        "rating": f"{_ce('rating', '🏆')} Rating:",
         "rating_from": "from {count} users",
-        "release": "Release:",
-        "genre": "Genre:",
-        "country": "Country:",
-        "language": "Language:",
-        "cast_header": "<emoji id=5879770735999717115>🙎</emoji> Cast Info:",
+        "release": f"{_ce('released', '📆')} Released:",
+        "genre": f"{_ce('genre', '🎭')} Genre:",
+        "country": f"{_ce('country', '🆔')} Country:",
+        "language": f"{_ce('language', '🔊')} Language:",
+        "cast_header": f"{_ce('cast', '🙎')} Cast Info:",
         "director": "Director:",
         "writer": "Writer:",
         "actor": "Stars:",
-        "plot": "<emoji id=5956561916573782596>📜</emoji> Summary:",
-        "keywords": "<emoji id=6008118472066732010>🔥</emoji> Keywords:",
-        "awards": "<emoji id=5316979941181496594>🏆</emoji> Awards:",
-        "available": "Available On:",
-        "imdb_by": "<emoji id=5886440807325504167>©️</emoji> IMDb by",
+        "plot": f"{_ce('plot', '📜')} Summary:",
+        "keywords": f"{_ce('keywords', '🔥')} Keywords:",
+        "awards": f"{_ce('awards', '🏆')} Awards:",
+        "available": "📽 Available On:",
+        "imdb_by": f"{_ce('imdb_by', '©️')} IMDb by",
         "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
         "parse_err": (
             "Sorry, failed getting data from IMDB.\n"
@@ -1081,11 +1117,11 @@ _IMDB_LABELS = {
     },
 }
 
-_RATING_STAR = "<emoji id=5958376256788502078>⭐</emoji>"
+_RATING_STAR = _ce("rating_star", "⭐")
 
 
 async def _build_imdb_result(
-    r_json, movie, imdb_url, locale, template, hidden_fields, imdb_by, ott
+    r_json, movie, imdb_url, locale, template, hidden_fields, imdb_by, ott, uid: int = 0
 ):
     """Rangkai hasil detail IMDb menjadi satu pesan.
 
@@ -1096,6 +1132,7 @@ async def _build_imdb_result(
     """
     L = _IMDB_LABELS[locale]
     lines: dict = {}
+    template_markup: InlineKeyboardMarkup | None = None
     typee = r_json.get("@type", "")
     tahun = str(r_json.get("releaseYear") or "N/A")
 
@@ -1153,9 +1190,10 @@ async def _build_imdb_result(
     if rating := r_json.get("aggregateRating"):
         rating_value = rating.get("ratingValue", "-")
         rating_count = rating.get("ratingCount", "-")
+        # Star custom emoji DI LUAR <code> — emoji di dalam code tidak render.
         lines["rating"] = (
-            f"<b>{L['rating']}</b> <code>{rating_value}{_RATING_STAR} "
-            f"{L['rating_from'].format(count=rating_count)}</code>\n"
+            f"<b>{L['rating']}</b> <code>{rating_value}</code> "
+            f"{_RATING_STAR} {L['rating_from'].format(count=rating_count)}\n"
         )
     if rilis != "-":
         release_date_text = format_imdb_date(rilis, L["date_locale"]) or rilis
@@ -1239,8 +1277,10 @@ async def _build_imdb_result(
         else:
             summary = deskripsi
         storyline_text = summary or "-"
+        # Label + blockquote SATU baris — rich message render label rapat
+        # dengan <details> (tidak ada enter di antara).
         lines["plot"] = (
-            f"<b>{L['plot']}</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
+            f"<b>{L['plot']}</b><blockquote expandable><code>{summary}</code></blockquote>\n\n"
         )
     keywords_list = []
     if keywd := r_json.get("keywords"):
@@ -1250,7 +1290,7 @@ async def _build_imdb_result(
             for i in keywords_list
         )
         lines["keywords"] = (
-            f"<b>{L['keywords']}</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
+            f"<b>{L['keywords']}</b><blockquote expandable>{keyword_text[:-2]}</blockquote>\n\n"
         )
     if keyword_text != "-":
         keyword_text = keyword_text[:-2]
@@ -1260,12 +1300,12 @@ async def _build_imdb_result(
         else:
             awards_text = awards or "-"
         lines["awards"] = (
-            f"<b>{L['awards']}</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
+            f"<b>{L['awards']}</b><blockquote expandable><code>{awards_text}</code></blockquote>\n\n"
         )
     else:
         lines["awards_spacer"] = "\n"
     if ott != "":
-        lines["ott"] = f"{L['available']}\n{ott}\n"
+        lines["ott"] = f"<b>{L['available']}</b>\n{ott}\n"
     ott_value = ott or "-"
     lines["imdb_by"] = f"<b>{L['imdb_by']}</b> {imdb_by}"
 
@@ -1374,8 +1414,18 @@ async def _build_imdb_result(
                     res_str = res_str.replace(lines.get(line_key, ""), "")
 
     # ---- tombol ----
+    close_btn = InlineKeyboardButton(
+        "❌ Close",
+        callback_data=f"close#{uid}",
+        icon_custom_emoji_id=IMDB_CUSTOM_EMOJI["close"],
+        style=enums.ButtonStyle.DANGER,
+    )
     if template:
-        markup = template_markup
+        if template_markup:
+            template_markup.inline_keyboard.append([close_btn])
+            markup = template_markup
+        else:
+            markup = InlineKeyboardMarkup([[close_btn]])
     else:
         if trailer := r_json.get("trailer"):
             trailer_url = trailer["url"]
@@ -1384,13 +1434,20 @@ async def _build_imdb_result(
                 buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
             if "trailer" not in hidden_fields:
                 buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
-            markup = InlineKeyboardMarkup([buttons]) if buttons else None
+            if buttons:
+                buttons.append(close_btn)
+                markup = InlineKeyboardMarkup([buttons])
+            else:
+                markup = InlineKeyboardMarkup([[close_btn]])
         else:
             if "open_imdb" in hidden_fields:
-                markup = None
+                markup = InlineKeyboardMarkup([[close_btn]])
             else:
                 markup = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)]]
+                    [
+                        [InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)],
+                        [close_btn],
+                    ]
                 )
     disable_web_preview = "web_preview" in hidden_fields
     send_as_photo = "send_as_photo" not in hidden_fields
@@ -1422,6 +1479,7 @@ async def _process_imdb_callback(self: Client, query: CallbackQuery, movie: str,
                 hidden_fields,
                 imdb_by,
                 ott,
+                uid=query.from_user.id,
             )
             await _deliver_imdb_result(
                 self,
