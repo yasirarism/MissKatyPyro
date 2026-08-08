@@ -256,18 +256,18 @@ async def filters_re(self, message):
                 if not file_id:
                     continue
             if data_type == "sticker":
+                # reply_sticker TIDAK punya param protect_content di pyrogram 2.x
                 await message.reply_sticker(
                     sticker=file_id,
                     disable_notification=send_opts["disable_notification"],
-                    protect_content=send_opts["protect_content"],
                 )
             if data_type == "animation":
+                # reply_animation TIDAK punya param protect_content di pyrogram 2.x
                 await message.reply_animation(
                     animation=file_id,
                     caption=data,
                     reply_markup=keyb,
                     disable_notification=send_opts["disable_notification"],
-                    protect_content=send_opts["protect_content"],
                     has_spoiler=send_opts["media_spoiler"],
                 )
             if data_type == "photo":
@@ -288,12 +288,12 @@ async def filters_re(self, message):
                     protect_content=send_opts["protect_content"],
                 )
             if data_type == "video":
+                # reply_video TIDAK punya param protect_content di pyrogram 2.x
                 await message.reply_video(
                     video=file_id,
                     caption=data,
                     reply_markup=keyb,
                     disable_notification=send_opts["disable_notification"],
-                    protect_content=send_opts["protect_content"],
                     has_spoiler=send_opts["media_spoiler"],
                 )
             if data_type == "video_note":
@@ -303,20 +303,20 @@ async def filters_re(self, message):
                     protect_content=send_opts["protect_content"],
                 )
             if data_type == "audio":
+                # reply_audio TIDAK punya param protect_content di pyrogram 2.x
                 await message.reply_audio(
                     audio=file_id,
                     caption=data,
                     reply_markup=keyb,
                     disable_notification=send_opts["disable_notification"],
-                    protect_content=send_opts["protect_content"],
                 )
             if data_type == "voice":
+                # reply_voice TIDAK punya param protect_content di pyrogram 2.x
                 await message.reply_voice(
                     voice=file_id,
                     caption=data,
                     reply_markup=keyb,
                     disable_notification=send_opts["disable_notification"],
-                    protect_content=send_opts["protect_content"],
                 )
             return
 

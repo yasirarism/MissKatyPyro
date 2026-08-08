@@ -1414,8 +1414,10 @@ async def _build_imdb_result(
                     res_str = res_str.replace(lines.get(line_key, ""), "")
 
     # ---- tombol ----
+    # Tombol Close custom emoji: label tanpa emoji teks (icon custom emoji
+    # sudah menampilkan ❌ — label ber-emoji teks jadi dobel).
     close_btn = InlineKeyboardButton(
-        "❌ Close",
+        "Close",
         callback_data=f"close#{uid}",
         icon_custom_emoji_id=IMDB_CUSTOM_EMOJI["close"],
         style=enums.ButtonStyle.DANGER,
@@ -1434,11 +1436,10 @@ async def _build_imdb_result(
                 buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
             if "trailer" not in hidden_fields:
                 buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
-            if buttons:
-                buttons.append(close_btn)
-                markup = InlineKeyboardMarkup([buttons])
-            else:
-                markup = InlineKeyboardMarkup([[close_btn]])
+            rows = [buttons] if buttons else []
+            # Close SELALU di baris sendiri di bawah (tidak berjejer)
+            rows.append([close_btn])
+            markup = InlineKeyboardMarkup(rows)
         else:
             if "open_imdb" in hidden_fields:
                 markup = InlineKeyboardMarkup([[close_btn]])
