@@ -40,7 +40,7 @@ from pyrogram.types import (
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator.errors import capture_err
-from misskaty.helper import fetch, gtranslate, gen_trans_image, rentry
+from misskaty.helper import ddg_search, fetch, gtranslate, gen_trans_image, rentry
 from misskaty.vars import COMMAND_HANDLER
 from misskaty.helper.chat_utils import extract_user_and_name, get_file_id
 
@@ -358,7 +358,7 @@ async def gsearch(self, message):
     query = message.text.split(maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        data = await _ddg_search(query, max_results=16)
+        data = await ddg_search(query, max_results=16)
         if not data:
             return await msg.edit("No results found.")
         arr = json.dumps(data, indent=2, ensure_ascii=False)

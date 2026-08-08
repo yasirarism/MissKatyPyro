@@ -28,7 +28,7 @@ from pyrogram.types import (
 
 from database.imdb_db import get_imdb_by, get_imdb_layout_fields, get_imdb_template
 from misskaty import BOT_USERNAME, app, user
-from misskaty.helper import GENRES_EMOJI, fetch, gtranslate, post_to_telegraph, search_jw
+from misskaty.helper import GENRES_EMOJI, ddg_search, fetch, gtranslate, post_to_telegraph, search_jw
 from misskaty.plugins.dev import shell_exec
 from misskaty.plugins.misc_tools import calc_btn, calcExpression
 from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
@@ -341,7 +341,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        data = await _ddg_search(judul, max_results=20)
+        data = await ddg_search(judul, max_results=20)
         if not data:
             return await inline_query.answer(
                 results=[],

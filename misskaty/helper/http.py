@@ -15,7 +15,7 @@ fetch = AsyncClient(
 )
 
 
-async def _ddg_search(query: str, max_results: int = 10) -> list[dict]:
+async def ddg_search(query: str, max_results: int = 10) -> list[dict]:
     base = "https://html.duckduckgo.com/html/"
     url = f"{base}?q={urllib.parse.quote(query)}"
     resp = await fetch.get(url)
