@@ -321,17 +321,27 @@ def _has_moov_atom(file_path: str, scan_mb: int = 20) -> bool:
         return False
 
 
-async def _mediainfo_timeout(cmd: str, timeout: int = 20) -> tuple[str, str, int]:
-    """Jalankan command dengan timeout; kill process tree kalau hang.
+async def _mediainfo_timeout(cmd_args: list[str], timeout: int = 20) -> tuple[str, str, int]:
+    """Jalankan command (list args) dengan timeout; kill process tree kalau hang.
 
-    PENTING: setelah ``proc.kill()`` pakai ``proc.wait()`` BUKAN
-    ``communicate()`` — communicate membaca pipe yang masih dipegang child
-    process yang sudah di-kill -> hang selamanya (zombie). Ini pelajaran
-    CrossXBot commit e461cd0f.
+    Pakai ``asyncio.create_subprocess_exec`` (bukan shell string) supaya path
+    dengan karakter aneh tidak bisa pecah/inject. ``start_new_session=True``
+    menjadikan proses sebagai leader process group sendiri, sehingga pada
+    timeout kita bisa ``os.killpg`` — membunuh seluruh child process, bukan
+    cuma proses utama (pelajaran CrossXBot commit e461cd0f + review Sourcery).
+
+    Returns:
+        ``(stdout, stderr, returncode)``
     """
+    import os
+    import signal
+
     try:
-        proc = await asyncio.create_subprocess_shell(
-            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        proc = await asyncio.create_subprocess_exec(
+            *cmd_args,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            start_new_session=True,
         )
         try:
             stdout, stderr = await asyncio.wait_for(
@@ -343,9 +353,12 @@ async def _mediainfo_timeout(cmd: str, timeout: int = 20) -> tuple[str, str, int
                 proc.returncode or 0,
             )
         except asyncio.TimeoutError:
-            proc.kill()
-            await proc.wait()  # bukan communicate() — hindari zombie pipe
-            LOGGER.warning("mediainfo timeout setelah %ss: %s", timeout, cmd[:120])
+            # Kill SELURUH process group (bukan cuma main process).
+            with contextlib.suppress(Exception):
+                os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+            with contextlib.suppress(Exception):
+                await proc.wait()  # bukan communicate() — hindari zombie pipe
+            LOGGER.warning("mediainfo timeout setelah %ss: %s", timeout, " ".join(cmd_args)[:120])
             return "", f"TIMEOUT setelah {timeout}s", -1
     except Exception as err:
         LOGGER.debug("mediainfo gagal: %s", err)
@@ -360,6 +373,12 @@ def _is_mp4_family(file_path: str) -> bool:
         return b"ftyp" in head
     except Exception:
         return False
+
+
+async def _run_mediainfo(file_path: str) -> str | None:
+    """Jalankan mediainfo CLI dengan timeout; return stdout (None jika kosong)."""
+    stdout, _, _ = await _mediainfo_timeout(["mediainfo", file_path])
+    return stdout if stdout else None
 
 
 async def _send_result(ctx: Message, process: Message, out: str, strings, media_type: str = "Unknown"):
@@ -431,10 +450,6 @@ async def mediainfo(client: Client, ctx: Message, strings):
                 return await process.edit(strings("dl_limit_exceeded"), del_in=6)
             c_time = time.time()
             dc_id = FileId.decode(file_info.file_id).dc_id
-
-            async def _run_mediainfo(path):
-                stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{path}"')
-                return stdout if stdout else None
 
             # --- Percobaan 1: partial download (head+tail), tanpa download penuh ---
             file_path = await _partial_download(client, file_info, file_size)
@@ -527,8 +542,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                 if not file_path:
                     return await process.edit(strings("err_link"), del_in=6)
 
-            stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{file_path}"')
-            out = stdout if stdout else None
+            out = await _run_mediainfo(file_path)
 
             # Partial kurang lengkap & file masih masuk akal -> coba full stream
             if not _looks_complete(out) and total and total <= MAX_URL_FULL:
@@ -538,8 +552,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                     link, "downloads", f"{job}_full", force_full=True, gid=gid
                 )
                 if file_path:
-                    stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{file_path}"')
-                    out = stdout if stdout else None
+                    out = await _run_mediainfo(file_path)
 
             if not _looks_complete(out):
                 await _cleanup([file_path])
