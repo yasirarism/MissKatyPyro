@@ -12,7 +12,6 @@ import traceback
 from urllib.parse import quote_plus
 
 import httpx
-from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import Client, enums
 from pyrogram import types as pyro_types
 from pyrogram.errors import (
@@ -423,23 +422,32 @@ async def imdb_choose(_, ctx: Message):
     if is_imdb:
         # "eng" -> "en", selain itu "id" — satu fungsi _imdb_search untuk dua bahasa
         return await _imdb_search(kuery, ctx, "en" if lang == "eng" else "id")
-    buttons = InlineKeyboard()
     ranval = get_random_string(4)
     LIST_CARI.add(ranval, kuery, timeout=15)
-    buttons.row(
-        InlineButton("🇺🇸 English", f"imdbcari#eng#{ranval}#{ctx.from_user.id}"),
-        InlineButton("🇮🇩 Indonesia", f"imdbcari#ind#{ranval}#{ctx.from_user.id}"),
-    )
-    buttons.row(InlineButton("🚩 Set Default Language", f"imdbset#{ctx.from_user.id}"))
-    # InlineButton pykeyboard tidak support icon custom emoji — ganti tombol
-    # Close dengan InlineKeyboardButton custom emoji (konsisten).
-    buttons.add(
-        InlineKeyboardButton(
-            "Close",
-            callback_data=f"close#{ctx.from_user.id}",
-            icon_custom_emoji_id=IMDB_CUSTOM_EMOJI["close"],
-            style=enums.ButtonStyle.DANGER,
-        )
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🇺🇸 English", callback_data=f"imdbcari#eng#{ranval}#{ctx.from_user.id}"
+                ),
+                InlineKeyboardButton(
+                    "🇮🇩 Indonesia", callback_data=f"imdbcari#ind#{ranval}#{ctx.from_user.id}"
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "🚩 Set Default Language", callback_data=f"imdbset#{ctx.from_user.id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "Close",
+                    callback_data=f"close#{ctx.from_user.id}",
+                    icon_custom_emoji_id=IMDB_CUSTOM_EMOJI["close"],
+                    style=enums.ButtonStyle.DANGER,
+                )
+            ],
+        ]
     )
     await ctx.reply(
         f"Hi {ctx.from_user.mention}, Please select the language you want to use on IMDB Search. If you want use default lang for every user, click third button. So no need click select lang if use CMD.\n\nTimeout: 10s",
@@ -776,7 +784,6 @@ async def _imdb_search(kueri, message, locale: str = "id", edit_msg=None, with_m
     BTN = []
     k = edit_msg or await message.reply(S["searching"].format(q=kueri))
     msg = ""
-    buttons = InlineKeyboard(row_width=4)
     with contextlib.redirect_stdout(sys.stderr):
         try:
             r = await fetch.get(
@@ -807,22 +814,27 @@ async def _imdb_search(kueri, message, locale: str = "id", edit_msg=None, with_m
                         callback_data=f"imdbres_{'id' if is_id else 'en'}#{uid}#{movieID}",
                     )
                 )
-            BTN.extend(
-                (
+            # Tombol nomor 4-per-baris + Language + Close (baris sendiri)
+            rows = [BTN[i : i + 4] for i in range(0, len(BTN), 4)]
+            rows.append(
+                [
                     InlineKeyboardButton(
                         text="🚩 Language",
                         callback_data=f"imdbsetlang#{uid}",
-                    ),
+                    )
+                ]
+            )
+            rows.append(
+                [
                     InlineKeyboardButton(
                         text="Close",
                         callback_data=f"close#{uid}",
                         icon_custom_emoji_id=IMDB_CUSTOM_EMOJI["close"],
                         style=enums.ButtonStyle.DANGER,
-                    ),
-                )
+                    )
+                ]
             )
-            buttons.add(*BTN)
-            await k.edit(msg, reply_markup=buttons)
+            await k.edit(msg, reply_markup=InlineKeyboardMarkup(rows))
         except httpx.HTTPError as exc:
             await k.edit(S["http_err"].format(exc=exc))
         except (MessageIdInvalid, MessageNotModified):
@@ -858,14 +870,16 @@ _IMDB_SEARCH_STRINGS = {
 @app.on_cb("imdbcari")
 async def imdbcari(_, query: CallbackQuery):
     _, lang, msg, uid = query.data.split("#")
+    locale = "id" if lang == "ind" else "en"
+    denied = "⚠️ Akses Ditolak!" if locale == "id" else "⚠️ Access Denied!"
+    expired = "⚠️ Callback Query Sudah Expired!" if locale == "id" else "⚠️ Callback Query Expired!"
     if query.from_user.id != int(uid):
-        return await query.answer("⚠️ Akses Ditolak!", True)
+        return await query.answer(denied, True)
     try:
         kueri = LIST_CARI.get(msg)
         del LIST_CARI[msg]
     except KeyError:
-        return await query.message.edit("⚠️ Callback Query Sudah Expired!")
-    locale = "id" if lang == "ind" else "en"
+        return await query.message.edit(expired)
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit(
             "<i>🔎 Sedang mencari di Database IMDB..</i>"
