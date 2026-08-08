@@ -341,38 +341,34 @@ async def inline_menu(self, inline_query: InlineQuery):
                 switch_pm_parameter="inline",
             )
         judul = inline_query.query.split(None, 1)[1].strip()
-        search_results = await fetch.get(
-            f"https://www.google.com/search?q={judul}&num=20"
-        )
-        soup = BeautifulSoup(search_results.text, "lxml")
-        data = []
-        for result in soup.select(".tF2Cxc"):
-            link = result.select_one(".yuRUbf a")["href"]
-            title = result.select_one(".DKV0Md").text
-            if snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b"):
-                snippet = snippet.get_text()
-            elif snippet := result.find(class_="VwiC3b yXK7lf lVm3ye r025kc hJNv6b Hdw6tb"):
-                snippet = snippet.get_text()
-            else:
-                snippet = "-"
-            message_text = f"<a href='{link}'>{html.escape(title)}</a>\n"
-            message_text += f"Deskription: {html.escape(snippet)}\n\nGoogleSearch by @{self.me.username}"
+        data = await _ddg_search(judul, max_results=20)
+        if not data:
+            return await inline_query.answer(
+                results=[],
+                switch_pm_text="No results found.",
+                switch_pm_parameter="google",
+            )
+        message_text = ""
+        for i in data:
+            message_text += f"<a href='{i['link']}'>{html.escape(i['title'])}</a>\n"
+            message_text += f"Deskription: {html.escape(i['snippet'])}\n\nGoogleSearch by @{self.me.username}\n\n"
             data.append(
                 InlineQueryResultArticle(
-                    title=f"{title}",
+                    title=f"{html.escape(i['title'])}",
                     input_message_content=InputTextMessageContent(
                         message_text=message_text,
                         parse_mode=enums.ParseMode.HTML,
                         link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=False),
                     ),
-                    url=link,
-                    description=snippet,
+                    url=i["link"],
+                    description=html.escape(i["snippet"]),
                     thumb_url="https://te.legra.ph/file/ed8ea62ae636793000bb4.jpg",
                     reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(text="Open Website", url=link)]]
+                        [[InlineKeyboardButton(text="Open Website", url=i["link"])]]
                     ),
                 )
             )
+            message_text = ""
         await inline_query.answer(
             results=data,
             is_gallery=False,

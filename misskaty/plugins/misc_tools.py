@@ -358,30 +358,9 @@ async def gsearch(self, message):
     query = message.text.split(maxsplit=1)[1]
     msg = await message.reply_text(f"**Googling** for `{query}` ...")
     try:
-        gs = await fetch.get(
-            f"https://www.google.com/search?q={query}&gl=id&hl=id&num=16",
-        )
-        soup = BeautifulSoup(gs.text, "lxml")
-
-        # collect data
-        data = []
-
-        for result in soup.select(".tF2Cxc"):
-            link = result.select_one(".yuRUbf a")["href"]
-            title = result.select_one(".DKV0Md").text
-            if snippet := result.find(class_="VwiC3b yXK7lf p4wth r025kc hJNv6b"):
-                snippet = snippet.get_text()
-            elif snippet := result.find(class_="VwiC3b yXK7lf p4wth r025kc hJNv6b Hdw6tb"):
-                snippet = snippet.get_text()
-            else:
-                snippet = "-"
-            data.append(
-                {
-                    "title": html.escape(title),
-                    "link": link,
-                    "snippet": shorten_text(html.escape(snippet)),
-                }
-            )
+        data = await _ddg_search(query, max_results=16)
+        if not data:
+            return await msg.edit("No results found.")
         arr = json.dumps(data, indent=2, ensure_ascii=False)
         parse = json.loads(arr)
         total = len(parse)
