@@ -27,7 +27,7 @@ from pyrogram.file_id import FileId, FileType
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
-from misskaty.helper import post_to_telegraph, runcmd
+from misskaty.helper import post_to_telegraph
 from misskaty.helper.chat_utils import get_file_id
 from misskaty.helper.localization import use_chat_lang
 from misskaty.helper.mediainfo_paste import mediainfo_paste
@@ -292,10 +292,74 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
 
 
 def _looks_complete(out: str | None) -> bool:
-    """Heuristik: output mediainfo dianggap lengkap jika ada section utama."""
+    """Heuristik: output mediainfo dianggap lengkap jika ada section utama.
+
+    PENTING: jangan cek "General" — mediainfo pada file parsial (moov
+    rusak/terpotong) tetap return laporan super pendek yang mengandung
+    "General" tapi tanpa section Video/Audio/Text, dan keluar exit 0.
+    Kalau "General" ikut dicek, fallback full download tidak pernah jalan
+    (pelajaran CrossXBot commit 42c2f162).
+    """
     if not out:
         return False
-    return any(section in out for section in ("General", "Video", "Audio"))
+    return any(section in out for section in ("Video", "Audio", "Text"))
+
+
+def _has_moov_atom(file_path: str, scan_mb: int = 20) -> bool:
+    """Cek binary apakah atom ``moov`` ada di 20 MB pertama file.
+
+    MP4/MOV faststart menaruh moov di awal; non-faststart menaruhnya di
+    akhir. Kalau head+tail partial tidak memuat moov -> mediainfo pasti
+    tidak akan bisa baca -> langsung full download lebih hemat daripada
+    buang waktu analisis partial (pelajaran CrossXBot).
+    """
+    try:
+        with open(file_path, "rb") as f:
+            head = f.read(scan_mb * 1024 * 1024)
+        return b"moov" in head
+    except Exception:
+        return False
+
+
+async def _mediainfo_timeout(cmd: str, timeout: int = 20) -> tuple[str, str, int]:
+    """Jalankan command dengan timeout; kill process tree kalau hang.
+
+    PENTING: setelah ``proc.kill()`` pakai ``proc.wait()`` BUKAN
+    ``communicate()`` — communicate membaca pipe yang masih dipegang child
+    process yang sudah di-kill -> hang selamanya (zombie). Ini pelajaran
+    CrossXBot commit e461cd0f.
+    """
+    try:
+        proc = await asyncio.create_subprocess_shell(
+            cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(
+                proc.communicate(), timeout=timeout
+            )
+            return (
+                stdout.decode("utf-8", "replace").strip(),
+                stderr.decode("utf-8", "replace").strip(),
+                proc.returncode or 0,
+            )
+        except asyncio.TimeoutError:
+            proc.kill()
+            await proc.wait()  # bukan communicate() — hindari zombie pipe
+            LOGGER.warning("mediainfo timeout setelah %ss: %s", timeout, cmd[:120])
+            return "", f"TIMEOUT setelah {timeout}s", -1
+    except Exception as err:
+        LOGGER.debug("mediainfo gagal: %s", err)
+        return "", str(err), -1
+
+
+def _is_mp4_family(file_path: str) -> bool:
+    """True jika file MP4/MOV family (magic ``ftyp`` di header)."""
+    try:
+        with open(file_path, "rb") as f:
+            head = f.read(16)
+        return b"ftyp" in head
+    except Exception:
+        return False
 
 
 async def _send_result(ctx: Message, process: Message, out: str, strings, media_type: str = "Unknown"):
@@ -368,9 +432,22 @@ async def mediainfo(client: Client, ctx: Message, strings):
             c_time = time.time()
             dc_id = FileId.decode(file_info.file_id).dc_id
 
+            async def _run_mediainfo(path):
+                stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{path}"')
+                return stdout if stdout else None
+
             # --- Percobaan 1: partial download (head+tail), tanpa download penuh ---
             file_path = await _partial_download(client, file_info, file_size)
             partial_used = file_path is not None
+
+            # MP4/MOV non-faststart (moov di akhir): partial head+tail tidak
+            # memuat moov -> mediainfo pasti gagal. Langsung full download
+            # lebih hemat daripada analisis partial yang buang waktu.
+            if partial_used and _is_mp4_family(file_path) and not _has_moov_atom(file_path):
+                LOGGER.info("MP4 tanpa moov di partial, langsung full download")
+                await _cleanup([file_path])
+                file_path = None
+                partial_used = False
 
             if not partial_used:
                 if file_size > FULL_DL_LIMIT:
@@ -387,8 +464,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                     return await process.edit("ERROR: FileNotFound.")
                 file_path = path.join("downloads/", path.basename(dl))
 
-            output_ = await runcmd(f'mediainfo "{file_path}"')
-            out = output_[0] if len(output_) != 0 else None
+            out = await _run_mediainfo(file_path)
 
             # --- Hasil partial kurang lengkap -> fallback download penuh ---
             if partial_used and not _looks_complete(out):
@@ -407,8 +483,7 @@ async def mediainfo(client: Client, ctx: Message, strings):
                 except FileNotFoundError:
                     return await process.edit("ERROR: FileNotFound.")
                 file_path = path.join("downloads/", path.basename(dl))
-                output_ = await runcmd(f'mediainfo "{file_path}"')
-                out = output_[0] if len(output_) != 0 else None
+                out = await _run_mediainfo(file_path)
 
             # Output tetap kosong/tidak lengkap -> jangan kirim file kosong
             if not _looks_complete(out):
@@ -441,8 +516,19 @@ async def mediainfo(client: Client, ctx: Message, strings):
             if not file_path:
                 return await process.edit(strings("err_link"), del_in=6)
 
-            output_ = await runcmd(f'mediainfo "{file_path}"')
-            out = output_[0] if len(output_) != 0 else None
+            # MP4/MOV non-faststart: partial head+tail tanpa moov -> langsung
+            # full stream (hemat: tidak analisis partial yang pasti gagal).
+            if _is_mp4_family(file_path) and not _has_moov_atom(file_path) and total and total <= MAX_URL_FULL:
+                LOGGER.info("URL MP4 tanpa moov di partial, langsung full stream")
+                await _cleanup([file_path])
+                file_path, _ = await _download_url_partial(
+                    link, "downloads", f"{job}_full", force_full=True, gid=gid
+                )
+                if not file_path:
+                    return await process.edit(strings("err_link"), del_in=6)
+
+            stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{file_path}"')
+            out = stdout if stdout else None
 
             # Partial kurang lengkap & file masih masuk akal -> coba full stream
             if not _looks_complete(out) and total and total <= MAX_URL_FULL:
@@ -452,8 +538,8 @@ async def mediainfo(client: Client, ctx: Message, strings):
                     link, "downloads", f"{job}_full", force_full=True, gid=gid
                 )
                 if file_path:
-                    output_ = await runcmd(f'mediainfo "{file_path}"')
-                    out = output_[0] if len(output_) != 0 else None
+                    stdout, _, _ = await _mediainfo_timeout(f'mediainfo "{file_path}"')
+                    out = stdout if stdout else None
 
             if not _looks_complete(out):
                 await _cleanup([file_path])
