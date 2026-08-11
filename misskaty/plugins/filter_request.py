@@ -166,277 +166,111 @@ async def thankregex(_, message):
     await message.reply_text(text=random.choice(pesan))
 
 
-@app.on_callback_query(filters.regex(r"^donereq"))
-async def callbackreq(c, q):
-    try:
-        user = await c.get_chat_member(-1001201566570, q.from_user.id)
-        if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR,
-            enums.ChatMemberStatus.OWNER,
-        ]:
-            _, msg_id, chat_id = q.data.split("_")
-            await c.send_message(
-                chat_id=chat_id,
-                text="#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
-                reply_parameters=pyro_types.ReplyParameters(message_id=int(msg_id)),
-            )
+# ── Admin action callbacks (done / already-available / reject / unavailable) ──
+# Payload: <action>_<message_id>_<chat_id> — diproduksi oleh request_user di atas.
 
-            if q.message.caption:
-                await q.message.edit_text(
-                    f"<b>COMPLETED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="✅ Request Completed",
-                                    callback_data="reqcompl",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            else:
-                await q.message.edit_text(
-                    f"<b>COMPLETED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="✅ Request Completed",
-                                    callback_data="reqcompl",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            await q.answer("Request berhasil diselesaikan ✅")
-        else:
-            await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
-    except UserNotParticipant:
-        return await q.answer(
-            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
-        )
-    except PeerIdInvalid:
-        return await q.answer(
-            "Silahkan kirim pesan digrup supaya bot bisa merespon.",
-            show_alert=True,
-            cache_time=10,
-        )
+# REQUEST_ACTIONS: action → (text dikirim ke grup request, heading status, tombol status)
+REQUEST_ACTIONS = {
+    "donereq": (
+        "#Done\nDone ✅, Selamat menonton. Jika request tidak bisa dilihat digrup silahkan join channel melalui link private yang ada di @YMovieZ_New ...",
+        "COMPLETED",
+        ("✅ Request Completed", "reqcompl"),
+    ),
+    "dahada": (
+        "#SudahAda\nFilm/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
+        "#AlreadyAvailable",
+        ("🔍 Request Sudah Ada", "reqavailable"),
+    ),
+    "rejectreq": (
+        "Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules grup no.6 yaa 🙃.",
+        "REJECTED",
+        ("🚫 Request Rejected", "reqreject"),
+    ),
+    "unavailablereq": (
+        "Mohon maaf, request kamu tidak tersedia. Silahkan baca beberapa alasannya di channel @YMovieZ_New",
+        "UNAVAILABLE",
+        ("⚠️ Request Unavailable", "requnav"),
+    ),
+}
 
+# REQUEST_ACTION_ALERTS: alert yang muncul saat admin menekan tombol aksi.
+REQUEST_ACTION_ALERTS = {
+    "donereq": "Request berhasil diselesaikan ✅",
+    "dahada": "Done ✔️",
+    "rejectreq": "Request berhasil ditolak 🚫",
+    "unavailablereq": "Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital.",
+}
 
-@app.on_callback_query(filters.regex(r"^dahada"))
-async def callbackreqada(c, q):
-    try:
-        user = await c.get_chat_member(-1001201566570, q.from_user.id)
-        if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR,
-            enums.ChatMemberStatus.OWNER,
-        ]:
-            _, msg_id, chat_id = q.data.split("_")
-            await c.send_message(
-                chat_id=chat_id,
-                text="#SudahAda\nFilm/series yang direquest sudah ada sebelumnya. Biasakan mencari terlebih dahulu..",
-                reply_parameters=pyro_types.ReplyParameters(message_id=int(msg_id)),
-            )
-
-            if q.message.caption:
-                await q.message.edit_text(
-                    f"<b>#AlreadyAvailable</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="🔍 Request Sudah Ada",
-                                    callback_data="reqavailable",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            else:
-                await q.message.edit_text(
-                    f"<b>Already Available</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="🔍 Request Sudah Ada",
-                                    callback_data="reqavailable",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            await q.answer("Done ✔️")
-        else:
-            await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
-    except UserNotParticipant:
-        return await q.answer(
-            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
-        )
-    except PeerIdInvalid:
-        return await q.answer(
-            "Silahkan kirim pesan digrup supaya bot bisa merespon.",
-            show_alert=True,
-            cache_time=10,
-        )
-
-
-@app.on_callback_query(filters.regex(r"^rejectreq"))
-async def callbackreject(c, q):
-    try:
-        user = await c.get_chat_member(-1001201566570, q.from_user.id)
-        if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR,
-            enums.ChatMemberStatus.OWNER,
-        ]:
-            _, msg_id, chat_id = q.data.split("_")
-            await c.send_message(
-                chat_id=chat_id,
-                text="Mohon maaf, request kamu ditolak karena tidak sesuai rules. Harap baca rules grup no.6 yaa 🙃.",
-                reply_parameters=pyro_types.ReplyParameters(message_id=int(msg_id)),
-            )
-
-            if q.message.caption:
-                await q.message.edit_text(
-                    f"<b>REJECTED</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="🚫 Request Rejected",
-                                    callback_data="reqreject",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            else:
-                await q.message.edit_text(
-                    f"<b>REJECTED</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="🚫 Request Rejected",
-                                    callback_data="reqreject",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            await q.answer("Request berhasil ditolak 🚫")
-        else:
-            await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
-    except UserNotParticipant:
-        await q.answer(
-            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
-        )
-    except PeerIdInvalid:
-        return await q.answer(
-            "Silahkan kirim pesan digrup supaya bot bisa merespon.",
-            show_alert=True,
-            cache_time=10,
-        )
-
-
-@app.on_callback_query(filters.regex(r"^unavailablereq"))
-async def callbackunav(c, q):
-    try:
-        user = await c.get_chat_member(-1001201566570, q.from_user.id)
-        if user.status in [
-            enums.ChatMemberStatus.ADMINISTRATOR,
-            enums.ChatMemberStatus.OWNER,
-        ]:
-            _, msg_id, chat_id = q.data.split("_")
-            await c.send_message(
-                chat_id=chat_id,
-                text="Mohon maaf, request kamu tidak tersedia. Silahkan baca beberapa alasannya di channel @YMovieZ_New",
-                reply_parameters=pyro_types.ReplyParameters(message_id=int(msg_id)),
-            )
-
-            if q.message.caption:
-                await q.message.edit_text(
-                    f"<b>UNAVAILABLE</b>\n\n<s>{q.message.caption}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="⚠️ Request Unavailable",
-                                    callback_data="requnav",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            else:
-                await q.message.edit_text(
-                    f"<b>UNAVAILABLE</b>\n\n<s>{q.message.text}</s>",
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [
-                                InlineKeyboardButton(
-                                    text="⚠️ Request Unavailable",
-                                    callback_data="requnav",
-                                )
-                            ]
-                        ]
-                    ),
-                )
-            await q.answer(
-                "Request tidak tersedia, mungkin belum rilis atau memang tidak tersedia versi digital."
-            )
-        else:
-            await q.answer(
-                "Apa motivasi kamu menekan tombol ini?",
-                show_alert=True,
-                cache_time=1000,
-            )
-    except UserNotParticipant:
-        await q.answer(
-            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
-        )
-    except PeerIdInvalid:
-        return await q.answer(
-            "Silahkan kirim pesan digrup supaya bot bisa merespon.",
-            show_alert=True,
-            cache_time=10,
-        )
-
-
-@app.on_callback_query(filters.regex(r"^reqcompl$"))
-async def callbackaft_done(_, q):
-    await q.answer(
+# REQUEST_STATUS_INFO: alert saat tombol status (yang muncul setelah aksi) ditekan.
+REQUEST_STATUS_INFO = {
+    "reqcompl": (
         "Request ini sudah terselesaikan 🥳, silahkan cek di channel atau grup yaa..",
-        show_alert=True,
-        cache_time=1000,
-    )
-
-
-@app.on_callback_query(filters.regex(r"^reqreject$"))
-async def callbackaft_rej(_, q):
-    await q.answer(
+        1000,
+    ),
+    "reqreject": (
         "Request ini ditolak 💔, silahkan cek rules grup yaa.",
-        show_alert=True,
-        cache_time=1000,
-    )
-
-
-@app.on_callback_query(filters.regex(r"^requnav$"))
-async def callbackaft_unav(_, q):
-    await q.answer(
+        1000,
+    ),
+    "requnav": (
         "Request ini tidak tersedia ☹️, mungkin filmnya belum rilis atau memang tidak tersedia versi digital.",
-        show_alert=True,
-        cache_time=1000,
-    )
+        1000,
+    ),
+    "reqavailable": ("Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..", None),
+}
 
 
-@app.on_callback_query(filters.regex(r"^reqavailable$"))
-async def callbackaft_dahada(_, q):
-    await q.answer(
-        "Request ini sudah ada, silahkan cari 🔍 di channelnya yaa 😉..",
-        show_alert=True,
-    )
+@app.on_callback_query(filters.regex(r"^(donereq|dahada|rejectreq|unavailablereq)_"))
+async def callback_request_action(c, q):
+    action = q.data.split("_", 1)[0]
+    action_cfg = REQUEST_ACTIONS.get(action)
+    if action_cfg is None:
+        return await q.answer()
+    text, heading, (btn_text, btn_data) = action_cfg
+    try:
+        user = await c.get_chat_member(-1001201566570, q.from_user.id)
+        if user.status in [
+            enums.ChatMemberStatus.ADMINISTRATOR,
+            enums.ChatMemberStatus.OWNER,
+        ]:
+            _, msg_id, chat_id = q.data.split("_")
+            await c.send_message(
+                chat_id=chat_id,
+                text=text,
+                reply_parameters=pyro_types.ReplyParameters(message_id=int(msg_id)),
+            )
+
+            original = q.message.caption or q.message.text or ""
+            await q.message.edit_text(
+                f"<b>{heading}</b>\n\n<s>{original}</s>",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton(text=btn_text, callback_data=btn_data)]]
+                ),
+            )
+            await q.answer(REQUEST_ACTION_ALERTS.get(action, "Done ✔️"))
+        else:
+            await q.answer("Apa motivasi kamu menekan tombol ini?", show_alert=True)
+    except UserNotParticipant:
+        return await q.answer(
+            "Apa motivasi kamu menekan tombol ini?", show_alert=True, cache_time=10
+        )
+    except PeerIdInvalid:
+        return await q.answer(
+            "Silahkan kirim pesan digrup supaya bot bisa merespon.",
+            show_alert=True,
+            cache_time=10,
+        )
+
+
+@app.on_callback_query(filters.regex(r"^(reqcompl|reqreject|requnav|reqavailable)$"))
+async def callback_request_status(_, q):
+    info = REQUEST_STATUS_INFO.get(q.data)
+    if info is None:
+        return await q.answer()
+    text, cache_time = info
+    kwargs = {"show_alert": True}
+    if cache_time is not None:
+        kwargs["cache_time"] = cache_time
+    await q.answer(text, **kwargs)
 
 
 scheduler = AsyncIOScheduler(timezone="Asia/Jakarta")
