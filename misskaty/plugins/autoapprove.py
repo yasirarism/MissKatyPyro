@@ -45,7 +45,7 @@ async def approval_command(_, message: Message):
         )
 
 
-@app.on_callback_query(filters.regex("approval(.*)"))
+@app.on_callback_query(filters.regex(r"^approval_(on|off)$"))
 async def approval_cb(_, cb: CallbackQuery):
     chat_id = cb.message.chat.id
     from_user = cb.from_user
@@ -59,8 +59,10 @@ async def approval_cb(_, cb: CallbackQuery):
                 show_alert=True,
             )
 
-    command_parts = cb.data.split("_", 1)
-    option = command_parts[1]
+    parts = cb.data.split("_", 1)
+    if len(parts) != 2:
+        return await cb.answer()
+    option = parts[1]
 
     if option == "on":
         if await approvaldb.count_documents({"chat_id": chat_id}) == 0:

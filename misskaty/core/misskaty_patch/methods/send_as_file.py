@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 from pyrogram import Client
 from pyrogram import types as pyro_types
+from pyrogram.types import Message
 
 
 async def send_as_file(
@@ -12,7 +13,7 @@ async def send_as_file(
     filename: str = "output.txt",
     caption: str = "",
     reply_parameters: Optional[pyro_types.ReplyParameters] = None,
-) -> "Message":
+) -> Message:
     """\nYou can send large outputs as file
     Example:
             @userge.send_as_file(chat_id=12345, text="hello")

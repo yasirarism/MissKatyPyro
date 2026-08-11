@@ -104,6 +104,10 @@ async def start(self, ctx, strings):
 
     if len(ctx.text.split()) > 1:
         name = (ctx.text.split(None, 1)[1]).lower()
+        # Payload deep-link milik plugin lain (notes/rules) — biarkan handler
+        # khusus yang memproses, jangan dianggap modul help.
+        if name.startswith(("btnnotesm_", "btnrules_")):
+            return
         if "_" in name:
             module = name.split("_", 1)[1]
             mod_obj = HELPABLE.get(module)

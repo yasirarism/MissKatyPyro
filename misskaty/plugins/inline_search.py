@@ -11,7 +11,6 @@ from sys import platform
 from sys import version as pyver
 from urllib.parse import quote_plus
 
-from bs4 import BeautifulSoup
 from pykeyboard import InlineButton, InlineKeyboard
 from pyrogram import __version__ as pyrover
 from pyrogram import enums, filters
@@ -51,73 +50,11 @@ PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
 
 
-class _ImdbTemplateDefaults(dict):
-    def __missing__(self, key):
-        return "-"
-
-
-def _render_template_buttons(template: str, payload: dict):
-    buttons = []
-
-    def _replace(match: re.Match) -> str:
-        label = match.group(1)
-        url = match.group(2)
-        try:
-            label = label.format_map(_ImdbTemplateDefaults(payload))
-            url = url.format_map(_ImdbTemplateDefaults(payload))
-        except Exception:
-            return ""
-        if url.startswith("http"):
-            buttons.append(InlineKeyboardButton(label, url=url))
-        return ""
-
-    template_without_buttons = re.sub(
-        r"\[([^\]]+)\]\((https?://[^)]+)\)", _replace, template
-    )
-    return template_without_buttons, buttons
-
-
-def render_imdb_template(template: str, payload: dict) -> str | None:
-    try:
-        normalized = template.replace("\\n", "\n")
-        rendered = normalized.format_map(_ImdbTemplateDefaults(payload))
-        return re.sub(
-            r"\[([^\]]+)\]\((https?://[^)]+)\)", r"<a href=\"\2\">\1</a>", rendered
-        )
-    except Exception as err:
-        LOGGER.warning(f"Failed rendering IMDB template: {err}")
-        return None
-
-
-def _normalize_imdb_layout_fields(stored_fields) -> set:
-    if isinstance(stored_fields, dict):
-        return {key for key, enabled in stored_fields.items() if not enabled}
-    if isinstance(stored_fields, (list, tuple, set)):
-        return set(stored_fields)
-    return set()
-
-
-def render_imdb_template_with_buttons(template: str, payload: dict):
-    try:
-        normalized = template.replace("\\n", "\n")
-        template_without_buttons, buttons = _render_template_buttons(
-            normalized, payload
-        )
-        rendered = template_without_buttons.format_map(_ImdbTemplateDefaults(payload))
-        return rendered, buttons
-    except Exception as err:
-        LOGGER.warning(f"Failed rendering IMDB template with buttons: {err}")
-        return None, []
-
-
-def _with_html_placeholders(payload: dict) -> dict:
-    enriched = dict(payload)
-    for key, value in payload.items():
-        if value is None:
-            value = "-"
-        if isinstance(value, str):
-            enriched[f"{key}_html"] = html.escape(value)
-    return enriched
+from misskaty.helper.imdb_template import (
+    _with_html_placeholders,
+    normalize_imdb_layout_fields,
+    render_imdb_template_with_buttons,
+)
 
 
 @app.on_inline_query()
@@ -642,7 +579,7 @@ async def inline_menu(self, inline_query: InlineQuery):
         if not isinstance(res, list):
             res = []
         stored_fields = await get_imdb_layout_fields(inline_query.from_user.id)
-        hidden_fields = _normalize_imdb_layout_fields(stored_fields)
+        hidden_fields = normalize_imdb_layout_fields(stored_fields)
         disable_web_preview = "web_preview" in hidden_fields
         send_as_photo = "send_as_photo" not in hidden_fields
         oorse = []
@@ -754,7 +691,7 @@ async def imdb_inl(_, query):
     if cbuser == f"{query.from_user.id}":
         try:
             stored_fields = await get_imdb_layout_fields(query.from_user.id)
-            hidden_fields = _normalize_imdb_layout_fields(stored_fields)
+            hidden_fields = normalize_imdb_layout_fields(stored_fields)
             disable_web_preview = "web_preview" in hidden_fields
             send_as_photo = "send_as_photo" not in hidden_fields
             if send_as_photo:

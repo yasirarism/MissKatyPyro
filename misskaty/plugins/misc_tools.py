@@ -8,7 +8,6 @@
 import ast
 import asyncio
 import contextlib
-import html
 import json
 import operator as op
 import os
