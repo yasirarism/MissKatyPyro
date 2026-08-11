@@ -3,9 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import contextlib
-import html
 import logging
-import os
 import re
 import sys
 import traceback
@@ -16,13 +14,11 @@ from pyrogram import Client, enums
 from pyrogram import types as pyro_types
 from pyrogram.errors import (
     MediaCaptionTooLong,
-    MediaEmpty,
     MessageIdInvalid,
     MessageNotModified,
     MessageTooLong,
     PhotoInvalidDimensions,
     QueryIdInvalid,
-    WebpageCurlFailed,
     WebpageMediaEmpty,
 )
 from pyrogram.types import (
@@ -59,53 +55,10 @@ from misskaty.helper.chat_utils import demoji
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 
-class _ImdbTemplateDefaults(dict):
-    def __missing__(self, key):
-        return "-"
-
-
-def _render_template_buttons(template: str, payload: dict):
-    buttons = []
-
-    def _replace(match: re.Match) -> str:
-        label = match.group(1)
-        url = match.group(2)
-        try:
-            label = label.format_map(_ImdbTemplateDefaults(payload))
-            url = url.format_map(_ImdbTemplateDefaults(payload))
-        except Exception:
-            return ""
-        if url.startswith("http"):
-            buttons.append(InlineKeyboardButton(label, url=url))
-        return ""
-
-    template_without_buttons = re.sub(
-        r"\[([^\]]+)\]\((https?://[^)]+)\)", _replace, template
-    )
-    return template_without_buttons, buttons
-
-
-def _with_html_placeholders(payload: dict) -> dict:
-    enriched = dict(payload)
-    for key, value in payload.items():
-        if value is None:
-            value = "-"
-        if isinstance(value, str):
-            enriched[f"{key}_html"] = html.escape(value)
-    return enriched
-
-
-def render_imdb_template_with_buttons(template: str, payload: dict):
-    try:
-        normalized = template.replace("\\n", "\n")
-        template_without_buttons, buttons = _render_template_buttons(
-            normalized, payload
-        )
-        rendered = template_without_buttons.format_map(_ImdbTemplateDefaults(payload))
-        return rendered, buttons
-    except Exception as err:
-        LOGGER.warning(f"Failed rendering IMDB template with buttons: {err}")
-        return None, []
+from misskaty.helper.imdb_template import (
+    _with_html_placeholders,
+    render_imdb_template_with_buttons,
+)
 
 
 def _imdb_settings_caption(name: str):
