@@ -114,11 +114,6 @@ async def start(self, ctx, strings):
             if not mod_obj:
                 return await ctx.reply("Unknown help module.")
             text = strings("help_name").format(mod=mod_obj.__MODULE__) + mod_obj.__HELP__
-            await ctx.reply(
-                text,
-                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
-                effect_id=5104841245755180586,
-            )
             if module == "federation":
                 return await ctx.reply(
                     text=text,
