@@ -55,6 +55,7 @@ from misskaty.helper.chat_utils import demoji
 LOGGER = logging.getLogger("MissKaty")
 LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 
+from misskaty.helper.imdb_graphql import format_imdb_awards
 from misskaty.helper.imdb_template import (
     _with_html_placeholders,
     format_imdb_money,
@@ -905,7 +906,7 @@ _IMDB_LABELS = {
         "plot": f"{_ce('plot', '📜')} Plot:",
         "keywords": f"{_ce('keywords', '🔥')} Kata Kunci:",
         "awards": f"{_ce('awards', '🏆')} Penghargaan:",
-        "available": "📽 Tersedia di:",
+        "available": f"{_ce('available', '📽')} Tersedia di:",
         "imdb_by": f"{_ce('imdb_by', '©️')} IMDb by",
         "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
         "parse_err": (
@@ -936,7 +937,7 @@ _IMDB_LABELS = {
         "plot": f"{_ce('plot', '📜')} Summary:",
         "keywords": f"{_ce('keywords', '🔥')} Keywords:",
         "awards": f"{_ce('awards', '🏆')} Awards:",
-        "available": "📽 Available On:",
+        "available": f"{_ce('available', '📽')} Available On:",
         "imdb_by": f"{_ce('imdb_by', '©️')} IMDb by",
         "http_err": "HTTP Exception for IMDB Search - <code>{exc}</code>",
         "parse_err": (
@@ -980,6 +981,7 @@ async def _build_imdb_result(
     storyline_text = "-"
     keyword_text = "-"
     awards_text = "-"
+    awards_id_text = "-"
     # Tanggal rilis mentah dari GraphQL (dipakai payload template {release}).
     # GraphQL IMDb tidak menyediakan URL spesifik per tanggal rilis, jadi
     # rilis_url sengaja dikosongkan -> {release_url}/{release_link} = "-".
@@ -1124,11 +1126,12 @@ async def _build_imdb_result(
         )
     if keyword_text != "-":
         keyword_text = keyword_text[:-2]
-    if awards := r_json.get("awards"):
-        # IMDb award summary is an official English label; do not translate it.
-        awards_text = awards or "-"
+    if r_json.get("awards_counts"):
+        awards_text = r_json.get("awards_en") or "-"
+        awards_id_text = format_imdb_awards(r_json.get("awards_counts"), "id") or "-"
+        display_awards = awards_id_text if locale == "id" else awards_text
         lines["awards"] = (
-            f"<b>{L['awards']}</b><blockquote expandable><code>{awards_text}</code></blockquote>\n\n"
+            f"<b>{L['awards']}</b><blockquote expandable><code>{display_awards}</code></blockquote>\n\n"
         )
     else:
         lines["awards_spacer"] = "\n"
@@ -1190,6 +1193,9 @@ async def _build_imdb_result(
             "keywords": keyword_text,
             "keywords_list": ", ".join(keywords_list) or "-",
             "awards": awards_text,
+            "awards_en": r_json.get("awards_en") or "-",
+            "awards_id": awards_id_text,
+            "awards_counts": r_json.get("awards_counts") or {},
             "metacritic_score": str((r_json.get("metacritic") or {}).get("score") or "-"),
             "metacritic_reviews": str((r_json.get("metacritic") or {}).get("reviewCount") or "-"),
             "budget": format_imdb_money(r_json.get("budget")),

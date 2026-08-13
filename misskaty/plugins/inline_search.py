@@ -50,6 +50,7 @@ PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
 
 
+from misskaty.helper.imdb_graphql import format_imdb_awards
 from misskaty.helper.imdb_template import (
     _with_html_placeholders,
     format_imdb_money,
@@ -728,6 +729,7 @@ async def imdb_inl(_, query):
             storyline_text = "-"
             keyword_text = "-"
             awards_text = "-"
+            awards_id_text = "-"
             rilis = "-"
             rilis_url = ""
             summary = ""
@@ -843,9 +845,11 @@ async def imdb_inl(_, query):
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
-            if awards := r_json.get("awards"):
-                awards_text = awards or "-"
-                res_str += f"\n<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
+            if r_json.get("awards_counts"):
+                awards_text = r_json.get("awards_en") or "-"
+                awards_id_text = format_imdb_awards(r_json.get("awards_counts"), "id") or "-"
+                # Inline mengikuti bahasa default IMDb command: Indonesia.
+                res_str += f"\n<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_id_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
@@ -904,6 +908,9 @@ async def imdb_inl(_, query):
                     "keywords": keyword_text,
                     "keywords_list": ", ".join(keywords_list) or "-",
                     "awards": awards_text,
+                    "awards_en": r_json.get("awards_en") or "-",
+                    "awards_id": awards_id_text,
+                    "awards_counts": r_json.get("awards_counts") or {},
                     "metacritic_score": str((r_json.get("metacritic") or {}).get("score") or "-"),
                     "metacritic_reviews": str((r_json.get("metacritic") or {}).get("reviewCount") or "-"),
                     "budget": format_imdb_money(r_json.get("budget")),
