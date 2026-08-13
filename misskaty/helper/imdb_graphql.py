@@ -41,6 +41,23 @@ IMDB_TITLE_QUERY = """query GetTitle($id: ID!) {
     }
     keywords(first: 10) { edges { node { text } } }
     latestTrailer { playbackURLs { url } }
+    metacritic { metascore { score reviewCount } }
+    productionBudget { budget { amount currency } }
+    openingWeekendGross(boxOfficeArea: DOMESTIC) {
+      gross { total { amount currency } }
+    }
+    domesticGross: lifetimeGross(boxOfficeArea: DOMESTIC) {
+      total { amount currency }
+    }
+    worldwideGross: lifetimeGross(boxOfficeArea: WORLDWIDE) {
+      total { amount currency }
+    }
+    parentsGuide {
+      categories {
+        category { text }
+        severity { text }
+      }
+    }
     awardNominations(first: 50) {
       total
       edges {
@@ -109,8 +126,26 @@ async def get_imdb_details_graphql(title_id: str):
         if not nominations:
             return None
         if not wins:
-            return f"{nominations} nominasi"
-        return f"{wins} kemenangan dari {nominations - wins} nominasi"
+            return f"{nominations} nominations"
+        return f"{wins} wins from {nominations - wins} nominations"
+
+    def _money(value):
+        money = (value or {}).get("total") or value or {}
+        amount = money.get("amount")
+        currency = money.get("currency")
+        if amount is None or not currency:
+            return None
+        return {"amount": amount, "currency": currency}
+
+    metacritic = payload.get("metacritic") or {}
+    metascore = metacritic.get("metascore") or {}
+    budget = ((payload.get("productionBudget") or {}).get("budget") or {})
+    guide = []
+    for item in (payload.get("parentsGuide") or {}).get("categories") or []:
+        category = (item.get("category") or {}).get("text")
+        severity = (item.get("severity") or {}).get("text")
+        if category:
+            guide.append({"category": category, "severity": severity})
 
     def _people(*categories):
         result = []
@@ -182,4 +217,15 @@ async def get_imdb_details_graphql(title_id: str):
         "creator": _people("Writers", "Writer", "Creator"),
         "actor": _people("Stars", "Cast"),
         "awards": _format_awards(payload.get("awardNominations") or {}),
+        # Extra fields are consumed only by custom templates; the default
+        # renderer intentionally does not read them.
+        "metacritic": {
+            "score": metascore.get("score"),
+            "reviewCount": metascore.get("reviewCount"),
+        } if metascore else None,
+        "budget": _money(budget),
+        "opening": _money(payload.get("openingWeekendGross")),
+        "domestic": _money(payload.get("domesticGross")),
+        "worldwide": _money(payload.get("worldwideGross")),
+        "parents_guide": guide,
     }

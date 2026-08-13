@@ -57,6 +57,7 @@ LIST_CARI = Cache(filename="imdb_cache.db", path="cache", in_memory=False)
 
 from misskaty.helper.imdb_template import (
     _with_html_placeholders,
+    format_imdb_money,
     render_imdb_template_with_buttons,
 )
 
@@ -423,6 +424,8 @@ async def imdb_template(_, ctx: Message):
             "{genres_list}, {countries}, {countries_list}, {languages}, "
             "{languages_list}, {directors}, {writers}, {cast}, {plot}, {keywords}, "
             "{keywords_list}, {awards}, {availability}, {ott}, {imdb_by}, "
+            "{metacritic_score}, {metacritic_reviews}, {budget}, {opening}, "
+            "{domestic}, {worldwide}, {parents_guide}, "
             "{imdb_url}, {trailer_url}, {poster_url}, {imdb_code}, {locale}"
         )
         if template:
@@ -1122,10 +1125,8 @@ async def _build_imdb_result(
     if keyword_text != "-":
         keyword_text = keyword_text[:-2]
     if awards := r_json.get("awards"):
-        if L["translate"]:
-            awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-        else:
-            awards_text = awards or "-"
+        # IMDb award summary is an official English label; do not translate it.
+        awards_text = awards or "-"
         lines["awards"] = (
             f"<b>{L['awards']}</b><blockquote expandable><code>{awards_text}</code></blockquote>\n\n"
         )
@@ -1189,6 +1190,15 @@ async def _build_imdb_result(
             "keywords": keyword_text,
             "keywords_list": ", ".join(keywords_list) or "-",
             "awards": awards_text,
+            "metacritic_score": str((r_json.get("metacritic") or {}).get("score") or "-"),
+            "metacritic_reviews": str((r_json.get("metacritic") or {}).get("reviewCount") or "-"),
+            "budget": format_imdb_money(r_json.get("budget")),
+            "opening": format_imdb_money(r_json.get("opening")),
+            "domestic": format_imdb_money(r_json.get("domestic")),
+            "worldwide": format_imdb_money(r_json.get("worldwide")),
+            "parents_guide": ", ".join(
+                item.get("category", "") for item in r_json.get("parents_guide") or [] if item.get("category")
+            ) or "-",
             "availability": ott_value,
             "ott": ott_value,
             "imdb_by": imdb_by,
