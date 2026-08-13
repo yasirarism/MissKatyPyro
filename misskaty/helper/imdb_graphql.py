@@ -39,7 +39,7 @@ IMDB_TITLE_QUERY = """query GetTitle($id: ID!) {
       category { text }
       credits { name { id nameText { text } } }
     }
-    keywords(first: 20) { edges { node { text } } }
+    keywords(first: 10) { edges { node { text } } }
     latestTrailer { playbackURLs { url } }
   }
 }"""
