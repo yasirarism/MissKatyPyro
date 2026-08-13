@@ -52,6 +52,7 @@ LOGGER = getLogger("MissKaty")
 
 from misskaty.helper.imdb_template import (
     _with_html_placeholders,
+    imdb_custom_emoji,
     normalize_imdb_layout_fields,
     render_imdb_template_with_buttons,
 )
@@ -600,7 +601,7 @@ async def inline_menu(self, inline_query: InlineQuery):
                 image_url = image
             if image_url.endswith(".jpg"):
                 image_url = image_url.replace(".jpg", "._V1_UX360.jpg")
-            caption = f"<a href='{image_url}'>🎬</a>"
+            caption = f"<a href='{image_url}'>{imdb_custom_emoji('title', '📹')}</a>"
             caption += f"<a href='{imdb_url}'>{title} {year}</a>"
             description_text = f" {description} | {stars}"
             reply_markup = InlineKeyboardMarkup(
@@ -730,25 +731,25 @@ async def imdb_inl(_, query):
             rilis_url = ""
             summary = ""
             tahun = str(r_json.get("releaseYear") or "N/A")
-            res_str += f"<b>📹 Judul:</b> <a href=\"{url}\">{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
+            res_str += f"<b>{imdb_custom_emoji('title', '📹')} Judul:</b> <a href=\"{url}\">{r_json['name']} [{tahun}]</a> (<code>{typee}</code>)\n"
             if r_json.get("alternateName"):
                 res_str += (
-                    f"<b>📢 AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
+                    f"<b>{imdb_custom_emoji('aka', '📢')} AKA:</b> <code>{r_json.get('alternateName')}</code>\n\n"
                 )
             else:
                 res_str += "\n"
             if durasi := r_json.get("duration"):
                 duration_raw = durasi
                 duration_text = (await gtranslate(durasi, "auto", "id")).text
-                res_str += f"<b>Durasi:</b> <code>{duration_text}</code>\n"
+                res_str += f"<b>{imdb_custom_emoji('duration', '🕓')} Durasi:</b> <code>{duration_text}</code>\n"
             if r_json.get("contentRating"):
                 category_text = r_json["contentRating"] or "-"
-                res_str += f"<b>Kategori:</b> <code>{r_json['contentRating']}</code> \n"
+                res_str += f"<b>{imdb_custom_emoji('category', '🔞')} Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-                res_str += f"<b>Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+                res_str += f"<b>{imdb_custom_emoji('rating', '🏆')} Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
             if rilis := r_json.get("datePublished"):
                 release_date_text = format_imdb_date(rilis, "id") or (rilis or "-")
-                res_str += f"<b>Rilis:</b> <code>{release_date_text}</code>\n"
+                res_str += f"<b>{imdb_custom_emoji('released', '📆')} Rilis:</b> <code>{release_date_text}</code>\n"
             genre_list = []
             if r_json.get("genre"):
                 genre_list = (
@@ -762,7 +763,7 @@ async def imdb_inl(_, query):
                     else f"#{i.replace('-', '_').replace(' ', '_')}, "
                     for i in genre_list
                 )
-                res_str += f"<b>Genre:</b> {genre_text[:-2]}\n"
+                res_str += f"<b>{imdb_custom_emoji('genre', '🎭')} Genre:</b> {genre_text[:-2]}\n"
             if genre_text == "-":
                 genre_text = "-"
             else:
@@ -776,7 +777,7 @@ async def imdb_inl(_, query):
                     for country in country_items
                     if country
                 )
-                res_str += f"<b>Negara:</b> {country_text[:-2]}\n"
+                res_str += f"<b>{imdb_custom_emoji('country', '🆔')} Negara:</b> {country_text[:-2]}\n"
             if country_text == "-":
                 country_text = "-"
             else:
@@ -790,12 +791,12 @@ async def imdb_inl(_, query):
                     for lang in language_items
                     if lang
                 )
-                res_str += f"<b>Bahasa:</b> {language_text[:-2]}\n"
+                res_str += f"<b>{imdb_custom_emoji('language', '🔊')} Bahasa:</b> {language_text[:-2]}\n"
             if language_text == "-":
                 language_text = "-"
             else:
                 language_text = language_text[:-2]
-            res_str += "\n<b>🙎 Info Cast:</b>\n"
+            res_str += f"\n<b>{imdb_custom_emoji('cast', '🙎')} Info Cast:</b>\n"
             director_names = []
             if r_json.get("director"):
                 director_names = [item["name"] for item in r_json["director"]]
@@ -828,7 +829,7 @@ async def imdb_inl(_, query):
             if r_json.get("description"):
                 summary = (await gtranslate(r_json.get("description"), "auto", "id")).text
                 storyline_text = summary or "-"
-                res_str += f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
+                res_str += f"<b>{imdb_custom_emoji('plot', '📜')} Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n"
             keywords_list = []
             if r_json.get("keywords"):
                 keywords_list = [kw.strip() for kw in r_json["keywords"].split(",")]
@@ -837,20 +838,20 @@ async def imdb_inl(_, query):
                     for i in keywords_list
                 )
                 res_str += (
-                    f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
+                    f"<b>{imdb_custom_emoji('keywords', '🔥')} Kata Kunci:</b>\n<blockquote expandable>{keyword_text[:-2]}</blockquote>\n"
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
             if awards := r_json.get("awards"):
                 awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-                res_str += f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
+                res_str += f"<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
                 res_str += f"Available On:\n{ott}\n"
             if not ott:
                 ott = "-"
-            res_str += f"<b>©️ IMDb by</b> {imdb_by}"
+            res_str += f"<b>{imdb_custom_emoji('imdb_by', '©️')} IMDb by</b> {imdb_by}"
             if template:
                 imdb_code = movie
                 title = r_json.get("name") or "-"
@@ -939,7 +940,7 @@ async def imdb_inl(_, query):
             else:
                 if "title" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📹 Judul:</b> <a href=\"{url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
+                        f"<b>{imdb_custom_emoji('title', '📹')} Judul:</b> <a href=\"{url}\">{r_json.get('name')} [{tahun}]</a> (<code>{typee}</code>)\n",
                         "",
                     )
                 if "release_date" in hidden_fields:
@@ -952,31 +953,31 @@ async def imdb_inl(_, query):
                 if "country" in hidden_fields:
                     res_str = res_str.replace(f"<b>Negara:</b> {country_text}\n", "")
                 if "language" in hidden_fields:
-                    res_str = res_str.replace(f"<b>Bahasa:</b> {language_text}\n", "")
+                    res_str = res_str.replace(f"<b>{imdb_custom_emoji('language', '🔊')} Bahasa:</b> {language_text}\n", "")
                 if "cast" in hidden_fields:
-                    res_str = res_str.replace("\n<b>🙎 Info Cast:</b>\n", "")
+                    res_str = res_str.replace(f"\n<b>{imdb_custom_emoji('cast', '🙎')} Info Cast:</b>\n", "")
                     res_str = res_str.replace(f"<b>Sutradara:</b> {director_text}\n", "")
                     res_str = res_str.replace(f"<b>Penulis:</b> {writer_text}\n", "")
                     res_str = res_str.replace(f"<b>Pemeran:</b> {cast_text}\n\n", "")
                 if "storyline" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>📜 Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
+                        f"<b>{imdb_custom_emoji('plot', '📜')} Plot:</b>\n<blockquote expandable><code>{summary}</code></blockquote>\n\n",
                         "",
                     )
                 if "keyword" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🔥 Kata Kunci:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
+                        f"<b>{imdb_custom_emoji('keywords', '🔥')} Kata Kunci:</b>\n<blockquote expandable>{keyword_text}</blockquote>\n",
                         "",
                     )
                 if "awards" in hidden_fields:
                     res_str = res_str.replace(
-                        f"<b>🏆 Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
+                        f"<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n",
                         "",
                     )
                 if "ott" in hidden_fields:
                     res_str = res_str.replace(f"Available On:\n{ott}\n", "")
                 if "imdb_by" in hidden_fields:
-                    res_str = res_str.replace(f"<b>©️ IMDb by</b> {imdb_by}", "")
+                    res_str = res_str.replace(f"<b>{imdb_custom_emoji('imdb_by', '©️')} IMDb by</b> {imdb_by}", "")
             if template:
                 markup = template_markup
             elif r_json.get("trailer"):
