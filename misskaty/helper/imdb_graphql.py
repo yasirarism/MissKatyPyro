@@ -108,6 +108,8 @@ async def get_imdb_details_graphql(title_id: str):
         )
         if not nominations:
             return None
+        if not wins:
+            return f"{nominations} nominasi"
         return f"{wins} kemenangan dari {nominations - wins} nominasi"
 
     def _people(*categories):
