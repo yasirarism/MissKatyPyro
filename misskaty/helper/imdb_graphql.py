@@ -41,6 +41,16 @@ IMDB_TITLE_QUERY = """query GetTitle($id: ID!) {
     }
     keywords(first: 10) { edges { node { text } } }
     latestTrailer { playbackURLs { url } }
+    awardNominations(first: 50) {
+      total
+      edges {
+        node {
+          isWinner
+          award { text }
+          category { text }
+        }
+      }
+    }
   }
 }"""
 
@@ -88,6 +98,17 @@ async def get_imdb_details_graphql(title_id: str):
         return {}
 
     principal_credits = payload.get("principalCredits") or []
+
+    def _format_awards(award_data):
+        nominations = award_data.get("total") or 0
+        wins = sum(
+            1
+            for edge in award_data.get("edges") or []
+            if ((edge.get("node") or {}).get("isWinner") is True)
+        )
+        if not nominations:
+            return None
+        return f"{wins} kemenangan dari {nominations - wins} nominasi"
 
     def _people(*categories):
         result = []
@@ -158,4 +179,5 @@ async def get_imdb_details_graphql(title_id: str):
         "director": _people("Director"),
         "creator": _people("Writers", "Writer", "Creator"),
         "actor": _people("Stars", "Cast"),
+        "awards": _format_awards(payload.get("awardNominations") or {}),
     }
