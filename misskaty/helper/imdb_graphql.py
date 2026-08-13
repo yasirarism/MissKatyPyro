@@ -41,6 +41,23 @@ IMDB_TITLE_QUERY = """query GetTitle($id: ID!) {
     }
     keywords(first: 10) { edges { node { text } } }
     latestTrailer { playbackURLs { url } }
+    metacritic { metascore { score reviewCount } }
+    productionBudget { budget { amount currency } }
+    openingWeekendGross(boxOfficeArea: DOMESTIC) {
+      gross { total { amount currency } }
+    }
+    domesticGross: lifetimeGross(boxOfficeArea: DOMESTIC) {
+      total { amount currency }
+    }
+    worldwideGross: lifetimeGross(boxOfficeArea: WORLDWIDE) {
+      total { amount currency }
+    }
+    parentsGuide {
+      categories {
+        category { text }
+        severity { text }
+      }
+    }
     awardNominations(first: 50) {
       total
       edges {
@@ -58,6 +75,20 @@ _MONTHS_ID = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember",
 ]
+
+
+def format_imdb_awards(counts: dict | None, locale: str = "en") -> str | None:
+    if not counts or not counts.get("total"):
+        return None
+    wins = counts.get("wins", 0)
+    nominations = counts.get("nominations", 0)
+    if locale == "id":
+        if not wins:
+            return f"{nominations} nominasi"
+        return f"{wins} kemenangan dari {nominations} nominasi"
+    if not wins:
+        return f"{nominations} nominations"
+    return f"{wins} wins from {nominations} nominations"
 
 
 def format_imdb_date(raw_date: str | None, locale: str = "id") -> str | None:
@@ -99,18 +130,44 @@ async def get_imdb_details_graphql(title_id: str):
 
     principal_credits = payload.get("principalCredits") or []
 
-    def _format_awards(award_data):
-        nominations = award_data.get("total") or 0
+    def _award_counts(award_data):
+        total = award_data.get("total") or 0
         wins = sum(
             1
             for edge in award_data.get("edges") or []
             if ((edge.get("node") or {}).get("isWinner") is True)
         )
-        if not nominations:
+        return {
+            "wins": wins,
+            "nominations": max(total - wins, 0),
+            "total": total,
+        } if total else None
+
+    def _format_awards(award_data):
+        counts = _award_counts(award_data)
+        if not counts:
             return None
-        if not wins:
-            return f"{nominations} nominasi"
-        return f"{wins} kemenangan dari {nominations - wins} nominasi"
+        if not counts["wins"]:
+            return f"{counts['nominations']} nominations"
+        return f"{counts['wins']} wins from {counts['nominations']} nominations"
+
+    def _money(value):
+        money = (value or {}).get("total") or value or {}
+        amount = money.get("amount")
+        currency = money.get("currency")
+        if amount is None or not currency:
+            return None
+        return {"amount": amount, "currency": currency}
+
+    metacritic = payload.get("metacritic") or {}
+    metascore = metacritic.get("metascore") or {}
+    budget = ((payload.get("productionBudget") or {}).get("budget") or {})
+    guide = []
+    for item in (payload.get("parentsGuide") or {}).get("categories") or []:
+        category = (item.get("category") or {}).get("text")
+        severity = (item.get("severity") or {}).get("text")
+        if category:
+            guide.append({"category": category, "severity": severity})
 
     def _people(*categories):
         result = []
@@ -182,4 +239,17 @@ async def get_imdb_details_graphql(title_id: str):
         "creator": _people("Writers", "Writer", "Creator"),
         "actor": _people("Stars", "Cast"),
         "awards": _format_awards(payload.get("awardNominations") or {}),
+        "awards_counts": _award_counts(payload.get("awardNominations") or {}),
+        "awards_en": _format_awards(payload.get("awardNominations") or {}),
+        # Extra fields are consumed only by custom templates; the default
+        # renderer intentionally does not read them.
+        "metacritic": {
+            "score": metascore.get("score"),
+            "reviewCount": metascore.get("reviewCount"),
+        } if metascore else None,
+        "budget": _money(budget),
+        "opening": _money(payload.get("openingWeekendGross")),
+        "domestic": _money(payload.get("domesticGross")),
+        "worldwide": _money(payload.get("worldwideGross")),
+        "parents_guide": guide,
     }

@@ -50,8 +50,10 @@ PRVT_MSGS = {}
 LOGGER = getLogger("MissKaty")
 
 
+from misskaty.helper.imdb_graphql import format_imdb_awards
 from misskaty.helper.imdb_template import (
     _with_html_placeholders,
+    format_imdb_money,
     imdb_custom_emoji,
     normalize_imdb_layout_fields,
     render_imdb_template_with_buttons,
@@ -727,6 +729,7 @@ async def imdb_inl(_, query):
             storyline_text = "-"
             keyword_text = "-"
             awards_text = "-"
+            awards_id_text = "-"
             rilis = "-"
             rilis_url = ""
             summary = ""
@@ -746,7 +749,7 @@ async def imdb_inl(_, query):
                 category_text = r_json["contentRating"] or "-"
                 res_str += f"<b>{imdb_custom_emoji('category', '🔞')} Kategori:</b> <code>{r_json['contentRating']}</code> \n"
             if r_json.get("aggregateRating"):
-                res_str += f"<b>{imdb_custom_emoji('rating', '🏆')} Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}⭐️ dari {r_json['aggregateRating']['ratingCount']} pengguna</code> \n"
+                res_str += f"<b>{imdb_custom_emoji('rating', '🏆')} Peringkat:</b> <code>{r_json['aggregateRating']['ratingValue']}</code> {imdb_custom_emoji('rating_star', '⭐')} dari {r_json['aggregateRating']['ratingCount']} pengguna \n"
             if rilis := r_json.get("datePublished"):
                 release_date_text = format_imdb_date(rilis, "id") or (rilis or "-")
                 res_str += f"<b>{imdb_custom_emoji('released', '📆')} Rilis:</b> <code>{release_date_text}</code>\n"
@@ -842,13 +845,15 @@ async def imdb_inl(_, query):
                 )
             if keyword_text != "-":
                 keyword_text = keyword_text[:-2]
-            if awards := r_json.get("awards"):
-                awards_text = (await gtranslate(awards, "auto", "id")).text or "-"
-                res_str += f"<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_text}</code></blockquote>\n"
+            if r_json.get("awards_counts"):
+                awards_text = r_json.get("awards_en") or "-"
+                awards_id_text = format_imdb_awards(r_json.get("awards_counts"), "id") or "-"
+                # Inline mengikuti bahasa default IMDb command: Indonesia.
+                res_str += f"\n<b>{imdb_custom_emoji('awards', '🏆')} Penghargaan:</b>\n<blockquote expandable><code>{awards_id_text}</code></blockquote>\n"
             else:
                 res_str += "\n"
             if ott != "":
-                res_str += f"Available On:\n{ott}\n"
+                res_str += f"\n<b>{imdb_custom_emoji('available', '📽')} Available On:</b>\n{ott}\n"
             if not ott:
                 ott = "-"
             res_str += f"<b>{imdb_custom_emoji('imdb_by', '©️')} IMDb by</b> {imdb_by}"
@@ -886,7 +891,7 @@ async def imdb_inl(_, query):
                     "category": category_text,
                     "rating_value": rating_value,
                     "rating_count": rating_count,
-                    "rating_text": rating_text,
+                    "rating_text": f"{rating_value}{imdb_custom_emoji('rating_star', '⭐')} dari {rating_count} pengguna",
                     "release": rilis,
                     "release_url": release_url,
                     "release_link": release_link,
@@ -903,6 +908,31 @@ async def imdb_inl(_, query):
                     "keywords": keyword_text,
                     "keywords_list": ", ".join(keywords_list) or "-",
                     "awards": awards_text,
+                    "awards_en": r_json.get("awards_en") or "-",
+                    "awards_id": awards_id_text,
+                    "awards_counts": r_json.get("awards_counts") or {},
+                    "metacritic_score": str((r_json.get("metacritic") or {}).get("score") or "-"),
+                    "metacritic_reviews": str((r_json.get("metacritic") or {}).get("reviewCount") or "-"),
+                    "budget": format_imdb_money(r_json.get("budget")),
+                    "opening": format_imdb_money(r_json.get("opening")),
+                    "domestic": format_imdb_money(r_json.get("domestic")),
+                    "worldwide": format_imdb_money(r_json.get("worldwide")),
+                    "parents_guide": ", ".join(
+                        item.get("category", "")
+                        for item in r_json.get("parents_guide") or []
+                        if item.get("category")
+                    ) or "-",
+                    "metacritic_score": str((r_json.get("metacritic") or {}).get("score") or "-"),
+                    "metacritic_reviews": str((r_json.get("metacritic") or {}).get("reviewCount") or "-"),
+                    "budget": format_imdb_money(r_json.get("budget")),
+                    "opening": format_imdb_money(r_json.get("opening")),
+                    "domestic": format_imdb_money(r_json.get("domestic")),
+                    "worldwide": format_imdb_money(r_json.get("worldwide")),
+                    "parents_guide": ", ".join(
+                        item.get("category", "")
+                        for item in r_json.get("parents_guide") or []
+                        if item.get("category")
+                    ) or "-",
                     "availability": ott,
                     "ott": ott,
                     "imdb_by": imdb_by,
@@ -975,7 +1005,7 @@ async def imdb_inl(_, query):
                         "",
                     )
                 if "ott" in hidden_fields:
-                    res_str = res_str.replace(f"Available On:\n{ott}\n", "")
+                    res_str = res_str.replace(f"\n<b>{imdb_custom_emoji('available', '📽')} Available On:</b>\n{ott}\n", "")
                 if "imdb_by" in hidden_fields:
                     res_str = res_str.replace(f"<b>{imdb_custom_emoji('imdb_by', '©️')} IMDb by</b> {imdb_by}", "")
             if template:
