@@ -11,6 +11,30 @@ from pyrogram.types import InlineKeyboardButton
 
 LOGGER = logging.getLogger("MissKaty")
 
+IMDB_CUSTOM_EMOJI = {
+    "processing": "5319190934510904031",
+    "cast": "5879770735999717115",
+    "plot": "5956561916573782596",
+    "keywords": "6008118472066732010",
+    "title": "6005986106703613755",
+    "aka": "6039454987250044861",
+    "duration": "5900104897885376843",
+    "category": "5920137394153067262",
+    "awards": "6035162669948867129",
+    "rating": "6035162669948867129",
+    "released": "5967412305338568701",
+    "genre": "6032625495328165724",
+    "country": "5776424837786374634",
+    "language": "5890997763331591703",
+    "rating_star": "6028338546736107668",
+    "close": "5985346521103604145",
+    "imdb_by": "5886440807325504167",
+}
+
+
+def imdb_custom_emoji(key: str, glyph: str) -> str:
+    return f'<emoji id="{IMDB_CUSTOM_EMOJI[key]}">{glyph}</emoji>'
+
 
 class ImdbTemplateDefaults(dict):
     """dict yang mengembalikan '-' untuk key yang tidak ada di payload."""
