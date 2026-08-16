@@ -111,7 +111,9 @@ def _media_source(reply: Message):
     if not media:
         return None
     mime = getattr(media, "mime_type", "") or ""
-    if reply.video or mime.startswith(("video/", "audio/")):
+    filename = getattr(media, "file_name", "") or ""
+    extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+    if reply.video or reply.audio or mime.startswith(("video/", "audio/")) or extension in ARCH_EXT:
         return media
     return None
 
@@ -164,20 +166,22 @@ async def ceksub(_, ctx: Message, strings):
 
     source = ctx.command[1] if len(ctx.command) > 1 else None
     source_path = None
+    owner_id = ctx.from_user.id if ctx.from_user else 0
+    start_time = time()
+    pesan = await ctx.reply(strings("progress_str"))
     if media:
         os.makedirs("downloads", exist_ok=True)
+        await pesan.edit(strings("progress_str") + "\nDownloading Telegram file...")
         source_path = await reply.download(file_name="downloads/")
         if not source_path:
-            return await ctx.reply(strings("fail_extr_media"), del_in=6)
+            return await pesan.edit(strings("fail_extr_media"))
         source = source_path
     if not source:
+        await pesan.delete()
         return await ctx.reply(
             strings("sub_extr_help").format(cmd=ctx.command[0]), del_in=5
         )
 
-    owner_id = ctx.from_user.id if ctx.from_user else 0
-    start_time = time()
-    pesan = await ctx.reply(strings("progress_str"))
     try:
         details = await _probe_media(source)
         streams = details.get("streams", [])
