@@ -29,7 +29,7 @@ from misskaty import app
 from misskaty.core.decorator.errors import capture_err
 from misskaty.helper.human_read import get_readable_time
 from misskaty.helper.localization import use_chat_lang
-from misskaty.helper.pyro_progress import progress_for_pyrogram
+from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram, time_formatter
 from misskaty.helper.tools import get_random_string
 from misskaty.plugins.dev import shell_exec
 from misskaty.vars import COMMAND_HANDLER
@@ -171,8 +171,13 @@ async def ceksub(_, ctx: Message, strings):
     pesan = await ctx.reply(strings("progress_str"))
     if media:
         os.makedirs("downloads", exist_ok=True)
+        dc_id = getattr(getattr(reply, "_client", None), "dc_id", 0)
         await pesan.edit(strings("progress_str") + "\nDownloading Telegram file...")
-        source_path = await reply.download(file_name="downloads/")
+        source_path = await reply.download(
+            file_name="downloads/",
+            progress=progress_for_pyrogram,
+            progress_args=("Downloading Telegram file...", pesan, time(), dc_id),
+        )
         if not source_path:
             return await pesan.edit(strings("fail_extr_media"))
         source = source_path

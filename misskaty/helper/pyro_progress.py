@@ -9,11 +9,22 @@ import time
 from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified
 
 
+_PROGRESS_LAST_UPDATE = {}
+
+
 async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
     """generic progress display for Telegram Upload / Download status"""
     now = time.time()
     diff = now - start
-    if round(diff % 10.00) == 0 or current == total:
+    key = (getattr(getattr(message, "chat", None), "id", 0), getattr(message, "id", 0))
+    if current != total and diff < 2:
+        return
+    if current != total and diff - _PROGRESS_LAST_UPDATE.get(key, 0) < 4:
+        return
+    _PROGRESS_LAST_UPDATE[key] = diff
+    if total <= 0:
+        return
+    if current == total or diff >= 0:
         percentage = current * 100 / total
         elapsed_time = round(diff)
         if elapsed_time == 0:
