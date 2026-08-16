@@ -5,6 +5,8 @@
 * Copyright @YasirPedia All rights reserved
 """
 
+import asyncio
+import contextlib
 import json
 import os
 import traceback
@@ -90,6 +92,30 @@ def get_subname(lang, url, ext):
     return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}{get_random_string(3)}.{ext}"
 
 
+async def _probe_media(source: str) -> dict:
+    """Probe local file/URL without shell interpolation."""
+    proc = await asyncio.create_subprocess_exec(
+        "ffprobe", "-v", "error", "-print_format", "json",
+        "-show_format", "-show_streams", source,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    out, err = await proc.communicate()
+    if proc.returncode:
+        raise RuntimeError(err.decode("utf-8", "replace").strip() or "ffprobe failed")
+    return json.loads(out.decode("utf-8", "replace"))
+
+
+def _media_source(reply: Message):
+    media = reply.video or reply.document or reply.audio
+    if not media:
+        return None
+    mime = getattr(media, "mime_type", "") or ""
+    if reply.video or mime.startswith(("video/", "audio/")):
+        return media
+    return None
+
+
 class StreamExtractHelper:
     """Helper kecil untuk validasi dan parsing callback stream extract."""
 
@@ -129,63 +155,70 @@ class StreamExtractHelper:
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @use_chat_lang()
 async def ceksub(_, ctx: Message, strings):
-    if len(ctx.command) == 1:
+    reply = ctx.reply_to_message
+    media = _media_source(reply) if reply else None
+    if len(ctx.command) == 1 and not media:
         return await ctx.reply(
             strings("sub_extr_help").format(cmd=ctx.command[0]), del_in=5
         )
-    link = ctx.command[1]
+
+    source = ctx.command[1] if len(ctx.command) > 1 else None
+    source_path = None
+    if media:
+        os.makedirs("downloads", exist_ok=True)
+        source_path = await reply.download(file_name="downloads/")
+        if not source_path:
+            return await ctx.reply(strings("fail_extr_media"), del_in=6)
+        source = source_path
+    if not source:
+        return await ctx.reply(
+            strings("sub_extr_help").format(cmd=ctx.command[0]), del_in=5
+        )
+
     owner_id = ctx.from_user.id if ctx.from_user else 0
     start_time = time()
     pesan = await ctx.reply(strings("progress_str"))
     try:
-        res = (
-            await shell_exec(
-                f"ffprobe -loglevel 0 -print_format json -show_format -show_streams {link}"
-            )
-        )[0]
-        details = json.loads(res)
-        # Simpan link per message_id pesan tombol, expired 60 detik.
-        # Key beda per pesan -> tombol lama tidak kebaca link yang baru.
+        details = await _probe_media(source)
+        streams = details.get("streams", [])
+        if not any(s.get("codec_type") in ("audio", "subtitle") for s in streams):
+            if source_path:
+                with contextlib.suppress(FileNotFoundError):
+                    os.remove(source_path)
+            return await pesan.edit(strings("fail_extr_media"))
+
         _EXTRACT_SESSIONS[pesan.id] = {
-            "link": link,
+            "link": source,
             "user_id": owner_id,
             "created_at": time(),
+            "local_file": bool(source_path),
         }
         buttons = []
-        for stream in details["streams"]:
-            mapping = stream["index"]
-            try:
-                stream_name = stream["codec_name"]
-            except Exception:
-                stream_name = "-"
-            stream_type = stream["codec_type"]
+        for stream in streams:
+            mapping = stream.get("index")
+            stream_name = stream.get("codec_name", "-")
+            stream_type = stream.get("codec_type")
             if stream_type not in ("audio", "subtitle"):
                 continue
-            try:
-                lang = stream["tags"]["language"]
-            except Exception:
-                lang = mapping
-            buttons.append(
-                [
-                    InlineKeyboardButton(
-                        f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                        StreamExtractHelper.build_callback(
-                            owner_id, lang, mapping, stream_name
-                        ),
-                    )
-                ]
-            )
+            lang = (stream.get("tags") or {}).get("language", mapping)
+            buttons.append([
+                InlineKeyboardButton(
+                    f"0:{mapping}({lang}): {stream_type}: {stream_name}",
+                    StreamExtractHelper.build_callback(owner_id, lang, mapping, stream_name),
+                )
+            ])
         timelog = time() - start_time
-        buttons.append(
-            [InlineKeyboardButton(strings("cancel_btn"), f"close#{owner_id}")]
-        )
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{owner_id}")])
         await pesan.edit(
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
     except Exception:
         LOGGER.error(traceback.format_exc())
-        _EXTRACT_SESSIONS.pop(owner_id, None)
+        if source_path:
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(source_path)
+        _EXTRACT_SESSIONS.pop(pesan.id, None)
         await pesan.edit(strings("fail_extr_media"))
 
 
@@ -243,25 +276,45 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
         return await update.answer(strings("unauth_cb"), True)
 
     link = StreamExtractHelper.get_source_link(update.message.id)
-    if not link:
+    session = _EXTRACT_SESSIONS.get(update.message.id)
+    if not link or not session:
         return await update.answer(strings("invalid_cb"), True)
 
     await update.message.edit(strings("progress_str"))
-    if codec == "aac":
+    if codec in ("aac", "m4a"):
         ext = "aac"
     elif codec == "mp3":
         ext = "mp3"
     elif codec == "eac3":
         ext = "eac3"
+    elif codec in ("ass", "ssa"):
+        ext = "ass"
+    elif codec in ("webvtt", "vtt"):
+        ext = "vtt"
     else:
         ext = "srt"
     start_time = time()
     namafile = get_subname(lang, link, ext)
+    if session.get("local_file"):
+        base = os.path.splitext(os.path.basename(link))[0]
+        namafile = f"[{str(lang).upper()}] {base}.{ext}"
     try:
         LOGGER.info(
             f"ExtractSub: {namafile} by {update.from_user.first_name} [{update.from_user.id}]"
         )
-        (await shell_exec(f"ffmpeg -i {link} -map {map_code} '{namafile}'"))[0]
+        ffmpeg_args = ["ffmpeg", "-y", "-i", link, "-map", map_code]
+        if codec in ("ass", "ssa", "subrip", "webvtt", "mov_text"):
+            ffmpeg_args += ["-c:s", "copy"]
+        elif codec in ("aac", "mp3", "eac3", "opus", "ac3"):
+            ffmpeg_args += ["-vn", "-c:a", "copy"]
+        ffmpeg_args.append(namafile)
+        proc = await asyncio.create_subprocess_exec(
+            *ffmpeg_args,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+        )
+        _, fferr = await proc.communicate()
+        if proc.returncode:
+            raise RuntimeError(fferr.decode("utf-8", "replace").strip() or "ffmpeg failed")
         timelog = time() - start_time
         c_time = time()
         await update.message.reply_document(
@@ -279,9 +332,17 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
             os.remove(namafile)
         except Exception:
             pass
+        if session.get("local_file"):
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(link)
+        _EXTRACT_SESSIONS.pop(update.message.id, None)
     except Exception as e:
         try:
             os.remove(namafile)
         except Exception:
             pass
+        if session.get("local_file"):
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(link)
+        _EXTRACT_SESSIONS.pop(update.message.id, None)
         await update.message.edit(strings("fail_extr_sub").format(link=link, e=e))
