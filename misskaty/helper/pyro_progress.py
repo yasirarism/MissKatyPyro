@@ -12,7 +12,7 @@ from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified
 _PROGRESS_LAST_UPDATE = {}
 
 
-async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
+async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id, reply_markup=None):
     """generic progress display for Telegram Upload / Download status"""
     now = time.time()
     diff = now - start
@@ -53,10 +53,10 @@ async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id):
             )
         )
         try:
-            await message.edit(f"{ud_type}\n {tmp}")
+            await message.edit(f"{ud_type}\n {tmp}", reply_markup=reply_markup)
         except FloodWait as e:
             await asyncio.sleep(e.value)
-            await message.edit(f"{ud_type}\n {tmp}")
+            await message.edit(f"{ud_type}\n {tmp}", reply_markup=reply_markup)
         except (MessageNotModified, MessageIdInvalid):
             pass
 

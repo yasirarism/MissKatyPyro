@@ -3,6 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
+import contextlib
 import math
 import os
 import re
@@ -17,6 +18,7 @@ from pyrogram import filters
 from pyrogram import types as pyro_types
 from pyrogram.file_id import FileId
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.errors import QueryIdInvalid
 from pySmartDL import SmartDL
 
 from misskaty import app
@@ -26,6 +28,24 @@ from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
 from misskaty.vars import COMMAND_HANDLER, OWNER_ID
 
 LOGGER = getLogger("MissKaty")
+
+ACTIVE_TG_DOWNLOADS = {}
+
+
+def _tg_download_cancel_markup(message_id, user_id):
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton("❌ Cancel", callback_data=f"tgdl_cancel#{message_id}#{user_id}")]]
+    )
+
+
+async def _tg_download_progress(current, total, label, message, start, dc_id, job_id, user_id):
+    job = ACTIVE_TG_DOWNLOADS.get(int(job_id), {})
+    if job.get("cancelled"):
+        raise asyncio.CancelledError
+    await progress_for_pyrogram(
+        current, total, label, message, start, dc_id,
+        reply_markup=_tg_download_cancel_markup(job_id, user_id),
+    )
 
 __MODULE__ = "Download/Upload"
 __HELP__ = """
@@ -101,11 +121,25 @@ async def download(client, message):
         if not media:
             return await pesan.edit("Unsupported media type..")
         dc_id = FileId.decode(media.file_id).dc_id
-        the_real_download_location = await client.download_media(
-            message=message.reply_to_message,
-            progress=progress_for_pyrogram,
-            progress_args=("Trying to download, sabar yakk..", pesan, c_time, dc_id),
+        job_id = f"{message.chat.id}:{pesan.id}"
+        user_id = message.from_user.id if message.from_user else OWNER_ID
+        await pesan.edit(reply_markup=_tg_download_cancel_markup(job_id, user_id))
+        download_task = asyncio.create_task(
+            client.download_media(
+                message=message.reply_to_message,
+                progress=_tg_download_progress,
+                progress_args=("Trying to download, sabar yakk..", pesan, c_time, dc_id, job_id, user_id),
+            )
         )
+        ACTIVE_TG_DOWNLOADS[job_id] = {"task": download_task, "user_id": user_id}
+        try:
+            the_real_download_location = await download_task
+        except asyncio.CancelledError:
+            ACTIVE_TG_DOWNLOADS.pop(job_id, None)
+            with contextlib.suppress(Exception):
+                await pesan.edit("❌ Download cancelled.")
+            return
+        ACTIVE_TG_DOWNLOADS.pop(job_id, None)
         end_t = datetime.now()
         ms = (end_t - start_t).seconds
         await pesan.edit(
@@ -170,6 +204,23 @@ async def download(client, message):
         await pesan.edit(
             "Reply to a Telegram Media, to download it to my local server."
         )
+
+
+@app.on_callback_query(filters.regex(r"^tgdl_cancel#"))
+async def tg_download_cancel(_, query):
+    try:
+        _, job_id, user_id = (query.data or "").split("#", 2)
+    except ValueError:
+        return await query.answer("Invalid task", True)
+    if query.from_user.id != int(user_id):
+        return await query.answer("Not yours!", True)
+    job = ACTIVE_TG_DOWNLOADS.get(job_id)
+    if not job:
+        return await query.answer("Task already finished", True)
+    task = job.get("task")
+    if task and not task.done():
+        task.cancel()
+    await query.answer("Cancelling download...")
 
 
 @app.on_message(filters.command(["instadl"], COMMAND_HANDLER))

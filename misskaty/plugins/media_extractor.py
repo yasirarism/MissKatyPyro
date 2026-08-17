@@ -187,7 +187,10 @@ async def _extract_progress(current, total, label, message, start, dc_id, job_id
     job = _ACTIVE_EXTRACTS.get(int(job_id), {})
     if job.get("cancelled"):
         raise asyncio.CancelledError
-    await progress_for_pyrogram(current, total, label, message, start, dc_id)
+    await progress_for_pyrogram(
+        current, total, label, message, start, dc_id,
+        reply_markup=_cancel_markup(job_id, user_id),
+    )
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
