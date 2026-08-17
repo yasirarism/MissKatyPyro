@@ -62,7 +62,7 @@ __HELP__ = """
 # callback tidak bergantung pada `reply_to_message` yang bisa hilang/None.
 # Key = message_id pesan yang berisi tombol, expired 60 detik.
 _EXTRACT_SESSIONS: dict[int, dict] = {}
-_EXTRACT_TTL = 60  # detik
+_EXTRACT_TTL = 60  # detik setelah daftar stream ditampilkan
 _ACTIVE_EXTRACTS: dict[int, dict] = {}
 
 
@@ -93,6 +93,28 @@ def get_subname(lang, url, ext):
     ):
         return f"[{lang.upper()}] MissKatySub{get_random_string(4)}.{ext}"
     return f"[{lang.upper()}] {get_base_name(os.path.basename(unquote(scheme_removed)))}{get_random_string(3)}.{ext}"
+
+
+async def _expire_extract_session(message_id: int):
+    """Expire menu, remove downloaded Telegram source, and update its message."""
+    try:
+        await asyncio.sleep(_EXTRACT_TTL)
+        session = _EXTRACT_SESSIONS.pop(message_id, None)
+        if not session:
+            return
+        if session.get("local_file"):
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(session.get("link", ""))
+        with contextlib.suppress(Exception):
+            await app.edit_message_text(
+                session["chat_id"],
+                message_id,
+                "⌛ <b>Task expired.</b>\nSilakan jalankan /extractmedia lagi.",
+            )
+    except asyncio.CancelledError:
+        raise
+    except Exception:
+        LOGGER.error(traceback.format_exc())
 
 
 async def _probe_media(source: str) -> dict:
@@ -258,7 +280,11 @@ async def ceksub(_, ctx: Message, strings):
             "user_id": owner_id,
             "created_at": time(),
             "local_file": bool(source_path),
+            "chat_id": pesan.chat.id,
         }
+        _EXTRACT_SESSIONS[pesan.id]["expiry_task"] = asyncio.create_task(
+            _expire_extract_session(pesan.id)
+        )
         buttons = []
         for stream in streams:
             mapping = stream.get("index")
@@ -346,8 +372,10 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
     link = StreamExtractHelper.get_source_link(update.message.id)
     session = _EXTRACT_SESSIONS.get(update.message.id)
     if not link or not session:
-        return await update.answer(strings("invalid_cb"), True)
-
+        return await update.answer("⌛ Task expired.", True)
+    expiry_task = session.pop("expiry_task", None)
+    if expiry_task and not expiry_task.done():
+        expiry_task.cancel()
     await update.message.edit(strings("progress_str"))
     if codec in ("aac", "m4a"):
         ext = "aac"
