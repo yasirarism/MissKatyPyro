@@ -220,7 +220,6 @@ async def ceksub(_, ctx: Message, strings):
         task = asyncio.create_task(
             reply.download(
                 file_name=dl_name,
-                chunk_size=1024 * 1024,
                 progress=_extract_progress,
                 progress_args=("Downloading Telegram file...", pesan, time(), dc_id, pesan.id, owner_id),
             )
