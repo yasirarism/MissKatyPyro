@@ -18,6 +18,7 @@ from urllib.parse import unquote
 
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
+from pyrogram.file_id import FileId
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -171,8 +172,8 @@ async def ceksub(_, ctx: Message, strings):
     pesan = await ctx.reply(strings("progress_str"))
     if media:
         os.makedirs("downloads", exist_ok=True)
-        dc_id = getattr(getattr(reply, "_client", None), "dc_id", 0)
-        await pesan.edit(strings("progress_str") + "\nDownloading Telegram file...")
+        dc_id = FileId.decode(media.file_id).dc_id
+        await pesan.edit(strings("progress_str") + f"\nDownloading Telegram file...\nDC ID: {dc_id}")
         source_path = await reply.download(
             file_name="downloads/",
             progress=progress_for_pyrogram,
