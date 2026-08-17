@@ -19,6 +19,7 @@ from urllib.parse import unquote
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
 from pyrogram.file_id import FileId
+from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -62,6 +63,7 @@ __HELP__ = """
 # Key = message_id pesan yang berisi tombol, expired 60 detik.
 _EXTRACT_SESSIONS: dict[int, dict] = {}
 _EXTRACT_TTL = 60  # detik
+_ACTIVE_EXTRACTS: dict[int, dict] = {}
 
 
 def _purge_expired_sessions():
@@ -155,6 +157,38 @@ class StreamExtractHelper:
         return session.get("link")
 
 
+def _cancel_markup(message_id: int, user_id: int, label: str = "❌ Cancel"):
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton(label, callback_data=f"extractcancel#{message_id}#{user_id}")]]
+    )
+
+
+@app.on_callback_query(filters.regex(r"^extractcancel#"))
+async def cancel_extract(_, query: CallbackQuery):
+    try:
+        _, message_id, user_id = (query.data or "").split("#", 2)
+        if query.from_user.id != int(user_id):
+            return await query.answer("Not yours!", True)
+        job = _ACTIVE_EXTRACTS.get(int(message_id))
+        if not job:
+            return await query.answer("Task sudah selesai.", True)
+        job["cancelled"] = True
+        await query.answer("Membatalkan download...", True)
+    except (ValueError, TypeError, QueryIdInvalid):
+        with contextlib.suppress(Exception):
+            await query.answer("Task tidak valid.", True)
+
+
+async def _extract_progress(current, total, label, message, start, dc_id, job_id, user_id):
+    job = _ACTIVE_EXTRACTS.get(int(job_id), {})
+    if job.get("cancelled"):
+        raise asyncio.CancelledError
+    await progress_for_pyrogram(current, total, label, message, start, dc_id)
+    if not job.get("cancelled"):
+        with contextlib.suppress(FloodWait, MessageNotModified, MessageIdInvalid):
+            await message.edit_reply_markup(_cancel_markup(job_id, user_id))
+
+
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
 @use_chat_lang()
 async def ceksub(_, ctx: Message, strings):
@@ -170,16 +204,27 @@ async def ceksub(_, ctx: Message, strings):
     owner_id = ctx.from_user.id if ctx.from_user else 0
     start_time = time()
     pesan = await ctx.reply(strings("progress_str"))
+    _ACTIVE_EXTRACTS[pesan.id] = {"cancelled": False, "user_id": owner_id}
     if media:
         os.makedirs("downloads", exist_ok=True)
         dc_id = FileId.decode(media.file_id).dc_id
-        await pesan.edit(strings("progress_str") + f"\nDownloading Telegram file...\nDC ID: {dc_id}")
-        source_path = await reply.download(
-            file_name="downloads/",
-            progress=progress_for_pyrogram,
-            progress_args=("Downloading Telegram file...", pesan, time(), dc_id),
+        await pesan.edit(
+            strings("progress_str") + f"\nDownloading Telegram file...\nDC ID: {dc_id}",
+            reply_markup=_cancel_markup(pesan.id, owner_id),
         )
+        try:
+            source_path = await reply.download(
+                file_name="downloads/",
+                progress=_extract_progress,
+                progress_args=("Downloading Telegram file...", pesan, time(), dc_id, pesan.id, owner_id),
+            )
+        except asyncio.CancelledError:
+            _ACTIVE_EXTRACTS.pop(pesan.id, None)
+            with contextlib.suppress(Exception):
+                await pesan.edit("❌ Download dibatalkan.")
+            return
         if not source_path:
+            _ACTIVE_EXTRACTS.pop(pesan.id, None)
             return await pesan.edit(strings("fail_extr_media"))
         source = source_path
     if not source:
@@ -223,12 +268,14 @@ async def ceksub(_, ctx: Message, strings):
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),
         )
+        _ACTIVE_EXTRACTS.pop(pesan.id, None)
     except Exception:
         LOGGER.error(traceback.format_exc())
         if source_path:
             with contextlib.suppress(FileNotFoundError):
                 os.remove(source_path)
         _EXTRACT_SESSIONS.pop(pesan.id, None)
+        _ACTIVE_EXTRACTS.pop(pesan.id, None)
         await pesan.edit(strings("fail_extr_media"))
 
 
