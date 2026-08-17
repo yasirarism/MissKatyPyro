@@ -188,9 +188,6 @@ async def _extract_progress(current, total, label, message, start, dc_id, job_id
     if job.get("cancelled"):
         raise asyncio.CancelledError
     await progress_for_pyrogram(current, total, label, message, start, dc_id)
-    if not job.get("cancelled"):
-        with contextlib.suppress(FloodWait, MessageNotModified, MessageIdInvalid):
-            await message.edit_reply_markup(_cancel_markup(job_id, user_id))
 
 
 @app.on_message(filters.command(["ceksub", "extractmedia"], COMMAND_HANDLER))
@@ -224,7 +221,7 @@ async def ceksub(_, ctx: Message, strings):
                 progress_args=("Downloading Telegram file...", pesan, time(), dc_id, pesan.id, owner_id),
             )
         )
-        _ACTIVE_EXTRACTS[pesan.id] = {"task": task, "user_id": owner_id}
+        _ACTIVE_EXTRACTS[pesan.id] = {"task": task, "user_id": owner_id, "cancelled": False}
         try:
             source_path = await task
         except asyncio.CancelledError:
