@@ -172,7 +172,11 @@ async def cancel_extract(_, query: CallbackQuery):
         job = _ACTIVE_EXTRACTS.get(int(message_id))
         if not job:
             return await query.answer("Task sudah selesai.", True)
-        job["cancelled"] = True
+        task = job.get("task")
+        if task and not task.done():
+            task.cancel()
+        else:
+            job["cancelled"] = True
         await query.answer("Membatalkan download...", True)
     except (ValueError, TypeError, QueryIdInvalid):
         with contextlib.suppress(Exception):
@@ -212,14 +216,22 @@ async def ceksub(_, ctx: Message, strings):
             strings("progress_str") + f"\nDownloading Telegram file...\nDC ID: {dc_id}",
             reply_markup=_cancel_markup(pesan.id, owner_id),
         )
-        try:
-            source_path = await reply.download(
-                file_name="downloads/",
+        dl_name = f"downloads/{pesan.id}_{os.path.basename(getattr(media, 'file_name', '') or f'media_{pesan.id}')}"
+        task = asyncio.create_task(
+            reply.download(
+                file_name=dl_name,
+                chunk_size=1024 * 1024,
                 progress=_extract_progress,
                 progress_args=("Downloading Telegram file...", pesan, time(), dc_id, pesan.id, owner_id),
             )
+        )
+        _ACTIVE_EXTRACTS[pesan.id] = {"task": task, "user_id": owner_id}
+        try:
+            source_path = await task
         except asyncio.CancelledError:
             _ACTIVE_EXTRACTS.pop(pesan.id, None)
+            with contextlib.suppress(FileNotFoundError):
+                os.remove(dl_name)
             with contextlib.suppress(Exception):
                 await pesan.edit("❌ Download dibatalkan.")
             return
