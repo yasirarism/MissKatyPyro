@@ -1193,7 +1193,9 @@ async def _build_imdb_result(
             "plot": summary or "-",
             "keywords": keyword_text,
             "keywords_list": ", ".join(keywords_list) or "-",
-            "awards": awards_text,
+            # {awards} follows the user's IMDb locale; explicit variants remain
+            # available for templates that need a fixed language.
+            "awards": awards_id_text if locale == "id" else awards_text,
             "awards_en": r_json.get("awards_en") or "-",
             "awards_id": awards_id_text,
             "awards_counts": r_json.get("awards_counts") or {},

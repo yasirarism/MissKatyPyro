@@ -6,6 +6,7 @@ import string
 import time
 from http.cookies import SimpleCookie
 from re import match as re_match
+from types import SimpleNamespace
 from googletrans import Translator
 from typing import Union
 from urllib.parse import urlparse
@@ -49,9 +50,34 @@ GENRES_EMOJI = {
 
 
 async def gtranslate(text, source="auto", target="id"):
-    async with Translator() as translator:
-         result = await translator.translate(text, src=source, dest=target)
-         return result
+    """Translate text with Google first and a lightweight HTTP fallback.
+
+    googletrans may return the source text unchanged when Google throttles the
+    undocumented endpoint. IMDb descriptions must not silently remain English
+    for Indonesian users, so retry through MyMemory before returning.
+    """
+    if not text:
+        return SimpleNamespace(text=text or "")
+    try:
+        async with Translator() as translator:
+            result = await translator.translate(text, src=source, dest=target)
+            if result.text and result.text.strip() != text.strip():
+                return result
+    except Exception as err:
+        LOGGER.warning("Google translation failed: %s", err)
+    if target == "id":
+        try:
+            response = await fetch.get(
+                "https://api.mymemory.translated.net/get",
+                params={"q": text, "langpair": "en|id"},
+            )
+            data = response.json()
+            translated = (data.get("responseData") or {}).get("translatedText")
+            if translated:
+                return SimpleNamespace(text=translated)
+        except Exception as err:
+            LOGGER.warning("MyMemory translation fallback failed: %s", err)
+    return SimpleNamespace(text=text)
         
 
 def is_url(url):
