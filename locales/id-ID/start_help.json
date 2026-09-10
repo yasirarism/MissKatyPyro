@@ -7,5 +7,8 @@
     "back_btn": "Kembali",
     "click_btn": "Klik tombol di bawah untuk mendapatkan bantuan tentang {nm}",
     "pm_detail": "PM Saya Untuk Detail Lebih Lanjut.",
-    "start_msg": "Halo <emoji id=5303081040464585038>🤗</emoji> {kamuh}, PM saya untuk tahu semua fitur. Kamu bisa mengubah bahasa bot dengan perintah /setlang, tapi masih tahap beta."
+    "start_msg": "Halo <emoji id=5303081040464585038>🤗</emoji> {kamuh}, PM saya untuk tahu semua fitur. Kamu bisa mengubah bahasa bot dengan perintah /setlang, tapi masih tahap beta.",
+    "help_modules_title": "📚 Daftar Modul",
+    "help_modules_hint": "Klik tombol modul di atas untuk detail, atau pakai {cmd} <modul>.",
+    "help_modules_foot": "Ditenagai oleh {bot}"
 }

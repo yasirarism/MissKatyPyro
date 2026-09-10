@@ -92,9 +92,27 @@ def is_module_loaded(name):
 
 
 import asyncio
+import contextlib
 
 
 async def run_sync(func, *args, **kwargs):
     """Run a blocking function in the default executor to avoid stalling the event loop."""
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
+
+
+async def schedule_msg_delete(msg, delay: int):
+    """Hapus `msg` otomatis setelah `delay` detik (fire-and-forget, silent-fail).
+
+    Dipakai untuk membuat pesan ephemeral (welcome, output eval/shell, dsb.)
+    tanpa memblokir handler. Aman dipanggil dengan msg=None.
+    """
+    if msg is None:
+        return
+
+    async def _auto_delete():
+        await asyncio.sleep(delay)
+        with contextlib.suppress(Exception):
+            await msg.delete_msg()
+
+    asyncio.create_task(_auto_delete())

@@ -25,11 +25,14 @@ from database.greetings_db import (
 from database.users_chats_db import db
 from misskaty import BOT_USERNAME, app
 from misskaty.core.decorator import asyncify, capture_err
-from misskaty.helper import fetch, use_chat_lang
+from misskaty.helper import fetch, schedule_msg_delete, use_chat_lang
 from misskaty.vars import COMMAND_HANDLER, SUPPORT_CHAT, OWNER_ID
 from misskaty.helper.chat_utils import temp
 
 LOGGER = getLogger("MissKaty")
+
+# Pesan welcome otomatis terhapus (ephemeral) setelah N detik.
+WELCOME_DELETE_DELAY = 300
 
 
 def circle(pfp, size=(215, 215)):
@@ -157,6 +160,9 @@ async def member_has_joined(c: Client, member: ChatMemberUpdated, strings):
                 member.chat.id,
                 photo=welcomeimg,
                 caption=caption,
+            )
+            await schedule_msg_delete(
+                temp.MELCOW[f"welcome-{member.chat.id}"], WELCOME_DELETE_DELAY
             )
         except Exception as e:
             LOGGER.info(e)

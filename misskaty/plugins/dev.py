@@ -57,6 +57,7 @@ from misskaty import BOT_NAME, app, botStartTime, misskaty_version, user
 from misskaty.core.decorator import new_task
 from misskaty.helper.eval_helper import format_exception, meval
 from misskaty.helper.functions import extract_user, extract_user_and_reason
+from misskaty.helper.misc import schedule_msg_delete
 from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
@@ -462,7 +463,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
     if len(shell) > 3000:
         with io.BytesIO(str.encode(shell)) as doc:
             doc.name = "shell_output.txt"
-            await ctx.reply_document(
+            sent = await ctx.reply_document(
                 document=doc,
                 caption=f"<code>{ctx.input[: 4096 // 4 - 1]}</code>",
                 file_name=doc.name,
@@ -478,6 +479,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                 ),
             )
             await msg.delete_msg()
+            await schedule_msg_delete(sent, 600)
     elif len(shell) != 0:
         await edit_or_reply(
             self,
@@ -497,8 +499,9 @@ async def shell_cmd(self: Client, ctx: Message, strings):
         )
         if self.me.is_bot:
             await msg.delete_msg()
+            await schedule_msg_delete(ctx, 600)
     else:
-        await ctx.reply(strings("no_reply"), del_in=5)
+        await edit_or_reply(self, ctx, text=strings("no_cmd"), del_in=30)
 
 
 @app.on_message(
@@ -519,7 +522,7 @@ async def shell_cmd(self: Client, ctx: Message, strings):
 @use_chat_lang()
 async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if (ctx.command and len(ctx.command) == 1) or ctx.text == "app.run()":
-        return await edit_or_reply(self, ctx, text=strings("no_eval"))
+        return await edit_or_reply(self, ctx, text=strings("no_eval"), del_in=30)
     status_message = (
         await ctx.edit(strings("run_eval"))
         if not self.me.is_bot
@@ -612,7 +615,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
-            await ctx.reply_document(
+            sent = await ctx.reply_document(
                 document=out_file,
                 caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
                 disable_notification=True,
@@ -629,6 +632,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                 ),
             )
             await status_message.delete_msg()
+            await schedule_msg_delete(sent, 600)
     else:
         await edit_or_reply(
             self,
@@ -648,6 +652,7 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
         )
         if self.me.is_bot:
             await status_message.delete_msg()
+            await schedule_msg_delete(ctx, 600)
 
 
 # Update and restart bot

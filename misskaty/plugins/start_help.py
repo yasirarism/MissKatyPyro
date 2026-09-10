@@ -6,6 +6,8 @@
 """
 import contextlib
 import re
+from html import escape
+from logging import getLogger
 
 from pyrogram import Client, filters
 from pyrogram import types as pyro_types
@@ -14,6 +16,7 @@ from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    InputRichMessage,
     Message,
 )
 
@@ -22,6 +25,8 @@ from misskaty import BOT_NAME, BOT_USERNAME, HELPABLE, app
 from misskaty.helper import bot_sys_stats, paginate_modules
 from misskaty.helper.localization import use_chat_lang
 from misskaty.vars import COMMAND_HANDLER
+
+LOGGER = getLogger("MissKaty")
 
 home_keyboard_pm = InlineKeyboardMarkup(
     [
@@ -130,10 +135,11 @@ async def start(self, ctx, strings):
                 effect_id=5104841245755180586,
             )
         elif name == "help":
-            text, keyb = await help_parser(ctx.from_user.first_name, strings)
+            text, keyb, rich_html = await help_parser(ctx.from_user.first_name, strings)
             await ctx.reply(
                 text, reply_markup=keyb, effect_id=5104841245755180586
             )
+            await _send_help_rich(ctx, rich_html)
     else:
         await self.send_photo(
             ctx.chat.id,
@@ -147,13 +153,22 @@ async def start(self, ctx, strings):
 @app.on_callback_query(filters.regex("bot_commands"))
 @use_chat_lang()
 async def commands_callbacc(_, cb: CallbackQuery, strings):
-    text, keyb = await help_parser(cb.from_user.mention, strings)
+    text, keyb, rich_html = await help_parser(cb.from_user.mention, strings)
     await app.send_message(
         cb.message.chat.id,
         text=text,
         reply_markup=keyb,
         effect_id=5104841245755180586,
     )
+    try:
+        await app.send_rich_message(
+            cb.message.chat.id,
+            InputRichMessage(html=rich_html),
+        )
+    except Exception as e:
+        LOGGER.warning(
+            f"help rich message gagal ({e.__class__.__name__}): {e}"
+        )
     await cb.message.delete_msg()
 
 
@@ -184,11 +199,12 @@ async def help_command(_, ctx: Message, strings):
                 await ctx.reply(
                     strings("click_btn").format(nm=name),
                     reply_markup=key,
+                    del_in=120,
                 )
             else:
-                await ctx.reply(strings("pm_detail"), reply_markup=keyboard)
+                await ctx.reply(strings("pm_detail"), reply_markup=keyboard, del_in=120)
         else:
-            await ctx.reply(strings("pm_detail"), reply_markup=keyboard)
+            await ctx.reply(strings("pm_detail"), reply_markup=keyboard, del_in=120)
     elif len(ctx.command) >= 2:
         name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
         if str(name) in HELPABLE:
@@ -202,30 +218,83 @@ async def help_command(_, ctx: Message, strings):
                 effect_id=5104841245755180586,
             )
         else:
-            text, help_keyboard = await help_parser(ctx.from_user.first_name, strings)
+            text, help_keyboard, rich_html = await help_parser(
+                ctx.from_user.first_name, strings
+            )
             await ctx.reply(
                 text,
                 reply_markup=help_keyboard,
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                 effect_id=5104841245755180586,
             )
+            await _send_help_rich(ctx, rich_html)
     else:
-        text, help_keyboard = await help_parser(ctx.from_user.first_name, strings)
+        text, help_keyboard, rich_html = await help_parser(
+            ctx.from_user.first_name, strings
+        )
         await ctx.reply(
             text,
             reply_markup=help_keyboard,
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
             effect_id=5104841245755180586,
         )
+        await _send_help_rich(ctx, rich_html)
+
+
+def _build_help_table(strings) -> str:
+    """Bangun HTML tabel daftar modul help (pola rich message prayer_reminder).
+
+    Modul dibagi 2 kolom kiri/kanan, seimbang sesuai jumlah modul terdaftar.
+    """
+    mods = sorted(x.__MODULE__ for x in HELPABLE.values())
+    half = (len(mods) + 1) // 2
+    left, right = mods[:half], mods[half:]
+    rows = []
+    for i in range(half):
+        left_cell = escape(left[i])
+        right_cell = escape(right[i]) if i < len(right) else ""
+        rows.append(f"<tr><td>• {left_cell}</td><td>• {right_cell}</td></tr>")
+    return (
+        "<table bordered striped>"
+        f"<caption>{escape(strings('help_modules_title'))}</caption>"
+        f"{''.join(rows)}"
+        "</table>"
+    )
+
+
+async def _send_help_rich(ctx: Message, rich_html: str) -> None:
+    """Kirim daftar modul sebagai rich message (tabel rapi).
+
+    help_txt + tombol tetap dikirim sebagai pesan biasa dulu supaya navigasi
+    callback (help_back/prev/next) mengedit pesan plain, bukan rich message;
+    rich table dikirim terpisah TANPA keyboard. Kalau rich gagal (server TG
+    tidak bisa render), fallback aman: pesan biasa + tombol modul tetap ada.
+    """
+    try:
+        await app.send_rich_message(
+            ctx.chat.id,
+            InputRichMessage(html=rich_html),
+            reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
+        )
+    except Exception as e:
+        LOGGER.warning(
+            f"help rich message gagal ({e.__class__.__name__}): {e}"
+        )
 
 
 async def help_parser(name, strings, keyb=None):
     if not keyb:
         keyb = InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help"))
-    return (
-        strings("help_txt").format(kamuh=name, bot=BOT_NAME),
-        keyb,
+    top_text = strings("help_txt").format(kamuh=name, bot=BOT_NAME)
+    rich_html = (
+        f"<p>{top_text}</p>"
+        f"<p>{escape(strings('help_modules_hint').format(cmd='/help'))}</p>"
+        f"{_build_help_table(strings)}"
+        "<aside>"
+        f"{escape(strings('help_modules_foot').format(bot=BOT_NAME))}"
+        "</aside>"
     )
+    return top_text, keyb, rich_html
 
 
 @app.on_callback_query(filters.regex(r"help_(.*?)"))
@@ -294,12 +363,13 @@ async def help_button(self: Client, query: CallbackQuery, strings):
         )
 
     elif create_match:
-        text, keyb = await help_parser(query.from_user.first_name, strings)
+        text, keyb, rich_html = await help_parser(query.from_user.first_name, strings)
         await query.message.edit(
             text=text,
             reply_markup=keyb,
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
         )
+        await _send_help_rich(query.message, rich_html)
 
     try:
         await self.answer_callback_query(query.id)

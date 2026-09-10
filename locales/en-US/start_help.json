@@ -7,5 +7,8 @@
     "back_btn": "Back",
     "click_btn": "Click on the below button to get help about {nm}",
     "pm_detail": "PM Me For More Details.",
-    "start_msg": "Hello <emoji id=5303081040464585038>🤗</emoji> {kamuh}, PM me to know about all my features. You can change language bot using /setlang command, but it's still in beta stage."
+    "start_msg": "Hello <emoji id=5303081040464585038>🤗</emoji> {kamuh}, PM me to know about all my features. You can change language bot using /setlang command, but it's still in beta stage.",
+    "help_modules_title": "📚 Available Modules",
+    "help_modules_hint": "Tap a module button above for details, or use {cmd} <module>.",
+    "help_modules_foot": "Powered by {bot}"
 }
