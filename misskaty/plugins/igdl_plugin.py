@@ -309,7 +309,6 @@ def _build_rich_card(data: dict) -> str:
     if caption:
         if len(caption) > MAX_CAPTION:
             caption = caption[:MAX_CAPTION] + "..."
-        parts.append("<br>")
         for para in caption.split("\n\n"):
             para = para.strip()
             if para:
