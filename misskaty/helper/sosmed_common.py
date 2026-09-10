@@ -1,12 +1,25 @@
 import asyncio
 import os
 from logging import getLogger
+
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
+
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 
+try:
+    from curl_cffi import requests as cffi_requests
+except ImportError:
+    cffi_requests = None
+
+try:
+    from yt_dlp import YoutubeDL
+except ImportError:
+    YoutubeDL = None
+
+LOGGER = getLogger("MissKaty")
 
 ACTIVE_TG_DOWNLOADS = {}
 
@@ -104,18 +117,3 @@ def _fmt_num(n) -> str:
 
 def _esc(s: str) -> str:
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-
-
-LOGGER = getLogger("MissKaty")
-
-
-try:
-    from curl_cffi import requests as cffi_requests
-except ImportError:
-    cffi_requests = None
-
-
-try:
-    from yt_dlp import YoutubeDL
-except ImportError:
-    YoutubeDL = None
