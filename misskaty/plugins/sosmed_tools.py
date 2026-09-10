@@ -11,10 +11,9 @@ import re
 import time
 from datetime import datetime
 from logging import getLogger
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 from bs4 import BeautifulSoup
-from cloudscraper import create_scraper
 from pyrogram import filters
 from pyrogram import types as pyro_types
 from pyrogram.file_id import FileId
@@ -23,7 +22,6 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     InputRichMessage,
 )
-from pyrogram.errors import QueryIdInvalid
 from pySmartDL import SmartDL
 
 from misskaty import app
@@ -67,6 +65,7 @@ __HELP__ = """
 /igdl [link] atau /instadl [link] - Instagram post/reel sebagai slideshow rich message (media, likes, komentar, caption, metadata video).
 /tiktokdl [link] - Download TikTok video.
 /fbdl [link] - Facebook post/reel/video sebagai slideshow rich message.
+  Metrik (reaksi/komentar/share) butuh cookies.txt akun Facebook.
 /twitterdl [link] - Download video dari Twitter/X.
 /ytdown [YT-DLP URL] - Download video/audio via yt-dlp.
 /download [url] atau reply file - Download ke server (OWNER only).
@@ -236,7 +235,6 @@ async def tg_download_cancel(_, query):
     await query.answer("Cancelling download...")
 
 
-COOKIES_ENV = os.environ.get("IG_COOKIES_FILE")
 COOKIES_DEFAULT = os.path.join(os.getcwd(), "cookies.txt")
 MAX_MEDIA = 50
 MAX_CAPTION = 2500
@@ -259,14 +257,16 @@ def _extract_post_id(url: str) -> str:
 
 
 def _resolve_cookies_path() -> str | None:
-    if COOKIES_ENV and os.path.exists(COOKIES_ENV):
-        return COOKIES_ENV
+    for env in ("SOCMED_COOKIES_FILE", "IG_COOKIES_FILE"):
+        path = os.environ.get(env)
+        if path and os.path.exists(path):
+            return path
     if os.path.exists(COOKIES_DEFAULT):
         return COOKIES_DEFAULT
     return None
 
 
-def _load_netscape_cookies(path: str) -> dict:
+def _load_netscape_cookies(path: str, domains=("instagram.com",)) -> dict:
     cookies: dict = {}
     try:
         with open(path, encoding="utf-8") as f:
@@ -280,11 +280,29 @@ def _load_netscape_cookies(path: str) -> dict:
                 if len(parts) < 7:
                     continue
                 domain, _flag, _path, _secure, _expiry, name, value = parts[:7]
-                if "instagram.com" in domain:
+                if any(d in domain for d in domains):
                     cookies[name] = value
     except Exception as e:
         LOGGER.warning("igdl gagal baca cookies.txt (%s): %s", path, e.__class__.__name__)
     return cookies
+
+
+def _session_with_cookies(domains=("instagram.com",), use_cookies: bool = True):
+    s = cffi_requests.Session(impersonate="chrome")
+    if not use_cookies:
+        return s
+    path = _resolve_cookies_path()
+    if path:
+        cookies = _load_netscape_cookies(path, domains)
+        if cookies:
+            s.cookies.update(cookies)
+            LOGGER.info("sosmed cookies.txt dipakai (%d cookie)", len(cookies))
+    return s
+
+
+def _ydl_cookie_opts() -> dict:
+    path = os.environ.get("YTDL_COOKIE_FILE") or _resolve_cookies_path()
+    return {"cookiefile": path} if path and os.path.exists(path) else {}
 
 
 def _find_polaris(obj, out: list):
@@ -349,15 +367,18 @@ def _extract_sync(shortcode: str) -> dict:
     if not cffi_requests:
         return {"ok": False, "reason": "no_curl_cffi"}
 
-    s = cffi_requests.Session(impersonate="chrome")
-    cookies_path = _resolve_cookies_path()
-    if cookies_path:
-        cookies = _load_netscape_cookies(cookies_path)
-        if cookies:
-            s.cookies.update(cookies)
-            LOGGER.info("igdl pakai cookies.txt (%d cookie IG)", len(cookies))
+    s = _session_with_cookies()
 
-    r = s.get(f"https://www.instagram.com/p/{shortcode}/", timeout=30)
+    try:
+        r = s.get(f"https://www.instagram.com/p/{shortcode}/", timeout=30, max_redirects=10)
+    except Exception as e:
+        LOGGER.warning("igdl request gagal (%s): %s", e.__class__.__name__, str(e)[:100])
+        try:
+            s = _session_with_cookies(use_cookies=False)
+            r = s.get(f"https://www.instagram.com/p/{shortcode}/", timeout=30, max_redirects=10)
+        except Exception as e2:
+            LOGGER.warning("igdl retry tanpa cookie gagal: %s", str(e2)[:100])
+            return {"ok": False, "reason": "request_failed"}
     if r.status_code == 429:
         return {"ok": False, "reason": "rate_limited"}
     if r.status_code != 200:
@@ -718,7 +739,7 @@ async def tiktokdl(_, message):
 
 def _fb_canonical(url: str) -> str:
     try:
-        s = cffi_requests.Session(impersonate="chrome")
+        s = _session_with_cookies(("facebook.com", "fbcdn.net"))
         r = s.get(url, timeout=30, allow_redirects=True)
         return r.url
     except Exception:
@@ -800,10 +821,23 @@ def _fb_extract_media(node: dict) -> list:
 
 
 def _fb_html_data(url: str) -> dict:
-    s = cffi_requests.Session(impersonate="chrome")
-    r = s.get(url, timeout=30, allow_redirects=True)
-    if r.status_code != 200:
-        return {"ok": False, "reason": f"http_{r.status_code}"}
+    for use_cookies in (True, False):
+        s = _session_with_cookies(("facebook.com", "fbcdn.net"), use_cookies=use_cookies)
+        try:
+            r = s.get(url, timeout=30, allow_redirects=True, max_redirects=10)
+        except Exception as e:
+            LOGGER.warning(
+                "fbdl request gagal (%s, cookie=%s): %s",
+                e.__class__.__name__,
+                use_cookies,
+                str(e)[:90],
+            )
+            continue
+        if r.status_code != 200:
+            continue
+        break
+    else:
+        return {"ok": False, "reason": "request_failed"}
     html = r.text
     scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
     nodes: list = []
@@ -842,6 +876,7 @@ def _fb_html_data(url: str) -> dict:
         "media": _fb_extract_media(node),
         "counts": counts,
         "permalink": node.get("permalink_url") or url,
+        "cookies_used": bool(_resolve_cookies_path()),
     }
 
 
@@ -854,6 +889,7 @@ def _fb_ytdlp(url: str) -> dict:
             "noplaylist": True,
             "socket_timeout": 30,
         }
+        opts.update(_ydl_cookie_opts())
         with YoutubeDL(opts) as ydl:
             return ydl.extract_info(url, download=False)
 
@@ -1002,7 +1038,12 @@ def _fb_rich_card(data: dict) -> str:
     if date_disp != "-":
         rows.append(f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>")
     if not any(k in counts for k in ("reactions", "comments", "shares")):
-        rows.append("<tr><td>📊 Metrik</td><td>tidak tersedia (login)</td></tr>")
+        hint = (
+            "cookies kedaluwarsa / post tidak terlihat"
+            if data.get("cookies_used")
+            else "perlu cookies.txt (login)"
+        )
+        rows.append(f"<tr><td>📊 Metrik</td><td>{hint}</td></tr>")
     parts.append("<table bordered striped>" + "".join(rows) + "</table>")
 
     meta = data.get("video_meta")
