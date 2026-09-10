@@ -96,6 +96,75 @@ async def edit_or_reply(self, msg, **kwargs):
     await func(**{k: v for k, v in kwargs.items() if k in spec})
 
 
+def _eph_params(self: Client, ctx: Message):
+    """EphemeralMessageParameters untuk /eval & /shell yang dipanggil di grup.
+
+    Output command dikirim sebagai ephemeral message sehingga hanya terlihat
+    oleh pemanggil (owner) + bot. Return None di PM (tidak perlu), di userbot,
+    atau bila fork terpasang belum punya tipe ini (degradasi aman ke jalur lama).
+    """
+    if ctx.chat.type == enums.ChatType.PRIVATE:
+        return None
+    if not getattr(self.me, "is_bot", False):
+        return None
+    if not ctx.from_user:
+        return None
+    cls = getattr(pyro_types, "EphemeralMessageParameters", None)
+    if cls is None:
+        return None
+    return cls(receiver_user_id=ctx.from_user.id)
+
+
+async def _send_eph_text(self: Client, ctx: Message, eph, text: str):
+    """Kirim output text. Di grup: ephemeral (privat utk pemanggil + bot);
+    bila Telegram menolak, fallback kirim normal + auto-delete 10 menit."""
+    if eph is not None:
+        try:
+            return await app.send_message(
+                ctx.chat.id,
+                text=text,
+                parse_mode=enums.ParseMode.HTML,
+                ephemeral_message_parameters=eph,
+            )
+        except Exception as e:
+            LOGGER.warning(
+                f"send ephemeral gagal ({e.__class__.__name__}): {e}, fallback normal"
+            )
+    msg = await app.send_message(
+        ctx.chat.id, text=text, parse_mode=enums.ParseMode.HTML
+    )
+    if eph is not None:
+        await schedule_msg_delete(msg, 600)
+    return msg
+
+
+async def _send_eph_doc(
+    self: Client, ctx: Message, eph, doc, caption: str, file_name: str, thumb=None
+):
+    """Kirim output sebagai dokumen (output kepanjangan). Fallback sama
+    seperti _send_eph_text."""
+    if eph is not None:
+        try:
+            return await app.send_document(
+                ctx.chat.id,
+                document=doc,
+                caption=caption,
+                file_name=file_name,
+                thumb=thumb,
+                ephemeral_message_parameters=eph,
+            )
+        except Exception as e:
+            LOGGER.warning(
+                f"send ephemeral doc gagal ({e.__class__.__name__}): {e}, fallback normal"
+            )
+    msg = await app.send_document(
+        ctx.chat.id, document=doc, caption=caption, file_name=file_name, thumb=thumb
+    )
+    if eph is not None:
+        await schedule_msg_delete(msg, 600)
+    return msg
+
+
 @app.on_message(filters.command(["privacy"], COMMAND_HANDLER))
 @use_chat_lang()
 async def privacy_policy(self: Client, ctx: Message, strings):
@@ -460,13 +529,42 @@ async def shell_cmd(self: Client, ctx: Message, strings):
         else await ctx.reply(strings("run_exec"))
     )
     shell = (await shell_exec(ctx.input))[0]
+    eph = _eph_params(self, ctx)
     if len(shell) > 3000:
         with io.BytesIO(str.encode(shell)) as doc:
             doc.name = "shell_output.txt"
-            sent = await ctx.reply_document(
-                document=doc,
-                caption=f"<code>{ctx.input[: 4096 // 4 - 1]}</code>",
-                file_name=doc.name,
+            caption = f"<code>{ctx.input[: 4096 // 4 - 1]}</code>"
+            if eph is not None:
+                await _send_eph_doc(self, ctx, eph, doc, caption, doc.name)
+                await msg.delete_msg()
+            else:
+                sent = await ctx.reply_document(
+                    document=doc,
+                    caption=caption,
+                    file_name=doc.name,
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text=strings("cl_btn"),
+                                    callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
+                await msg.delete_msg()
+                await schedule_msg_delete(sent, 600)
+    elif len(shell) != 0:
+        if eph is not None:
+            await _send_eph_text(self, ctx, eph, html.escape(shell))
+            await msg.delete_msg()
+        else:
+            await edit_or_reply(
+                self,
+                ctx,
+                text=html.escape(shell),
+                parse_mode=enums.ParseMode.HTML,
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -478,28 +576,9 @@ async def shell_cmd(self: Client, ctx: Message, strings):
                     ]
                 ),
             )
-            await msg.delete_msg()
-            await schedule_msg_delete(sent, 600)
-    elif len(shell) != 0:
-        await edit_or_reply(
-            self,
-            ctx,
-            text=html.escape(shell),
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
-                        )
-                    ]
-                ]
-            ),
-        )
-        if self.me.is_bot:
-            await msg.delete_msg()
-            await schedule_msg_delete(ctx, 600)
+            if self.me.is_bot:
+                await msg.delete_msg()
+                await schedule_msg_delete(ctx, 600)
     else:
         await edit_or_reply(self, ctx, text=strings("no_cmd"), del_in=30)
 
@@ -612,14 +691,45 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
     if out.endswith("\n"):
         out = out[:-1]
     final_output = f"{prefix}<b>INPUT:</b>\n<pre language='python'>{html.escape(code)}</pre>\n<b>OUTPUT:</b>\n<pre language='python'>{html.escape(out)}</pre>\nExecuted Time: {el_str}"
+    eph = _eph_params(self, ctx)
     if len(final_output) > 4096:
         with io.BytesIO(str.encode(out)) as out_file:
             out_file.name = "MissKatyEval.txt"
-            sent = await ctx.reply_document(
-                document=out_file,
-                caption=f"<code>{code[: 4096 // 4 - 1]}</code>",
-                disable_notification=True,
-                thumb="assets/thumb.jpg",
+            caption = f"<code>{code[: 4096 // 4 - 1]}</code>"
+            if eph is not None:
+                await _send_eph_doc(
+                    self, ctx, eph, out_file, caption, out_file.name, thumb="assets/thumb.jpg"
+                )
+                await status_message.delete_msg()
+            else:
+                sent = await ctx.reply_document(
+                    document=out_file,
+                    caption=caption,
+                    disable_notification=True,
+                    thumb="assets/thumb.jpg",
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    text=strings("cl_btn"),
+                                    callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
+                                )
+                            ]
+                        ]
+                    ),
+                )
+                await status_message.delete_msg()
+                await schedule_msg_delete(sent, 600)
+    else:
+        if eph is not None:
+            await _send_eph_text(self, ctx, eph, final_output)
+            await status_message.delete_msg()
+        else:
+            await edit_or_reply(
+                self,
+                ctx,
+                text=final_output,
+                parse_mode=enums.ParseMode.HTML,
                 reply_markup=InlineKeyboardMarkup(
                     [
                         [
@@ -631,28 +741,9 @@ async def cmd_eval(self: Client, ctx: Message, strings) -> Optional[str]:
                     ]
                 ),
             )
-            await status_message.delete_msg()
-            await schedule_msg_delete(sent, 600)
-    else:
-        await edit_or_reply(
-            self,
-            ctx,
-            text=final_output,
-            parse_mode=enums.ParseMode.HTML,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton(
-                            text=strings("cl_btn"),
-                            callback_data=f"close#{ctx.from_user.id if ctx.from_user else self.me.id}",
-                        )
-                    ]
-                ]
-            ),
-        )
-        if self.me.is_bot:
-            await status_message.delete_msg()
-            await schedule_msg_delete(ctx, 600)
+            if self.me.is_bot:
+                await status_message.delete_msg()
+                await schedule_msg_delete(ctx, 600)
 
 
 # Update and restart bot

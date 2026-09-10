@@ -13,6 +13,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from beanie import init_beanie
 from pymongo import MongoClient
 from pyrogram import Client
+from pyrogram import types as pyro_types
 
 from database import get_database
 from misskaty.core.client import MissKatyClient
@@ -127,6 +128,34 @@ app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.me.username
+
+# Daftarkan /eval & /shell sebagai ephemeral commands (Bot API Ephemeral Messages,
+# scope: semua grup). Saat command ini dipanggil member di grup, command & output
+# hanya terlihat oleh pemanggil + bot. Aman dilewati bila fork pyrogram terpasang
+# belum mendukung fitur ini.
+if hasattr(app, "set_bot_commands") and hasattr(pyro_types, "EphemeralMessageParameters"):
+    try:
+
+        async def _register_ephemeral_commands():
+            await app.set_bot_commands(
+                [
+                    pyro_types.BotCommand(
+                        "eval",
+                        "Eksekusi kode Python (output privat: kamu + bot)",
+                        is_ephemeral=True,
+                    ),
+                    pyro_types.BotCommand(
+                        "shell",
+                        "Eksekusi perintah shell (output privat: kamu + bot)",
+                        is_ephemeral=True,
+                    ),
+                ],
+                scope=pyro_types.BotCommandScopeAllGroupChats(),
+            )
+
+        loop.run_until_complete(_register_ephemeral_commands())
+    except Exception as e:
+        app.log.error(f"Failed to register ephemeral commands: {e}")
 if USER_SESSION:
     try:
         user.start()
