@@ -37,6 +37,11 @@ try:
 except ImportError:
     cffi_requests = None
 
+try:
+    from yt_dlp import YoutubeDL
+except ImportError:
+    YoutubeDL = None
+
 LOGGER = getLogger("MissKaty")
 
 ACTIVE_TG_DOWNLOADS = {}
@@ -61,7 +66,7 @@ __MODULE__ = "SosmedTools"
 __HELP__ = """
 /igdl [link] atau /instadl [link] - Instagram post/reel sebagai slideshow rich message (media, likes, komentar, caption, metadata video).
 /tiktokdl [link] - Download TikTok video.
-/fbdl [link] - Download Facebook video.
+/fbdl [link] - Facebook post/reel/video sebagai slideshow rich message.
 /twitterdl [link] - Download video dari Twitter/X.
 /ytdown [YT-DLP URL] - Download video/audio via yt-dlp.
 /download [url] atau reply file - Download ke server (OWNER only).
@@ -711,37 +716,376 @@ async def tiktokdl(_, message):
         await msg.delete()
 
 
-@app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
+def _fb_canonical(url: str) -> str:
+    try:
+        s = cffi_requests.Session(impersonate="chrome")
+        r = s.get(url, timeout=30, allow_redirects=True)
+        return r.url
+    except Exception:
+        return url
+
+
+def _fb_parse_count(text: str):
+    m = re.match(r"([\d.,]+)\s*([KMkm])?", str(text or "").strip())
+    if not m:
+        return None
+    try:
+        n = float(m.group(1).replace(",", ""))
+    except ValueError:
+        return None
+    unit = (m.group(2) or "").upper()
+    if unit == "K":
+        n *= 1000
+    elif unit == "M":
+        n *= 1000000
+    return int(n)
+
+
+def _fb_find_node(obj, out, depth=0):
+    if depth > 40:
+        return
+    if isinstance(obj, dict):
+        if "post_id" in obj and "feedback" in obj:
+            out.append(obj)
+        for v in obj.values():
+            _fb_find_node(v, out, depth + 1)
+    elif isinstance(obj, list):
+        for x in obj:
+            _fb_find_node(x, out, depth + 1)
+
+
+def _fb_find_key(obj, key, out, depth=0):
+    if depth > 40:
+        return
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if k == key:
+                out.append(v)
+            _fb_find_key(v, key, out, depth + 1)
+    elif isinstance(obj, list):
+        for x in obj:
+            _fb_find_key(x, key, out, depth + 1)
+
+
+def _fb_extract_media(node: dict) -> list:
+    media: list = []
+    seen = set()
+
+    def add(url, mtype):
+        if url and url not in seen:
+            seen.add(url)
+            media.append({"type": mtype, "url": url})
+
+    vids: list = []
+    for key in ("playable_url", "browser_native_hd_url", "browser_native_sd_url"):
+        _fb_find_key(node.get("attachments"), key, vids)
+    for v in vids:
+        if isinstance(v, str) and v.startswith("http"):
+            add(v, "video")
+
+    for att in node.get("attachments") or []:
+        styles = att.get("styles") or {}
+        inner = styles.get("attachment") or att
+        pm = (inner.get("media") or {}).get("photo_image")
+        if isinstance(pm, dict) and pm.get("uri"):
+            add(pm["uri"], "photo")
+
+    if not media:
+        uris: list = []
+        _fb_find_key(node.get("attachments"), "uri", uris)
+        for u in uris:
+            if isinstance(u, str) and "scontent" in u:
+                add(u, "photo")
+    return media
+
+
+def _fb_html_data(url: str) -> dict:
+    s = cffi_requests.Session(impersonate="chrome")
+    r = s.get(url, timeout=30, allow_redirects=True)
+    if r.status_code != 200:
+        return {"ok": False, "reason": f"http_{r.status_code}"}
+    html = r.text
+    scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
+    nodes: list = []
+    for sc in scripts:
+        sc = sc.strip()
+        if not sc.startswith(("{", "[")):
+            continue
+        try:
+            _fb_find_node(json.loads(sc), nodes)
+        except Exception:
+            continue
+    if not nodes:
+        return {"ok": False, "reason": "no_node"}
+
+    node = nodes[0]
+    feedback = node.get("feedback") or {}
+    owner = feedback.get("owning_profile") or {}
+    sections = node.get("comet_sections") or {}
+    story = (sections.get("content") or {}).get("story") or {}
+    message = (story.get("message") or {}).get("text") or ""
+
+    counts = {}
+    fb_sec = (sections.get("feedback") or {}).get("story") or {}
+    ufi = json.dumps(fb_sec, ensure_ascii=False)
+    for label, key in (("reactions", "reaction_count"), ("comments", "comment_count"), ("shares", "share_count")):
+        m = re.search(rf'"{key}":\{{"count":(\d+)', ufi)
+        if m and int(m.group(1)) > 0:
+            counts[label] = int(m.group(1))
+
+    return {
+        "ok": True,
+        "post_id": node.get("post_id"),
+        "owner": owner.get("name") or owner.get("short_name") or "",
+        "caption": message,
+        "timestamp": node.get("creation_time"),
+        "media": _fb_extract_media(node),
+        "counts": counts,
+        "permalink": node.get("permalink_url") or url,
+    }
+
+
+def _fb_ytdlp(url: str) -> dict:
+    def _run():
+        opts = {
+            "quiet": True,
+            "no_warnings": True,
+            "skip_download": True,
+            "noplaylist": True,
+            "socket_timeout": 30,
+        }
+        with YoutubeDL(opts) as ydl:
+            return ydl.extract_info(url, download=False)
+
+    try:
+        info = _run()
+    except Exception as e:
+        LOGGER.info("fbdl yt-dlp gagal (%s): %s", e.__class__.__name__, str(e)[:120])
+        return {}
+
+    fmts = info.get("formats") or []
+    video_fmts = [f for f in fmts if f.get("vcodec") and f["vcodec"] != "none"]
+    h = [f for f in video_fmts if f.get("height")]
+    best = max(h, key=lambda f: f.get("height") or 0) if h else None
+
+    title = info.get("title") or ""
+    views = info.get("view_count")
+    reactions = None
+    m = re.search(r"([\d.,]+[KkMm]?)\s*reactions", title, re.I)
+    if m:
+        reactions = _fb_parse_count(m.group(1))
+    elif "likes" in title.lower():
+        m2 = re.search(r"([\d.,]+[KkMm]?)\s*(?:likes|suka)", title, re.I)
+        if m2:
+            reactions = _fb_parse_count(m2.group(1))
+    views = views or _fb_parse_count(re.search(r"([\d.,]+[KkMm]?)\s*views", title, re.I).group(1)) if re.search(r"([\d.,]+[KkMm]?)\s*views", title, re.I) else views
+
+    meta = {}
+    dur = info.get("duration")
+    if dur:
+        meta["duration"] = _parse_duration(dur)
+    if best:
+        meta["resolution"] = f"{best.get('width')}x{best.get('height')}"
+    if video_fmts:
+        meta["qualities"] = str(len(video_fmts))
+        codecs = sorted({(f.get("vcodec") or "").split(".")[0] for f in video_fmts if f.get("vcodec")})
+        if codecs:
+            meta["codec"] = ", ".join(codecs)
+
+    return {
+        "title": title,
+        "uploader": info.get("uploader") or "",
+        "caption": info.get("description") or "",
+        "duration": info.get("duration"),
+        "view_count": views,
+        "reactions": reactions,
+        "media_url": (best or {}).get("url") or info.get("url"),
+        "thumb": info.get("thumbnail"),
+        "meta": meta or None,
+        "is_video": bool(video_fmts),
+    }
+
+
+def _fb_extract_sync(url: str) -> dict:
+    if not cffi_requests:
+        return {"ok": False, "reason": "no_curl_cffi"}
+
+    canon = _fb_canonical(url)
+    data = _fb_html_data(canon)
+
+    yt = _fb_ytdlp(canon)
+
+    if not data.get("ok") and not yt:
+        raw = _fb_html_data(url)
+        if raw.get("ok"):
+            data = raw
+        else:
+            code = re.search(r"/(?:reel|videos|watch)/(\d+)", canon)
+            if code:
+                yt2 = _fb_ytdlp(f"https://www.facebook.com/watch/?v={code.group(1)}")
+                if yt2:
+                    yt = yt2
+    if not data.get("ok") and not yt:
+        return {"ok": False, "reason": data.get("reason") or "no_data"}
+
+    media = list(data.get("media") or []) if data.get("ok") else []
+    if yt.get("media_url"):
+        media = [m for m in media if m["type"] != "photo" or m["url"] != yt.get("thumb")]
+        media.insert(0, {"type": "video", "url": yt["media_url"]})
+    if not media and yt.get("thumb"):
+        media = [{"type": "photo", "url": yt["thumb"]}]
+
+    caption = (data.get("caption") if data.get("ok") else "") or yt.get("caption") or ""
+    owner = (data.get("owner") if data.get("ok") else "") or yt.get("uploader") or "Facebook"
+    ts = data.get("timestamp") if data.get("ok") else None
+
+    counts = dict(data.get("counts") or {})
+    if yt.get("reactions") and "reactions" not in counts:
+        counts["reactions"] = yt["reactions"]
+
+    return {
+        "ok": True,
+        "platform": "Facebook",
+        "owner": owner,
+        "caption": caption,
+        "timestamp": ts,
+        "media": media,
+        "counts": counts,
+        "views": yt.get("view_count"),
+        "video_meta": yt.get("meta"),
+        "n_video": sum(1 for x in media if x["type"] == "video"),
+        "shortcode": str(data.get("post_id") or "") or "",
+        "permalink": data.get("permalink") or canon,
+        "title": yt.get("title") or "",
+    }
+
+
+async def _get_facebook_data(link: str) -> dict:
+    try:
+        return await asyncio.to_thread(_fb_extract_sync, link)
+    except Exception as e:
+        LOGGER.warning("fbdl extract gagal: %s", e)
+        return {"ok": False, "reason": f"exception:{e.__class__.__name__}"}
+
+
+def _fb_rich_card(data: dict) -> str:
+    owner = data.get("owner") or "Facebook"
+    media = data.get("media") or []
+    counts = data.get("counts") or {}
+    ts = data.get("timestamp")
+    try:
+        date_disp = datetime.fromtimestamp(int(ts)).strftime("%d %b %Y %H:%M")
+    except Exception:
+        date_disp = "-"
+
+    parts: list = []
+    if media:
+        items = []
+        for item in media[:MAX_MEDIA]:
+            src = _esc(item["url"])
+            items.append(f'<video src="{src}"/>' if item["type"] == "video" else f'<img src="{src}"/>')
+        label = f"{len(media)} media" if len(media) > 1 else "1 media"
+        parts.append(f"<tg-slideshow>{''.join(items)}<figcaption>{_esc(owner)} · {label}</figcaption></tg-slideshow>")
+
+    parts.append(f"<p>📘 <b>{_esc(owner)}</b></p>")
+
+    rows = []
+    if "reactions" in counts:
+        rows.append(f"<tr><td>👍 Reaksi</td><td><b>{_fmt_num(counts['reactions'])}</b></td></tr>")
+    if "comments" in counts:
+        rows.append(f"<tr><td>💬 Komentar</td><td><b>{_fmt_num(counts['comments'])}</b></td></tr>")
+    if "shares" in counts:
+        rows.append(f"<tr><td>🔁 Dibagikan</td><td><b>{_fmt_num(counts['shares'])}</b></td></tr>")
+    if data.get("views"):
+        rows.append(f"<tr><td>👁 Tayangan</td><td><b>{_fmt_num(data['views'])}</b></td></tr>")
+    rows.append(f"<tr><td>🖼 Media</td><td><b>{len(media)}</b></td></tr>")
+    if date_disp != "-":
+        rows.append(f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>")
+    if not any(k in counts for k in ("reactions", "comments", "shares")):
+        rows.append("<tr><td>📊 Metrik</td><td>tidak tersedia (login)</td></tr>")
+    parts.append("<table bordered striped>" + "".join(rows) + "</table>")
+
+    meta = data.get("video_meta")
+    if meta:
+        mrows = []
+        if meta.get("duration"):
+            mrows.append(f"<p>⏱ <b>Durasi:</b> {meta['duration']}</p>")
+        if meta.get("resolution"):
+            mrows.append(f"<p>📐 <b>Resolusi:</b> {meta['resolution']}</p>")
+        if meta.get("qualities"):
+            mrows.append(f"<p>🎚 <b>Kualitas:</b> {meta['qualities']} varian</p>")
+        if meta.get("codec"):
+            mrows.append(f"<p>🎞 <b>Codec:</b> {meta['codec']}</p>")
+        if mrows:
+            parts.append(f"<details><summary>🎬 Metadata Video</summary>{''.join(mrows)}</details>")
+
+    caption = (data.get("caption") or "").strip()
+    if caption:
+        if len(caption) > MAX_CAPTION:
+            caption = caption[:MAX_CAPTION] + "..."
+        for para in caption.split("\n\n"):
+            para = para.strip()
+            if para:
+                parts.append(f"<p>{_esc(para).replace(chr(10), '<br>')}</p>")
+    return "".join(parts)
+
+
+def _fb_plain_card(data: dict) -> str:
+    counts = data.get("counts") or {}
+    bits = []
+    if "reactions" in counts:
+        bits.append(f"👍 {_fmt_num(counts['reactions'])}")
+    if "comments" in counts:
+        bits.append(f"💬 {_fmt_num(counts['comments'])}")
+    if data.get("views"):
+        bits.append(f"👁 {_fmt_num(data['views'])}")
+    bits.append(f"🖼 {len(data.get('media') or [])}")
+    lines = [f"📘 <b>{_esc(data.get('owner') or 'Facebook')}</b>", " • ".join(bits)]
+    caption = (data.get("caption") or "").strip()
+    if caption:
+        if len(caption) > 900:
+            caption = caption[:900] + "..."
+        lines.append("")
+        lines.append(_esc(caption))
+    return "\n".join(lines)
+
+
+def _fb_keyboard(data: dict) -> InlineKeyboardMarkup:
+    url = data.get("permalink") or "https://www.facebook.com"
+    return InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Buka di Facebook", url=url)]])
+
+
+@app.on_message(filters.command(["fbdl", "fb"], COMMAND_HANDLER))
 @capture_err
-@new_task
 async def fbdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
-            f"Use command /{message.command[0]} [link] to download Facebook video."
+            f"Gunakan: <code>/{message.command[0]} &lt;link&gt;</code>\n\n"
+            f"Contoh:\n<code>/{message.command[0]} https://www.facebook.com/share/p/18qRpLjJEk/</code>"
         )
-    link = message.command[1]
-    msg = await message.reply("<emoji id=5319190934510904031>⏳</emoji> Processing..")
+
+    link = message.command[1].strip()
+    if not any(d in link for d in ("facebook.com", "fb.watch", "fb.me")):
+        return await message.reply("<b>❌</b> Link bukan dari Facebook.")
+
+    status_msg = await message.reply(
+        "<emoji id=5319190934510904031>⏳</emoji> <b>Processing Facebook post...</b>"
+    )
+
+    data = await _get_facebook_data(link)
+    if not data.get("ok") or not data.get("media"):
+        return await status_msg.edit(
+            "<b>❌ Gagal mengambil data Facebook.</b>\n\n"
+            "Kemungkinan: post private / grup tertutup / link butuh login.\n"
+            f"<code>{data.get('reason', 'no_media')}</code>"
+        )
+
+    keyb = _fb_keyboard(data)
     try:
-        resjson = (await fetch.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
-        try:
-            url = resjson["result"]["hd"]
-        except KeyError:
-            url = resjson["result"]["sd"]
-        obj = SmartDL(url, progress_bar=False, timeout=15, verify=False)
-        obj.start()
-        path = obj.get_dest()
-        await message.reply_video(
-            path,
-            caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-            thumb="assets/thumb.jpg",
-        )
-        await msg.delete()
-        try:
-            os.remove(path)
-        except Exception:
-            pass
+        await status_msg.edit_rich(InputRichMessage(html=_fb_rich_card(data)), reply_markup=keyb)
     except Exception as e:
-        await message.reply(
-            f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}"
-        )
-        await msg.delete()
+        LOGGER.warning("fbdl rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
+        try:
+            await status_msg.edit(_fb_plain_card(data), reply_markup=keyb)
+        except Exception as e2:
+            LOGGER.error("fbdl plain gagal: %s", e2)
