@@ -49,7 +49,7 @@ MOD_NOLOAD = ["subscene_dl", "download_upload", "igdl_plugin"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.17.0"
+misskaty_version = "v2.18.0"
 
 # ------------------------------------------------------------------ event loop
 uvloop.install()
