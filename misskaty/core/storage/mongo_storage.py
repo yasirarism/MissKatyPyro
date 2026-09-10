@@ -1,12 +1,30 @@
 import logging
 import time
-from typing import Any, List, Tuple
+from typing import Any, Iterable, List, Tuple
 
+from beanie.operators import In
 from pymongo.operations import UpdateOne
 from pyrogram import raw, utils
 from pyrogram.storage import Storage
 
 from .models import Peer, Session, UpdateState, Username
+
+try:
+    # kurigram >= commit e1cb84a35: update_state was split into
+    # get_update_states / set_update_state / delete_update_state and the
+    # Storage ABC now exposes UpdateState as a frozen dataclass.
+    from pyrogram.storage import UpdateState as TGUpdateState
+except ImportError:  # older kurigram/pyrogram
+
+    from dataclasses import dataclass
+
+    @dataclass(frozen=True)
+    class TGUpdateState:
+        id: int
+        pts: object = None
+        qts: object = None
+        date: object = None
+        seq: object = None
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +56,9 @@ class MongoStorage(Storage):
     USERNAME_TTL = 8 * 60 * 60
 
     def __init__(self, name: str, remove_peers: bool = False):
-        super().__init__(name=name)
+        # kurigram dropped Storage.__init__: set the session name directly
+        # (works on both old and new versions).
+        self.name = name
 
         self.remove_peers = remove_peers
 
@@ -212,6 +232,69 @@ class MongoStorage(Storage):
         await self._update_state.find_one(
             self._update_state.session_name == self.name,
             self._update_state.peer_id == peer_id,
+        ).delete()
+
+    # --- kurigram >= e1cb84a35 "update_state split" interface ---
+
+    async def get_update_states(self, ids: int | Iterable[int] | None = None):
+        filters = [self._update_state.session_name == self.name]
+
+        if ids is not None:
+            state_ids = (ids,) if isinstance(ids, int) else tuple(ids)
+            if not state_ids:
+                return []
+            filters.append(In(self._update_state.peer_id, list(state_ids)))
+
+        states = (
+            await self._update_state.find(*filters)
+            .sort(self._update_state.date)
+            .to_list()
+        )
+
+        return [
+            TGUpdateState(
+                id=state.peer_id,
+                pts=state.pts,
+                qts=state.qts,
+                date=state.date,
+                seq=state.seq,
+            )
+            for state in states
+        ]
+
+    async def set_update_state(self, update_state):
+        states = (
+            [update_state]
+            if isinstance(update_state, TGUpdateState)
+            else list(update_state)
+        )
+
+        ops = []
+        for state in states:
+            find_filter = {"session_name": self.name, "peer_id": state.id}
+            replacement_doc = {
+                "session_name": self.name,
+                "peer_id": state.id,
+                "pts": state.pts,
+                "qts": state.qts,
+                "date": state.date,
+                "seq": state.seq,
+            }
+            ops.append(UpdateOne(find_filter, {"$set": replacement_doc}, upsert=True))
+
+        if ops:
+            await self._update_state.get_pymongo_collection().bulk_write(
+                ops, ordered=False
+            )
+
+    async def delete_update_state(self, state_id):
+        state_ids = (state_id,) if isinstance(state_id, int) else tuple(state_id)
+        if not state_ids:
+            return
+
+        await self._update_state.find(
+            self._update_state.session_name == self.name,
+            In(self._update_state.peer_id, list(state_ids)),
         ).delete()
 
     async def get_peer_by_id(self, peer_id: int):
