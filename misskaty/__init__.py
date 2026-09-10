@@ -45,11 +45,11 @@ getLogger("httpx").setLevel(ERROR)
 
 # ---------------------------------------------------------------- runtime state
 MOD_LOAD = []
-MOD_NOLOAD = ["subscene_dl"]
+MOD_NOLOAD = ["subscene_dl", "download_upload", "igdl_plugin"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
-misskaty_version = "v2.17.0"
+misskaty_version = "v2.18.0"
 
 # ------------------------------------------------------------------ event loop
 uvloop.install()

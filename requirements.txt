@@ -29,8 +29,9 @@ pyrate_limiter
 cachetools
 cloudscraper
 openai
-GitPython
 aiofiles
+curl_cffi
+GitPython
 uvloop
 lxml_html_clean
 fastapi

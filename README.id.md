@@ -28,6 +28,7 @@
   - [Build And Run The Docker Image Using docker-compose](#build-and-run-the-docker-image-using-docker-compose)
 - [[8] Credits](#8-thanks-to)
 - [[9] Disclaimer](#8-disclaimer)
+- [[10] Changelog](#10-changelog)
 
 # [1] Tentang MissKaty
 *MissKaty* adalah Bot Telegram yang dibuat menggunakan Python dan library Pyrogram. Banyak fitur yang berguna untuk kita gunakan. Saya berharap suatu saat jika project ini dihentikan, ada yang melanjutkan atau mengembangkannya lagi. Saya memberi nama MissKaty karena saya suka kucing, hewan lucu yang suka bermain dan bersahabat dengan manusia.
@@ -57,7 +58,8 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 | ------------- | ------------- |
 | Basic Admin Feature (ban, kick, mute, warn, promote, purge, dll) |✔️|
 | AFK Feature |✔️|
-| Downloader FB, TikTok and YT-DLP Support (output AVC + AAC) |✔️|
+| Downloader IG, FB, TikTok, Twitter/X dan YT-DLP Support (output AVC + AAC) |✔️|
+| Post Instagram/Facebook/TikTok jadi slideshow rich message (media, caption, statistik, metadata video) |✔️|
 | YT Search & Quality Picker (resolusi, bitrate, codec) |✔️|
 | MultiLanguage Support (en-US, id-ID, id-JW, ru-RU) |✔️|
 | NightMode  |✔️|
@@ -84,6 +86,9 @@ Jika Anda ingin membantu saya memperbaiki beberapa kesalahan di bot saya, Anda d
 ### Variabel Opsional
 * `YT_COOKIES` : Dapatkan cookies Youtube menggunakan https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1 dan simpan isi file di github gist. Salin raw url dan isi di vars ini.
 * `USER_SESSION` : String session untuk Userbot.
+* `SOCMED_COOKIES_FILE` : Path ke `cookies.txt` format **Netscape** (sama seperti yt-dlp) yang dipakai `/igdl` dan `/fbdl` untuk post private dan metrik Facebook. Satu file boleh berisi cookie instagram.com dan facebook.com sekaligus. Jika tidak diisi, bot mencari `cookies.txt` di direktori kerja.
+* `IG_COOKIES_FILE` : Alias dari `SOCMED_COOKIES_FILE` (dipertahankan agar kompatibel).
+* `YTDL_COOKIE_FILE` : Path `cookies.txt` untuk yt-dlp; dipakai juga saat mengambil video Facebook.
 * `DATABASE_NAME`: Nama database di MongoDB
 * `PAYDISINI_KEY`: Api Key PayDisini
 * `PAYDISINI_CHANNEL_ID`: Channel ID QRIS paydisini
@@ -210,3 +215,22 @@ PERINGATAN: *Dilarang Keras* Menjual Kode Kepada Orang Lain Demi Uang Tanpa Seij
 [sociabuzz-url]: https://sociabuzz.com/yasirarism/tribe
 [saweria-url]: https://saweria.co/yasirarism
 [trakteer-url]: https://trakteer.id/yasir-aris-sp7cn
+
+## [10] Changelog
+
+### v2.18.0 (2026-09-10)
+
+Dibangun di atas fork **Kurigram**, memakai transport rich message (`InputRichMessage`) untuk kartu media sosial.
+
+**Media sosial — slideshow rich message (tanpa Chromium, tanpa browser)**
+- `/igdl` & `/instadl`: post/reel Instagram jadi satu rich message. Carousel tampil inline sebagai `<tg-slideshow>` (sampai 50 media, batas rich message) lengkap dengan likes, komentar, caption, dan metadata video yang bisa di-collapse. Ekstraksi murni HTTP via `curl_cffi` dengan TLS impersonation Chrome, membaca JSON `xig_polaris_media` di halaman — menggantikan jalur `instaloader` / saveig.app yang sudah mati (instaloader kini 401 dari IP datacenter; saveig.app sudah tidak resolve).
+- `/fbdl` & `/fb`: post/reel/video Facebook jadi slideshow rich message. Konten diambil dari JSON `comet_sections` di halaman dan video dari `yt-dlp`; jumlah reaksi/komentar/share dibaca dari node `feedback` (id-nya base64 dari `feedback:<post_id>`). Link `facebook.com/share/p/...` di-resolve dulu ke URL kanoniknya.
+- `/tiktokdl` & `/ttdl`: video/foto TikTok jadi slideshow rich message, sumbernya API tikwm.com — URL CDN TikTok sendiri diblokir Akamai untuk fetch sisi server (`playAddr` dan `url` dari yt-dlp balas 403 bagi siapa pun kecuali extractor-nya, sehingga server Telegram tidak bisa mengunduhnya).
+- Ketiganya menjawab dengan SATU pesan: teks status di-edit jadi kartu rich (bukan caption terpisah + album), dengan tombol URL ke post aslinya.
+- Panggilan `curl_cffi` yang blocking dijalankan lewat `asyncio.to_thread`, jadi ekstraksi tidak pernah membekukan event loop bot.
+- `cookies.txt` format **Netscape (sama seperti yt-dlp)** kini dipakai bersama oleh Instagram dan Facebook: path dibaca saat runtime, beberapa domain bisa berada di satu file, dan cookie yang kedaluwarsa tidak membuat command crash (otomatis dicoba ulang tanpa cookie).
+
+**Struktur**
+- `download_upload.py` + `igdl_plugin.py` digabung menjadi satu **`sosmed_tools.py`**; extractor, pembuat kartu, penanganan cookie/session, dan formatter dipindah ke **`misskaty/helper/sosmed_helper.py`**, sehingga plugin hanya berisi handler.
+- `update.py` sekarang menghapus file plugin sisa image lama (`download_upload.py`, `igdl_plugin.py`) dan `MOD_NOLOAD` melewatinya. Sebelumnya modul lama dan baru mendaftarkan command yang sama, dan handler lama (yang sudah rusak) yang menjawab.
+

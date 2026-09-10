@@ -296,11 +296,11 @@ async def ceksub(_, ctx: Message, strings):
             buttons.append([
                 InlineKeyboardButton(
                     f"0:{mapping}({lang}): {stream_type}: {stream_name}",
-                    StreamExtractHelper.build_callback(owner_id, lang, mapping, stream_name),
+                    callback_data=StreamExtractHelper.build_callback(owner_id, lang, mapping, stream_name),
                 )
             ])
         timelog = time() - start_time
-        buttons.append([InlineKeyboardButton(strings("cancel_btn"), f"close#{owner_id}")])
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), callback_data=f"close#{owner_id}")])
         await pesan.edit(
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),

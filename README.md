@@ -57,7 +57,8 @@ If you want help me fixing some error in my bot, you can make pull request to th
 | ------------- | ------------- |
 | Basic Admin Feature (ban, kick, mute, warn, promote, purge, dll) |✔️|
 | AFK Feature |✔️|
-| Downloader FB, TikTok and YT-DLP Support (AVC + AAC output) |✔️|
+| Downloader IG, FB, TikTok, Twitter/X and YT-DLP Support (AVC + AAC output) |✔️|
+| Instagram/Facebook/TikTok post as slideshow rich message (media, caption, stats, video metadata) |✔️|
 | YT Search & Quality Picker (resolution, bitrate, codec) |✔️|
 | MultiLanguage Support (en-US, id-ID, id-JW, ru-RU) |✔️|
 | NightMode  |✔️|
@@ -83,6 +84,9 @@ If you want help me fixing some error in my bot, you can make pull request to th
 ### Optional Variables
 * `YT_COOKIES` : Get YT cookies using https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc?pli=1 and save cookies value on github gist. Copy raw url and fill in this vars.
 * `USER_SESSION` : Session string for Userbot.
+* `SOCMED_COOKIES_FILE` : Path to a `cookies.txt` in **Netscape format** (same as yt-dlp) used by `/igdl` and `/fbdl` for private posts and Facebook engagement counts. One file may hold cookies for both instagram.com and facebook.com. If unset, the bot looks for `cookies.txt` in the working directory.
+* `IG_COOKIES_FILE` : Alias of `SOCMED_COOKIES_FILE` (kept for backwards compatibility).
+* `YTDL_COOKIE_FILE` : Path to a `cookies.txt` for yt-dlp; also reused when extracting Facebook videos.
 * `DATABASE_NAME`: Name of the database in MongoDB
 * `PAYDISINI_KEY`: Api Key PayDisini
 * `PAYDISINI_CHANNEL_ID`: Channel ID QRIS paydisini
@@ -187,6 +191,23 @@ Licensed under [GNU AGPL 2.0.](https://github.com/yasirarism/MissKatyPyro/blob/m
 WARNING: Selling The Codes To Other People For Money Is *Strictly Prohibited*. Or i will stop this project forever.
 
 ## [10] Changelog
+
+### v2.18.0 (2026-09-10)
+
+Built on the **Kurigram** fork, using its rich-message transport (`InputRichMessage`) for social-media cards.
+
+**Social media — slideshow rich message (no Chromium, no browser)**
+- `/igdl` & `/instadl`: Instagram post/reel as a single rich message. Carousels render inline as `<tg-slideshow>` (up to 50 media, the rich-message limit) with likes, comments, caption and a collapsible video-metadata block. Extraction is pure HTTP via `curl_cffi` with Chrome TLS impersonation, reading the page's embedded `xig_polaris_media` JSON — this replaces the dead `instaloader` / saveig.app route (instaloader now returns 401 from datacenter IPs; saveig.app no longer resolves).
+- `/fbdl` & `/fb`: Facebook post/reel/video as a slideshow rich message. Content comes from the page's `comet_sections` JSON and video from `yt-dlp`; engagement counts are read from the `feedback` node (its id is base64 of `feedback:<post_id>`). `facebook.com/share/p/...` links are resolved to their canonical URL first.
+- `/tiktokdl` & `/ttdl`: TikTok video/photo as a slideshow rich message, sourced from the tikwm.com API — TikTok's own CDN URLs are Akamai-blocked for server-side fetch (`playAddr` and yt-dlp's `url` return 403 to everyone but the extractor, and Telegram's servers therefore cannot download them).
+- Every one of them answers with ONE message: the status text is edited into the rich card (never a separate caption plus album), with an inline URL button to the original post.
+- Blocking `curl_cffi` calls are dispatched through `asyncio.to_thread`, so extraction never stalls the bot's event loop.
+- `cookies.txt` in **Netscape format (same as yt-dlp)** is now shared by Instagram and Facebook: path is resolved at runtime, several domains can live in one file, and a stale cookie file degrades gracefully (automatic retry without cookies) instead of crashing the command.
+
+**Structure**
+- `download_upload.py` + `igdl_plugin.py` merged into a single **`sosmed_tools.py`**; extractors, card builders, cookie/session handling and formatters moved into **`misskaty/helper/sosmed_helper.py`**, leaving the plugin with handlers only.
+- `update.py` now deletes plugin files left behind by older images (`download_upload.py`, `igdl_plugin.py`) and `MOD_NOLOAD` skips them. Previously both the old and the new module registered the same commands, and the stale (already-broken) handler was the one that answered.
+
 
 ### v2.17.0 (2026-08-07)
 Built on top of the **Kurigram** fork (`KurimuzonAkuma/pyrogram`), which adds rich-message support (`InputRichMessage`, `rich_message` on send/edit) and `Client.get_file` with offset/limit for partial downloads.

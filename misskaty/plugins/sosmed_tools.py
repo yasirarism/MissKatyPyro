@@ -1,63 +1,61 @@
-# * @author        Yasir Aris M <yasiramunandar@gmail.com>
-# * @date          2023-06-21 22:12:27
-# * @projectName   MissKatyPyro
-# * Copyright ©YasirPedia All rights reserved
 import asyncio
 import contextlib
 import math
 import os
-import re
 import time
 from datetime import datetime
 from logging import getLogger
 from urllib.parse import unquote
-
 from bs4 import BeautifulSoup
-from cloudscraper import create_scraper
 from pyrogram import filters
 from pyrogram import types as pyro_types
 from pyrogram.file_id import FileId
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.errors import QueryIdInvalid
+from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputRichMessage,
+)
 from pySmartDL import SmartDL
-
 from misskaty import app
 from misskaty.core.decorator import capture_err, new_task
 from misskaty.helper.http import fetch
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
+from misskaty.helper.sosmed_helper import (
+    ACTIVE_TG_DOWNLOADS,
+    _build_plain_card,
+    _build_rich_card,
+    _esc,
+    _fb_keyboard,
+    _fb_plain_card,
+    _fb_rich_card,
+    _get_facebook_data,
+    _get_instagram_data,
+    _get_tiktok_data,
+    _tg_download_cancel_markup,
+    _tg_download_progress,
+    _tt_keyboard,
+    _tt_plain_card,
+    _tt_rich_card,
+    _url_keyboard,
+)
 from misskaty.vars import COMMAND_HANDLER, OWNER_ID
+
 
 LOGGER = getLogger("MissKaty")
 
-ACTIVE_TG_DOWNLOADS = {}
+
+__MODULE__ = "SosmedTools"
 
 
-def _tg_download_cancel_markup(message_id, user_id):
-    return InlineKeyboardMarkup(
-        [[InlineKeyboardButton("❌ Cancel", callback_data=f"tgdl_cancel#{message_id}#{user_id}")]]
-    )
-
-
-async def _tg_download_progress(current, total, label, message, start, dc_id, job_id, user_id):
-    job = ACTIVE_TG_DOWNLOADS.get(int(job_id), {})
-    if job.get("cancelled"):
-        raise asyncio.CancelledError
-    await progress_for_pyrogram(
-        current, total, label, message, start, dc_id,
-        reply_markup=_tg_download_cancel_markup(job_id, user_id),
-    )
-
-__MODULE__ = "Download/Upload"
 __HELP__ = """
-/download [url] - Download file from URL (OWNER Only)
-/download [reply_to_TG_File] - Download TG File
-/tgraph_up [reply_to_TG_File] - Download TG File
-/tiktokdl [link] - Download TikTok Video, try use ytdown command if error.
-/fbdl [link] - Download Facebook Video.
-/instadl [link] - Download photo or video from instagram (Only first post).
-/twitterdl [link] - Dowload video from Twitter aka X.
-/anon [link] - Upload files to Anonfiles.
-/ytdown [YT-DLP Supported URL] - Downloading YT-DLP Supported Video and Audio.
+/igdl [link] atau /instadl [link] - Instagram post/reel sebagai slideshow rich message (media, likes, komentar, caption, metadata video).
+/tiktokdl [link] - TikTok video/foto sebagai slideshow rich message (alias: /ttdl).
+/fbdl [link] - Facebook post/reel/video sebagai slideshow rich message.
+  Metrik (reaksi/komentar/share) butuh cookies.txt akun Facebook.
+/twitterdl [link] - Download video dari Twitter/X.
+/ytdown [YT-DLP URL] - Download video/audio via yt-dlp.
+/download [url] atau reply file - Download ke server (OWNER only).
+/anon [reply file] - Upload file ke anonfiles.
 """
 
 
@@ -223,58 +221,59 @@ async def tg_download_cancel(_, query):
     await query.answer("Cancelling download...")
 
 
-@app.on_message(filters.command(["instadl"], COMMAND_HANDLER))
+@app.on_message(filters.command(["igdl", "instadl"], COMMAND_HANDLER))
 @capture_err
-async def instadl(_, message):
+async def igdl_handler(client, message):
     if len(message.command) == 1:
         return await message.reply(
-            f"Use command /{message.command[0]} [link] to download Instagram Photo or Video."
+            f"<b>📸 Instagram Downloader</b>\n\n"
+            f"Gunakan: <code>/{message.command[0]} &lt;link&gt;</code>\n\n"
+            f"Contoh:\n"
+            f"<code>/{message.command[0]} https://www.instagram.com/p/DcdCVwzkULZ/</code>"
         )
-    link = message.command[1]
-    msg = await message.reply("<emoji id=5319190934510904031>⏳</emoji> Processing..")
+
+    link = message.command[1].strip()
+    if not any(d in link for d in ("instagram.com", "instagr.am")):
+        return await message.reply(
+            "<b>❌</b> Link bukan dari Instagram. Harap berikan URL instagram.com."
+        )
+
+    status_msg = await message.reply(
+        "<emoji id=5319190934510904031>⏳</emoji> <b>Processing Instagram post...</b>"
+    )
+
+    data = await _get_instagram_data(link)
+    if not data.get("ok"):
+        reason = data.get("reason", "unknown")
+        if reason == "unavailable_or_private":
+            err = (
+                "<b>❌ Post tidak tersedia.</b>\n\n"
+                "Kemungkinan post private / sudah dihapus.\n"
+                "Untuk post private: taruh <code>cookies.txt</code> (format yt-dlp) "
+                "di root project atau set <code>IG_COOKIES_FILE</code>, "
+                "akun cookies harus follow akun post-nya."
+            )
+        elif reason == "rate_limited":
+            err = "<b>❌ Rate limited oleh Instagram.</b> Coba lagi beberapa menit lagi."
+        else:
+            err = f"<b>❌ Gagal mengambil data Instagram.</b>\n<code>{reason}</code>"
+        return await status_msg.edit(err)
+
+    if not data.get("media"):
+        return await status_msg.edit("<b>❌ Tidak ada media yang ditemukan.</b>")
+
+    keyb = _url_keyboard(data)
     try:
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:105.0) Gecko/20100101 Firefox/105.0",
-            "Accept": "*/*",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-Length": "99",
-            "Origin": "https://saveig.app",
-            "Connection": "keep-alive",
-            "Referer": "https://saveig.app/id",
-        }
-        post = create_scraper().post(
-            "https://saveig.app/api/ajaxSearch",
-            data={"q": link, "t": "media", "lang": "id"},
-            headers=headers,
+        await status_msg.edit_rich(
+            InputRichMessage(html=_build_rich_card(data)),
+            reply_markup=keyb,
         )
-        if post.status_code not in [200, 401]:
-            return await message.reply("Unknown error.")
-        res = post.json()
-        if r := re.findall(
-            r'href="(https?://(?!play\.google\.com|/)[^"]+)"', res["data"]
-        ):
-            res = r[0].replace("&amp;", "&")
-            fname = (
-                (await fetch.head(res))
-                .headers.get("content-disposition", "")
-                .split("filename=")[1]
-            )
-            is_img = (
-                (await fetch.head(res)).headers.get("content-type").startswith("image")
-            )
-            if is_img:
-                await message.reply_photo(res, caption=fname)
-            else:
-                await message.reply_video(res, caption=fname)
-        await msg.delete()
     except Exception as e:
-        await message.reply(
-            f"Failed to download instagram video..\n\n<b>Reason:</b> {e}"
-        )
-        await msg.delete()
+        LOGGER.warning("igdl edit rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
+        try:
+            await status_msg.edit(_build_plain_card(data), reply_markup=keyb)
+        except Exception as e2:
+            LOGGER.error("igdl edit plain gagal: %s", e2)
 
 
 @app.on_message(filters.command(["twitterdl"], COMMAND_HANDLER))
@@ -348,66 +347,90 @@ async def twitterdl(_, message):
         await msg.delete()
 
 
-@app.on_message(filters.command(["tiktokdl"], COMMAND_HANDLER))
+@app.on_message(filters.command(["tiktokdl", "ttdl"], COMMAND_HANDLER))
 @capture_err
 async def tiktokdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
-            f"Use command /{message.command[0]} [link] to download tiktok video."
+            "<b>🎵 TikTok Downloader</b>\n\n"
+            f"Gunakan: <code>/{message.command[0]} &lt;link&gt;</code>\n\n"
+            "Contoh:\n"
+            f"<code>/{message.command[0]} https://vt.tiktok.com/ZSqDfLf8d/</code>"
         )
-    link = message.command[1]
-    msg = await message.reply("<emoji id=5319190934510904031>⏳</emoji> Processing..")
-    try:
-        r = (
-            await fetch.post(
-                "https://lovetik.com/api/ajax/search", data={"query": link}
+
+    link = message.command[1].strip()
+    if not any(d in link for d in ("tiktok.com", "tiktokv.com", "vt.tiktok")):
+        return await message.reply(
+            "<b>❌</b> Link bukan dari TikTok. Harap berikan URL tiktok.com."
+        )
+
+    status_msg = await message.reply(
+        "<emoji id=5319190934510904031>⏳</emoji> <b>Processing TikTok post...</b>"
+    )
+
+    data = await _get_tiktok_data(link)
+    if not data.get("ok"):
+        reason = data.get("reason", "unknown")
+        if reason == "unavailable":
+            err = (
+                "<b>❌ Post tidak tersedia.</b>\n\n"
+                "Kemungkinan post private / sudah dihapus."
             )
-        ).json()
-        fname = (await fetch.head(r["links"][0]["a"])).headers.get(
-            "content-disposition", ""
+        elif reason == "rate_limited":
+            err = "<b>❌ Rate limited.</b> Coba lagi beberapa detik lagi."
+        else:
+            detail = data.get("detail") or reason
+            err = f"<b>❌ Gagal mengambil data TikTok.</b>\n<code>{_esc(str(detail)[:200])}</code>"
+        return await status_msg.edit(err)
+
+    if not data.get("media"):
+        return await status_msg.edit("<b>❌ Tidak ada media yang ditemukan.</b>")
+
+    keyb = _tt_keyboard(data)
+    try:
+        await status_msg.edit_rich(
+            InputRichMessage(html=_tt_rich_card(data)),
+            reply_markup=keyb,
         )
-        filename = unquote(fname.split("filename=")[1].strip('"').split('"')[0])
-        await message.reply_video(
-            r["links"][0]["a"],
-            caption=f"<b>Title:</b> <code>{filename}</code>\n<b>Uploader</b>: <a href='https://www.tiktok.com/{r['author']}'>{r['author_name']}</a>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-        )
-        await msg.delete()
     except Exception as e:
-        await message.reply(f"Failed to download tiktok video..\n\n<b>Reason:</b> {e}")
-        await msg.delete()
+        LOGGER.warning("tiktokdl edit rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
+        try:
+            await status_msg.edit(_tt_plain_card(data), reply_markup=keyb)
+        except Exception as e2:
+            LOGGER.error("tiktokdl edit plain gagal: %s", e2)
 
 
-@app.on_message(filters.command(["fbdl"], COMMAND_HANDLER))
+@app.on_message(filters.command(["fbdl", "fb"], COMMAND_HANDLER))
 @capture_err
-@new_task
 async def fbdl(_, message):
     if len(message.command) == 1:
         return await message.reply(
-            f"Use command /{message.command[0]} [link] to download Facebook video."
+            f"Gunakan: <code>/{message.command[0]} &lt;link&gt;</code>\n\n"
+            f"Contoh:\n<code>/{message.command[0]} https://www.facebook.com/share/p/18qRpLjJEk/</code>"
         )
-    link = message.command[1]
-    msg = await message.reply("<emoji id=5319190934510904031>⏳</emoji> Processing..")
+
+    link = message.command[1].strip()
+    if not any(d in link for d in ("facebook.com", "fb.watch", "fb.me")):
+        return await message.reply("<b>❌</b> Link bukan dari Facebook.")
+
+    status_msg = await message.reply(
+        "<emoji id=5319190934510904031>⏳</emoji> <b>Processing Facebook post...</b>"
+    )
+
+    data = await _get_facebook_data(link)
+    if not data.get("ok") or not data.get("media"):
+        return await status_msg.edit(
+            "<b>❌ Gagal mengambil data Facebook.</b>\n\n"
+            "Kemungkinan: post private / grup tertutup / link butuh login.\n"
+            f"<code>{data.get('reason', 'no_media')}</code>"
+        )
+
+    keyb = _fb_keyboard(data)
     try:
-        resjson = (await fetch.get(f"https://yasirapi.eu.org/fbdl?link={link}")).json()
-        try:
-            url = resjson["result"]["hd"]
-        except KeyError:
-            url = resjson["result"]["sd"]
-        obj = SmartDL(url, progress_bar=False, timeout=15, verify=False)
-        obj.start()
-        path = obj.get_dest()
-        await message.reply_video(
-            path,
-            caption=f"<code>{os.path.basename(path)}</code>\n\nUploaded for {message.from_user.mention} [<code>{message.from_user.id}</code>]",
-            thumb="assets/thumb.jpg",
-        )
-        await msg.delete()
-        try:
-            os.remove(path)
-        except Exception:
-            pass
+        await status_msg.edit_rich(InputRichMessage(html=_fb_rich_card(data)), reply_markup=keyb)
     except Exception as e:
-        await message.reply(
-            f"Failed to download Facebook video..\n\n<b>Reason:</b> {e}"
-        )
-        await msg.delete()
+        LOGGER.warning("fbdl rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
+        try:
+            await status_msg.edit(_fb_plain_card(data), reply_markup=keyb)
+        except Exception as e2:
+            LOGGER.error("fbdl plain gagal: %s", e2)
