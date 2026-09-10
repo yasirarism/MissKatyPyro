@@ -1,6 +1,7 @@
 import os
 import subprocess
 from logging import INFO, StreamHandler, basicConfig, getLogger, handlers
+from pathlib import Path
 
 import dotenv
 import requests
@@ -61,6 +62,19 @@ if all([UPSTREAM_REPO_URL, UPSTREAM_REPO_BRANCH]):
         ups_rem = repo.remote("upstream")
         ups_rem.fetch(UPSTREAM_REPO_BRANCH)
         LOGGER.info(f"Successfully update with latest branch > {UPSTREAM_REPO_BRANCH}")
+
+        for stale in (
+            "misskaty/plugins/download_upload.py",
+            "misskaty/plugins/igdl_plugin.py",
+        ):
+            if os.path.exists(stale):
+                tracked = subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", stale],
+                    capture_output=True,
+                ).returncode == 0
+                if not tracked:
+                    Path(stale).unlink()
+                    LOGGER.info(f"Removed stale plugin left by old image: {stale}")
     except Exception as e:
         LOGGER.error(e)
 else:

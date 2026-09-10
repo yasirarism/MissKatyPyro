@@ -45,7 +45,7 @@ getLogger("httpx").setLevel(ERROR)
 
 # ---------------------------------------------------------------- runtime state
 MOD_LOAD = []
-MOD_NOLOAD = ["subscene_dl"]
+MOD_NOLOAD = ["subscene_dl", "download_upload", "igdl_plugin"]
 HELPABLE = {}
 cleanmode = {}
 botStartTime = time.time()
