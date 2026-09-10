@@ -1,11 +1,11 @@
+import re
 from math import ceil
 
 from pyrogram.types import InlineKeyboardButton
 
-from misskaty import MOD_LOAD, MOD_NOLOAD
+from misskaty import HELPABLE, MOD_LOAD, MOD_NOLOAD
 
 
-# skipcq: PYL-W1641
 class EqInlineKeyboardButton(InlineKeyboardButton):
     def __eq__(self, other):
         return self.text == other.text
@@ -60,7 +60,6 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
     max_num_pages = ceil(len(pairs) / COLUMN_SIZE)
     modulo_page = page_n % max_num_pages
 
-    # can only have a certain amount of buttons side by side
     if len(pairs) > COLUMN_SIZE:
         pairs = pairs[modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)] + [
             (
@@ -91,10 +90,73 @@ def is_module_loaded(name):
     return (not MOD_LOAD or name in MOD_LOAD) and name not in MOD_NOLOAD
 
 
+def _parse_help_lines(help_text: str) -> list[tuple[str, str]]:
+    lines = help_text.strip().split("\n")
+    pairs = []
+    for raw in lines:
+        line = raw.strip()
+        if not line:
+            continue
+        m = re.match(r"^(.+?)\s+-\s+(.+)$", line)
+        if not m:
+            m2 = re.match(r"^(/\S+)$", line)
+            if m2:
+                pairs.append((m2.group(1), ""))
+            continue
+        cmd_part, desc = m.group(1).strip(), m.group(2).strip()
+        cmd = re.sub(r"\s*\|\s*", " / ", cmd_part)
+        pairs.append((cmd, desc))
+    return pairs
+
+
+def build_help_table(help_text: str, *, title: str = "") -> str:
+    pairs = _parse_help_lines(help_text)
+    if not pairs:
+        return ""
+    rows = "".join(
+        f"<tr><td><code>{cmd}</code></td><td>{desc or '—'}</td></tr>\n"
+        for cmd, desc in pairs
+    )
+    cap = f"<caption>📋 {title}</caption>\n" if title else ""
+    return (
+        f"<table bordered striped>\n{cap}"
+        f"<tr><td><b>Command</b></td><td><b>Description</b></td></tr>\n"
+        f"{rows}</table>"
+    )
+
+
+def build_module_list_table() -> str:
+    modules = sorted(HELPABLE.values(), key=lambda m: m.__MODULE__.lower())
+    if not modules:
+        return ""
+    rows = []
+    for mod in modules:
+        name = mod.__MODULE__
+        raw = (mod.__HELP__ or "").strip()
+        first_line = ""
+        for ln in raw.split("\n"):
+            ln = ln.strip()
+            if ln and not ln.startswith("/"):
+                first_line = ln
+                break
+        if not first_line:
+            first_line = raw.split("\n")[0].strip() if raw else "—"
+        desc = re.sub(r"<[^>]+>", "", first_line)[:80]
+        rows.append(
+            f"<tr><td><code>/{name.lower()}</code></td><td>{desc}</td></tr>\n"
+        )
+    return (
+        "<table bordered striped>\n"
+        "<caption>📚 Semua Module</caption>\n"
+        "<tr><td><b>Module</b></td><td><b>Description</b></td></tr>\n"
+        + "".join(rows)
+        + "</table>"
+    )
+
+
 import asyncio
 
 
 async def run_sync(func, *args, **kwargs):
-    """Run a blocking function in the default executor to avoid stalling the event loop."""
     loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
