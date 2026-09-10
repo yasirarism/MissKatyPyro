@@ -92,12 +92,11 @@ async def _send_rich_help(chat_id: int, mod_obj, *, reply_to: int | None = None)
         chat_id=chat_id,
         rich_message=InputRichMessage(html=html),
         reply_markup=kb,
-        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
     )
     if reply_to:
         params["reply_parameters"] = pyro_types.ReplyParameters(message_id=reply_to)
     with contextlib.suppress(Exception):
-        return await app.send_message(**params)
+        return await app.send_rich_message(**params)
     return None
 
 
@@ -282,11 +281,10 @@ async def help_button(self: Client, query: CallbackQuery, strings):
                     [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
                 )
                 try:
-                    await app.send_message(
+                    await app.send_rich_message(
                         query.message.chat.id,
                         rich_message=InputRichMessage(html=html),
                         reply_markup=kb,
-                        link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                     )
                     await query.message.delete_msg()
                 except Exception:
