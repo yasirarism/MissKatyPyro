@@ -81,25 +81,6 @@ FED_MARKUP = InlineKeyboardMarkup(
 )
 
 
-async def _send_rich_help(chat_id: int, mod_obj, *, reply_to: int | None = None) -> Message | None:
-    html = build_help_table(mod_obj.__HELP__, title=mod_obj.__MODULE__)
-    if not html:
-        return None
-    kb = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
-    )
-    params = dict(
-        chat_id=chat_id,
-        rich_message=InputRichMessage(html=html),
-        reply_markup=kb,
-    )
-    if reply_to:
-        params["reply_parameters"] = pyro_types.ReplyParameters(message_id=reply_to)
-    with contextlib.suppress(Exception):
-        return await app.send_rich_message(**params)
-    return None
-
-
 @app.on_message(filters.command("start", COMMAND_HANDLER))
 @app.on_managed_bot()
 @use_chat_lang()
@@ -134,19 +115,27 @@ async def start(self, ctx, strings):
                     link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                     effect_id=5104841245755180586,
                 )
-            sent = await _send_rich_help(
-                ctx.chat.id, mod_obj, reply_to=ctx.id
-            )
-            if not sent:
-                text = strings("help_name").format(mod=mod_obj.__MODULE__) + mod_obj.__HELP__
-                await ctx.reply(
-                    text,
-                    reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("back", callback_data="help_back")]]
-                    ),
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
-                    effect_id=5104841245755180586,
+            html = build_help_table(mod_obj.__HELP__, title=mod_obj.__MODULE__)
+            if html:
+                kb = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
                 )
+                with contextlib.suppress(Exception):
+                    return await app.send_rich_message(
+                        ctx.chat.id,
+                        rich_message=InputRichMessage(html=html),
+                        reply_markup=kb,
+                        reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
+                    )
+            text = strings("help_name").format(mod=mod_obj.__MODULE__) + mod_obj.__HELP__
+            await ctx.reply(
+                text,
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("back", callback_data="help_back")]]
+                ),
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+                effect_id=5104841245755180586,
+            )
         elif name == "help":
             text, keyb = await help_parser(ctx.from_user.first_name, strings)
             await ctx.reply(
@@ -210,19 +199,27 @@ async def help_command(_, ctx: Message, strings):
     elif len(ctx.command) >= 2:
         name = (ctx.text.split(None, 1)[1]).replace(" ", "_").lower()
         if str(name) in HELPABLE:
-            sent = await _send_rich_help(
-                ctx.chat.id, HELPABLE[name], reply_to=ctx.id
+            html = build_help_table(HELPABLE[name].__HELP__, title=HELPABLE[name].__MODULE__)
+            if html:
+                kb = InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
+                )
+                with contextlib.suppress(Exception):
+                    return await app.send_rich_message(
+                        ctx.chat.id,
+                        rich_message=InputRichMessage(html=html),
+                        reply_markup=kb,
+                        reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
+                    )
+            text = (
+                strings("help_name").format(mod=HELPABLE[name].__MODULE__)
+                + HELPABLE[name].__HELP__
             )
-            if not sent:
-                text = (
-                    strings("help_name").format(mod=HELPABLE[name].__MODULE__)
-                    + HELPABLE[name].__HELP__
-                )
-                await ctx.reply(
-                    text,
-                    link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
-                    effect_id=5104841245755180586,
-                )
+            await ctx.reply(
+                text,
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+                effect_id=5104841245755180586,
+            )
         else:
             text, help_keyboard = await help_parser(ctx.from_user.first_name, strings)
             await ctx.reply(
@@ -276,17 +273,17 @@ async def help_button(self: Client, query: CallbackQuery, strings):
             )
         else:
             html = build_help_table(mod_obj.__HELP__, title=mod_obj.__MODULE__)
+            kb = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
+            )
             if html:
-                kb = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
-                )
                 try:
-                    await app.send_rich_message(
+                    await app.edit_message_text(
                         query.message.chat.id,
+                        query.message.id,
                         rich_message=InputRichMessage(html=html),
                         reply_markup=kb,
                     )
-                    await query.message.delete_msg()
                 except Exception:
                     text = (
                         strings("help_name").format(mod=mod_obj.__MODULE__)
@@ -294,9 +291,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
                     )
                     await query.message.edit(
                         text=text,
-                        reply_markup=InlineKeyboardMarkup(
-                            [[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]
-                        ),
+                        reply_markup=kb,
                         link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                     )
             else:
@@ -306,9 +301,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
                 )
                 await query.message.edit(
                     text=text,
-                    reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton(strings("back_btn"), callback_data="help_back")]]
-                    ),
+                    reply_markup=kb,
                     link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                 )
     elif home_match:
@@ -340,7 +333,9 @@ async def help_button(self: Client, query: CallbackQuery, strings):
 
     elif back_match:
         try:
-            await query.message.edit(
+            await app.edit_message_text(
+                query.message.chat.id,
+                query.message.id,
                 text=top_text,
                 reply_markup=InlineKeyboardMarkup(paginate_modules(0, HELPABLE, "help")),
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),

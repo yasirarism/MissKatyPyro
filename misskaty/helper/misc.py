@@ -120,7 +120,7 @@ def build_help_table(help_text: str, *, title: str = "") -> str:
     cap = f"<caption>📋 {title}</caption>\n" if title else ""
     return (
         f"<table bordered striped>\n{cap}"
-        f"<tr><td><b>Command</b></td><td><b>Description</b></td></tr>\n"
+        f"<tr><th>Command</th><th>Description</th></tr>\n"
         f"{rows}</table>"
     )
 
