@@ -27,8 +27,7 @@ async def get_message_sender_id(ctx: Message):
         return ctx.from_user.id
     elif ctx.sender_chat:
         return ctx.sender_chat.id
-    else:
-        return 1
+    return 1
 
 
 async def get_message_sender_name(ctx: Message):
@@ -43,17 +42,14 @@ async def get_message_sender_name(ctx: Message):
             )
         elif ctx.forward_from_chat:
             return ctx.forward_from_chat.title
-        else:
-            return ""
+        return ""
     elif ctx.from_user:
         if ctx.from_user.last_name:
             return f"{ctx.from_user.first_name} {ctx.from_user.last_name}"
-        else:
-            return ctx.from_user.first_name
+        return ctx.from_user.first_name
     elif ctx.sender_chat:
         return ctx.sender_chat.title
-    else:
-        return ""
+    return ""
 
 
 async def get_custom_emoji(ctx: Message):
@@ -108,25 +104,23 @@ async def get_message_sender_photo(ctx: Message):
 async def get_admin_title(client: Client, chat_id: int, user_id: int):
     try:
         member = await client.get_chat_member(chat_id, user_id)
-        if isinstance(member, ChatMemberStatus):
-            return ""
-        if hasattr(member, "custom_title") and member.custom_title:
-            return member.custom_title
         if member.status == ChatMemberStatus.OWNER:
             return "Owner"
+        if member.status == ChatMemberStatus.ADMINISTRATOR:
+            return getattr(member, "custom_title", "") or "Admin"
     except Exception:
         pass
     return ""
 
 
-async def get_sender_from(ctx: Message, client: Client = None):
+async def get_sender_from(ctx: Message):
     user = None
     if ctx.forward_date:
         user = ctx.forward_from
     elif ctx.from_user:
         user = ctx.from_user
     if user:
-        sender = {
+        return {
             "id": user.id,
             "first_name": user.first_name or "",
             "last_name": user.last_name or "",
@@ -134,9 +128,6 @@ async def get_sender_from(ctx: Message, client: Client = None):
             "photo": await get_message_sender_photo(ctx),
             "emoji_status": await get_custom_emoji(ctx) or None,
         }
-        if client and ctx.chat and ctx.chat.type.name in ("GROUP", "SUPERGROUP"):
-            sender["senderTag"] = await get_admin_title(client, ctx.chat.id, user.id) or None
-        return sender
     if ctx.forward_from_chat:
         chat = ctx.forward_from_chat
         return {
@@ -188,6 +179,9 @@ async def get_text_or_caption(ctx: Message):
 async def pyrogram_to_quotly(client, messages, is_reply):
     if not isinstance(messages, list):
         messages = [messages]
+
+    is_group = messages[0].chat and messages[0].chat.type.name in ("GROUP", "SUPERGROUP")
+
     payload = {
         "botToken": BOT_TOKEN,
         "type": "quote",
@@ -197,14 +191,21 @@ async def pyrogram_to_quotly(client, messages, is_reply):
     }
 
     for message in messages:
+        sender_tag = ""
+        if is_group and message.from_user:
+            sender_tag = await get_admin_title(client, message.chat.id, message.from_user.id)
+
         msg_dict = {
             "text": await get_text_or_caption(message),
             "entities": build_entities(message),
             "avatar": True,
-            "from": await get_sender_from(message, client),
+            "from": await get_sender_from(message),
         }
+        if sender_tag:
+            msg_dict["senderTag"] = sender_tag
+
         if message.reply_to_message and is_reply:
-            reply_from = await get_sender_from(message.reply_to_message, client)
+            reply_from = await get_sender_from(message.reply_to_message)
             msg_dict["replyMessage"] = {
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
@@ -219,8 +220,7 @@ async def pyrogram_to_quotly(client, messages, is_reply):
     r = await fetch.post("https://quote-api.yasirweb.eu.org/generate.png", json=payload)
     if not r.is_error:
         return r.read()
-    else:
-        raise QuotlyException(r.json())
+    raise QuotlyException(r.json())
 
 
 def isArgInt(txt) -> list:
