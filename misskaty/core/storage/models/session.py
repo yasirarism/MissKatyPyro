@@ -70,9 +70,12 @@ class Username(Document):
 class UpdateState(Document):
     session_name: str
     peer_id: int
-    pts: int
+    # Mirrors kurigram's UpdateState dataclass: pts/date may legitimately be
+    # None (e.g. the initial "state 0" row), so keep them optional to avoid
+    # pydantic ValidationError when reading legacy documents.
+    pts: Optional[int] = None
     qts: Optional[int] = None
-    date: int
+    date: Optional[int] = None
     seq: Optional[int] = None
 
     class Settings:
