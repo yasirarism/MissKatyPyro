@@ -1,7 +1,3 @@
-# * @author        Yasir Aris M <yasiramunandar@gmail.com>
-# * @date          2023-06-21 22:12:27
-# * @projectName   MissKatyPyro
-# * Copyright ©YasirPedia All rights reserved
 from io import BytesIO
 
 from pyrogram import Client, filters
@@ -43,7 +39,6 @@ async def get_message_sender_name(ctx: Message):
                 if ctx.forward_from.last_name
                 else ctx.forward_from.first_name
             )
-
         elif ctx.forward_from_chat:
             return ctx.forward_from_chat.title
         else:
@@ -61,16 +56,14 @@ async def get_message_sender_name(ctx: Message):
 
 async def get_custom_emoji(ctx: Message):
     if ctx.forward_date:
-        return (
-            ""
-            if ctx.forward_sender_name
-            or not ctx.forward_from
-            and ctx.forward_from_chat
-            or not ctx.forward_from
-            else ctx.forward_from.emoji_status.custom_emoji_id
-        )
-
-    return ctx.from_user.emoji_status.custom_emoji_id if ctx.from_user else ""
+        if ctx.forward_sender_name or not ctx.forward_from:
+            return ""
+        if ctx.forward_from and ctx.forward_from.emoji_status:
+            return ctx.forward_from.emoji_status.custom_emoji_id or ""
+        return ""
+    if ctx.from_user and ctx.from_user.emoji_status:
+        return ctx.from_user.emoji_status.custom_emoji_id or ""
+    return ""
 
 
 async def get_message_sender_username(ctx: Message):
@@ -79,30 +72,16 @@ async def get_message_sender_username(ctx: Message):
             not ctx.forward_sender_name
             and not ctx.forward_from
             and ctx.forward_from_chat
-            and ctx.forward_from_chat.username
         ):
-            return ctx.forward_from_chat.username
-        elif (
-            not ctx.forward_sender_name
-            and not ctx.forward_from
-            and ctx.forward_from_chat
-            or ctx.forward_sender_name
-            or not ctx.forward_from
-        ):
-            return ""
-        else:
+            return ctx.forward_from_chat.username or ""
+        elif ctx.forward_from:
             return ctx.forward_from.username or ""
+        return ""
     elif ctx.from_user and ctx.from_user.username:
         return ctx.from_user.username
-    elif (
-        ctx.from_user
-        or ctx.sender_chat
-        and not ctx.sender_chat.username
-        or not ctx.sender_chat
-    ):
-        return ""
-    else:
+    elif ctx.sender_chat and ctx.sender_chat.username:
         return ctx.sender_chat.username
+    return ""
 
 
 async def get_message_sender_photo(ctx: Message):
@@ -113,53 +92,70 @@ async def get_message_sender_photo(ctx: Message):
             and ctx.forward_from_chat
             and ctx.forward_from_chat.photo
         ):
-            return {
-                "small_file_id": ctx.forward_from_chat.photo.small_file_id,
-                "small_photo_unique_id": ctx.forward_from_chat.photo.small_photo_unique_id,
-                "big_file_id": ctx.forward_from_chat.photo.big_file_id,
-                "big_photo_unique_id": ctx.forward_from_chat.photo.big_photo_unique_id,
-            }
-        elif (
-            not ctx.forward_sender_name
-            and not ctx.forward_from
-            and ctx.forward_from_chat
-            or ctx.forward_sender_name
-            or not ctx.forward_from
-        ):
-            return ""
-        else:
-            return (
-                {
-                    "small_file_id": ctx.forward_from.photo.small_file_id,
-                    "small_photo_unique_id": ctx.forward_from.photo.small_photo_unique_id,
-                    "big_file_id": ctx.forward_from.photo.big_file_id,
-                    "big_photo_unique_id": ctx.forward_from.photo.big_photo_unique_id,
-                }
-                if ctx.forward_from.photo
-                else ""
-            )
-
-    elif ctx.from_user and ctx.from_user.photo:
-        return {
-            "small_file_id": ctx.from_user.photo.small_file_id,
-            "small_photo_unique_id": ctx.from_user.photo.small_photo_unique_id,
-            "big_file_id": ctx.from_user.photo.big_file_id,
-            "big_photo_unique_id": ctx.from_user.photo.big_photo_unique_id,
-        }
-    elif (
-        ctx.from_user
-        or ctx.sender_chat
-        and not ctx.sender_chat.photo
-        or not ctx.sender_chat
-    ):
+            return {"big_file_id": ctx.forward_from_chat.photo.big_file_id}
+        elif ctx.forward_from and ctx.forward_from.photo:
+            return {"big_file_id": ctx.forward_from.photo.big_file_id}
         return ""
-    else:
+    elif ctx.from_user and ctx.from_user.photo:
+        return {"big_file_id": ctx.from_user.photo.big_file_id}
+    elif ctx.sender_chat and ctx.sender_chat.photo:
+        return {"big_file_id": ctx.sender_chat.photo.big_file_id}
+    return ""
+
+
+async def get_sender_from(ctx: Message):
+    user = None
+    if ctx.forward_date:
+        user = ctx.forward_from
+    elif ctx.from_user:
+        user = ctx.from_user
+    if user:
         return {
-            "small_file_id": ctx.sender_chat.photo.small_file_id,
-            "small_photo_unique_id": ctx.sender_chat.photo.small_photo_unique_id,
-            "big_file_id": ctx.sender_chat.photo.big_file_id,
-            "big_photo_unique_id": ctx.sender_chat.photo.big_photo_unique_id,
+            "id": user.id,
+            "first_name": user.first_name or "",
+            "last_name": user.last_name or "",
+            "username": user.username or "",
+            "photo": await get_message_sender_photo(ctx),
+            "emoji_status": await get_custom_emoji(ctx) or None,
         }
+    if ctx.forward_from_chat:
+        chat = ctx.forward_from_chat
+        return {
+            "id": chat.id,
+            "first_name": chat.title or "",
+            "last_name": "",
+            "username": chat.username or "",
+            "photo": await get_message_sender_photo(ctx),
+        }
+    if ctx.sender_chat:
+        chat = ctx.sender_chat
+        return {
+            "id": chat.id,
+            "first_name": chat.title or "",
+            "last_name": "",
+            "username": chat.username or "",
+            "photo": await get_message_sender_photo(ctx),
+        }
+    return {"id": 1, "first_name": "Unknown", "last_name": "", "username": ""}
+
+
+def build_entities(msg: Message):
+    ents = msg.entities or msg.caption_entities or []
+    result = []
+    for e in ents:
+        ent = {
+            "type": e.type.name.lower(),
+            "offset": e.offset,
+            "length": e.length,
+        }
+        if e.type.name == "TEXT_LINK":
+            ent["url"] = e.url
+        elif e.type.name == "TEXT_MENTION":
+            ent["user"] = {"id": e.user.id}
+        elif e.type.name == "CUSTOM_EMOJI":
+            ent["custom_emoji_id"] = str(e.custom_emoji_id)
+        result.append(ent)
+    return result
 
 
 async def get_text_or_caption(ctx: Message):
@@ -167,8 +163,7 @@ async def get_text_or_caption(ctx: Message):
         return ctx.text
     elif ctx.caption:
         return ctx.caption
-    else:
-        return ""
+    return ""
 
 
 async def pyrogram_to_quotly(messages, is_reply):
@@ -182,51 +177,25 @@ async def pyrogram_to_quotly(messages, is_reply):
     }
 
     for message in messages:
-        the_message_dict_to_append = {}
-        if message.entities:
-            the_message_dict_to_append["entities"] = [
-                {
-                    "type": entity.type.name.lower(),
-                    "offset": entity.offset,
-                    "length": entity.length,
-                }
-                for entity in message.entities
-            ]
-        elif message.caption_entities:
-            the_message_dict_to_append["entities"] = [
-                {
-                    "type": entity.type.name.lower(),
-                    "offset": entity.offset,
-                    "length": entity.length,
-                }
-                for entity in message.caption_entities
-            ]
-        else:
-            the_message_dict_to_append["entities"] = []
-        the_message_dict_to_append["chatId"] = await get_message_sender_id(message)
-        the_message_dict_to_append["text"] = await get_text_or_caption(message)
-        the_message_dict_to_append["avatar"] = True
-        the_message_dict_to_append["from"] = {}
-        the_message_dict_to_append["from"]["id"] = await get_message_sender_id(message)
-        the_message_dict_to_append["from"]["name"] = await get_message_sender_name(
-            message
-        )
-        the_message_dict_to_append["from"][
-            "username"
-        ] = await get_message_sender_username(message)
-        the_message_dict_to_append["from"]["type"] = message.chat.type.name.lower()
-        the_message_dict_to_append["from"]["photo"] = await get_message_sender_photo(
-            message
-        )
+        msg_dict = {
+            "text": await get_text_or_caption(message),
+            "entities": build_entities(message),
+            "avatar": True,
+            "from": await get_sender_from(message),
+        }
         if message.reply_to_message and is_reply:
-            the_message_dict_to_append["replyMessage"] = {
+            reply_from = await get_sender_from(message.reply_to_message)
+            msg_dict["replyMessage"] = {
                 "name": await get_message_sender_name(message.reply_to_message),
                 "text": await get_text_or_caption(message.reply_to_message),
                 "chatId": await get_message_sender_id(message.reply_to_message),
+                "from": reply_from,
+                "entities": build_entities(message.reply_to_message),
             }
         else:
-            the_message_dict_to_append["replyMessage"] = {}
-        payload["messages"].append(the_message_dict_to_append)
+            msg_dict["replyMessage"] = {}
+        payload["messages"].append(msg_dict)
+
     r = await fetch.post("http://quote-api:3000/generate.png", json=payload)
     if not r.is_error:
         return r.read()
@@ -265,21 +234,21 @@ async def msg_quotly_cmd(self: Client, ctx: Message):
                     if not i.empty and not i.media
                 ]
             except Exception:
-                return await ctx.reply_text("🤷🏻‍♂️")
+                return await ctx.reply_text("🤷🏻♂️")
             try:
                 make_quotly = await pyrogram_to_quotly(messages, is_reply=is_reply)
                 bio_sticker = BytesIO(make_quotly)
                 bio_sticker.name = "misskatyquote_sticker.webp"
                 return await ctx.reply_sticker(bio_sticker)
             except Exception:
-                return await ctx.reply("🤷🏻‍♂️")
+                return await ctx.reply("🤷🏻♂️")
     try:
         messages_one = await self.get_messages(
             chat_id=ctx.chat.id, message_ids=ctx.reply_to_message.id, replies=-1
         )
         messages = [messages_one]
     except Exception:
-        return await ctx.reply("🤷🏻‍♂️")
+        return await ctx.reply("🤷🏻♂️")
     try:
         make_quotly = await pyrogram_to_quotly(messages, is_reply=is_reply)
         bio_sticker = BytesIO(make_quotly)
