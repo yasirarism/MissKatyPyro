@@ -20,31 +20,25 @@ from misskaty import app
 from misskaty.core.decorator import capture_err, new_task
 from misskaty.helper.http import fetch
 from misskaty.helper.pyro_progress import humanbytes, progress_for_pyrogram
-from misskaty.vars import COMMAND_HANDLER, OWNER_ID
-from misskaty.helper.sosmed_common import (
-    _esc,
+from misskaty.helper.sosmed_helper import (
     ACTIVE_TG_DOWNLOADS,
+    _build_plain_card,
+    _build_rich_card,
+    _esc,
+    _fb_keyboard,
+    _fb_plain_card,
+    _fb_rich_card,
+    _get_facebook_data,
+    _get_instagram_data,
+    _get_tiktok_data,
     _tg_download_cancel_markup,
     _tg_download_progress,
-)
-from misskaty.helper.sosmed_instagram import (
-    _build_rich_card,
-    _build_plain_card,
-    _url_keyboard,
-    _get_instagram_data,
-)
-from misskaty.helper.sosmed_tiktok import (
-    _tt_rich_card,
-    _tt_plain_card,
     _tt_keyboard,
-    _get_tiktok_data,
+    _tt_plain_card,
+    _tt_rich_card,
+    _url_keyboard,
 )
-from misskaty.helper.sosmed_facebook import (
-    _fb_rich_card,
-    _fb_plain_card,
-    _fb_keyboard,
-    _get_facebook_data,
-)
+from misskaty.vars import COMMAND_HANDLER, OWNER_ID
 
 
 LOGGER = getLogger("MissKaty")
