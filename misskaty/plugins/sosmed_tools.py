@@ -3,6 +3,7 @@
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
 import asyncio
+import base64
 import contextlib
 import json
 import math
@@ -762,6 +763,89 @@ def _fb_parse_count(text: str):
     return int(n)
 
 
+_FB_FID_PREFIX = "ZmVlZGJhY2s6"
+
+
+def _fb_decode_fid(fid: str) -> str:
+    try:
+        return base64.b64decode(fid + "==").decode("utf-8", "ignore")
+    except Exception:
+        return ""
+
+
+def _fb_post_id(url: str) -> str:
+    m = re.search(r"[?&]v=(\d+)", url)
+    if m:
+        return m.group(1)
+    m = re.search(r"/(?:permalink|posts|videos|reel)/(\d+)", url)
+    return m.group(1) if m else ""
+
+
+def _fb_collect_feed(obj, feeds, path="", depth=0):
+    if depth > 45:
+        return
+    if isinstance(obj, dict):
+        fid = obj.get("id")
+        if isinstance(fid, str) and fid.startswith(_FB_FID_PREFIX):
+            feeds.append((path, obj))
+        for k, v in obj.items():
+            _fb_collect_feed(v, feeds, f"{path}.{k}", depth + 1)
+    elif isinstance(obj, list):
+        for i, x in enumerate(obj):
+            _fb_collect_feed(x, feeds, f"{path}[{i}]", depth + 1)
+
+
+def _fb_feed_counts(feed: dict) -> dict:
+    counts: dict = {}
+    rc = feed.get("reaction_count")
+    if isinstance(rc, dict):
+        rc = rc.get("count")
+    if isinstance(rc, int) and rc > 0:
+        counts["reactions"] = rc
+    tc = feed.get("total_comment_count")
+    if isinstance(tc, int) and tc > 0:
+        counts["comments"] = tc
+    for key in ("share_count_reduced", "share_count"):
+        sc = feed.get(key)
+        if isinstance(sc, dict):
+            sc = sc.get("count") or (sc.get("count") == 0 and 0)
+        if isinstance(sc, str) and sc.strip().isdigit():
+            sc = int(sc)
+        if isinstance(sc, int) and sc > 0:
+            counts["shares"] = sc
+            break
+    return counts
+
+
+def _fb_feed_views(feed: dict):
+    for key in ("video_view_count", "video_view_count_reduced", "play_count"):
+        v = feed.get(key)
+        if isinstance(v, dict):
+            v = v.get("count")
+        if isinstance(v, str) and v.strip().isdigit():
+            v = int(v)
+        if isinstance(v, int) and v > 0:
+            return v
+    return None
+
+
+def _fb_pick_feed(feeds: list, post_id: str):
+    best = None
+    best_key = None
+    for path, feed in feeds:
+        fid = _fb_decode_fid(feed.get("id") or "")
+        key = (
+            int(bool(post_id) and post_id in fid),
+            int(path.endswith(".result.data.feedback")),
+            1 if feed.get("video_view_count_renderer") else 0,
+            int((_fb_feed_counts(feed) or {}).get("reactions") or 0),
+        )
+        if best_key is None or key > best_key:
+            best_key = key
+            best = feed
+    return best or {}
+
+
 def _fb_find_node(obj, out, depth=0):
     if depth > 40:
         return
@@ -841,41 +925,50 @@ def _fb_html_data(url: str) -> dict:
     html = r.text
     scripts = re.findall(r"<script[^>]*>(.*?)</script>", html, re.S)
     nodes: list = []
+    feeds: list = []
     for sc in scripts:
         sc = sc.strip()
         if not sc.startswith(("{", "[")):
             continue
         try:
-            _fb_find_node(json.loads(sc), nodes)
+            parsed = json.loads(sc)
         except Exception:
             continue
-    if not nodes:
+        _fb_find_node(parsed, nodes)
+        _fb_collect_feed(parsed, feeds)
+    if not nodes and not str(r.text).strip():
         return {"ok": False, "reason": "no_node"}
 
-    node = nodes[0]
+    final = str(r.url or url)
+    cid = _fb_post_id(final)
+
+    def _cap_len(n):
+        sec = n.get("comet_sections") or {}
+        story = (sec.get("content") or {}).get("story") or {}
+        return len(((story.get("message") or {}).get("text") or ""))
+
+    node = max(nodes, key=lambda n: (str(n.get("post_id") or "") == cid, _cap_len(n))) if nodes else {}
     feedback = node.get("feedback") or {}
     owner = feedback.get("owning_profile") or {}
     sections = node.get("comet_sections") or {}
     story = (sections.get("content") or {}).get("story") or {}
     message = (story.get("message") or {}).get("text") or ""
 
-    counts = {}
-    fb_sec = (sections.get("feedback") or {}).get("story") or {}
-    ufi = json.dumps(fb_sec, ensure_ascii=False)
-    for label, key in (("reactions", "reaction_count"), ("comments", "comment_count"), ("shares", "share_count")):
-        m = re.search(rf'"{key}":\{{"count":(\d+)', ufi)
-        if m and int(m.group(1)) > 0:
-            counts[label] = int(m.group(1))
+    feed = _fb_pick_feed(feeds, cid)
+    counts = _fb_feed_counts(feed)
+    views = _fb_feed_views(feed)
 
     return {
         "ok": True,
-        "post_id": node.get("post_id"),
+        "post_id": node.get("post_id") or cid,
         "owner": owner.get("name") or owner.get("short_name") or "",
         "caption": message,
         "timestamp": node.get("creation_time"),
         "media": _fb_extract_media(node),
         "counts": counts,
-        "permalink": node.get("permalink_url") or url,
+        "views": views,
+        "n_attachments": len(node.get("attachments") or []),
+        "permalink": node.get("permalink_url") or final,
         "cookies_used": bool(_resolve_cookies_path()),
     }
 
@@ -967,6 +1060,8 @@ def _fb_extract_sync(url: str) -> dict:
     media = list(data.get("media") or []) if data.get("ok") else []
     if yt.get("media_url"):
         media = [m for m in media if m["type"] != "photo" or m["url"] != yt.get("thumb")]
+        if (data.get("n_attachments") or 0) <= 1:
+            media = [m for m in media if m["type"] != "photo"]
         media.insert(0, {"type": "video", "url": yt["media_url"]})
     if not media and yt.get("thumb"):
         media = [{"type": "photo", "url": yt["thumb"]}]
@@ -987,12 +1082,13 @@ def _fb_extract_sync(url: str) -> dict:
         "timestamp": ts,
         "media": media,
         "counts": counts,
-        "views": yt.get("view_count"),
+        "views": data.get("views") or yt.get("view_count"),
         "video_meta": yt.get("meta"),
         "n_video": sum(1 for x in media if x["type"] == "video"),
         "shortcode": str(data.get("post_id") or "") or "",
         "permalink": data.get("permalink") or canon,
         "title": yt.get("title") or "",
+        "cookies_used": bool(data.get("cookies_used")),
     }
 
 
@@ -1039,7 +1135,7 @@ def _fb_rich_card(data: dict) -> str:
         rows.append(f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>")
     if not any(k in counts for k in ("reactions", "comments", "shares")):
         hint = (
-            "cookies kedaluwarsa / post tidak terlihat"
+            "0 / tidak terlihat oleh akun ini"
             if data.get("cookies_used")
             else "perlu cookies.txt (login)"
         )
