@@ -1,10 +1,3 @@
-"""
-* @author        Yasir Aris M <yasiramunandar@gmail.com>
-* @date          2026-08-25 / 2026-09-10
-* @projectName   MissKatyPyro
-* Copyright ©YasirPedia All rights reserved
-"""
-
 import asyncio
 import json
 import logging
@@ -29,7 +22,7 @@ LOGGER = logging.getLogger("MissKaty")
 
 __MODULE__ = "InstagramDL"
 __HELP__ = """
-/igdl [link] - Tampilkan Instagram post/reel sebagai slideshow dalam satu rich message (media + likes + komentar + caption).
+/igdl [link] - Tampilkan Instagram post/reel sebagai slideshow dalam satu rich message (media + likes + komentar + caption + metadata video).
 Contoh: /igdl https://www.instagram.com/p/DcdCVwzkULZ/
 
 Post private? Taruh file cookies.txt (format Netscape/yt-dlp) di root project
@@ -38,10 +31,12 @@ atau set env IG_COOKIES_FILE=/path/cookies.txt, akun cookies harus follow akun p
 
 COOKIES_ENV = os.environ.get("IG_COOKIES_FILE")
 COOKIES_DEFAULT = os.path.join(os.getcwd(), "cookies.txt")
-MAX_MEDIA = 10
-MAX_CAPTION = 3000
+MAX_MEDIA = 50
+MAX_CAPTION = 2500
 
 _SJS_RE = re.compile(r'<script\b[^>]+\bdata-sjs>(\{.+?\})</script>')
+_DASH_DURATION_RE = re.compile(r'duration="PT([\d.]+)S"')
+_DASH_CODEC_RE = re.compile(r'codecs="([^"]+)"')
 
 
 def _extract_post_id(url: str) -> str:
@@ -111,6 +106,38 @@ def _best_video(node: dict) -> str | None:
     return vv[0]["url"] if vv else None
 
 
+def _parse_duration(seconds) -> str:
+    try:
+        total = int(round(float(seconds)))
+    except Exception:
+        return "-"
+    h, rem = divmod(total, 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
+
+def _video_meta(node: dict) -> dict | None:
+    if not node or not node.get("video_versions"):
+        return None
+    meta: dict = {}
+    dash = node.get("video_dash_manifest") or ""
+    m = _DASH_DURATION_RE.search(dash)
+    if m:
+        meta["duration"] = _parse_duration(m.group(1))
+    w, h = node.get("original_width"), node.get("original_height")
+    if w and h:
+        meta["resolution"] = f"{w}x{h}"
+    if node.get("has_audio") is not None:
+        meta["audio"] = "ada" if node.get("has_audio") else "tanpa audio"
+    qualities = node.get("number_of_qualities")
+    if qualities:
+        meta["qualities"] = str(qualities)
+    codecs = sorted({c.split(".")[0] for c in _DASH_CODEC_RE.findall(dash)})
+    if codecs:
+        meta["codec"] = ", ".join(codecs)
+    return meta or None
+
+
 def _extract_sync(shortcode: str) -> dict:
     if not cffi_requests:
         return {"ok": False, "reason": "no_curl_cffi"}
@@ -148,16 +175,20 @@ def _extract_sync(shortcode: str) -> dict:
     user = product.get("user") or {}
 
     media_items: list = []
-    for slide in product.get("carousel_media") or []:
-        vurl = _best_video(slide)
-        media_items.append(
-            {"type": "video" if vurl else "photo", "url": vurl or _best_image(slide)}
-        )
-    if not media_items:
-        vurl = _best_video(product)
-        media_items.append(
-            {"type": "video" if vurl else "photo", "url": vurl or _best_image(product)}
-        )
+    nodes = product.get("carousel_media") or [product]
+    for node in nodes:
+        vurl = _best_video(node)
+        item = {
+            "type": "video" if vurl else "photo",
+            "url": vurl or _best_image(node),
+        }
+        if vurl:
+            item["meta"] = _video_meta(node)
+        media_items.append(item)
+
+    media_items = [m for m in media_items if m["url"]]
+    video_meta = next((m.get("meta") for m in media_items if m.get("meta")), None)
+    n_video = sum(1 for m in media_items if m["type"] == "video")
 
     return {
         "ok": True,
@@ -168,7 +199,9 @@ def _extract_sync(shortcode: str) -> dict:
         "comments": int(product.get("comment_count") or 0),
         "timestamp": product.get("taken_at"),
         "caption": (product.get("caption") or {}).get("text") or "",
-        "media": [m for m in media_items if m["url"]],
+        "media": media_items,
+        "n_video": n_video,
+        "video_meta": video_meta,
         "shortcode": shortcode,
     }
 
@@ -206,8 +239,31 @@ def _build_slideshow(data: dict) -> str:
             items.append(f'<video src="{src}"/>')
         else:
             items.append(f'<img src="{src}"/>')
-    caption = _esc(data.get("owner") or "Instagram")
-    return f"<tg-slideshow>{''.join(items)}<figcaption>{caption}</figcaption></tg-slideshow>"
+    owner = _esc(data.get("owner") or "Instagram")
+    label = f"{len(media)} media" if len(media) > 1 else "1 media"
+    return f"<tg-slideshow>{''.join(items)}<figcaption>@{owner} · {label}</figcaption></tg-slideshow>"
+
+
+def _build_video_details(data: dict) -> str:
+    meta = data.get("video_meta")
+    if not meta:
+        return ""
+    n_video = data.get("n_video", 1)
+    rows = []
+    if meta.get("duration"):
+        rows.append(f"<p>⏱ <b>Durasi:</b> {meta['duration']}</p>")
+    if meta.get("resolution"):
+        rows.append(f"<p>📐 <b>Resolusi:</b> {meta['resolution']}</p>")
+    if meta.get("qualities"):
+        rows.append(f"<p>🎚 <b>Kualitas:</b> {meta['qualities']} varian</p>")
+    if meta.get("codec"):
+        rows.append(f"<p>🎞 <b>Codec:</b> {meta['codec']}</p>")
+    if meta.get("audio"):
+        rows.append(f"<p>🔊 <b>Audio:</b> {meta['audio']}</p>")
+    if not rows:
+        return ""
+    label = f"🎬 Metadata Video ({n_video} video)" if n_video > 1 else "🎬 Metadata Video"
+    return f"<details><summary>{label}</summary>{''.join(rows)}</details>"
 
 
 def _build_rich_card(data: dict) -> str:
@@ -225,15 +281,30 @@ def _build_rich_card(data: dict) -> str:
     slideshow = _build_slideshow(data)
     if slideshow:
         parts.append(slideshow)
-    parts.append("<p>📸 <b>@" + _esc(owner) + "</b>" + verified + (f" · {_esc(full)}" if full else "") + "</p>")
+    who = f"📸 <b>@{_esc(owner)}</b>{verified}"
+    if full:
+        who += f" · {_esc(full)}"
+    parts.append(f"<p>{who}</p>")
+
+    n_video = data.get("n_video", 0)
+    media_label = f"{len(media)}"
+    if len(media) > 1:
+        media_label += " (carousel)"
+    if n_video:
+        media_label += f", {n_video} video"
     parts.append(
         "<table bordered striped>"
         f"<tr><td>❤️ Likes</td><td><b>{_fmt_num(data.get('likes', 0))}</b></td></tr>"
         f"<tr><td>💬 Komentar</td><td><b>{_fmt_num(data.get('comments', 0))}</b></td></tr>"
-        f"<tr><td>🖼 Media</td><td><b>{len(media)}</b>{' (carousel)' if len(media) > 1 else ''}</td></tr>"
+        f"<tr><td>🖼 Media</td><td><b>{media_label}</b></td></tr>"
         f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>"
         "</table>"
     )
+
+    details = _build_video_details(data)
+    if details:
+        parts.append(details)
+
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > MAX_CAPTION:
@@ -241,13 +312,8 @@ def _build_rich_card(data: dict) -> str:
         parts.append("<br>")
         for para in caption.split("\n\n"):
             para = para.strip()
-            if not para:
-                continue
-            parts.append(f"<p><i>{_esc(para).replace(chr(10), '<br>')}</i></p>")
-    link = f"https://www.instagram.com/p/{data.get('shortcode', '')}/"
-    parts.append(
-        f"<p><tg-button type=\"url\" style=\"primary\" url=\"{link}\">🔗 Buka di Instagram</tg-button></p>"
-    )
+            if para:
+                parts.append(f"<p>{_esc(para).replace(chr(10), '<br>')}</p>")
     return "".join(parts)
 
 
@@ -255,20 +321,25 @@ def _build_plain_card(data: dict) -> str:
     owner = data.get("owner", "-")
     verified = " ✔️" if data.get("verified") else ""
     media = data.get("media") or []
-    lines = [
-        f"📸 <b>@{_esc(owner)}</b>{verified}",
-        f"❤️ {_fmt_num(data.get('likes', 0))} • 💬 {_fmt_num(data.get('comments', 0))} • 🖼 {len(media)}",
-    ]
+    n_video = data.get("n_video", 0)
+    head = f"❤️ {_fmt_num(data.get('likes', 0))} • 💬 {_fmt_num(data.get('comments', 0))} • 🖼 {len(media)}"
+    if n_video:
+        head += f" ({n_video} video)"
+    lines = [f"📸 <b>@{_esc(owner)}</b>{verified}", head]
+    meta = data.get("video_meta") or {}
+    if meta:
+        bits = [f"{k}: {v}" for k, v in meta.items()]
+        lines.append("🎬 " + " • ".join(bits))
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > 900:
             caption = caption[:900] + "..."
         lines.append("")
-        lines.append(f"<i>{_esc(caption)}</i>")
+        lines.append(_esc(caption))
     return "\n".join(lines)
 
 
-def _plain_keyboard(data: dict) -> InlineKeyboardMarkup:
+def _url_keyboard(data: dict) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [
             [
@@ -322,11 +393,15 @@ async def igdl_handler(client, message):
     if not data.get("media"):
         return await status_msg.edit("<b>❌ Tidak ada media yang ditemukan.</b>")
 
+    keyb = _url_keyboard(data)
     try:
-        await status_msg.edit_rich(InputRichMessage(html=_build_rich_card(data)))
+        await status_msg.edit_rich(
+            InputRichMessage(html=_build_rich_card(data)),
+            reply_markup=keyb,
+        )
     except Exception as e:
         LOGGER.warning("igdl edit rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
         try:
-            await status_msg.edit(_build_plain_card(data), reply_markup=_plain_keyboard(data))
+            await status_msg.edit(_build_plain_card(data), reply_markup=keyb)
         except Exception as e2:
             LOGGER.error("igdl edit plain gagal: %s", e2)
