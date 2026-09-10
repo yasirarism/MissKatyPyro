@@ -5,6 +5,7 @@ from pyrogram.types import Message
 
 from misskaty import app
 from misskaty.helper.http import fetch
+from misskaty.vars import BOT_TOKEN
 
 
 class QuotlyException(Exception):
@@ -170,6 +171,7 @@ async def pyrogram_to_quotly(messages, is_reply):
     if not isinstance(messages, list):
         messages = [messages]
     payload = {
+        "botToken": BOT_TOKEN,
         "type": "quote",
         "format": "png",
         "backgroundColor": "#1b1429",
