@@ -119,7 +119,7 @@ def build_help_table(help_text: str, *, title: str = "") -> str:
     )
     cap = f"<caption>📋 {title}</caption>\n" if title else ""
     return (
-        f"<table bordered striped>\n{cap}"
+        f"<table striped compact>\n{cap}"
         f"<tr><th>Command</th><th>Description</th></tr>\n"
         f"{rows}</table>"
     )
@@ -146,9 +146,9 @@ def build_module_list_table() -> str:
             f"<tr><td><code>/{name.lower()}</code></td><td>{desc}</td></tr>\n"
         )
     return (
-        "<table bordered striped>\n"
+        "<table striped compact>\n"
         "<caption>📚 Semua Module</caption>\n"
-        "<tr><td><b>Module</b></td><td><b>Description</b></td></tr>\n"
+        "<tr><th>Module</th><th>Description</th></tr>\n"
         + "".join(rows)
         + "</table>"
     )
