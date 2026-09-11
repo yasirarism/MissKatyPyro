@@ -7,7 +7,6 @@
 
 import os
 
-from pyrogram import types as pyro_types
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from misskaty import app
@@ -17,7 +16,6 @@ from misskaty import app
 @app.on_cmd("json")
 async def jsonify(_, message: Message):
     the_real_message = None
-    reply_to_id = None
 
     the_real_message = message.reply_to_message or message
     try:
@@ -41,7 +39,6 @@ async def jsonify(_, message: Message):
             document="json.txt",
             caption=f"<code>{str(e)}</code>",
             disable_notification=True,
-            reply_parameters=pyro_types.ReplyParameters(message_id=reply_to_id),
             thumb="assets/thumb.jpg",
         )
         os.remove("json.txt")

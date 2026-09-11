@@ -251,7 +251,7 @@ async def donate(self: Client, ctx: Message):
 async def balas(_, ctx: Message) -> "str":
     pesan = ctx.input
     await ctx.delete_msg()
-    await ctx.reply(pesan, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.reply_to_message.id))
+    await ctx.reply(pesan)
 
 
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))

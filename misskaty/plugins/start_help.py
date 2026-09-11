@@ -147,7 +147,7 @@ async def start(self, ctx, strings):
             photo="https://img.yasirweb.eu.org/file/90e9a448bc2f8b055b762.jpg",
             caption=home_text_pm,
             reply_markup=home_keyboard_pm,
-            reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
+            reply_to_message_id=ctx.id,
         )
 
 

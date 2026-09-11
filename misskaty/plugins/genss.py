@@ -101,16 +101,16 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
-                            ctx.reply_photo(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
+                            ctx.reply_document(images),
+                            ctx.reply_photo(images),
                         ]
                     )
                 except FloodWait as e:
                     await sleep(e.value)
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
-                            ctx.reply_photo(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
+                            ctx.reply_document(images),
+                            ctx.reply_photo(images),
                         ]
                     )
                 await ctx.reply(
@@ -121,7 +121,6 @@ async def genss(self: Client, ctx: Message, strings):
                         id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.title,
                         bot_uname=self.me.username,
                     ),
-                    reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
                 )
                 await pesan.delete()
                 try:
@@ -170,16 +169,16 @@ async def genss(self: Client, ctx: Message, strings):
                 try:
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
-                            ctx.reply_photo(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
+                            ctx.reply_document(images),
+                            ctx.reply_photo(images),
                         ]
                     )
                 except FloodWait as e:
                     await sleep(e.value)
                     await gather(
                         *[
-                            ctx.reply_document(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
-                            ctx.reply_photo(images, reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id)),
+                            ctx.reply_document(images),
+                            ctx.reply_photo(images),
                         ]
                     )
                 await ctx.reply(
@@ -190,7 +189,6 @@ async def genss(self: Client, ctx: Message, strings):
                         id=ctx.from_user.id if ctx.from_user else ctx.sender_chat.id,
                         bot_uname=self.me.username,
                     ),
-                    reply_parameters=pyro_types.ReplyParameters(message_id=ctx.id),
                 )
                 await process.delete()
                 try:

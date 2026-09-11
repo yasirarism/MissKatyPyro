@@ -272,7 +272,6 @@ async def reply_as_file(
     Returns:
         On success, the sent Message is returned.
     """
-    reply_to_id = self.reply_to_message.id if self.reply_to_message else self.id
     if delete_message:
         create_task(self.delete())
     doc = io.BytesIO(text.encode())
@@ -281,7 +280,6 @@ async def reply_as_file(
         document=doc,
         caption=caption[:1024],
         disable_notification=True,
-        reply_parameters=pyro_types.ReplyParameters(message_id=reply_to_id),
     )
 
 

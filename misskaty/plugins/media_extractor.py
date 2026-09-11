@@ -17,7 +17,6 @@ from time import time
 from urllib.parse import unquote
 
 from pyrogram import Client, filters
-from pyrogram import types as pyro_types
 from pyrogram.file_id import FileId
 from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified, QueryIdInvalid
 from pyrogram.types import (
@@ -418,7 +417,6 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
             caption=strings("capt_extr_sub").format(
                 nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
             ),
-            reply_parameters=pyro_types.ReplyParameters(message_id=update.message.id),
             thumb="assets/thumb.jpg",
             progress=progress_for_pyrogram,
             progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
