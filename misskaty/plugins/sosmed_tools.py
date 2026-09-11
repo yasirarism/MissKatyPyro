@@ -121,7 +121,10 @@ async def download(client, message):
         dc_id = FileId.decode(media.file_id).dc_id
         job_id = f"{message.chat.id}:{pesan.id}"
         user_id = message.from_user.id if message.from_user else OWNER_ID
-        await pesan.edit(reply_markup=_tg_download_cancel_markup(job_id, user_id))
+        await pesan.edit(
+            f"<emoji id=5319190934510904031>⏳</emoji> Downloading Telegram file...\nDC ID: {dc_id}",
+            reply_markup=_tg_download_cancel_markup(job_id, user_id),
+        )
         download_task = asyncio.create_task(
             client.download_media(
                 message=message.reply_to_message,
