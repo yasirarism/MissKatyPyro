@@ -362,7 +362,11 @@ async def reply(self: Message, text: str, del_in: int = 0, *args, **kwargs):
     return await reply_text(self, text=text, del_in=del_in, *args, **kwargs)
 
 
-async def edit(self: Message, text: str, del_in: int = 0, *args, **kwargs):
+async def edit(self: Message, text: str | None = None, del_in: int = 0, *args, **kwargs):
+    if text is None:
+        if "reply_markup" in kwargs:
+            return await self.edit_reply_markup(kwargs["reply_markup"])
+        return self
     return await edit_text(self, text=text, del_in=del_in, *args, **kwargs)
 
 
