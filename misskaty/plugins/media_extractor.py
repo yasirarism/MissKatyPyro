@@ -7,6 +7,7 @@
 
 import asyncio
 import contextlib
+import html
 import json
 import os
 import traceback
@@ -24,6 +25,7 @@ from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     Message,
+    ReplyParameters,
 )
 
 from misskaty import app
@@ -277,6 +279,7 @@ async def ceksub(_, ctx: Message, strings):
         _EXTRACT_SESSIONS[pesan.id] = {
             "link": source,
             "user_id": owner_id,
+            "user_msg_id": ctx.id,
             "created_at": time(),
             "local_file": bool(source_path),
             "chat_id": pesan.chat.id,
@@ -305,14 +308,15 @@ async def ceksub(_, ctx: Message, strings):
             reply_markup=InlineKeyboardMarkup(buttons),
         )
         _ACTIVE_EXTRACTS.pop(pesan.id, None)
-    except Exception:
-        LOGGER.error(traceback.format_exc())
+    except Exception as e:
+        err_msg = str(e).strip() or "ffprobe failed"
+        LOGGER.error(f"ProbeMedia error: {err_msg}")
         if source_path:
             with contextlib.suppress(FileNotFoundError):
                 os.remove(source_path)
         _EXTRACT_SESSIONS.pop(pesan.id, None)
         _ACTIVE_EXTRACTS.pop(pesan.id, None)
-        await pesan.edit(strings("fail_extr_media"))
+        await pesan.edit(f"<b>Gagal mengekstrak media:</b>\n<code>{html.escape(err_msg)}</code>")
 
 
 @app.on_message(filters.command(["converttosrt", "converttoass"], COMMAND_HANDLER))
@@ -410,17 +414,34 @@ async def stream_extract(self: Client, update: CallbackQuery, strings):
         _, fferr = await proc.communicate()
         if proc.returncode:
             raise RuntimeError(fferr.decode("utf-8", "replace").strip() or "ffmpeg failed")
-        timelog = time() - start_time
+        timelog = int(time() - start_time)
         c_time = time()
-        await update.message.reply_document(
-            namafile,
-            caption=strings("capt_extr_sub").format(
-                nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
-            ),
-            thumb="assets/thumb.jpg",
-            progress=progress_for_pyrogram,
-            progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
-        )
+        user_msg_id = session.get("user_msg_id") or getattr(update.message, "reply_to_message_id", None)
+        reply_params = ReplyParameters(message_id=user_msg_id) if user_msg_id else None
+        try:
+            await self.send_document(
+                session["chat_id"],
+                namafile,
+                caption=strings("capt_extr_sub").format(
+                    nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
+                ),
+                thumb="assets/thumb.jpg",
+                reply_parameters=reply_params,
+                progress=progress_for_pyrogram,
+                progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
+            )
+        except Exception as send_err:
+            LOGGER.warning(f"send_document with reply failed: {send_err}, sending without reply")
+            await self.send_document(
+                session["chat_id"],
+                namafile,
+                caption=strings("capt_extr_sub").format(
+                    nf=namafile, bot=self.me.username, timelog=get_readable_time(timelog)
+                ),
+                thumb="assets/thumb.jpg",
+                progress=progress_for_pyrogram,
+                progress_args=(strings("up_str"), update.message, c_time, self.me.dc_id),
+            )
         await update.message.delete_msg()
         try:
             os.remove(namafile)
