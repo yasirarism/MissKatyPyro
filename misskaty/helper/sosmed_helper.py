@@ -148,6 +148,12 @@ def _find_polaris(obj, out: list):
         for k, v in obj.items():
             if k == "xig_polaris_media" and isinstance(v, dict):
                 out.append(v)
+            elif k == "xdt_api__v1__media__shortcode__web_info" and isinstance(v, dict):
+                items = v.get("items") or []
+                if items and isinstance(items[0], dict):
+                    out.append(items[0])
+            elif k in ("xdt_shortcode_media", "shortcode_media") and isinstance(v, dict):
+                out.append(v)
             else:
                 _find_polaris(v, out)
     elif isinstance(obj, list):
@@ -159,14 +165,18 @@ def _best_image(node: dict) -> str | None:
     if not node:
         return None
     cands = ((node.get("image_versions2") or {}).get("candidates")) or []
-    return cands[0]["url"] if cands else None
+    if cands:
+        return cands[0]["url"]
+    return node.get("display_url")
 
 
 def _best_video(node: dict) -> str | None:
     if not node:
         return None
     vv = node.get("video_versions") or []
-    return vv[0]["url"] if vv else None
+    if vv:
+        return vv[0]["url"]
+    return node.get("video_url")
 
 
 def _video_meta(node: dict) -> dict | None:
@@ -213,7 +223,13 @@ def _extract_sync(shortcode: str) -> dict:
         return {"ok": False, "reason": f"http_{r.status_code}"}
     html = r.text
 
-    if "xig_polaris_media" not in html:
+    known_markers = (
+        "xig_polaris_media",
+        "xdt_api__v1__media__shortcode__web_info",
+        "xdt_shortcode_media",
+        "shortcode_media",
+    )
+    if not any(marker in html for marker in known_markers):
         return {"ok": False, "reason": "unavailable_or_private"}
 
     medias: list = []
@@ -228,10 +244,18 @@ def _extract_sync(shortcode: str) -> dict:
 
     media = medias[0]
     product = media.get("if_not_gated_logged_out") or media
-    user = product.get("user") or {}
+    user = product.get("user") or product.get("owner") or {}
 
     media_items: list = []
-    nodes = product.get("carousel_media") or [product]
+    nodes = (
+        product.get("carousel_media")
+        or [
+            edge.get("node")
+            for edge in product.get("edge_sidecar_to_children", {}).get("edges", [])
+            if edge.get("node")
+        ]
+        or [product]
+    )
     for node in nodes:
         vurl = _best_video(node)
         item = {
@@ -246,15 +270,37 @@ def _extract_sync(shortcode: str) -> dict:
     video_meta = next((m.get("meta") for m in media_items if m.get("meta")), None)
     n_video = sum(1 for m in media_items if m["type"] == "video")
 
+    caption_text = ""
+    caption_raw = product.get("caption")
+    if isinstance(caption_raw, dict):
+        caption_text = caption_raw.get("text") or ""
+    elif isinstance(caption_raw, str):
+        caption_text = caption_raw
+    elif "edge_media_to_caption" in product:
+        edges = product.get("edge_media_to_caption", {}).get("edges") or []
+        if edges and isinstance(edges[0], dict):
+            caption_text = (edges[0].get("node") or {}).get("text") or ""
+
+    likes = (
+        product.get("like_count")
+        or product.get("edge_media_preview_like", {}).get("count")
+        or 0
+    )
+    comments = (
+        product.get("comment_count")
+        or product.get("edge_media_to_comment", {}).get("count")
+        or 0
+    )
+
     return {
         "ok": True,
         "owner": (user.get("username") or "").strip(),
         "full_name": (user.get("full_name") or "").strip(),
         "verified": bool(user.get("is_verified")),
-        "likes": int(product.get("like_count") or 0),
-        "comments": int(product.get("comment_count") or 0),
+        "likes": int(likes or 0),
+        "comments": int(comments or 0),
         "timestamp": product.get("taken_at"),
-        "caption": (product.get("caption") or {}).get("text") or "",
+        "caption": caption_text,
         "media": media_items,
         "n_video": n_video,
         "video_meta": video_meta,
