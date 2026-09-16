@@ -20,7 +20,6 @@ python-dateutil
 telegraph
 hachoir
 Pillow
-git+https://github.com/yasirarism/privatebin-api
 httpx[http2]
 git+https://github.com/yasirarism/vcsi
 googletrans
