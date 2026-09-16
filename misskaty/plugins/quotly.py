@@ -105,7 +105,8 @@ async def get_admin_title(client: Client, chat_id: int, user_id: int):
     try:
         member = await client.get_chat_member(chat_id, user_id)
         status = member.status
-        status_name = getattr(status, "name", str(status)).upper()
+        status_name = getattr(status, "name", None) or str(status)
+        status_name = status_name.rsplit(".", 1)[-1].upper()
         if status_name in ("OWNER", "CREATOR"):
             return "Owner"
         if status_name in ("ADMINISTRATOR", "ADMIN"):
