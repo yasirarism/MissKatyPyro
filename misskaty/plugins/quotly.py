@@ -104,17 +104,24 @@ async def get_message_sender_photo(ctx: Message):
 async def get_admin_title(client: Client, chat_id: int, user_id: int):
     try:
         member = await client.get_chat_member(chat_id, user_id)
-        if member.status == ChatMemberStatus.OWNER:
+        status = member.status
+        status_name = getattr(status, "name", str(status)).upper()
+        if status_name in ("OWNER", "CREATOR"):
             return "Owner"
-        if member.status == ChatMemberStatus.ADMINISTRATOR:
+        if status_name in ("ADMINISTRATOR", "ADMIN"):
             return getattr(member, "custom_title", "") or "Admin"
-        if member.status == ChatMemberStatus.MEMBER:
-            return "Member"
-        if member.status == ChatMemberStatus.RESTRICTED:
+        if status_name in ("MEMBER", "RESTRICTED"):
             return "Member"
     except Exception:
         pass
     return ""
+
+
+async def get_sender_tag(client: Client, message: Message, is_group: bool):
+    if not is_group or not message.from_user:
+        return ""
+    tag = await get_admin_title(client, message.chat.id, message.from_user.id)
+    return tag or "Member"
 
 
 async def get_sender_from(ctx: Message):
@@ -195,9 +202,7 @@ async def pyrogram_to_quotly(client, messages, is_reply):
     }
 
     for message in messages:
-        sender_tag = ""
-        if is_group and message.from_user:
-            sender_tag = await get_admin_title(client, message.chat.id, message.from_user.id)
+        sender_tag = await get_sender_tag(client, message, is_group)
 
         msg_dict = {
             "text": await get_text_or_caption(message),
