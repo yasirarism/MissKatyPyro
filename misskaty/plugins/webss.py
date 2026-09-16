@@ -15,6 +15,7 @@ from misskaty.helper.localization import use_chat_lang
 __MODULE__ = "WebSS"
 __HELP__ = """
 /webss [URL] - Take A Screenshot Of A Webpage.
+/webss [URL] -f - Capture full scrollable page.
 """
 
 
@@ -24,17 +25,34 @@ __HELP__ = """
 async def take_ss(_, ctx: Message, strings):
     if len(ctx.command) == 1:
         return await ctx.reply(strings("no_url"), del_in=6)
-    url = (
-        ctx.command[1]
-        if ctx.command[1].startswith("http")
-        else f"https://{ctx.command[1]}"
+
+    target_url = None
+    is_full_page = "false"
+    for arg in ctx.command[1:]:
+        if arg.lower() in ("-f", "--full"):
+            is_full_page = "true"
+        elif not target_url and not arg.startswith("-"):
+            target_url = arg
+
+    if not target_url:
+        return await ctx.reply(strings("no_url"), del_in=6)
+
+    target_url = (
+        target_url
+        if target_url.startswith("http")
+        else f"https://{target_url}"
     )
-    download_file_path = os.path.join("downloads/", f"webSS_{ctx.from_user.id}.png")
+    user_id = ctx.from_user.id if ctx.from_user else ctx.chat.id
+    os.makedirs("downloads", exist_ok=True)
+    download_file_path = os.path.join("downloads/", f"webSS_{user_id}.jpg")
     msg = await ctx.reply(strings("wait_str"))
     try:
-        url = f"https://webss.yasirweb.eu.org/api/screenshot?resX=1280&resY=900&outFormat=jpg&waitTime=1000&isFullPage=false&dismissModals=false&url={url}"
+        api_url = (
+            "https://webss.yasirweb.eu.org/api/screenshot"
+            f"?resX=1280&resY=900&outFormat=jpg&waitTime=1000&isFullPage={is_full_page}&dismissModals=true&url={target_url}"
+        )
         downloader = SmartDL(
-            url, download_file_path, progress_bar=False, timeout=15, verify=False
+            api_url, download_file_path, progress_bar=False, timeout=25, verify=False
         )
         downloader.start(blocking=True)
         await gather(
