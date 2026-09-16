@@ -75,6 +75,8 @@ async def reply_text(
     Raises:
         RPCError: In case of a Telegram RPC error.
     """
+    kwargs.pop("quote", None)
+    kwargs.pop("reply_parameters", None)
     try:
         if as_raw:
             msg = await _ORIG_REPLY_TEXT(

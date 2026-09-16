@@ -539,7 +539,7 @@ async def getDatalk21(msg, kueri, CurrentPage, strings):
             try:
                 result = await _scrape_lk21_direct(kueri)
             except Exception as exc:
-                LOGGER.exception("LK21 direct scrape gagal")
+                LOGGER.warning("LK21 direct scrape gagal: %s", exc)
                 await msg.edit(
                     f"ERROR: Gagal mengambil data LK21 - <code>{exc}</code>"
                 )

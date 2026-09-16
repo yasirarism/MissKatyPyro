@@ -78,7 +78,7 @@ async def _progress_ctx(client, ctx: Message, strings):
         )
         return _GuestInlineMessage(client, sent.inline_message_id)
 
-    return await ctx.reply(strings("find_answers_str"), quote=True)
+    return await ctx.reply(strings("find_answers_str"))
 
 
 async def _edit_msg(bmsg, text: str, **kwargs):

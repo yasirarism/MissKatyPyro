@@ -80,6 +80,13 @@ async def multipost(url: str, times: int, *args, **kwargs):
     return await gather(*[post(url, *args, **kwargs) for _ in range(times)])
 
 
+async def stream(url: str, *args, **kwargs):
+    """Async generator: yields bytes chunks from streaming GET."""
+    async with fetch.stream("GET", url, *args, **kwargs) as response:
+        async for chunk in response.aiter_bytes(65536):
+            yield chunk
+
+
 async def resp_get(url: str, *args, **kwargs):
     return await fetch.get(url, *args, **kwargs)
 

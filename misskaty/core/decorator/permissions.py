@@ -100,7 +100,7 @@ async def list_admins(chat_id: int):
     if chat_id in admins_in_chat:
         interval = time() - admins_in_chat[chat_id]["last_updated_at"]
         if interval < 3600:
-            return admins_in_chat[chat_id]["data"]
+            return admins_in_chat[chat_id]["data"] or []
 
     try:
         admins_in_chat.add(
@@ -117,8 +117,8 @@ async def list_admins(chat_id: int):
             timeout=6 * 60 * 60,
         )
         return admins_in_chat[chat_id]["data"]
-    except ChannelPrivate:
-        return
+    except (ChannelPrivate, Exception):
+        return []
 
 
 async def authorised(func, subFunc2, client, message, *args, **kwargs):

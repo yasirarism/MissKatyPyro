@@ -3,7 +3,7 @@ from typing import Union
 
 from pyrogram import filters
 from pyrogram.enums import ChatType
-from pyrogram.errors import ListenerTimeout
+from pyrogram.errors import ListenerTimeout, QueryIdInvalid
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -124,4 +124,7 @@ async def chlang(_, m: Union[CallbackQuery, Message], strings):
 
 @app.on_callback_query(filters.regex("^setlangsel "))
 async def set_chat_lang_expired(_, m: CallbackQuery):
-    await m.answer("Menu language ini sudah expired, buka lagi dengan /setlang.", show_alert=True)
+    try:
+        await m.answer("Menu language ini sudah expired, buka lagi dengan /setlang.", show_alert=True)
+    except QueryIdInvalid:
+        pass
