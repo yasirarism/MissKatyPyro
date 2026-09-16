@@ -107,9 +107,9 @@ async def get_admin_title(client: Client, chat_id: int, user_id: int):
         status = member.status
         status_name = getattr(status, "name", None) or str(status)
         status_name = status_name.rsplit(".", 1)[-1].upper()
-        if status_name in ("OWNER", "CREATOR"):
-            return "Owner"
-        if status_name in ("ADMINISTRATOR", "ADMIN"):
+        if status_name in ("OWNER", "CREATOR") or getattr(member, "is_owner", False):
+            return getattr(member, "custom_title", "") or "Owner"
+        if status_name in ("ADMINISTRATOR", "ADMIN") or getattr(member, "is_admin", False):
             return getattr(member, "custom_title", "") or "Admin"
         if status_name in ("MEMBER", "RESTRICTED"):
             return "Member"
@@ -122,7 +122,9 @@ async def get_sender_tag(client: Client, message: Message, is_group: bool):
     if not is_group or not message.from_user:
         return ""
     tag = await get_admin_title(client, message.chat.id, message.from_user.id)
-    return tag or "Member"
+    if tag:
+        return tag
+    return "Owner" if message.from_user.id == client.me.id else "Member"
 
 
 async def get_sender_from(ctx: Message):
