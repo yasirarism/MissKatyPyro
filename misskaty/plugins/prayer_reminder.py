@@ -3,6 +3,7 @@
 # * Copyright ©YasirPedia All rights reserved
 """Chat-configurable prayer time reminder using api.myquran.com."""
 
+import asyncio
 import datetime
 from contextlib import suppress
 from html import escape
@@ -449,11 +450,12 @@ async def prayer_reminder_callback(_, query: CallbackQuery):
         return await query.message.edit(_panel_text(config), reply_markup=_panel_markup(config, user_id))
 
 
-scheduler.add_job(
-    bootstrap_prayer_reminders,
-    "date",
-    id="prayer_reminder_bootstrap",
-    run_date=datetime.datetime.now() + datetime.timedelta(seconds=5),
-    replace_existing=True,
-    misfire_grace_time=60,
-)
+async def _delayed_bootstrap():
+    await asyncio.sleep(5)
+    await bootstrap_prayer_reminders()
+
+
+try:
+    asyncio.create_task(_delayed_bootstrap())
+except RuntimeError:
+    pass
