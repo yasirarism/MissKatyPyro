@@ -130,6 +130,15 @@ async def homepage():
     return "Hello World"
 
 
+@api.get("/billiard", response_class=HTMLResponse)
+async def billiard_game():
+    template_path = path.join(path.dirname(__file__), "..", "templates", "billiard.html")
+    if path.exists(template_path):
+        with open(template_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse(content="<h1>Billiard template not found</h1>", status_code=404)
+
+
 @api.exception_handler(HTTPException)
 async def page_not_found(request: Request, exc: HTTPException):
     return HTMLResponse(content=f"<h1>Error: {exc}</h1>", status_code=exc.status_code)
