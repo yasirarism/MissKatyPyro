@@ -413,8 +413,9 @@
     let isAiming = false;
     let aimAngle = -Math.PI / 2;
     let shootPower = 0;
-    let maxPower = 24;
-    let pullStartDistance = 0;
+    let maxPower = 22;
+    let aimLocked = false;        // true once dragging back to charge power
+    let pointerStart = null;      // {x, y} where the drag began
 
     function resizeCanvas() {
       const rect = container.getBoundingClientRect();
@@ -850,29 +851,39 @@
       if (!areBallsStopped() || cueBall.potted) return;
       const pos = getPointerPos(e);
       isAiming = true;
+      aimLocked = false;
       shootPower = 0;
-      updateAim(pos.x, pos.y);
-    }
-
-    function updateAim(px, py) {
-      aimAngle = Math.atan2(py - cueBall.y, px - cueBall.x);
+      pointerStart = { x: pos.x, y: pos.y };
+      // Initial aim direction: FROM cue ball TOWARD touch point
+      aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
     }
 
     function onPointerMove(e) {
       if (!isAiming) return;
       const pos = getPointerPos(e);
 
-      // Dragging backwards charges power, forward or around rotates aim
       const dx = pos.x - cueBall.x;
       const dy = pos.y - cueBall.y;
       const dist = Math.hypot(dx, dy);
 
-      // Calculate projection opposite to aim angle
+      // "pull" = how far the pointer is behind the cue ball (opposite of aim)
       const pull = -(dx * Math.cos(aimAngle) + dy * Math.sin(aimAngle));
-      if (pull > 5) {
-        shootPower = Math.min(Math.max((pull - 5) / 5, 0), maxPower);
-      } else {
-        updateAim(pos.x, pos.y);
+
+      if (!aimLocked) {
+        // Phase 1: dragging freely → update aim direction
+        // Lock from aim to pull-back once user clearly drags behind cue ball
+        if (pull > 20 && dist > 30) {
+          aimLocked = true;
+        } else {
+          aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
+        }
+      }
+
+      if (aimLocked) {
+        // Phase 2: aim locked → pull distance controls power
+        // Remap: pull 20..200 → power 0..maxPower
+        const rawPower = (pull - 20) / 8;
+        shootPower = Math.min(Math.max(rawPower, 0), maxPower);
       }
 
       powerFill.style.width = `${(shootPower / maxPower) * 100}%`;
@@ -880,7 +891,7 @@
 
     function onPointerUp() {
       if (!isAiming) return;
-      if (shootPower > 1.5) {
+      if (shootPower > 0.5) {
         // Shoot Cue Ball
         cueBall.vx = Math.cos(aimAngle) * shootPower;
         cueBall.vy = Math.sin(aimAngle) * shootPower;
@@ -891,7 +902,9 @@
       }
 
       isAiming = false;
+      aimLocked = false;
       shootPower = 0;
+      pointerStart = null;
       powerFill.style.width = "0%";
     }
 
