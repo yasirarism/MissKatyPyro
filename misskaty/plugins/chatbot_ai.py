@@ -12,12 +12,33 @@ from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitErr
 from pyrogram import enums, filters
 from pyrogram.errors import FloodWait, MessageNotModified
 from pyrogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
     InlineQueryResultArticle,
     InputRichMessage,
     InputTextMessageContent,
     LinkPreviewOptions,
     Message,
 )
+from misskaty.helper.sosmed_helper import (
+    _build_plain_card,
+    _build_rich_card,
+    _esc,
+    _fb_keyboard,
+    _fb_plain_card,
+    _fb_rich_card,
+    _get_facebook_data,
+    _get_instagram_data,
+    _get_tiktok_data,
+    _tt_keyboard,
+    _tt_plain_card,
+    _tt_rich_card,
+    _url_keyboard,
+)
+
+RE_INSTAGRAM = re.compile(r"https?://(?:www\.)?(?:instagram\.com|instagr\.am)/[^\s]+", re.I)
+RE_TIKTOK = re.compile(r"https?://(?:(?:[a-zA-Z0-9_\-]+\.)?tiktok\.com|vt\.tiktok\.com)/[^\s]+", re.I)
+RE_FACEBOOK = re.compile(r"https?://(?:www\.|m\.|web\.)?(?:facebook\.com|fb\.watch|fb\.me)/[^\s]+", re.I)
 
 
 class _GuestInlineMessage:
@@ -42,6 +63,105 @@ class _GuestInlineMessage:
             parse_mode=enums.ParseMode.HTML,
             link_preview_options=link_preview_options,
         )
+
+    async def edit_rich(self, rich_message: InputRichMessage, reply_markup: InlineKeyboardMarkup = None, **kwargs):
+        return await self._client.edit_inline_text(
+            self.inline_message_id,
+            rich_message=rich_message,
+            reply_markup=reply_markup,
+        )
+
+    async def edit(self, text: str, reply_markup: InlineKeyboardMarkup = None, **kwargs):
+        return await self._client.edit_inline_text(
+            self.inline_message_id,
+            text=text,
+            parse_mode=enums.ParseMode.HTML,
+            reply_markup=reply_markup,
+        )
+
+
+async def _handle_guest_sosmed(client, ctx: Message, text: str) -> bool:
+    """Detect FB, IG, or TikTok links in guest prompt; render rich card if found."""
+    if not text:
+        return False
+
+    ig_match = RE_INSTAGRAM.search(text)
+    tt_match = RE_TIKTOK.search(text)
+    fb_match = RE_FACEBOOK.search(text)
+
+    if not (ig_match or tt_match or fb_match):
+        return False
+
+    if ig_match:
+        platform = "Instagram"
+        link = ig_match.group(0).rstrip(".,;!?)>]\'\"")
+        fetcher = _get_instagram_data
+        rich_builder = _build_rich_card
+        plain_builder = _build_plain_card
+        keyb_builder = _url_keyboard
+    elif tt_match:
+        platform = "TikTok"
+        link = tt_match.group(0).rstrip(".,;!?)>]\'\"")
+        fetcher = _get_tiktok_data
+        rich_builder = _tt_rich_card
+        plain_builder = _tt_plain_card
+        keyb_builder = _tt_keyboard
+    elif fb_match:
+        platform = "Facebook"
+        link = fb_match.group(0).rstrip(".,;!?)>]\'\"")
+        fetcher = _get_facebook_data
+        rich_builder = _fb_rich_card
+        plain_builder = _fb_plain_card
+        keyb_builder = _fb_keyboard
+    else:
+        return False
+
+    status_msg = await _reply_ctx(
+        client,
+        ctx,
+        f"<emoji id=5319190934510904031>⏳</emoji> <b>Processing {platform} post...</b>",
+    )
+
+    try:
+        data = await fetcher(link)
+    except Exception as e:
+        LOGGER.error("Guest %s fetch failed: %s", platform, e)
+        await status_msg.edit(f"<b>❌ Gagal mengambil data {platform}.</b>\n<code>{_esc(str(e)[:150])}</code>")
+        return True
+
+    if not data or not data.get("ok"):
+        reason = (data or {}).get("reason", "unknown")
+        detail = (data or {}).get("detail") or reason
+        if reason == "unavailable_or_private":
+            err = (
+                "<b>❌ Post tidak tersedia.</b>\n\n"
+                "Kemungkinan post private / sudah dihapus."
+            )
+        elif reason == "rate_limited":
+            err = f"<b>❌ Rate limited oleh {platform}.</b> Coba lagi nanti."
+        else:
+            err = f"<b>❌ Gagal mengambil data {platform}.</b>\n<code>{_esc(str(detail)[:200])}</code>"
+        await status_msg.edit(err)
+        return True
+
+    if not data.get("media"):
+        await status_msg.edit(f"<b>❌ Tidak ada media {platform} yang ditemukan.</b>")
+        return True
+
+    keyb = keyb_builder(data)
+    try:
+        await status_msg.edit_rich(
+            InputRichMessage(html=rich_builder(data)),
+            reply_markup=keyb,
+        )
+    except Exception as e:
+        LOGGER.warning("Guest %s edit_rich failed (%s): %s, fallback plain", platform, e.__class__.__name__, e)
+        try:
+            await status_msg.edit(plain_builder(data), reply_markup=keyb)
+        except Exception as e2:
+            LOGGER.error("Guest %s edit plain failed: %s", platform, e2)
+
+    return True
 
 
 async def _reply_ctx(client, ctx: Message, text: str, **kwargs):
@@ -362,6 +482,14 @@ async def gemini_chatbot(client, ctx: Message, strings):
     # Guest mode uses:  @BotUsername <prompt>
     if getattr(ctx, "guest_query_id", None):
         prompt = _extract_guest_prompt(ctx)
+        reply = getattr(ctx, "reply_to_message", None)
+        reply_text = (reply.text or reply.caption or "") if reply else ""
+
+        # Deteksi link sosmed (FB, IG, TikTok) di prompt atau reply text
+        sosmed_source = prompt or reply_text
+        if await _handle_guest_sosmed(client, ctx, sosmed_source):
+            return
+
         if not prompt:
             return await _reply_ctx(
                 client,
@@ -443,6 +571,13 @@ async def openai_chatbot(client, ctx: Message, strings):
     # Guest mode uses:  @BotUsername <prompt>
     if getattr(ctx, "guest_query_id", None):
         prompt = _extract_guest_prompt(ctx)
+        reply = getattr(ctx, "reply_to_message", None)
+        reply_text = (reply.text or reply.caption or "") if reply else ""
+
+        sosmed_source = prompt or reply_text
+        if await _handle_guest_sosmed(client, ctx, sosmed_source):
+            return
+
         if not prompt:
             return await _reply_ctx(
                 client,
