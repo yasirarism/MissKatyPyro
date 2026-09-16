@@ -108,6 +108,10 @@ async def get_admin_title(client: Client, chat_id: int, user_id: int):
             return "Owner"
         if member.status == ChatMemberStatus.ADMINISTRATOR:
             return getattr(member, "custom_title", "") or "Admin"
+        if member.status == ChatMemberStatus.MEMBER:
+            return "Member"
+        if member.status == ChatMemberStatus.RESTRICTED:
+            return "Member"
     except Exception:
         pass
     return ""
