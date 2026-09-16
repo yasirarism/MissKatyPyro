@@ -14,9 +14,7 @@ from pyrogram.types import (
 
 from misskaty import app
 from misskaty.core.decorator import capture_err
-from misskaty.vars import COMMAND_HANDLER
-
-BILLIARD_URL = "https://yasir-project-misskaty.jestfr.easypanel.host/billiard"
+from misskaty.vars import COMMAND_HANDLER, WEBAPP_URL
 
 __MODULE__ = "Billiard"
 __HELP__ = """
@@ -27,6 +25,9 @@ __HELP__ = """
 @app.on_message(filters.command(["billiard", "pool", "biliard"], COMMAND_HANDLER))
 @capture_err
 async def billiard_cmd(_, message: Message):
+    if not WEBAPP_URL:
+        return await message.reply("⚠️ WEBAPP_URL belum diset di environment.")
+    billiard_url = f"{WEBAPP_URL.rstrip('/')}/billiard"
     text = (
         "🎱 <b>MissKaty 8-Ball Pool Mini App</b>\n\n"
         "Mainkan game biliar langsung di dalam Telegram!\n\n"
@@ -41,7 +42,7 @@ async def billiard_cmd(_, message: Message):
             [
                 InlineKeyboardButton(
                     "🎱 Mainkan Biliar",
-                    web_app=WebAppInfo(url=BILLIARD_URL),
+                    web_app=WebAppInfo(url=billiard_url),
                 )
             ]
         ]

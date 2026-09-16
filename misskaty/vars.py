@@ -63,6 +63,7 @@ NINE_ROUTER_API_KEY = environ.get("NINE_ROUTER_API_KEY")
 NINE_ROUTER_BASE_URL = environ.get("NINE_ROUTER_BASE_URL", "https://9router.yasirweb.eu.org/v1")
 NINE_ROUTER_MODEL_AI = environ.get("NINE_ROUTER_MODEL_AI", "oc/mimo-v2.5-free")
 NINE_ROUTER_MODEL_ASK = environ.get("NINE_ROUTER_MODEL_ASK", "oc/deepseek-v4-flash-free")
+WEBAPP_URL = environ.get("WEBAPP_URL", "")
 PAYDISINI_KEY = environ.get("PAYDISINI_KEY")
 PAYDISINI_CHANNEL_ID = environ.get("PAYDISINI_CHANNEL_ID", "17")
 
