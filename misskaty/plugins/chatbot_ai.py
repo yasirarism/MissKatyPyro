@@ -6,7 +6,6 @@ import asyncio
 import html
 import re
 from logging import getLogger
-import privatebinapi
 
 from cachetools import TTLCache
 from openai import APIConnectionError, APIStatusError, AsyncOpenAI, RateLimitError
@@ -89,7 +88,7 @@ async def _edit_msg(bmsg, text: str, **kwargs):
 
 from misskaty import BOT_USERNAME, app
 from misskaty.core import pyro_cooldown
-from misskaty.helper import check_time_gap, use_chat_lang
+from misskaty.helper import check_time_gap, use_chat_lang, yasirbin
 from misskaty.vars import (
     COMMAND_HANDLER,
     NINE_ROUTER_API_KEY,
@@ -260,7 +259,7 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
     """Kirim hasil: rich message di private, edit_msg di tempat lain.
 
     Rich message punya batas 32768 char / 500 blok (Bot API); edit biasa
-    dibatasi 4096 char. Jika melampaui batas mode aktif -> privatebin.
+    dibatasi 4096 char. Jika melampaui batas mode aktif -> YasirBin.
     """
     if rich_mode:
         if not _rich_too_long(text):
@@ -270,14 +269,9 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
         if len(text) <= EDIT_MAX_CHARS:
             await _edit_msg(bmsg, text, disable_web_page_preview=True)
             return
-    answerlink = await privatebinapi.send_async(
-        "https://bin.yasirweb.eu.org",
-        text=text,
-        expiration="1week",
-        formatting="markdown",
-    )
+    answerlink = await yasirbin(text, expires="30d")
     text = strings("answers_too_long").format(
-        answerlink=answerlink.get("full_url")
+        answerlink=answerlink
     )
     if rich_mode:
         await _rich_send(client, ctx.chat.id, text)

@@ -145,6 +145,18 @@ async def rentry(teks):
     )
 
 
+async def yasirbin(content: str, expires: str = "30d") -> str:
+    """Upload text to YasirBin (https://bin.yasirweb.eu.org)."""
+    resp = await fetch.post(
+        "https://bin.yasirweb.eu.org/api/document",
+        data={"content": content, "expires": expires},
+    )
+    data = resp.json()
+    if not data.get("ok"):
+        raise Exception(data.get("message", "Failed to paste to YasirBin"))
+    return data["data"]["url"]
+
+
 def get_provider(url):
     def pretty(names):
         name = names[1]

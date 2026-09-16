@@ -4,7 +4,6 @@
 * @projectName   MissKatyPyro
 * Copyright @YasirPedia All rights reserved
 """
-import privatebinapi
 from os import remove
 from re import compile as compiles
 
@@ -12,7 +11,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
-from misskaty.helper import fetch, post_to_telegraph, rentry
+from misskaty.helper import fetch, post_to_telegraph, rentry, yasirbin
 from misskaty.vars import COMMAND_HANDLER
 
 __MODULE__ = "Paste"
@@ -185,17 +184,17 @@ async def wastepaste(_, message):
         uname = message.sender_chat.title
 
     try:
-        url = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=data, expiration="1week", formatting="markdown")
+        url = await yasirbin(data, expires="30d")
     except Exception as e:
         return await msg.edit(f"ERROR: {e}")
 
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url["full_url"])],
+        [InlineKeyboardButton("Open Link", url=url)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url['full_url']}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}"
             )
         ],
     ]

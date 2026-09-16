@@ -7,7 +7,6 @@ import os
 import hashlib
 import pickle
 import platform
-import privatebinapi
 import re
 import secrets
 import sys
@@ -60,6 +59,7 @@ from misskaty.helper.functions import extract_user, extract_user_and_reason
 from misskaty.helper.http import fetch
 from misskaty.helper.human_read import get_readable_file_size, get_readable_time
 from misskaty.helper.localization import use_chat_lang
+from misskaty.helper.tools import yasirbin
 from database.payment_db import autopay_update
 from misskaty.vars import AUTO_RESTART, COMMAND_HANDLER, LOG_CHANNEL, SUDO, OWNER_ID, PAYDISINI_CHANNEL_ID, PAYDISINI_KEY
 
@@ -153,9 +153,9 @@ async def log_file(_, ctx: Message, strings):
         try:
             with open("MissKatyLogs.txt", "r") as file:
                 content = file.read()
-            pastelog = await privatebinapi.send_async("https://bin.yasirweb.eu.org", text=content, expiration="1week", formatting="syntaxhighlighting")
+            pastelog = await yasirbin(content, expires="30d")
             await msg.edit(
-                f"<a href='{pastelog['full_url']}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
+                f"<a href='{pastelog}'>Here the Logs</a>\nlog size: {get_readable_file_size(os.path.getsize('MissKatyLogs.txt'))}"
             )
         except Exception:
             await ctx.reply_document(
