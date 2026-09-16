@@ -13,13 +13,21 @@
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
+      touch-action: none;
+      -webkit-overflow-scrolling: none;
+    }
+
+    html, body {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+      height: 100%;
     }
 
     body {
       background: radial-gradient(circle at 50% 30%, #152219 0%, #080d09 100%);
       color: #e6f4ea;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -240,6 +248,19 @@
     #status-banner.show {
       opacity: 1;
     }
+
+    /* Hint text */
+    #hint {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      pointer-events: none;
+      white-space: nowrap;
+      transition: opacity 0.3s;
+    }
   </style>
 </head>
 <body>
@@ -269,6 +290,7 @@
   <div id="canvas-container">
     <canvas id="poolCanvas"></canvas>
     <div id="status-banner">Scratch!</div>
+    <div id="hint">Sentuh & tarik dari bola putih untuk menembak</div>
   </div>
 
   <!-- Potted balls tray -->
@@ -291,6 +313,10 @@
   </footer>
 
   <script>
+    // === Prevent ALL scrolling/bouncing in Telegram WebView ===
+    document.addEventListener("touchmove", function(e) { e.preventDefault(); }, { passive: false });
+    document.addEventListener("gesturestart", function(e) { e.preventDefault(); });
+
     // === 📱 Telegram Mini App Initialization ===
     const tg = window.Telegram?.WebApp;
     if (tg) {
@@ -329,44 +355,56 @@
 
     function playSound(type, volume = 0.5) {
       try {
-        const ctx = getAudioCtx();
-        const now = ctx.currentTime;
+        const actx = getAudioCtx();
+        const now = actx.currentTime;
         if (type === "cue_hit") {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
           osc.type = "triangle";
           osc.frequency.setValueAtTime(140, now);
           osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
           gain.gain.setValueAtTime(volume * 0.8, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
           osc.connect(gain);
-          gain.connect(ctx.destination);
+          gain.connect(actx.destination);
           osc.start(now);
           osc.stop(now + 0.08);
         } else if (type === "ball_hit") {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
           osc.type = "sine";
           osc.frequency.setValueAtTime(800, now);
           osc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
           gain.gain.setValueAtTime(Math.min(volume, 0.6), now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
           osc.connect(gain);
-          gain.connect(ctx.destination);
+          gain.connect(actx.destination);
           osc.start(now);
           osc.stop(now + 0.04);
         } else if (type === "pocket") {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
           osc.type = "sine";
           osc.frequency.setValueAtTime(110, now);
           osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
           gain.gain.setValueAtTime(0.6, now);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
           osc.connect(gain);
-          gain.connect(ctx.destination);
+          gain.connect(actx.destination);
           osc.start(now);
           osc.stop(now + 0.2);
+        } else if (type === "cushion") {
+          const osc = actx.createOscillator();
+          const gain = actx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.exponentialRampToValueAtTime(80, now + 0.05);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+          osc.connect(gain);
+          gain.connect(actx.destination);
+          osc.start(now);
+          osc.stop(now + 0.05);
         }
       } catch (e) {}
     }
@@ -377,8 +415,9 @@
     const container = document.getElementById("canvas-container");
     const powerFill = document.getElementById("power-fill");
     const banner = document.getElementById("status-banner");
+    const hintEl = document.getElementById("hint");
 
-    // Table specifications (Vertical orientation: 1 width : 2 length)
+    // Table specifications
     let W = 360;
     let H = 640;
     const borderThickness = 24;
@@ -387,20 +426,21 @@
 
     const BALL_RADIUS = 9;
     const POCKET_RADIUS = 18;
-    const FRICTION = 0.988;
+    const FRICTION = 0.985;
+    const MIN_SPEED = 0.08;
 
     // Ball Colors (Standard 9-Ball)
     const BALL_DEFS = [
-      { num: 0, color: "#ffffff", stripe: false }, // Cue Ball
-      { num: 1, color: "#ffd32a", stripe: false }, // Yellow
-      { num: 2, color: "#1e90ff", stripe: false }, // Blue
-      { num: 3, color: "#ff3838", stripe: false }, // Red
-      { num: 4, color: "#8854d0", stripe: false }, // Purple
-      { num: 5, color: "#fa8231", stripe: false }, // Orange
-      { num: 6, color: "#20bf6b", stripe: false }, // Green
-      { num: 7, color: "#a55eea", stripe: false }, // Maroon
-      { num: 8, color: "#2d3436", stripe: false }, // 8-Ball Black
-      { num: 9, color: "#ffd32a", stripe: true  }, // 9-Ball Stripe
+      { num: 0, color: "#ffffff", stripe: false },
+      { num: 1, color: "#ffd32a", stripe: false },
+      { num: 2, color: "#1e90ff", stripe: false },
+      { num: 3, color: "#ff3838", stripe: false },
+      { num: 4, color: "#8854d0", stripe: false },
+      { num: 5, color: "#fa8231", stripe: false },
+      { num: 6, color: "#20bf6b", stripe: false },
+      { num: 7, color: "#a55eea", stripe: false },
+      { num: 8, color: "#2d3436", stripe: false },
+      { num: 9, color: "#ffd32a", stripe: true  },
     ];
 
     let balls = [];
@@ -408,21 +448,21 @@
     let pockets = [];
     let shotsTaken = 0;
     let ballsPotted = 0;
+    let hintShown = true;
 
-    // Aim & Shooting State
-    let isAiming = false;
-    let aimAngle = -Math.PI / 2;
-    let shootPower = 0;
-    let maxPower = 22;
-    let aimLocked = false;        // true once dragging back to charge power
-    let pointerStart = null;      // {x, y} where the drag began
+    // ===== SHOOTING STATE =====
+    // Simple drag model: touch down on/near cue ball, drag AWAY to set
+    // aim direction (opposite of drag) and power (drag distance).
+    // The cue ball shoots AWAY from where you drag your finger.
+    let isDragging = false;
+    let dragStart = null;   // canvas coords where touch began {x,y}
+    let dragCur = null;     // current drag position {x,y}
 
     function resizeCanvas() {
       const rect = container.getBoundingClientRect();
       const maxW = Math.min(rect.width - 16, 420);
       const maxH = rect.height - 12;
 
-      // Maintain ~ 1:1.8 Aspect Ratio
       let targetW = maxW;
       let targetH = targetW * 1.82;
       if (targetH > maxH) {
@@ -432,7 +472,6 @@
 
       W = Math.floor(targetW);
       H = Math.floor(targetH);
-
       canvas.width = W;
       canvas.height = H;
 
@@ -448,12 +487,12 @@
 
     function setupPockets() {
       pockets = [
-        { x: innerLeft + 2, y: innerTop + 2, r: POCKET_RADIUS },           // Top Left
-        { x: innerRight - 2, y: innerTop + 2, r: POCKET_RADIUS },          // Top Right
-        { x: innerLeft - 2, y: H / 2, r: POCKET_RADIUS },                  // Mid Left
-        { x: innerRight + 2, y: H / 2, r: POCKET_RADIUS },                 // Mid Right
-        { x: innerLeft + 2, y: innerBottom - 2, r: POCKET_RADIUS },        // Bottom Left
-        { x: innerRight - 2, y: innerBottom - 2, r: POCKET_RADIUS },       // Bottom Right
+        { x: innerLeft + 2, y: innerTop + 2, r: POCKET_RADIUS },
+        { x: innerRight - 2, y: innerTop + 2, r: POCKET_RADIUS },
+        { x: innerLeft - 2, y: H / 2, r: POCKET_RADIUS },
+        { x: innerRight + 2, y: H / 2, r: POCKET_RADIUS },
+        { x: innerLeft + 2, y: innerBottom - 2, r: POCKET_RADIUS },
+        { x: innerRight - 2, y: innerBottom - 2, r: POCKET_RADIUS },
       ];
     }
 
@@ -470,45 +509,44 @@
         this.potted = false;
       }
 
+      get speed() { return Math.hypot(this.vx, this.vy); }
+
       update() {
         if (this.potted) return;
 
         this.x += this.vx;
         this.y += this.vy;
 
-        // Friction
         this.vx *= FRICTION;
         this.vy *= FRICTION;
-        if (Math.hypot(this.vx, this.vy) < 0.05) {
+        if (this.speed < MIN_SPEED) {
           this.vx = 0;
           this.vy = 0;
         }
 
-        // Cushion Bounces
+        // Cushion bounces
         if (this.x - this.r < innerLeft) {
           this.x = innerLeft + this.r;
-          this.vx = -this.vx * 0.85;
-          triggerHaptic("light");
+          this.vx = Math.abs(this.vx) * 0.82;
+          playSound("cushion"); triggerHaptic("light");
         } else if (this.x + this.r > innerRight) {
           this.x = innerRight - this.r;
-          this.vx = -this.vx * 0.85;
-          triggerHaptic("light");
+          this.vx = -Math.abs(this.vx) * 0.82;
+          playSound("cushion"); triggerHaptic("light");
         }
-
         if (this.y - this.r < innerTop) {
           this.y = innerTop + this.r;
-          this.vy = -this.vy * 0.85;
-          triggerHaptic("light");
+          this.vy = Math.abs(this.vy) * 0.82;
+          playSound("cushion"); triggerHaptic("light");
         } else if (this.y + this.r > innerBottom) {
           this.y = innerBottom - this.r;
-          this.vy = -this.vy * 0.85;
-          triggerHaptic("light");
+          this.vy = -Math.abs(this.vy) * 0.82;
+          playSound("cushion"); triggerHaptic("light");
         }
 
         // Pocket check
         for (const p of pockets) {
-          const d = Math.hypot(this.x - p.x, this.y - p.y);
-          if (d < p.r) {
+          if (Math.hypot(this.x - p.x, this.y - p.y) < p.r) {
             this.pot();
             break;
           }
@@ -546,13 +584,13 @@
         ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
         ctx.fill();
 
-        // Ball Body
+        // Body
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         ctx.fillStyle = this.color;
         ctx.fill();
 
-        // Stripe styling if 9-ball
+        // Stripe
         if (this.stripe) {
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
@@ -561,14 +599,10 @@
           ctx.fillRect(this.x - this.r, this.y - this.r / 2, this.r * 2, this.r);
         }
 
-        // Specular highlight
+        // Specular
         const grad = ctx.createRadialGradient(
-          this.x - this.r * 0.35,
-          this.y - this.r * 0.35,
-          1,
-          this.x,
-          this.y,
-          this.r
+          this.x - this.r * 0.35, this.y - this.r * 0.35, 1,
+          this.x, this.y, this.r
         );
         grad.addColorStop(0, "rgba(255, 255, 255, 0.65)");
         grad.addColorStop(0.5, "rgba(255, 255, 255, 0)");
@@ -578,13 +612,12 @@
         ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
         ctx.fill();
 
-        // Ball Number
+        // Number
         if (this.num > 0) {
           ctx.fillStyle = "#ffffff";
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.r * 0.45, 0, Math.PI * 2);
           ctx.fill();
-
           ctx.fillStyle = "#111111";
           ctx.font = `bold ${this.r * 0.65}px sans-serif`;
           ctx.textAlign = "center";
@@ -612,21 +645,15 @@
       document.getElementById("tray-list").innerHTML = "";
       updateHUD();
 
-      // Cue Ball at head spot
       cueBall = new Ball(W / 2, innerBottom - innerH * 0.22, BALL_DEFS[0]);
       balls.push(cueBall);
 
-      // Diamond Rack for 9-Ball (Apex ball at foot spot)
       const apexX = W / 2;
       const apexY = innerTop + innerH * 0.25;
       const spacing = BALL_RADIUS * 2 + 0.5;
 
       const diamondRows = [
-        [1],
-        [2, 3],
-        [4, 9, 5],
-        [6, 7],
-        [8]
+        [1], [2, 3], [4, 9, 5], [6, 7], [8]
       ];
 
       diamondRows.forEach((row, rowIdx) => {
@@ -638,6 +665,9 @@
           if (def) balls.push(new Ball(ballX, rowY, def));
         });
       });
+
+      hintShown = true;
+      hintEl.style.opacity = "1";
     }
 
     function updateHUD() {
@@ -661,8 +691,8 @@
       setTimeout(() => banner.classList.remove("show"), 1500);
     }
 
-    function areBallsStopped() {
-      return balls.every((b) => Math.hypot(b.vx, b.vy) === 0 || b.potted);
+    function allStopped() {
+      return balls.every((b) => b.potted || (b.vx === 0 && b.vy === 0));
     }
 
     function resolveCollisions() {
@@ -675,31 +705,31 @@
           const dx = b2.x - b1.x;
           const dy = b2.y - b1.y;
           const dist = Math.hypot(dx, dy);
+          const minDist = b1.r + b2.r;
 
-          if (dist < b1.r + b2.r && dist > 0) {
-            // Overlap resolution
-            const overlap = b1.r + b2.r - dist;
+          if (dist < minDist && dist > 0) {
             const nx = dx / dist;
             const ny = dy / dist;
 
+            // Separate
+            const overlap = minDist - dist;
             b1.x -= nx * (overlap / 2);
             b1.y -= ny * (overlap / 2);
             b2.x += nx * (overlap / 2);
             b2.y += ny * (overlap / 2);
 
-            // Velocity impulse transfer
-            const kx = b1.vx - b2.vx;
-            const ky = b1.vy - b2.vy;
-            const p = 2 * (nx * kx + ny * ky) / 2;
+            // Elastic collision impulse (equal mass)
+            const dvx = b1.vx - b2.vx;
+            const dvy = b1.vy - b2.vy;
+            const dot = dvx * nx + dvy * ny;
 
-            if (p > 0) {
-              b1.vx -= p * nx;
-              b1.vy -= p * ny;
-              b2.vx += p * nx;
-              b2.vy += p * ny;
+            if (dot > 0) {
+              b1.vx -= dot * nx;
+              b1.vy -= dot * ny;
+              b2.vx += dot * nx;
+              b2.vy += dot * ny;
 
-              const hitSpeed = Math.hypot(p * nx, p * ny);
-              playSound("ball_hit", Math.min(hitSpeed / 10, 0.7));
+              playSound("ball_hit", Math.min(dot / 10, 0.7));
               triggerHaptic("light");
             }
           }
@@ -707,43 +737,36 @@
       }
     }
 
-    // === 🎨 Table & Cushion Rendering ===
+    // === 🎨 Table Rendering ===
     function drawTable() {
       ctx.clearRect(0, 0, W, H);
 
-      // Wooden Rail Outer Border
       ctx.fillStyle = "#2c1808";
       ctx.fillRect(0, 0, W, H);
-
-      // Rail Inset Detail
       ctx.fillStyle = "#1e1005";
       ctx.fillRect(4, 4, W - 8, H - 8);
 
-      // Green Felt Surface
       const feltGrad = ctx.createRadialGradient(W / 2, H / 2, 80, W / 2, H / 2, H / 1.4);
       feltGrad.addColorStop(0, "#0e6b30");
       feltGrad.addColorStop(1, "#07481f");
       ctx.fillStyle = feltGrad;
       ctx.fillRect(innerLeft, innerTop, innerW, innerH);
 
-      // Table markings (Head string line & spots)
+      // Head string
       ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
       ctx.lineWidth = 1;
-      const headStringY = innerBottom - innerH * 0.22;
+      const headY = innerBottom - innerH * 0.22;
       ctx.beginPath();
-      ctx.moveTo(innerLeft, headStringY);
-      ctx.lineTo(innerRight, headStringY);
+      ctx.moveTo(innerLeft, headY);
+      ctx.lineTo(innerRight, headY);
       ctx.stroke();
 
       // Pockets
       pockets.forEach((p) => {
-        // Pocket hole
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fillStyle = "#050705";
         ctx.fill();
-
-        // Metallic Rim
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r + 2, 0, Math.PI * 2);
         ctx.strokeStyle = "#4d3928";
@@ -752,26 +775,39 @@
       });
     }
 
-    // === 🎯 Aim Guide Line & Cue Stick ===
-    function drawAimGuide() {
-      if (!isAiming || !areBallsStopped() || cueBall.potted) return;
+    // === 🎯 Drag Aim & Cue Stick ===
+    function drawDragAim() {
+      if (!isDragging || !dragStart || !dragCur || cueBall.potted) return;
 
-      const cos = Math.cos(aimAngle);
-      const sin = Math.sin(aimAngle);
+      const dx = dragCur.x - cueBall.x;
+      const dy = dragCur.y - cueBall.y;
+      const dragDist = Math.hypot(dx, dy);
 
-      // Calculate first collision along aim trajectory
+      if (dragDist < 5) return;
+
+      // Shoot direction = OPPOSITE of drag direction (pull back = shoot forward)
+      const shootAngle = Math.atan2(-dy, -dx);
+      const cos = Math.cos(shootAngle);
+      const sin = Math.sin(shootAngle);
+
+      // Power from drag distance
+      const power = Math.min(dragDist / 12, 22);
+      const powerPct = Math.min(power / 22, 1);
+      powerFill.style.width = `${powerPct * 100}%`;
+
+      // === Trajectory line (in shoot direction) ===
       let closestDist = 400;
       let targetHit = null;
 
       balls.forEach((b) => {
         if (b === cueBall || b.potted) return;
-        const dx = b.x - cueBall.x;
-        const dy = b.y - cueBall.y;
-        const proj = dx * cos + dy * sin;
+        const bx = b.x - cueBall.x;
+        const by = b.y - cueBall.y;
+        const proj = bx * cos + by * sin;
         if (proj > 0) {
-          const perpDist = Math.abs(-sin * dx + cos * dy);
-          if (perpDist < BALL_RADIUS * 2) {
-            const hitDist = proj - Math.sqrt(Math.max(0, (BALL_RADIUS * 2) ** 2 - perpDist ** 2));
+          const perp = Math.abs(-sin * bx + cos * by);
+          if (perp < BALL_RADIUS * 2) {
+            const hitDist = proj - Math.sqrt(Math.max(0, (BALL_RADIUS * 2) ** 2 - perp ** 2));
             if (hitDist > 0 && hitDist < closestDist) {
               closestDist = hitDist;
               targetHit = b;
@@ -780,8 +816,9 @@
         }
       });
 
-      // Laser trajectory line
       ctx.save();
+
+      // Laser line
       ctx.setLineDash([4, 4]);
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
@@ -790,7 +827,7 @@
       ctx.lineTo(cueBall.x + cos * closestDist, cueBall.y + sin * closestDist);
       ctx.stroke();
 
-      // Ghost Ball at impact
+      // Ghost ball
       const ghostX = cueBall.x + cos * closestDist;
       const ghostY = cueBall.y + sin * closestDist;
       ctx.setLineDash([]);
@@ -800,26 +837,33 @@
       ctx.lineWidth = 1.2;
       ctx.stroke();
 
-      // Deflected trajectory of target ball
+      // Target ball deflection
       if (targetHit) {
         const tnx = targetHit.x - ghostX;
         const tny = targetHit.y - ghostY;
-        const tdist = Math.hypot(tnx, tny);
-        if (tdist > 0) {
+        const td = Math.hypot(tnx, tny);
+        if (td > 0) {
           ctx.strokeStyle = "rgba(255, 211, 42, 0.7)";
+          ctx.setLineDash([3, 3]);
           ctx.beginPath();
           ctx.moveTo(targetHit.x, targetHit.y);
-          ctx.lineTo(targetHit.x + (tnx / tdist) * 60, targetHit.y + (tny / tdist) * 60);
+          ctx.lineTo(targetHit.x + (tnx / td) * 60, targetHit.y + (tny / td) * 60);
           ctx.stroke();
         }
       }
 
-      // Cue Stick
-      const stickDist = BALL_RADIUS + 10 + shootPower * 2.5;
-      const stickStartX = cueBall.x - cos * stickDist;
-      const stickStartY = cueBall.y - sin * stickDist;
-      const stickEndX = cueBall.x - cos * (stickDist + 160);
-      const stickEndY = cueBall.y - sin * (stickDist + 160);
+      // === Cue Stick (on the drag side, i.e. behind the cue ball) ===
+      ctx.setLineDash([]);
+      const stickGap = BALL_RADIUS + 6 + powerPct * 40; // pulls back with power
+      const stickLen = 160;
+      // Stick points from cue ball towards drag direction (opposite of shoot)
+      const stickAngle = Math.atan2(dy, dx);
+      const sc = Math.cos(stickAngle);
+      const ss = Math.sin(stickAngle);
+      const stickStartX = cueBall.x + sc * stickGap;
+      const stickStartY = cueBall.y + ss * stickGap;
+      const stickEndX = cueBall.x + sc * (stickGap + stickLen);
+      const stickEndY = cueBall.y + ss * (stickGap + stickLen);
 
       ctx.lineWidth = 4.5;
       ctx.lineCap = "round";
@@ -833,11 +877,19 @@
       ctx.lineTo(stickEndX, stickEndY);
       ctx.stroke();
 
+      // White tip
+      ctx.lineWidth = 4.5;
+      ctx.strokeStyle = "#e8dcc8";
+      ctx.beginPath();
+      ctx.moveTo(stickStartX, stickStartY);
+      ctx.lineTo(stickStartX + sc * 4, stickStartY + ss * 4);
+      ctx.stroke();
+
       ctx.restore();
     }
 
     // === 🎮 Touch & Mouse Interaction ===
-    function getPointerPos(e) {
+    function getCanvasPos(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -847,92 +899,100 @@
       };
     }
 
-    function onPointerDown(e) {
-      if (!areBallsStopped() || cueBall.potted) return;
-      const pos = getPointerPos(e);
-      isAiming = true;
-      aimLocked = false;
-      shootPower = 0;
-      pointerStart = { x: pos.x, y: pos.y };
-      // Initial aim direction: FROM cue ball TOWARD touch point
-      aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
+    function onDown(e) {
+      e.preventDefault();
+      if (!allStopped() || cueBall.potted) return;
+
+      const pos = getCanvasPos(e);
+
+      // Must start touch near the cue ball (within 40px canvas)
+      const distToCue = Math.hypot(pos.x - cueBall.x, pos.y - cueBall.y);
+      if (distToCue > 45) return;
+
+      isDragging = true;
+      dragStart = { x: pos.x, y: pos.y };
+      dragCur = { x: pos.x, y: pos.y };
+
+      // Hide hint after first interaction
+      if (hintShown) {
+        hintShown = false;
+        hintEl.style.opacity = "0";
+      }
     }
 
-    function onPointerMove(e) {
-      if (!isAiming) return;
-      const pos = getPointerPos(e);
+    function onMove(e) {
+      e.preventDefault();
+      if (!isDragging) return;
+      dragCur = getCanvasPos(e);
+    }
 
-      const dx = pos.x - cueBall.x;
-      const dy = pos.y - cueBall.y;
-      const dist = Math.hypot(dx, dy);
+    function onUp(e) {
+      e.preventDefault();
+      if (!isDragging) return;
 
-      // "pull" = how far the pointer is behind the cue ball (opposite of aim)
-      const pull = -(dx * Math.cos(aimAngle) + dy * Math.sin(aimAngle));
+      if (dragCur && !cueBall.potted) {
+        const dx = dragCur.x - cueBall.x;
+        const dy = dragCur.y - cueBall.y;
+        const dragDist = Math.hypot(dx, dy);
 
-      if (!aimLocked) {
-        // Phase 1: dragging freely → update aim direction
-        // Lock from aim to pull-back once user clearly drags behind cue ball
-        if (pull > 20 && dist > 30) {
-          aimLocked = true;
-        } else {
-          aimAngle = Math.atan2(pos.y - cueBall.y, pos.x - cueBall.x);
+        if (dragDist > 10) {
+          // Shoot OPPOSITE of drag direction
+          const power = Math.min(dragDist / 12, 22);
+          const shootAngle = Math.atan2(-dy, -dx);
+
+          cueBall.vx = Math.cos(shootAngle) * power;
+          cueBall.vy = Math.sin(shootAngle) * power;
+          shotsTaken++;
+          updateHUD();
+          playSound("cue_hit", power / 22);
+          triggerHaptic("medium");
         }
       }
 
-      if (aimLocked) {
-        // Phase 2: aim locked → pull distance controls power
-        // Remap: pull 20..200 → power 0..maxPower
-        const rawPower = (pull - 20) / 8;
-        shootPower = Math.min(Math.max(rawPower, 0), maxPower);
-      }
-
-      powerFill.style.width = `${(shootPower / maxPower) * 100}%`;
-    }
-
-    function onPointerUp() {
-      if (!isAiming) return;
-      if (shootPower > 0.5) {
-        // Shoot Cue Ball
-        cueBall.vx = Math.cos(aimAngle) * shootPower;
-        cueBall.vy = Math.sin(aimAngle) * shootPower;
-        shotsTaken++;
-        updateHUD();
-        playSound("cue_hit", shootPower / maxPower);
-        triggerHaptic("medium");
-      }
-
-      isAiming = false;
-      aimLocked = false;
-      shootPower = 0;
-      pointerStart = null;
+      isDragging = false;
+      dragStart = null;
+      dragCur = null;
       powerFill.style.width = "0%";
     }
 
-    canvas.addEventListener("mousedown", onPointerDown);
-    window.addEventListener("mousemove", onPointerMove);
-    window.addEventListener("mouseup", onPointerUp);
+    // Touch events on canvas
+    canvas.addEventListener("touchstart", onDown, { passive: false });
+    canvas.addEventListener("touchmove", onMove, { passive: false });
+    canvas.addEventListener("touchend", onUp, { passive: false });
+    canvas.addEventListener("touchcancel", onUp, { passive: false });
 
-    canvas.addEventListener("touchstart", (e) => { e.preventDefault(); onPointerDown(e); }, { passive: false });
-    window.addEventListener("touchmove", (e) => { onPointerMove(e); });
-    window.addEventListener("touchend", onPointerUp);
+    // Mouse events for desktop testing
+    canvas.addEventListener("mousedown", onDown);
+    canvas.addEventListener("mousemove", onMove);
+    canvas.addEventListener("mouseup", onUp);
 
-    document.getElementById("btn-rerack").addEventListener("click", () => {
+    // Rerack button — both click and touch
+    const rerackBtn = document.getElementById("btn-rerack");
+    rerackBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      initGame();
+      triggerHaptic("medium");
+    });
+    rerackBtn.addEventListener("touchend", (e) => {
+      e.preventDefault();
       initGame();
       triggerHaptic("medium");
     });
 
-    window.addEventListener("resize", () => {
-      resizeCanvas();
-    });
+    window.addEventListener("resize", resizeCanvas);
 
     // === 🔄 Main Loop ===
     function loop() {
-      balls.forEach((b) => b.update());
-      resolveCollisions();
+      // Physics substeps for stability
+      const steps = 2;
+      for (let s = 0; s < steps; s++) {
+        balls.forEach((b) => b.update());
+        resolveCollisions();
+      }
 
       drawTable();
       balls.forEach((b) => b.draw());
-      drawAimGuide();
+      drawDragAim();
 
       requestAnimationFrame(loop);
     }
