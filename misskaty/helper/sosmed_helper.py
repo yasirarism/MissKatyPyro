@@ -410,17 +410,21 @@ def _build_rich_card(data: dict) -> str:
 
 def _build_plain_card(data: dict) -> str:
     owner = data.get("owner", "-")
-    verified = " ✔️" if data.get("verified") else ""
+    verified = " <emoji id=\"5805532930662996322\">✔️</emoji>" if data.get("verified") else ""
     media = data.get("media") or []
     n_video = data.get("n_video", 0)
-    head = f"❤️ {_fmt_num(data.get('likes', 0))} • 💬 {_fmt_num(data.get('comments', 0))} • 🖼 {len(media)}"
+    head = (
+        f"<emoji id=\"5994453058656931434\">❤️</emoji> {_fmt_num(data.get('likes', 0))} • "
+        f"<emoji id=\"5886436057091673541\">💬</emoji> {_fmt_num(data.get('comments', 0))} • "
+        f"<emoji id=\"5843506780931363129\">🖼</emoji> {len(media)}"
+    )
     if n_video:
         head += f" ({n_video} video)"
-    lines = [f"📸 <b>@{_esc(owner)}</b>{verified}", head]
+    lines = [f"<emoji id=\"5206383450977750405\">📸</emoji> <b>@{_esc(owner)}</b>{verified}", head]
     meta = data.get("video_meta") or {}
     if meta:
         bits = [f"{k}: {v}" for k, v in meta.items()]
-        lines.append("🎬 " + " • ".join(bits))
+        lines.append("<emoji id=\"6005986106703613755\">🎬</emoji> " + " • ".join(bits))
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > 900:
@@ -645,15 +649,15 @@ def _tt_plain_card(data: dict) -> str:
     counts = data.get("counts") or {}
     bits = []
     if counts.get("views"):
-        bits.append(f"👁 {_tt_fmt_num(counts['views'])}")
+        bits.append(f"<emoji id=\"5960714428394507968\">👁</emoji> {_tt_fmt_num(counts['views'])}")
     if counts.get("likes"):
-        bits.append(f"❤️ {_tt_fmt_num(counts['likes'])}")
+        bits.append(f"<emoji id=\"5994453058656931434\">❤️</emoji> {_tt_fmt_num(counts['likes'])}")
     if counts.get("comments"):
-        bits.append(f"💬 {_tt_fmt_num(counts['comments'])}")
-    lines = [f"🎵 <b>{_esc(data.get('owner') or 'TikTok')}</b>", " • ".join(bits) or "—"]
+        bits.append(f"<emoji id=\"5886436057091673541\">💬</emoji> {_tt_fmt_num(counts['comments'])}")
+    lines = [f"<emoji id=\"5206421491503088521\">🎵</emoji> <b>{_esc(data.get('owner') or 'TikTok')}</b>", " • ".join(bits) or "—"]
     meta = data.get("video_meta") or {}
     if meta:
-        lines.append("🎬 " + " • ".join(f"{k}: {v}" for k, v in meta.items()))
+        lines.append("<emoji id=\"6005986106703613755\">🎬</emoji> " + " • ".join(f"{k}: {v}" for k, v in meta.items()))
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > 900:
@@ -1104,16 +1108,19 @@ def _fb_rich_card(data: dict) -> str:
 
 
 def _fb_plain_card(data: dict) -> str:
+    owner = data.get("owner") or "Facebook"
     counts = data.get("counts") or {}
     bits = []
     if "reactions" in counts:
-        bits.append(f"👍 {_fmt_num(counts['reactions'])}")
+        bits.append(f"<emoji id=\"5992199545151295755\">👍</emoji> {_fmt_num(counts['reactions'])}")
     if "comments" in counts:
-        bits.append(f"💬 {_fmt_num(counts['comments'])}")
+        bits.append(f"<emoji id=\"5886436057091673541\">💬</emoji> {_fmt_num(counts['comments'])}")
+    if "shares" in counts:
+        bits.append(f"<emoji id=\"5877468380125990242\">↗️</emoji> {_fmt_num(counts['shares'])}")
     if data.get("views"):
-        bits.append(f"👁 {_fmt_num(data['views'])}")
-    bits.append(f"🖼 {len(data.get('media') or [])}")
-    lines = [f"📘 <b>{_esc(data.get('owner') or 'Facebook')}</b>", " • ".join(bits)]
+        bits.append(f"<emoji id=\"5960714428394507968\">👁</emoji> {_fmt_num(data['views'])}")
+    bits.append(f"<emoji id=\"5843506780931363129\">🖼</emoji> {len(data.get('media') or [])}")
+    lines = [f"<emoji id=\"5206488346964018944\">📘</emoji> <b>{_esc(owner)}</b>", " • ".join(bits)]
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > 900:
