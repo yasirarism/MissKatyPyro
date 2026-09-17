@@ -1,6 +1,7 @@
 import re
 from math import ceil
 
+from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton
 
 from misskaty import HELPABLE, MOD_LOAD, MOD_NOLOAD
@@ -64,13 +65,13 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
         pairs = pairs[modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)] + [
             (
                 EqInlineKeyboardButton(
-                    "❮", callback_data=f"{prefix}_prev({modulo_page})"
+                    "❮", callback_data=f"{prefix}_prev({modulo_page})", style=enums.ButtonStyle.PRIMARY
                 ),
                 EqInlineKeyboardButton(
-                    "Back", callback_data=f"{prefix}_home({modulo_page})"
+                    "Back", callback_data=f"{prefix}_home({modulo_page})", style=enums.ButtonStyle.DANGER
                 ),
                 EqInlineKeyboardButton(
-                    "❯", callback_data=f"{prefix}_next({modulo_page})"
+                    "❯", callback_data=f"{prefix}_next({modulo_page})", style=enums.ButtonStyle.PRIMARY
                 ),
             )
         ]
@@ -78,7 +79,7 @@ def paginate_modules(page_n, module_dict, prefix, chat=None):
         pairs = pairs[modulo_page * COLUMN_SIZE : COLUMN_SIZE * (modulo_page + 1)] + [
             (
                 EqInlineKeyboardButton(
-                    "Back", callback_data=f"{prefix}_home({modulo_page})"
+                    "Back", callback_data=f"{prefix}_home({modulo_page})", style=enums.ButtonStyle.DANGER
                 ),
             )
         ]
@@ -117,7 +118,7 @@ def build_help_table(help_text: str, *, title: str = "") -> str:
         f"<tr><td><code>{cmd}</code></td><td>{desc or '—'}</td></tr>\n"
         for cmd, desc in pairs
     )
-    cap = f"<caption>📋 {title}</caption>\n" if title else ""
+    cap = f"<caption><tg-emoji emoji-id=\"5877597667231534929\">📋</tg-emoji> {title}</caption>\n" if title else ""
     return (
         f"<table bordered striped>\n{cap}"
         f"<tr><th>Command</th><th>Description</th></tr>\n"
@@ -147,7 +148,7 @@ def build_module_list_table() -> str:
         )
     return (
         "<table bordered striped>\n"
-        "<caption>📚 Semua Module</caption>\n"
+        "<caption><tg-emoji emoji-id=\"5875462364110787088\">🗂</tg-emoji> Semua Module</caption>\n"
         "<tr><td><b>Module</b></td><td><b>Description</b></td></tr>\n"
         + "".join(rows)
         + "</table>"

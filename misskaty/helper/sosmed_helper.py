@@ -8,6 +8,7 @@ from datetime import datetime
 from logging import getLogger
 from urllib.parse import urlparse
 
+from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty.helper.pyro_progress import progress_for_pyrogram
@@ -29,7 +30,7 @@ ACTIVE_TG_DOWNLOADS = {}
 
 def _tg_download_cancel_markup(message_id, user_id):
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton("❌ Cancel", callback_data=f"tgdl_cancel#{message_id}#{user_id}")]]
+        [[InlineKeyboardButton("❌ Cancel", callback_data=f"tgdl_cancel#{message_id}#{user_id}", style=enums.ButtonStyle.DANGER)]]
     )
 
 
@@ -342,7 +343,7 @@ def _build_video_details(data: dict) -> str:
     n_video = data.get("n_video", 1)
     rows = []
     if meta.get("duration"):
-        rows.append(f"<p>⏱ <b>Durasi:</b> {meta['duration']}</p>")
+        rows.append(f"<p><tg-emoji emoji-id=\"5900104897885376843\">⏱</tg-emoji> <b>Durasi:</b> {meta['duration']}</p>")
     if meta.get("resolution"):
         rows.append(f"<p>📐 <b>Resolusi:</b> {meta['resolution']}</p>")
     if meta.get("qualities"):
@@ -350,10 +351,10 @@ def _build_video_details(data: dict) -> str:
     if meta.get("codec"):
         rows.append(f"<p>🎞 <b>Codec:</b> {meta['codec']}</p>")
     if meta.get("audio"):
-        rows.append(f"<p>🔊 <b>Audio:</b> {meta['audio']}</p>")
+        rows.append(f"<p><tg-emoji emoji-id=\"5890997763331591703\">🔊</tg-emoji> <b>Audio:</b> {meta['audio']}</p>")
     if not rows:
         return ""
-    label = f"🎬 Metadata Video ({n_video} video)" if n_video > 1 else "🎬 Metadata Video"
+    label = f"<tg-emoji emoji-id=\"6005986106703613755\">🎬</tg-emoji> Metadata Video ({n_video} video)" if n_video > 1 else "<tg-emoji emoji-id=\"6005986106703613755\">🎬</tg-emoji> Metadata Video"
     return f"<details><summary>{label}</summary>{''.join(rows)}</details>"
 
 
@@ -372,7 +373,7 @@ def _build_rich_card(data: dict) -> str:
     slideshow = _build_slideshow(data)
     if slideshow:
         parts.append(slideshow)
-    who = f"📸 <b>@{_esc(owner)}</b>{verified}"
+    who = f"<tg-emoji emoji-id=\"5206383450977750405\">📸</tg-emoji> <b>@{_esc(owner)}</b>{verified}"
     if full:
         who += f" · {_esc(full)}"
     parts.append(f"<p>{who}</p>")
@@ -385,10 +386,10 @@ def _build_rich_card(data: dict) -> str:
         media_label += f", {n_video} video"
     parts.append(
         "<table bordered striped>"
-        f"<tr><td>❤️ Likes</td><td><b>{_fmt_num(data.get('likes', 0))}</b></td></tr>"
-        f"<tr><td>💬 Komentar</td><td><b>{_fmt_num(data.get('comments', 0))}</b></td></tr>"
-        f"<tr><td>🖼 Media</td><td><b>{media_label}</b></td></tr>"
-        f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>"
+        f"<tr><td><tg-emoji emoji-id=\"5994453058656931434\">❤️</tg-emoji> Likes</td><td><b>{_fmt_num(data.get('likes', 0))}</b></td></tr>"
+        f"<tr><td><tg-emoji emoji-id=\"5886436057091673541\">💬</tg-emoji> Komentar</td><td><b>{_fmt_num(data.get('comments', 0))}</b></td></tr>"
+        f"<tr><td><tg-emoji emoji-id=\"5843506780931363129\">🖼</tg-emoji> Media</td><td><b>{media_label}</b></td></tr>"
+        f"<tr><td><tg-emoji emoji-id=\"5967412305338568701\">📅</tg-emoji> Tanggal</td><td>{date_disp}</td></tr>"
         "</table>"
     )
 
@@ -436,6 +437,7 @@ def _url_keyboard(data: dict) -> InlineKeyboardMarkup:
                 InlineKeyboardButton(
                     "🔗 Buka di Instagram",
                     url=f"https://www.instagram.com/p/{data.get('shortcode', '')}/",
+                    style=enums.ButtonStyle.PRIMARY,
                 )
             ]
         ]
@@ -591,24 +593,24 @@ def _tt_rich_card(data: dict) -> str:
             f"<figcaption>@{_esc(username) or _esc(owner)} · {label}</figcaption></tg-slideshow>"
         )
 
-    parts.append(f"<p>🎵 <b>{_esc(owner)}</b>{verified}</p>")
+    parts.append(f"<p><tg-emoji emoji-id=\"5206421491503088521\">🎵</tg-emoji> <b>{_esc(owner)}</b>{verified}</p>")
 
     rows = []
     if counts.get("views"):
-        rows.append(f"<tr><td>👁 Tayangan</td><td><b>{_tt_fmt_num(counts['views'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5960714428394507968\">👁</tg-emoji> Tayangan</td><td><b>{_tt_fmt_num(counts['views'])}</b></td></tr>")
     if counts.get("likes"):
-        rows.append(f"<tr><td>❤️ Suka</td><td><b>{_tt_fmt_num(counts['likes'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5994453058656931434\">❤️</tg-emoji> Suka</td><td><b>{_tt_fmt_num(counts['likes'])}</b></td></tr>")
     if counts.get("comments"):
-        rows.append(f"<tr><td>💬 Komentar</td><td><b>{_tt_fmt_num(counts['comments'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5886436057091673541\">💬</tg-emoji> Komentar</td><td><b>{_tt_fmt_num(counts['comments'])}</b></td></tr>")
     if counts.get("shares"):
-        rows.append(f"<tr><td>🔁 Dibagikan</td><td><b>{_tt_fmt_num(counts['shares'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5877468380125990242\">↗️</tg-emoji> Dibagikan</td><td><b>{_tt_fmt_num(counts['shares'])}</b></td></tr>")
     if counts.get("saves"):
-        rows.append(f"<tr><td>🔖 Disimpan</td><td><b>{_tt_fmt_num(counts['saves'])}</b></td></tr>")
-    rows.append(f"<tr><td>🖼 Media</td><td><b>{len(media)}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5985433648810171091\">🏷</tg-emoji> Disimpan</td><td><b>{_tt_fmt_num(counts['saves'])}</b></td></tr>")
+    rows.append(f"<tr><td><tg-emoji emoji-id=\"5843506780931363129\">🖼</tg-emoji> Media</td><td><b>{len(media)}</b></td></tr>")
     if date_disp != "-":
-        rows.append(f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5967412305338568701\">📅</tg-emoji> Tanggal</td><td>{date_disp}</td></tr>")
     if username:
-        rows.append(f"<tr><td>👤 Akun</td><td>@{_esc(username)}</td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5879770735999717115\">👤</tg-emoji> Akun</td><td>@{_esc(username)}</td></tr>")
     parts.append("<table bordered striped>" + "".join(rows) + "</table>")
 
     meta = data.get("video_meta")
@@ -663,7 +665,9 @@ def _tt_plain_card(data: dict) -> str:
 
 def _tt_keyboard(data: dict) -> InlineKeyboardMarkup:
     link = data.get("permalink") or "https://www.tiktok.com"
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Buka di TikTok", url=link)]])
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton("🔗 Buka di TikTok", url=link, style=enums.ButtonStyle.PRIMARY)]]
+    )
 
 
 async def _get_tiktok_data(link: str) -> dict:
@@ -1051,20 +1055,20 @@ def _fb_rich_card(data: dict) -> str:
         label = f"{len(media)} media" if len(media) > 1 else "1 media"
         parts.append(f"<tg-slideshow>{''.join(items)}<figcaption>{_esc(owner)} · {label}</figcaption></tg-slideshow>")
 
-    parts.append(f"<p>📘 <b>{_esc(owner)}</b></p>")
+    parts.append(f"<p><tg-emoji emoji-id=\"5206488346964018944\">📘</tg-emoji> <b>{_esc(owner)}</b></p>")
 
     rows = []
     if "reactions" in counts:
-        rows.append(f"<tr><td>👍 Reaksi</td><td><b>{_fmt_num(counts['reactions'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5992199545151295755\">👍</tg-emoji> Reaksi</td><td><b>{_fmt_num(counts['reactions'])}</b></td></tr>")
     if "comments" in counts:
-        rows.append(f"<tr><td>💬 Komentar</td><td><b>{_fmt_num(counts['comments'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5886436057091673541\">💬</tg-emoji> Komentar</td><td><b>{_fmt_num(counts['comments'])}</b></td></tr>")
     if "shares" in counts:
-        rows.append(f"<tr><td>🔁 Dibagikan</td><td><b>{_fmt_num(counts['shares'])}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5877468380125990242\">↗️</tg-emoji> Dibagikan</td><td><b>{_fmt_num(counts['shares'])}</b></td></tr>")
     if data.get("views"):
-        rows.append(f"<tr><td>👁 Tayangan</td><td><b>{_fmt_num(data['views'])}</b></td></tr>")
-    rows.append(f"<tr><td>🖼 Media</td><td><b>{len(media)}</b></td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5960714428394507968\">👁</tg-emoji> Tayangan</td><td><b>{_fmt_num(data['views'])}</b></td></tr>")
+    rows.append(f"<tr><td><tg-emoji emoji-id=\"5843506780931363129\">🖼</tg-emoji> Media</td><td><b>{len(media)}</b></td></tr>")
     if date_disp != "-":
-        rows.append(f"<tr><td>📅 Tanggal</td><td>{date_disp}</td></tr>")
+        rows.append(f"<tr><td><tg-emoji emoji-id=\"5967412305338568701\">📅</tg-emoji> Tanggal</td><td>{date_disp}</td></tr>")
     if not any(k in counts for k in ("reactions", "comments", "shares")):
         hint = (
             "0 / tidak terlihat oleh akun ini"
@@ -1121,4 +1125,6 @@ def _fb_plain_card(data: dict) -> str:
 
 def _fb_keyboard(data: dict) -> InlineKeyboardMarkup:
     url = data.get("permalink") or "https://www.facebook.com"
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🔗 Buka di Facebook", url=url)]])
+    return InlineKeyboardMarkup(
+        [[InlineKeyboardButton("🔗 Buka di Facebook", url=url, style=enums.ButtonStyle.PRIMARY)]]
+    )

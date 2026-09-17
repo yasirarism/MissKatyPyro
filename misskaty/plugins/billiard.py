@@ -4,7 +4,7 @@
 * @projectName   MissKatyPyro
 * Copyright @YasirPedia All rights reserved
 """
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -29,7 +29,7 @@ async def billiard_cmd(_, message: Message):
         return await message.reply("⚠️ WEBAPP_URL belum diset di environment.")
     billiard_url = f"{WEBAPP_URL.rstrip('/')}/billiard"
     text = (
-        "🎱 <b>MissKaty 8-Ball Pool Mini App</b>\n\n"
+        "<emoji id=\"5935847413859225147\">🎱</emoji> <b>MissKaty 8-Ball Pool Mini App</b>\n\n"
         "Mainkan game biliar langsung di dalam Telegram!\n\n"
         "• <b>Fisika 2D Realistis</b>: Tubrukan antar-bola & pantulan ban meja\n"
         "• <b>Aim & Laser Guide</b>: Garis bidik presisi + ghost ball projection\n"
@@ -43,6 +43,7 @@ async def billiard_cmd(_, message: Message):
                 InlineKeyboardButton(
                     "🎱 Mainkan Biliar",
                     web_app=WebAppInfo(url=billiard_url),
+                    style=enums.ButtonStyle.SUCCESS,
                 )
             ]
         ]

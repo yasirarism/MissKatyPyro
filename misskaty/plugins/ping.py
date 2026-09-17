@@ -26,11 +26,14 @@ PING_LOCK = Lock()
 async def ping(_, ctx: Message):
     currentTime = get_readable_time(time.time() - botStartTime)
     start_t = time.time()
-    rm = await ctx.reply("🐱 Pong!!...")
+    rm = await ctx.reply("<emoji id=\"5474618190271104037\">🐱</emoji> Pong!!...")
     end_t = time.time()
     time_taken_s = round(end_t - start_t, 3)
     await rm.edit(
-        f"<b>🐈 MissKatyBot {misskaty_version} based Pyrogram {pyrover} Online.</b>\n\n<b>Ping:</b> <code>{time_taken_s} detik</code>\n<b>Uptime:</b> <code>{currentTime}</code>\n<b>Python Version:</b> <code>{platform.python_version()}</code>"
+        f"<b><emoji id=\"5474618190271104037\">🐱</emoji> MissKatyBot {misskaty_version} based Pyrogram {pyrover} Online.</b>\n\n"
+        f"<b><emoji id=\"5877613700344450910\">⏲</emoji> Ping:</b> <code>{time_taken_s} detik</code>\n"
+        f"<b><emoji id=\"5877410604225924969\">🔄</emoji> Uptime:</b> <code>{currentTime}</code>\n"
+        f"<b><emoji id=\"5260480440971570446\">💻</emoji> Python:</b> <code>{platform.python_version()}</code>"
     )
 
 

@@ -12,7 +12,7 @@ from time import time
 from uuid import uuid4
 
 from PIL import Image
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.enums import ParseMode
 from pyrogram.errors import (
     MessageIdInvalid,
@@ -294,7 +294,7 @@ def quality_markup(cache_key: str, tree: dict) -> InlineKeyboardMarkup:
         if size_hint:
             label += f" ({humanbytes(size_hint)})"
         rows.append([InlineKeyboardButton(label, callback_data=f"yt_res|{cache_key}|{res}")])
-    rows.append([InlineKeyboardButton("🎧 Audio AAC", callback_data=f"yt_audio|{cache_key}")])
+    rows.append([InlineKeyboardButton("🎧 Audio AAC", callback_data=f"yt_audio|{cache_key}", style=enums.ButtonStyle.SUCCESS)])
     return InlineKeyboardMarkup(rows)
 
 
@@ -321,7 +321,7 @@ async def ytsearch(_, ctx: Message, strings):
     btn = InlineKeyboardMarkup(
         [
             [InlineKeyboardButton(f"1/{len(results)}", callback_data=f"ytdl_scroll|{search_key}|0")],
-            [InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{search_key}|0")],
+            [InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{search_key}|0", style=enums.ButtonStyle.SUCCESS)],
         ]
     )
     await ctx.reply_photo(await get_ytthumb(i.get("id")), caption=out, reply_markup=btn, parse_mode=ParseMode.HTML)
@@ -417,7 +417,7 @@ async def ytdl_pick_step(_, cq: CallbackQuery, strings):
             if opt.get("size"):
                 label += f" • {humanbytes(opt['size'])}"
             rows.append([InlineKeyboardButton(label, callback_data=f"yt_dl|{cache_key}|v|{res}|{idx}")])
-        rows.append([InlineKeyboardButton("⬅️ Back", callback_data=f"yt_back|{cache_key}")])
+        rows.append([InlineKeyboardButton("⬅️ Back", callback_data=f"yt_back|{cache_key}", style=enums.ButtonStyle.PRIMARY)])
         return await cq.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(rows))
 
     rows = []
@@ -426,7 +426,7 @@ async def ytdl_pick_step(_, cq: CallbackQuery, strings):
         if opt.get("size"):
             label += f" • {humanbytes(opt['size'])}"
         rows.append([InlineKeyboardButton(label, callback_data=f"yt_dl|{cache_key}|a|{opt['bitrate']}")])
-    rows.append([InlineKeyboardButton("⬅️ Back", callback_data=f"yt_back|{cache_key}")])
+    rows.append([InlineKeyboardButton("⬅️ Back", callback_data=f"yt_back|{cache_key}", style=enums.ButtonStyle.PRIMARY)])
     await cq.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(rows))
 
 
@@ -477,7 +477,7 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
         "last_update": time(),
         "last_status": "starting",
     }
-    cancel_markup = InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data=f"yt_cancel|{job_id}")]])
+    cancel_markup = InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data=f"yt_cancel|{job_id}", style=enums.ButtonStyle.DANGER)]])
 
     def _edit_caption(text: str, markup=cancel_markup):
         """Edit caption via client (lebih andal daripada via callback query)."""
@@ -713,12 +713,12 @@ async def ytdl_scroll_callback(_, cq: CallbackQuery, strings):
 
     scroll_btn = [[]]
     if page > 0:
-        scroll_btn[0].append(InlineKeyboardButton(strings("back"), callback_data=f"ytdl_scroll|{search_key}|{page - 1}"))
+        scroll_btn[0].append(InlineKeyboardButton(strings("back"), callback_data=f"ytdl_scroll|{search_key}|{page - 1}", style=enums.ButtonStyle.PRIMARY))
     scroll_btn[0].append(InlineKeyboardButton(f"{page + 1}/{len(results)}", callback_data=f"ytdl_scroll|{search_key}|{page}"))
     if page < len(results) - 1:
-        scroll_btn[0].append(InlineKeyboardButton("Next", callback_data=f"ytdl_scroll|{search_key}|{page + 1}"))
+        scroll_btn[0].append(InlineKeyboardButton("Next", callback_data=f"ytdl_scroll|{search_key}|{page + 1}", style=enums.ButtonStyle.PRIMARY))
 
-    btn = InlineKeyboardMarkup(scroll_btn + [[InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{search_key}|{page}")]])
+    btn = InlineKeyboardMarkup(scroll_btn + [[InlineKeyboardButton(strings("dl_btn"), callback_data=f"yt_gen|{search_key}|{page}", style=enums.ButtonStyle.SUCCESS)]])
     await cq.edit_message_media(InputMediaPhoto(await get_ytthumb(i.get("id")), caption=out), reply_markup=btn)
 
 

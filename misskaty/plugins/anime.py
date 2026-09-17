@@ -2,7 +2,7 @@ import json
 from calendar import month_name
 
 import aiohttp
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
@@ -221,12 +221,12 @@ async def anime_search(_, mesg):
     btn = (
         [
             [
-                InlineKeyboardButton("More info", url=info),
-                InlineKeyboardButton("Trailer 🎬", url=trailer),
+                InlineKeyboardButton("More info", url=info, style=enums.ButtonStyle.PRIMARY),
+                InlineKeyboardButton("Trailer 🎬", url=trailer, style=enums.ButtonStyle.SUCCESS),
             ]
         ]
         if trailer
-        else [[InlineKeyboardButton("More info", url=info)]]
+        else [[InlineKeyboardButton("More info", url=info, style=enums.ButtonStyle.PRIMARY)]]
     )
 
     if image:

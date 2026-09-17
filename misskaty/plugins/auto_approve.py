@@ -5,7 +5,7 @@
 * Copyright @YasirPedia All rights reserved
 """
 
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import UserAlreadyParticipant, UserIsBlocked
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -23,17 +23,17 @@ async def approve_join_chat(c, m):
             [
                 [
                     InlineKeyboardButton(
-                        text="Sudah", callback_data=f"approve_{m.chat.id}"
+                        text="Sudah", callback_data=f"approve_{m.chat.id}", style=enums.ButtonStyle.SUCCESS
                     ),
                     InlineKeyboardButton(
-                        text="Belum", callback_data=f"declined_{m.chat.id}"
+                        text="Belum", callback_data=f"declined_{m.chat.id}", style=enums.ButtonStyle.DANGER
                     ),
                 ]
             ]
         )
         await c.send_message(
             m.from_user.id,
-            "<b>PERMINTAAN JOIN CHANNEL YMOVIEZ REBORN</b>\n\nSebelum masuk ke channel ada tes kejujuran, apakah anda sudah membaca catatan di @YMovieZ_New? Jika sudah silahkan klik <b>Sudah</b>, jika kamu berbohong resiko kamu tanggung sendiri 😶‍🌫️.\n\nBot by @YasirPediaChannel",
+            "<emoji id=\"5805532930662996322\">✅</emoji> <b>PERMINTAAN JOIN CHANNEL YMOVIEZ REBORN</b>\n\nSebelum masuk ke channel ada tes kejujuran, apakah anda sudah membaca catatan di @YMovieZ_New? Jika sudah silahkan klik <b>Sudah</b>, jika kamu berbohong resiko kamu tanggung sendiri 😶🌫️.\n\nBot by @YasirPediaChannel",
             link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
             reply_markup=markup,
         )

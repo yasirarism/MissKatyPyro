@@ -7,6 +7,7 @@ import html
 import logging
 import re
 
+from pyrogram import enums
 from pyrogram.types import InlineKeyboardButton
 
 LOGGER = logging.getLogger("MissKaty")
@@ -71,7 +72,7 @@ def _render_template_buttons(template: str, payload: dict):
         except Exception:
             return ""
         if url.startswith("http"):
-            buttons.append(InlineKeyboardButton(label, url=url))
+            buttons.append(InlineKeyboardButton(label, url=url, style=enums.ButtonStyle.PRIMARY))
         return ""
 
     template_without_buttons = re.sub(

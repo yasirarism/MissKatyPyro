@@ -10,7 +10,7 @@ import re
 import urllib.parse
 from urllib.parse import unquote
 
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import EntitiesTooLong, MessageTooLong
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
@@ -117,8 +117,8 @@ async def bypass(_, ctx: Message):
             markup = InlineKeyboardMarkup(
                 [
                     [
-                        InlineKeyboardButton("Open Link", url=result),
-                        InlineKeyboardButton("Raw Link", url=f"{result}/raw"),
+                        InlineKeyboardButton("Open Link", url=result, style=enums.ButtonStyle.PRIMARY),
+                        InlineKeyboardButton("Raw Link", url=f"{result}/raw", style=enums.ButtonStyle.SUCCESS),
                     ]
                 ]
             )

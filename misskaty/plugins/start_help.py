@@ -1,7 +1,7 @@
 import contextlib
 import re
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import ChatSendPhotosForbidden, ChatWriteForbidden, QueryIdInvalid
 from pyrogram.types import (
@@ -39,6 +39,7 @@ home_keyboard_pm = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 text="Add Me To Your Group 🎉",
                 url=f"http://t.me/{BOT_USERNAME}?startgroup=new",
+                style=enums.ButtonStyle.PRIMARY,
             )
         ],
     ]
@@ -118,7 +119,7 @@ async def start(self, ctx, strings):
             html = build_help_table(mod_obj.__HELP__, title=mod_obj.__MODULE__)
             if html:
                 kb = InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
+                    [[InlineKeyboardButton("◀ Back", callback_data="help_back", style=enums.ButtonStyle.PRIMARY)]]
                 )
                 with contextlib.suppress(Exception):
                     return await app.send_rich_message(
@@ -131,7 +132,7 @@ async def start(self, ctx, strings):
             await ctx.reply(
                 text,
                 reply_markup=InlineKeyboardMarkup(
-                    [[InlineKeyboardButton("back", callback_data="help_back")]]
+                    [[InlineKeyboardButton("back", callback_data="help_back", style=enums.ButtonStyle.PRIMARY)]]
                 ),
                 link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
                 effect_id=5104841245755180586,
@@ -274,7 +275,7 @@ async def help_button(self: Client, query: CallbackQuery, strings):
         else:
             html = build_help_table(mod_obj.__HELP__, title=mod_obj.__MODULE__)
             kb = InlineKeyboardMarkup(
-                [[InlineKeyboardButton("◀ Back", callback_data="help_back")]]
+                [[InlineKeyboardButton("◀ Back", callback_data="help_back", style=enums.ButtonStyle.PRIMARY)]]
             )
             if html:
                 try:

@@ -17,7 +17,7 @@ from re import split as ngesplit
 from time import time
 from urllib.parse import unquote
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.file_id import FileId
 from pyrogram.errors import FloodWait, MessageIdInvalid, MessageNotModified, QueryIdInvalid
 from pyrogram.types import (
@@ -182,7 +182,7 @@ class StreamExtractHelper:
 
 def _cancel_markup(message_id: int, user_id: int, label: str = "❌ Cancel"):
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton(label, callback_data=f"extractcancel#{message_id}#{user_id}")]]
+        [[InlineKeyboardButton(label, callback_data=f"extractcancel#{message_id}#{user_id}", style=enums.ButtonStyle.DANGER)]]
     )
 
 
@@ -302,7 +302,7 @@ async def ceksub(_, ctx: Message, strings):
                 )
             ])
         timelog = time() - start_time
-        buttons.append([InlineKeyboardButton(strings("cancel_btn"), callback_data=f"close#{owner_id}")])
+        buttons.append([InlineKeyboardButton(strings("cancel_btn"), callback_data=f"close#{owner_id}", style=enums.ButtonStyle.DANGER)])
         await pesan.edit(
             strings("press_btn_msg").format(timelog=get_readable_time(timelog)),
             reply_markup=InlineKeyboardMarkup(buttons),

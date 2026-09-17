@@ -145,8 +145,8 @@ def _layout_keyboard(hidden_fields: set, uid: int):
         rows.append(row)
     rows.append(
         [
-            InlineKeyboardButton("🔄 Reset", callback_data=f"imdblayoutreset#{uid}"),
-            InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{uid}"),
+            InlineKeyboardButton("🔄 Reset", callback_data=f"imdblayoutreset#{uid}", style=enums.ButtonStyle.DANGER),
+            InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{uid}", style=enums.ButtonStyle.PRIMARY),
         ]
     )
     rows.append(
@@ -383,10 +383,14 @@ async def imdb_choose(_, ctx: Message):
         [
             [
                 InlineKeyboardButton(
-                    "🇺🇸 English", callback_data=f"imdbcari#eng#{ranval}#{ctx.from_user.id}"
+                    "🇺🇸 English",
+                    callback_data=f"imdbcari#eng#{ranval}#{ctx.from_user.id}",
+                    style=enums.ButtonStyle.PRIMARY,
                 ),
                 InlineKeyboardButton(
-                    "🇮🇩 Indonesia", callback_data=f"imdbcari#ind#{ranval}#{ctx.from_user.id}"
+                    "🇮🇩 Indonesia",
+                    callback_data=f"imdbcari#ind#{ranval}#{ctx.from_user.id}",
+                    style=enums.ButtonStyle.PRIMARY,
                 ),
             ],
             [
@@ -523,8 +527,8 @@ async def imdb_lang_menu(_, query: CallbackQuery):
     buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🇺🇸 English", callback_data=f"setimdb#eng#{query.from_user.id}"),
-                InlineKeyboardButton("🇮🇩 Indonesia", callback_data=f"setimdb#ind#{query.from_user.id}"),
+                InlineKeyboardButton("🇺🇸 English", callback_data=f"setimdb#eng#{query.from_user.id}", style=enums.ButtonStyle.PRIMARY),
+                InlineKeyboardButton("🇮🇩 Indonesia", callback_data=f"setimdb#ind#{query.from_user.id}", style=enums.ButtonStyle.PRIMARY),
             ]
         ]
     )
@@ -533,12 +537,12 @@ async def imdb_lang_menu(_, query: CallbackQuery):
         buttons.inline_keyboard.append(
             [
                 InlineKeyboardButton(
-                    "🗑 Remove UserSetting", callback_data=f"setimdb#rm#{query.from_user.id}"
+                    "🗑 Remove UserSetting", callback_data=f"setimdb#rm#{query.from_user.id}", style=enums.ButtonStyle.DANGER
                 )
             ]
         )
     buttons.inline_keyboard.append(
-        [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}")]
+        [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}", style=enums.ButtonStyle.PRIMARY)]
     )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
         await query.message.edit(
@@ -658,7 +662,7 @@ async def imdb_template_menu(_, query: CallbackQuery):
     buttons = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}"),
+                InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}", style=enums.ButtonStyle.PRIMARY),
                 InlineKeyboardButton(
                     "Close",
                     callback_data=f"close#{query.from_user.id}",
@@ -687,7 +691,7 @@ async def imdb_by_menu(_, query: CallbackQuery):
     )
     buttons = InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}")]
+            [InlineKeyboardButton("↩️ Back", callback_data=f"imdbset#{query.from_user.id}", style=enums.ButtonStyle.PRIMARY)]
         ]
     )
     with contextlib.suppress(MessageIdInvalid, MessageNotModified):
@@ -1279,9 +1283,9 @@ async def _build_imdb_result(
             trailer_url = trailer["url"]
             buttons = []
             if "open_imdb" not in hidden_fields:
-                buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url))
+                buttons.append(InlineKeyboardButton("🎬 Open IMDB", url=imdb_url, style=enums.ButtonStyle.PRIMARY))
             if "trailer" not in hidden_fields:
-                buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url))
+                buttons.append(InlineKeyboardButton("▶️ Trailer", url=trailer_url, style=enums.ButtonStyle.SUCCESS))
             rows = [buttons] if buttons else []
             # Close SELALU di baris sendiri di bawah (tidak berjejer)
             rows.append([close_btn])
@@ -1292,7 +1296,7 @@ async def _build_imdb_result(
             else:
                 markup = InlineKeyboardMarkup(
                     [
-                        [InlineKeyboardButton("🎬 Open IMDB", url=imdb_url)],
+                        [InlineKeyboardButton("🎬 Open IMDB", url=imdb_url, style=enums.ButtonStyle.PRIMARY)],
                         [close_btn],
                     ]
                 )

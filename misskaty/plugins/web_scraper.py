@@ -17,7 +17,7 @@ import httpx
 from bs4 import BeautifulSoup
 from cachetools import TTLCache
 from pykeyboard import InlineButton, InlineKeyboard
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram import types as pyro_types
 from pyrogram.errors import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, InputRichMessage
@@ -121,7 +121,7 @@ def build_web_buttons(uid: int):
             row = []
     if row:
         rows.append(row)
-    rows.append([InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")])
+    rows.append([InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}", style=enums.ButtonStyle.DANGER)])
     return InlineKeyboardMarkup(rows)
 
 
@@ -130,14 +130,14 @@ def build_web_domain_menu(uid: int, key: str):
         [
             [
                 InlineKeyboardButton(
-                    "👁 View", callback_data=f"webdomainview#{key}#{uid}"
+                    "👁 View", callback_data=f"webdomainview#{key}#{uid}", style=enums.ButtonStyle.PRIMARY
                 ),
                 InlineKeyboardButton(
-                    "✏️ Edit", callback_data=f"webdomainedit#{key}#{uid}"
+                    "✏️ Edit", callback_data=f"webdomainedit#{key}#{uid}", style=enums.ButtonStyle.SUCCESS
                 ),
             ],
-            [InlineKeyboardButton("↩️ Back", callback_data=f"webdomainback#{uid}")],
-            [InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}")],
+            [InlineKeyboardButton("↩️ Back", callback_data=f"webdomainback#{uid}", style=enums.ButtonStyle.PRIMARY)],
+            [InlineKeyboardButton("❌ Close", callback_data=f"close#{uid}", style=enums.ButtonStyle.DANGER)],
         ]
     )
 

@@ -1,7 +1,7 @@
 from functools import partial
 from typing import Union
 
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram.enums import ChatType
 from pyrogram.errors import ListenerTimeout, QueryIdInvalid
 from pyrogram.types import (
@@ -43,6 +43,7 @@ def gen_langs_kb():
                 InlineKeyboardButton(
                     f"{lang['language_flag']} {lang['language_name']}",
                     callback_data=f"setlangsel {langs[0]}",
+                    style=enums.ButtonStyle.PRIMARY,
                 )
             )
 
@@ -68,6 +69,7 @@ async def apply_language_change(msg: Message, lang: str):
                     InlineKeyboardButton(
                         strings("back_btn", context="general"),
                         callback_data="start_back",
+                        style=enums.ButtonStyle.PRIMARY,
                     )
                 ]
             ]
@@ -87,7 +89,7 @@ async def chlang(_, m: Union[CallbackQuery, Message], strings):
             *gen_langs_kb(),
             [
                 InlineKeyboardButton(
-                    strings("back_btn", context="general"), callback_data="start_back"
+                    strings("back_btn", context="general"), callback_data="start_back", style=enums.ButtonStyle.PRIMARY
                 )
             ],
         ]

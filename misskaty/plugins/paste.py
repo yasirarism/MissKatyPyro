@@ -7,7 +7,7 @@
 from os import remove
 from re import compile as compiles
 
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from misskaty import app
@@ -128,15 +128,15 @@ async def telegraph_paste(_, message):
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
             )
         ],
     ]
 
-    pasted = f"**Successfully pasted your data to Telegraph<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your data to Telegraph<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
@@ -191,15 +191,15 @@ async def wastepaste(_, message):
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
             )
         ],
     ]
 
-    pasted = f"**Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your data to YasirBin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
@@ -262,15 +262,15 @@ async def nekopaste(_, message):
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
             )
         ],
     ]
 
-    pasted = f"**Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your data to Nekobin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
@@ -331,15 +331,15 @@ async def spacebinn(_, message):
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
             )
         ],
     ]
 
-    pasted = f"**Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your data to Spacebin<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
@@ -397,15 +397,15 @@ async def rentrypaste(_, message):
     if not url:
         return await msg.edit("Text Too Short Or File Problems")
     button = [
-        [InlineKeyboardButton("Open Link", url=url)],
+        [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
         [
             InlineKeyboardButton(
-                "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
             )
         ],
     ]
 
-    pasted = f"**Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
+    pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your data to Rentry<a href='{url}'>.</a>\n\nPaste by {uname}**"
     await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
 
 
@@ -439,15 +439,15 @@ async def imgbb_upload(_, message):
         remove(path)
         url = f"https://ibb.co.com/{res.json()['image']['id_encoded']}"
         button = [
-            [InlineKeyboardButton("Open Link", url=url)],
+            [InlineKeyboardButton("Open Link", url=url, style=enums.ButtonStyle.PRIMARY)],
             [
                 InlineKeyboardButton(
-                    "Share Link", url=f"https://telegram.me/share/url?url={url}"
+                    "Share Link", url=f"https://telegram.me/share/url?url={url}", style=enums.ButtonStyle.SUCCESS
                 )
             ],
         ]
     
-        pasted = f"**Successfully pasted your images to ImgBB<a href='{url}'>.</a>\n\nPaste by {uname}**"
+        pasted = f"<emoji id=\"5877301185639091664\">📋</emoji> **Successfully pasted your images to ImgBB<a href='{url}'>.</a>\n\nPaste by {uname}**"
         await msg.edit(pasted, reply_markup=InlineKeyboardMarkup(button))
     except Exception as e:
         await msg.edit(f"ERROR: {e}")

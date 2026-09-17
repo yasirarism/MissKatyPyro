@@ -1,7 +1,7 @@
 import traceback
 from logging import getLogger
 
-from pyrogram import Client, filters
+from pyrogram import Client, enums, filters
 from pyrogram.errors import (
     ApiIdInvalid,
     ListenerTimeout,
@@ -36,17 +36,17 @@ __HELP__ = """
 ask_ques = "**» Please choose the library for which you want generate string :**\n\nNote: I'm not collecting any personal info from this feature, you can deploy own bot if you want."
 buttons_ques = [
     [
-        InlineKeyboardButton("Pyrogram", callback_data="pyrogram"),
-        InlineKeyboardButton("Telethon", callback_data="telethon"),
+        InlineKeyboardButton("Pyrogram", callback_data="pyrogram", style=enums.ButtonStyle.PRIMARY),
+        InlineKeyboardButton("Telethon", callback_data="telethon", style=enums.ButtonStyle.PRIMARY),
     ],
     [
-        InlineKeyboardButton("Pyrogram Bot", callback_data="pyrogram_bot"),
-        InlineKeyboardButton("Telethon Bot", callback_data="telethon_bot"),
+        InlineKeyboardButton("Pyrogram Bot", callback_data="pyrogram_bot", style=enums.ButtonStyle.PRIMARY),
+        InlineKeyboardButton("Telethon Bot", callback_data="telethon_bot", style=enums.ButtonStyle.PRIMARY),
     ],
 ]
 
 gen_button = [
-    [InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring")]
+    [InlineKeyboardButton(text="🙄 Generate Session 🙄", callback_data="genstring", style=enums.ButtonStyle.PRIMARY)]
 ]
 
 

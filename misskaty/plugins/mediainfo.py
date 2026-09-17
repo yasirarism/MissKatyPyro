@@ -23,6 +23,7 @@ from pyrogram.errors import (
     MessageNotModified,
     QueryIdInvalid,
 )
+from pyrogram import enums
 from pyrogram.file_id import FileId, FileType
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -46,7 +47,7 @@ ACTIVE_MEDIAINFO: dict[int, dict] = {}
 
 def _mi_cancel_markup(gid: int, uid: int, label: str = "❌ Cancel") -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
-        [[InlineKeyboardButton(label, callback_data=f"miocancel#{gid}#{uid}")]]
+        [[InlineKeyboardButton(label, callback_data=f"miocancel#{gid}#{uid}", style=enums.ButtonStyle.DANGER)]]
     )
 
 
@@ -394,7 +395,7 @@ DETAILS
     try:
         link = await mediainfo_paste(out, "MissKaty Mediainfo")
         markup = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+            [[InlineKeyboardButton(text=strings("viweb"), url=link, style=enums.ButtonStyle.PRIMARY)]]
         )
     except Exception:
         try:
@@ -402,7 +403,7 @@ DETAILS
                 False, "MissKaty MediaInfo", f"<code>{body_text}</code>"
             )
             markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton(text=strings("viweb"), url=link)]]
+                [[InlineKeyboardButton(text=strings("viweb"), url=link, style=enums.ButtonStyle.PRIMARY)]]
             )
         except Exception:
             markup = None

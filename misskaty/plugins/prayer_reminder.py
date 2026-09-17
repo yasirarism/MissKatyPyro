@@ -12,7 +12,7 @@ from typing import Optional
 
 import aiohttp
 import pytz
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -243,26 +243,28 @@ async def _get_cities() -> list[dict]:
 
 def _panel_markup(config: dict, user_id: int) -> InlineKeyboardMarkup:
     status_text = "🔴 Nonaktifkan" if config["enabled"] else "🟢 Aktifkan"
+    toggle_style = enums.ButtonStyle.DANGER if config["enabled"] else enums.ButtonStyle.SUCCESS
     return InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton(status_text, callback_data=f"prtoggle#{user_id}")],
-            [InlineKeyboardButton("📍 Set target chat/topic ini", callback_data=f"prtarget#{user_id}")],
-            [InlineKeyboardButton("🧪 Test reminder", callback_data=f"prtest#{user_id}")],
-            [InlineKeyboardButton("❌ Close", callback_data=f"prclose#{user_id}")],
+            [InlineKeyboardButton(status_text, callback_data=f"prtoggle#{user_id}", style=toggle_style)],
+            [InlineKeyboardButton("📍 Set target chat/topic ini", callback_data=f"prtarget#{user_id}", style=enums.ButtonStyle.PRIMARY)],
+            [InlineKeyboardButton("🧪 Test reminder", callback_data=f"prtest#{user_id}", style=enums.ButtonStyle.SUCCESS)],
+            [InlineKeyboardButton("❌ Close", callback_data=f"prclose#{user_id}", style=enums.ButtonStyle.DANGER)],
         ]
     )
 
 
 def _panel_text(config: dict) -> str:
     status = "Aktif" if config["enabled"] else "Nonaktif"
+    status_icon = '<emoji id="5825794181183836432">✅</emoji>' if config["enabled"] else '<emoji id="5872829476143894491">🚫</emoji>'
     return (
-        "🕌 **Prayer Reminder**\n"
-        f"Status: **{status}**\n"
-        f"Kota: **{config['city_name']}** (`{config['city_id']}`)\n"
-        f"Timezone: `{config['timezone']}`\n"
-        f"Chat ID: `{config['chat_id'] or '-'}`\n"
-        f"Thread ID: `{config['thread_id'] or '-'}`\n\n"
-        "Cari kota dengan command: `/prayerreminder nama kota`"
+        "🕌 <b>Prayer Reminder</b>\n\n"
+        f"{status_icon} <b>Status:</b> {status}\n"
+        f"<emoji id=\"5776424837786374634\">🆔</emoji> <b>Kota:</b> {config['city_name']} (<code>{config['city_id']}</code>)\n"
+        f"<emoji id=\"5877613700344450910\">⏲</emoji> <b>Timezone:</b> <code>{config['timezone']}</code>\n"
+        f"<emoji id=\"5884510167986343350\">💬</emoji> <b>Chat ID:</b> <code>{config['chat_id'] or '-'}</code>\n"
+        f"<emoji id=\"5951584964305755220\">#</emoji> <b>Thread ID:</b> <code>{config['thread_id'] or '-'}</code>\n\n"
+        "Cari kota dengan command: <code>/prayerreminder nama kota</code>"
     )
 
 
@@ -276,7 +278,7 @@ def _city_markup(cities: list[dict], user_id: int) -> InlineKeyboardMarkup:
                 )
             ]
         )
-    rows.append([InlineKeyboardButton("↩️ Panel", callback_data=f"prpanel#{user_id}")])
+    rows.append([InlineKeyboardButton("↩️ Panel", callback_data=f"prpanel#{user_id}", style=enums.ButtonStyle.PRIMARY)])
     return InlineKeyboardMarkup(rows)
 
 

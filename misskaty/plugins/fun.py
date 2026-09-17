@@ -5,7 +5,7 @@ from os import remove as hapus
 
 import regex
 from PIL import Image, ImageDraw, ImageFont
-from pyrogram import filters
+from pyrogram import enums, filters
 from pyrogram import types as pyro_types
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import MessageIdInvalid, PeerIdInvalid, ReactionInvalid, ListenerTimeout
@@ -344,7 +344,7 @@ def build_tebak_angka_keyboard(game_id):
         if len(buttons) == 5:
             rows.append(buttons)
             buttons = []
-    rows.append([InlineKeyboardButton("🛑 Berhenti", callback_data=f"ga:{game_id}:stop")])
+    rows.append([InlineKeyboardButton("🛑 Berhenti", callback_data=f"ga:{game_id}:stop", style=enums.ButtonStyle.DANGER)])
     return InlineKeyboardMarkup(rows)
 
 
@@ -357,16 +357,16 @@ async def batu_gunting_kertas(_, message):
     keyboard = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🪨 Batu", callback_data=f"rps:{game_id}:batu"),
-                InlineKeyboardButton("✂️ Gunting", callback_data=f"rps:{game_id}:gunting"),
-                InlineKeyboardButton("📄 Kertas", callback_data=f"rps:{game_id}:kertas"),
+                InlineKeyboardButton("🪨 Batu", callback_data=f"rps:{game_id}:batu", style=enums.ButtonStyle.PRIMARY),
+                InlineKeyboardButton("✂️ Gunting", callback_data=f"rps:{game_id}:gunting", style=enums.ButtonStyle.PRIMARY),
+                InlineKeyboardButton("📄 Kertas", callback_data=f"rps:{game_id}:kertas", style=enums.ButtonStyle.PRIMARY),
             ],
-            [InlineKeyboardButton("❌ Batalkan", callback_data=f"rps:{game_id}:stop")],
+            [InlineKeyboardButton("❌ Batalkan", callback_data=f"rps:{game_id}:stop", style=enums.ButtonStyle.DANGER)],
         ]
     )
 
     msg = await message.reply_text(
-        "🎮 <b>Batu Gunting Kertas</b>\n"
+        "<emoji id=\"5204222562736819197\">🎮</emoji> <b>Batu Gunting Kertas</b>\n"
         f"Pemain: {message.from_user.mention}\n"
         "Klik salah satu tombol di bawah untuk memilih.",
         reply_markup=keyboard,
