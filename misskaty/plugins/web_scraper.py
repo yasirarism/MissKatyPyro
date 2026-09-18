@@ -608,8 +608,9 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
         kusodata = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['kusonime']}/?s={kueri}" if kueri else web["kusonime"]
                 data = await fetch.get(
-                    f"{web['kusonime']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 data.raise_for_status()
             except httpx.HTTPError as exc:
@@ -635,7 +636,7 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 
     kusoResult = (
         strings("header_no_query").format(web="Kusonime", cmd="kusonime")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="Kusonime", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -662,8 +663,9 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
         moviekudata = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['movieku']}/?s={kueri}" if kueri else web["movieku"]
                 data = await fetch.get(
-                    f"{web['movieku']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 data.raise_for_status()
             except httpx.HTTPError as exc:
@@ -689,7 +691,7 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
 
     moviekuResult = (
         strings("header_no_query").format(web="Movieku", cmd="movieku")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="Movieku", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -709,8 +711,9 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
         nodrakordata = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['nodrakor']}/?s={kueri}" if kueri else web["nodrakor"]
                 data = await fetch.get(
-                    f"{web['nodrakor']}/?s={kueri}",
+                    target,
                     follow_redirects=True,
                 )
                 data.raise_for_status()
@@ -742,7 +745,7 @@ async def getDataNodrakor(msg, kueri, CurrentPage, user, strings):
     extractbtn = []
     nodrakorResult = (
         strings("header_no_query").format(web="NoDrakor", cmd="nodrakor")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="NoDrakor", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -762,8 +765,9 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
         sfdata = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['savefilm21']}/?s={kueri}" if kueri else web["savefilm21"]
                 data = await fetch.get(
-                    f"{web['savefilm21']}/?s={kueri}",
+                    target,
                     follow_redirects=True,
                 )
                 data.raise_for_status()
@@ -795,7 +799,7 @@ async def getDataSavefilm21(msg, kueri, CurrentPage, user, strings):
     extractbtn = []
     sfResult = (
         strings("header_no_query").format(web="Savefilm21", cmd="savefilm21")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="Savefilm21", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -814,8 +818,9 @@ async def getDataNunaDrama(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['nunadrama']}/?s={kueri}" if kueri else web["nunadrama"]
                 nunafetch = await fetch.get(
-                    f"{web['nunadrama']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 nunafetch.raise_for_status()
             except httpx.HTTPError as exc:
@@ -870,8 +875,9 @@ async def getDataPusatFilm(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['pusatfilm']}/?s={kueri}" if kueri else web["pusatfilm"]
                 nunafetch = await fetch.get(
-                    f"{web['pusatfilm']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 nunafetch.raise_for_status()
             except httpx.HTTPError as exc:
@@ -926,8 +932,9 @@ async def getDataDutaMovie(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['dutamovie']}/?s={kueri}" if kueri else web["dutamovie"]
                 nunafetch = await fetch.get(
-                    f"{web['dutamovie']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 nunafetch.raise_for_status()
             except httpx.HTTPError as exc:
@@ -1014,7 +1021,7 @@ async def getDataOppaweb(msg, kueri, CurrentPage, user, strings):
 
     oppawebResult = (
         strings("header_no_query").format(web="OppaWeb", cmd="oppaweb")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="OppaWeb", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -1084,7 +1091,7 @@ async def getDataLendrive(msg, kueri, CurrentPage, user, strings):
 
     lenddataResult = (
         strings("header_no_query").format(web="Lendrive", cmd="lendrive")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="Lendrive", kueri=kueri)
     )
     for c, i in enumerate(savedict[msg.id][0][index], start=1):
@@ -1103,8 +1110,9 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['melongmovie']}/?s={kueri}" if kueri else web["melongmovie"]
                 data = await fetch.get(
-                    f"{web['melongmovie']}/?s={kueri}",
+                    target,
                     follow_redirects=True,
                 )
                 data.raise_for_status()
@@ -1135,7 +1143,7 @@ async def getDataMelong(msg, kueri, CurrentPage, user, strings):
 
     melongResult = (
         strings("header_no_query").format(web="Melongmovie", cmd="melongmovie")
-        if kueri == ""
+        if not kueri
         else strings("header_with_query").format(web="Melongmovie", kueri=kueri)
     )
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
@@ -1154,8 +1162,9 @@ async def getDataGomov(msg, kueri, CurrentPage, user, strings):
     if not SCRAP_DICT.get(msg.id):
         with contextlib.redirect_stdout(sys.stderr):
             try:
+                target = f"{web['gomov']}/?s={kueri}" if kueri else web["gomov"]
                 gomovv = await fetch.get(
-                    f"{web['gomov']}/?s={kueri}", follow_redirects=True
+                    target, follow_redirects=True
                 )
                 gomovv.raise_for_status()
             except httpx.HTTPError as exc:
@@ -1270,7 +1279,7 @@ PAGE_REGISTRY = {v[1]: (v[0], v[2]) for v in SCRAPER_REGISTRY.values()}
 async def scraper_cmd(_, message, strings):
     cmd = message.command[0].lower().lstrip("/")
     func, page_prefix, needs_user = SCRAPER_REGISTRY[cmd]
-    kueri = " ".join(message.command[1:]) or None
+    kueri = " ".join(message.command[1:]).strip()
     pesan = await message.reply(strings("get_data"))
     if needs_user:
         unpacked = await func(pesan, kueri, 1, message.from_user.id, strings)
