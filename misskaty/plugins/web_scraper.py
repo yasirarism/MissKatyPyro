@@ -67,7 +67,7 @@ DEFAULT_WEB = {
     "pahe": "pahe.ink",
     "savefilm21": "https://new13.savefilm21info.com",
     "melongmovie": "https://tv12.melongmovies.com",
-    "terbit21": "https://terbit21official.site",
+    "terbit21": "https://terbit21official.fit",
     "lk21": "https://tv12.lk21official.cc",
     "gomov": "https://klikxxi.com",
     "movieku": "https://movieku.fit",
@@ -438,10 +438,47 @@ def format_oppaweb_detail(data: dict):
     return result
 
 
-# Terbit21 GetData
+async def _scrape_terbit21_direct(kueri, page: int = 1) -> list[dict]:
+    base = web.get("terbit21") or DEFAULT_WEB["terbit21"]
+    if not base.startswith(("http://", "https://")):
+        base = f"https://{base}"
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"}
+    if kueri:
+        url = f"{base}/page/{page}/?s={quote_plus(kueri)}" if page > 1 else f"{base}/?s={quote_plus(kueri)}"
+    else:
+        url = f"{base}/page/{page}/" if page > 1 else f"{base}/"
+    resp = await resp_get(url, headers=headers, follow_redirects=True)
+    resp.raise_for_status()
+    final_base = str(resp.url).rstrip("/")
+    soup = BeautifulSoup(resp.text, "lxml")
+    articles = soup.find_all("article")
+    result = []
+    for a in articles:
+        h = a.find("h3") or a.find("h2")
+        link_tag = a.find("a", href=True)
+        genre_tag = a.find(class_="gmr-movie-on") or a.find(class_="genre")
+        if not h or not link_tag:
+            continue
+        link = str(link_tag["href"])
+        if link.startswith("/"):
+            link = urljoin(final_base, link)
+        slug = link.rstrip("/").split("/")[-1]
+        dl_link = f"https://sharer.link/download/{slug}"
+        result.append(
+            {
+                "link": link,
+                "judul": h.text.strip(),
+                "kategori": genre_tag.text.strip() if genre_tag else "Movie",
+                "dl": dl_link,
+            }
+        )
+    return result
+
+
 async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     await ensure_web_config()
     if not SCRAP_DICT.get(msg.id):
+        result = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
                 if kueri:
@@ -451,16 +488,21 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
                 else:
                     terbitjson = await fetch.get(f"{web['yasirapi']}/terbit21")
                 terbitjson.raise_for_status()
-            except httpx.HTTPError as exc:
-                await msg.edit(
-                    f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>"
-                )
-                return None, None
-        res = terbitjson.json()
-        if not res.get("result"):
-            await msg.edit(strings("no_result"), del_in=5)
+                result = terbitjson.json().get("result") or []
+            except (httpx.HTTPError, ValueError) as exc:
+                LOGGER.warning("Terbit21 API gagal (%s), fallback ke scrape langsung", exc)
+        if not result:
+            try:
+                result = await _scrape_terbit21_direct(kueri)
+            except Exception as exc:
+                LOGGER.warning("Terbit21 direct scrape gagal: %s", exc)
+        if not result:
+            if not kueri:
+                await msg.edit(strings("no_result"), del_in=5)
+            else:
+                await msg.edit(strings("no_result_w_query").format(kueri=kueri), del_in=5)
             return None, None
-        SCRAP_DICT.add(msg.id, [split_arr(res["result"], 6), kueri], timeout=1800)
+        SCRAP_DICT.add(msg.id, [split_arr(result, 6), kueri], timeout=1800)
     index = int(CurrentPage - 1)
     PageLen = len(SCRAP_DICT[msg.id][0])
     if kueri:
@@ -468,11 +510,15 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     else:
         TerbitRes = strings("header_no_query").format(web="Terbit21", cmd="terbit21")
     for c, i in enumerate(SCRAP_DICT[msg.id][0][index], start=1):
+        dl_link = (i.get("dl") or "").replace("t21.press", "sharer.link").replace("mantap.store", "sharer.link")
+        if not dl_link and i.get("link"):
+            slug = i["link"].rstrip("/").split("/")[-1]
+            dl_link = f"https://sharer.link/download/{slug}"
         TerbitRes += f"<b>{index*6+c}. <a href='{i['link']}'>{i['judul']}</a></b>\n<b>{strings('cat_text')}:</b> <code>{i['kategori']}</code>\n"
         TerbitRes += (
             "\n"
             if re.search(r"Complete|Ongoing", i["kategori"])
-            else f"<b><a href='{i['dl']}'>{strings('dl_text')}</a></b>\n\n"
+            else f"<b><a href='{dl_link}'>{strings('dl_text')}</a></b>\n\n"
         )
     return TerbitRes, PageLen
 
