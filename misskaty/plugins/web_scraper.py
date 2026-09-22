@@ -576,7 +576,7 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
             continue
         href = str(a["href"])
         slug = "/" + href.strip("/").split("/")[-1]
-        link = href if href.startswith("http") else urljoin(final_base + "/", href.lstrip("/"))
+        link = href if href.startswith("http") else urljoin(final_url, href)
 
         title_tag = article.find("h3", class_="poster-title") or article.find(["h2", "h3", "h4"])
         if not title_tag:
