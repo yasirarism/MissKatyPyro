@@ -524,42 +524,91 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
 
 
 async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
-    """Scrape LK21 langsung dari situs (fallback saat API yasirapi kosong).
-
-    Cloudflare memblokir User-Agent curl biasa, jadi pakai Googlebot UA.
-    """
+    """Scrape LK21 langsung dari situs via FlareSolverr (fallback saat API yasirapi kosong)."""
     base = web.get("lk21") or DEFAULT_WEB["lk21"]
     if not base.startswith(("http://", "https://")):
         base = f"https://{base}"
-    headers = {"User-Agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"}
+    base = base.rstrip("/")
+
     if kueri:
-        url = f"{base}/?s={quote_plus(kueri)}"
+        url = (
+            f"{base}/search?s={quote_plus(kueri)}"
+            if page <= 1
+            else f"{base}/search?s={quote_plus(kueri)}&page={page}"
+        )
     else:
-        url = f"{base}/latest"
-        if page > 1:
-            url += f"/page/{page}"
-    resp = await resp_get(url, headers=headers, follow_redirects=True)
+        url = (
+            f"{base}/latest"
+            if page <= 1
+            else f"{base}/latest/page/{page}"
+        )
+
+    flaresolverr_url = "https://cf.yasirweb.eu.org/v1"
+    payload = {
+        "cmd": "request.get",
+        "url": url,
+        "maxTimeout": 60000,
+    }
+    fs_headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    }
+    resp = await fetch.post(
+        flaresolverr_url,
+        json=payload,
+        headers=fs_headers,
+        timeout=httpx.Timeout(70.0),
+    )
     resp.raise_for_status()
-    # Setelah redirect (misal tv10 -> tv12), pakai URL final sebagai base
-    final_base = str(resp.url).rstrip("/")
-    html = resp.text
-    articles = re.findall(r"<article.*?</article>", html, re.DOTALL)
+    data = resp.json()
+    if data.get("status") != "ok":
+        raise RuntimeError(data.get("message") or "FlareSolverr failed to solve challenge")
+
+    html = data.get("solution", {}).get("response", "")
+    final_url = data.get("solution", {}).get("url") or base
+    final_base = str(final_url).rstrip("/")
+
+    soup = BeautifulSoup(html, "html.parser")
     result = []
-    for b in articles:
-        href = re.search(r'<a href="([^"]+)"[^>]*itemprop="url"', b)
-        title = re.search(r'<h3 class="poster-title"[^>]*>([^<]+)</h3>', b)
-        genre = re.search(r'<div class="genre">\s*([^<]+?)\s*</div>', b)
-        if not href or not title:
+    for article in soup.find_all("article"):
+        a = article.find("a", href=True)
+        if not a:
             continue
-        link = href.group(1)
-        if link.startswith("/"):
-            link = urljoin(final_base, link)
+        href = str(a["href"])
+        slug = "/" + href.strip("/").split("/")[-1]
+        link = href if href.startswith("http") else urljoin(final_url, href)
+
+        title_tag = article.find("h3", class_="poster-title") or article.find(["h2", "h3", "h4"])
+        if not title_tag:
+            continue
+        title = title_tag.get_text(strip=True)
+
+        year_tag = article.find("span", class_="year")
+        year = year_tag.get_text(strip=True) if year_tag else ""
+
+        quality_tag = article.find("span", class_="label")
+        quality = quality_tag.get_text(strip=True) if quality_tag else ""
+
+        genre_tag = article.find("div", class_="genre") or article.find("meta", itemprop="genre")
+        if genre_tag and hasattr(genre_tag, "get_text") and genre_tag.get_text(strip=True):
+            genre = genre_tag.get_text(strip=True)
+        elif genre_tag and "content" in genre_tag.attrs:
+            genre = genre_tag["content"]
+        else:
+            genre = "Movie"
+
+        full_title = f"{title}"
+        if year:
+            full_title += f" ({year})"
+        if quality:
+            full_title += f" {quality}"
+
         result.append(
             {
                 "link": link,
-                "judul": title.group(1).strip(),
-                "kategori": genre.group(1).strip() if genre else "Movie",
-                "dl": link,
+                "judul": full_title,
+                "kategori": genre,
+                "dl": f"https://mantap.store/get{slug}",
             }
         )
     return result
