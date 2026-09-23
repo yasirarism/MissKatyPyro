@@ -10,7 +10,7 @@ import logging
 import re
 import sys
 from html import escape
-from urllib.parse import quote_plus, urljoin
+from urllib.parse import quote_plus, urljoin, urlparse
 
 import cloudscraper
 import httpx
@@ -523,6 +523,59 @@ async def getDataTerbit21(msg, kueri, CurrentPage, strings):
     return TerbitRes, PageLen
 
 
+# Cache domain download LK21. Domain ini terpisah dari domain situs dan
+# berganti sewaktu-waktu (mantap.store -> dadadidi.de), jadi dideteksi dari
+# tombol DOWNLOAD di halaman detail lalu di-cache agar tidak request terus.
+LK21_DL_BASE_CACHE: TTLCache = TTLCache(maxsize=1, ttl=21600)  # 6 jam
+LK21_DEFAULT_DOWNLOAD_BASE = "https://dadadidi.de"
+LK21_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+
+async def _lk21_download_base(origin_base: str, sample_slug: str) -> str:
+    """Deteksi domain download LK21 dari tombol DOWNLOAD di halaman detail."""
+    cached = LK21_DL_BASE_CACHE.get("base")
+    if cached:
+        return cached
+
+    dl_base = None
+    if sample_slug:
+        try:
+            resp = await fetch.post(
+                "https://cf.yasirweb.eu.org/v1",
+                json={
+                    "cmd": "request.get",
+                    "url": f"{origin_base.rstrip('/')}/{sample_slug}",
+                    "maxTimeout": 60000,
+                },
+                headers={"Content-Type": "application/json", "User-Agent": LK21_UA},
+                timeout=httpx.Timeout(70.0),
+            )
+            resp.raise_for_status()
+            detail = resp.json()
+            if detail.get("status") == "ok":
+                detail_soup = BeautifulSoup(
+                    detail.get("solution", {}).get("response", ""), "html.parser"
+                )
+                for a in detail_soup.find_all("a", href=True):
+                    if not re.search(r"download|unduh", a.get_text(" ", strip=True), re.I):
+                        continue
+                    parsed = urlparse(str(a["href"]))
+                    if parsed.scheme in ("http", "https") and parsed.netloc:
+                        dl_base = f"{parsed.scheme}://{parsed.netloc}"
+                        break
+        except Exception as exc:  # noqa: BLE001 - deteksi domain bersifat best-effort
+            LOGGER.warning("LK21: gagal deteksi domain download: %s", exc)
+
+    if not dl_base:
+        dl_base = LK21_DEFAULT_DOWNLOAD_BASE
+        LOGGER.warning("LK21: pakai fallback download base %s", dl_base)
+    else:
+        LOGGER.info("LK21: download base terdeteksi %s", dl_base)
+
+    LK21_DL_BASE_CACHE["base"] = dl_base
+    return dl_base
+
+
 async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
     """Scrape LK21 langsung dari situs via FlareSolverr (fallback saat API yasirapi kosong)."""
     base = web.get("lk21") or DEFAULT_WEB["lk21"]
@@ -567,16 +620,22 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
     html = data.get("solution", {}).get("response", "")
     final_url = data.get("solution", {}).get("url") or base
     final_base = str(final_url).rstrip("/")
+    # Origin domain LK21, dipakai untuk membangun link film. href di listing
+    # berbentuk "/slug" — kalau di-join ke final_url (/latest) hasilnya salah
+    # jadi /latest/slug, maka pakai origin saja.
+    origin = urlparse(final_base)
+    origin_base = f"{origin.scheme}://{origin.netloc}"
 
     soup = BeautifulSoup(html, "html.parser")
     result = []
+    slugs = []
     for article in soup.find_all("article"):
         a = article.find("a", href=True)
         if not a:
             continue
         href = str(a["href"])
-        slug = "/" + href.strip("/").split("/")[-1]
-        link = href if href.startswith("http") else urljoin(final_url, href)
+        slug = href.strip("/").split("/")[-1]
+        link = href if href.startswith("http") else f"{origin_base}/{slug}"
 
         title_tag = article.find("h3", class_="poster-title") or article.find(["h2", "h3", "h4"])
         if not title_tag:
@@ -608,9 +667,16 @@ async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
                 "link": link,
                 "judul": full_title,
                 "kategori": genre,
-                "dl": f"https://mantap.store/get{slug}",
+                "dl": "",
             }
         )
+        slugs.append(slug)
+
+    # Domain download diambil dari tombol "DOWNLOAD" di halaman detail (bukan
+    # hardcode) supaya ikut berubah saat pemilik situs ganti domain lagi.
+    dl_base = await _lk21_download_base(origin_base, slugs[0] if slugs else "")
+    for item, slug in zip(result, slugs):
+        item["dl"] = f"{dl_base.rstrip('/')}/{slug}/"
     return result
 
 
