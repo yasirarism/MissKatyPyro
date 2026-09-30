@@ -11,12 +11,14 @@ from datetime import datetime
 
 from pyrogram import enums, filters
 from pyrogram.raw import functions
-from pyrogram.types import (
-    ChatEventFilter,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    Message,
-)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+
+# ChatEventFilter tidak diekspor lewat `pyrogram.types` pada Kurigram 2.2.26 (hanya ada di
+# submodulnya), dan import gagal di sini akan mematikan load_modules() sehingga bot tidak start.
+try:
+    from pyrogram.types import ChatEventFilter
+except ImportError:  # pragma: no cover - tergantung versi Kurigram
+    from pyrogram.types.user_and_chats.chat_event_filter import ChatEventFilter
 
 from misskaty import app, user
 

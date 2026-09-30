@@ -123,12 +123,19 @@ async def init_storage_models():
 
 loop.run_until_complete(verify_database_connection())
 loop.run_until_complete(init_storage_models())
+
+# `app.start()` dijalankan dari module scope (tidak ada loop yang jalan), sehingga Kurigram
+# memilih loop sendiri lewat `_bridge_loop()`. Kalau loop itu bukan `loop` di atas, pymongo
+# melempar "Cannot use AsyncMongoClient in different event loop" karena AsyncMongoClient +
+# Beanie dibuat di `loop`. `_bridge_loop()` membaca `client._loop`, jadi ikat di sini.
+app._loop = loop
 app.start()
 BOT_ID = app.me.id
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.me.username
 if USER_SESSION:
     try:
+        user._loop = loop
         user.start()
         UBOT_ID = user.me.id
         UBOT_NAME = user.me.first_name

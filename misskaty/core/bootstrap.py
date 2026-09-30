@@ -128,5 +128,9 @@ def main():
     except Exception:
         LOGGER.info(traceback.format_exc())
     finally:
-        app.loop.stop()
+        # `app.loop` tidak selalu ada (mis. saat Client gagal start sebelum loop-nya terpasang).
+        # Tanpa guard ini, AttributeError menutupi traceback penyebab sebenarnya.
+        _loop = getattr(app, "loop", None)
+        if _loop is not None:
+            _loop.stop()
         LOGGER.info("------------------------ Stopped Services ------------------------")
