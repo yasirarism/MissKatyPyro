@@ -4,6 +4,8 @@ from typing import Union
 from pyrogram import Client
 from pyrogram.types import Message
 
+from ..utils.link_preview import normalize_link_preview
+
 
 async def send_message(
     self, chat_id: Union[int, str], text: str, del_in: int = 0, *args, **kwargs
@@ -53,7 +55,9 @@ async def send_message(
     Returns:
         :obj:`Message`: On success, the sent text message or True is returned.
     """
-    msg = await self.send_message(chat_id=chat_id, text=text, *args, **kwargs)
+    msg = await self.send_message(
+        chat_id=chat_id, text=text, *args, **normalize_link_preview(kwargs)
+    )
     if del_in == 0:
         return msg
     if del_in > 0:

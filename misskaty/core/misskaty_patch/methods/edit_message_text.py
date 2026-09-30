@@ -4,6 +4,8 @@ from typing import Union
 from pyrogram import Client
 from pyrogram.types import Message
 
+from ..utils.link_preview import normalize_link_preview
+
 
 async def edit_message_text(
     self,
@@ -51,7 +53,7 @@ async def edit_message_text(
         RPCError: In case of a Telegram RPC error.
     """
     msg = await self.edit_message_text(
-        chat_id=chat_id, message_id=message_id, text=text, *args, **kwargs
+        chat_id=chat_id, message_id=message_id, text=text, *args, **normalize_link_preview(kwargs)
     )
     if del_in == 0:
         return msg
