@@ -2,5 +2,13 @@
     "no_url": "Give A Url To Fetch Screenshot.",
     "wait_str": "Capturing screenshot...",
     "str_credit": "🌞 Screenshot generated using Puppeteer",
-    "ss_failed_str": "Failed To Take Screenshot. {err}"
+    "ss_failed_str": "Failed To Take Screenshot. {err}",
+    "ss_timeout_str": "⏱ The page took too long to capture. Try again or use a lighter page.",
+    "ss_unreachable_str": "🌐 Cannot reach the screenshot service. Please try again in a moment.",
+    "ss_need_number": "❌ {flag} needs a number. Example: <code>/webss example.com -w 1440</code>",
+    "ss_bad_width": "❌ Width must be {range} px.",
+    "ss_bad_height": "❌ Height must be {range} px.",
+    "ss_fallback_note": "full page unavailable, sent viewport",
+    "ss_clipped_note": "page is very tall, result was clipped",
+    "ss_dns_str": "🌐 That domain cannot be resolved (site does not exist or DNS is down)."
 }

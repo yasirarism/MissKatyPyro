@@ -2,5 +2,13 @@
     "no_url": "Wenehana url kanggo njupuk screenshot.",
     "wait_str": "Lagi njupuk gambar layar...",
     "str_credit": "🌞 Screenshot digawe nganggo Puppeteer",
-    "ss_failed_str": "Gagal njupuk gambar. ERROR: {err}"
+    "ss_failed_str": "Gagal njupuk gambar. ERROR: {err}",
+    "ss_timeout_str": "⏱ Kaca banget njupuk gambare. Coba maneh utawa nganggo kaca sing luwih entheng.",
+    "ss_unreachable_str": "🌐 Ora bisa nyambung menyang layanan screenshot. Coba maneh sedhela.",
+    "ss_need_number": "❌ {flag} kudu angka. Conto: <code>/webss example.com -w 1440</code>",
+    "ss_bad_width": "❌ Amba kudu {range} px.",
+    "ss_bad_height": "❌ Dhuwur kudu {range} px.",
+    "ss_fallback_note": "full page ora kasedhiya, mung viewport",
+    "ss_clipped_note": "kacane dhuwur banget, asile dipotong",
+    "ss_dns_str": "🌐 Domain kuwi ora bisa di-resolve (situs ora ana utawa DNS rusak)."
 }

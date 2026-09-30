@@ -2,5 +2,13 @@
     "no_url": "Berikan url untuk mengambil tangkapan layar.",
     "wait_str": "Mengambil tangkapan layar...",
     "str_credit": "🌞 Screenshot dibuat dengan Puppeteer",
-    "ss_failed_str": "Gagal Mengambil Tangkapan Layar. ERROR: {err}"
+    "ss_failed_str": "Gagal Mengambil Tangkapan Layar. ERROR: {err}",
+    "ss_timeout_str": "⏱ Halaman terlalu lama diambil. Coba lagi atau pakai halaman yang lebih ringan.",
+    "ss_unreachable_str": "🌐 Tidak bisa menghubungi layanan screenshot. Coba lagi sebentar lagi.",
+    "ss_need_number": "❌ {flag} butuh angka. Contoh: <code>/webss example.com -w 1440</code>",
+    "ss_bad_width": "❌ Lebar harus {range} px.",
+    "ss_bad_height": "❌ Tinggi harus {range} px.",
+    "ss_fallback_note": "full page tidak tersedia, dikirim viewport saja",
+    "ss_clipped_note": "halaman sangat tinggi, hasil dipotong",
+    "ss_dns_str": "🌐 Domain tersebut tidak bisa di-resolve (situs tidak ada atau DNS bermasalah)."
 }
