@@ -21,6 +21,8 @@ from pyrogram.errors import (
 )
 from pyrogram.types import Message
 
+from ..utils.link_preview import normalize_link_preview
+
 LOGGER = getLogger("MissKaty")
 
 _ORIG_REPLY_TEXT = Message.reply_text
@@ -77,6 +79,8 @@ async def reply_text(
     """
     kwargs.pop("quote", None)
     kwargs.pop("reply_parameters", None)
+    # Kurigram 2.2.x menghapus disable_web_page_preview -> link_preview_options.
+    kwargs = normalize_link_preview(kwargs)
     try:
         if as_raw:
             msg = await _ORIG_REPLY_TEXT(
@@ -129,6 +133,7 @@ async def edit_text(
     Raises:
         RPCError: In case of a Telegram RPC error.
     """
+    kwargs = normalize_link_preview(kwargs)
     try:
         msg = await _ORIG_EDIT_TEXT(self, text, *args, **kwargs)
         if del_in == 0:
