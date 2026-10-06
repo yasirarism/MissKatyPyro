@@ -38,6 +38,7 @@ from misskaty.helper.sosmed_helper import (
     _tt_rich_card,
     _url_keyboard,
     clean_sosmed_url,
+    edit_rich_or_plain,
 )
 from misskaty.vars import COMMAND_HANDLER, OWNER_ID
 
@@ -267,17 +268,7 @@ async def igdl_handler(client, message):
         return await status_msg.edit("<b>❌ Tidak ada media yang ditemukan.</b>")
 
     keyb = _url_keyboard(data)
-    try:
-        await status_msg.edit_rich(
-            InputRichMessage(html=_build_rich_card(data)),
-            reply_markup=keyb,
-        )
-    except Exception as e:
-        LOGGER.warning("igdl edit rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
-        try:
-            await status_msg.edit(_build_plain_card(data), reply_markup=keyb)
-        except Exception as e2:
-            LOGGER.error("igdl edit plain gagal: %s", e2)
+    await edit_rich_or_plain(status_msg, _build_rich_card(data), _build_plain_card(data), keyb)
 
 
 @app.on_message(filters.command(["twitterdl"], COMMAND_HANDLER))
@@ -391,17 +382,7 @@ async def tiktokdl(_, message):
         return await status_msg.edit("<b>❌ Tidak ada media yang ditemukan.</b>")
 
     keyb = _tt_keyboard(data)
-    try:
-        await status_msg.edit_rich(
-            InputRichMessage(html=_tt_rich_card(data)),
-            reply_markup=keyb,
-        )
-    except Exception as e:
-        LOGGER.warning("tiktokdl edit rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
-        try:
-            await status_msg.edit(_tt_plain_card(data), reply_markup=keyb)
-        except Exception as e2:
-            LOGGER.error("tiktokdl edit plain gagal: %s", e2)
+    await edit_rich_or_plain(status_msg, _tt_rich_card(data), _tt_plain_card(data), keyb)
 
 
 @app.on_message(filters.command(["fbdl", "fb"], COMMAND_HANDLER))
@@ -430,11 +411,4 @@ async def fbdl(_, message):
         )
 
     keyb = _fb_keyboard(data)
-    try:
-        await status_msg.edit_rich(InputRichMessage(html=_fb_rich_card(data)), reply_markup=keyb)
-    except Exception as e:
-        LOGGER.warning("fbdl rich gagal (%s): %s, fallback plain", e.__class__.__name__, e)
-        try:
-            await status_msg.edit(_fb_plain_card(data), reply_markup=keyb)
-        except Exception as e2:
-            LOGGER.error("fbdl plain gagal: %s", e2)
+    await edit_rich_or_plain(status_msg, _fb_rich_card(data), _fb_plain_card(data), keyb)

@@ -35,6 +35,7 @@ from misskaty.helper.sosmed_helper import (
     _tt_rich_card,
     _url_keyboard,
     clean_sosmed_url,
+    edit_rich_or_plain,
 )
 
 RE_INSTAGRAM = re.compile(r"https?://(?:www\.)?(?:instagram\.com|instagr\.am)/[^\s]+", re.I)
@@ -150,17 +151,7 @@ async def _handle_guest_sosmed(client, ctx: Message, text: str) -> bool:
         return True
 
     keyb = keyb_builder(data)
-    try:
-        await status_msg.edit_rich(
-            InputRichMessage(html=rich_builder(data)),
-            reply_markup=keyb,
-        )
-    except Exception as e:
-        LOGGER.warning("Guest %s edit_rich failed (%s): %s, fallback plain", platform, e.__class__.__name__, e)
-        try:
-            await status_msg.edit(plain_builder(data), reply_markup=keyb)
-        except Exception as e2:
-            LOGGER.error("Guest %s edit plain failed: %s", platform, e2)
+    await edit_rich_or_plain(status_msg, rich_builder(data), plain_builder(data), keyb)
 
     return True
 

@@ -9,7 +9,7 @@ from logging import getLogger
 from urllib.parse import urlparse
 
 from pyrogram import enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage
 
 from misskaty.helper.pyro_progress import progress_for_pyrogram
 
@@ -691,6 +691,43 @@ def clean_sosmed_url(url: str) -> str:
         if sep in url:
             url = url.split(sep, 1)[0]
     return url.rstrip("/")
+
+
+async def edit_rich_or_plain(status_msg, rich_html: str, plain_html: str, reply_markup=None) -> bool:
+    """Ubah pesan status jadi kartu rich; kalau gagal, jatuh ke kartu plain.
+
+    PENTING: ``Message.edit_rich`` **tidak melempar exception** untuk kegagalan
+    Telegram seperti ``RICH_MESSAGE_VIDEO_NO_MEDIA_FOUND`` — error ditelan di
+    dalamnya dan fungsi balas ``False``. Jadi ``try/except`` saja TIDAK cukup
+    dan fallback plain tidak akan pernah jalan (pesan nyangkut di
+    "⏳ Processing...").
+
+    Nilai balik ``edit_rich``:
+      - objek Message -> sukses
+      - ``False``      -> gagal (rich ditolak Telegram) atau tidak dimodifikasi
+      - ``None``       -> pesan asli sudah tidak ada, tidak bisa diedit lagi
+
+    Returns True kalau ada versi kartu yang berhasil dikirim.
+    """
+    result = None
+    try:
+        result = await status_msg.edit_rich(
+            InputRichMessage(html=rich_html), reply_markup=reply_markup
+        )
+    except Exception as e:
+        LOGGER.warning("edit_rich exception (%s): %s, fallback plain", e.__class__.__name__, str(e)[:160])
+        result = False
+
+    if result is not None and result is not False:
+        return True
+
+    # Rich gagal (False) atau pesan hilang (None) -> kirim kartu plain.
+    try:
+        await status_msg.edit(plain_html, reply_markup=reply_markup)
+        return True
+    except Exception as e2:
+        LOGGER.error("edit plain fallback gagal: %s", str(e2)[:160])
+        return False
 
 
 def _fb_canonical(url: str) -> str:
