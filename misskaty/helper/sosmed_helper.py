@@ -678,6 +678,21 @@ async def _get_tiktok_data(link: str) -> dict:
     return await asyncio.to_thread(_tt_extract_sync, link)
 
 
+def clean_sosmed_url(url: str) -> str:
+    """Buang query/trailing junk dari URL sosmed (dipakai IG/TikTok/FB).
+
+    Parameter seperti ``?app=fbl`` (dari tombol "share via app") bukan bagian
+    dari identitas post dan membuat permintaan ke platform meleset. ``rstrip``
+    biasa tidak memotong ``?`` karena ia ada di TENGAH string, jadi harus
+    dipotong eksplisit di ``?`` maupun ``#``.
+    """
+    url = url.strip().rstrip(".,;!?)>]'\"")
+    for sep in ("?", "#"):
+        if sep in url:
+            url = url.split(sep, 1)[0]
+    return url.rstrip("/")
+
+
 def _fb_canonical(url: str) -> str:
     try:
         s = _session_with_cookies(("facebook.com", "fbcdn.net"))
@@ -812,13 +827,30 @@ def _fb_find_key(obj, key, out, depth=0):
             _fb_find_key(x, key, out, depth + 1)
 
 
+def _fb_media_key(url: str) -> str:
+    """Kunci dedup untuk URL media Facebook.
+
+    Facebook mengembalikan foto yang SAMA dengan query berbeda (``ctp=s913x516``
+    vs ``ctp=p600x600``) untuk tiap attachment, sehingga pencocokan URL utuh
+    meloloskan duplikat. Kunci memakai path saja.
+
+    PENTING: query TIDAK boleh dibuang dari URL yang disimpan — parameter
+    ``oh=`` (hash) dan ``oe=`` (kedaluwarsa) adalah tanda tangan yang wajib ada
+    agar file bisa diunduh dari CDN.
+    """
+    return url.split("?", 1)[0].split("#", 1)[0]
+
+
 def _fb_extract_media(node: dict) -> list:
     media: list = []
     seen = set()
 
     def add(url, mtype):
-        if url and url not in seen:
-            seen.add(url)
+        if not url:
+            return
+        key = _fb_media_key(url)
+        if key not in seen:
+            seen.add(key)
             media.append({"type": mtype, "url": url})
 
     vids: list = []

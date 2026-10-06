@@ -37,6 +37,7 @@ from misskaty.helper.sosmed_helper import (
     _tt_plain_card,
     _tt_rich_card,
     _url_keyboard,
+    clean_sosmed_url,
 )
 from misskaty.vars import COMMAND_HANDLER, OWNER_ID
 
@@ -235,7 +236,7 @@ async def igdl_handler(client, message):
             f"<code>/{message.command[0]} https://www.instagram.com/p/DcdCVwzkULZ/</code>"
         )
 
-    link = message.command[1].strip()
+    link = clean_sosmed_url(message.command[1])
     if not any(d in link for d in ("instagram.com", "instagr.am")):
         return await message.reply(
             "<b>❌</b> Link bukan dari Instagram. Harap berikan URL instagram.com."
@@ -286,7 +287,7 @@ async def twitterdl(_, message):
         return await message.reply(
             f"Use command /{message.command[0]} [link] to download Twitter video."
         )
-    url = message.command[1]
+    url = clean_sosmed_url(message.command[1])
     if "x.com" in url:
         url = url.replace("x.com", "twitter.com")
     msg = await message.reply("<emoji id=5319190934510904031>⏳</emoji> Processing..")
@@ -361,7 +362,7 @@ async def tiktokdl(_, message):
             f"<code>/{message.command[0]} https://vt.tiktok.com/ZSqDfLf8d/</code>"
         )
 
-    link = message.command[1].strip()
+    link = clean_sosmed_url(message.command[1])
     if not any(d in link for d in ("tiktok.com", "tiktokv.com", "vt.tiktok")):
         return await message.reply(
             "<b>❌</b> Link bukan dari TikTok. Harap berikan URL tiktok.com."
@@ -412,7 +413,7 @@ async def fbdl(_, message):
             f"Contoh:\n<code>/{message.command[0]} https://www.facebook.com/share/p/18qRpLjJEk/</code>"
         )
 
-    link = message.command[1].strip()
+    link = clean_sosmed_url(message.command[1])
     if not any(d in link for d in ("facebook.com", "fb.watch", "fb.me")):
         return await message.reply("<b>❌</b> Link bukan dari Facebook.")
 

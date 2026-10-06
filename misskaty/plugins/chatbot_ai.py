@@ -34,6 +34,7 @@ from misskaty.helper.sosmed_helper import (
     _tt_plain_card,
     _tt_rich_card,
     _url_keyboard,
+    clean_sosmed_url,
 )
 
 RE_INSTAGRAM = re.compile(r"https?://(?:www\.)?(?:instagram\.com|instagr\.am)/[^\s]+", re.I)
@@ -94,21 +95,21 @@ async def _handle_guest_sosmed(client, ctx: Message, text: str) -> bool:
 
     if ig_match:
         platform = "Instagram"
-        link = ig_match.group(0).rstrip(".,;!?)>]\'\"")
+        link = clean_sosmed_url(ig_match.group(0))
         fetcher = _get_instagram_data
         rich_builder = _build_rich_card
         plain_builder = _build_plain_card
         keyb_builder = _url_keyboard
     elif tt_match:
         platform = "TikTok"
-        link = tt_match.group(0).rstrip(".,;!?)>]\'\"")
+        link = clean_sosmed_url(tt_match.group(0))
         fetcher = _get_tiktok_data
         rich_builder = _tt_rich_card
         plain_builder = _tt_plain_card
         keyb_builder = _tt_keyboard
     elif fb_match:
         platform = "Facebook"
-        link = fb_match.group(0).rstrip(".,;!?)>]\'\"")
+        link = clean_sosmed_url(fb_match.group(0))
         fetcher = _get_facebook_data
         rich_builder = _fb_rich_card
         plain_builder = _fb_plain_card
