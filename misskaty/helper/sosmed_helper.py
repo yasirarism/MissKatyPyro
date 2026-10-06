@@ -1128,7 +1128,7 @@ def _fb_rich_card(data: dict) -> str:
         label = f"{len(media)} media" if len(media) > 1 else "1 media"
         parts.append(f"<tg-slideshow>{''.join(items)}<figcaption>{_esc(owner)} · {label}</figcaption></tg-slideshow>")
 
-    parts.append(f"<p><tg-emoji emoji-id=\"5206488346964018944\">📘</tg-emoji> <b>{_esc(owner)}</b></p>")
+    parts.append(f"<p><tg-emoji emoji-id=\"5206546814353818069\">📘</tg-emoji> <b>{_esc(owner)}</b></p>")
 
     rows = []
     if "reactions" in counts:
@@ -1189,7 +1189,7 @@ def _fb_plain_card(data: dict) -> str:
     if data.get("views"):
         bits.append(f"<emoji id=\"5960714428394507968\">👁</emoji> {_fmt_num(data['views'])}")
     bits.append(f"<emoji id=\"5843506780931363129\">🖼</emoji> {len(data.get('media') or [])}")
-    lines = [f"<emoji id=\"5206488346964018944\">📘</emoji> <b>{_esc(owner)}</b>", " • ".join(bits)]
+    lines = [f"<emoji id=\"5206546814353818069\">📘</emoji> <b>{_esc(owner)}</b>", " • ".join(bits)]
     caption = (data.get("caption") or "").strip()
     if caption:
         if len(caption) > 900:
