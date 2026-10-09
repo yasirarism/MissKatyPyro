@@ -70,7 +70,7 @@ DEFAULT_WEB = {
     "terbit21": "https://terbit21official.fit",
     "lk21": "https://tv12.lk21official.cc",
     "gomov": "https://klikxxi.com",
-    "movieku": "https://movieku.fit",
+    "movieku": "https://movieku.website",
     "kusonime": "https://kusonime.com",
     "lendrive": "https://lendrive.web.id",
     "samehadaku": "https://samehadaku.help",
@@ -817,6 +817,80 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
     return kusoResult, PageLen, extractbtn1, extractbtn2
 
 
+# Movieku helpers
+def movieku_base() -> str:
+    """Base URL movieku tanpa trailing slash."""
+    return web.get("movieku", DEFAULT_WEB["movieku"]).rstrip("/")
+
+
+def movieku_search_url(kueri: str) -> str:
+    """URL pencarian movieku; query harus di-encode agar spasi tidak bikin URL invalid."""
+    base = movieku_base()
+    return f"{base}/?s={quote_plus(kueri)}" if kueri else base
+
+
+def parse_movieku_search(html: str) -> list[dict]:
+    """Ambil daftar film/series dari halaman pencarian atau homepage movieku."""
+    soup = BeautifulSoup(html, "lxml")
+    results = []
+    for i in soup.find_all(class_="bx"):
+        anchor = i.find("a")
+        if not anchor or not anchor.get("href"):
+            continue
+        judul = anchor.get("title") or anchor.get_text(strip=True) or "Judul tidak diketahui"
+        # Kartu tanpa badge kualitas (mis. rilisan TMDB) tidak punya .overlay
+        overlay = i.find(class_="overlay")
+        typ = overlay.get_text(strip=True) if overlay else ""
+        results.append(
+            {"judul": judul, "link": anchor["href"], "type": typ or "~"}
+        )
+    return results
+
+
+MOVIEKU_VALID_RESOLUTIONS = {"1080p", "720p", "480p", "360p"}
+
+
+def parse_movieku_downloads(soup: BeautifulSoup):
+    """Parse blok #smokeddl. Judul download bisa <h2> (halaman film) atau <h3> (halaman episode)."""
+    data = {}
+    total_links = 0
+    current_title = None
+    for element in soup.find_all(["h2", "h3", "h4", "p"]):
+        if element.name != "p" and "smokettl" in (element.get("class") or []):
+            current_title = element.get_text(strip=True)
+            data.setdefault(current_title, [])
+            continue
+        if element.name != "p" or not current_title:
+            continue
+        strong_tag = element.find("strong")
+        if not strong_tag:
+            continue
+        resolution = strong_tag.get_text(strip=True)
+        if resolution not in MOVIEKU_VALID_RESOLUTIONS:
+            continue
+        anchors = element.find_all("a")
+        if not anchors:
+            continue
+        total_links += len(anchors)
+        links = ", ".join(
+            f'<a href="{a["href"]}">{a.get_text(strip=True)}</a>'
+            for a in anchors
+            if a.get("href")
+        )
+        data[current_title].append(f"{resolution} {links}")
+    # buang judul tanpa link valid
+    return {t: r for t, r in data.items() if r}, total_links
+
+
+def format_movieku_downloads(data: dict) -> list[str]:
+    output = []
+    for title, resolutions in data.items():
+        output.append(title)
+        output.extend(resolutions)
+        output.append("")
+    return output
+
+
 # Movieku GetData
 async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
     await ensure_web_config()
@@ -824,24 +898,15 @@ async def getDataMovieku(msg, kueri, CurrentPage, user, strings):
         moviekudata = []
         with contextlib.redirect_stdout(sys.stderr):
             try:
-                target = f"{web['movieku']}/?s={kueri}" if kueri else web["movieku"]
-                data = await fetch.get(
-                    target, follow_redirects=True
-                )
+                target = movieku_search_url(kueri)
+                data = await fetch.get(target, follow_redirects=True)
                 data.raise_for_status()
             except httpx.HTTPError as exc:
                 await msg.edit(
                     f"ERROR: Failed to fetch data from {exc.request.url} - <code>{exc}</code>"
                 )
                 return None, 0, None
-        r = BeautifulSoup(data, "lxml")
-        res = r.find_all(class_="bx")
-        for i in res:
-            judul = i.find_all("a")[0]["title"]
-            link = i.find_all("a")[0]["href"]
-            typ = i.find(class_="overlay").text
-            typee = typ.strip() if typ.strip() != "" else "~"
-            moviekudata.append({"judul": judul, "link": link, "type": typee})
+        moviekudata = parse_movieku_search(data.text)
         if not moviekudata:
             await msg.edit(strings("no_result"), del_in=5)
             return None, 0, None
@@ -1842,40 +1907,34 @@ async def _extract_nodrakor(client, callback_query, strings, link, keyboard):
 async def _extract_movieku(client, callback_query, strings, link, keyboard):
     with contextlib.redirect_stdout(sys.stderr):
         try:
-            html = await fetch.get(link)
+            html = await fetch.get(link, follow_redirects=True)
             html.raise_for_status()
             soup = BeautifulSoup(html.text, "lxml")
-            data = {}
-            output = []
-            total_links = 0
-            valid_resolutions = {'1080p', '720p', '480p', '360p'}
-            current_title = None
-
-            for element in soup.find_all(['h3', 'p']):
-                if element.name == 'h3' and 'smokettl' in element.get('class', []):
-                    current_title = element.text.strip()
-                    if current_title not in data:
-                        data[current_title] = []
-                elif element.name == 'p' and current_title:
-                    strong_tag = element.find('strong')
-                    if strong_tag:
-                        resolution = strong_tag.text.strip()
-                        if resolution in valid_resolutions:
-                            total_links += 1
-                            links = ', '.join([f'<a href="{a["href"]}">{a.text.strip()}</a>' for a in element.find_all('a')])
-                            data[current_title].append(f"{resolution} {links}")
-
-            for title, resolutions in data.items():
-                output.append(title)
-                output.extend(resolutions)
-                output.append('')
-            if total_links > 70:
+            data, total_links = parse_movieku_downloads(soup)
+            output = format_movieku_downloads(data)
+            if not output:
+                output = (
+                    "\nOpen link in browser, click on episode page and use "
+                    "/movieku_scrap [page link] commands for extract download link"
+                )
+                return await callback_query.message.edit(
+                    strings("res_scrape").format(link=link, kl=output),
+                    reply_markup=keyboard,
+                )
+            if total_links > 70 or len("\n".join(output)) > 3500:
                 url = await post_to_telegraph(False, link, "<br>".join(output))
-                return await callback_query.message.edit(strings("res_scrape").format(link=link, kl=f"Your result is too long, i have pasted your result on Telegraph:\n{url}"), reply_markup=keyboard)
-            if "\n".join(output) == "":
-                output = "\nOpen link in browser, click on episode page and use /movieku_scrap [page link] commands for extract download link"
-                return await callback_query.message.edit(strings("res_scrape").format(link=link, kl=output), reply_markup=keyboard)
-            await callback_query.message.edit(strings("res_scrape").format(link=link, kl="\n".join(output)), reply_markup=keyboard)
+                return await callback_query.message.edit(
+                    strings("res_scrape").format(
+                        link=link,
+                        kl=f"Your result is too long, i have pasted your result on Telegraph:\n{url}",
+                    ),
+                    reply_markup=keyboard,
+                )
+            await callback_query.message.edit(
+                strings("res_scrape").format(link=link, kl="\n".join(output)),
+                link_preview_options=pyro_types.LinkPreviewOptions(is_disabled=True),
+                reply_markup=keyboard,
+            )
         except httpx.HTTPError as exc:
             await callback_query.message.edit(
                 f"HTTP Exception for {exc.request.url} - <code>{exc}</code>",
@@ -1990,39 +2049,18 @@ async def muviku_scrap(_, message, strings):
     with contextlib.redirect_stdout(sys.stderr):
         try:
             link = message.text.split(maxsplit=1)[1]
-            html = await fetch.get(link)
+            html = await fetch.get(link, follow_redirects=True)
             html.raise_for_status()
             soup = BeautifulSoup(html.text, "lxml")
-            data = {}
-            output = []
-            total_links = 0
-            valid_resolutions = {'1080p', '720p', '480p', '360p'}
-            current_title = None
-
-            for element in soup.find_all(['h3', 'p']):
-                if element.name == 'h3' and 'smokettl' in element.get('class', []):
-                    current_title = element.text.strip()
-                    if current_title not in data:
-                        data[current_title] = []
-                elif element.name == 'p' and current_title:
-                    strong_tag = element.find('strong')
-                    if strong_tag:
-                        resolution = strong_tag.text.strip()
-                        if resolution in valid_resolutions:
-                            links = ', '.join([f'<a href="{a["href"]}">{a.text.strip()}</a>' for a in element.find_all('a')])
-                            data[current_title].append(f"{resolution} {links}")
-
-            for title, resolutions in data.items():
-                output.append(title)
-                output.extend(resolutions)
-                output.append('')
-                for res in resolutions:
-                    total_links += res.count('<a href=')
-            if not data:
+            data, total_links = parse_movieku_downloads(soup)
+            output = format_movieku_downloads(data)
+            if not output:
                 return await message.reply(strings("no_result"))
-            if total_links > 70:
+            if total_links > 70 or len("\n".join(output)) > 3500:
                 url = await post_to_telegraph(False, link, "<br>".join(output))
-                return await message.reply(f"Your result is too long, i have pasted your result on Telegraph:\n{url}")
+                return await message.reply(
+                    f"Your result is too long, i have pasted your result on Telegraph:\n{url}"
+                )
             await message.reply("\n".join(output))
         except IndexError:
             return await message.reply(
