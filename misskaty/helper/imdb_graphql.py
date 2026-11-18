@@ -13,10 +13,7 @@ IMDB_GRAPHQL_HEADERS = {
     "origin": "https://www.imdb.com",
     "referer": "https://www.imdb.com/",
     "priority": "u=1, i",
-    # WAF CloudFront IMDb menolak (403) request tanpa header klien ini.
-    # Nilai ini yang dikirim frontend imdb.com sendiri; tanpa header ini
-    # endpoint GraphQL selalu 403 walau UA/impersonate sudah benar.
-    "x-imdb-client-name": "imdb-web-next-localized",
+    "x-imdb-client-name": "imdb-web-next-localized",  # wajib: tanpa ini WAF IMDb balas 403
     "user-agent": (
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -112,7 +109,6 @@ LAST_ERROR = ""
 
 
 def imdb_last_error() -> str:
-    """Alasan kegagalan terakhir, supaya pemanggil tidak cuma bilang 'empty'."""
     return LAST_ERROR
 
 
