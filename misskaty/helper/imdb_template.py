@@ -1,8 +1,3 @@
-"""Shared IMDB template rendering helpers.
-
-Satu sumber kebenaran untuk render template layout IMDb yang dipakai oleh
-plugin inline_search dan imdb_search. Sebelumnya diduplikasi di kedua plugin.
-"""
 import html
 import logging
 import re
@@ -39,7 +34,6 @@ def imdb_custom_emoji(key: str, glyph: str) -> str:
 
 
 def format_imdb_money(value: dict | None) -> str:
-    """Format GraphQL money payload for custom-template placeholders."""
     if not value:
         return "-"
     amount = value.get("amount")
@@ -50,17 +44,12 @@ def format_imdb_money(value: dict | None) -> str:
 
 
 class ImdbTemplateDefaults(dict):
-    """dict yang mengembalikan '-' untuk key yang tidak ada di payload."""
 
     def __missing__(self, key):
         return "-"
 
 
 def _render_template_buttons(template: str, payload: dict):
-    """Hapus tombol markdown `[label](url)` dari template, kumpulkan tombolnya.
-
-    Mengembalikan (template_tanpa_tombol, list[InlineKeyboardButton]).
-    """
     buttons = []
 
     def _replace(match: re.Match) -> str:
@@ -82,7 +71,6 @@ def _render_template_buttons(template: str, payload: dict):
 
 
 def render_imdb_template(template: str, payload: dict) -> str | None:
-    """Render template menjadi teks HTML (tombol jadi anchor <a>)."""
     try:
         normalized = template.replace("\\n", "\n")
         rendered = normalized.format_map(ImdbTemplateDefaults(payload))
@@ -95,10 +83,6 @@ def render_imdb_template(template: str, payload: dict) -> str | None:
 
 
 def render_imdb_template_with_buttons(template: str, payload: dict):
-    """Render template; tombol markdown dikumpulkan sebagai tombol inline.
-
-    Mengembalikan (rendered_text, list[InlineKeyboardButton]).
-    """
     try:
         normalized = template.replace("\\n", "\n")
         template_without_buttons, buttons = _render_template_buttons(
@@ -112,7 +96,6 @@ def render_imdb_template_with_buttons(template: str, payload: dict):
 
 
 def _with_html_placeholders(payload: dict) -> dict:
-    """Salin payload, tambahkan <key>_html berisi value yang di-escape HTML."""
     enriched = dict(payload)
     for key, value in payload.items():
         if value is None:
@@ -123,7 +106,6 @@ def _with_html_placeholders(payload: dict) -> dict:
 
 
 def normalize_imdb_layout_fields(stored_fields) -> set:
-    """Normalisasi format field layout tersimpan menjadi set field tersembunyi."""
     if isinstance(stored_fields, dict):
         return {key for key, enabled in stored_fields.items() if not enabled}
     if isinstance(stored_fields, (list, tuple, set)):

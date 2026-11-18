@@ -1,9 +1,3 @@
-"""
-* @author        yasir <yasiramunandar@gmail.com>
-* @date          2022-12-01 09:12:27
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 
 import asyncio
 import contextlib
@@ -67,7 +61,6 @@ async def mediainfo_cancel_cb(_, query: CallbackQuery):
 
 
 async def _mi_progress(current, total, ud_type, message, start, dc_id, gid, uid):
-    """progress_for_pyrogram + tombol Cancel tetap tampil + cek flag cancel."""
     if ACTIVE_MEDIAINFO.get(int(gid), {}).get("cancelled"):
         raise asyncio.CancelledError
     now = time.time()
@@ -127,7 +120,6 @@ MAX_URL_FULL = 200 * 1024 * 1024  # 200 MiB — cap full download URL tanpa Rang
 
 
 async def _fetch_chunks(client: Client, decoded: FileId, file_size: int, offset_chunks: int, limit_chunks: int) -> bytes:
-    """Ambil N chunk (1 MiB) mulai dari offset tertentu via MTProto."""
     data = b""
     async for chunk in client.get_file(
         decoded, file_size=file_size, limit=limit_chunks, offset=offset_chunks
@@ -137,7 +129,6 @@ async def _fetch_chunks(client: Client, decoded: FileId, file_size: int, offset_
 
 
 def _is_partial_supported(file_id: FileId) -> bool:
-    """Foto tidak bisa via InputDocumentFileLocation — full download saja."""
     return file_id.file_type not in (
         FileType.PHOTO,
         FileType.CHAT_PHOTO,
@@ -150,13 +141,6 @@ def _is_partial_supported(file_id: FileId) -> bool:
 
 
 async def _partial_download(client: Client, media, file_size: int) -> str | None:
-    """Download head+tail file ke disk, return path temp (None jika gagal).
-
-    - MP4/MOV: `moov` atom umumnya di akhir file -> tail cukup.
-    - MKV/WebM/AVI/MP3/FLAC: metadata di awal -> head cukup.
-    - Gabungan head+tail membuat MediaInfo bisa membaca hampir semua format
-      tanpa mengunduh file utuh.
-    """
     try:
         decoded = FileId.decode(media.file_id)
         if not _is_partial_supported(decoded):
@@ -186,10 +170,6 @@ async def _partial_download(client: Client, media, file_size: int) -> str | None
 
 
 def _parse_content_range(value: str | None) -> int:
-    """Parse header ``Content-Range`` -> total ukuran file (0 jika tidak tahu).
-
-    Contoh: ``bytes 0-8388607/123456789`` -> 123456789
-    """
     if not value or "/" not in value:
         return 0
     try:
@@ -199,19 +179,6 @@ def _parse_content_range(value: str | None) -> int:
 
 
 async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bool = False, gid: int = 0):
-    """Download URL remote via HTTP Range (head + tail) lalu simpan ke disk.
-
-    - Server support Range (206) -> ambil 8 MiB awal + 8 MiB akhir.
-    - Server abaikan Range (200) -> stream sampai 8 MiB saja (head);
-      kalau file > MAX_URL_FULL dan tidak support Range -> (None, total)
-      supaya pemanggil bisa menolak dengan pesan yang jelas.
-    - 403/404 -> (None, 0).
-    - ``gid`` diisi saat dipanggil dari /mediainfo: flag cancel dicek tiap
-      chunk, kalau user menekan Cancel -> raise ``asyncio.CancelledError``.
-
-    Returns:
-        ``(path, total_size)`` — total_size 0 berarti tidak diketahui.
-    """
     os.makedirs(tmp_dir, exist_ok=True)
     tmp_path = path.join(tmp_dir, f"mi_url_{job}.part")
 
@@ -293,27 +260,13 @@ async def _download_url_partial(url: str, tmp_dir: str, job: str, force_full: bo
 
 
 def _looks_complete(out: str | None) -> bool:
-    """Heuristik: output mediainfo dianggap lengkap jika ada section utama.
-
-    PENTING: jangan cek "General" — mediainfo pada file parsial (moov
-    rusak/terpotong) tetap return laporan super pendek yang mengandung
-    "General" tapi tanpa section Video/Audio/Text, dan keluar exit 0.
-    Kalau "General" ikut dicek, fallback full download tidak pernah jalan
-    (pelajaran CrossXBot commit 42c2f162).
-    """
+    # sengaja tanpa cek "General": file parsial tetap keluarkan General tapi tanpa section Video/Audio/Text
     if not out:
         return False
     return any(section in out for section in ("Video", "Audio", "Text"))
 
 
 def _has_moov_atom(file_path: str, scan_mb: int = 20) -> bool:
-    """Cek binary apakah atom ``moov`` ada di 20 MB pertama file.
-
-    MP4/MOV faststart menaruh moov di awal; non-faststart menaruhnya di
-    akhir. Kalau head+tail partial tidak memuat moov -> mediainfo pasti
-    tidak akan bisa baca -> langsung full download lebih hemat daripada
-    buang waktu analisis partial (pelajaran CrossXBot).
-    """
     try:
         with open(file_path, "rb") as f:
             head = f.read(scan_mb * 1024 * 1024)
@@ -323,17 +276,6 @@ def _has_moov_atom(file_path: str, scan_mb: int = 20) -> bool:
 
 
 async def _mediainfo_timeout(cmd_args: list[str], timeout: int = 20) -> tuple[str, str, int]:
-    """Jalankan command (list args) dengan timeout; kill process tree kalau hang.
-
-    Pakai ``asyncio.create_subprocess_exec`` (bukan shell string) supaya path
-    dengan karakter aneh tidak bisa pecah/inject. ``start_new_session=True``
-    menjadikan proses sebagai leader process group sendiri, sehingga pada
-    timeout kita bisa ``os.killpg`` — membunuh seluruh child process, bukan
-    cuma proses utama (pelajaran CrossXBot commit e461cd0f + review Sourcery).
-
-    Returns:
-        ``(stdout, stderr, returncode)``
-    """
     import os
     import signal
 
@@ -367,7 +309,6 @@ async def _mediainfo_timeout(cmd_args: list[str], timeout: int = 20) -> tuple[st
 
 
 def _is_mp4_family(file_path: str) -> bool:
-    """True jika file MP4/MOV family (magic ``ftyp`` di header)."""
     try:
         with open(file_path, "rb") as f:
             head = f.read(16)
@@ -377,13 +318,11 @@ def _is_mp4_family(file_path: str) -> bool:
 
 
 async def _run_mediainfo(file_path: str) -> str | None:
-    """Jalankan mediainfo CLI dengan timeout; return stdout (None jika kosong)."""
     stdout, _, _ = await _mediainfo_timeout(["mediainfo", file_path])
     return stdout if stdout else None
 
 
 async def _send_result(ctx: Message, process: Message, out: str, strings, media_type: str = "Unknown"):
-    """Buat paste + kirim file hasil mediainfo (dipakai reply & URL path)."""
     body_text = f"""
 MissKatyBot MediaInfo
 JSON

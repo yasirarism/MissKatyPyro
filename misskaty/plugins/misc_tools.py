@@ -1,9 +1,3 @@
-"""
-* @author        yasir <yasiramunandar@gmail.com>
-* @date          2022-12-01 09:12:27
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 
 import ast
 import asyncio
@@ -70,7 +64,6 @@ __HELP__ = """
 
 
 def remove_html_tags(text):
-    """Remove html tags from a string"""
 
     clean = re.compile("<.*?>")
     return re.sub(clean, "", text)
@@ -584,7 +577,6 @@ KURYANA_BASE = "https://kuryana.tbdh.app"
 
 
 async def _kuryana_json(path: str) -> dict | None:
-    """Fetch Kuryana mirror API. Return dict atau None kalau gagal/non-JSON."""
     try:
         async with aiohttp.ClientSession(
             headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
@@ -599,11 +591,6 @@ async def _kuryana_json(path: str) -> dict | None:
 
 
 async def mdlapi(title):
-    """Cari drama di MyDramaList via Kuryana mirror (lebih lengkap).
-
-    Return list of dict: {title, year, slug, type}. Fallback scrape MDL
-    langsung kalau Kuryana gagal.
-    """
     kuryana = await _kuryana_json(f"/search/q/{quote_plus(title)}")
     if kuryana and kuryana.get("results", {}).get("dramas"):
         return [
@@ -729,10 +716,6 @@ async def mdl_callback(_, query: CallbackQuery):
 
 
 async def mdl_detail(slug: str) -> dict:
-    """Ambil detail drama via Kuryana mirror (lebih lengkap).
-
-    Fallback scrape MDL langsung kalau Kuryana gagal.
-    """
     link = f"https://mydramalist.com/{slug}"
 
     kuryana = await _kuryana_json(f"/id/{slug}")

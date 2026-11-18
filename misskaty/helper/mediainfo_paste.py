@@ -5,9 +5,6 @@ from .http import fetch
 
 
 def html_builder(title: str, text: str) -> str:
-    """
-    Make proper html with css from given content.
-    """
 
     heading = "<span class='container heading'><b>{content}</b></span>"
     subheading = "<span class='container subheading'><b>{content}</b></span>"

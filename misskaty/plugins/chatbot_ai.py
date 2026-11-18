@@ -44,10 +44,6 @@ RE_FACEBOOK = re.compile(r"https?://(?:www\.|m\.|web\.)?(?:facebook\.com|fb\.wat
 
 
 class _GuestInlineMessage:
-    """Tiny adapter to mimic Message.edit_msg() for Guest Mode replies.
-
-    Guest replies are *inline messages* and must be edited using edit_inline_text.
-    """
 
     def __init__(self, client, inline_message_id: str):
         self._client = client
@@ -83,7 +79,6 @@ class _GuestInlineMessage:
 
 
 async def _handle_guest_sosmed(client, ctx: Message, text: str) -> bool:
-    """Detect FB, IG, or TikTok links in guest prompt; render rich card if found."""
     if not text:
         return False
 
@@ -157,7 +152,6 @@ async def _handle_guest_sosmed(client, ctx: Message, text: str) -> bool:
 
 
 async def _reply_ctx(client, ctx: Message, text: str, **kwargs):
-    """Reply helper that supports normal chats + Guest Mode."""
     if getattr(ctx, "guest_query_id", None):
         sent = await client.answer_guest_query(
             ctx.guest_query_id,
@@ -175,7 +169,6 @@ async def _reply_ctx(client, ctx: Message, text: str, **kwargs):
 
 
 async def _progress_ctx(client, ctx: Message, strings):
-    """Create 'processing' message that can be edited later."""
     if getattr(ctx, "guest_query_id", None):
         sent = await client.answer_guest_query(
             ctx.guest_query_id,
@@ -193,7 +186,6 @@ async def _progress_ctx(client, ctx: Message, strings):
 
 
 async def _edit_msg(bmsg, text: str, **kwargs):
-    """Edit a message: Kurigram Message uses .edit(); guest adapter uses .edit_msg()."""
     if hasattr(bmsg, "edit_msg"):
         return await bmsg.edit_msg(text, **kwargs)
     return await bmsg.edit(text, **kwargs)
@@ -215,11 +207,6 @@ LOGGER = getLogger("MissKaty")
 
 
 async def _rich_send(client, chat_id, text: str, draft_id: int = None):
-    """Kirim rich message (draft/final) dengan handling FloodWait & error global.
-
-    - draft_id=None  -> send_rich_message (final)
-    - draft_id!=None -> send_rich_message_draft (streaming preview)
-    """
     retries = 3
     for attempt in range(retries):
         try:
@@ -245,17 +232,6 @@ async def _rich_send(client, chat_id, text: str, draft_id: int = None):
 
 
 def _extract_guest_prompt(ctx: Message) -> str:
-    """Extract user prompt when the bot is summoned in Guest Mode.
-
-    Handles both:
-    - Single mention: "@BotUsername <prompt>"
-    - Multi-bot messages (each bot per line), e.g.
-        "@BotA foo\n@BotB bar"
-      In this case, we only take the line(s) belonging to this bot.
-
-    Note: In Guest Mode, Kurigram will deliver the same source message text to each
-    mentioned guest bot (up to 3). Each bot should extract its own segment.
-    """
     raw_text = (ctx.text or ctx.caption or "")
     text = raw_text.strip()
     if not text:
@@ -343,7 +319,6 @@ _BLOCK_TAGS = re.compile(
 
 
 def _rich_too_long(text: str) -> bool:
-    """True jika teks melampaui batas rich message (chars atau blocks)."""
     if len(text) > RICH_MAX_CHARS:
         return True
     # Estimasi jumlah blok dari tag blok-level (batas 500)
@@ -353,14 +328,12 @@ def _rich_too_long(text: str) -> bool:
 
 
 def _is_private_chat(ctx: Message) -> bool:
-    """True when we can use rich messages/drafts: private DM, not guest inline."""
     if getattr(ctx, "guest_query_id", None):
         return False
     return getattr(ctx.chat, "type", None) == enums.ChatType.PRIVATE
 
 
 async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
-    """Kirim pesan error: rich message di private, edit_msg di tempat lain."""
     if rich_mode:
         await _rich_send(client, ctx.chat.id, err)
     else:
@@ -368,11 +341,6 @@ async def _deliver_error(client, ctx, bmsg, err: str, rich_mode: bool):
 
 
 async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool):
-    """Kirim hasil: rich message di private, edit_msg di tempat lain.
-
-    Rich message punya batas 32768 char / 500 blok (Bot API); edit biasa
-    dibatasi 4096 char. Jika melampaui batas mode aktif -> YasirBin.
-    """
     if rich_mode:
         if not _rich_too_long(text):
             await _rich_send(client, ctx.chat.id, text)
@@ -392,7 +360,6 @@ async def _deliver_result(client, ctx, bmsg, text: str, strings, rich_mode: bool
 
 
 async def _edit_result(client, ctx, bmsg, text: str, strings):
-    """Send final answer: rich message in private, edit_msg elsewhere."""
     rich_mode = ctx is not None and _is_private_chat(ctx)
     await _deliver_result(client, ctx, bmsg, text, strings, rich_mode)
 

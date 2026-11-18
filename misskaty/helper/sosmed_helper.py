@@ -679,13 +679,6 @@ async def _get_tiktok_data(link: str) -> dict:
 
 
 def clean_sosmed_url(url: str) -> str:
-    """Buang query/trailing junk dari URL sosmed (dipakai IG/TikTok/FB).
-
-    Parameter seperti ``?app=fbl`` (dari tombol "share via app") bukan bagian
-    dari identitas post dan membuat permintaan ke platform meleset. ``rstrip``
-    biasa tidak memotong ``?`` karena ia ada di TENGAH string, jadi harus
-    dipotong eksplisit di ``?`` maupun ``#``.
-    """
     url = url.strip().rstrip(".,;!?)>]'\"")
     for sep in ("?", "#"):
         if sep in url:
@@ -694,21 +687,7 @@ def clean_sosmed_url(url: str) -> str:
 
 
 async def edit_rich_or_plain(status_msg, rich_html: str, plain_html: str, reply_markup=None) -> bool:
-    """Ubah pesan status jadi kartu rich; kalau gagal, jatuh ke kartu plain.
-
-    PENTING: ``Message.edit_rich`` **tidak melempar exception** untuk kegagalan
-    Telegram seperti ``RICH_MESSAGE_VIDEO_NO_MEDIA_FOUND`` — error ditelan di
-    dalamnya dan fungsi balas ``False``. Jadi ``try/except`` saja TIDAK cukup
-    dan fallback plain tidak akan pernah jalan (pesan nyangkut di
-    "⏳ Processing...").
-
-    Nilai balik ``edit_rich``:
-      - objek Message -> sukses
-      - ``False``      -> gagal (rich ditolak Telegram) atau tidak dimodifikasi
-      - ``None``       -> pesan asli sudah tidak ada, tidak bisa diedit lagi
-
-    Returns True kalau ada versi kartu yang berhasil dikirim.
-    """
+    # edit_rich membalas False (bukan raise) saat Telegram menolak, jadi fallback tidak bisa main try/except saja
     result = None
     try:
         result = await status_msg.edit_rich(
@@ -865,16 +844,7 @@ def _fb_find_key(obj, key, out, depth=0):
 
 
 def _fb_media_key(url: str) -> str:
-    """Kunci dedup untuk URL media Facebook.
-
-    Facebook mengembalikan foto yang SAMA dengan query berbeda (``ctp=s913x516``
-    vs ``ctp=p600x600``) untuk tiap attachment, sehingga pencocokan URL utuh
-    meloloskan duplikat. Kunci memakai path saja.
-
-    PENTING: query TIDAK boleh dibuang dari URL yang disimpan — parameter
-    ``oh=`` (hash) dan ``oe=`` (kedaluwarsa) adalah tanda tangan yang wajib ada
-    agar file bisa diunduh dari CDN.
-    """
+    # dedup pakai path saja; query (oh/oe/_nc_ohc) adalah tanda tangan CDN yang wajib ikut saat diunduh
     return url.split("?", 1)[0].split("#", 1)[0]
 
 

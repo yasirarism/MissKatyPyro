@@ -147,7 +147,6 @@ async def refund_star_payment(client: Client, message: Message):
 @app.on_message(filters.command(["logs"], COMMAND_HANDLER) & (filters.user(SUDO) | filters.user(OWNER_ID)))
 @use_chat_lang()
 async def log_file(_, ctx: Message, strings):
-    """Send log file"""
     msg = await ctx.reply("<b>Reading bot logs ...</b>")
     if len(ctx.command) == 1:
         try:
@@ -257,9 +256,6 @@ async def balas(_, ctx: Message) -> "str":
 @app.on_message(filters.command(["stats"], COMMAND_HANDLER))
 @new_task
 async def server_stats(_, ctx: Message) -> "Message":
-    """
-    Give system stats of the server.
-    """
     total, used, free = disk_usage(".")
     process = Process(os.getpid())
 

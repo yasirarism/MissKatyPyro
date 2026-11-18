@@ -178,13 +178,6 @@ async def _toggle_layout_field(user_id: int, field_key: str):
 
 
 def _to_rich_html(text: str) -> str:
-    """Konversi caption HTML biasa (parse_mode=HTML) ke HTML rich message.
-
-    Rich message tidak merender ``\\n`` sebagai newline — harus pakai ``<br>``
-    atau tag blok. `<blockquote expandable>` juga bukan tag rich yang valid,
-    diganti `<details>` + `<summary>` supaya tetap collapsible. Custom emoji
-    ``<emoji id=...>`` diubah ke bentuk rich ``<tg-emoji emoji-id=...>``.
-    """
     # 0) Custom emoji -> bentuk rich message (terima bentuk quoted & unquoted)
     text = re.sub(
         r'<emoji id="?(\d+)"?>([^<]*)</emoji>',
@@ -230,15 +223,6 @@ def _to_rich_html(text: str) -> str:
 
 
 async def _send_rich_result(self, query, res_str, markup, poster_url=None):
-    """Kirim hasil IMDb sebagai rich message (caption kepanjangan / user pilih).
-
-    Prioritas sekarang: EDIT pesan yang sudah ada menjadi rich message
-    (didukung ``edit_message_text`` + ``rich_message`` di fork Kurigram),
-    jadi tidak perlu hapus-lalu-kirim pesan baru. Poster dikirim via
-    ``<img src="URL">`` (server Telegram yang fetch URL); kalau gagal ->
-    fallback rich tanpa foto, lalu edit HTML biasa. Kirim pesan baru hanya
-    dipakai sebagai jalan terakhir kalau pesan asli sudah tidak bisa diedit.
-    """
     chat_id = query.message.chat.id
     rich_html = _to_rich_html(res_str)
     photo_html = f'<img src="{poster_url}"/>\n\n' if poster_url else ""
@@ -285,16 +269,6 @@ async def _send_rich_result(self, query, res_str, markup, poster_url=None):
 
 
 async def _deliver_imdb_result(self, query, res_str, markup, disable_web_preview, thumb, send_as_photo):
-    """Kirim hasil IMDb ke chat.
-
-    Prioritas:
-    1. send_as_photo + poster -> download lalu edit media foto + caption
-    2. caption kepanjangan (MediaCaptionTooLong): EDIT pesan yang ada jadi
-       rich message (bukan hapus-lalu-kirim) dengan `<img src="URL">`,
-       fallback rich tanpa foto kalau URL gagal
-    3. teks kepanjangan tanpa foto (MessageTooLong) -> rich message via edit
-    4. selain itu -> edit teks biasa
-    """
     if not send_as_photo:
         try:
             await query.message.edit(
@@ -729,15 +703,6 @@ async def imdbsetlang(_, query: CallbackQuery):
 
 
 async def _imdb_search(kueri, message, locale: str = "id", edit_msg=None, with_mention: bool = False, user_id: int | None = None, mention: str | None = None):
-    """Cari judul di database suggestion IMDb, tampilkan list hasil + tombol.
-
-    ``locale`` menentukan bahasa teks ("id" / "en"). ``edit_msg`` diisi untuk
-    meng-edit pesan yang sudah ada (dipakai callback imdbcari), kalau None
-    pesan baru di-reply. ``with_mention`` menambah "~ @user" di header hasil.
-    ``user_id``/``mention`` di-override saat pesan bukan dari user langsung
-    (callback: query.message.from_user = bot). Satu fungsi untuk semua jalur
-    pencarian (command & callback).
-    """
     is_id = locale == "id"
     S = _IMDB_SEARCH_STRINGS.get(locale, _IMDB_SEARCH_STRINGS["id"])
     uid = user_id if user_id is not None else (message.from_user.id if message.from_user else 0)
@@ -959,13 +924,6 @@ _RATING_STAR = _ce("rating_star", "⭐")
 async def _build_imdb_result(
     r_json, movie, imdb_url, locale, template, hidden_fields, imdb_by, ott, uid: int = 0
 ):
-    """Rangkai hasil detail IMDb menjadi satu pesan.
-
-    Mengembalikan ``(res_str, markup, disable_web_preview, send_as_photo)``.
-    Setiap baris disimpan di dict ``lines`` supaya penghapusan field
-    tersembunyi (layout) tepat sasaran — tidak perlu string replace yang
-    rapuh seperti sebelumnya.
-    """
     L = _IMDB_LABELS[locale]
     lines: dict = {}
     template_markup: InlineKeyboardMarkup | None = None
@@ -1306,7 +1264,6 @@ async def _build_imdb_result(
 
 
 async def _process_imdb_callback(self: Client, query: CallbackQuery, movie: str, locale: str):
-    """Alur detail IMDb (dipakai callback id & en — bedanya hanya label)."""
     L = _IMDB_LABELS[locale]
     with contextlib.redirect_stdout(sys.stderr):
         try:

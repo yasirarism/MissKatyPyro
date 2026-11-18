@@ -1,9 +1,3 @@
-"""
-* @author        yasir <yasiramunandar@gmail.com>
-* @created       2022-12-01 09:12:27
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 
 import asyncio
 import contextlib
@@ -68,7 +62,6 @@ _ACTIVE_EXTRACTS: dict[int, dict] = {}
 
 
 def _purge_expired_sessions():
-    """Hapus session yang sudah lewat TTL supaya dict tidak membengkak."""
     now = time()
     expired = [
         mid
@@ -97,7 +90,6 @@ def get_subname(lang, url, ext):
 
 
 async def _expire_extract_session(message_id: int):
-    """Expire menu, remove downloaded Telegram source, and update its message."""
     try:
         await asyncio.sleep(_EXTRACT_TTL)
         session = _EXTRACT_SESSIONS.pop(message_id, None)
@@ -119,7 +111,6 @@ async def _expire_extract_session(message_id: int):
 
 
 async def _probe_media(source: str) -> dict:
-    """Probe local file/URL without shell interpolation."""
     proc = await asyncio.create_subprocess_exec(
         "ffprobe", "-v", "error", "-print_format", "json",
         "-show_format", "-show_streams", source,
@@ -145,7 +136,6 @@ def _media_source(reply: Message):
 
 
 class StreamExtractHelper:
-    """Helper kecil untuk validasi dan parsing callback stream extract."""
 
     @staticmethod
     def sanitize(value: str) -> str:
@@ -160,7 +150,6 @@ class StreamExtractHelper:
 
     @staticmethod
     def parse_callback(data: str) -> tuple[int, str, str, str] | None:
-        """Parse payload -> (user_id, lang, map_code, codec). None kalau invalid."""
         try:
             _, uid, lang, map_code, codec = data.split("#", 4)
             return int(uid), lang, map_code, codec

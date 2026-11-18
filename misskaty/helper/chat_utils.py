@@ -1,5 +1,3 @@
-"""Misc chat utilities shared by plugins: user extraction, file-id
-retrieval, broadcast helper and the in-memory ``temp`` state container."""
 
 import asyncio
 import logging
@@ -75,7 +73,6 @@ def get_file_id(msg: Message):
 
 
 def extract_user_and_name(message: Message) -> Union[int, str]:
-    """extracts (user_id, user_first_name) from a message (sync helper)"""
     # https://github.com/SpEcHiDe/PyroGramBot/blob/f30e2cca12002121bad1982f68cd0ff9814ce027/pyrobot/helper_functions/extract_user.py#L7
     user_id = None
     user_first_name = None

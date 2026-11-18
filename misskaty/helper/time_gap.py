@@ -4,8 +4,6 @@ GAP = {}
 
 
 async def check_time_gap(user_id: int):
-    """A Function for checking user time gap!
-    :parameter user_id Telegram User ID"""
 
     if str(user_id) in GAP:
         current_time = time.time()

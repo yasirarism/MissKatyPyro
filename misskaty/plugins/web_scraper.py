@@ -1,9 +1,3 @@
-"""
-* @author        yasir <yasiramunandar@gmail.com>
-* @created       2022-12-01 09:12:27
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 
 import contextlib
 import logging
@@ -532,7 +526,6 @@ LK21_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, 
 
 
 async def _lk21_download_base(origin_base: str, sample_slug: str) -> str:
-    """Deteksi domain download LK21 dari tombol DOWNLOAD di halaman detail."""
     cached = LK21_DL_BASE_CACHE.get("base")
     if cached:
         return cached
@@ -577,7 +570,6 @@ async def _lk21_download_base(origin_base: str, sample_slug: str) -> str:
 
 
 async def _scrape_lk21_direct(kueri, page: int = 1) -> list[dict]:
-    """Scrape LK21 langsung dari situs via FlareSolverr (fallback saat API yasirapi kosong)."""
     base = web.get("lk21") or DEFAULT_WEB["lk21"]
     if not base.startswith(("http://", "https://")):
         base = f"https://{base}"
@@ -819,18 +811,15 @@ async def getDataKuso(msg, kueri, CurrentPage, user, strings):
 
 # Movieku helpers
 def movieku_base() -> str:
-    """Base URL movieku tanpa trailing slash."""
     return web.get("movieku", DEFAULT_WEB["movieku"]).rstrip("/")
 
 
 def movieku_search_url(kueri: str) -> str:
-    """URL pencarian movieku; query harus di-encode agar spasi tidak bikin URL invalid."""
     base = movieku_base()
     return f"{base}/?s={quote_plus(kueri)}" if kueri else base
 
 
 def parse_movieku_search(html: str) -> list[dict]:
-    """Ambil daftar film/series dari halaman pencarian atau homepage movieku."""
     soup = BeautifulSoup(html, "lxml")
     results = []
     for i in soup.find_all(class_="bx"):
@@ -851,7 +840,6 @@ MOVIEKU_VALID_RESOLUTIONS = {"1080p", "720p", "480p", "360p"}
 
 
 def parse_movieku_downloads(soup: BeautifulSoup):
-    """Parse blok #smokeddl. Judul download bisa <h2> (halaman film) atau <h3> (halaman episode)."""
     data = {}
     total_links = 0
     current_title = None
@@ -1596,7 +1584,6 @@ async def scraper_page_callback(_, callback_query, strings):
 # Dispatch ke fungsi per-situs; parsing + keyboard terpusat
 # ============================================================
 async def _extract_cb_parse(callback_query, strings, back_prefix, store):
-    """Parse callback data + buat keyboard back/close. Return (link, keyboard) atau None."""
     try:
         if callback_query.from_user.id != int(callback_query.data.split("#")[3]):
             await callback_query.answer(strings("unauth"), True)
@@ -1725,7 +1712,6 @@ async def _extract_savefilm21(client, callback_query, strings, link, keyboard):
 
 
 def _to_rich_html(text: str) -> str:
-    """Konversi caption HTML biasa ke HTML rich message (baris -> <p>, emoji -> tg-emoji)."""
     text = re.sub(
         r"<emoji id=(\d+)>([^<]*)</emoji>",
         r'<tg-emoji emoji-id="\1">\2</tg-emoji>',
@@ -2072,7 +2058,5 @@ async def muviku_scrap(_, message, strings):
             )
         except Exception as e:
             await message.reply(f"ERROR: {str(e)}")
-
-
 
 

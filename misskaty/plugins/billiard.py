@@ -1,9 +1,3 @@
-"""
-* @author        Yasir Aris M <yasiramunandar@gmail.com>
-* @created       2026-09-16
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 from pyrogram import enums, filters
 from pyrogram.types import (
     InlineKeyboardButton,

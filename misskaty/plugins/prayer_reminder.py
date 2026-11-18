@@ -1,7 +1,6 @@
 # * @author        Yasir Aris M <yasiramunandar@gmail.com>
 # * @projectName   MissKatyPyro
 # * Copyright ©YasirPedia All rights reserved
-"""Chat-configurable prayer time reminder using api.myquran.com."""
 
 import asyncio
 import datetime
@@ -208,11 +207,6 @@ async def _get_cached_jadwal(config: dict, now: datetime.datetime) -> Optional[d
 
 
 async def _get_cities() -> list[dict]:
-    """Fetch list of cities with a simple in-memory TTL cache.
-
-    This reduces latency and external API calls for interactive flows that
-    repeatedly query the mostly-static city list.
-    """
     cache_ttl_seconds = 3600  # 1 hour
 
     now = datetime.datetime.now(datetime.timezone.utc)

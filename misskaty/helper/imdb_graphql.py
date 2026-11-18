@@ -13,7 +13,7 @@ IMDB_GRAPHQL_HEADERS = {
     "origin": "https://www.imdb.com",
     "referer": "https://www.imdb.com/",
     "priority": "u=1, i",
-    "x-imdb-client-name": "imdb-web-next-localized",  # wajib: tanpa ini WAF IMDb balas 403
+    "x-imdb-client-name": "imdb-web-next-localized",
     "user-agent": (
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "

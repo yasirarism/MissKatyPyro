@@ -1,9 +1,3 @@
-"""
-* @author        Yasir Aris M <yasiramunandar@gmail.com>
-* @created       2022-12-01 09:12:27
-* @projectName   MissKatyPyro
-* Copyright @YasirPedia All rights reserved
-"""
 from os import remove
 from re import compile as compiles
 
@@ -27,7 +21,6 @@ __HELP__ = """
 
 # Size Checker for Limit
 def humanbytes(size: int):
-    """Convert Bytes To Bytes So That Human Can Read It"""
     if not isinstance(size, int):
         try:
             pass

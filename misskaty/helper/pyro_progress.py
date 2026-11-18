@@ -13,7 +13,6 @@ _PROGRESS_LAST_UPDATE = {}
 
 
 async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id, reply_markup=None):
-    """generic progress display for Telegram Upload / Download status"""
     now = time.time()
     diff = now - start
     key = (getattr(getattr(message, "chat", None), "id", 0), getattr(message, "id", 0))
@@ -62,7 +61,6 @@ async def progress_for_pyrogram(current, total, ud_type, message, start, dc_id, 
 
 
 def humanbytes(size: int) -> str:
-    """converts bytes into human readable format"""
     # https://stackoverflow.com/a/49361727/4723940
     # 2**10 = 1024
     if not size:

@@ -35,8 +35,6 @@ def extract_urls(reply_markup):
     return urls
 
 
-
-
 def has_button_markup(text: str | None) -> bool:
     if not text:
         return False
@@ -92,8 +90,6 @@ def _parse_buttonurl_syntax(text: str, chat_id: int | None = None):
     if current_row:
         rows.append(current_row.copy())
     return cleaned.strip(), (InlineKeyboardMarkup(rows) if rows else None)
-
-
 
 
 async def _build_rules_button(message):
@@ -172,9 +168,6 @@ async def int_to_alpha(user_id: int) -> str:
 
 
 async def extract_userid(message, text: str):
-    """
-    NOT TO BE USED OUTSIDE THIS FILE
-    """
 
     def is_int(text: str):
         try:
@@ -235,11 +228,6 @@ async def extract_user(message):
 
 
 async def time_converter(time_value: str) -> datetime:
-    """Convert ``1d`` / ``2h`` / ``30m`` to a datetime.
-
-    Raises:
-        ValueError: when the format is invalid or empty.
-    """
     if not time_value or not time_value[:-1].isdigit():
         raise ValueError("Incorrect time specified")
     unit = ["m", "h", "d"]  # m == minutes | h == hours | d == days

@@ -50,12 +50,6 @@ GENRES_EMOJI = {
 
 
 async def gtranslate(text, source="auto", target="id"):
-    """Translate text with Google first and a lightweight HTTP fallback.
-
-    googletrans may return the source text unchanged when Google throttles the
-    undocumented endpoint. IMDb descriptions must not silently remain English
-    for Indonesian users, so retry through MyMemory before returning.
-    """
     if not text:
         return SimpleNamespace(text=text or "")
     try:
@@ -146,7 +140,6 @@ async def rentry(teks):
 
 
 async def yasirbin(content: str, expires: str = "30d") -> str:
-    """Upload text to YasirBin (https://bin.yasirweb.eu.org)."""
     resp = await fetch.post(
         "https://bin.yasirweb.eu.org/api/document",
         data={"content": content, "expires": expires},

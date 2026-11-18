@@ -12,7 +12,6 @@ __all__ = ["Cache"]
 
 
 class Cache:
-    """Simple SQLite Cache."""
 
     PICKLE_PROTOCOL = pickle.HIGHEST_PROTOCOL
     DEFAULT_TIMEOUT = 300
@@ -84,17 +83,6 @@ class Cache:
         ] = "DEFERRED",
         **kwargs,
     ):
-        """Create a cache using sqlite3.
-
-        :param filename: Cache file name.
-        :param path: Path string to the wanted db location. If None, use current directory.
-        :param in_memory: Create database in-memory only. A file is still created, but nothing is stored in it.
-        :param timeout: Cache connection timeout.
-        :param isolation_level: Controls the transaction handling performed by sqlite3.
-                                If set to None, transactions are never implicitly opened.
-                                https://www.sqlite.org/lang_transaction.html
-        :param kwargs: Pragma settings. https://www.sqlite.org/pragma.html
-        """
 
         filepath = filename if path is None else str(Path(path) / filename)
         suffix = ":?mode=memory&cache=shared" if in_memory else ""
@@ -153,7 +141,6 @@ class Cache:
             self.close()
 
     def close(self) -> None:
-        """Closes the cache."""
         self._con.execute(
             self._set_pragma.format("optimize")
         )  # https://www.sqlite.org/pragma.html#pragma_optimize
@@ -182,14 +169,6 @@ class Cache:
         return pickle.loads(value)  # noqa: S301
 
     def add(self, key: str, value: Any, timeout: int = DEFAULT_TIMEOUT) -> None:
-        """Set the value to the cache only if the key is not already in the cache,
-        or the found value has expired.
-
-        :param key: Cache key.
-        :param value: Picklable object to store.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         data = {
             "key": key,
             "value": self._stream(value),
@@ -199,11 +178,6 @@ class Cache:
         self._con.commit()
 
     def get(self, key: str, default: Any = None) -> Any:
-        """Get the value under some key. Return `default` if key not in the cache or expired.
-
-        :param key: Cache key.
-        :param default: Value to return if key not in the cache.
-        """
         result: Optional[Tuple[bytes, float]] = self._con.execute(
             self._get_sql, {"key": key}
         ).fetchone()
@@ -220,13 +194,6 @@ class Cache:
         return self._unstream(result[0])
 
     def set(self, key: str, value: Any, timeout: int = DEFAULT_TIMEOUT) -> None:
-        """Set a value in cache under some key.
-
-        :param key: Cache key.
-        :param value: Picklable object to store.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         data = {
             "key": key,
             "value": self._stream(value),
@@ -236,42 +203,20 @@ class Cache:
         self._con.commit()
 
     def update(self, key: str, value: Any) -> None:
-        """Update value in the cache. Does nothing if key not in the cache or expired.
-
-        :param key: Cache key.
-        :param value: Picklable object to store.
-        """
         data = {"key": key, "value": self._stream(value)}
         self._con.execute(self._update_sql, data)
         self._con.commit()
 
     def touch(self, key: str, timeout: int = DEFAULT_TIMEOUT) -> None:
-        """Extend the lifetime of an object in cache. Does nothing if key is not in the cache or is expired.
-
-        :param key: Cache key.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         data = {"exp": self._exp_timestamp(timeout), "key": key}
         self._con.execute(self._touch_sql, data)
         self._con.commit()
 
     def delete(self, key: str) -> None:
-        """Remove the value under the given key from the cache. Does nothing if key is not in the cache.
-
-        :param key: Cache key.
-        """
         self._con.execute(self._delete_sql, {"key": key})
         self._con.commit()
 
     def add_many(self, dict_: Dict[str, Any], timeout: int = DEFAULT_TIMEOUT) -> None:
-        """For all keys in the given dict, add the value to the cache only if the key is not
-        already in the cache, or the found value has expired.
-
-        :param dict_: Cache keys with values to add.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         command = self._add_many_sql.format(
             ", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))])
         )
@@ -287,10 +232,6 @@ class Cache:
         self._con.commit()
 
     def get_many(self, keys: List[str]) -> Dict[str, Any]:
-        """Get all values that exist and aren't expired from the given cache keys, and return a dict.
-
-        :param keys: List of cache keys.
-        """
         seq = ", ".join([f"'{value}'" for value in keys])
         fetched: List[Tuple[str, Any, float]] = self._con.execute(
             self._get_many_sql.format(seq)
@@ -320,12 +261,6 @@ class Cache:
         return results
 
     def set_many(self, dict_: Dict[str, Any], timeout: int = DEFAULT_TIMEOUT) -> None:
-        """Set values to the cache for all keys in the given dict.
-
-        :param dict_: Cache keys with values to set.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         command = self._set_many_sql.format(
             ", ".join([f"(:key{n}, :value{n}, :exp{n})" for n in range(len(dict_))])
         )
@@ -341,10 +276,6 @@ class Cache:
         self._con.commit()
 
     def update_many(self, dict_: Dict[str, Any]) -> None:
-        """Update values to the cache for all keys in the given dict. Does nothing if key not in cache or expired.
-
-        :param dict_:Cache keys with values to update to.
-        """
         seq = [
             {"key": key, "value": self._stream(value)} for key, value in dict_.items()
         ]
@@ -352,36 +283,18 @@ class Cache:
         self._con.commit()
 
     def touch_many(self, keys: List[str], timeout: int = DEFAULT_TIMEOUT) -> None:
-        """Extend the lifetime for all objects under the given keys in cache.
-        Does nothing if a key is not in the cache or is expired.
-
-        :param keys: List of cache keys.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         exp = self._exp_timestamp(timeout)
         seq = [{"key": key, "exp": exp} for key in keys]
         self._con.executemany(self._touch_sql, seq)
         self._con.commit()
 
     def delete_many(self, keys: List[str]) -> None:
-        """Remove all the values under the given keys from the cache.
-
-        :param keys: List of cache keys.
-        """
         self._con.execute(
             self._delete_many_sql.format(", ".join([f"'{value}'" for value in keys]))
         )
         self._con.commit()
 
     def get_or_set(self, key: str, default: Any, timeout: int = DEFAULT_TIMEOUT) -> Any:
-        """Get a value under some key, or set the default if key is not in cache.
-
-        :param key: Cache key.
-        :param default: Picklable object to store if key is not in cache.
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
         result: Optional[Tuple[bytes, float]] = self._con.execute(
             self._get_sql, {"key": key}
         ).fetchone()
@@ -403,23 +316,14 @@ class Cache:
         return default
 
     def get_all(self) -> Dict[str, Any]:
-        """Get all key-value pairs from the cache."""
         all_data = self._con.execute("SELECT key, value FROM cache;").fetchall()
         return {key: self._unstream(value) for key, value in all_data}
 
     def clear(self) -> None:
-        """Clear the cache from all values."""
         self._con.execute(self._clear_sql)
         self._con.commit()
 
     def incr(self, key: str, delta: int = 1) -> int:
-        """Increment the value in cache by the given delta.
-        Note that this is not an atomic transaction!
-
-        :param key: Cache key.
-        :param delta: How much to increment.
-        :raises ValueError: Value cannot be incremented.
-        """
         result: Optional[Tuple[bytes, float]] = self._con.execute(
             self._check_sql, {"key": key}
         ).fetchone()
@@ -439,13 +343,6 @@ class Cache:
         return new_value
 
     def decr(self, key: str, delta: int = 1) -> int:
-        """Decrement the value in cache by the given delta.
-        Note that this is not an atomic transaction!
-
-        :param key: Cache key.
-        :param delta: How much to decrement.
-        :raises ValueError: Value cannot be decremented.
-        """
         result: Optional[Tuple[bytes, float]] = self._con.execute(
             self._check_sql, {"key": key}
         ).fetchone()
@@ -467,12 +364,6 @@ class Cache:
     def memoize(
         self, timeout: int = DEFAULT_TIMEOUT
     ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
-        """Save the result of the decorated function in cache. Calls with different
-        arguments are saved under different keys.
-
-        :param timeout: How long the value is valid in the cache.
-                        Negative numbers will keep the key in cache until manually removed.
-        """
 
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             @wraps(func)
@@ -491,12 +382,6 @@ class Cache:
     memorize = memoize  # for backwards compatibility
 
     def ttl(self, key: str) -> int:
-        """How long the key is still valid in the cache in seconds.
-        Returns `-1` if the value for the key does not expire.
-        Returns `-2` if the value for the key has expired, or has not been set.
-
-        :param key: Cache key.
-        """
         result: Optional[Tuple[bytes, float]] = self._con.execute(
             self._get_sql, {"key": key}
         ).fetchone()
@@ -517,12 +402,6 @@ class Cache:
         return ttl
 
     def ttl_many(self, keys: List[str]) -> Dict[str, int]:
-        """How long the given keys are still valid in the cache in seconds.
-        Returns `-1` if a value for the key does not expire.
-        Returns `-2` if a value for the key has expired, or has not been set.
-
-        :param keys: List of cache keys.
-        """
         seq = ", ".join([f"'{value}'" for value in keys])
         fetched: List[Tuple[str, Any, float]] = self._con.execute(
             self._get_many_sql.format(seq)

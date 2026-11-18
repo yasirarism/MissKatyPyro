@@ -62,12 +62,6 @@ def rand_key() -> str:
 
 
 def _resolve_yt_url(ctx: Message) -> str:
-    """Ambil URL untuk /ytdown.
-
-    Prioritas: 1) argumen command, 2) reply message (text/caption),
-    3) trigger regex (link dikirim langsung di chat). Mengembalikan string
-    kosong kalau tidak ada URL sama sekali.
-    """
     if ctx.command and len(ctx.command) > 1:
         return ctx.command[1]
     if ctx.reply_to_message:
@@ -102,8 +96,6 @@ def build_ydl_opts(extra: dict | None = None) -> dict:
     return opts
 
 
-
-
 def format_ytdl_error(err: Exception) -> str:
     msg = str(err).strip()
     if msg.startswith("ERROR: "):
@@ -118,8 +110,6 @@ def resolve_downloaded_file(output_dir: str, job_id: str, expected_ext: str | No
             if file.suffix.lower() == f".{expected_ext.lower()}":
                 return str(file)
     return str(candidates[0]) if candidates else None
-
-
 
 
 def estimate_audio_size(duration: int, bitrate_kbps: int) -> int:
@@ -480,7 +470,6 @@ async def ytdl_download_callback(self: Client, cq: CallbackQuery, strings):
     cancel_markup = InlineKeyboardMarkup([[InlineKeyboardButton("❌ Cancel", callback_data=f"yt_cancel|{job_id}", style=enums.ButtonStyle.DANGER)]])
 
     def _edit_caption(text: str, markup=cancel_markup):
-        """Edit caption via client (lebih andal daripada via callback query)."""
         return self.edit_message_caption(
             cq.message.chat.id,
             cq.message.id,
