@@ -49,7 +49,7 @@ from database.imdb_db import (
 )
 from misskaty import app
 from misskaty.helper import GENRES_EMOJI, Cache, fetch, gtranslate, get_random_string, search_jw
-from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql
+from misskaty.helper.imdb_graphql import format_imdb_date, get_imdb_details_graphql, imdb_last_error
 from misskaty.helper.chat_utils import demoji
 
 LOGGER = logging.getLogger("MissKaty")
@@ -1314,7 +1314,7 @@ async def _process_imdb_callback(self: Client, query: CallbackQuery, movie: str,
             imdb_url = f"https://m.imdb.com/title/tt{movie}/"
             r_json = await get_imdb_details_graphql(f"tt{movie}")
             if not r_json:
-                raise ValueError("IMDb GraphQL returned empty payload")
+                raise ValueError(f"IMDb GraphQL returned empty payload ({imdb_last_error() or 'no detail'})")
             ott = await search_jw(
                 r_json.get("alternateName") or r_json.get("name"), L["search_jw_locale"]
             )

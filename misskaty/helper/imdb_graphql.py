@@ -13,6 +13,10 @@ IMDB_GRAPHQL_HEADERS = {
     "origin": "https://www.imdb.com",
     "referer": "https://www.imdb.com/",
     "priority": "u=1, i",
+    # WAF CloudFront IMDb menolak (403) request tanpa header klien ini.
+    # Nilai ini yang dikirim frontend imdb.com sendiri; tanpa header ini
+    # endpoint GraphQL selalu 403 walau UA/impersonate sudah benar.
+    "x-imdb-client-name": "imdb-web-next-localized",
     "user-agent": (
         "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
         "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -104,7 +108,17 @@ def format_imdb_date(raw_date: str | None, locale: str = "id") -> str | None:
     return parsed.strftime("%-d %B %Y")
 
 
+LAST_ERROR = ""
+
+
+def imdb_last_error() -> str:
+    """Alasan kegagalan terakhir, supaya pemanggil tidak cuma bilang 'empty'."""
+    return LAST_ERROR
+
+
 async def get_imdb_details_graphql(title_id: str):
+    global LAST_ERROR
+    LAST_ERROR = ""
     title_id = title_id if str(title_id).startswith("tt") else f"tt{title_id}"
     try:
         response = await fetch.post(
@@ -119,13 +133,18 @@ async def get_imdb_details_graphql(title_id: str):
         response.raise_for_status()
         body = response.json()
     except Exception as err:
-        LOGGER.warning(f"IMDb GraphQL request failed for {title_id}: {err}")
+        status = getattr(getattr(err, "response", None), "status_code", None)
+        LAST_ERROR = f"HTTP {status}: {err}" if status else f"{type(err).__name__}: {err}"
+        LOGGER.warning(f"IMDb GraphQL request failed for {title_id}: {LAST_ERROR}")
         return {}
 
     payload = body.get("data", {}).get("title") or {}
     if not payload:
         if body.get("errors"):
+            LAST_ERROR = f"GraphQL errors: {body.get('errors')}"
             LOGGER.warning(f"IMDb GraphQL returned errors for {title_id}: {body.get('errors')}")
+        else:
+            LAST_ERROR = "empty title payload"
         return {}
 
     principal_credits = payload.get("principalCredits") or []
